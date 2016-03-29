@@ -58,6 +58,12 @@ namespace NuSysApp
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
                 await SessionController.Instance.InitializeRecog();
+                
+            };
+
+            SizeChanged += delegate(object sender, SizeChangedEventArgs args)
+            {
+       
             };
 
             MyWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));

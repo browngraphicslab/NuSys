@@ -2,37 +2,35 @@
     background-color: #FFFFFF;
     padding: 1em;
 }
-.container {
+/*.container {
     position: absolute;
     top: 3em;
     left: 0;
     bottom:0;
     right:0;
     z-index: -10;
-}
+}*/
 
 #buttonbar {
    top: 0;
    left: 0;
-   margin: 1em;
-   position: fixed;
+   margin: 0.5em;
 }
 
-#editor {
-	border-collapse: separate; 
-	position: absolute;
-    overflow: auto;
+.view {
+    position: absolute;
     top: 0;
     left: 0;
     bottom: 0;
     right:0;
-    padding: 1em;
-    padding-right: 2em;
-    padding-bottom: 2em;
+}
 
+#editor {
+	border-collapse: separate; 
+    overflow: auto;
+    padding: 1em;
 	outline: none;
     font-family: Segoe UI;
-    z-index: -1;
     border: none;
 }
 

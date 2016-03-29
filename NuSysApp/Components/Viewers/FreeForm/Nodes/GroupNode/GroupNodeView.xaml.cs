@@ -101,6 +101,7 @@ namespace NuSysApp
             var vm = (GroupNodeViewModel)DataContext;
             var dvm = new GroupNodeDataGridViewModel((ElementCollectionController)vm.Controller);
             await dvm.CreateChildren();
+        
             dataGridView = new GroupNodeDataGridView(dvm);
             ExpandedGrid.Children.Add(dataGridView);
             dataGridView.Visibility = Visibility.Visible;

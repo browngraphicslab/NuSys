@@ -37,8 +37,13 @@ namespace NuSysApp
             {
                 foreach (var atom in e.NewItems)
                 {
+                    
+
                     var atomTest = (FrameworkElement)atom;
                     var vm = (ElementViewModel)atomTest.DataContext; //access viewmodel
+                    if (vm is LinkViewModel)
+                        continue;
+                    
                     _nodeModel = (ElementModel)vm.Model; // access model
                     _nodeModel.SetMetaData("creator", _nodeModel.CreatorId);
 

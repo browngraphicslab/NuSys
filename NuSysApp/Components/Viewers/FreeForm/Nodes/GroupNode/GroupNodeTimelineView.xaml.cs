@@ -209,6 +209,9 @@ namespace NuSysApp
             foreach (var atom in _vm.AtomViewList)
             {
                 var vm = (ElementViewModel)atom.DataContext; //access viewmodel
+                if (vm is LinkViewModel)
+                    continue;
+                
                 vm.Height = 80;
                 vm.Width = 130;
                 _nodeModel = (ElementModel)vm.Model; // access model

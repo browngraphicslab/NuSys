@@ -35,6 +35,8 @@ namespace NuSysApp
             Annotation.Text = vm.Annotation;
             Annotation.TextChanged += AnnotationOnTextChanged;
 
+ 
+
             var linkController = (LinkElementController) vm.Controller;
             linkController.AnnotationChanged += LinkControllerOnAnnotationChanged;
           //  linkController.PositionChanged += LinkControllerOnPositionChanged;
@@ -54,7 +56,16 @@ namespace NuSysApp
 
         private void LinkControllerOnAnnotationChanged(string text)
         {
+            var vm = (LinkViewModel)DataContext;
             Annotation.Text = text;
+            if (text != "" || vm.IsSelected)
+            {
+                Annotation.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                Annotation.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void AnnotationOnTextChanged(object source, string title)
@@ -91,14 +102,7 @@ namespace NuSysApp
         {
             
             this.UpdateControlPoints();
-            return;
 
-            if (propertyChangedEventArgs.PropertyName == "AnnotationText")
-            {
-                AnnotationContainer.Visibility = Annotation.Text == ""
-                    ? Visibility.Collapsed
-                    : Visibility.Visible;
-            }
 
             var vm = (LinkViewModel)DataContext;
 
@@ -116,11 +120,7 @@ namespace NuSysApp
                     {
                         AnnotationContainer.Visibility = Visibility.Collapsed;
                     }
-                    else
-                    {
-                        UpdateText();
-                        Delete.Visibility = Visibility.Collapsed;
-                    }
+                    Delete.Visibility = Visibility.Collapsed;
                     this.Annotation.DeActivate();
                 }
             }

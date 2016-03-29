@@ -171,8 +171,6 @@ namespace NuSysApp
 
         private void OnKeyDown(CoreWindow sender, KeyEventArgs args)
         {
-            if (FocusManager.GetFocusedElement() is TextBox)
-                return;
 
             if (args.VirtualKey == VirtualKey.Shift && _prevOptions != Options.PenGlobalInk)
             {
@@ -182,9 +180,6 @@ namespace NuSysApp
 
         private async void OnKeyUp(CoreWindow sender, KeyEventArgs args)
         {
-            if (FocusManager.GetFocusedElement() is TextBox)
-                return;
-
             if (args.VirtualKey == VirtualKey.Shift)
             {
                 ActivatePenMode(false);

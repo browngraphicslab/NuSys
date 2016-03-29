@@ -9,7 +9,7 @@
     <script src="app.js"></script>
 </head>
 <body>
-<script type="text/javascript" language="javascript">
+    <script type="text/javascript" language="javascript">
     // Updates text in text node as it is added/edited in Text Editor
     function InsertText(text) {
         document.getElementById("editor").innerHTML = text;
@@ -19,9 +19,9 @@
         window.external.notify(document.getElementById("editor").innerHTML);
     });
 
-</script>
-<div id="editor">
-</div>
-<div id="preview"></div>
+    </script>
+    <div id="editor" class="view">
+    </div>
+    <div id="preview"></div>
 </body>
 </html>

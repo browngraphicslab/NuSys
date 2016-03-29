@@ -21,7 +21,7 @@
                         <Canvas x:Name="xCanvas" Grid.Row="0" Width="{Binding Width}" Height="{Binding Height}">
                             <Grid x:Name="xTitleContainer" VerticalAlignment="Top" Width="{Binding Width}" >
                                     <Border x:Name="Rect" Background="White" BorderBrush="#83A6A3" BorderThickness="1" Width="{Binding Width}"  />
-                                    <TextBox Padding="10,5,10,10" Margin="0,0" x:Name="xTitle" Foreground="#606d7a" Width="{Binding Width}"  IsHitTestVisible="{Binding IsSelected}" TextWrapping="NoWrap"  Text="{Binding Title, Mode=TwoWay}" MaxHeight="80" FontSize="18" BorderBrush="Transparent" Background="Transparent" TextAlignment="Center" VerticalAlignment="Center" BorderThickness="0"></TextBox>
+                                    <TextBox Padding="10,5,10,10" Margin="0,0" x:Name="xTitle" IsTabStop="{Binding IsSelected}" Foreground="#606d7a" Width="{Binding Width}"  IsHitTestVisible="{Binding IsSelected}" TextWrapping="NoWrap"  Text="{Binding Title, Mode=TwoWay}" MaxHeight="80" FontSize="18" BorderBrush="Transparent" Background="Transparent" TextAlignment="Center" VerticalAlignment="Center" BorderThickness="0"></TextBox>
                                 <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
                             </Grid>
 

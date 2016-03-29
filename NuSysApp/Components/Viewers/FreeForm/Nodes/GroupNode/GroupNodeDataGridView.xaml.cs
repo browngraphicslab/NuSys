@@ -64,6 +64,7 @@ namespace NuSysApp
             var src = (FrameworkElement) args.OriginalSource;
             if (src.DataContext is GroupNodeDataGridInfo)
             {
+                /*
                 _drag = new Image();//TODO temporary
                 BitmapImage textimage = new BitmapImage(new Uri("ms-appx:///Assets/icon_text.png", UriKind.Absolute));
                 _drag.Source = textimage;
@@ -74,6 +75,7 @@ namespace NuSysApp
                 SessionController.Instance.SessionView.MainCanvas.Children.Add(_drag);
                 //Canvas.SetLeft(img, 0);
                 //Canvas.SetTop(img, 0);
+                */
                 var info = (GroupNodeDataGridInfo) src.DataContext;
                 _id = info.Id;
             }
@@ -81,19 +83,20 @@ namespace NuSysApp
 
         private async void OnPointerReleased(object source, PointerRoutedEventArgs args)
         {
-            if (_drag != null)
+            if (_id == null)
+                return;
+
+            var point = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
+            if (!this.IsPointerInGroup(point))
             {
-                var point = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
-                if (!this.IsPointerInGroup(point))
-                {
-                    var newPos = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(point);
-                    var controller = SessionController.Instance.IdToControllers[_id];
-                    await controller.RequestMoveToCollection(WaitingRoomView.InitialWorkspaceId, newPos.X, newPos.Y);
-                }
-                SessionController.Instance.SessionView.MainCanvas.Children.Remove(_drag);
-                _drag = null;
-                _id = null;
+                var newPos = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(point);
+                var controller = SessionController.Instance.IdToControllers[_id];
+                await controller.RequestMoveToCollection(WaitingRoomView.InitialWorkspaceId, newPos.X, newPos.Y);
             }
+            //  SessionController.Instance.SessionView.MainCanvas.Children.Remove(_drag);
+            _drag = null;
+            _id = null;
+            
         }
 
         private bool IsPointerInGroup(Point point)
