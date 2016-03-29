@@ -19,14 +19,11 @@
 
     }
 
-    analyzeContent(): void {
+    analyzeContent(): void { 
 
         this.makeInitialParentList();
-        console.info(this._parentList);
 
         this.findCommonParent();
-        console.log("=====rmChildforLasso");
-        console.info(this._parentList);
 
         var parent = this._parentList[0].cloneNode(true);
         if (parent.nodeName == "html") {
@@ -58,22 +55,6 @@
     }
     
 
- //    l1 is rectlines --> horizontal or vertical 
-    //islineintersect(l1, l2: Line): boolean {
-    //    console.log("isLineInstersect");
-    //    console.log(l1);
-    //     console.log(l2);
-    //     var det = l1.A * l2.B - l2.A * l1.B;
-    //   //  console.log(det);
-    //     if (det == 0)
-    //         return false;
-    //     var x = (l2.B * l1.C - l1.B * l2.C) / det;
-    //     var y = (l1.A * l2.C - l2.A * l1.C) / det;
-    //     console.log(x + ": " +  y);
-    //     var pt = new Point(x, y);
-
-    //     return l1.hasPoint(pt) && l2.hasPoint(pt);
-    //}
 
     isLineIntersect(l1, l2: Line): boolean {
         if (l1.p1.x == l1.p2.x) {
@@ -94,31 +75,20 @@
 
 
     intersectWith(el: Element): number {
- //       console.log("intersectWith.... ");
-  //      console.log(el);
-
         if (!el)
             return 0;
         if (this.isTextElement(el)) {
-    //        console.log(el);
             var range = document.createRange();
             range.selectNodeContents(el);
             var rects = range.getClientRects();
             if (rects.length == 0) { return 0; }
-      //      console.log("rects: ");
-
             for (var i = 0; i < rects.length; i++) {
-        //        console.log(rects[i]);
-
                 var rect = rects[i];
                 if (this.isRectIntersect(new Rectangle(rect.left, rect.top, rect.width, rect.height))) {
-      //              console.log("isIntersect!");
                     return 1;
                 }
             }
             if (this.isPointBound(new Point(rects[0].left, rects[0].top))) {
-        //        console.log("=====BOUND");
-
                 return 2;
             }
             return 0;
@@ -136,19 +106,12 @@
                 console.log(el);
                 return 0;
             }
-  //          console.log(el);
-
             if (this.isRectIntersect(new Rectangle(minX, minY, realWidth, realHeight))) {
-    //            console.log("======1");
                 return 1;
             }
             if (this.isPointBound(new Point(minX, minY))) {
-      //          console.log("======2");
-
                 return 2;
             }
-    //        console.log("======0");
-
             return 0;
         }
     }
@@ -208,28 +171,14 @@
     }
 
     isRectIntersect(rect: Rectangle): boolean {
-  //      console.log(rect);
         var lines = rect.getLines();
-        //lines.forEach(l => {
-        //    this._sampleLines.forEach(m => {
-        //        if (this.isLineIntersect(l, m)) {
-        //            console.log("true...");
-        //            return true;
-        //        }
-        //    });
-        //});
-        
         for (var i = 0; i < lines.length; i++) {
             for (var j = 0; j < this._sampleLines.length; j++) {
                 if (this.isLineIntersect(lines[i], this._sampleLines[j])) {
-  ////                  console.log("==================TRUE=============");
                     return true;
                 }
             }
         }
-  //      console.log("===================NO INTERSECTING LINE with RECT");
-  //      console.log(rect);
-  //      console.log(rect.hasPoint(this.stroke.points[0]));
         return rect.hasPoint(this.stroke.points[0]);
     }
 
@@ -263,8 +212,6 @@
         for (var i = 0; i < removed.length; i++) {
             el.removeChild(removed[i]);
         }
- //       console.log(realNList);
- //       console.log(resList);
         for (var i = 0; i < el.childNodes.length; i++) {
 
             if (resList[i] != 2) {
@@ -273,12 +220,12 @@
                     $(trueEl.childNodes[index]).replaceWith("<words>" + $(trueEl.childNodes[index]).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
                     var result = "";
                     for (var j = 0; j < trueEl.childNodes[index].childNodes.length; j++) {
-        //                console.log(trueEl.childNodes[index].childNodes[j]);
                         if (this.intersectWith(trueEl.childNodes[index].childNodes[j]) > 0) {
-        //                    console.log("included!!!!");
                             if (trueEl.childNodes[index].childNodes[j].style) {
                                 trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
                                 this.addToHighLights(trueEl.childNodes[index].childNodes[j], indexList[i], j);
+                                trueEl.childNodes[index].childNodes[j].className += " " + this.id.toString();
+
                             }
                             if (!trueEl.childNodes[index].childNodes[j]["innerHTML"]) {
                                 if (trueEl.childNodes[index].childNodes[j].nodeName == "WORD") {
@@ -293,11 +240,7 @@
                     this.rmChildNodes(el.childNodes[i], realNList[i]);
                 }
             } else {
-  ////              console.log("BOUNDEDDDD=====");
-  //              console.log(trueEl.childNodes[indexList[i]]);
                 var startIndex = Array.prototype.indexOf.call(trueEl.childNodes, trueEl.childNodes[i]);
-
-
                 var foundElement = $(trueEl.childNodes[indexList[i]]).find("img");
                 if (foundElement.length > 0) {
                     var label = $("<span class='wow'>Selected</span>");
@@ -308,12 +251,11 @@
                 }
 
                 if (trueEl.childNodes[indexList[i]].childNodes.length == 0) {
-    //                console.log("-----------TEXT?-------");
-    //                console.log($(trueEl.childNodes[indexList[i]]));
                     $(trueEl.childNodes[indexList[i]]).replaceWith("<hilight>" + $(realNList[i]).text() + "</hilight>");
                 }
                 $(realNList[i]).css("background-color", "yellow");
                 trueEl.childNodes[indexList[i]].style.backgroundColor = "yellow";
+                trueEl.childNodes[indexList[i]].className += " " + this.id.toString();
                 this.addToHighLights(trueEl.childNodes[indexList[i]], indexList[i], -1);
             }
         }
