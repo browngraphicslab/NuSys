@@ -42,6 +42,7 @@ namespace NuSysApp
         {
             var model = (PdfNodeModel)Controller.Model;
             model.PageChange -= OnPageChange;
+            if (_document != null)
             _document.Dispose();
             base.Dispose();
         }
