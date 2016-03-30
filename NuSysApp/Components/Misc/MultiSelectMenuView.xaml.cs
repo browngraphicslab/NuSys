@@ -82,6 +82,12 @@ namespace NuSysApp
                 dict["metadata"] = metadata;
                 dict["autoCreate"] = true;
                 dict["creator"] = controller.LibraryElementModel.Id;
+
+                if (vm is PdfNodeViewModel)
+                {
+                    dict["page"] = (vm as PdfNodeViewModel).CurrentPageNumber;
+                }
+
                 var request = new NewElementRequest(dict);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
                 vm.Controller.RequestDelete();

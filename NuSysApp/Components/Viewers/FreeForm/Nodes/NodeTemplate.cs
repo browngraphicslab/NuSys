@@ -18,7 +18,7 @@ using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
-    [TemplatePart(Name = "inkCanvas", Type =typeof(InqCanvasView))]
+    [TemplatePart(Name = "inkCanvas", Type = typeof(InqCanvasView))]
     [TemplatePart(Name = "btnDelete", Type = typeof(Button))]
     [TemplatePart(Name = "resizer", Type = typeof(Path))]
     [TemplatePart(Name = "bg", Type = typeof(Grid))]
@@ -69,10 +69,10 @@ namespace NuSysApp
         }
 
         public static readonly DependencyProperty SubMenuProperty = DependencyProperty.Register("SubMenu",
-            typeof (object), typeof (NodeTemplate), new PropertyMetadata(null));
+            typeof(object), typeof(NodeTemplate), new PropertyMetadata(null));
 
-        public static readonly DependencyProperty InnerProperty = DependencyProperty.Register("Inner", typeof (object),
-            typeof (NodeTemplate), new PropertyMetadata(null));
+        public static readonly DependencyProperty InnerProperty = DependencyProperty.Register("Inner", typeof(object),
+            typeof(NodeTemplate), new PropertyMetadata(null));
 
         public object SubMenu
         {
@@ -89,7 +89,7 @@ namespace NuSysApp
         protected override void OnApplyTemplate()
         {
             var vm = (ElementViewModel)this.DataContext;
-            
+
             bg = (Grid)GetTemplateChild("bg");
             hitArea = (Rectangle)GetTemplateChild("HitArea");
 
@@ -120,22 +120,22 @@ namespace NuSysApp
             resizer.ManipulationDelta += OnResizerManipulationDelta;
 
             highlight = (Border)GetTemplateChild("xHighlight");
-            userName = (TextBlock) GetTemplateChild("xUserName");
+            userName = (TextBlock)GetTemplateChild("xUserName");
 
             //tags = (TextBlock)GetTemplateChild("Tags");
             //var t = new TranslateTransform {X = 0, Y = 25};
             //tags.RenderTransform = t;
 
-            tags = (ItemsControl) GetTemplateChild("Tags");
+            tags = (ItemsControl)GetTemplateChild("Tags");
 
             title = (TextBox)GetTemplateChild("xTitle");
             title.TextChanged += TitleOnTextChanged;
-            
+
             if (vm.Controller.LibraryElementModel != null)
                 vm.Controller.LibraryElementModel.OnTitleChanged += LibraryElementModelOnOnTitleChanged;
-            titleContainer = (Grid) GetTemplateChild("xTitleContainer");           
+            titleContainer = (Grid)GetTemplateChild("xTitleContainer");
 
-            title.Loaded += delegate(object sender, RoutedEventArgs args)
+            title.Loaded += delegate (object sender, RoutedEventArgs args)
             {
                 titleContainer.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
                 highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
@@ -147,7 +147,8 @@ namespace NuSysApp
 
 
 
-            if (vm.Controller.LibraryElementModel != null) { 
+            if (vm.Controller.LibraryElementModel != null)
+            {
 
                 vm.Controller.LibraryElementModel.OnLightupContent += LibraryElementModelOnOnLightupContent;
 
@@ -199,10 +200,9 @@ namespace NuSysApp
 
         private void LibraryElementModelOnOnLightupContent(LibraryElementModel model, bool lightup)
         {
-
-           // highlight.Visibility = lightup ? Visibility.Visible : Visibility.Collapsed;
-            highlight.BorderThickness = new Thickness(3);
-            highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(255,255,226,139));
+            highlight.Visibility = lightup ? Visibility.Visible : Visibility.Collapsed;
+            highlight.BorderThickness = new Thickness(5);
+            highlight.BorderBrush = new SolidColorBrush(Colors.Aqua);
         }
 
         private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)
@@ -215,7 +215,7 @@ namespace NuSysApp
 
             if (_currenDragMode == DragMode.Duplicate)
             {
-                
+
                 var vm = (ElementViewModel)DataContext;
                 vm.Controller.RequestDuplicate(r.X, r.Y, new Message(await vm.Model.Pack()));
             }
@@ -325,7 +325,7 @@ namespace NuSysApp
 
         private void OnBtnDeleteClick(object sender, RoutedEventArgs e)
         {
-            var model = (ElementModel)((ElementViewModel) this.DataContext).Model;
+            var model = (ElementModel)((ElementViewModel)this.DataContext).Model;
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(model.Id));
         }
 
@@ -334,19 +334,19 @@ namespace NuSysApp
         {
             if (SessionController.Instance.SessionView.IsPenMode)
                 return;
-            
+
             var vm = (ElementViewModel)this.DataContext;
 
             var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
-            var resizeX = vm.Model.Width + e.Delta.Translation.X/zoom;
-            var resizeY = vm.Model.Height + e.Delta.Translation.Y/zoom;
+            var resizeX = vm.Model.Width + e.Delta.Translation.X / zoom;
+            var resizeY = vm.Model.Height + e.Delta.Translation.Y / zoom;
             if (resizeY > 0 && resizeX > 0)
             {
-            vm.Controller.SetSize(resizeX,resizeY);
+                vm.Controller.SetSize(resizeX, resizeY);
             }
-         //   inkCanvas.Width = vm.Width;
-         //   inkCanvas.Height = vm.Height;
-            e.Handled = true; 
+            //   inkCanvas.Width = vm.Width;
+            //   inkCanvas.Height = vm.Height;
+            e.Handled = true;
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -361,23 +361,24 @@ namespace NuSysApp
             {
                 if (vm.IsSelected)
                 {
-                   // highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(240,90,142,232));
-                 //   highlight.BorderThickness = new Thickness(3);
+                    bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 156, 197, 194));
+                    bg.BorderThickness = new Thickness(2);
                     hitArea.Visibility = Visibility.Visible;
                 }
                 if (vm.IsEditing)
                 {
-                    highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(240, 90, 142, 232));
-                    highlight.BorderThickness = new Thickness(3);
+                    bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 197, 158, 156));
+                    bg.BorderThickness = new Thickness(2);
                     hitArea.Visibility = Visibility.Collapsed;
                 }
                 if (!(vm.IsEditing || vm.IsSelected))
                 {
-                   // highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 131, 166, 163));
-                    highlight.BorderThickness = new Thickness(0);
+                    bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 131, 166, 163));
+                    bg.BorderThickness = new Thickness(1);
                     hitArea.Visibility = Visibility.Visible;
                 }
             }
         }
     }
 }
+
