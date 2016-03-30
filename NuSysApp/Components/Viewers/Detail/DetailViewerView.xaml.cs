@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using LdaLibrary;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -23,6 +24,8 @@ namespace NuSysApp
 {
     public sealed partial class DetailViewerView : AnimatableUserControl
     {
+
+        private ElementViewModel _activeVm;
 
         public DetailViewerView()
         {
@@ -51,7 +54,56 @@ namespace NuSysApp
                   // Metadata.ItemsSource = vm.Metadata;
               };
 
+            SuggestButton.Click += delegate(object sender, RoutedEventArgs args)
+            {
+                var dvm = (DetailViewerViewModel)DataContext;
+                var cvm = (ElementViewModel)dvm.View.DataContext;
+                if (cvm is PdfNodeViewModel)
+                {
+                    var pvm = (PdfNodeViewModel) cvm;
+                    LaunchLDA(pvm.GetAllText());
+                }
+                if (cvm is TextNodeViewModel)
+                {
+                    var tvm = (TextNodeViewModel)cvm;
+                    LaunchLDA(tvm.Controller.LibraryElementModel.Data);
+                }
+            };
+
             
+        }
+
+        public async Task LaunchLDA(string text)
+        {
+            if (text == null || text == "")
+                return;
+            var dvm = (DetailViewerViewModel)DataContext;
+            var cvm = (ElementViewModel) dvm.View.DataContext;
+
+            Task.Run(async () =>
+            {
+                var test = new List<string>();
+
+                // parameters for our LDA algorithm
+                string filename = cvm.Title;
+                test.Add(filename);
+                test.Add("niters 10");
+                test.Add("ntopics 1");
+                test.Add("twords 10");
+                test.Add("dir ");
+                test.Add("est true");
+                test.Add("alpha 12.5");
+                test.Add("beta .1");
+                test.Add("model model-final");
+                
+                DieStopWords ds = new DieStopWords();
+                text = await ds.removeStopWords(text);
+                List<string> topics = await TagExtractor.launch(test, new List<string>() { text });
+                await UITask.Run(() =>
+                {
+                    cvm.Controller.SetMetadata("tags", topics);
+                });
+            });
         }
 
         public async void ShowElement(ElementController controller)

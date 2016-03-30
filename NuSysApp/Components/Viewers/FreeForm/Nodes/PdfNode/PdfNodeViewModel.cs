@@ -156,6 +156,19 @@ namespace NuSysApp
             SetSize(width, height);
         }
 
+        public string GetAllText()
+        {
+            string data = "";
+            int numPages = _document.PageCount;
+            int currPage = 0;
+            while (currPage<numPages)
+            {
+                data = data + _document.GetAllTexts(currPage);
+                currPage++;
+            }
+            return data;
+        }
+
         public async Task LaunchLDA(PdfNodeModel model)
         {
 
