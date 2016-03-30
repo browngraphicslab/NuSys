@@ -183,11 +183,8 @@ namespace NuSysApp
         {
             var metadata = new Dictionary<string, object>();
             metadata["node_creation_date"] = DateTime.Now;
-            // TODO: remove temp
-            Random rnd = new Random();
-            metadata["random_id"] = rnd.Next(1, 1000);
-            metadata["random_id2"] = rnd.Next(1, 100);
-            var m1 = new Message();
+
+            var m1 = new Message(await Model.Pack());
             m1["metadata"] = metadata;
             m1["contentId"] = Model.LibraryId;
             m1["nodeType"] = Model.ElementType;

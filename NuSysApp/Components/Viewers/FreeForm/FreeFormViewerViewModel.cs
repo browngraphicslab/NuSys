@@ -35,14 +35,15 @@ namespace NuSysApp
             var model = controller.Model as CollectionElementModel;
             CompositeTransform = new CompositeTransform
             {
-                TranslateX = model.LocationX,
-                TranslateY = model.LocationY,
-                CenterX = model.CenterX,
-                CenterY = model.CenterY,
-                ScaleX = model.ScaleX,
-                ScaleY = model.ScaleY
+                TranslateX = -Constants.MaxCanvasSize / 2.0,
+                TranslateY = -Constants.MaxCanvasSize / 2.0,
+                CenterX = -Constants.MaxCanvasSize / 2.0,
+                CenterY = -Constants.MaxCanvasSize / 2.0,
+                ScaleX = 1,
+                ScaleY = 1
             };
-    
+
+
         }
 
         private void OnSelectionChanged(object source)

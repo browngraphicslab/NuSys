@@ -86,6 +86,11 @@ namespace NuSysApp
             xWorkspaceTitle.IsActivated = true;
 
             Loaded += OnLoaded;
+
+            _contentImporter.ContentImported += delegate(List<string> markdown)
+            {
+                
+            };
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
@@ -216,6 +221,8 @@ namespace NuSysApp
 
         public async Task LoadWorkspaceFromServer(IEnumerable<Message> nodeMessages, string collectionId)
         {
+            WaitingRoomView.InitialWorkspaceId = collectionId;
+
             xLoadingGrid.Visibility = Visibility.Visible;
 
             await

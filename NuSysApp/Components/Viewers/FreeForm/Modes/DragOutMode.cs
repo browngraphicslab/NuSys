@@ -123,7 +123,9 @@ namespace NuSysApp
                 _timer?.Stop();
                 _timer = null;
 
-                await controller.RequestMoveToCollection(SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.Id, newPos.X, newPos.Y);
+                
+
+                await controller.RequestMoveToCollection(WaitingRoomView.InitialWorkspaceId, newPos.X, newPos.Y);
             }
 
             _dragItem = null;

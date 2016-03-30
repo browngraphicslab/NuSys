@@ -93,11 +93,12 @@ namespace NuSysApp
                 var controller = SessionController.Instance.IdToControllers[_id];
                 await controller.RequestMoveToCollection(WaitingRoomView.InitialWorkspaceId, newPos.X, newPos.Y);
             }
-            //  SessionController.Instance.SessionView.MainCanvas.Children.Remove(_drag);
+            //SessionController.Instance.SessionView.MainCanvas.Children.Remove(_drag);
             _drag = null;
             _id = null;
             
         }
+   
 
         private bool IsPointerInGroup(Point point)
         {

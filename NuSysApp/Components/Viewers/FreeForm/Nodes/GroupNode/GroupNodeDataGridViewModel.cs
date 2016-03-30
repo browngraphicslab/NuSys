@@ -64,6 +64,9 @@ namespace NuSysApp
                 foreach (var atom in e.OldItems)
                 {
                     var atomTest = (FrameworkElement)atom;
+                    if (!_infoDict.ContainsKey(atomTest))
+                        continue;
+                    
                     if (AtomDataList.Contains(_infoDict[atomTest]))
                     {
                         AtomDataList.Remove(_infoDict[atomTest]);

@@ -52,41 +52,51 @@ namespace NuSysApp
                 var count = 0;
 
                 var text = await FileIO.ReadTextAsync(file);
-                
-                await UITask.Run(async () =>
+
+
+                var json = JsonConvert.DeserializeObject < List<string>> (text);
+                foreach (var htmltext in json)
                 {
-                   // text = await ContentConverter.HtmlToRtf(text);
-                    var m = new Message();
-                    var width = SessionController.Instance.SessionView.ActualWidth;
-                    var height = SessionController.Instance.SessionView.ActualHeight;
-                    var centerpoint =
-                        SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(
-                            new Point(width / 2, height / 2));
+                    
+                    await UITask.Run(async () =>
+                    {
 
-                    var contentId = SessionController.Instance.GenerateId();
+                        var metadata = new Dictionary<string, object>();
+                        metadata["node_creation_date"] = DateTime.Now;
 
-                    m["contentId"] = contentId;
-                    m["x"] = centerpoint.X - 200;
-                    m["y"] = centerpoint.Y - 200;
-                    m["width"] = 400;
-                    m["height"] = 400;
-                    m["nodeType"] = ElementType.Text.ToString();
-                    m["autoCreate"] = true;
-                    m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                        // text = await ContentConverter.HtmlToRtf(text);
+                        var m = new Message();
+                        var width = SessionController.Instance.SessionView.ActualWidth;
+                        var height = SessionController.Instance.SessionView.ActualHeight;
+                        var centerpoint =
+                            SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(
+                                new Point(width / 2, height / 2));
 
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
+                        var contentId = SessionController.Instance.GenerateId();
 
-                    await
-                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
-                            new CreateNewLibraryElementRequest(contentId, text, ElementType.Text));
-                    //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, text), NetworkClient.PacketType.TCP, null, true);
+                        m["metadata"] = metadata;
+                        m["contentId"] = contentId;
+                        m["x"] = centerpoint.X - 200;
+                        m["y"] = centerpoint.Y - 200;
+                        m["width"] = 400;
+                        m["height"] = 400;
+                        m["title"] = "Imported from Chrome";
+                        m["nodeType"] = ElementType.Text.ToString();
+                        m["autoCreate"] = true;
+                        m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
+                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, htmltext == null ? "" : htmltext.ToString(), ElementType.Text, m.ContainsKey("title") ? m["title"].ToString() : null));
+                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
+                        //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, json), NetworkClient.PacketType.TCP, null, true);
+                    });
 
+                }
 
-                });
-
-                await file.DeleteAsync();
             };
+
+         
+
+
         }
 
         private Message CreateMessage(SelectionItem selectionItem, String contentId, Point centerpoint)

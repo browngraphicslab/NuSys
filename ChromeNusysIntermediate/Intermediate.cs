@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -30,8 +31,14 @@ namespace ChromeNusysIntermediate
             var fileDir = dir + "\\selectionX.nusys";
 
             string input = OpenStandardStreamIn();
+            var selections = new ArrayList();
+            
             while (input != null && input != "")
             {
+                var b = input.Remove(0, 1);
+                b = b.Remove(b.Length - 1, 1);
+                File.WriteAllText(fileDir, b);
+                /*
                 var b = input.Remove(0, 1);
                 b = b.Remove(b.Length - 1, 1);
                 var a = JArray.Parse(b);
@@ -49,52 +56,13 @@ namespace ChromeNusysIntermediate
                     {
                         imgSrc = "http://" + imgSrc;
                     }
-                    string pattern = @"<img[^>]+\>";
-                    Regex rgx = new Regex(pattern);
-                    input = rgx.Replace(input, "---IMAGE---");
-
-                    string imageRtf = string.Empty;
-                    if (!imgSrc.Equals(""))
-                    {
-                        var imgPath = dir + "\\image.png";
-                        using (WebClient webClient = new WebClient())
-                        {
-                            webClient.DownloadFile(imgSrc, imgPath);
-                        }
 
 
-                        var img = Image.FromFile(imgPath);
-
-                        var imgW = img.Width;
-                        var imgH = img.Height;
-                        img.Dispose();
-                        var imgGoalW = imgW * 15;
-                        var imgGoalH = imgH * 15;
-                        var imgData = BitConverter.ToString(File.ReadAllBytes(imgPath)).Replace("-", "");
-
-                        File.Delete(imgPath);
-
-                        imageRtf = Resources.image.ToString();
-                        imageRtf = imageRtf.Replace("---IMG_W---", imgW.ToString());
-                        imageRtf = imageRtf.Replace("---IMG_H---", imgH.ToString());
-                        imageRtf = imageRtf.Replace("---IMG_GOAL_W---", imgGoalW.ToString());
-                        imageRtf = imageRtf.Replace("---IMG_GOAL_H---", imgGoalH.ToString());
-                        imageRtf = imageRtf.Replace("---IMG_DATA---", imgData);
-                    }
-
-                    input = MarkupConverter.HtmlToRtfConverter.ConvertHtmlToRtf(input);
-                 //   var i = input.IndexOf("________________________________________________________");
-                  //  input = input.Remove(i, input.Length - i) + "}";
-
-                    if (!imgSrc.Equals("http:"))
-                    {
-                          input = input.Replace("---IMAGE---", imageRtf);
-                    }
-
+                    selections.Add(\
                     File.WriteAllText(fileDir, input);
                    // System.IO.File.SetLastWriteTimeUtc(fileDir, DateTime.UtcNow);
                     //File.Move(fileDir, fileDir);
-                }
+                }*/
 
                 input = OpenStandardStreamIn();
             }

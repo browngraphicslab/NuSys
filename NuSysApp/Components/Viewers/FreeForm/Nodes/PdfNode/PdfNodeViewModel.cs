@@ -13,7 +13,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using Microsoft.Graphics.Canvas.Brushes;
 using MuPDFWinRT;
-//using LdaLibrary;
+using LdaLibrary;
 using System.Collections.ObjectModel;
 using Windows.UI;
 using Windows.UI.Text;
@@ -159,37 +159,41 @@ namespace NuSysApp
         public async Task LaunchLDA(PdfNodeModel model)
         {
 
-            var test = new List<string>();
-
-            // parameters for our LDA algorithm
-            string filename = model.Title;
-            test.Add(filename);
-            test.Add("niters 10");
-            test.Add("ntopics 1");
-            test.Add("twords 10");
-            test.Add("dir ");
-            test.Add("est true");
-            test.Add("alpha 12.5");
-            test.Add("beta .1");
-            test.Add("model model-final");
-
-            string data = "";
-            int numPages = _document.PageCount;
-            int currPage = 0;
-            while (currPage < numPages)
+            Task.Run(async () =>
             {
-                data = data + _document.GetAllTexts(currPage);
-                currPage++;
-            }
+                var test = new List<string>();
 
-            /*
-            DieStopWords ds = new DieStopWords();
-            data = await ds.removeStopWords(data);
-            List<string> topics = await TagExtractor.launch(test, new List<string>() { data });
-            this.Model.SetMetaData("tags", topics);
+                // parameters for our LDA algorithm
+                string filename = model.Title;
+                test.Add(filename);
+                test.Add("niters 10");
+                test.Add("ntopics 1");
+                test.Add("twords 10");
+                test.Add("dir ");
+                test.Add("est true");
+                test.Add("alpha 12.5");
+                test.Add("beta .1");
+                test.Add("model model-final");
 
-            RaisePropertyChanged("Tags");*/
+                string data = "";
+                int numPages = _document.PageCount;
+                int currPage = 0;
+                while (currPage < numPages)
+                {
+                    data = data + _document.GetAllTexts(currPage);
+                    currPage++;
+                }
 
+
+                DieStopWords ds = new DieStopWords();
+                data = await ds.removeStopWords(data);
+                List<string> topics = await TagExtractor.launch(test, new List<string>() {data});
+                await UITask.Run(() =>
+                {
+                    this.Model.SetMetaData("tags", topics);
+                    RaisePropertyChanged("Tags");
+                });
+            });
         }
 
         public MuPDFWinRT.Document Document

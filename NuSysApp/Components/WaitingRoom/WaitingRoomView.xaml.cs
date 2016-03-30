@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
@@ -17,6 +19,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using MyToolkit.Utilities;
 using Newtonsoft.Json;
+using NuSysApp;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -29,7 +32,7 @@ namespace NuSysApp
     {
         public FreeFormViewer _freeFormViewer;
 
-        public static string InitialWorkspaceId { get; private set; }
+        public static string InitialWorkspaceId { get; set; }
         public static string ServerName { get; private set; }
         public static string UserName { get; private set; }
         public static string Password { get; private set; }
@@ -80,6 +83,7 @@ namespace NuSysApp
                 var list = JsonConvert.DeserializeObject<List<string>>(data);
                 list.Sort();
                 List?.Items?.Clear();
+                var ii = new List<CollectionTextBox>();
                 foreach (var s in list)
                 {
                     Dictionary<string, object> dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(s,settings);
@@ -89,10 +93,21 @@ namespace NuSysApp
                         box.Text = (string) dict["title"];
                     else
                         box.Text = "Unnamed Collection";
-                    List.Items.Add(box);
+                    //List.Items.Add(box);
+                    ii.Add(box);
                     _preloadedIDs.Add(box.ID);
                 }
+
+                ii.Sort( (a,b) => a.Text.CompareTo(b.Text));
+                foreach (var i in ii)
+                {
+                    List.Items.Add(i);
+                }
+                
+               
             }
+
+          
             catch (Exception e)
             {
                 Debug.WriteLine("not a valid server");

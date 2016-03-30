@@ -25,17 +25,7 @@ namespace NuSysApp
 
         }
 
-        public override async Task<Dictionary<string, object>> Pack()
-        {
-            var dict = await base.Pack();
-            dict.Add("collectionview", ActiveCollectionViewType);
-            dict.Add("zoom", ActiveCollectionViewType);
-            dict.Add("locationX", ActiveCollectionViewType);
-            dict.Add("locationY", ActiveCollectionViewType);
-            dict.Add("centerX", ActiveCollectionViewType);
-            dict.Add("centerY", ActiveCollectionViewType);
-            return dict;
-        }
+
 
       
 
@@ -47,14 +37,7 @@ namespace NuSysApp
                 ActiveCollectionViewType = (CollectionViewType)Enum.Parse(typeof(CollectionViewType), t);
             }
 
-          
-                LocationX = props.GetDouble("locationX", -Constants.MaxCanvasSize / 2.0);
-                LocationY = props.GetDouble("locationY", -Constants.MaxCanvasSize / 2.0);
-                CenterX = props.GetDouble("centerX", -Constants.MaxCanvasSize / 2.0);
-                CenterY = props.GetDouble("centerY", -Constants.MaxCanvasSize / 2.0);
-                Zoom = props.GetDouble("zoom", 1);
-          
-
+         
             await base.UnPack(props);
         }
     }
