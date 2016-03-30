@@ -138,7 +138,9 @@ namespace NuSysApp
 
         public override void SetSize(double width, double height)
         {
-  
+            if (ImageSource == null)
+                return;
+
             if (ImageSource.PixelWidth > ImageSource.PixelHeight)
             {
                 var r = ImageSource.PixelHeight / (double)ImageSource.PixelWidth;
