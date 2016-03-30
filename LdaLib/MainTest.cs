@@ -26,7 +26,8 @@ namespace LdaLibrary
 
         public async static Task Init(List<string> args, List<string> documents )
         {
-            var tmp = await KnownFolders.PicturesLibrary.GetFolderAsync("bla");
+
+            var tmp = ApplicationData.Current.LocalFolder;
 
             WordmapFile = await CreateFileIfNotExists(tmp, "wordmap.txt");
             Tassign = await CreateFileIfNotExists(tmp, "tassign.txt");
