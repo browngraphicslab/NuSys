@@ -9,7 +9,7 @@
     mc:Ignorable="d"
     >
 
-    <Grid x:Name="WebContainer" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Azure">
+    <Grid x:Name="WebContainer" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent">
         <WebView Name ="MyWebView"  Width="{Binding ElementName=WebContainer, Path=Width}" Height="800"  ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled"  
                              Visibility="Visible" HorizontalAlignment ="Stretch" VerticalAlignment="Stretch" IsTapEnabled="True" NavigationStarting="WebView_OnNavigationStarting">
                 </WebView>

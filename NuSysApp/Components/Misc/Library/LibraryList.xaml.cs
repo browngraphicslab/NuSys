@@ -150,12 +150,15 @@ namespace NuSysApp
                 return;
             }
 
+            
+            
 
             var view = SessionController.Instance.SessionView;
+            view.LibraryDraggingRectangle.Visibility = Visibility.Collapsed;
             var rect = view.LibraryDraggingRectangle;
             Canvas.SetZIndex(rect, 3);
-            rect.Width = 200;
-            rect.Height = 200;
+            rect.Width = 100;
+            rect.Height = 100;
             rect.RenderTransform = new CompositeTransform();
             var t = (CompositeTransform)rect.RenderTransform;
 
@@ -183,6 +186,19 @@ namespace NuSysApp
                 return;
             }
 
+            var el = (FrameworkElement) sender;
+            var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
+            
+            var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(sp, null).Where( i => i is LibraryView);
+            if (itemsBelow.Any())
+            {
+                SessionController.Instance.SessionView.LibraryDraggingRectangle.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                SessionController.Instance.SessionView.LibraryDraggingRectangle.Visibility = Visibility.Visible;
+
+            }
             var view = SessionController.Instance.SessionView;
             var rect = view.LibraryDraggingRectangle;
             var t = (CompositeTransform)rect.RenderTransform;
@@ -211,11 +227,8 @@ namespace NuSysApp
             rect.Width = 0;
             rect.Height = 0;
 
-
-         //   var t = (CompositeTransform)rect.RenderTransform;
-
-      //      var wvm = SessionController.Instance.ActiveFreeFormViewer;
-          //  var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(_x - 100, _y - 100, 200, 200));
+            if (SessionController.Instance.SessionView.LibraryDraggingRectangle.Visibility == Visibility.Collapsed)
+                return;
             var r = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(_x, _y));
             await _library.AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type,element.Id);
         }

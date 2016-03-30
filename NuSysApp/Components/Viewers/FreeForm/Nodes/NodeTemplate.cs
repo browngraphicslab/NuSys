@@ -199,9 +199,10 @@ namespace NuSysApp
 
         private void LibraryElementModelOnOnLightupContent(LibraryElementModel model, bool lightup)
         {
-            highlight.Visibility = lightup ? Visibility.Visible : Visibility.Collapsed;
-            highlight.BorderThickness = new Thickness(5);
-            highlight.BorderBrush = new SolidColorBrush(Colors.Aqua);
+
+           // highlight.Visibility = lightup ? Visibility.Visible : Visibility.Collapsed;
+            highlight.BorderThickness = new Thickness(3);
+            highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(255,255,226,139));
         }
 
         private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)
@@ -360,20 +361,20 @@ namespace NuSysApp
             {
                 if (vm.IsSelected)
                 {
-                    bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255,156,197,194));
-                    bg.BorderThickness = new Thickness(2);
+                   // highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(240,90,142,232));
+                 //   highlight.BorderThickness = new Thickness(3);
                     hitArea.Visibility = Visibility.Visible;
                 }
                 if (vm.IsEditing)
                 {
-                    bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255,197,158,156));
-                    bg.BorderThickness = new Thickness(2);
+                    highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(240, 90, 142, 232));
+                    highlight.BorderThickness = new Thickness(3);
                     hitArea.Visibility = Visibility.Collapsed;
                 }
                 if (!(vm.IsEditing || vm.IsSelected))
                 {
-                    bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 131, 166, 163));
-                    bg.BorderThickness = new Thickness(1);
+                   // highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 131, 166, 163));
+                    highlight.BorderThickness = new Thickness(0);
                     hitArea.Visibility = Visibility.Visible;
                 }
             }

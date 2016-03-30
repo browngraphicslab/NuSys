@@ -369,8 +369,8 @@ namespace NuSysApp
             // show draggable graph image
             var draggedGraphImage = SessionController.Instance.SessionView.GraphImage;
             Canvas.SetZIndex(draggedGraphImage, 3);
-            draggedGraphImage.Width = 200;
-            draggedGraphImage.Height = 200;
+            draggedGraphImage.Width = 100;
+            draggedGraphImage.Height = 100;
 
             // set up transforms
             draggedGraphImage.RenderTransform = new CompositeTransform();

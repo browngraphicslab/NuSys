@@ -47,8 +47,8 @@
         </Button>
         <StackPanel Name="Users" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="70">
         </StackPanel>
-        <Rectangle Name="LibraryDraggingNode" Width="0" Height="0" Fill="LightGray"></Rectangle>
-        <Image Name="DraggingGraphImage" Source="http://png-3.findicons.com/files/icons/2660/finance/256/bar_graph.png" Width="0" Height="0"></Image>
+            <Image Name="LibraryDraggingNode" Source="ms-appx:///Assets/icon_new_workspace.png" Width="0" Height="0"></Image>
+            <Image Name="DraggingGraphImage" Source="ms-appx:///Assets/icon_new_workspace.png" Width="0" Height="0"></Image>
             <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5,0,0,50"></local:ChatPopupView >
 
 

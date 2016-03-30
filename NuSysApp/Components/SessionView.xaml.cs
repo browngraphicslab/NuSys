@@ -39,7 +39,7 @@ namespace NuSysApp
             get { return ChatPopup; }
         }
 
-        public Rectangle LibraryDraggingRectangle
+        public FrameworkElement LibraryDraggingRectangle
         {
             get { return LibraryDraggingNode; }
         }
@@ -203,7 +203,7 @@ namespace NuSysApp
                 IsPenMode = true;
                 xBtnPen.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 197, 118, 97));
                 PenCircle.Background = new SolidColorBrush(Color.FromArgb(255, 197, 118, 97));
-                Debug.WriteLine("asdasdas");
+        
             }
             else
             {
