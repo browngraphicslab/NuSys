@@ -120,23 +120,9 @@ class Main {
     }
 
     removeHighlight(s: AbstractSelection): void {
-
-        s.selectedElements.forEach((el) => {
-            if (el.tagName == "WORD") {
-                if (el.wordIndx == -1) {
-                    $('WORD').get(el.index)["style"].backgroundColor = "";
-                } else {
-                    var ele = $(el.par).get(el.parIndex).childNodes[el.txtnIndx].childNodes[el.wordIndx];
-                    ele["style"].backgroundColor = "";
-                }
-            } else if (el.tagName == "HILIGHT") {
-                $(el.par).get(el.parIndex).childNodes[el.txtnIndx]["style"].backgroundColor = "";
-            } else {
-                $(el.tagName).get(el.index).style.backgroundColor = "";
-
-            }
-
-
+        $("." + s.id).each((indx, ele) => {
+            ele["style"].backgroundColor = "";
+            $(ele).removeClass(s.id.toString());
         });
     }
 
@@ -323,9 +309,10 @@ class Main {
                 var editedStroke = new Stroke();
                 editedStroke.points = this.selectionOnHover.samplePoints;
                 editedSelection.stroke = editedStroke;
+                editedSelection.id = this.selectionOnHover.id;
+
                 editedSelection.end(0, 0);
                 editedSelection.type = StrokeType.Lasso;
-                editedSelection.id = this.selectionOnHover.id;
                 editedSelection.url = this.selectionOnHover.url;
                 editedSelection.tags = this.selectionOnHover.tags;
                 chrome.runtime.sendMessage({ msg: "edit_selection", data: editedSelection });
@@ -357,7 +344,6 @@ class Main {
         this.selection.stroke = this.inkCanvas._activeStroke;
         this.selection.end(e.clientX, e.clientY);
         console.log(this.selection.getContent()); //print out content 
-        this.selection.id = Date.now(); //assign contents of the selection 
         this.selection.type = this.currentStrokeType;
         this.selection.url = this._url;
         this.selection.tags = $(this.menuIframe).contents().find("#tagfield").val();
@@ -371,6 +357,7 @@ class Main {
         this.inkCanvas.clear();
    //     this.inkCanvas.drawStroke(this.selection.stroke);
         this.currentStrokeType = StrokeType.Line;
+        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         document.body.appendChild(this.canvas);
     }
 
@@ -417,6 +404,7 @@ class Main {
             this.isSelecting = true;
             this._startX = e.clientX;
             this._startY = e.clientY;
+            this.selection.id = Date.now();
             this.selection.start(e.clientX, e.clientY);
         }
 
@@ -659,13 +647,15 @@ class Main {
 
             var stroke = new Stroke();
             stroke.points = sel.samplePoints;
-            return this.isPointBound(new Point(e.clientX, e.clientY), stroke);
+            return this.isPointBound(new Point(e.clientX, e.clientY + $(document).scrollTop()), stroke);
 
     }
 
     sampleLines(stroke :Stroke): Array<Line> {
         var sampleStroke = stroke.points;
         var lines = [];
+        if (!sampleStroke)
+            return;
         for (var i = 1; i < sampleStroke.length; i++) {
             lines.push(new Line(sampleStroke[i - 1], sampleStroke[i]));
         }
@@ -678,6 +668,9 @@ class Main {
       //  console.log("======isPointBound ");
       //  console.log(p);
         var xPoints = [];
+        if (!lines) {
+            return false;
+        }
         for (var i = 0; i < lines.length; i++) {
             var l = lines[i];
             if (p.y <= Math.max(l.p1.y, l.p2.y) && p.y >= Math.min(l.p1.y, l.p2.y)) {
@@ -717,6 +710,7 @@ class Main {
 
     switchSelection(strokeType) {
         console.log("Iselection switched to : " + strokeType);
+        var id = this.selection.id;
         switch (strokeType) {
             //////STROKE TYPE CHANGE
             case StrokeType.Marquee:
@@ -733,6 +727,7 @@ class Main {
                 this.selection = new LassoSelection();
                 break;
         }
+        this.selection.id = id;
         this.selection.start(this._startX, this._startY);
     }
     checkNoteBubble = (e): void => {

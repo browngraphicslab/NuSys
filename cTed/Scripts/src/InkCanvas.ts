@@ -91,8 +91,8 @@ class InkCanvas {
 
         ctx.fillStyle = '#ff0000';
         ctx.beginPath();
-        ctx.moveTo(p.x, p.y);
-        ctx.arc(p.x, p.y, 5, 0, Math.PI * 2, false);
+        ctx.moveTo(p.x, p.y - $(document).scrollTop());
+        ctx.arc(p.x, p.y - $(document).scrollTop(), 5, 0, Math.PI * 2, false);
         ctx.fill();
     }
 
@@ -103,8 +103,8 @@ class InkCanvas {
         ctx.setLineDash([]);
         ctx.beginPath();
 
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
+        ctx.moveTo(p1.x, p1.y - $(document).scrollTop());
+        ctx.lineTo(p2.x, p2.y - $(document).scrollTop());
         ctx.stroke();
     }
     

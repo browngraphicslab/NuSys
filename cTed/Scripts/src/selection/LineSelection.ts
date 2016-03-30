@@ -8,6 +8,7 @@ class LineSelection extends AbstractSelection {
     _endY: number = 0;
     _content: string = "";
     _parentList: Array<any> = new Array<any>();
+    
 
     constructor() {
         super();
@@ -26,6 +27,8 @@ class LineSelection extends AbstractSelection {
         
         this.analyzeContent();
         console.log("line end" + x + ":" + y);
+        this.stroke.points = [new Point(this._startX, this._startY), new Point(this._endX, this._endY)];
+       // this.sampleStroke = this.stroke;    
     }
     getContent(): string {
         return this._content;
