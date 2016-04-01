@@ -84,11 +84,12 @@ namespace NuSysApp
                     var ms = new MemoryStream(dataBytes);
                     using (IInputStream inputStreamAt = ms.AsInputStream())
 
+
                     using (var dataReader = new DataReader(inputStreamAt))
                     {
                         uint u = await dataReader.LoadAsync((uint)dataBytes.Length);
                         IBuffer readBuffer = dataReader.ReadBuffer(u);
-                        _document = MuPDFWinRT.Document.Create(readBuffer, DocumentType.PDF, 140);
+                        _document = MuPDFWinRT.Document.Create(readBuffer, DocumentType.PDF, 100);
                     }
 
                     var pageSize = _document.GetPageSize(1);

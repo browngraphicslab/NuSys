@@ -71,8 +71,10 @@ namespace NuSysApp
             vm.LinkedTimeModels.CollectionChanged -= LinkedTimeBlocks_CollectionChanged;
             scrubBar.SizeChanged -= ScrubBar_OnSizeChanged;
             playbackElement.MediaEnded -= PlaybackElementOnMediaEnded;
+            if (_temporaryLinkVisual != null) { 
             _temporaryLinkVisual.PointerMoved -= ScrubBar_OnPointerMoved;
             _temporaryLinkVisual.PointerReleased -= ScrubBar_OnPointerReleased;
+            }
             vm.Controller.Disposed -= ControllerOnDisposed;
         }
 

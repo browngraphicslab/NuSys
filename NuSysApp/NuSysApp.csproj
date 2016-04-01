@@ -238,7 +238,7 @@
     <Compile Include="Components\Misc\TextInputBlock.xaml.cs">
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\SelectionHull.cs" />
+    <Compile Include="Components\WaitingRoom\SelectionHull.cs" />
     <Compile Include="Components\Viewers\Detail\DetailNodeViewFactory.cs" />
     <Compile Include="Components\Viewers\Detail\DetailViewerView.xaml.cs">
       <DependentUpon>DetailViewerView.xaml</DependentUpon>
@@ -454,6 +454,7 @@
     <Compile Include="Util\Point2d.cs" />
     <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\Statistics.cs" />
+    <Compile Include="Util\Telemetry.cs" />
     <Compile Include="Util\UITask.cs" />
     <Compile Include="Components\TextEditor\InqCanvas\InqCanvasViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoNodeViewModel.cs" />
@@ -914,7 +915,9 @@
       <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.XInput.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

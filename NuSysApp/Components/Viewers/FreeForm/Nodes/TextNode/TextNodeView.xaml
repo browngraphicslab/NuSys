@@ -45,10 +45,10 @@
                     <Button Margin="0,2,0,2"  x:Name="EditText"  Click="OnEditClick" Background="#9cc5c2" Style="{StaticResource NodeSubMenuItem}" Tag="bla">
                         <Image Source="ms-appx:///Assets/node icons/text.png" Height="25" Width="25" Stretch="Uniform"></Image>
                     </Button>
-                    <Button Margin="0,2,0,2" x:Name="EditInk"  Click="OnInkClick" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
+                    <Button Visibility="Collapsed" Margin="0,2,0,2" x:Name="EditInk"  Click="OnInkClick" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
                         <Image Source="ms-appx:///Assets/node icons/pen.png" Height="25" Width="25"></Image>
                     </Button>
-                    <Button Margin="0,2,0,2" x:Name="Record"  Click="RecordButton_OnClick" Background="#9cc5c2" Style="{StaticResource NodeSubMenuItem}">
+                    <Button Visibility="Collapsed" Margin="0,2,0,2" x:Name="Record"  Click="RecordButton_OnClick" Background="#9cc5c2" Style="{StaticResource NodeSubMenuItem}">
                         <Image Source="ms-appx:///Assets/node icons/record.png" Height="25" Width="25"></Image>
                     </Button>
                     <Button Margin="0,2,0,2" x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">

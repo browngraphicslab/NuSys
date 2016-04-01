@@ -438,8 +438,8 @@ namespace NuSysApp
             //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
 
             var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(r.X, r.Y, contentId, 300, 300, newCollectionId);
-
-            foreach (var libraryElementModel in _pageViewModel.PageElements.ToArray())
+            
+            foreach ( var libraryElementModel in _pageViewModel.PageElements.ToList().GetRange(0, Math.Min(_pageViewModel.PageElements.Count, 10)))
             {
                 var dict = new Message();
                 dict["title"] = libraryElementModel?.Title;

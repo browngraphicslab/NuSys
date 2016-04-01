@@ -44,9 +44,6 @@
             <Paragraph>
                 <Run x:Name="UserName" Text="No Name" FontSize="18"/>
             </Paragraph>
-            <Paragraph>
-                <Run x:Name="UserIP" Text="Unidentified IP" FontSize="12"/>
-            </Paragraph>
         </RichTextBlock>
     </Grid>
 </UserControl>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using Windows.Devices.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using NuSysApp.Components.Nodes.GroupNode;
@@ -26,6 +27,8 @@ namespace NuSysApp
                 ScaleX = 1,
                 ScaleY = 1
             };
+
+            
 
             _translateTransform = new TranslateTransform()
             {

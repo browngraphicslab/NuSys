@@ -64,11 +64,13 @@ namespace NuSysApp
             vm.PropertyChanged -= Node_SelectionChanged;
             (DataContext as AudioNodeViewModel).removeTimeBlockChange(LinkedTimeBlocks_CollectionChanged);
             _timeBlocks = null;
-            
-            ((AudioNodeModel)(vm.Model)).Controller.OnPlay -= Controller_OnPlay;
-            ((AudioNodeModel)(vm.Model)).Controller.OnPause -= Controller_OnPause;
-            ((AudioNodeModel)(vm.Model)).Controller.OnStop -= Controller_OnStop;
-            ((AudioNodeModel)(vm.Model)).Controller = null;
+
+            if (((AudioNodeModel)(vm.Model)).Controller != null) { 
+                ((AudioNodeModel)(vm.Model)).Controller.OnPlay -= Controller_OnPlay;
+                ((AudioNodeModel)(vm.Model)).Controller.OnPause -= Controller_OnPause;
+                ((AudioNodeModel)(vm.Model)).Controller.OnStop -= Controller_OnStop;
+                ((AudioNodeModel)(vm.Model)).Controller = null;
+            }
             playbackElement.MediaEnded -= PlaybackElementOnMediaEnded;
             (DataContext as AudioNodeViewModel).OnVisualizationLoaded -= LoadPlaybackElement;
             nodeTpl.Dispose();

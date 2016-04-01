@@ -43,10 +43,10 @@ namespace NuSysApp.Components.Nodes.GroupNode
             tb.Text = sortElement.ToString();
             tb.TextAlignment = TextAlignment.Center;
             tb.FontSize = 11;
-            tb.FontWeight = FontWeights.ExtraBold;
+            tb.FontWeight = FontWeights.Bold;
             tb.VerticalAlignment = VerticalAlignment.Bottom;
             tb.HorizontalAlignment = HorizontalAlignment.Center;
-            tb.Foreground = new SolidColorBrush(Colors.Navy);
+            tb.Foreground = new SolidColorBrush(Colors.Black);
             //tb.Width = 120;
 
             Grid tbGrid = new Grid();

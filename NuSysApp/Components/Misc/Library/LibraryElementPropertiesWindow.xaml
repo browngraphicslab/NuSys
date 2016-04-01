@@ -82,7 +82,7 @@
         <Grid Margin="-7,0,3,0">
             <Image Source="ms-appx:///Assets/icon_collapse.png" Tapped="CollapseArrow_OnTapped"  HorizontalAlignment="Right" Width="10" Margin="0,0,10,0"/>
             <StackPanel Padding="50" Orientation="Vertical" >
-                <Border Height="150" Width="150" BorderThickness="1" Margin="0,-30,0,0" BorderBrush="#E6EDEC">
+                <Border Height="150" Width="150" BorderThickness="1" Margin="0,-30,0,0" BorderBrush="#E6EDEC" Visibility="Collapsed">
                     <Image x:Name="Preview" Height="150" Width="150" />
                 </Border>
 

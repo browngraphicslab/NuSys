@@ -10,7 +10,7 @@
     d:DesignWidth="400"
 >
     <Grid>
-        <Grid x:Name="TimelineGrid" Background="#DFE9E8">
+        <Grid x:Name="TimelineGrid" Background="White">
             <Canvas x:Name="TimelineCanvas" Background="Transparent" RenderTransform="{Binding CompositeTransform}">
                 <Border x:Name ="TimelinePanelBorder" BorderBrush="Yellow" Height="110">
                     <Canvas x:Name="TimelinePanel" Background="Transparent"/>
@@ -22,15 +22,15 @@
                             Orientation="Vertical" 
                             VerticalAlignment="Bottom" 
                             HorizontalAlignment="Left" 
-                            Background="CornflowerBlue" 
-                            Width="100" Opacity="0" IsHitTestVisible="False"/>
+                            Background="White" 
+                            Width="100" Opacity="0" IsHitTestVisible="False" Visibility="Collapsed"/>
         <StackPanel x:Name="ViewPanel"  
                             Margin="0,0,-100,0" 
                             Orientation="Vertical" 
                             VerticalAlignment="Bottom" 
                             HorizontalAlignment="Right" 
-                            Background="CornflowerBlue" 
-                            Width="100" Opacity="0" IsHitTestVisible="false"/>
+                            Background="White" 
+                            Width="100" Opacity="0" IsHitTestVisible="false" Visibility="Collapsed"/>
         <Button Name="ViewBlock" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="30"/>
         <Button Name="TagBlock" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="30"/>
         <AutoSuggestBox x:Name="SearchBox"
@@ -41,6 +41,6 @@
                             PlaceholderText="Search"
                             Height="35"
                             HorizontalAlignment="Stretch"
-                            Opacity ="1"/>
+                            Opacity ="1" Visibility="Collapsed"/>
     </Grid>
 </local:AnimatableUserControl>

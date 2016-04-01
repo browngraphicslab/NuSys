@@ -112,6 +112,15 @@ namespace NuSysApp
             if (await vm.ShowElement(controller))
                 Visibility = Visibility.Visible;
 
+            if (controller.Model is TextElementModel || controller.Model is PdfNodeModel)
+            {
+                SuggestButton.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                SuggestButton.Visibility = Visibility.Collapsed;
+            }
+
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)

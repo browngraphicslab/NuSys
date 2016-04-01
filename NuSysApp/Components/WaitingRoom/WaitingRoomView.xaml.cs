@@ -17,9 +17,11 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Microsoft.ApplicationInsights.Extensibility;
 using MyToolkit.Utilities;
 using Newtonsoft.Json;
 using NuSysApp;
+using NuSysApp.Util;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -50,6 +52,16 @@ namespace NuSysApp
             this.InitializeComponent();
             //waitingroomanimation.Begin();
 
+            //TelemetryConfiguration.Active.TelemetryChannel.DeveloperMode = true;
+          //  App.TelemetryClient.Context.Device.
+
+            App.TelemetryClient.InstrumentationKey = "8f830614-4100-43cd-a0c9-5b94ada7b3f6";
+            App.TelemetryClient.Context.InstrumentationKey = "8f830614-4100-43cd-a0c9-5b94ada7b3f6";
+           
+            App.TelemetryClient.TrackEvent("woo", new Dictionary<string, string>());
+
+          //  Telemetry.Init();
+          //  Telemetry.TrackEvent("startup");
             
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.Auto;
 
@@ -124,9 +136,8 @@ namespace NuSysApp
             var name = NewWorkspaceName.Text;
             var request = new CreateNewLibraryElementRequest(SessionController.Instance.GenerateId(),null,ElementType.Collection,name);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            await Task.Delay(1000);
             Init();
-            //IsLocal = true;
-            //this.Frame.Navigate(typeof(SessionView));
         }
         private async void Join_Workspace_Click(object sender, RoutedEventArgs e)
         {
@@ -169,7 +180,11 @@ namespace NuSysApp
                 var cred = new Dictionary<string, string>();
 
                 //cred["user"] = Convert.ToBase64String(Encrypt(usernameInput.Text));
-                cred["user"] = usernameInput.Text;
+
+                Random r = new Random();
+                int rInt = r.Next(0, 100); //for ints
+
+                cred["user"] = usernameInput.Text + rInt;
                 cred["pass"] = Convert.ToBase64String(Encrypt(passwordInput.Password));
                 if (createNewUser)
                 {
@@ -241,7 +256,9 @@ namespace NuSysApp
                         _loggedIn = true;
                         if (_isLoaded)
                         {
-                            UITask.Run(delegate {
+                            UITask.Run(delegate
+                            {
+                                JoinWorkspaceButton.Content = "Enter";
                                 JoinWorkspaceButton.IsEnabled = true;
                                 JoinWorkspaceButton.Visibility = Visibility.Visible;
                             });
@@ -306,6 +323,7 @@ namespace NuSysApp
                             {
                                 UITask.Run(delegate {
                                     JoinWorkspaceButton.IsEnabled = true;
+                                    JoinWorkspaceButton.Content = "Enter";
                                     JoinWorkspaceButton.Visibility = Visibility.Visible;
                                 });
                             }
@@ -314,12 +332,15 @@ namespace NuSysApp
                     catch (ServerClient.IncomingDataReaderException loginException)
                     {
                         loggedInText.Text = "Log in failed!";
-                        throw new Exception("Your account is probably already logged in");
+                   //     throw new Exception("Your account is probably already logged in");
                     }
                 }
                 else
                 {
-                    loggedInText.Text = "Log in failed!";
+                   // loggedInText.Text = "Log in failed!";
+                    if (!createNewUser) { 
+                        Login(true);
+                    }
                 }
 
             }
@@ -338,7 +359,7 @@ namespace NuSysApp
                 {
                     var box = new CollectionTextBox();
                     box.ID = element.Id;
-                    box.Text = element.Title ?? "Unnamed Collection";
+                    box.Text = element.Title ?? "";
                     List.Items.Add(box);
                 });
                 _preloadedIDs.Add(element.Id);

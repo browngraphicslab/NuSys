@@ -64,7 +64,7 @@ namespace NuSysApp
                 UserInfoBox.Opacity = 1;
                 UserInfoBox.Foreground = new SolidColorBrush(_user.Color);
                 UserName.Text = _user.Name;
-                UserIP.Text = _user.ID;
+                //UserIP.Text = _user.ID;
             }
         }
 

@@ -75,12 +75,15 @@ namespace NuSysApp
             scrubBar.SizeChanged -= ScrubBar_OnSizeChanged;
             vm.Controller.Disposed -= ControllerOnDisposed;
 
-            ((AudioNodeModel)(vm.Model)).Controller.OnScrub -= ControllerOnScrub;
-            ((AudioNodeModel)(vm.Model)).Controller.OnPlay -= Controller_OnPlay1;
-            ((AudioNodeModel)(vm.Model)).Controller.OnPause -= Controller_OnPause1;
-            ((AudioNodeModel)(vm.Model)).Controller.OnStop -= Controller_OnStop1;
-            scrubBar.Loaded -= ScrubBarOnLoaded;
-            ((AudioNodeModel)(vm.Model)).Controller.Scrub();
+            if (((AudioNodeModel)(vm.Model)).Controller != null) { 
+                ((AudioNodeModel)(vm.Model)).Controller.OnScrub -= ControllerOnScrub;
+                ((AudioNodeModel)(vm.Model)).Controller.OnPlay -= Controller_OnPlay1;
+                ((AudioNodeModel)(vm.Model)).Controller.OnPause -= Controller_OnPause1;
+                ((AudioNodeModel)(vm.Model)).Controller.OnStop -= Controller_OnStop1;
+                scrubBar.Loaded -= ScrubBarOnLoaded;
+                ((AudioNodeModel)(vm.Model)).Controller.Scrub();
+            }
+            
 
             (DataContext as AudioNodeViewModel).OnVisualizationLoaded -= LoadPlaybackElement;
             (DataContext as AudioNodeViewModel).removeTimeBlockChange(LinkedTimeBlocks_CollectionChanged);
