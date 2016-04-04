@@ -1,5 +1,4 @@
 ﻿body {
-    background-color: #FFFFFF;
     padding: 1em;
 }
 /*.container {
@@ -14,7 +13,7 @@
 #buttonbar {
    top: 0;
    left: 0;
-   margin: 0.5em;
+   margin: 0.5em 0.5em 0 0.5em;
 }
 
 .view {

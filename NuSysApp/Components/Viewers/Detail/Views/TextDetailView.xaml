@@ -8,11 +8,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     >
+    <StackPanel Orientation="Vertical" Background="Blue"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 
-    <Grid x:Name="WebContainer" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent">
-        <WebView Name ="MyWebView"  Width="{Binding ElementName=WebContainer, Path=Width}" Height="800"  ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled"  
+        <Grid x:Name="WebContainer" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent">
+            <WebView Name ="MyWebView"  Width="{Binding ElementName=WebContainer, Path=Width}"  Height ="400"  ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled"  
                              Visibility="Visible" HorizontalAlignment ="Stretch" VerticalAlignment="Stretch" IsTapEnabled="True" NavigationStarting="WebView_OnNavigationStarting">
-                </WebView>
+            </WebView>
         </Grid>
-    
+    </StackPanel>
+
 </UserControl>

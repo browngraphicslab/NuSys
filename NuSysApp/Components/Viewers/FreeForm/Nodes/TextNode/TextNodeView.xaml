@@ -68,7 +68,7 @@
                             <PlaneProjection RotationY="0"></PlaneProjection>
                         </Grid.Projection>
                         <Grid x:Name="myGrid" Width="{Binding Width}" Height="{Binding Height}">
-                            <WebView Name="TextNodeWebView" Width="{Binding Width}" Height="{Binding Height}" IsTapEnabled="True" DefaultBackgroundColor="White"></WebView>
+                            <WebView Name="TextNodeWebView" Width="{Binding Width}" Height="{Binding Height}"  ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" IsTapEnabled="True" DefaultBackgroundColor="White"></WebView>
                             <!--<Grid x:Name="xMediaRecotder" Visibility="Collapsed">
                                 <CaptureElement Name="preview"  Width="{Binding Width}" Height="{Binding Height}"/>
                                 <MediaElement Grid.Row="0" Grid.Column="0" x:Name="playbackElement" AreTransportControlsEnabled="True"  Stretch="Uniform" Width="{Binding Width}" Height="{Binding Height}" />
