@@ -41,7 +41,9 @@ namespace NuSysApp
               
 
                   var vm = (DetailViewerViewModel)DataContext;
+
                   vm.PropertyChanged += OnPropertyChanged;
+                  vm.TitleChanged += LibraryElementModelTitleChanged;
                   Tags.ItemsSource = vm.Tags;
                   vm.MakeTagList();
 
@@ -70,7 +72,16 @@ namespace NuSysApp
                 }
             };
 
-            
+
+
+        }
+
+        private void LibraryElementModelTitleChanged(object sender, string newTitle)
+        {
+            if (sender!=this && TitleBox.Text != newTitle)
+            {
+                TitleBox.Text = newTitle;
+            }
         }
 
         public async Task LaunchLDA(string text)
@@ -138,6 +149,13 @@ namespace NuSysApp
                 await AddTag();
                 e.Handled = true;
             }
+        }
+
+        private void TitleChanged(object sender, KeyRoutedEventArgs e)
+        {
+            var vm = (DetailViewerViewModel)DataContext;
+            vm.CurrentElementController.LibraryElementModel.Title = TitleBox.Text;
+            //vm.LibraryElementModelOnOnTitleChanged(this, TitleBox.Text);
         }
 
         private async void AddTagButton_OnClick(object sender, RoutedEventArgs e)

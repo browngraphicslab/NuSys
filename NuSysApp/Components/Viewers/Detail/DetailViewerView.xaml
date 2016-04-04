@@ -31,8 +31,9 @@
             <TextBlock Grid.Row="0" x:Name="exitButton" HorizontalAlignment="Right" VerticalAlignment="Top" Text="x" Foreground="White" FontSize="24" Tapped="closeDV_OnTapped"/>
 
             <StackPanel Grid.Row="1"  x:Name="TitleEnter" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,20">
-                <TextBlock Text="{Binding Title}" Foreground="White" FontSize="30" CharacterSpacing="45" HorizontalAlignment="Stretch"/>
-
+                <!--<TextBlock Text="{Binding Title}" Foreground="White" FontSize="30" CharacterSpacing="45" HorizontalAlignment="Stretch"/>-->
+                <local:TextInputBlock  x:Name ="TitleBox" Text="{Binding Title}"  KeyUp="TitleChanged"  LeftJustified="False" SetHeight="30" HorizontalAlignment="Stretch">
+                </local:TextInputBlock>
                 <Rectangle HorizontalAlignment="Stretch" Fill="White" Height="2"/>
             </StackPanel>
 
