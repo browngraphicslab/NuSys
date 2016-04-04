@@ -35,6 +35,8 @@ namespace NuSysApp
 
         public delegate void LinkAddedEventHandler(object source, LinkElementController linkController);
 
+        public delegate void SelectionChangedHandler(object source, bool selected);
+
         public event DisposeEventHandler Disposed;
         public event DeleteEventHandler Deleted;
         public event LinkAddedEventHandler LinkedAdded;
@@ -44,6 +46,7 @@ namespace NuSysApp
         public event ScaleChangedEventHandler ScaleChanged;
         public event AlphaChangedEventHandler AlphaChanged;
         public event NetworkUserChangedEventHandler UserChanged;
+        public event SelectionChangedHandler SelectionChanged;
 
         public ElementController(ElementModel model)
         {
@@ -87,6 +90,11 @@ namespace NuSysApp
 
             _debouncingDictionary.Add("scaleX", sx);
             _debouncingDictionary.Add("scaleY", sy);
+        }
+
+        public void Selected(bool selected)
+        {
+            SelectionChanged?.Invoke(this, selected);
         }
 
         public void SetSize(double width, double height)

@@ -47,10 +47,9 @@ namespace NuSysApp
             TextNodeWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
             DataContext = vm;
   
-           
-
             vm.Controller.Disposed += ControllerOnDisposed;
             vm.TextBindingChanged += TextChanged;
+            vm.TextUnselected += Blur;
             TextNodeWebView.NavigationCompleted += TextNodeWebViewOnNavigationCompleted;
             TextNodeWebView.ScriptNotify += wvBrowser_ScriptNotify;
         }
@@ -125,7 +124,12 @@ namespace NuSysApp
             _text = str;
         }
 
-      
+        private async void Blur(object source)
+        {
+            TextNodeWebView.InvokeScriptAsync("Blur", null);
+        }
+
+
 
         private async void OnEditClick(object sender, RoutedEventArgs e)
         {
