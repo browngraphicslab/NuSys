@@ -8,19 +8,14 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
+    <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 
-    <Grid x:Name="xGrid" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="150"/>
-            <RowDefinition Height="150"/>
-            <RowDefinition Height="150"/>
-            <RowDefinition Height="150"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-    </Grid>
+        <Grid x:Name="WebContainer" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent">
+            <WebView Name ="MyWebView"  Width="{Binding ElementName=WebContainer, Path=Width}"  Height ="100"  ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled"  
+                             Visibility="Visible" HorizontalAlignment ="Stretch" VerticalAlignment="Stretch" IsTapEnabled="True">
+            </WebView>
+        </Grid>
+        
+    </StackPanel>
+
 </UserControl>

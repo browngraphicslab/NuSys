@@ -238,6 +238,9 @@
     <Compile Include="Components\Misc\TextInputBlock.xaml.cs">
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\ElementCollectionDetailView.xaml.cs">
+      <DependentUpon>ElementCollectionDetailView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\WaitingRoom\SelectionHull.cs" />
     <Compile Include="Components\Viewers\Detail\DetailNodeViewFactory.cs" />
     <Compile Include="Components\Viewers\Detail\DetailViewerView.xaml.cs">
@@ -653,6 +656,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\Detail\Views\AudioDetailView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\ElementCollectionDetailView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
