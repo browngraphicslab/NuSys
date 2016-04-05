@@ -781,13 +781,17 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LdaLib\LdaLib.csproj">
-      <Project>{108aee28-552d-4d59-bfe3-41edef97dd30}</Project>
-      <Name>LdaLib</Name>
+    <ProjectReference Include="..\LdaLibrary\LdaLibrary.csproj">
+      <Project>{29e341a3-fe98-4e49-a72c-37dd66a7fedc}</Project>
+      <Name>LdaLibrary</Name>
     </ProjectReference>
     <ProjectReference Include="..\MuPDFWinRT\Win8\MuPDFWinRT.vcxproj">
       <Project>{56c66c4f-3c21-4929-baf1-2eda2ec56823}</Project>
       <Name>MuPDFWinRT</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WordNetUnivApp\WordNetUnivApp.csproj">
+      <Project>{e84752c3-7c99-470f-bfde-c2d7f7bc23aa}</Project>
+      <Name>WordNetUnivApp</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

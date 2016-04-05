@@ -4,10 +4,6 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-/*using LAIR.Extensions;
-using LAIR.Collections.Generic;*/
-/*using LAIR.IO;*/
-
 namespace WordNetUnivApp
 {
     /// <summary>
