@@ -231,6 +231,7 @@ namespace NuSysApp
         {
             var contentId = SessionController.Instance.GenerateId();
             var libraryElementRequest = new CreateNewLibraryElementRequest(contentId,null,ElementType.Link, "NEW LINK");
+            
             var request = new NewLinkRequest(Model.Id, otherId, Model.Creator,contentId);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);

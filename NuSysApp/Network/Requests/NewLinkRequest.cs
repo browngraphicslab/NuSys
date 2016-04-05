@@ -18,6 +18,17 @@ namespace NuSysApp
             _message["creator"] = creator;
             _message["contentId"] = contentId;
         }
+
+        //public NewLinkRequest(string id1, string id2, string creator, string contentId, string id = null, Dictionary<string,string> dict, type ) : base(RequestType.NewLinkRequest)
+        //{
+        //    _message["id1"] = id1;
+        //    _message["id2"] = id2;
+        //    _message["id"] = id ?? SessionController.Instance.GenerateId();
+        //    _message["creator"] = creator;
+        //    _message["contentId"] = contentId;
+        //    _message["type"]= type
+        //    _message["fgdict"] = dict;
+        //}
         public override async Task CheckOutgoingRequest()
         {
             if (!_message.ContainsKey("id"))
