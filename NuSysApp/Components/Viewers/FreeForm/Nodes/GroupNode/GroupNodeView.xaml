@@ -18,27 +18,33 @@
     BorderBrush="Black"
    >
     <local:AnimatableUserControl.Resources>
-        <converters:BoolToVisibilityConverter x:Key="vConverter"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <converters:BoolToVisibilityConverter x:Key="vConverter"/>
+        </ResourceDictionary>
     </local:AnimatableUserControl.Resources>
     <local:NodeTemplate x:Name="nodeTpl" Background="#dee5e9" Opacity="1">
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Vertical">
-            <Button Margin="0,0,0,0" x:Name="ListButton" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
+            <Button Margin="0,0,0,0" x:Name="ListButton" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
                 <Image Source="ms-appx:///Assets/node icons/icon_list.png" Width="20" Stretch="Uniform"></Image>
             </Button>
-            <Button Margin="0,0,0,0" x:Name="FreeFormButton"  Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
+            <Button Margin="0,0,0,0" x:Name="FreeFormButton"  Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
                 <Image Source="ms-appx:///Assets/node icons/icon_freeform.png" Height="23" Stretch="Uniform"></Image>
             </Button>
 
-            <Button Margin="0,0,0,0" x:Name="TimeLineButton" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
+            <Button Margin="0,0,0,0" x:Name="TimeLineButton" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
                 <Image Source="ms-appx:///Assets/node icons/icon_line.png"  Width="25" Stretch="Uniform"></Image>
             </Button>
 
-            <Button Margin="0,0,0,0" x:Name="EnterButton" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
+            <Button Margin="0,0,0,0" x:Name="EnterButton" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
                 <Image Source="ms-appx:///Assets/node icons/icon_enter.png"  Height="28" Stretch="Uniform"></Image>
             </Button>
 
-            <Button Margin="0,2,0,2" x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
+            <Button Margin="0,2,0,2" x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
                 <Image Source="ms-appx:///Assets/node icons/delete.png" Height="23" Stretch="Uniform"></Image>
             </Button>
             </StackPanel>
@@ -48,7 +54,7 @@
             <Canvas Height="{Binding Height}" Width="{Binding Width}" Background="Transparent">
     <Canvas x:Name="GroupNodeCanvas" Height="{Binding Height}" Width="{Binding Width}" Background="Transparent" IsHitTestVisible="{Binding IsEditing}">
         <Grid x:Name="xTitleContainer" VerticalAlignment="Top" Width="{Binding Width}" >
-            <Border x:Name="Rect" Background="White" BorderBrush="#83A6A3" BorderThickness="1" Width="{Binding Width}"  />
+            <Border x:Name="Rect" Background="White" BorderBrush="{StaticResource color3}" BorderThickness="1" Width="{Binding Width}"  />
             <!--<TextBox Padding="10,5,10,10" x:Name="xTitle" Foreground="#606d7a" Width="{Binding Width}"  IsHitTestVisible="{Binding IsSelected}" TextWrapping="NoWrap"  Text="{Binding Title, Mode=TwoWay}" MaxHeight="80" FontSize="18" BorderBrush="Transparent" Background="Transparent" TextAlignment="Center" VerticalAlignment="Center" BorderThickness="0"></TextBox>-->
             <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
         </Grid>

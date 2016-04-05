@@ -1,0 +1,10 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp">
+
+    <SolidColorBrush x:Key="color1" Color="#E6EDEC"/>
+    <SolidColorBrush x:Key="color2" Color="#9CC5C2"/>
+    <SolidColorBrush x:Key="color3" Color="#83A6A3"/>
+    <SolidColorBrush x:Key="color4" Color="#C59E9C"/>
+</ResourceDictionary>

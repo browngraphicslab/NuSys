@@ -9,6 +9,14 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
+    <local:AnimatableUserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </local:AnimatableUserControl.Resources>
+
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid x:Name="resizer" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="LightGray" Width="30"
                     ManipulationDelta="Resizer_OnManipulationDelta" ManipulationMode="All">
@@ -17,7 +25,7 @@
             </Grid.RenderTransform>
             <Image x:Name="resizerImage" Source="/Assets/resizer.png" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Grid>
-        <Grid x:Name="xContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="DarkGray" Padding="25,10,25,10">
+        <Grid x:Name="xContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource color2}" Padding="25,10,25,10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
