@@ -121,18 +121,6 @@ namespace NuSysApp
 
 
            // await Library.Reload();
-            ChatPopup.OnNewTextsChanged += delegate(int newTexts)
-            {
-                if (newTexts > 0)
-                {
-                    ChatNotifs.Opacity = 1;
-                    NotifNumber.Text = newTexts.ToString();
-                }
-                else
-                {
-                    ChatNotifs.Opacity = 0;
-                }
-            };
         }
         private void NewNetworkUser(NetworkUser user)
         {
