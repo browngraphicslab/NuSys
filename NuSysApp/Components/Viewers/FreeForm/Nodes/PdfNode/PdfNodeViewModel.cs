@@ -19,7 +19,6 @@ using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 
-
 namespace NuSysApp
 {
     public class PdfNodeViewModel : ElementViewModel
