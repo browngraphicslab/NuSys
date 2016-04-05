@@ -123,6 +123,7 @@ namespace NuSysApp
 
         private void TagBlock_Tapped(object sender, TappedRoutedEventArgs e)
         {
+
             TagPanel.Opacity = TagPanel.Opacity == 0 ? 1 : 0;
             TagPanel.IsHitTestVisible = TagPanel.Opacity == 0 ? false : true;
         }
@@ -192,8 +193,6 @@ namespace NuSysApp
         }
 
         #region Sort Timeline
-
-
         public async Task ResortTimeline()
         {
             await ResortTimeline(_sortBy);
@@ -268,8 +267,6 @@ namespace NuSysApp
                         IncrementCounter();
                     };
                 }
-
-
             }
             _vm.DataList = _atomList;
         }
@@ -296,8 +293,8 @@ namespace NuSysApp
             if (_vm.AtomViewList.Count >= _count)
             {
                 ResortTimeline(_sortBy);
-                AddMetaDataButtons(e.NewItems);
             }
+            AddMetaDataButtons(e.NewItems);
         }
 
         private void AddMetaDataButtons(IList list)
