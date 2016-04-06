@@ -37,7 +37,7 @@
             <Grid>
                 <WebView x:Name="xWebView" Width ="{Binding Width}" Height ="{Binding Height}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  IsHitTestVisible ="False" NavigationStarting="XWebView_OnNavigationStarting" NavigationCompleted="XWebView_OnNavigationCompleted" Margin="0,37,0,0" />
                 <Border Background="#99000000" VerticalAlignment="Top" Width="{Binding Width}" Height="39">
-                    <TextBox x:Name="xUrlBox"  Tag="NoManipulation" Text="{Binding Url}" KeyUp="OnKeyUp" Height="37" Foreground="White" FontSize="18"></TextBox>
+                    <TextBox x:Name="xUrlBox"  Tag="NoManipulation" Text="{Binding Url}" KeyUp="OnKeyUp" Height="37" Foreground="{StaticResource color6}" FontSize="18"></TextBox>
                 </Border>
                 <!--</Canvas>-->
             </Grid>

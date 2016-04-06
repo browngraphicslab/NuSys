@@ -7,22 +7,31 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
 >
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
     <!--<Grid x:Name="webViewPanel" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">-->
     <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <Grid x:Name="webTopBar" Background="#99000000" VerticalAlignment="Top">
-            <Button x:Name="Back" Height="37" Foreground="White" Click="Back_OnClick" VerticalAlignment="Top" HorizontalAlignment="Left">
+            <Button x:Name="Back" Height="37" Foreground="{StaticResource color6}" Click="Back_OnClick" VerticalAlignment="Top" HorizontalAlignment="Left">
                 <Image Source="http://www.iconsplace.com/icons/preview/white/left-round-256.png"></Image>
             </Button>
-            <Button x:Name="Forward" Height="37" Foreground="White" Click="Forward_OnClick" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="45,0,0,0">
+            <Button x:Name="Forward" Height="37" Foreground="{StaticResource color6}" Click="Forward_OnClick" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="45,0,0,0">
                 <Image Source="http://www.iconsdb.com/icons/preview/white/right-round-xxl.png"></Image>
             </Button>
-            <TextBox x:Name="xUrlBox" Tag="NoManipulation" Text="{Binding Url}" KeyUp="OnKeyUp" Width="10000" Height="37" Foreground="White" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="90,0,0,0"/>
-            <Button x:Name="Refresh" Height="37" Background="#99000000" Foreground="White" Click="Refresh_OnClick"  VerticalAlignment="Top" HorizontalAlignment="Right">
+            <TextBox x:Name="xUrlBox" Tag="NoManipulation" Text="{Binding Url}" KeyUp="OnKeyUp" Width="10000" Height="37" Foreground="{StaticResource color6}" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="90,0,0,0"/>
+            <Button x:Name="Refresh" Height="37" Background="#99000000" Foreground="{StaticResource color6}" Click="Refresh_OnClick"  VerticalAlignment="Top" HorizontalAlignment="Right">
                 <Image Source="http://www.iconsdb.com/icons/preview/white/recurring-appointment-xxl.png"></Image>
             </Button>
         </Grid>
         <!--<ScrollViewer x:Name="xScrollViewer" Margin="0,37,0,0">-->
-        <WebView x:Name="xWebView" DefaultBackgroundColor="White" NavigationStarting="XWebView_OnNavigationStarting" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  NavigationCompleted="XWebView_OnNavigationCompleted" />
+        <WebView x:Name="xWebView" DefaultBackgroundColor="{StaticResource color6}" NavigationStarting="XWebView_OnNavigationStarting" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  NavigationCompleted="XWebView_OnNavigationCompleted" />
         <!--</ScrollViewer>-->
     </StackPanel>
     <!--</Grid>-->

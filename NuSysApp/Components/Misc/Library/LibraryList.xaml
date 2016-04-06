@@ -76,7 +76,7 @@
 
         <ListView  x:Name="ListView" ItemClick="ListView_OnItemClick" IsItemClickEnabled="True" ItemsSource="{Binding PageElements}">
             <ListView.Header>
-                <Grid VerticalAlignment="Center" Background="White ">
+                <Grid VerticalAlignment="Center" Background="{StaticResource color6}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="150" />
                         <ColumnDefinition Width="125" />

@@ -9,8 +9,17 @@
     d:DesignHeight="300"
     d:DesignWidth="400"
 >
+
+    <local:AnimatableUserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </local:AnimatableUserControl.Resources>
+    
     <Grid>
-        <Grid x:Name="TimelineGrid" Background="White">
+        <Grid x:Name="TimelineGrid" Background="{StaticResource color6}">
             <Canvas x:Name="TimelineCanvas" Background="Transparent" RenderTransform="{Binding CompositeTransform}">
                 <Border x:Name ="TimelinePanelBorder" BorderBrush="Yellow" Height="110">
                     <Canvas x:Name="TimelinePanel" Background="Transparent"/>
@@ -22,14 +31,14 @@
                             Orientation="Vertical" 
                             VerticalAlignment="Bottom" 
                             HorizontalAlignment="Left" 
-                            Background="White" 
+                            Background="{StaticResource color6}" 
                             Width="100" Opacity="0" IsHitTestVisible="False" Visibility="Collapsed"/>
         <StackPanel x:Name="ViewPanel"  
                             Margin="0,0,-100,0" 
                             Orientation="Vertical" 
                             VerticalAlignment="Bottom" 
                             HorizontalAlignment="Right" 
-                            Background="White" 
+                            Background="{StaticResource color6}" 
                             Width="100" Opacity="0" IsHitTestVisible="false" Visibility="Collapsed"/>
         <Button Name="ViewBlock" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="30"/>
         <Button Name="TagBlock" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="30"/>

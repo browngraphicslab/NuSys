@@ -8,12 +8,20 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
         <Border Background="DimGray" Width="300" Height="100" CornerRadius="10,10,10,10">
             <StackPanel Margin="15,10">
-                <TextBlock Text="New Text Node" VerticalAlignment="Top" FontSize="16" Foreground="White"/>
-                <Line Fill="White" HorizontalAlignment="Stretch" Height="1"></Line>
-                <TextBlock Text="Import Media" VerticalAlignment="Top" FontSize="16" Foreground="White"/>
+                <TextBlock Text="New Text Node" VerticalAlignment="Top" FontSize="16" Foreground="{StaticResource color6}"/>
+                <Line Fill="{StaticResource color6}" HorizontalAlignment="Stretch" Height="1"></Line>
+                <TextBlock Text="Import Media" VerticalAlignment="Top" FontSize="16" Foreground="{StaticResource color6}"/>
             </StackPanel>
         </Border>
     </Grid>

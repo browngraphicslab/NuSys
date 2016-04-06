@@ -17,7 +17,7 @@
 
             <Style x:Key="SubButton" TargetType="Button">
                 <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="Foreground" Value="DarkGray"/>
+                <Setter Property="Foreground" Value="{StaticResource color8}"/>
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="Padding" Value="8,4,8,4"/>
                 <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -112,7 +112,7 @@
     <Button x:Name="btn" Style="{StaticResource FloatingButton}" BorderBrush="{StaticResource color2}">
         <Button.Content>
             <StackPanel Orientation="Vertical">
-                <TextBlock x:Name="btnCaption" TextAlignment="Center" FontSize="12" Margin="0,5,0,0"  FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="DarkGray" ></TextBlock>
+                <TextBlock x:Name="btnCaption" TextAlignment="Center" FontSize="12" Margin="0,5,0,0"  FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="{StaticResource color8}" ></TextBlock>
                 <Image x:Name="icon" Height="35" Width="20" VerticalAlignment="Center" Margin="0,16,0,0"  HorizontalAlignment="Center"></Image>
                 </StackPanel>
         </Button.Content>

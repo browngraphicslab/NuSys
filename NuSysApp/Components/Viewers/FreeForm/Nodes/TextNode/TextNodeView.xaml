@@ -44,7 +44,7 @@
 
 
     <Canvas x:Name="xCanvas">
-        <local:NodeTemplate x:Name="nodeTpl" Background="White" BorderBrush="Transparent">
+        <local:NodeTemplate x:Name="nodeTpl" Background="{StaticResource color6}" BorderBrush="Transparent">
             <local:NodeTemplate.SubMenu>
                 <StackPanel Orientation="Vertical">
                     <Button Margin="0,2,0,2"  x:Name="EditText"  Click="OnEditClick" Background="{StaticResource color2}" Style="{StaticResource NodeSubMenuItem}" Tag="bla">

@@ -21,7 +21,7 @@
         </ResourceDictionary>
     </local:AnimatableUserControl.Resources>
 
-    <local:NodeTemplate x:Name="nodeTpl" Background="{Binding Color}" BorderBrush="White">
+    <local:NodeTemplate x:Name="nodeTpl" Background="{Binding Color}" BorderBrush="{StaticResource color6}">
 
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Horizontal">

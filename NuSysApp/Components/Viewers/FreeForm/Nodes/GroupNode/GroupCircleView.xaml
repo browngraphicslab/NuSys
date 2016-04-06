@@ -9,6 +9,14 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
+    <local:AnimatableUserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </local:AnimatableUserControl.Resources>
+
     <Grid  x:Name="xCircleView" >
         <Grid Width="{Binding Width}" Height="{Binding Height}">
             <Ellipse Opacity="0.5" Width="{Binding Width}" Height="{Binding Height}" Fill="#62bcd5"></Ellipse>
@@ -29,7 +37,7 @@
                 <Border.RenderTransform>
                     <TranslateTransform X="138" Y="-117"></TranslateTransform>
                 </Border.RenderTransform>
-                <TextBlock HorizontalAlignment="Center" x:Name="Num" Foreground="White" FontSize="22" FontWeight="Bold" Text="{Binding AtomViewList.Count}" />
+                <TextBlock HorizontalAlignment="Center" x:Name="Num" Foreground="{StaticResource color6}" FontSize="22" FontWeight="Bold" Text="{Binding AtomViewList.Count}" />
             </Border>
 
         </Grid>
