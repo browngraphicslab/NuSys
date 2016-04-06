@@ -7,7 +7,32 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Canvas x:Name="xWrapper" >
+        
 
-    </Grid>
+
+
+        <Canvas x:Name="xAtomCanvas" HorizontalAlignment="Left" Background="DarkSeaGreen" Width="100000" Height="100000">
+
+            
+
+
+            <Rectangle Fill="Crimson" Width="100" Height="100">
+                <Rectangle.RenderTransform>
+                    <TranslateTransform X="50000" Y="50000"></TranslateTransform>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+
+            <Rectangle Fill="Yellow" Width="100" Height="100">
+                <Rectangle.RenderTransform>
+                    <TranslateTransform X="50300" Y="50300"></TranslateTransform>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+        </Canvas>
+
+    
+        <local:PhilInqCanvas x:Name="inqCanvas" Background="LightSteelBlue"></local:PhilInqCanvas>
+
+        <Button x:Name="xToggleInk" Width="100" Height="30">Ink</Button>
+    </Canvas>
 </Page>

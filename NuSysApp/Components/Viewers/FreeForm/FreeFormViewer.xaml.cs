@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.Foundation;
+using Windows.UI.Xaml.Media;
 
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -15,7 +16,7 @@ namespace NuSysApp
     public sealed partial class FreeFormViewer
     {
         private AbstractWorkspaceViewMode _mode;
-        private InqCanvasView _inqCanvas;
+        private PhilInqCanvas _inqCanvas;
         private NodeManipulationMode _nodeManipulationMode;
         private CreateGroupMode _createGroupMode;
         private DuplicateNodeMode _duplicateMode;
@@ -33,14 +34,15 @@ namespace NuSysApp
         public FreeFormViewer(FreeFormViewerViewModel vm)
         {
             this.InitializeComponent();
- 
-            var inqCanvasModel = vm.Controller.Model.InqCanvas;
-            var inqCanvasViewModel = new InqCanvasViewModel(inqCanvasModel, new Size(Constants.MaxCanvasSize, Constants.MaxCanvasSize));
-            _inqCanvas = new InqCanvasView(inqCanvasViewModel);
-            _inqCanvas.Width = Window.Current.Bounds.Width;
-            _inqCanvas.Height = Window.Current.Bounds.Height;
-            xOuterWrapper.Children.Add(_inqCanvas);
 
+            // var inqCanvasModel = vm.Controller.Model.InqCanvas;
+            // var inqCanvasViewModel = new InqCanvasViewModel(inqCanvasModel, new Size(Constants.MaxCanvasSize, Constants.MaxCanvasSize));
+            // _inqCanvas = new InqCanvasView(inqCanvasViewModel);
+            // _inqCanvas.Width = Window.Current.Bounds.Width;
+            // _inqCanvas.Height = Window.Current.Bounds.Height;
+            // xOuterWrapper.Children.Add(_inqCanvas);
+
+            _inqCanvas = xInqCanvas;
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
@@ -61,18 +63,12 @@ namespace NuSysApp
             };
             
             // TODO:refactor
-            /*
-            CompositeTransform ct = new CompositeTransform();
-            ct.CenterX = wsModel.CenterX;
-            ct.CenterY = wsModel.CenterY;
-            ct.ScaleX = wsModel.Zoom;
-            ct.ScaleY = wsModel.Zoom;
-            ct.TranslateX = wsModel.LocationX;
-            ct.TranslateY = wsModel.LocationY;
-            _inqCanvas.Transform = ct;
-            */
+            
+ 
+            _inqCanvas.RenderTransform = vm.CompositeTransform;
+            
 
-            _inqCanvas.Transform = vm.CompositeTransform;
+            //_inqCanvas.Transform = vm.CompositeTransform;
 
             vm.SelectionChanged += VmOnSelectionChanged;
             vm.Controller.Model.InqCanvas.LineFinalized += InqCanvasOnLineFinalized;
@@ -180,7 +176,7 @@ namespace NuSysApp
 
         public InqCanvasView InqCanvas
         {
-            get { return _inqCanvas; }
+            get { return null; }
         }
 
         public async Task SetViewMode(AbstractWorkspaceViewMode mode, bool isFixed = false)

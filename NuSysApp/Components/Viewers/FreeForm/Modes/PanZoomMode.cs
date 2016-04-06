@@ -104,7 +104,7 @@ namespace NuSysApp
             {
                 return;
             }
-            _cview.InqCanvas.Transform = compositeTransform;
+            _cview.InqCanvas.Transform = compositeTransform;    
 
         }
 
@@ -178,7 +178,7 @@ namespace NuSysApp
             {
                 return;
             }
-            _cview.InqCanvas.Transform = compositeTransform;
+            //_cview.InqCanvas.Transform = compositeTransform;
         }
     }
 }

@@ -10,6 +10,13 @@ namespace NuSysApp
 {
     public static class Extensions
     {
+
+
+        public static System.Numerics.Vector2 ToSystemVector2(this Point p)
+        {
+            return new System.Numerics.Vector2((float)p.X, (float)p.Y);
+        }
+
         public static Vector2 ToVector2(this Point p)
         {
             return new Vector2(p.X, p.Y);
