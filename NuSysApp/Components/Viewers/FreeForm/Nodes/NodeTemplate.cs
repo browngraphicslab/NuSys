@@ -202,7 +202,7 @@ namespace NuSysApp
         {
             highlight.Visibility = lightup ? Visibility.Visible : Visibility.Collapsed;
             highlight.BorderThickness = new Thickness(5);
-            highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 156, 197, 194));
+            highlight.BorderBrush = new SolidColorBrush(Constants.color2);
         }
 
         private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)
@@ -361,19 +361,19 @@ namespace NuSysApp
             {
                 if (vm.IsSelected)
                 {
-                    bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 156, 197, 194));
+                    bg.BorderBrush = new SolidColorBrush(Constants.color2);
                     bg.BorderThickness = new Thickness(2);
                     hitArea.Visibility = Visibility.Visible;
                 }
                 if (vm.IsEditing)
                 {
-                    bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 197, 158, 156));
+                    bg.BorderBrush = new SolidColorBrush(Constants.color4);
                     bg.BorderThickness = new Thickness(2);
                     hitArea.Visibility = Visibility.Collapsed;
                 }
                 if (!(vm.IsEditing || vm.IsSelected))
                 {
-                    bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 131, 166, 163));
+                    bg.BorderBrush = new SolidColorBrush(Constants.color3);
                     bg.BorderThickness = new Thickness(1);
                     hitArea.Visibility = Visibility.Visible;
                 }

@@ -200,8 +200,8 @@ namespace NuSysApp
                 _activeFreeFormViewer.SwitchMode(Options.SelectNode, false);
                 _prevOptions = Options.SelectNode;
                 IsPenMode = false;
-                xBtnPen.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 197, 158, 156));
-                PenCircle.Background = new SolidColorBrush(Color.FromArgb(255, 197, 158, 156));
+                xBtnPen.BorderBrush = new SolidColorBrush(Constants.color4);
+                PenCircle.Background = new SolidColorBrush(Constants.color4);
 
             }
             

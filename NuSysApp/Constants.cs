@@ -50,8 +50,15 @@ namespace NuSysApp
         #endregion Ink Node
 
         #region Color
-        public static Color DefaultColor = Color.FromArgb(20, 0, 76, 153);
-        public static Color SelectedColor = Color.FromArgb(200, DefaultColor.R, DefaultColor.G, DefaultColor.B);
+        public static Color color1 = Color.FromArgb(255, 230, 237, 236);   // lightest blue
+        public static Color color2 = Color.FromArgb(255, 156, 197, 194);   // medium blue
+        public static Color color3 = Color.FromArgb(255, 131, 166, 163);   // darkest blue
+        public static Color color4 = Color.FromArgb(255, 197, 158, 156);   // red
+        public static Color color5 = Color.FromArgb(255, 143, 152, 161);   // dark gray blue
+        public static Color color6 = Colors.White;                         // white
+        public static Color color7 = Colors.LightGray;                     // light gray
+        public static Color color8 = Colors.DarkGray;                      // dark gray
+        public static Color color9 = Colors.DarkSalmon;                    // dark salmon
         #endregion Color
 
         #region AtomType
