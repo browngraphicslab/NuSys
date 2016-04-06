@@ -117,7 +117,6 @@ namespace NuSysApp
         {
             if (!(((FrameworkElement)e.OriginalSource).DataContext is FreeFormViewerViewModel))
                 return;
-            
             var vm = (FreeFormViewerViewModel)_view.DataContext;
 
             var compositeTransform = vm.CompositeTransform;
@@ -178,7 +177,8 @@ namespace NuSysApp
             {
                 return;
             }
-            _cview.InqCanvas.Transform = compositeTransform;
+            _cview.InqCanvas.Transform = compositeTransform;  
+          
         }
     }
 }

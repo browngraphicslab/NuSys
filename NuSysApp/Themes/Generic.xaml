@@ -51,6 +51,14 @@
                                                 <TextBlock Text="Link" TextAlignment="Center" Foreground="#9CC5C2" FontSize="12"></TextBlock>
                                             </StackPanel>
                                         </Button>
+
+                                    
+
+                                        <Button x:Name="MoveTestingButton" Background="Green" Content="Move" Margin="0,140,0,0">
+
+                                        </Button>
+
+                                      
                                     </Canvas>
 
                                     <ContentControl Content="{TemplateBinding Inner}" x:Name="innerControl"  />

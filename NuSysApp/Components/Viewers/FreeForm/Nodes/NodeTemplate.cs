@@ -42,6 +42,7 @@ namespace NuSysApp
         public Canvas xCanvas = null;
         public Button DuplicateElement = null;
         public Button Link = null;
+        public Button MoveTestingButton = null;
 
         private Image _dragItem;
 
@@ -104,10 +105,15 @@ namespace NuSysApp
 
             DuplicateElement = (Button)GetTemplateChild("DuplicateElement");
             Link = (Button)GetTemplateChild("Link");
+            
+            MoveTestingButton = (Button)GetTemplateChild("MoveTestingButton");
             xCanvas = (Canvas)GetTemplateChild("xCanvas");
 
             DuplicateElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             DuplicateElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
+
+
+            MoveTestingButton.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnOnPointerPressed), true);
 
             Link.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             Link.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
@@ -156,6 +162,16 @@ namespace NuSysApp
             vm.PropertyChanged += OnPropertyChanged;
             base.OnApplyTemplate();
             OnTemplateReady?.Invoke();
+        }
+
+        private void BtnOnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+
+            var vm = (ElementViewModel)this.DataContext;
+
+            if (sender == MoveTestingButton)
+                TransformHelper.FullScreen(vm);
+            
         }
 
         private void TitleOnTextChanged(object sender, TextChangedEventArgs textChangedEventArgs)
