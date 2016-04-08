@@ -51,6 +51,24 @@
                                                 <TextBlock Text="Link" TextAlignment="Center" Foreground="#9CC5C2" FontSize="12"></TextBlock>
                                             </StackPanel>
                                         </Button>
+                                        <Button x:Name="PresentationMode" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,140,0,0">
+                                            <StackPanel>
+                                                <Image Source="ms-appx:///Assets/powerpointIcon.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                                                <TextBlock Text="Present" TextAlignment="Center" Foreground="#9CC5C2" FontSize="12"></TextBlock>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button x:Name="Next" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,210,0,0" Visibility="{Binding IsPresenting, Converter={StaticResource vConverter}}">
+                                            <StackPanel>
+                                                <Image Source="ms-appx:///Assets/icon_pdf_right.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                                                <TextBlock Text="Present" TextAlignment="Center" Foreground="#9CC5C2" FontSize="12"></TextBlock>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button x:Name="Prev" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,210,0,0" Visibility="{Binding IsPresenting, Converter={StaticResource vConverter}}">
+                                            <StackPanel>
+                                                <Image Source="ms-appx:///Assets/icon_pdf_left.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                                                <TextBlock Text="Present" TextAlignment="Center" Foreground="#9CC5C2" FontSize="12"></TextBlock>
+                                            </StackPanel>
+                                        </Button>
                                     </Canvas>
 
                                     <ContentControl Content="{TemplateBinding Inner}" x:Name="innerControl"  />

@@ -26,7 +26,7 @@ namespace NuSysApp
         private CompositeTransform _inkScale;
         private CompositeTransform _transform = new CompositeTransform();
         private ElementController _controller;
-        protected bool _isSelected, _isVisible;
+        protected bool _isSelected, _isVisible, _isPresenting;
 
         #endregion Private Members
 
@@ -443,6 +443,22 @@ namespace NuSysApp
             }
         }
 
+        public bool IsPresenting
+        {
+            get { return _isPresenting; }
+
+            set
+            {
+                if (_isPresenting == value)
+                {
+                    return;
+                }
+                _isPresenting = value;
+                RaisePropertyChanged("IsPresenting");
+            }
+        }
+
         #endregion Public Properties
     }
+
 }

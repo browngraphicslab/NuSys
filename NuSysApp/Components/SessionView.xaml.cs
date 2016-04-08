@@ -34,6 +34,8 @@ namespace NuSysApp
 
         public bool IsPenMode { get; private set; }
 
+        public bool IsPresentationMode { get; private set; }
+
         public ChatPopupView ChatPopupWindow
         {
             get { return ChatPopup; }

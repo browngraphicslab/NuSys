@@ -42,6 +42,7 @@ namespace NuSysApp
         public Canvas xCanvas = null;
         public Button DuplicateElement = null;
         public Button Link = null;
+        public Button PresentationMode = null;
 
         private Image _dragItem;
 
@@ -112,6 +113,8 @@ namespace NuSysApp
             Link.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             Link.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
 
+            PresentationMode = (Button)GetTemplateChild("PresentationMode");
+            PresentationMode.Click += OnPresentationClick;
 
             btnDelete = (Button)GetTemplateChild("btnDelete");
             btnDelete.Click += OnBtnDeleteClick;
@@ -329,6 +332,26 @@ namespace NuSysApp
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(model.Id));
         }
 
+        private void OnPresentationClick(object sender, RoutedEventArgs e)
+        {
+            if (SessionController.Instance.SessionView.IsPresentationMode)
+            {
+
+            }
+            else
+            {
+                var vm = (ElementViewModel)this.DataContext;
+                if (vm.IsPresenting)
+                {
+                    vm.IsPresenting = false;
+                }
+                else
+                {
+                    vm.IsPresenting = true;
+                    var list = vm.LinkList;
+                }
+            }
+        }
 
         private void OnResizerManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
