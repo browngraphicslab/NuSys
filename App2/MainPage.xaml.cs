@@ -26,6 +26,8 @@ namespace App2
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        private DispatcherTimer _timer;
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -51,33 +53,6 @@ namespace App2
                 TranslateY = -50000
             };
 
-            PointerReleased += delegate(object sender, PointerRoutedEventArgs args)
-            {
-                Debug.WriteLine("");
-            };
-
-
-            inqCanvas.InkAdded += async delegate
-            {
-                return;
-                var rt = new RenderTargetBitmap();
-                await rt.RenderAsync(inqCanvas);
-
-
-                var compositeTransform = (CompositeTransform)xAtomCanvas.RenderTransform;
-                var img = new Image {Source = rt};
-                img.RenderTransform = new TranslateTransform
-                {
-                    X = -compositeTransform.TranslateX,
-                    Y = -compositeTransform.TranslateY
-                };
-
-                xAtomCanvas.Children.Insert(0,img);
-            };
-
-            
-
-
             inqCanvas.Transform = (CompositeTransform)xAtomCanvas.RenderTransform;
            
             ManipulationMode = ManipulationModes.All;
@@ -85,10 +60,21 @@ namespace App2
             ManipulationStarting += OnManipulationStarting;
             ManipulationCompleted += OnManipulationCompleted;
             PointerWheelChanged += OnPointerWheelChanged;
+
+            _timer = new DispatcherTimer();
+            _timer.Interval = TimeSpan.FromMilliseconds(5);
+            _timer.Tick += delegate(object sender, object o)
+            {
+                _timer.Stop();
+                inqCanvas.Transform = (CompositeTransform) xAtomCanvas.RenderTransform;
+                inqCanvas.Invalidate(true);
+                _timer.Start();
+            };
         }
 
         private async void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs manipulationCompletedRoutedEventArgs)
         {
+            _timer.Stop();
             inqCanvas.Invalidate(true);
 
     
@@ -139,11 +125,13 @@ namespace App2
             compositeTransform.CenterX = cent.X;
             compositeTransform.CenterY = cent.Y;
 
+            inqCanvas.Transform = (CompositeTransform)xAtomCanvas.RenderTransform;
             inqCanvas.Invalidate(true);
         }
 
         protected void OnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
         {
+            _timer.Start();
             e.Container = this;
         }
 
@@ -189,17 +177,6 @@ namespace App2
             //And consider a translational shift
             compositeTransform.TranslateX += e.Delta.Translation.X;
             compositeTransform.TranslateY += e.Delta.Translation.Y;
-
-            inqCanvas.Transform = compositeTransform;
-
-            if (DateTime.Now.Subtract(_lastUpdate).TotalMilliseconds > 25)
-            {
-                // Debug.WriteLine("UPDATE");
-                inqCanvas.Invalidate(true);
-                _lastUpdate = DateTime.Now;
-            }
         }
-
-        private DateTime _lastUpdate = DateTime.Now;
     }
 }
