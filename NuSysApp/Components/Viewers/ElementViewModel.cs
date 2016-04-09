@@ -223,7 +223,7 @@ namespace NuSysApp
         #region Public Properties
 
         public ObservableCollection<LinkElementController> LinkList { get; set; }
-
+        
         public virtual bool IsSelected
         {
             get { return _isSelected; }
@@ -440,21 +440,6 @@ namespace NuSysApp
                     }
                 }
                 return false;
-            }
-        }
-
-        public bool IsPresenting
-        {
-            get { return _isPresenting; }
-
-            set
-            {
-                if (_isPresenting == value)
-                {
-                    return;
-                }
-                _isPresenting = value;
-                RaisePropertyChanged("IsPresenting");
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -113,7 +114,7 @@ namespace NuSysApp
             Link.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             Link.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
 
-            PresentationMode = (Button)GetTemplateChild("PresentationMode");
+            PresentationMode = (Button) GetTemplateChild("PresentationMode");
             PresentationMode.Click += OnPresentationClick;
 
             btnDelete = (Button)GetTemplateChild("btnDelete");
@@ -160,7 +161,7 @@ namespace NuSysApp
             base.OnApplyTemplate();
             OnTemplateReady?.Invoke();
         }
-
+        
         private void TitleOnTextChanged(object sender, TextChangedEventArgs textChangedEventArgs)
         {
             var vm = (ElementViewModel)this.DataContext;
@@ -334,22 +335,22 @@ namespace NuSysApp
 
         private void OnPresentationClick(object sender, RoutedEventArgs e)
         {
-            if (SessionController.Instance.SessionView.IsPresentationMode)
-            {
+            
+            var vm = ((ElementViewModel)this.DataContext);
+            var sv = SessionController.Instance.SessionView;
 
+            // unselect start element
+            vm.IsSelected = false;
+            vm.IsEditing = false;
+            highlight.Visibility = Visibility.Collapsed;
+
+            if (sv.IsPresentationMode)
+            {
+                sv.ExitPresentationMode();
             }
             else
             {
-                var vm = (ElementViewModel)this.DataContext;
-                if (vm.IsPresenting)
-                {
-                    vm.IsPresenting = false;
-                }
-                else
-                {
-                    vm.IsPresenting = true;
-                    var list = vm.LinkList;
-                }
+                sv.EnterPresentationMode(vm.Model);
             }
         }
 
