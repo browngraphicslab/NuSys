@@ -35,7 +35,7 @@ namespace NuSysApp
             
             TitleBorder.PointerEntered += delegate
             {
-                Title.Foreground = new SolidColorBrush(Constants.color6);
+                Title.Foreground = new SolidColorBrush(Constants.foreground6);
                 TitleBorder.Background = new SolidColorBrush(Colors.DarkRed);
             };
 

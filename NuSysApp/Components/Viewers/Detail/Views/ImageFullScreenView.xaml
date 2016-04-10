@@ -21,8 +21,8 @@
     <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
     <Grid x:Name="totalStackPanel" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <StackPanel x:Name="buttons" Orientation="Horizontal" Background="#565F6D" VerticalAlignment="Top" HorizontalAlignment="Stretch"  Height="30" Visibility="Collapsed">
-            <Button Click="ButtonBase_OnClick" Foreground="{StaticResource color6}" Background="Transparent">INK</Button>
-            <Button Name="SourceBttn" Foreground="{StaticResource color6}" Click="OnGoToSource" Background="Transparent">GO TO SOURCE</Button>
+            <Button Click="ButtonBase_OnClick" Foreground="{StaticResource foreground6}" Background="Transparent">INK</Button>
+            <Button Name="SourceBttn" Foreground="{StaticResource foreground6}" Click="OnGoToSource" Background="Transparent">GO TO SOURCE</Button>
         </StackPanel>
             <Image x:Name="xImg" Source="{Binding Image}" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="3,3,3,3"/>
     </Grid>

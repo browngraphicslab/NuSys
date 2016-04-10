@@ -28,7 +28,7 @@
             </Grid>
             <Grid Height="90" Width="260"  Margin="20,0,20,5" VerticalAlignment="Bottom">
                 <TextBox Name="TextBox" Width ="200" Height="60" Background="{StaticResource color6}"  Margin="0,0,0,0" BorderThickness="0" HorizontalAlignment="Left"></TextBox>
-                <Button Height="60" HorizontalAlignment="Right"  Width="60" Click="Enter_Click" Foreground="{StaticResource color6}">Send</Button>
+                <Button Height="60" HorizontalAlignment="Right"  Width="60" Click="Enter_Click" Foreground="{StaticResource foreground6}">Send</Button>
             </Grid>
         </Grid>
     </Grid>

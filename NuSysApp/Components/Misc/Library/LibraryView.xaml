@@ -271,7 +271,7 @@
                 </PivotItem.Header>
             </PivotItem>
         </Pivot>
-        <TextBox x:Name="Searchfield" Style="{StaticResource SearchBoxStyle}"  TextChanging="TextBox_OnTextChanging"  PlaceholderText="SEARCH" FontSize="16" BorderThickness="1" BorderBrush="{StaticResource color2}"  Background="{StaticResource color6}"  Foreground="{StaticResource color6}" VerticalAlignment="Bottom" Height="38" Width="400" HorizontalAlignment="Left"></TextBox>
+        <TextBox x:Name="Searchfield" Style="{StaticResource SearchBoxStyle}"  TextChanging="TextBox_OnTextChanging"  PlaceholderText="SEARCH" FontSize="16" BorderThickness="1" BorderBrush="{StaticResource color2}"  Background="{StaticResource color6}"  Foreground="{StaticResource foreground6}" VerticalAlignment="Bottom" Height="38" Width="400" HorizontalAlignment="Left"></TextBox>
 
         <!--<Image Tapped="Folder_Tapped" Source ="ms-appx:///Assets/icon_upload.png" Margin="320,542,13,506" Height="30" VerticalAlignment="Bottom"></Image>-->
         <!--<Image Source="ms-appx:///Assets/icon_search.png" Height="20"  Margin="320,512,0,0"/>-->
@@ -282,7 +282,7 @@
         <Image x:Name="Graph" Source="ms-appx:///Assets/icon_new_workspace.png"  Height="20" VerticalAlignment="Top" Margin="0,15,10,0" ManipulationMode="TranslateX, TranslateY" PointerPressed="Graph_OnPointerPressed" ManipulationStarted="Graph_OnManipulationStarted" ManipulationDelta="Graph_OnManipulationDelta" ManipulationCompleted="Graph_OnManipulationCompleted" 
                HorizontalAlignment="Right"/>
 
-        <!--<ComboBox x:Name="SortBox" SelectionChanged="ComboBox1_OnSelectionChanged" Width="100" PlaceholderText="Sort by..." Margin="330,50,0,0" Foreground="{StaticResource color6}">
+        <!--<ComboBox x:Name="SortBox" SelectionChanged="ComboBox1_OnSelectionChanged" Width="100" PlaceholderText="Sort by..." Margin="330,50,0,0" Foreground="{StaticResource foreground6}">
             <x:String>Title</x:String>
             <x:String>Node type</x:String>
             <x:String>Creator</x:String>

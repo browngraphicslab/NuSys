@@ -37,7 +37,7 @@
                 <Border.RenderTransform>
                     <TranslateTransform X="138" Y="-117"></TranslateTransform>
                 </Border.RenderTransform>
-                <TextBlock HorizontalAlignment="Center" x:Name="Num" Foreground="{StaticResource color6}" FontSize="22" FontWeight="Bold" Text="{Binding AtomViewList.Count}" />
+                <TextBlock HorizontalAlignment="Center" x:Name="Num" Foreground="{StaticResource foreground6}" FontSize="22" FontWeight="Bold" Text="{Binding AtomViewList.Count}" />
             </Border>
 
         </Grid>

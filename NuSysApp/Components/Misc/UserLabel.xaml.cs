@@ -44,7 +44,7 @@ namespace NuSysApp
                     _userName = "Me";
                 }
                 UserBubbleText.Text = _userName;
-                UserButton.Foreground = new SolidColorBrush(Constants.color6);
+                UserButton.Foreground = new SolidColorBrush(Constants.foreground6);
 
                 UserBubbleText.Inlines.Clear();
                 UserBubbleText.Text = _userName;

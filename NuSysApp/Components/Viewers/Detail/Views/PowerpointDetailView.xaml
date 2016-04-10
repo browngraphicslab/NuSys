@@ -19,7 +19,7 @@
     
     <StackPanel VerticalAlignment="Top">
         <StackPanel  Orientation="Horizontal">
-            <Button Click="ButtonBase_OnClick" Foreground="{StaticResource color6}">Ink</Button>
+            <Button Click="ButtonBase_OnClick" Foreground="{StaticResource foreground6}">Ink</Button>
         </StackPanel>
         <Grid x:Name="xWrapper" Margin="0,100,0,0">
             <Image x:Name="xImg" Margin="3,3,3,3" Source="{Binding Model.Image}" Stretch="Uniform"/>

@@ -8,7 +8,8 @@
     <SolidColorBrush x:Key="color3" Color="#83A6A3"/>   <!-- darkest blue -->
     <SolidColorBrush x:Key="color4" Color="#C59E9C"/>   <!-- red -->
     <SolidColorBrush x:Key="color5" Color="#8f98a1"/>   <!-- dark gray blue -->
-    <SolidColorBrush x:Key="color6" Color="White"/>     <!-- white-->
+    <SolidColorBrush x:Key="color6" Color="White"/>     <!-- background white-->
+    <SolidColorBrush x:Key="foreground6" Color="Black"/>     <!-- background white-->
     <SolidColorBrush x:Key="color7" Color="LightGray"/> <!-- light gray-->
     <SolidColorBrush x:Key="color8" Color="DarkGray"/>  <!-- dark gray-->
 </ResourceDictionary>

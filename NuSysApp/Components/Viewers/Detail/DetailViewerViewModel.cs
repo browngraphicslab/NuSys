@@ -178,7 +178,7 @@ namespace NuSysApp
         public FrameworkElement MakeTagBlock(string text)
         {
             var deleteButton = new TextBlock() { Text = "X" };
-            deleteButton.Foreground = new SolidColorBrush(Constants.color6);
+            deleteButton.Foreground = new SolidColorBrush(Constants.foreground6);
             deleteButton.FontSize = 15;
             deleteButton.FontWeight = FontWeights.Bold;
             deleteButton.Margin = new Thickness(0,0,3,0);
@@ -189,7 +189,7 @@ namespace NuSysApp
             deleteGrid.Tapped += DeleteGridOnTapped;
 
             var tagContent = new TextBlock() { Text = text };
-            tagContent.Foreground = new SolidColorBrush(Constants.color6);
+            tagContent.Foreground = new SolidColorBrush(Constants.foreground6);
             tagContent.FontStyle = FontStyle.Italic;
             tagContent.HorizontalAlignment = HorizontalAlignment.Stretch;
 
@@ -208,7 +208,7 @@ namespace NuSysApp
             tagBlock.Height = 30;
             tagBlock.Padding = new Thickness(5);
             tagBlock.BorderThickness = new Thickness(0);
-            tagBlock.Foreground = new SolidColorBrush(Constants.color6);
+            tagBlock.Foreground = new SolidColorBrush(Constants.foreground6);
             tagBlock.Margin = new Thickness(5, 2, 2, 5);///
             tagBlock.Opacity = 0.75;
             tagBlock.FontStyle = FontStyle.Italic;
@@ -253,18 +253,18 @@ namespace NuSysApp
         public StackPanel MakeMetaDataBlock(string key, string val, bool editable)
         {
             var keyBox = new TextBlock {Text = key};
-            keyBox.Foreground = new SolidColorBrush(Constants.color6);
+            keyBox.Foreground = new SolidColorBrush(Constants.foreground6);
             keyBox.FontSize = 18;
             keyBox.Height = 30;
 
             var colon = new TextBlock {Text = ":"};
-            colon.Foreground = new SolidColorBrush(Constants.color6);
+            colon.Foreground = new SolidColorBrush(Constants.foreground6);
             colon.FontSize = 18;
             colon.Height = 30;
             colon.Padding = new Thickness(2, 0, 2, 0);
             
             TextBox valBox = new TextBox {Text = val};
-            valBox.Foreground = new SolidColorBrush(Constants.color6);
+            valBox.Foreground = new SolidColorBrush(Constants.foreground6);
             valBox.FontSize = 18;
             valBox.MinWidth = 80;
             valBox.Height = 20;

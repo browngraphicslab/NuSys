@@ -18,7 +18,7 @@
     </UserControl.Resources>
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <StackPanel  VerticalAlignment="Top" Orientation="Horizontal" Background="#565F6D" Visibility="Collapsed">
-            <Button Name="SourceBttn" Foreground="{StaticResource color6}" Click="OnGoToSource">GO TO SOURCE</Button>
+            <Button Name="SourceBttn" Foreground="{StaticResource foreground6}" Click="OnGoToSource">GO TO SOURCE</Button>
         </StackPanel>
         <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid x:Name="xWrapper" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -36,7 +36,7 @@
             </Grid>
         </Border>
         <StackPanel Visibility="Collapsed">
-            <TextBlock Text="SUGGESTED TAGS" Foreground="{StaticResource color6}" FontSize="30" CharacterSpacing="45" Margin="10,15,30,0" Padding="5,0,5,0"></TextBlock>
+            <TextBlock Text="SUGGESTED TAGS" Foreground="{StaticResource foreground6}" FontSize="30" CharacterSpacing="45" Margin="10,15,30,0" Padding="5,0,5,0"></TextBlock>
             <Line Stroke="{StaticResource color6}" StrokeThickness="1.5" X1="0" Y1="0" X2 ="50" Y2="0" Margin="0,15,0,0"></Line>
             <ItemsControl x:Name="SuggestedTags" ItemsSource="{Binding SuggestedTags}">
                 <ItemsControl.ItemsPanel>

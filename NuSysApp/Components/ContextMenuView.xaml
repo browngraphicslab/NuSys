@@ -19,9 +19,9 @@
     <Grid>
         <Border Background="DimGray" Width="300" Height="100" CornerRadius="10,10,10,10">
             <StackPanel Margin="15,10">
-                <TextBlock Text="New Text Node" VerticalAlignment="Top" FontSize="16" Foreground="{StaticResource color6}"/>
+                <TextBlock Text="New Text Node" VerticalAlignment="Top" FontSize="16" Foreground="{StaticResource foreground6}"/>
                 <Line Fill="{StaticResource color6}" HorizontalAlignment="Stretch" Height="1"></Line>
-                <TextBlock Text="Import Media" VerticalAlignment="Top" FontSize="16" Foreground="{StaticResource color6}"/>
+                <TextBlock Text="Import Media" VerticalAlignment="Top" FontSize="16" Foreground="{StaticResource foreground6}"/>
             </StackPanel>
         </Border>
     </Grid>
