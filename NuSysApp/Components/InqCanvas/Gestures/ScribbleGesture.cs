@@ -29,7 +29,7 @@ namespace NuSysApp
 
             foreach (InqLineModel existingStroq in _inqCanvas.Lines.Where(s => s != stroq))
             {
-                var intersections = new List<Vector2>();
+                var intersections = new List<Vector2d>();
                 var existingStroqSegs = existingStroq.ToLineSegments();
                 var scribbleSegs = stroq.ToLineSegments();
 
@@ -37,7 +37,7 @@ namespace NuSysApp
                 {
                     foreach (LineSegment stroqSeg in scribbleSegs)
                     {
-                        var intersection = new Vector2(0,0);
+                        var intersection = new Vector2d(0,0);
                         if (stroqSeg.Intersects(stroqResampledSeg, out intersection))
                         {
                             intersections.Add(intersection);

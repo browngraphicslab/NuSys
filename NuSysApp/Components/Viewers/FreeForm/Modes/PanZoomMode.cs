@@ -11,11 +11,22 @@ namespace NuSysApp
 {
     public class PanZoomMode : AbstractWorkspaceViewMode
     {
+        private DispatcherTimer _timer;
         private FreeFormViewer _cview;
 
         public PanZoomMode(FrameworkElement view) : base(view)
         {
             _cview = view as FreeFormViewer;
+
+            _timer = new DispatcherTimer();
+            _timer.Interval = TimeSpan.FromMilliseconds(5);
+            _timer.Tick += delegate (object sender, object o)
+            {
+                _timer.Stop();
+                _cview.InqCanvas.Transform = (CompositeTransform)_cview.AtomCanvas.RenderTransform;
+                _cview.InqCanvas.Invalidate(true);
+                _timer.Start();
+            };
         }
 
         public override async Task Activate()
@@ -29,11 +40,8 @@ namespace NuSysApp
 
         private void ViewOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs manipulationCompletedRoutedEventArgs)
         {
-            var vm = (FreeFormViewerViewModel)_view.DataContext;
-            if (SessionController.Instance.ActiveFreeFormViewer != vm)
-                return;
-            
- 
+            _timer.Stop();
+            _cview.InqCanvas.Invalidate(true);
         }
 
         public override async Task Deactivate()
@@ -90,26 +98,18 @@ namespace NuSysApp
             compositeTransform.CenterY = cent.Y;
             vm.CompositeTransform = compositeTransform;
 
-            // TODO: refactor
-            /*
-            var model = (WorkspaceModel)vm.Model;
-            model.LocationX = compositeTransform.TranslateX;
-            model.LocationY = compositeTransform.TranslateY;
-            model.CenterX = compositeTransform.CenterX;
-            model.CenterY = compositeTransform.CenterY;
-            model.Zoom = compositeTransform.ScaleX;
-            */
-
             if (_cview == null)
             {
                 return;
             }
-            _cview.InqCanvas.Transform = compositeTransform;    
+            _cview.InqCanvas.Transform = compositeTransform;
+            _cview.InqCanvas.Invalidate(true);
 
         }
 
         protected void OnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
         {
+            _timer.Start();
             e.Container = _view;
         }
 
@@ -164,21 +164,6 @@ namespace NuSysApp
             }
 
             vm.CompositeTransform = compositeTransform;
-
-            // TODO: refactor
-            /*
-            var model = (WorkspaceModel)vm.Model;
-            model.LocationX = compositeTransform.TranslateX;
-            model.LocationY = compositeTransform.TranslateY;
-            model.CenterX = compositeTransform.CenterX;
-            model.CenterY = compositeTransform.CenterY;
-            model.Zoom = compositeTransform.ScaleX;
-            */
-            if (_cview == null)
-            {
-                return;
-            }
-            //_cview.InqCanvas.Transform = compositeTransform;
         }
     }
 }

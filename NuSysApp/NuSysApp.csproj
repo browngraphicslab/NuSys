@@ -231,7 +231,7 @@
     </Compile>
     <Compile Include="Classas.cs" />
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
-    <Compile Include="Components\InqCanvas\PhilInqCanvas.xaml.cs">
+    <Compile Include="Components\InqCanvas2\PhilInqCanvas.xaml.cs">
       <DependentUpon>PhilInqCanvas.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\ISelectable.cs" />
@@ -605,7 +605,7 @@
       <DependentUpon>WaitingRoomView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Util\Utils.cs" />
-    <Compile Include="Util\Vector2.cs" />
+    <Compile Include="Util\Vector2d.cs" />
     <Compile Include="Util\WrapPanel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -644,9 +644,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Components\InqCanvas\PhilInqCanvas.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Components\InqCanvas2\PhilInqCanvas.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\LoadingScreen.xaml">
       <SubType>Designer</SubType>
@@ -926,6 +926,7 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

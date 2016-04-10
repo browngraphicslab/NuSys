@@ -11,7 +11,8 @@
     d:DesignWidth="400">
 
     <Canvas x:Name="xOuterWrapper">
- 
+
+        <local:PhilInqCanvas x:Name="inqCanvas" Background="LightSteelBlue"></local:PhilInqCanvas>
         <Canvas x:Name="xWrapper" >
 
             <Canvas x:Name="xAtomCanvas" HorizontalAlignment="Left" Background="Transparent" Width="100000" Height="100000" RenderTransform="{Binding CompositeTransform}">
@@ -23,13 +24,12 @@
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
             </Canvas>
-
           
             <local:MultiSelectMenuView x:Name="multiMenu" Visibility="Collapsed" Canvas.Top="30" Canvas.Left="300"/>
             
 
         </Canvas>
-        <local:PhilInqCanvas x:Name="xInqCanvas" Background="Aqua" Width="1000" Height="1000"></local:PhilInqCanvas>
+       
     </Canvas>
    
 </UserControl>

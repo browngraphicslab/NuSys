@@ -61,8 +61,6 @@ namespace NuSysApp
             CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
             CoreWindow.GetForCurrentThread().KeyUp += OnKeyUp;
 
-            PointerEntered += OnPointerEntered;
-            PointerExited += OnPointerExited;
             SessionController.Instance.SessionView = this;
 
             SizeChanged +=
@@ -75,13 +73,10 @@ namespace NuSysApp
 
             xBtnPen.PointerPressed += delegate(object sender, PointerRoutedEventArgs args)
             {
-                ActivatePenMode(true);
+                ActivatePenMode(!IsPenMode);
                 args.Handled = true;
             };
-            xBtnPen.PointerExited += delegate (object sender, PointerRoutedEventArgs args)
-            {
-                ActivatePenMode(false);            
-            };
+    
 
             xWorkspaceTitle.IsActivated = true;
 
@@ -151,27 +146,15 @@ namespace NuSysApp
 
         private void OnPointerExited(object sender, PointerRoutedEventArgs eventArgs)
         {
-            if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen && xDetailViewer.Opacity < 0.1)
+            if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen && _prevOptions == Options.PenGlobalInk)
             {
-                var source = (FrameworkElement) eventArgs.OriginalSource;
-
-                _activeFreeFormViewer.SwitchMode(Options.SelectNode, false);
-                _prevOptions = Options.SelectNode;
-                IsPenMode = false;
+               
             }
         }
 
         private void OnPointerEntered(object sender, PointerRoutedEventArgs eventArgs)
         {
-            if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen && _prevOptions != Options.PenGlobalInk &&
-                xDetailViewer.Opacity < 0.1)
-            {
-                var source = (FrameworkElement) eventArgs.OriginalSource;
-
-                _activeFreeFormViewer.SwitchMode(Options.PenGlobalInk, false);
-                _prevOptions = Options.PenGlobalInk;
-                IsPenMode = true;
-            }
+            ActivatePenMode(!IsPenMode);
         }
 
         private void OnKeyDown(CoreWindow sender, KeyEventArgs args)
@@ -198,6 +181,7 @@ namespace NuSysApp
             {
                 if (IsPenMode)
                     return;
+                Debug.WriteLine("INNNNK");
                 _activeFreeFormViewer.SwitchMode(Options.PenGlobalInk, false);
                 _prevOptions = Options.PenGlobalInk;
                 IsPenMode = true;
@@ -209,6 +193,7 @@ namespace NuSysApp
             {
                 if (!IsPenMode)
                     return;
+                Debug.WriteLine("SEEELECTT");
                 _activeFreeFormViewer.SwitchMode(Options.SelectNode, false);
                 _prevOptions = Options.SelectNode;
                 IsPenMode = false;

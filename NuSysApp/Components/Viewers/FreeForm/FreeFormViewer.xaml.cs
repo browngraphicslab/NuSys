@@ -29,6 +29,7 @@ namespace NuSysApp
         private MultiMode _mainMode;
         private MultiMode _simpleEditMode;
         private MultiMode _simpleEditGroupMode;
+        private GlobalInkMode _globalInkMode;
         private AbstractWorkspaceViewMode _prevMode;
 
         public FreeFormViewer(FreeFormViewerViewModel vm)
@@ -42,7 +43,16 @@ namespace NuSysApp
             // _inqCanvas.Height = Window.Current.Bounds.Height;
             // xOuterWrapper.Children.Add(_inqCanvas);
 
-            _inqCanvas = xInqCanvas;
+            inqCanvas.Width = Window.Current.Bounds.Width;
+            inqCanvas.Height = Window.Current.Bounds.Height;
+
+            SizeChanged += delegate (object sender, SizeChangedEventArgs args)
+            {
+                inqCanvas.Width = args.NewSize.Width;
+                inqCanvas.Height = args.NewSize.Height;
+            };
+
+            _inqCanvas = inqCanvas;
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
@@ -53,10 +63,11 @@ namespace NuSysApp
                 _gestureMode = new GestureMode(this);
                 _selectMode = new SelectMode(this);
                 _floatingMenuMode = new FloatingMenuMode(this);
+                _globalInkMode = new GlobalInkMode(this);
 
                 _tagMode = new TagNodeMode(this);
                 _linkMode = new LinkMode(this);
-                _mainMode = new MultiMode(this, _selectMode, _floatingMenuMode, _gestureMode, _nodeManipulationMode, _createGroupMode, _duplicateMode, _panZoomMode, _tagMode, _linkMode);
+                _mainMode = new MultiMode(this, _selectMode, _globalInkMode, _floatingMenuMode, _gestureMode, _nodeManipulationMode, _createGroupMode, _panZoomMode);
                 _simpleEditMode = new MultiMode(this, _selectMode, _panZoomMode, _nodeManipulationMode, _floatingMenuMode);
                 _simpleEditGroupMode = new MultiMode(this, _selectMode, _nodeManipulationMode, _floatingMenuMode);
                 SwitchMode(Options.SelectNode, false);
@@ -65,7 +76,7 @@ namespace NuSysApp
             // TODO:refactor
             
  
-            _inqCanvas.RenderTransform = vm.CompositeTransform;
+            _inqCanvas.Transform = vm.CompositeTransform;
             
 
             //_inqCanvas.Transform = vm.CompositeTransform;
@@ -174,9 +185,9 @@ namespace NuSysApp
             get { return xWrapper; }
         }
 
-        public InqCanvasView InqCanvas
+        public PhilInqCanvas InqCanvas
         {
-            get { return null; }
+            get { return inqCanvas; }
         }
 
         public async Task SetViewMode(AbstractWorkspaceViewMode mode, bool isFixed = false)
@@ -204,7 +215,7 @@ namespace NuSysApp
                         SetViewMode(_mainMode);
                     break;
                 case Options.PenGlobalInk:
-                    await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new LinkMode(this), _gestureMode));
+                  //  await SetViewMode(_globalInkMode);
                     break;
             }
         }
