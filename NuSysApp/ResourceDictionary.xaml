@@ -3,13 +3,25 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:NuSysApp">
 
-    <SolidColorBrush x:Key="color1" Color="#E6EDEC"/>   <!-- lightest blue -->
-    <SolidColorBrush x:Key="color2" Color="#9CC5C2"/>   <!-- medium blue -->
-    <SolidColorBrush x:Key="color3" Color="#83A6A3"/>   <!-- darkest blue -->
-    <SolidColorBrush x:Key="color4" Color="#C59E9C"/>   <!-- red -->
+   <!--
+    <SolidColorBrush x:Key="color1" Color="#E6EDEC"/>   lightest blue 
+    <SolidColorBrush x:Key="color2" Color="#9CC5C2"/>   medium blue
+    <SolidColorBrush x:Key="color3" Color="#83A6A3"/>   darkest blue
+    <SolidColorBrush x:Key="color4" Color="#C59E9C"/>   red
+    <SolidColorBrush x:Key="color5" Color="#8f98a1"/>   dark gray blue
+    <SolidColorBrush x:Key="color6" Color="White"/>     background white
+    <SolidColorBrush x:Key="foreground6" Color="Black"/> background white
+    <SolidColorBrush x:Key="color7" Color="LightGray"/> light gray
+    <SolidColorBrush x:Key="color8" Color="DarkGray"/>  dark gray
+    -->
+
+    <SolidColorBrush x:Key="color1" Color="#FFDBE7FE"/>   <!-- lightest blue -->
+    <SolidColorBrush x:Key="color2" Color="#7A89A3"/>   <!-- medium blue -->
+    <SolidColorBrush x:Key="color3" Color="#47607A"/>   <!-- darkest blue -->
+    <SolidColorBrush x:Key="color4" Color="#D36978"/>   <!-- red -->
     <SolidColorBrush x:Key="color5" Color="#8f98a1"/>   <!-- dark gray blue -->
     <SolidColorBrush x:Key="color6" Color="White"/>     <!-- background white-->
-    <SolidColorBrush x:Key="foreground6" Color="Black"/>     <!-- background white-->
-    <SolidColorBrush x:Key="color7" Color="LightGray"/> <!-- light gray-->
+    <SolidColorBrush x:Key="foreground6" Color="Black"/><!-- background white-->
+    <SolidColorBrush x:Key="color7" Color="#FFD0D0D4"/> <!-- light gray-->
     <SolidColorBrush x:Key="color8" Color="DarkGray"/>  <!-- dark gray-->
 </ResourceDictionary>
