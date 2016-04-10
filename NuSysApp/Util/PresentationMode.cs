@@ -16,31 +16,35 @@ namespace NuSysApp.Util
     /// </summary>
     class PresentationMode
     {
-        private ObservableCollection<ElementModel> previousNodes;
-        private ElementModel currentNode;
-        private ElementModel nextNode;
+        private ElementModel _previousNode = null;
+        private ElementModel _nextNode = null;
+        private ElementModel _currentNode;
 
         public PresentationMode(ElementModel start)
         {
-            previousNodes = new ObservableCollection<ElementModel>();
-            currentNode = start;
-            FullScreen(currentNode);
+            _currentNode = start;
+            Load();
+            FullScreen(_currentNode);
         }
 
         /// <summary>
         /// Checks if there is a valid next node and stores it
         /// </summary>
         /// <returns></returns>
-        public bool Next()
+        private void Load()
         {
             var vmList = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
-                item => ((ElementViewModel)item.DataContext).Model.Id == currentNode.Id);
+                item => ((ElementViewModel)item.DataContext).Model.Id == _currentNode.Id);
 
             var vm = (ElementViewModel)vmList.Single().DataContext;
 
-            nextNode = getNextNode(vm);
+            _nextNode = GetNextOrPrevNode(vm, false);
+            _previousNode = GetNextOrPrevNode(vm, true);
+        }
 
-            return (nextNode != null);
+        public bool Next()
+        {
+            return (_nextNode != null);
         }
 
         /// <summary>
@@ -48,9 +52,9 @@ namespace NuSysApp.Util
         /// </summary>
         public void MoveToNext()
         {
-            previousNodes.Add(currentNode);
-            currentNode = nextNode;
-            FullScreen(currentNode);
+            _currentNode = _nextNode;
+            Load();
+            FullScreen(_currentNode);
         }
 
         /// <summary>
@@ -59,7 +63,7 @@ namespace NuSysApp.Util
         /// <returns></returns>
         public bool Previous()
         {
-            return (previousNodes.Count > 0);
+            return (_previousNode != null);
         }
 
         /// <summary>
@@ -67,9 +71,9 @@ namespace NuSysApp.Util
         /// </summary>
         public void MoveToPrevious()
         {
-            currentNode = previousNodes.Last();
-            previousNodes.Remove(previousNodes.Last());
-            FullScreen(currentNode);
+            _currentNode = _previousNode;
+            Load();
+            FullScreen(_currentNode);
         }
 
         public void ExitMode()
@@ -78,22 +82,20 @@ namespace NuSysApp.Util
         }
 
         /// <summary>
-        /// Finds next possible node for presentation. Currently searches for any node linked to the current node 
-        /// that is not the previous.
+        /// Finds previous node for presentation if reverse is true, next node otherwise.
         /// </summary>
         /// <param name="vm"></param>
         /// <returns></returns>
-        private ElementModel getNextNode(ElementViewModel vm)
+        private ElementModel GetNextOrPrevNode(ElementViewModel vm, bool reverse)
         {
-            var prev = Previous() ? previousNodes.Last() : null;
             foreach (LinkElementController link in vm.LinkList)
             {
-                if (link.OutElement.Model.Equals(vm.Model) && !link.InElement.Model.Equals(prev))
+                if (link.OutElement.Model.Equals(vm.Model) && reverse)
                 {
                     return link.InElement.Model;
                 }
 
-                if (link.InElement.Model.Equals(vm.Model) && !link.OutElement.Model.Equals(prev))
+                if (link.InElement.Model.Equals(vm.Model) && !reverse)
                 {
                     return link.OutElement.Model;
                 }
