@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using Windows.Security.ExchangeActiveSyncProvisioning;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -32,10 +33,29 @@ namespace App2
         {
             this.InitializeComponent();
 
+            var analyticsInfo = Windows.System.Profile.AnalyticsInfo.VersionInfo;
+            // get the device manufacturer and model name
+            EasClientDeviceInformation eas = new EasClientDeviceInformation();
+            var DeviceManufacturer = eas.SystemManufacturer;
+            var DeviceModel = eas.SystemProductName;
+
             xToggleInk.Click += delegate(object sender, RoutedEventArgs args)
             {
-                inqCanvas.InkEnabled = !inqCanvas.InkEnabled;
+                inqCanvas.Mode = PhilInqCanvas.InqCanvasMode.Ink;
             };
+
+
+            xSelect.Click += delegate (object sender, RoutedEventArgs args)
+            {
+                inqCanvas.Mode = PhilInqCanvas.InqCanvasMode.Disabled;
+            };
+
+            xErase.Click += delegate (object sender, RoutedEventArgs args)
+            {
+                inqCanvas.Mode = PhilInqCanvas.InqCanvasMode.Erase;
+            };
+
+
 
             SizeChanged += delegate(object sender, SizeChangedEventArgs args)
             {
@@ -70,6 +90,8 @@ namespace App2
                 inqCanvas.Invalidate(true);
                 _timer.Start();
             };
+
+            
         }
 
         private async void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs manipulationCompletedRoutedEventArgs)

@@ -7,16 +7,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Canvas x:Name="xWrapper" >
+    <Grid>
+    
+    <Canvas x:Name="xWrapper" HorizontalAlignment="Left" VerticalAlignment="Top">
         
-
-
-
         <Canvas x:Name="xAtomCanvas" HorizontalAlignment="Left" Background="DarkSeaGreen" Width="100000" Height="100000">
-
-            
-
-
             <Rectangle Fill="Crimson" Width="100" Height="100">
                 <Rectangle.RenderTransform>
                     <TranslateTransform X="50000" Y="50000"></TranslateTransform>
@@ -33,6 +28,13 @@
     
         <local:PhilInqCanvas x:Name="inqCanvas" Background="LightSteelBlue"></local:PhilInqCanvas>
 
-        <Button x:Name="xToggleInk" Width="100" Height="30">Ink</Button>
+        
     </Canvas>
+
+        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center">
+            <Button x:Name="xSelect" Width="100" Height="60">Select</Button>
+            <Button x:Name="xToggleInk" Width="100" Height="60">Ink</Button>
+            <Button x:Name="xErase" Width="100" Height="60">Erase</Button>
+        </StackPanel>
+    </Grid>
 </Page>

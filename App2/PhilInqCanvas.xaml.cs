@@ -11,6 +11,8 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using Windows.UI.Xaml.Input;
+using Microsoft.Graphics.Canvas.Geometry;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -36,6 +38,32 @@ namespace App2
             {
                 SelectColor();
                 inkCanvas.InkPresenter.IsInputEnabled = value;
+            }
+        }
+
+        public enum InqCanvasMode { Ink, Erase, Disabled}
+
+        private InqCanvasMode _mode = InqCanvasMode.Ink;
+        public InqCanvasMode Mode
+        {
+            get { return _mode; }
+            set
+            {
+
+                switch (value)
+                {
+                    case InqCanvasMode.Disabled:
+                        InkEnabled = false;
+                        break;
+                    case InqCanvasMode.Ink:
+                        InkEnabled = true;
+                        inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = InkInputProcessingMode.Inking;
+                        break;
+                    case InqCanvasMode.Erase:
+                        InkEnabled = true;
+                        inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = InkInputProcessingMode.None;
+                        break;
+                }
             }
         }
 
@@ -66,17 +94,22 @@ namespace App2
 
             // By default, pen barrel button or right mouse button is processed for inking
             // Set the configuration to instead allow processing these input on the UI thread
+           
             inkCanvas.InkPresenter.InputProcessingConfiguration.RightDragAction =
                 InkInputRightDragAction.LeaveUnprocessed;
 
+
+           
             inkCanvas.InkPresenter.UnprocessedInput.PointerPressed += UnprocessedInput_PointerPressed;
             inkCanvas.InkPresenter.UnprocessedInput.PointerMoved += UnprocessedInput_PointerMoved;
             inkCanvas.InkPresenter.UnprocessedInput.PointerReleased += UnprocessedInput_PointerReleased;
+            
             inkCanvas.InkPresenter.StrokeInput.StrokeStarted += StrokeInput_StrokeStarted;
             inkCanvas.InkPresenter.StrokesCollected += InkPresenter_StrokesCollected;
             inkCanvas.InkPresenter.StrokesErased += InkPresenter_StrokesErased;
+            
             _inkSynchronizer = inkCanvas.InkPresenter.ActivateCustomDrying();
-
+ 
             _needToCreateSizeDependentResources = true;
         }
 
@@ -94,7 +127,6 @@ namespace App2
         {
             if (!InkEnabled)
                 return;
-
 
             var inv = (MatrixTransform) Transform.Inverse;
 
@@ -148,8 +180,11 @@ namespace App2
         {
             if (!InkEnabled)
                 return;
+
+            Debug.WriteLine("--------------------------");
             _selectionPolylinePoints = new List<Point>();
-            _selectionPolylinePoints.Add(args.CurrentPoint.RawPosition);
+            var pos = Transform.Inverse.TransformPoint(args.CurrentPoint.RawPosition);
+            _selectionPolylinePoints.Add(pos);
 
             canvasControl.Invalidate();
         }
@@ -158,7 +193,8 @@ namespace App2
         {
             if (!InkEnabled)
                 return;
-            _selectionPolylinePoints.Add(args.CurrentPoint.RawPosition);
+            var pos = Transform.Inverse.TransformPoint(args.CurrentPoint.RawPosition);
+            _selectionPolylinePoints.Add(pos);
 
             canvasControl.Invalidate();
         }
@@ -168,10 +204,41 @@ namespace App2
             if (!InkEnabled)
                 return;
 
-            _selectionPolylinePoints.Add(args.CurrentPoint.RawPosition);
-            _selectionPolylinePoints = null;
+            var pos = Transform.Inverse.TransformPoint(args.CurrentPoint.RawPosition);
+            _selectionPolylinePoints.Add(pos);
 
-            canvasControl.Invalidate();
+            inkManager.SelectWithLine(_selectionPolylinePoints[0], _selectionPolylinePoints[_selectionPolylinePoints.Count-1]);
+            inkManager.DeleteSelected();
+            inkManager.SelectWithPolyLine(_selectionPolylinePoints);
+            inkManager.DeleteSelected();
+            // Debug.WriteLine(rect);
+            _selectionPolylinePoints = null;
+            
+
+            Invalidate(true);
+        }
+
+        private void DrawSelectionLasso(CanvasControl sender, CanvasDrawingSession ds)
+        {
+            if (_selectionPolylinePoints == null) return;
+            if (_selectionPolylinePoints.Count == 0) return;
+
+            CanvasPathBuilder selectionLasso = new CanvasPathBuilder(canvasControl);
+            selectionLasso.BeginFigure(_selectionPolylinePoints[0].ToVector2());
+            for (int i = 1; i < _selectionPolylinePoints.Count; ++i)
+            {
+                selectionLasso.AddLine(_selectionPolylinePoints[i].ToVector2());
+            }
+            selectionLasso.EndFigure(CanvasFigureLoop.Open);
+
+            CanvasGeometry pathGeometry = CanvasGeometry.CreatePath(selectionLasso);
+
+            var inv = (MatrixTransform)Transform.Inverse.Inverse;
+            var m = new Matrix3x2((float)inv.Matrix.M11, (float)inv.Matrix.M12, (float)inv.Matrix.M21,
+                (float)inv.Matrix.M22, (float)inv.Matrix.OffsetX, (float)inv.Matrix.OffsetY);
+
+            ds.Transform = m;
+            ds.DrawGeometry(pathGeometry, Colors.DarkRed, 5.0f);
         }
 
         private void ClearSelection()
@@ -204,15 +271,11 @@ namespace App2
 
             using (var ds = _renderTarget.CreateDrawingSession())
             {
-                var translation = Matrix3x2.CreateTranslation((float) Transform.TranslateX, (float) Transform.TranslateY);
-                var scale = Matrix3x2.CreateScale((float) Transform.ScaleX, (float) Transform.ScaleY);
-                var toOrigin = Matrix3x2.CreateTranslation((float) (Transform.CenterX + Transform.TranslateX),
-                    (float) (Transform.CenterY + Transform.TranslateY));
-                var fromOrigin = Matrix3x2.CreateTranslation((float) -(Transform.CenterX + Transform.TranslateX),
-                    (float) -(Transform.CenterY + Transform.TranslateY));
+                var inv = (MatrixTransform)Transform.Inverse.Inverse;
+                var m = new Matrix3x2((float)inv.Matrix.M11, (float)inv.Matrix.M12, (float)inv.Matrix.M21,
+                    (float)inv.Matrix.M22, (float)inv.Matrix.OffsetX, (float)inv.Matrix.OffsetY);
 
-                //var x = (MatrixTransform)Transform.Inverse.Inverse;
-                ds.Transform = fromOrigin*translation*scale*toOrigin;
+                ds.Transform = m;
                 ds.DrawInk(strokes);
             }
         }
@@ -245,6 +308,8 @@ namespace App2
             }
             args.DrawingSession.DrawImage(_renderTarget);
             _needToRedrawInkSurface = false;
+
+            DrawSelectionLasso(sender, args.DrawingSession);
         }
 
         private void DeferredEndDry(object sender, object e)
