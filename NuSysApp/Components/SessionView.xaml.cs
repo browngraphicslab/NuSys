@@ -224,11 +224,10 @@ namespace NuSysApp
         public void EnterPresentationMode(ElementModel em)
         {
             _presentationModeInstance = new PresentationMode(em);
-            if (_presentationModeInstance.Next())
-            {
-                NextNode.Visibility = Visibility.Visible;
-            }
+            NextNode.Visibility = _presentationModeInstance.Next() ? Visibility.Visible : Visibility.Collapsed;
+            PreviousNode.Visibility = _presentationModeInstance.Previous() ? Visibility.Visible : Visibility.Collapsed;
             FloatingMenu.Visibility = Visibility.Collapsed;
+            xPresentation.Visibility = Visibility.Visible;
         }
 
         public void ExitPresentationMode()
@@ -238,6 +237,7 @@ namespace NuSysApp
             FloatingMenu.Visibility = Visibility.Visible;
             NextNode.Visibility = Visibility.Collapsed;
             PreviousNode.Visibility = Visibility.Collapsed;
+            xPresentation.Visibility = Visibility.Collapsed;
         }
 
         public bool IsPresentationMode
@@ -248,6 +248,12 @@ namespace NuSysApp
 
         private void Presentation_OnClick(object sender, RoutedEventArgs e)
         {
+            if (sender == xPresentation)
+            {
+                ExitPresentationMode();
+                return;
+            }
+
             if (sender == NextNode)
             {
                 _presentationModeInstance.MoveToNext();
@@ -258,6 +264,7 @@ namespace NuSysApp
                 _presentationModeInstance.MoveToPrevious();
             }
 
+            // only show next and prev buttons if next and prev nodes exist
             NextNode.Visibility = _presentationModeInstance.Next() ? Visibility.Visible : Visibility.Collapsed;
             PreviousNode.Visibility = _presentationModeInstance.Previous() ? Visibility.Visible : Visibility.Collapsed;
         }

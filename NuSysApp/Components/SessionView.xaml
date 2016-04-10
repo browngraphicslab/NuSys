@@ -58,9 +58,12 @@
         <Button x:Name="PreviousNode"  Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="10,10,5,10" Visibility="Collapsed">
             <Image Source="/Assets/icon_pdf_left.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Button>
-            
+        <Button x:Name="xPresentation" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="200,10,5,10" Visibility="Collapsed">
+            <Image Source="/Assets/icon_whitex.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+        </Button>
 
-        <Grid x:Name="xBtnPen" CornerRadius="50"  BorderBrush="#c59e9c" BorderThickness="3"  Width="60" Height="60">
+
+            <Grid x:Name="xBtnPen" CornerRadius="50"  BorderBrush="#c59e9c" BorderThickness="3"  Width="60" Height="60">
             <Grid x:Name="PenCircle" CornerRadius="50" Width="50" Height="50" Background="#c59e9c">
                 <Image Source="../Assets/node icons/pen.png" Height="30"></Image>
             </Grid>
