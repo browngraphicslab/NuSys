@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml;
+﻿using System.Diagnostics;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 
@@ -18,6 +19,7 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = vm;
             this.SetUpBindings();
+            
         }
 
         /// <summary>

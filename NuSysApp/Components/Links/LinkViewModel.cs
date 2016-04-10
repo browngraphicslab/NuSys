@@ -11,10 +11,42 @@ namespace NuSysApp
 
         private ElementController InElementController;
         private ElementController OutElementController;
+        public LinkModel LinkModel { get; set; }
 
         public LinkViewModel(LinkElementController controller) : base(controller)
         {
             var linkModel = (LinkModel)controller.Model;
+            //new
+            LinkModel = linkModel;
+
+            switch (LinkModel.InType)
+            {
+                case "image":
+                    break;
+                case "text":
+                    break;
+                case "audio":
+                    break;
+                case "video":
+                    break;
+                case "node":
+                    break;
+            }
+
+            switch (LinkModel.OutType)
+            {
+                case "image":
+                    break;
+                case "text":
+                    break;
+                case "audio":
+                    break;
+                case "video":
+                    break;
+                case "node":
+                    break;
+            }
+            //
             InElementController = SessionController.Instance.IdToControllers[linkModel.InAtomId]; 
             OutElementController = SessionController.Instance.IdToControllers[linkModel.OutAtomId];
 

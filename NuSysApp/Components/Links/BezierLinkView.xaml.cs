@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -45,6 +46,44 @@ namespace NuSysApp
                 AnnotationContainer.Visibility = vm.AnnotationText == "" ? Visibility.Collapsed : Visibility.Visible;
                 //       await SessionController.Instance.InitializeRecog();
             };
+            Debug.WriteLine("fdsafdsa");
+            //the switch here isn't actually strings. Look it up by debugging.
+            object value;
+            switch (vm.LinkModel.InType)
+            {
+                case "image":
+                    Debug.WriteLine("This links from a image with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
+
+                    break;
+                case "text":
+                    Debug.WriteLine("This links from a text with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
+                    break;
+                case "media":
+                    Debug.WriteLine("This links from a text with values " + vm.LinkModel.InFGDictionary.TryGetValue("start", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("end", out value));
+                    break;
+                case "node":
+                    Debug.WriteLine("This links from a node with values");
+                    break;
+            }
+
+            switch (vm.LinkModel.OutType)
+            {
+                case "image":
+                    Debug.Write("to a image with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
+
+                    break;
+                case "text":
+                    Debug.Write("to a text with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
+
+                    break;
+                case "media":
+                    Debug.Write("to a media with values " + vm.LinkModel.InFGDictionary.TryGetValue("start", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("end", out value));
+
+                    break;
+                case "node":
+                    Debug.Write("to a node");
+                    break;
+            }
         }
         private void UpdateText()
         {

@@ -11,24 +11,28 @@ namespace NuSysApp
             ElementType = ElementType.Link;
         }
 
-        //public FillInDict(double x, double y, double r)
-        //{
-        //}
-
-        //public FillInDict(double wordnumber)
-        //{
-        //}
 
         public string InAtomId { get; set; }
 
         public string OutAtomId { get; set; }
 
-        public Dictionary<string,string> InAtomFinegrainedDictionary { get; set; } 
+        public string InType { get; set; }
+
+        public string OutType { get; set; }
+
+        public Dictionary<string,object> InFGDictionary { get; set; }
+        public Dictionary<string, object> OutFGDictionary { get; set; }
+
 
         public override async Task UnPack(Message props)
         {
             InAtomId = props.GetString("id1", InAtomId);
-            //InAtomFinegrainedDictionary = props.GetDict<string, string>("fgdict");
+            //new
+            InFGDictionary = props.GetDict<string, object>("inFGDict");
+            OutFGDictionary = props.GetDict<string, object>("outFGDict");
+            InType = props.GetString("InType", InType);
+            OutType = props.GetString("OutType", OutType);
+            //
             OutAtomId = props.GetString("id2", InAtomId);
             base.UnPack(props);
         }
@@ -37,7 +41,12 @@ namespace NuSysApp
         {
             var dict = await base.Pack();
             dict.Add("id1", InAtomId);
-            //dict.Add("fgdict", InAtomFinegrainedDictionary);
+            //new
+            dict.Add("inFGDict", InFGDictionary);
+            dict.Add("outFGDict", OutFGDictionary);
+            dict.Add("InType", InType);
+            dict.Add("OutType", OutType);
+            //
             dict.Add("id2", OutAtomId);
             dict.Add("type", ElementType.ToString());
             return dict;

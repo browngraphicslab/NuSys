@@ -9,14 +9,25 @@ namespace NuSysApp
 {
     public class NewLinkRequest : Request
     {
+        public enum LinkType
+        {
+            Node, Image, Audio, Video, Text
+        }
         public NewLinkRequest(Message m) : base(RequestType.NewLinkRequest,m){}
-        public NewLinkRequest(string id1, string id2, string creator, string contentId, string id = null) : base(RequestType.NewLinkRequest)
+        public NewLinkRequest(string id1, string id2, string creator, string contentId, Dictionary<string, object> inFineGrainDictionary = null, Dictionary<string, object> outFineGrainDictionary = null,   string id = null) : base(RequestType.NewLinkRequest)
         {
             _message["id1"] = id1;
             _message["id2"] = id2;
             _message["id"] = id ?? SessionController.Instance.GenerateId();
             _message["creator"] = creator;
             _message["contentId"] = contentId;
+            //new
+            _message["inType"] = SessionController.Instance.IdToControllers[id1];
+            _message["outType"] = SessionController.Instance.IdToControllers[id2];
+            _message["inFGDictionary"] = inFineGrainDictionary;
+            _message["outFGDictionary"] = outFineGrainDictionary;
+
+
         }
 
         //public NewLinkRequest(string id1, string id2, string creator, string contentId, string id = null, Dictionary<string,string> dict, type ) : base(RequestType.NewLinkRequest)

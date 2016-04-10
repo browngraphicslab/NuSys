@@ -60,7 +60,7 @@ namespace NuSysApp {
             if (startVm == endVm)
                 return;
 
-            startVm.Controller.RequestLinkTo(endVm.Id);
+            //startVm.Controller.RequestLinkTo(endVm.Id, null, null, null);
 
             lineModel.Delete();
             
