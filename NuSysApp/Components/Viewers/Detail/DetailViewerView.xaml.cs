@@ -31,7 +31,7 @@ namespace NuSysApp
         {
             InitializeComponent();
             Visibility = Visibility.Collapsed;
-            NewTagBox.Activate();
+            //NewTagBox.Activate();
 
 
             DataContextChanged += delegate(FrameworkElement sender, DataContextChangedEventArgs args)

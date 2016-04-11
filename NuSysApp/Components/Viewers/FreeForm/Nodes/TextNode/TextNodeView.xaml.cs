@@ -38,6 +38,8 @@ namespace NuSysApp
 
         private static int _count = 0;
         private bool navigated = false;
+        private string speechString="";
+        private Rectangle r;
 
         public TextNodeView(TextNodeViewModel vm)
         {
@@ -46,6 +48,8 @@ namespace NuSysApp
             InitializeComponent();
             TextNodeWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
             DataContext = vm;
+
+            this.SetUpInking();
   
             vm.Controller.Disposed += ControllerOnDisposed;
             vm.TextBindingChanged += TextChanged;
@@ -94,11 +98,14 @@ namespace NuSysApp
 
             var inqView = new InqCanvasView(inqViewModel);
             inqView.IsEnabled = true;
-            rr.Children.Clear();
-            Rectangle r = new Rectangle();
+            inkerCanvas.Children.Clear();
+            r = new Rectangle();
             r.Opacity = 0.5;
-            rr.Children.Add(r);
-            rr.Children.Add(inqView);
+            r.Height = 100;
+            r.Fill = new SolidColorBrush(Colors.LightSlateGray);
+
+            inkerCanvas.Children.Add(r);
+            inkerCanvas.Children.Add(inqView);
             _savedForInking = _text;
             List<InqLineModel> lines = new List<InqLineModel>();
             inqModel.LineFinalizedLocally += async delegate (InqLineModel model)
@@ -135,7 +142,9 @@ namespace NuSysApp
         {
             if (_isopen)
             {
-                FlipClose.Begin();
+                inker.Visibility = Visibility.Collapsed;
+
+                //FlipClose.Begin();
                 _isopen = false;
             }
         }
@@ -145,12 +154,15 @@ namespace NuSysApp
             _savedForInking = _text;
             if (!_isopen)
             {
-                //SetUpInking();
-                FlipOpen.Begin();
+                SetUpInking();
+                inker.Visibility = Visibility.Visible;
+                //FlipOpen.Begin();
             }
             else
             {
-                FlipClose.Begin();
+                inker.Visibility = Visibility.Collapsed;
+
+                //FlipClose.Begin();
             }
             _isopen = !_isopen;
         }
@@ -204,23 +216,34 @@ namespace NuSysApp
         }
 
 
-        private async void RecordButton_OnClick(object sender, RoutedEventArgs e)
+        private async void RecordButton_OnClick(object sender, PointerRoutedEventArgs e)
         {
+            _isRecording = true;
             if(_isopen)
             {
-                FlipClose.Begin();
+                inker.Visibility =Visibility.Collapsed;
                 _isopen = false;
             }
             var session = SessionController.Instance;
             if (!session.IsRecording)
             {
                 await session.TranscribeVoice();
-
-                var text = session.SpeechString;
-                UpdateText(_text + " " + text);
-                UpdateController(_text);
+                speechString = session.SpeechString;
             }
         }
+
+        private void RecordButton_Released(object sender, PointerRoutedEventArgs e)
+        {
+            if (_isRecording)
+            {
+                Debug.WriteLine("RECORD RELEASED");
+                UpdateText(_text + " " + speechString);
+                UpdateController(_text);
+            }
+            speechString = "";
+            _isRecording = false;
+        }
+
 
         public async Task<List<string>> InkToText(List<InqLineModel> inqLineModels)
         {
@@ -243,7 +266,12 @@ namespace NuSysApp
 
             var result = await im.RecognizeAsync(InkRecognitionTarget.All);
             return result[0].GetTextCandidates().ToList();
+        }
 
+        private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            inker.Height += e.Delta.Translation.Y;
+            r.Height += e.Delta.Translation.Y;
         }
     }
 }

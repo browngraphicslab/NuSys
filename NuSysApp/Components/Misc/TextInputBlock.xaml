@@ -9,7 +9,7 @@
     mc:Ignorable="d"
 >
 
-    <local:AnimatableUserControl.Resources>
+    <!--<local:AnimatableUserControl.Resources>
         <local:BoolInvertConverter x:Key="iConverter"/>
 
         <Storyboard x:Name="FlipOpen">
@@ -32,22 +32,35 @@
                 <SplineDoubleKeyFrame KeyTime="0:0:0.4" Value="-90"/>
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
-    </local:AnimatableUserControl.Resources>
+    </local:AnimatableUserControl.Resources>-->
 
 
     <Grid x:Name="MainGrid" HorizontalAlignment="Stretch">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition/>
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
+
+        <Canvas x:Name="InkBubble" Visibility="Collapsed">
+            <Canvas.RenderTransform>
+                <TranslateTransform X="-40" Y =" -80"></TranslateTransform>
+            </Canvas.RenderTransform>
+            <Image Name="bubble"  Source="ms-appx:///Assets/menububble2.png" Width="200">
+            </Image>
+            <!--{Binding Width, ElementName=bubble}-->
+            <Grid x:Name="Inker" Width="194" Height="68" Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">
+                
+            </Grid>
+
+        </Canvas>
 
         <Grid Name ="Input" Grid.Column="0" HorizontalAlignment="Stretch">
 
-            <Grid x:Name="InkBox" HorizontalAlignment="Stretch" Background="Transparent">
+            <!--<Grid x:Name="InkBox" HorizontalAlignment="Stretch" Background="Transparent">
                 <Grid.Projection>
                     <PlaneProjection RotationY="0"></PlaneProjection>
                 </Grid.Projection>
-            </Grid>
+            </Grid>-->
             <Grid x:Name="Main" HorizontalAlignment="Stretch" Background="Transparent">
                 <Grid.Projection>
                     <PlaneProjection RotationY="0"></PlaneProjection>
@@ -56,14 +69,15 @@
             </Grid>
         </Grid>
 
-        <StackPanel Grid.Column="1" Name="Buttons"  Orientation="Horizontal" Visibility="Collapsed">
-            <Button x:Name="MenuButton"  Click="MenuButton_OnClick" Style="{StaticResource InputButton}"  Margin="5 0 5 0" >
+        <!--<StackPanel Grid.Column="1" Name="Buttons"  Orientation="Horizontal">-->
+            <!--<Button x:Name="MenuButton"  Click="MenuButton_OnClick" Style="{StaticResource InputButton}"  Margin="5 0 5 0" >
                 <Image x:Name ="ButtonImg" Source="ms-appx:///Assets/icon_node_text.png" MaxHeight="18" MaxWidth="18"/>
-            </Button>
-            <StackPanel x:Name="InputMenu" Orientation="Horizontal" Visibility="Collapsed" Margin="-120, 0">
-                <Button x:Name="TextButton" Visibility ="Collapsed"  Click="TextButton_OnClick" Style="{StaticResource InputButton}" Margin="5 0 5 0">
+            </Button>-->
+            <StackPanel x:Name="ButtonMenu" Grid.Column="1" Orientation="Horizontal" Visibility="Visible" Margin="0">
+                <!--<Button x:Name="TextButton" Visibility ="Collapsed"  Click="TextButton_OnClick" Style="{StaticResource InputButton}" Margin="5 0 5 0">
                     <Image x:Name="TextImg" Source="ms-appx:///Assets/icon_node_text.png" MaxHeight="18" MaxWidth="18"/>
-                </Button>
+                </Button>-->
+                
                 <Button x:Name="RecordButton"  Click="RecordButton_OnClick" Style="{StaticResource InputButton}"  Margin="5 0 5 0">
                     <Image  x:Name="RecordImg" Source= "ms-appx:///Assets/icon_audionode_record.png" MaxHeight="18" MaxWidth="18"/>
                 </Button>
@@ -71,6 +85,6 @@
                     <Image  x:Name="InkImg" Source="ms-appx:///Assets/icon_node_ink.png" MaxHeight="18" MaxWidth="18"/>
                 </Button>
             </StackPanel>
-        </StackPanel>
+        <!--</StackPanel>-->
     </Grid>
 </local:AnimatableUserControl>
