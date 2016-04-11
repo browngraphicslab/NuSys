@@ -2711,6 +2711,10 @@ var InkCanvas = (function () {
         ctx.beginPath();
         ctx.moveTo(p.x, p.y - $(document).scrollTop() + this._scroll);
         ctx.arc(p.x, p.y - $(document).scrollTop() + this._scroll, 5, 0, Math.PI * 2, false);
+        //=======
+        //        ctx.moveTo(p.x, p.y - $(document).scrollTop());
+        //        ctx.arc(p.x, p.y - $(document).scrollTop(), 5, 0, Math.PI * 2, false);
+        //>>>>>>> 787e4e4da6f83bf58a2a9872efdcf97d20086146
         ctx.fill();
     };
     InkCanvas.prototype.drawline = function (p1, p2) {
@@ -2721,6 +2725,10 @@ var InkCanvas = (function () {
         ctx.beginPath();
         ctx.moveTo(p1.x, p1.y - $(document).scrollTop() + this._scroll);
         ctx.lineTo(p2.x, p2.y - $(document).scrollTop() + this._scroll);
+        //=======
+        //        ctx.moveTo(p1.x, p1.y - $(document).scrollTop());
+        //        ctx.lineTo(p2.x, p2.y - $(document).scrollTop());
+        //>>>>>>> 787e4e4da6f83bf58a2a9872efdcf97d20086146
         ctx.stroke();
     };
     InkCanvas.prototype.editPoint = function (points, e) {
@@ -2980,7 +2988,6 @@ var Main = (function () {
                     }
                     editedSelection.stroke = editedStroke;
                     editedSelection.id = _this.selectionOnHover.id;
-                    console.log(editedSelection.yscroll);
                     editedSelection.end(0, 0);
                     editedSelection.type = StrokeType.Lasso;
                     editedSelection.url = _this.selectionOnHover.url;
@@ -3010,6 +3017,7 @@ var Main = (function () {
             _this.selection.stroke = _this.inkCanvas._activeStroke;
             _this.selection.end(e.clientX, e.clientY);
             _this.selection.yscroll = $(document).scrollTop();
+            console.log(_this.selection.getContent()); //print out content 
             _this.selection.type = _this.currentStrokeType;
             _this.selection.url = _this._url;
             _this.selection.tags = $(_this.menuIframe).contents().find("#tagfield").val();

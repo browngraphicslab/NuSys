@@ -340,7 +340,6 @@ class Main {
                 }
                 editedSelection.stroke = editedStroke;
                 editedSelection.id = this.selectionOnHover.id;
-                console.log(editedSelection.yscroll);
 
                 editedSelection.end(0, 0);
                 editedSelection.type = StrokeType.Lasso;
@@ -378,6 +377,7 @@ class Main {
         this.selection.stroke = this.inkCanvas._activeStroke;
         this.selection.end(e.clientX, e.clientY);
         this.selection.yscroll = $(document).scrollTop();
+        console.log(this.selection.getContent()); //print out content 
         this.selection.type = this.currentStrokeType;
         this.selection.url = this._url;
         this.selection.tags = $(this.menuIframe).contents().find("#tagfield").val();
@@ -718,6 +718,7 @@ class Main {
         });
         return [(maxH - minH), (maxW - minW), minW, minH];
     }
+
 
     isInRect(e, elem): boolean {
         if (e.clientX >= elem["left"] && e.clientX <= elem["left"] + elem["width"]) {

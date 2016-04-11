@@ -95,6 +95,10 @@ class InkCanvas {
         ctx.beginPath();
         ctx.moveTo(p.x, p.y - $(document).scrollTop() + this._scroll);
         ctx.arc(p.x, p.y - $(document).scrollTop() +this._scroll, 5, 0, Math.PI * 2, false);
+//=======
+//        ctx.moveTo(p.x, p.y - $(document).scrollTop());
+//        ctx.arc(p.x, p.y - $(document).scrollTop(), 5, 0, Math.PI * 2, false);
+//>>>>>>> 787e4e4da6f83bf58a2a9872efdcf97d20086146
         ctx.fill();
     }
 
@@ -104,9 +108,12 @@ class InkCanvas {
         ctx.strokeStyle = '#123456';
         ctx.setLineDash([]);
         ctx.beginPath();
-
         ctx.moveTo(p1.x, p1.y - $(document).scrollTop() + this._scroll);
         ctx.lineTo(p2.x, p2.y - $(document).scrollTop() + this._scroll);
+//=======
+//        ctx.moveTo(p1.x, p1.y - $(document).scrollTop());
+//        ctx.lineTo(p2.x, p2.y - $(document).scrollTop());
+//>>>>>>> 787e4e4da6f83bf58a2a9872efdcf97d20086146
         ctx.stroke();
     }
     
