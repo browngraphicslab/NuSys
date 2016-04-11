@@ -86,7 +86,7 @@ class InkCanvas {
         this._prevBrush.drawPrevious(stroke, this);
     }
 
-    drawPoint(p: Point) {
+    drawPoint(p: Point) { 
         var ctx = this._context;
 
         ctx.globalCompositeOperation = "source-over";
