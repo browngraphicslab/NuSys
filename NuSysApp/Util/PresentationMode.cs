@@ -112,7 +112,7 @@ namespace NuSysApp.Util
         public static void FullScreen(ElementModel e)
         {
             // Define some variables that will be used in future translation/scaling
-            
+
             var sv = SessionController.Instance.SessionView;
             var x = e.X + e.Width / 2;
             var y = e.Y + e.Height / 2;
@@ -136,10 +136,16 @@ namespace NuSysApp.Util
 
             // Obtain correct scale value based on width/height ratio of passed in element
             double scale;
-            if (e.Width > e.Height)
-                scale = sv.ActualWidth / e.Width;
+            if (e.Width > e.Height) { 
+               scale = sv.ActualWidth / e.Width;
+               //scale = scale/scaleXInitial;
+        }
             else
+            {
                 scale = sv.ActualHeight / e.Height;
+              //  scale = scale / scaleYInitial;
+            }
+                
 
             // Scale the active free form viewer so that the passed in element appears to be full screen.
             scale = scale * .7; // adjustment so things don't get cut off
@@ -148,17 +154,21 @@ namespace NuSysApp.Util
             var scalex = new Point(scaleXInitial, scale);
             var scaley = new Point(scaleYInitial, scale);
             // anim(compositeTransform, center1, center2, scalex, scaley);
-            testZoomOut();
 
-            /* THIS WORKS, BUT NO ANIMATION
+
+            testZoomOut(scale,x,y,translateX,translateY);
+
+             //THIS WORKS, BUT NO ANIMATION
+             /*
             compositeTransform.CenterX = x;
             compositeTransform.CenterY = y;
             compositeTransform.ScaleX = scale;
             compositeTransform.ScaleY = scale;
             */
+            
         }
 
-        private static void testZoomOut()
+        private static void testZoomOut(double scale, double x , double y, double translateX, double translateY)
         {
             var transform = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
             var scaleX1 = transform.ScaleX;
@@ -169,7 +179,7 @@ namespace NuSysApp.Util
 
             //Storyboard board = new Storyboard();
             // Create a duration of 2 seconds.
-            Duration duration = new Duration(TimeSpan.FromSeconds(2));
+            Duration duration = new Duration(TimeSpan.FromSeconds(1));
             // Create two DoubleAnimations and set their properties.
             DoubleAnimation scaleAnimationX = new DoubleAnimation();
             DoubleAnimation scaleAnimationY = new DoubleAnimation();
@@ -182,12 +192,48 @@ namespace NuSysApp.Util
             Storyboard.SetTarget(scaleAnimationX, transform);
             Storyboard.SetTarget(scaleAnimationY, transform);
 
+            DoubleAnimation centerAnimationX = new DoubleAnimation();
+            DoubleAnimation centerAnimationY = new DoubleAnimation();
+            centerAnimationX.Duration = duration;
+            centerAnimationY.Duration = duration;
+            //Storyboard justintimeStoryboard = new Storyboard();
+            //justintimeStoryboard.Duration = duration;
+            justintimeStoryboard.Children.Add(centerAnimationX);
+            justintimeStoryboard.Children.Add(centerAnimationY);
+            Storyboard.SetTarget(centerAnimationX, transform);
+            Storyboard.SetTarget(centerAnimationY, transform);
+
             // Set the X and Y properties of the Transform to be the target properties
             // of the two respective DoubleAnimations.
             Storyboard.SetTargetProperty(scaleAnimationX, "ScaleX");
             Storyboard.SetTargetProperty(scaleAnimationY, "ScaleY");
-            scaleAnimationX.To = scaleX1*2;
-            scaleAnimationY.To = scaleY1*2;
+            scaleAnimationX.To = scale;
+            scaleAnimationY.To = scale;
+
+            // Set the X and Y properties of the Transform to be the target properties
+            // of the two respective DoubleAnimations.
+            Storyboard.SetTargetProperty(centerAnimationX, "CenterX");
+            Storyboard.SetTargetProperty(centerAnimationY, "CenterY");
+            centerAnimationX.To = x;
+            centerAnimationY.To = y;
+
+            DoubleAnimation translateAnimationX = new DoubleAnimation();
+            DoubleAnimation translateAnimationY = new DoubleAnimation();
+            translateAnimationX.Duration = duration;
+            translateAnimationY.Duration = duration;
+            //Storyboard justintimeStoryboard = new Storyboard();
+            //justintimeStoryboard.Duration = duration;
+            justintimeStoryboard.Children.Add(translateAnimationX);
+            justintimeStoryboard.Children.Add(translateAnimationY);
+            Storyboard.SetTarget(translateAnimationX, transform);
+            Storyboard.SetTarget(translateAnimationY, transform);
+
+            // Set the X and Y properties of the Transform to be the target properties
+            // of the two respective DoubleAnimations.
+            Storyboard.SetTargetProperty(translateAnimationX, "TranslateX");
+            Storyboard.SetTargetProperty(translateAnimationY, "TranslateY");
+            translateAnimationX.To = translateX;
+            translateAnimationY.To = translateY;
 
             // Make the Storyboard a resource.
             SessionController.Instance.SessionView.Resources.Add("justintimeStoryboard", justintimeStoryboard);
