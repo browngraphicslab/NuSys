@@ -8,6 +8,7 @@ using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
+using MyToolkit.Utilities;
 
 namespace NuSysApp.Util
 {
@@ -19,10 +20,12 @@ namespace NuSysApp.Util
         private ElementModel _previousNode = null;
         private ElementModel _nextNode = null;
         private ElementModel _currentNode;
+        private CompositeTransform _originalTransform;
 
         public PresentationMode(ElementModel start)
         {
             _currentNode = start;
+            _originalTransform = MakeShallowCopy(SessionController.Instance.ActiveFreeFormViewer.CompositeTransform);
             Load();
             FullScreen();
         }
@@ -78,7 +81,7 @@ namespace NuSysApp.Util
 
         public void ExitMode()
         {
-            
+            AnimatePresentation(_originalTransform.ScaleX, _originalTransform.CenterX, _originalTransform.CenterY, _originalTransform.TranslateX, _originalTransform.TranslateY);
         }
 
         /// <summary>
@@ -188,7 +191,23 @@ namespace NuSysApp.Util
             Storyboard.SetTarget(toReturn, transform);
             Storyboard.SetTargetProperty(toReturn, name);
             toReturn.To = to;
+            toReturn.EasingFunction = new QuadraticEase();
             return toReturn;
+        }
+
+        private CompositeTransform MakeShallowCopy(CompositeTransform transform)
+        {
+            CompositeTransform newTransform = new CompositeTransform();
+            newTransform.CenterX = transform.CenterX;
+            newTransform.CenterY = transform.CenterY;
+            newTransform.ScaleX = transform.ScaleX;
+            newTransform.ScaleY = transform.ScaleY;
+            newTransform.TranslateX = transform.TranslateX;
+            newTransform.TranslateY = transform.TranslateY;
+            newTransform.Rotation = transform.Rotation;
+            newTransform.SkewX = transform.SkewX;
+            newTransform.SkewY = transform.SkewY;
+            return newTransform;
         }
     }
 }

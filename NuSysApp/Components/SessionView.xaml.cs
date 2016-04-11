@@ -232,7 +232,7 @@ namespace NuSysApp
 
         public void ExitPresentationMode()
         {
-            //_presentationModeInstance.ExitMode();
+            _presentationModeInstance.ExitMode();
             _presentationModeInstance = null;
             FloatingMenu.Visibility = Visibility.Visible;
             NextNode.Visibility = Visibility.Collapsed;
