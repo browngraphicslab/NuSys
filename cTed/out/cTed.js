@@ -2683,7 +2683,9 @@ var InkCanvas = (function () {
         this._prevBrush = new MarqueeBrush();
         this._prevBrush.drawPrevious(stroke, this);
     };
-    InkCanvas.prototype.drawPointsAndLines = function (points) {
+    InkCanvas.prototype.drawPointsAndLines = function (sel) {
+        var points = sel.samplePoints;
+        this._scroll = sel.yscroll;
         this.clear();
         this.drawPoint(points[0]);
         this.drawline(points[0], points[points.length - 1]);
@@ -2693,7 +2695,7 @@ var InkCanvas = (function () {
         }
     };
     InkCanvas.prototype.drawPreviousGesture = function (sel) {
-        this.drawPointsAndLines(sel.samplePoints);
+        this.drawPointsAndLines(sel);
     };
     InkCanvas.prototype.drawPreviousGestureL = function (points) {
         console.log("======================redraw==");
@@ -2707,8 +2709,8 @@ var InkCanvas = (function () {
         ctx.globalCompositeOperation = "source-over";
         ctx.fillStyle = '#ff0000';
         ctx.beginPath();
-        ctx.moveTo(p.x, p.y);
-        ctx.arc(p.x, p.y, 5, 0, Math.PI * 2, false);
+        ctx.moveTo(p.x, p.y - $(document).scrollTop() + this._scroll);
+        ctx.arc(p.x, p.y - $(document).scrollTop() + this._scroll, 5, 0, Math.PI * 2, false);
         ctx.fill();
     };
     InkCanvas.prototype.drawline = function (p1, p2) {
@@ -2717,15 +2719,16 @@ var InkCanvas = (function () {
         ctx.strokeStyle = '#123456';
         ctx.setLineDash([]);
         ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
+        ctx.moveTo(p1.x, p1.y - $(document).scrollTop() + this._scroll);
+        ctx.lineTo(p2.x, p2.y - $(document).scrollTop() + this._scroll);
         ctx.stroke();
     };
     InkCanvas.prototype.editPoint = function (points, e) {
         var sampleStroke = points;
         var lines = [];
         for (var i = 1; i < sampleStroke.length; i++) {
-            if (Math.abs(e.clientX - sampleStroke[i].x) < 3 && Math.abs(e.clientY - sampleStroke[i].y) < 3) {
+            //          console.log(e.clientY + ": " + sampleStroke[i].y + " : " + $(document).scrollTop() + " : " + this._scroll);
+            if (Math.abs(e.clientX - sampleStroke[i].x) < 5 && Math.abs(e.clientY - sampleStroke[i].y + $(document).scrollTop() - this._scroll) < 5) {
                 this.focusPoint(sampleStroke[i]);
                 return sampleStroke[i];
             }
@@ -2735,14 +2738,13 @@ var InkCanvas = (function () {
         var sampleStroke = points;
         var lines = [];
         for (var i = 0; i < sampleStroke.length; i++) {
-            console.log("DAXXXXXXXXF");
             if (i == 0) {
                 var line = new Line(sampleStroke[sampleStroke.length - 1], sampleStroke[0]);
             }
             else {
                 var line = new Line(sampleStroke[i - 1], sampleStroke[i]);
             }
-            if (this.checkAboveLine(line, new Point(e.clientX, e.clientY))) {
+            if (this.checkAboveLine(line, new Point(e.clientX, e.clientY + $(document).scrollTop()))) {
                 this.focusLine(line);
                 return line;
             }
@@ -2752,8 +2754,8 @@ var InkCanvas = (function () {
         var ctx = this._context;
         ctx.beginPath();
         //  ctx.fillStyle = '#ff0000';
-        ctx.moveTo(line.p1.x, line.p1.y);
-        ctx.lineTo(line.p2.x, line.p2.y);
+        ctx.moveTo(line.p1.x, line.p1.y - $(document).scrollTop() + this._scroll);
+        ctx.lineTo(line.p2.x, line.p2.y - $(document).scrollTop() + this._scroll);
         ctx.lineWidth = 3;
         ctx.stroke();
     };
@@ -2762,8 +2764,8 @@ var InkCanvas = (function () {
         ctx.globalCompositeOperation = "source-over";
         ctx.fillStyle = '#0000FF';
         ctx.beginPath();
-        ctx.moveTo(p.x, p.y);
-        ctx.arc(p.x, p.y, 8, 0, Math.PI * 2, false);
+        ctx.moveTo(p.x, p.y - $(document).scrollTop() + this._scroll);
+        ctx.arc(p.x, p.y - $(document).scrollTop() + this._scroll, 8, 0, Math.PI * 2, false);
         ctx.fill();
     };
     InkCanvas.prototype.isBetween = function (a, b, x) {
@@ -2776,15 +2778,14 @@ var InkCanvas = (function () {
     };
     InkCanvas.prototype.checkAboveLine = function (line, mouse) {
         if (line.p1.x == line.p2.x) {
-            return (Math.abs(mouse.x - line.p1.x) < 5 && this.isBetween(line.p1.y, line.p2.y, mouse.y));
+            return (Math.abs(mouse.x - line.p1.x) < 5 && this.isBetween(line.p1.y + this._scroll, line.p2.y + this._scroll, mouse.y));
         }
         if (line.p1.y == line.p2.y) {
-            return (Math.abs(mouse.y - line.p1.y) < 5 && this.isBetween(line.p1.x, line.p2.x, mouse.x));
+            return (Math.abs(mouse.y - line.p1.y - this._scroll) < 5 && this.isBetween(line.p1.x, line.p2.x, mouse.x));
         }
-        var m1 = (mouse.y - line.p1.y) / (mouse.x - line.p1.x);
-        var m2 = (line.p2.y - mouse.y) / (line.p2.x - mouse.x);
-        // console.log((m1 == m2) && (line.p1.y <= mouse.y && mouse.y <= line.p2.y) && (line.p1.x <= mouse.x && mouse.x <= line.p2.x));
-        return (Math.abs(m1 - m2) < 0.15) && (this.isBetween(line.p1.y, line.p2.y, mouse.y)) && this.isBetween(line.p1.x, line.p2.x, mouse.x);
+        var m1 = (mouse.y - line.p1.y - this._scroll) / (mouse.x - line.p1.x);
+        var m2 = (line.p2.y + this._scroll - mouse.y) / (line.p2.x - mouse.x);
+        return (Math.abs(m1 - m2) < 0.3) && (this.isBetween(line.p1.y + this._scroll, line.p2.y + this._scroll, mouse.y)) && this.isBetween(line.p1.x, line.p2.x, mouse.x);
     };
     InkCanvas.prototype.clear = function () {
         this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
@@ -2940,6 +2941,27 @@ var Main = (function () {
             if (_this.selectionOnHover) {
                 if (_this.is_editing_selection) {
                     _this.inkCanvas.clear();
+                    if (_this.selectionOnHover.type == StrokeType.Bracket) {
+                        //    this.selectionOnHover.samplePoints.splice(this.pointIndex - 1, 1, new Point(e.clientX, e.clientY
+                        _this.isLineSelected = false;
+                        _this.isPointSelected = false;
+                        _this.is_editing_selection = false;
+                        _this.pointIndex = -1;
+                        _this.countX = 0;
+                        return;
+                    }
+                    if (_this.countX < 3 && _this.isLineSelected) {
+                        console.log("=====================");
+                        console.log(_this.pointIndex);
+                        console.log(_this.selectionOnHover.samplePoints);
+                        _this.selectionOnHover.samplePoints.splice(_this.pointIndex + 1, 0, new Point(e.clientX, e.clientY - _this.selectionOnHover.yscroll + $(document).scrollTop()));
+                        chrome.runtime.sendMessage({ msg: "edit_selection", data: editedSelection });
+                        _this.isLineSelected = false;
+                        _this.isPointSelected = false;
+                        _this.is_editing_selection = false;
+                        _this.pointIndex = -1;
+                        return;
+                    }
                     console.log(_this.selectionOnHover);
                     _this.removeHighlight(_this.selectionOnHover);
                     _this.isLineSelected = false;
@@ -2950,24 +2972,28 @@ var Main = (function () {
                     document.body.removeChild(_this.canvas);
                     var editedSelection = new LassoSelection();
                     var editedStroke = new Stroke();
+                    editedSelection.yscroll = $(document).scrollTop();
                     editedStroke.points = _this.selectionOnHover.samplePoints;
+                    var len = editedStroke.points.length;
+                    for (var i = 0; i < len; i++) {
+                        editedStroke.points[i] = new Point(editedStroke.points[i].x, editedStroke.points[i].y + _this.selectionOnHover.yscroll);
+                    }
                     editedSelection.stroke = editedStroke;
+                    editedSelection.id = _this.selectionOnHover.id;
+                    console.log(editedSelection.yscroll);
                     editedSelection.end(0, 0);
                     editedSelection.type = StrokeType.Lasso;
-                    editedSelection.id = _this.selectionOnHover.id;
                     editedSelection.url = _this.selectionOnHover.url;
                     editedSelection.tags = _this.selectionOnHover.tags;
+                    for (var i = 0; i < len; i++) {
+                        editedStroke.points[i] = new Point(editedStroke.points[i].x, editedStroke.points[i].y - _this.selectionOnHover.yscroll);
+                    }
                     chrome.runtime.sendMessage({ msg: "edit_selection", data: editedSelection });
                     document.body.appendChild(_this.canvas);
                     return;
                 }
                 else {
                     console.log("======BUBBE");
-                    $(_this.bubble).show();
-                    $(_this.bubble).css("top", e.clientY - 170 - $(window).scrollTop());
-                    $(_this.bubble).css("left", e.clientX - 30);
-                    $(_this.bubble).css("border", "8px solid #666");
-                    document.styleSheets[0]["insertRule"]('p.noteBubble:before { content: " "; width: 0; height: 0; position: absolute; top: 100px; left: 30px; border: 25px solid #666; border-color: #666 transparent transparent #666; }', 0);
                 }
                 $(_this.bubble).click(function () {
                 });
@@ -2983,8 +3009,7 @@ var Main = (function () {
             _this.is_editing_selection = false;
             _this.selection.stroke = _this.inkCanvas._activeStroke;
             _this.selection.end(e.clientX, e.clientY);
-            console.log(_this.selection.getContent()); //print out content 
-            _this.selection.id = Date.now(); //assign contents of the selection 
+            _this.selection.yscroll = $(document).scrollTop();
             _this.selection.type = _this.currentStrokeType;
             _this.selection.url = _this._url;
             _this.selection.tags = $(_this.menuIframe).contents().find("#tagfield").val();
@@ -2998,6 +3023,7 @@ var Main = (function () {
             _this.inkCanvas.clear();
             //     this.inkCanvas.drawStroke(this.selection.stroke);
             _this.currentStrokeType = StrokeType.Line;
+            console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             document.body.appendChild(_this.canvas);
         };
         //mousedown action
@@ -3015,6 +3041,7 @@ var Main = (function () {
                 _this.isSelecting = true;
                 _this._startX = e.clientX;
                 _this._startY = e.clientY;
+                _this.selection.id = Date.now();
                 _this.selection.start(e.clientX, e.clientY);
             }
         };
@@ -3045,7 +3072,7 @@ var Main = (function () {
                     if (_this.pointIndex == -1) {
                         _this.pointIndex = _this.findReplacementStroke(sel.samplePoints, _this.pointAbove);
                     }
-                    var newPoint = new Point(e.clientX, e.clientY);
+                    var newPoint = new Point(e.clientX, e.clientY + $(document).scrollTop() - _this.selectionOnHover.yscroll);
                     sel.samplePoints.join();
                     sel.samplePoints.splice(_this.pointIndex, 1, newPoint);
                     sel.samplePoints.join();
@@ -3053,23 +3080,18 @@ var Main = (function () {
                     _this.inkCanvas.drawPreviousGesture(sel);
                 }
                 if (_this.isLineSelected) {
-                    var index = _this.findInsertionStroke(sel.samplePoints, _this.lineAbove);
-                    index++;
-                    console.log("mousemove...");
-                    console.log(index);
-                    var newPoint = new Point(e.clientX, e.clientY);
                     console.log(sel.samplePoints.length);
                     if (_this.countX == 0) {
-                        sel.samplePoints.join();
-                        sel.samplePoints.splice(index, 0, newPoint);
-                        sel.samplePoints.join();
+                        _this.insertionIndex = _this.findInsertionStroke(sel.samplePoints, _this.lineAbove);
+                        _this.original1 = sel.samplePoints[_this.insertionIndex];
+                        _this.original2 = sel.samplePoints[(_this.insertionIndex + 1) % sel.samplePoints.length];
                     }
-                    else {
-                        sel.samplePoints.join();
-                        sel.samplePoints.splice(index, 1, newPoint);
-                        sel.samplePoints.join();
-                    }
-                    console.log(sel.samplePoints.length);
+                    var dx = _this.pivotPointLine.x - e.clientX;
+                    var dy = _this.pivotPointLine.y - e.clientY;
+                    sel.samplePoints.join();
+                    sel.samplePoints[_this.insertionIndex] = new Point(_this.original1.x - dx, _this.original1.y - dy + $(document).scrollTop() - _this.selectionOnHover.yscroll);
+                    sel.samplePoints[(_this.insertionIndex + 1) % sel.samplePoints.length] = new Point(_this.original2.x - dx, _this.original2.y - dy + $(document).scrollTop() - _this.selectionOnHover.yscroll);
+                    // console.log(sel.samplePoints.length);
                     _this.inkCanvas.clear();
                     _this.inkCanvas.drawPreviousGesture(sel);
                     console.log("==========DRAW====");
@@ -3085,12 +3107,10 @@ var Main = (function () {
                     _this.inkCanvas.drawPreviousGesture(_this.selectionOnHover);
                     _this.pointAbove = _this.inkCanvas.editPoint(_this.selectionOnHover.samplePoints, e);
                     if (_this.pointAbove) {
-                        console.log("point..... ");
                     }
                     else {
                         _this.lineAbove = _this.inkCanvas.editStrokes(_this.selectionOnHover.samplePoints, e);
                         if (_this.lineAbove) {
-                            console.log("line.....");
                         }
                     }
                 }
@@ -3204,6 +3224,11 @@ var Main = (function () {
             else if (_this.lineAbove) {
                 _this.isLineSelected = true;
                 _this.is_editing_selection = true;
+                console.log(_this.lineAbove);
+                console.log(_this.selectionOnHover.samplePoints);
+                console.log(e.clientY + " L " + $(document).scrollTop() + " D " + _this.selectionOnHover.yscroll);
+                _this.pivotPointLine = new Point(e.clientX, e.clientY + $(document).scrollTop() - _this.selectionOnHover.yscroll);
+                _this.pointIndex = _this.findReplacementStroke(_this.selectionOnHover.samplePoints, _this.lineAbove.p1);
                 document.body.appendChild(_this.canvas);
             }
             else if (hitElem.nodeName == "A") {
@@ -3293,22 +3318,9 @@ var Main = (function () {
         });
     };
     Main.prototype.removeHighlight = function (s) {
-        s.selectedElements.forEach(function (el) {
-            if (el.tagName == "WORD") {
-                if (el.wordIndx == -1) {
-                    $('WORD').get(el.index)["style"].backgroundColor = "";
-                }
-                else {
-                    var ele = $(el.par).get(el.parIndex).childNodes[el.txtnIndx].childNodes[el.wordIndx];
-                    ele["style"].backgroundColor = "";
-                }
-            }
-            else if (el.tagName == "HILIGHT") {
-                $(el.par).get(el.parIndex).childNodes[el.txtnIndx]["style"].backgroundColor = "";
-            }
-            else {
-                $(el.tagName).get(el.index).style.backgroundColor = "";
-            }
+        $("." + s.id).each(function (indx, ele) {
+            ele["style"].backgroundColor = "";
+            $(ele).removeClass(s.id.toString());
         });
     };
     Main.prototype.highlightPrevious = function (s) {
@@ -3544,11 +3556,56 @@ var Main = (function () {
     Main.prototype.isAbove = function (e, sel) {
         var stroke = new Stroke();
         stroke.points = sel.samplePoints;
-        return this.isPointBound(new Point(e.clientX, e.clientY), stroke);
+        var st = new Stroke();
+        for (var i = 0; i < stroke.points.length; i++) {
+            st.points.push(new Point(stroke.points[i].x, stroke.points[i].y + sel.yscroll - $(document).scrollTop()));
+        }
+        if (sel.type == StrokeType.Bracket) {
+            for (var i = 0; i < sel.selectedElements.length; i++) {
+                var el = $(sel.selectedElements[i].tagName).get(sel.selectedElements[i].index);
+                if ((e.clientX > $(el).offset().left && e.clientX < $(el).offset().left + $(el).width())
+                    && (e.clientY > $(el).offset().top && e.clientY < $(el).offset().top + $(el).height())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return this.isPointBound(new Point(e.clientX, e.clientY), st);
+    };
+    Main.prototype.getRealHeightWidth = function (rectsList) {
+        //finds the real Heights and Widths of DOM elements by iterating through their clientRectList.
+        var maxH = Number.NEGATIVE_INFINITY;
+        var minH = Number.POSITIVE_INFINITY;
+        var maxW = Number.NEGATIVE_INFINITY;
+        var minW = Number.POSITIVE_INFINITY;
+        $(rectsList).each(function (indx, elem) {
+            console.log($(elem).height());
+            if (elem["top"] + elem["height"] > maxH) {
+                maxH = elem["top"] + elem["height"];
+            }
+            if (elem["top"] < minH) {
+                minH = elem["top"];
+            }
+            if (elem["left"] < minW) {
+                minW = elem["left"];
+            }
+            if (elem["left"] + elem["width"] > maxW) {
+                maxW = elem["left"] + elem["width"];
+            }
+        });
+        return [(maxH - minH), (maxW - minW), minW, minH];
+    };
+    Main.prototype.isInRect = function (e, elem) {
+        if (e.clientX >= elem["left"] && e.clientX <= elem["left"] + elem["width"]) {
+            return e.clientY >= elem["top"] && e.clientY <= elem["top"] + elem["height"];
+        }
+        return false;
     };
     Main.prototype.sampleLines = function (stroke) {
         var sampleStroke = stroke.points;
         var lines = [];
+        if (!sampleStroke)
+            return;
         for (var i = 1; i < sampleStroke.length; i++) {
             lines.push(new Line(sampleStroke[i - 1], sampleStroke[i]));
         }
@@ -3561,6 +3618,9 @@ var Main = (function () {
         //  console.log("======isPointBound ");
         //  console.log(p);
         var xPoints = [];
+        if (!lines) {
+            return false;
+        }
         for (var i = 0; i < lines.length; i++) {
             var l = lines[i];
             if (p.y <= Math.max(l.p1.y, l.p2.y) && p.y >= Math.min(l.p1.y, l.p2.y)) {
@@ -3592,6 +3652,7 @@ var Main = (function () {
     };
     Main.prototype.switchSelection = function (strokeType) {
         console.log("Iselection switched to : " + strokeType);
+        var id = this.selection.id;
         switch (strokeType) {
             //////STROKE TYPE CHANGE
             case StrokeType.Marquee:
@@ -3608,6 +3669,7 @@ var Main = (function () {
                 this.selection = new LassoSelection();
                 break;
         }
+        this.selection.id = id;
         this.selection.start(this._startX, this._startY);
     };
     Main.prototype.showBubble = function () {
@@ -3680,6 +3742,7 @@ var BracketSelection = (function (_super) {
     BracketSelection.prototype.end = function (x, y) {
         this._endX = x;
         this._endY = y;
+        this.samplePoints = [new Point(this._startX, this._startY), new Point(this._endX, this._endY)];
         this.analyzeContent();
         console.log("bracket end" + x + ":" + y);
     };
@@ -3837,18 +3900,20 @@ var LassoSelection = (function (_super) {
         this._content = "";
     }
     LassoSelection.prototype.start = function (x, y) {
+        this.yscroll = 0;
     };
     LassoSelection.prototype.end = function (x, y) {
-        this.samplePoints = this.stroke.sampleStroke().points;
+        var points = this.stroke.sampleStroke().points;
+        for (var i = 0; i < points.length; i++) {
+            points[i] = new Point(points[i].x, points[i].y - this.yscroll);
+        }
+        this.samplePoints = points;
         this._sampleLines = this.sampleLines(this.samplePoints);
         this.analyzeContent();
     };
     LassoSelection.prototype.analyzeContent = function () {
         this.makeInitialParentList();
-        console.info(this._parentList);
         this.findCommonParent();
-        console.log("=====rmChildforLasso");
-        console.info(this._parentList);
         var parent = this._parentList[0].cloneNode(true);
         if (parent.nodeName == "html") {
             console.log("=========================PARENT WRONG ================");
@@ -3876,21 +3941,6 @@ var LassoSelection = (function (_super) {
         lines.push(new Line(sampleStroke[sampleStroke.length - 1], sampleStroke[0]));
         return lines;
     };
-    //    l1 is rectlines --> horizontal or vertical 
-    //islineintersect(l1, l2: Line): boolean {
-    //    console.log("isLineInstersect");
-    //    console.log(l1);
-    //     console.log(l2);
-    //     var det = l1.A * l2.B - l2.A * l1.B;
-    //   //  console.log(det);
-    //     if (det == 0)
-    //         return false;
-    //     var x = (l2.B * l1.C - l1.B * l2.C) / det;
-    //     var y = (l1.A * l2.C - l2.A * l1.C) / det;
-    //     console.log(x + ": " +  y);
-    //     var pt = new Point(x, y);
-    //     return l1.hasPoint(pt) && l2.hasPoint(pt);
-    //}
     LassoSelection.prototype.isLineIntersect = function (l1, l2) {
         if (l1.p1.x == l1.p2.x) {
             //vertical line 
@@ -3908,29 +3958,22 @@ var LassoSelection = (function (_super) {
         return false;
     };
     LassoSelection.prototype.intersectWith = function (el) {
-        //       console.log("intersectWith.... ");
-        //      console.log(el);
         if (!el)
             return 0;
         if (this.isTextElement(el)) {
-            //        console.log(el);
             var range = document.createRange();
             range.selectNodeContents(el);
             var rects = range.getClientRects();
             if (rects.length == 0) {
                 return 0;
             }
-            //      console.log("rects: ");
             for (var i = 0; i < rects.length; i++) {
-                //        console.log(rects[i]);
                 var rect = rects[i];
                 if (this.isRectIntersect(new Rectangle(rect.left, rect.top, rect.width, rect.height))) {
-                    //              console.log("isIntersect!");
                     return 1;
                 }
             }
             if (this.isPointBound(new Point(rects[0].left, rects[0].top))) {
-                //        console.log("=====BOUND");
                 return 2;
             }
             return 0;
@@ -3949,16 +3992,12 @@ var LassoSelection = (function (_super) {
                 console.log(el);
                 return 0;
             }
-            //          console.log(el);
             if (this.isRectIntersect(new Rectangle(minX, minY, realWidth, realHeight))) {
-                //            console.log("======1");
                 return 1;
             }
             if (this.isPointBound(new Point(minX, minY))) {
-                //          console.log("======2");
                 return 2;
             }
-            //        console.log("======0");
             return 0;
         }
     };
@@ -4013,27 +4052,14 @@ var LassoSelection = (function (_super) {
         return [(maxH - minH), (maxW - minW), minW, minH];
     };
     LassoSelection.prototype.isRectIntersect = function (rect) {
-        //      console.log(rect);
         var lines = rect.getLines();
-        //lines.forEach(l => {
-        //    this._sampleLines.forEach(m => {
-        //        if (this.isLineIntersect(l, m)) {
-        //            console.log("true...");
-        //            return true;
-        //        }
-        //    });
-        //});
         for (var i = 0; i < lines.length; i++) {
             for (var j = 0; j < this._sampleLines.length; j++) {
                 if (this.isLineIntersect(lines[i], this._sampleLines[j])) {
-                    ////                  console.log("==================TRUE=============");
                     return true;
                 }
             }
         }
-        //      console.log("===================NO INTERSECTING LINE with RECT");
-        //      console.log(rect);
-        //      console.log(rect.hasPoint(this.stroke.points[0]));
         return rect.hasPoint(this.stroke.points[0]);
     };
     LassoSelection.prototype.isTextElement = function (el) {
@@ -4064,8 +4090,6 @@ var LassoSelection = (function (_super) {
         for (var i = 0; i < removed.length; i++) {
             el.removeChild(removed[i]);
         }
-        //       console.log(realNList);
-        //       console.log(resList);
         for (var i = 0; i < el.childNodes.length; i++) {
             if (resList[i] != 2) {
                 if (this.isTextElement(el.childNodes[i])) {
@@ -4073,12 +4097,11 @@ var LassoSelection = (function (_super) {
                     $(trueEl.childNodes[index]).replaceWith("<words>" + $(trueEl.childNodes[index]).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
                     var result = "";
                     for (var j = 0; j < trueEl.childNodes[index].childNodes.length; j++) {
-                        //                console.log(trueEl.childNodes[index].childNodes[j]);
                         if (this.intersectWith(trueEl.childNodes[index].childNodes[j]) > 0) {
-                            //                    console.log("included!!!!");
                             if (trueEl.childNodes[index].childNodes[j].style) {
                                 trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
                                 this.addToHighLights(trueEl.childNodes[index].childNodes[j], indexList[i], j);
+                                trueEl.childNodes[index].childNodes[j].className += " " + this.id.toString();
                             }
                             if (!trueEl.childNodes[index].childNodes[j]["innerHTML"]) {
                                 if (trueEl.childNodes[index].childNodes[j].nodeName == "WORD") {
@@ -4097,8 +4120,6 @@ var LassoSelection = (function (_super) {
                 }
             }
             else {
-                ////              console.log("BOUNDEDDDD=====");
-                //              console.log(trueEl.childNodes[indexList[i]]);
                 var startIndex = Array.prototype.indexOf.call(trueEl.childNodes, trueEl.childNodes[i]);
                 var foundElement = $(trueEl.childNodes[indexList[i]]).find("img");
                 if (foundElement.length > 0) {
@@ -4109,12 +4130,11 @@ var LassoSelection = (function (_super) {
                     label.css("left", ($(foundElement).offset().left - 5) + "px");
                 }
                 if (trueEl.childNodes[indexList[i]].childNodes.length == 0) {
-                    //                console.log("-----------TEXT?-------");
-                    //                console.log($(trueEl.childNodes[indexList[i]]));
                     $(trueEl.childNodes[indexList[i]]).replaceWith("<hilight>" + $(realNList[i]).text() + "</hilight>");
                 }
                 $(realNList[i]).css("background-color", "yellow");
                 trueEl.childNodes[indexList[i]].style.backgroundColor = "yellow";
+                trueEl.childNodes[indexList[i]].className += " " + this.id.toString();
                 this.addToHighLights(trueEl.childNodes[indexList[i]], indexList[i], -1);
             }
         }
@@ -4206,6 +4226,8 @@ var LineSelection = (function (_super) {
         this._endY = y;
         this.analyzeContent();
         console.log("line end" + x + ":" + y);
+        this.stroke.points = [new Point(this._startX, this._startY), new Point(this._endX, this._endY)];
+        // this.sampleStroke = this.stroke;    
     };
     LineSelection.prototype.getContent = function () {
         return this._content;
@@ -4570,6 +4592,7 @@ var MarqueeSelection = (function (_super) {
                                 trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
                                 //      console.log(trueEl.childNodes[index]);
                                 this.addToHighLights(trueEl.childNodes[index].childNodes[j], indexList[i], j);
+                                trueEl.childNodes[index].childNodes[j].className += " " + this.id;
                             }
                             if (!trueEl.childNodes[index].childNodes[j]["innerHTML"]) {
                                 if (trueEl.childNodes[index].childNodes[j].nodeName == "WORD") {
@@ -4608,26 +4631,12 @@ var MarqueeSelection = (function (_super) {
                 trueEl.childNodes[indexList[i]].style.backgroundColor = "yellow";
                 //    console.log(startIndex);
                 this.addToHighLights(trueEl.childNodes[indexList[i]], indexList[i], -1);
+                trueEl.childNodes[indexList[i]].className += " " + this.id;
             }
         }
     };
     MarqueeSelection.prototype.addToHighLights = function (el, txtindx, wordindx) {
-        var index = $(el.tagName).index(el);
-        var obj = { type: "marquee", tagName: el.tagName, index: index };
-        if (el.tagName == "WORD" || el.tagName == "HILIGHT") {
-            var par = el.attributes[0]["ownerElement"].parentElement;
-            if (el.tagName == "WORD") {
-                var startIndex = Array.prototype.indexOf.call(el.parentElement.childNodes, el);
-                par = par.parentElement;
-                obj["wordIndx"] = wordindx;
-            }
-            var parIndex = $(par.tagName).index(par);
-            obj["par"] = par.tagName;
-            obj["parIndex"] = parIndex;
-            obj["txtnIndx"] = txtindx;
-            obj["val"] = el;
-        }
-        this.selectedElements.push(obj);
+        //     el.    
     };
     MarqueeSelection.prototype.intersectWith = function (el) {
         //checks if element is intersecting with selection range 

@@ -25,6 +25,10 @@ class Main {
     isPointSelected: boolean;
     is_above_previous: boolean;
     is_editing_selection: boolean;
+    original1: Point;
+    original2: Point;
+    pivotPointLine: Point;
+    insertionIndex: number;
     selection: AbstractSelection;
     selections: Array<AbstractSelection> = new Array<AbstractSelection>();
     //previousSelections: Array<AbstractSelection> = new Array<AbstractSelection>();
@@ -120,23 +124,9 @@ class Main {
     }
 
     removeHighlight(s: AbstractSelection): void {
-
-        s.selectedElements.forEach((el) => {
-            if (el.tagName == "WORD") {
-                if (el.wordIndx == -1) {
-                    $('WORD').get(el.index)["style"].backgroundColor = "";
-                } else {
-                    var ele = $(el.par).get(el.parIndex).childNodes[el.txtnIndx].childNodes[el.wordIndx];
-                    ele["style"].backgroundColor = "";
-                }
-            } else if (el.tagName == "HILIGHT") {
-                $(el.par).get(el.parIndex).childNodes[el.txtnIndx]["style"].backgroundColor = "";
-            } else {
-                $(el.tagName).get(el.index).style.backgroundColor = "";
-
-            }
-
-
+        $("." + s.id).each((indx, ele) => {
+            ele["style"].backgroundColor = "";
+            $(ele).removeClass(s.id.toString());
         });
     }
 
@@ -311,6 +301,27 @@ class Main {
         if (this.selectionOnHover) {
             if (this.is_editing_selection) {
                 this.inkCanvas.clear();
+                if (this.selectionOnHover.type == StrokeType.Bracket) {
+                //    this.selectionOnHover.samplePoints.splice(this.pointIndex - 1, 1, new Point(e.clientX, e.clientY
+                    this.isLineSelected = false;
+                    this.isPointSelected = false;
+                    this.is_editing_selection = false;
+                    this.pointIndex = -1;
+                    this.countX = 0;
+                    return;
+                }
+                if (this.countX < 3 && this.isLineSelected) {
+                    console.log("=====================");
+                    console.log(this.pointIndex);
+                    console.log(this.selectionOnHover.samplePoints);
+                    this.selectionOnHover.samplePoints.splice(this.pointIndex + 1, 0, new Point(e.clientX, e.clientY - this.selectionOnHover.yscroll + $(document).scrollTop()));
+                    chrome.runtime.sendMessage({ msg: "edit_selection", data: editedSelection });
+                    this.isLineSelected = false;
+                    this.isPointSelected = false;
+                    this.is_editing_selection = false;
+                    this.pointIndex = -1;
+                    return;
+                }
                 console.log(this.selectionOnHover);
                 this.removeHighlight(this.selectionOnHover);
                 this.isLineSelected = false;
@@ -321,24 +332,34 @@ class Main {
                 document.body.removeChild(this.canvas);
                 var editedSelection = new LassoSelection();
                 var editedStroke = new Stroke();
+                editedSelection.yscroll = $(document).scrollTop();
                 editedStroke.points = this.selectionOnHover.samplePoints;
+                var len = editedStroke.points.length;
+                for (var i = 0; i < len; i++) {
+                    editedStroke.points[i] = new Point(editedStroke.points[i].x, editedStroke.points[i].y + this.selectionOnHover.yscroll );
+                }
                 editedSelection.stroke = editedStroke;
+                editedSelection.id = this.selectionOnHover.id;
+                console.log(editedSelection.yscroll);
+
                 editedSelection.end(0, 0);
                 editedSelection.type = StrokeType.Lasso;
-                editedSelection.id = this.selectionOnHover.id;
                 editedSelection.url = this.selectionOnHover.url;
                 editedSelection.tags = this.selectionOnHover.tags;
+                for (var i = 0; i < len; i++) {
+                    editedStroke.points[i] = new Point(editedStroke.points[i].x, editedStroke.points[i].y - this.selectionOnHover.yscroll);
+                }
                 chrome.runtime.sendMessage({ msg: "edit_selection", data: editedSelection });
                 document.body.appendChild(this.canvas);
 
                 return;
             } else {
                 console.log("======BUBBE");
-                $(this.bubble).show();
-                $(this.bubble).css("top", e.clientY - 170 - $(window).scrollTop());
-                $(this.bubble).css("left", e.clientX - 30);
-                $(this.bubble).css("border", "8px solid #666");
-                document.styleSheets[0]["insertRule"]('p.noteBubble:before { content: " "; width: 0; height: 0; position: absolute; top: 100px; left: 30px; border: 25px solid #666; border-color: #666 transparent transparent #666; }', 0);
+                //$(this.bubble).show();
+                //$(this.bubble).css("top", e.clientY - 170 - $(window).scrollTop());
+                //$(this.bubble).css("left", e.clientX - 30);
+                //$(this.bubble).css("border", "8px solid #666");
+                //document.styleSheets[0]["insertRule"]('p.noteBubble:before { content: " "; width: 0; height: 0; position: absolute; top: 100px; left: 30px; border: 25px solid #666; border-color: #666 transparent transparent #666; }', 0);
             }
 
             $(this.bubble).click(function () {
@@ -356,8 +377,7 @@ class Main {
         this.is_editing_selection = false;
         this.selection.stroke = this.inkCanvas._activeStroke;
         this.selection.end(e.clientX, e.clientY);
-        console.log(this.selection.getContent()); //print out content 
-        this.selection.id = Date.now(); //assign contents of the selection 
+        this.selection.yscroll = $(document).scrollTop();
         this.selection.type = this.currentStrokeType;
         this.selection.url = this._url;
         this.selection.tags = $(this.menuIframe).contents().find("#tagfield").val();
@@ -371,6 +391,7 @@ class Main {
         this.inkCanvas.clear();
    //     this.inkCanvas.drawStroke(this.selection.stroke);
         this.currentStrokeType = StrokeType.Line;
+        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         document.body.appendChild(this.canvas);
     }
 
@@ -417,6 +438,7 @@ class Main {
             this.isSelecting = true;
             this._startX = e.clientX;
             this._startY = e.clientY;
+            this.selection.id = Date.now();
             this.selection.start(e.clientX, e.clientY);
         }
 
@@ -480,8 +502,8 @@ class Main {
             if (this.isPointSelected) {
                     if (this.pointIndex == -1) {
                         this.pointIndex = this.findReplacementStroke(sel.samplePoints, this.pointAbove);
-                    }
-                    var newPoint = new Point(e.clientX, e.clientY);
+                }
+                var newPoint = new Point(e.clientX, e.clientY + $(document).scrollTop() - this.selectionOnHover.yscroll);
                     sel.samplePoints.join();
                     sel.samplePoints.splice(this.pointIndex, 1, newPoint);
                     sel.samplePoints.join();
@@ -492,23 +514,20 @@ class Main {
             }
 
             if (this.isLineSelected) {
-                    var index = this.findInsertionStroke(sel.samplePoints, this.lineAbove);
-                    index++;
-                    console.log("mousemove...");
-                    console.log(index);
-                    var newPoint = new Point(e.clientX, e.clientY);
-                    console.log(sel.samplePoints.length);
-                    if (this.countX == 0) {
-                        sel.samplePoints.join();
-                        sel.samplePoints.splice(index, 0, newPoint);
-                        sel.samplePoints.join();
-                    } else {
-                        sel.samplePoints.join();
-                        sel.samplePoints.splice(index, 1, newPoint);
-                        sel.samplePoints.join();
-                    }
 
                     console.log(sel.samplePoints.length);
+                    if (this.countX == 0) {
+                        this.insertionIndex = this.findInsertionStroke(sel.samplePoints, this.lineAbove);
+                        this.original1 = sel.samplePoints[this.insertionIndex];
+                        this.original2 = sel.samplePoints[(this.insertionIndex+1)%sel.samplePoints.length];
+                    }
+                    var dx = this.pivotPointLine.x - e.clientX;
+                    var dy = this.pivotPointLine.y - e.clientY;
+                    sel.samplePoints.join();
+                    sel.samplePoints[this.insertionIndex] = new Point(this.original1.x - dx, this.original1.y - dy + $(document).scrollTop() - this.selectionOnHover.yscroll);
+                    sel.samplePoints[(this.insertionIndex + 1) % sel.samplePoints.length] = new Point(this.original2.x - dx, this.original2.y - dy + $(document).scrollTop() - this.selectionOnHover.yscroll);
+
+                   // console.log(sel.samplePoints.length);
                     this.inkCanvas.clear();
                     this.inkCanvas.drawPreviousGesture(sel);
                     console.log("==========DRAW====");
@@ -526,12 +545,12 @@ class Main {
                 this.inkCanvas.drawPreviousGesture(this.selectionOnHover);
                 this.pointAbove = this.inkCanvas.editPoint(this.selectionOnHover.samplePoints, e);
                 if (this.pointAbove) {
-                    console.log("point..... ");
-
+   //                 console.log("point..... ");
+   //                 console.log(this.pointAbove);
                 } else {
                     this.lineAbove = this.inkCanvas.editStrokes(this.selectionOnHover.samplePoints, e);
                     if (this.lineAbove) {
-                        console.log("line.....");
+    //                    console.log("line.....");
                     }
                 }
 
@@ -659,13 +678,59 @@ class Main {
 
             var stroke = new Stroke();
             stroke.points = sel.samplePoints;
-            return this.isPointBound(new Point(e.clientX, e.clientY), stroke);
+            var st = new Stroke();
+            for (var i = 0; i < stroke.points.length; i++) {
+                st.points.push(new Point(stroke.points[i].x, stroke.points[i].y +  sel.yscroll - $(document).scrollTop()));
+             }
+            if (sel.type == StrokeType.Bracket) {
+                for (var i = 0; i < sel.selectedElements.length; i++) {
+                    var el = $(sel.selectedElements[i].tagName).get(sel.selectedElements[i].index);
+                    if ((e.clientX > $(el).offset().left && e.clientX < $(el).offset().left + $(el).width())
+                        && (e.clientY > $(el).offset().top && e.clientY < $(el).offset().top + $(el).height())) {
+                        return true
+                    }
+                }
+                return false;
+            }
+            return this.isPointBound(new Point(e.clientX, e.clientY), st);
+    }
 
+    getRealHeightWidth(rectsList): Array<number> {
+        //finds the real Heights and Widths of DOM elements by iterating through their clientRectList.
+        var maxH = Number.NEGATIVE_INFINITY;
+        var minH = Number.POSITIVE_INFINITY;
+        var maxW = Number.NEGATIVE_INFINITY;
+        var minW = Number.POSITIVE_INFINITY;
+        $(rectsList).each(function (indx, elem) {
+            console.log($(elem).height());
+            if (elem["top"] + elem["height"] > maxH) {
+                maxH = elem["top"] + elem["height"];
+            }
+            if (elem["top"] < minH) {
+                minH = elem["top"];
+            }
+            if (elem["left"] < minW) {
+                minW = elem["left"];
+            }
+            if (elem["left"] + elem["width"] > maxW) {
+                maxW = elem["left"] + elem["width"];
+            }
+        });
+        return [(maxH - minH), (maxW - minW), minW, minH];
+    }
+
+    isInRect(e, elem): boolean {
+        if (e.clientX >= elem["left"] && e.clientX <= elem["left"] + elem["width"]) {
+            return e.clientY >= elem["top"] && e.clientY <= elem["top"] + elem["height"]
+        }
+        return false;
     }
 
     sampleLines(stroke :Stroke): Array<Line> {
         var sampleStroke = stroke.points;
         var lines = [];
+        if (!sampleStroke)
+            return;
         for (var i = 1; i < sampleStroke.length; i++) {
             lines.push(new Line(sampleStroke[i - 1], sampleStroke[i]));
         }
@@ -678,6 +743,9 @@ class Main {
       //  console.log("======isPointBound ");
       //  console.log(p);
         var xPoints = [];
+        if (!lines) {
+            return false;
+        }
         for (var i = 0; i < lines.length; i++) {
             var l = lines[i];
             if (p.y <= Math.max(l.p1.y, l.p2.y) && p.y >= Math.min(l.p1.y, l.p2.y)) {
@@ -717,6 +785,7 @@ class Main {
 
     switchSelection(strokeType) {
         console.log("Iselection switched to : " + strokeType);
+        var id = this.selection.id;
         switch (strokeType) {
             //////STROKE TYPE CHANGE
             case StrokeType.Marquee:
@@ -733,6 +802,7 @@ class Main {
                 this.selection = new LassoSelection();
                 break;
         }
+        this.selection.id = id;
         this.selection.start(this._startX, this._startY);
     }
     checkNoteBubble = (e): void => {
@@ -758,6 +828,11 @@ class Main {
         } else if (this.lineAbove) {
             this.isLineSelected = true;
             this.is_editing_selection = true;
+            console.log(this.lineAbove);
+            console.log(this.selectionOnHover.samplePoints);
+            console.log(e.clientY + " L " + $(document).scrollTop() + " D " + this.selectionOnHover.yscroll);
+            this.pivotPointLine = new Point(e.clientX, e.clientY + $(document).scrollTop() - this.selectionOnHover.yscroll);
+            this.pointIndex = this.findReplacementStroke(this.selectionOnHover.samplePoints, this.lineAbove.p1);
             document.body.appendChild(this.canvas);
         } else if (hitElem.nodeName == "A") {   
             console.log("atag");
@@ -778,7 +853,7 @@ class Main {
             document.body.appendChild(this.canvas);
             res = false;
         }
-        return res;
+        return res; 
     }
     isAboveLine(points: Array<Point>): boolean {
 

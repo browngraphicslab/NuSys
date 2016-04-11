@@ -5,6 +5,7 @@
     tags: string;
     stroke: Stroke;
     type: StrokeType;
+    yscroll: number;
     samplePoints: Array<Point>;
 
     public selectedElements: Array<any> = new Array<any>();

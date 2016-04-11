@@ -91,6 +91,8 @@
                                 trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
                           //      console.log(trueEl.childNodes[index]);
                                 this.addToHighLights(trueEl.childNodes[index].childNodes[j], indexList[i], j);
+                                trueEl.childNodes[index].childNodes[j].className += " "+this.id;
+
                             }
                             if (!trueEl.childNodes[index].childNodes[j]["innerHTML"]) {
                                 if (trueEl.childNodes[index].childNodes[j].nodeName == "WORD") {
@@ -130,6 +132,7 @@
                 trueEl.childNodes[indexList[i]].style.backgroundColor = "yellow";
             //    console.log(startIndex);
                 this.addToHighLights(trueEl.childNodes[indexList[i]], indexList[i], -1);
+                trueEl.childNodes[indexList[i]].className += " "+this.id;
                  
                 //if (trueEl.childNodes[index].childNodes[j]) {
                 //    trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
@@ -144,25 +147,7 @@
     }
 
     addToHighLights(el: Element, txtindx: Number, wordindx): void {
-
-        var index = $(el.tagName).index(el);
-        var obj = { type: "marquee", tagName: el.tagName, index: index };
-        if (el.tagName == "WORD" || el.tagName == "HILIGHT") {
-
-            var par = el.attributes[0]["ownerElement"].parentElement;
-            if (el.tagName == "WORD") {
-
-                var startIndex = Array.prototype.indexOf.call(el.parentElement.childNodes, el);
-                par = par.parentElement;
-                obj["wordIndx"] = wordindx;
-            }
-            var parIndex = $(par.tagName).index(par);
-            obj["par"] = par.tagName;
-            obj["parIndex"] = parIndex;
-            obj["txtnIndx"] = txtindx;
-            obj["val"] = el;
-        } 
-        this.selectedElements.push(obj);        
+   //     el.    
     }
 
     intersectWith(el): boolean {

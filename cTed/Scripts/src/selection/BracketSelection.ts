@@ -21,7 +21,7 @@ class BracketSelection extends AbstractSelection {
     end(x: number, y: number): void {
         this._endX = x;
         this._endY = y;
-
+        this.samplePoints = [new Point(this._startX, this._startY), new Point(this._endX, this._endY)];
         this.analyzeContent();
         console.log("bracket end" + x + ":" + y);
     } 

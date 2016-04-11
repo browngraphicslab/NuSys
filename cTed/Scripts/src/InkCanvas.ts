@@ -9,7 +9,7 @@ class InkCanvas {
     _context: CanvasRenderingContext2D;
     _activeStroke: Stroke; 
     _prevBrush: IBrush; 
-
+    _scroll: number;
     constructor(canvas: HTMLCanvasElement) {
         this._canvas = canvas;
         this._context = canvas.getContext("2d");
@@ -26,7 +26,7 @@ class InkCanvas {
     }
 
     draw(x: number, y: number) {
-        this._activeStroke.push(x,y);
+        this._activeStroke.push(x, y);
         this._brush.draw(x, y, this);
     }
 
@@ -60,7 +60,9 @@ class InkCanvas {
         this._prevBrush.drawPrevious(stroke, this);
     }
 
-    drawPointsAndLines(points: Array<Point>) {
+    drawPointsAndLines(sel: AbstractSelection) {
+        var points = sel.samplePoints;
+        this._scroll = sel.yscroll;
         this.clear();
         this.drawPoint(points[0]);
         this.drawline(points[0], points[points.length - 1]);
@@ -72,7 +74,7 @@ class InkCanvas {
     }
 
     drawPreviousGesture(sel: AbstractSelection) {
-            this.drawPointsAndLines(sel.samplePoints);
+            this.drawPointsAndLines(sel);
 
     }
 
@@ -91,8 +93,8 @@ class InkCanvas {
 
         ctx.fillStyle = '#ff0000';
         ctx.beginPath();
-        ctx.moveTo(p.x, p.y);
-        ctx.arc(p.x, p.y, 5, 0, Math.PI * 2, false);
+        ctx.moveTo(p.x, p.y - $(document).scrollTop() + this._scroll);
+        ctx.arc(p.x, p.y - $(document).scrollTop() +this._scroll, 5, 0, Math.PI * 2, false);
         ctx.fill();
     }
 
@@ -103,8 +105,8 @@ class InkCanvas {
         ctx.setLineDash([]);
         ctx.beginPath();
 
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
+        ctx.moveTo(p1.x, p1.y - $(document).scrollTop() + this._scroll);
+        ctx.lineTo(p2.x, p2.y - $(document).scrollTop() + this._scroll);
         ctx.stroke();
     }
     
@@ -112,7 +114,8 @@ class InkCanvas {
         var sampleStroke = points;
         var lines = [];
         for (var i = 1; i < sampleStroke.length; i++) {
-            if (Math.abs(e.clientX - sampleStroke[i].x) < 3 && Math.abs(e.clientY - sampleStroke[i].y) < 3) {
+  //          console.log(e.clientY + ": " + sampleStroke[i].y + " : " + $(document).scrollTop() + " : " + this._scroll);
+            if (Math.abs(e.clientX - sampleStroke[i].x) < 5  && Math.abs(e.clientY - sampleStroke[i].y + $(document).scrollTop() - this._scroll) < 5) {
                 this.focusPoint(sampleStroke[i]);
                 return sampleStroke[i];
             } 
@@ -123,13 +126,12 @@ class InkCanvas {
         var sampleStroke = points;
         var lines = [];
         for (var i = 0; i < sampleStroke.length; i++) {
-            console.log("DAXXXXXXXXF");
             if (i == 0) {
                 var line = new Line(sampleStroke[sampleStroke.length - 1], sampleStroke[0]);
             } else {
                 var line = new Line(sampleStroke[i - 1], sampleStroke[i])
             }
-            if (this.checkAboveLine(line, new Point(e.clientX, e.clientY))) {
+            if (this.checkAboveLine(line, new Point(e.clientX, e.clientY + $(document).scrollTop()))) {
                 this.focusLine(line);
                 return line;
             }
@@ -140,8 +142,8 @@ class InkCanvas {
         var ctx = this._context;
         ctx.beginPath();
       //  ctx.fillStyle = '#ff0000';
-        ctx.moveTo(line.p1.x, line.p1.y);
-        ctx.lineTo(line.p2.x, line.p2.y);
+        ctx.moveTo(line.p1.x, line.p1.y - $(document).scrollTop() + this._scroll);
+        ctx.lineTo(line.p2.x, line.p2.y - $(document).scrollTop() + this._scroll);
         ctx.lineWidth = 3;
         ctx.stroke();
     }
@@ -151,8 +153,8 @@ class InkCanvas {
         ctx.globalCompositeOperation = "source-over";
         ctx.fillStyle = '#0000FF';
         ctx.beginPath();
-        ctx.moveTo(p.x, p.y);
-        ctx.arc(p.x, p.y, 8, 0, Math.PI * 2, false);
+        ctx.moveTo(p.x, p.y - $(document).scrollTop() + this._scroll);
+        ctx.arc(p.x, p.y - $(document).scrollTop() + this._scroll, 8, 0, Math.PI * 2, false);
         ctx.fill();
     }
 
@@ -167,16 +169,14 @@ class InkCanvas {
 
     checkAboveLine(line: Line, mouse: Point): boolean {
         if (line.p1.x == line.p2.x) {
-            return (Math.abs(mouse.x - line.p1.x) < 5 && this.isBetween(line.p1.y, line.p2.y, mouse.y));
+            return (Math.abs(mouse.x - line.p1.x) < 5 && this.isBetween(line.p1.y + this._scroll, line.p2.y + this._scroll, mouse.y));
         }
         if (line.p1.y == line.p2.y) {
-            return (Math.abs(mouse.y - line.p1.y) < 5 && this.isBetween(line.p1.x, line.p2.x, mouse.x));
+            return (Math.abs(mouse.y - line.p1.y - this._scroll) < 5 && this.isBetween(line.p1.x, line.p2.x, mouse.x));
         }
-        var m1 = (mouse.y - line.p1.y) / (mouse.x - line.p1.x);
-        var m2 = (line.p2.y - mouse.y) / (line.p2.x - mouse.x);
-        // console.log((m1 == m2) && (line.p1.y <= mouse.y && mouse.y <= line.p2.y) && (line.p1.x <= mouse.x && mouse.x <= line.p2.x));
-        return (Math.abs(m1 - m2) < 0.15) && (this.isBetween(line.p1.y, line.p2.y, mouse.y)) && this.isBetween(line.p1.x, line.p2.x, mouse.x);
-
+        var m1 = (mouse.y - line.p1.y - this._scroll) / (mouse.x - line.p1.x);
+        var m2 = (line.p2.y + this._scroll - mouse.y) / (line.p2.x - mouse.x);
+        return (Math.abs(m1 - m2) < 0.3) && (this.isBetween(line.p1.y + this._scroll, line.p2.y + this._scroll, mouse.y)) && this.isBetween(line.p1.x, line.p2.x, mouse.x);
     }
 
     clear(): void {
