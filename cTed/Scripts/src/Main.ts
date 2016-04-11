@@ -335,6 +335,7 @@ class Main {
                 editedSelection.yscroll = $(document).scrollTop();
                 editedStroke.points = this.selectionOnHover.samplePoints;
                 var len = editedStroke.points.length;
+               
                 for (var i = 0; i < len; i++) {
                     editedStroke.points[i] = new Point(editedStroke.points[i].x, editedStroke.points[i].y + this.selectionOnHover.yscroll );
                 }
@@ -866,7 +867,7 @@ class Main {
         $(this.menuIframe).contents().find("#toggle").prop("checked", flag);
         //called to add or remove canvas when toggle has been changed
         this.is_active = flag;
-
+         
         if (this.is_active) {
             try {
                 document.body.appendChild(this.canvas);
