@@ -49,41 +49,41 @@ namespace NuSysApp
             Debug.WriteLine("fdsafdsa");
             //the switch here isn't actually strings. Look it up by debugging.
             object value;
-            switch (vm.LinkModel.InType)
+            if (vm.LinkModel.InFGDictionary != null)
             {
-                case "image":
-                    Debug.WriteLine("This links from a image with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
+                switch (SessionController.Instance.IdToControllers[vm.LinkModel.InAtomId].Model.ElementType)
+                {
+                    case ElementType.Image:
+                        Debug.WriteLine("This links from a image with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
 
-                    break;
-                case "text":
-                    Debug.WriteLine("This links from a text with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
-                    break;
-                case "media":
-                    Debug.WriteLine("This links from a text with values " + vm.LinkModel.InFGDictionary.TryGetValue("start", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("end", out value));
-                    break;
-                case "node":
-                    Debug.WriteLine("This links from a node with values");
-                    break;
+                        break;
+                    case ElementType.Text:
+                        Debug.WriteLine("This links from a text with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
+                        break;
+                    case ElementType.Audio:
+                        Debug.WriteLine("This links from a text with values " + vm.LinkModel.InFGDictionary.TryGetValue("start", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("end", out value));
+                        break;
+                }
             }
 
-            switch (vm.LinkModel.OutType)
+            if (vm.LinkModel.OutFGDictionary != null)
             {
-                case "image":
-                    Debug.Write("to a image with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
+                switch (SessionController.Instance.IdToControllers[vm.LinkModel.OutAtomId].Model.ElementType)
+                {
+                    case ElementType.Image:
+                        Debug.Write("to a image with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
 
-                    break;
-                case "text":
-                    Debug.Write("to a text with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
+                        break;
+                    case ElementType.Text:
+                        Debug.Write("to a text with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
 
-                    break;
-                case "media":
-                    Debug.Write("to a media with values " + vm.LinkModel.InFGDictionary.TryGetValue("start", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("end", out value));
-
-                    break;
-                case "node":
-                    Debug.Write("to a node");
-                    break;
+                        break;
+                    case ElementType.Audio:
+                        Debug.Write("to a media with values " + vm.LinkModel.InFGDictionary.TryGetValue("start", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("end", out value));
+                        break;
+                }
             }
+            
         }
         private void UpdateText()
         {
@@ -204,6 +204,15 @@ namespace NuSysApp
             var vm = (LinkViewModel)this.DataContext;
             var controller = (LinkElementController)vm.Controller;
             await controller.RequestDelete();
+        }
+
+        private void Edit_OnClick(object sender, RoutedEventArgs e)
+        {
+        }
+
+        public void changeIn(BiDictionary<string, object> dic)
+        {
+            ((LinkViewModel) DataContext).LinkModel.InFGDictionary = dic;
         }
     }
 }

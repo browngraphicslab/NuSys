@@ -15,6 +15,10 @@ namespace NuSysApp
         private ElementModel _model;
         private DebouncingDictionary _debouncingDictionary;
 
+        public Boolean DrawLink { get; set; }
+
+        public BezierLinkView _link;
+
         public delegate void AlphaChangedEventHandler(object source, double alpha);
 
         public delegate void DeleteEventHandler(object source);
@@ -59,6 +63,13 @@ namespace NuSysApp
             {
                 LibraryElementModel.OnDelete += Delete;
             }
+            DrawLink = false;
+        }
+
+        public void drawFineGrain(BezierLinkView link)
+        {
+            _link = link;
+            DrawLink = true;
         }
 
         public void Dispose()

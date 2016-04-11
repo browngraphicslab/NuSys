@@ -220,9 +220,9 @@ namespace NuSysApp
                         return;
                     }
                     //do stuff here to input proper parameters for fine grain linking. Next time make different functions for each type of dictionary
-                    Dictionary<string, object> inFgDictionary = vm.Controller.CreateImageDictionary(200, 100, 100, 200);
-                    Dictionary<string, object> outFgDictionary = vm.Controller.CreateMediaDictionary(new TimeSpan(10,1,1,1), new TimeSpan(10, 1, 1, 1));
-                    Debug.WriteLine("test");
+                    Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100, 100, 200);
+                    Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100,100,100,100);
+                    Debug.WriteLine("nodetemplate");
                     vm.Controller.RequestLinkTo(dc.Id, inFgDictionary, outFgDictionary);
                 }
             }

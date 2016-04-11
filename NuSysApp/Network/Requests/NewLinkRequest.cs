@@ -22,8 +22,8 @@ namespace NuSysApp
             _message["creator"] = creator;
             _message["contentId"] = contentId;
             //new
-            _message["inType"] = SessionController.Instance.IdToControllers[id1];
-            _message["outType"] = SessionController.Instance.IdToControllers[id2];
+            //_message["inType"] = SessionController.Instance.IdToControllers[id1];
+            //_message["outType"] = SessionController.Instance.IdToControllers[id2];
             _message["inFGDictionary"] = inFineGrainDictionary;
             _message["outFGDictionary"] = outFineGrainDictionary;
 
