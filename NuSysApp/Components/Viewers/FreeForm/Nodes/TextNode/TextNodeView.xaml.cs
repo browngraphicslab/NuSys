@@ -1,5 +1,6 @@
 ﻿using Windows.UI;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -15,9 +16,11 @@ using Windows.UI.Xaml.Media.Imaging;
 using System.Threading.Tasks;
 using Windows.Media.Capture;
 using Windows.Storage.Streams;
+using Windows.UI.Core;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Shapes;
+using MyToolkit.Converters;
 using MyToolkit.Utilities;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -39,7 +42,12 @@ namespace NuSysApp
         private static int _count = 0;
         private bool navigated = false;
         private string speechString="";
-        private Rectangle r;
+        private Stack _inkStack = new Stack();
+
+        private InqCanvasView _inqView;
+        private Rectangle _curr;
+        private Rectangle _marker;
+
 
         public TextNodeView(TextNodeViewModel vm)
         {
@@ -90,36 +98,6 @@ namespace NuSysApp
             DataContext = null;
         }
 
-        private void SetUpInking()
-        {
-            var vm = (TextNodeViewModel)DataContext;
-            var inqModel = new InqCanvasModel(SessionController.Instance.GenerateId());
-            var inqViewModel = new InqCanvasViewModel(inqModel, new Size(vm.Width, vm.Height));
-
-            var inqView = new InqCanvasView(inqViewModel);
-            inqView.IsEnabled = true;
-            inkerCanvas.Children.Clear();
-            r = new Rectangle();
-            r.Opacity = 0.5;
-            r.Height = 100;
-            r.Fill = new SolidColorBrush(Colors.LightSlateGray);
-
-            inkerCanvas.Children.Add(r);
-            inkerCanvas.Children.Add(inqView);
-            _savedForInking = _text;
-            List<InqLineModel> lines = new List<InqLineModel>();
-            inqModel.LineFinalizedLocally += async delegate (InqLineModel model)
-            {
-                var nm = model.GetScaled(Constants.MaxCanvasSize);
-
-                lines.Add(nm);
-                var texts = await InkToText(lines);
-                if (texts.Count > 0)
-                    UpdateText(_savedForInking + " " + texts[0]);
-                UpdateController(_text);
-            };
-        }
-
         private async void UpdateText(String str)
         {
             if (!string.IsNullOrEmpty(str))
@@ -157,14 +135,97 @@ namespace NuSysApp
                 SetUpInking();
                 inker.Visibility = Visibility.Visible;
                 //FlipOpen.Begin();
+                SetImage("ms-appx:///Assets/icon_whitex.png", InkImg);
             }
             else
             {
                 inker.Visibility = Visibility.Collapsed;
-
+                SetImage("ms-appx:///Assets/node icons/pen.png", InkImg);
                 //FlipClose.Begin();
             }
             _isopen = !_isopen;
+        }
+
+
+
+        private void SetUpInking()
+        {
+            var vm = (TextNodeViewModel)DataContext;
+            var inqModel = new InqCanvasModel(SessionController.Instance.GenerateId());
+            var inqViewModel = new InqCanvasViewModel(inqModel, new Size(vm.Width, vm.Height));
+
+            _inqView = new InqCanvasView(inqViewModel);
+            _inqView.IsEnabled = true;
+
+            ResetInkingCanvas();
+            //_inqView.PointerPressed += InkerClick;
+
+            inkerCanvas.Children.Add(_curr);
+            inkerCanvas.Children.Add(_inqView);
+            inkerCanvas.Children.Add(_marker);
+
+            _savedForInking = _text;
+            List<InqLineModel> lines = new List<InqLineModel>();
+            inqModel.LineFinalizedLocally += async delegate (InqLineModel model)
+            {
+                var nm = model.GetScaled(Constants.MaxCanvasSize);
+
+                lines.Add(nm);
+                var texts = await InkToText(lines);
+                if (texts.Count > 0)
+                    UpdateText(_savedForInking + " " + texts[0]);
+                UpdateController(_text);
+            };
+        }
+
+        private void ResetInkingCanvas()
+        {
+            inkerCanvas.Children.Clear();
+            _curr = new Rectangle();
+            _marker = new Rectangle();
+            _curr.Opacity = 0.5;
+            _marker.Opacity = 0.1;
+            _curr.Height = 100;
+            _marker.Height = 100;
+            _marker.Width = 30;
+            _marker.HorizontalAlignment = HorizontalAlignment.Left;
+            _curr.Fill = new SolidColorBrush(Color.FromArgb(1, 242, 242, 242));
+            _marker.Stroke = new SolidColorBrush(Colors.LightSlateGray);
+            _marker.Fill = new SolidColorBrush(Color.FromArgb(1, 242, 242, 242));
+
+            _marker.PointerPressed += InkerClick;
+        }
+
+        private void InkerClick(Object sender, PointerRoutedEventArgs e)
+        {
+            SetUpInking();
+            e.Handled = false;
+            _inqView.OnPointerPressed(sender, e);
+        }
+
+
+        private void OnInkSpace(object sender, RoutedEventArgs e)
+        {
+            SetUpInking();
+        }
+
+        private void OnInkPeriod(object sender, RoutedEventArgs e)
+        {
+            UpdateText(_text + ".");
+            UpdateController(_text);
+            SetUpInking();
+        }
+
+        private void OnInkBackspace(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void OnInkReturn(object sender, RoutedEventArgs e)
+        {
+            UpdateText(_text + "<br>");
+            UpdateController(_text);
+            SetUpInking();
         }
 
         void wvBrowser_ScriptNotify(object sender, NotifyEventArgs e)
@@ -184,8 +245,15 @@ namespace NuSysApp
             controller.LibraryElementModel?.SetContentData(vm, s);
         }
 
-        
-        
+        public void SetImage(String url, Image buttonName)
+        {
+            Uri imageUri = new Uri(url, UriKind.Absolute);
+            BitmapImage imageBitmap = new BitmapImage(imageUri);
+            buttonName.Source = imageBitmap;
+        }
+
+
+
         public NodeTemplate NodeTpl
         {
             get { return nodeTpl; }
@@ -271,7 +339,8 @@ namespace NuSysApp
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             inker.Height += e.Delta.Translation.Y;
-            r.Height += e.Delta.Translation.Y;
+            _curr.Height += e.Delta.Translation.Y;
+            _marker.Height += e.Delta.Translation.Y;
         }
     }
 }

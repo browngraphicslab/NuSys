@@ -46,7 +46,7 @@
                         <Image Source="ms-appx:///Assets/node icons/text.png" Height="25" Width="25" Stretch="Uniform"></Image>
                     </Button>
                     <Button Margin="0,2,0,2" x:Name="EditInk"  Click="OnInkClick" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
-                        <Image Source="ms-appx:///Assets/node icons/pen.png" Height="25" Width="25"></Image>
+                        <Image Name ="InkImg" Source="ms-appx:///Assets/node icons/pen.png" Height="25" Width="25"></Image>
                     </Button>
                     <Button  Margin="0,2,0,2" x:Name="Record" PointerPressed="RecordButton_OnClick" PointerReleased="RecordButton_Released"  Background="#9cc5c2" Style="{StaticResource NodeSubMenuItem}">
                         <Image Source="ms-appx:///Assets/node icons/record.png" Height="25" Width="25" IsHitTestVisible="False"></Image>
@@ -68,25 +68,44 @@
                             <PlaneProjection RotationY="0"></PlaneProjection>
                         </Grid.Projection>-->
                         <StackPanel Orientation ="Vertical">
-                            <Grid x:Name="inker" Visibility="Collapsed">
-                                <Grid x:Name="inkerCanvas">
+                            <Grid x:Name="inker" Visibility="Collapsed" >
+                                <StackPanel Orientation="Vertical">
+                                    <Grid x:Name="inkerCanvas">
 
                                     <Rectangle Height="100" Fill="Gray"></Rectangle>
                                     <!--<Grid.Projection>
                                     <PlaneProjection RotationY="0"></PlaneProjection>
                                 </Grid.Projection>-->
-                                </Grid>
-                                <Grid x:Name="resizer" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="20"
-                    ManipulationDelta="Resizer_OnManipulationDelta" ManipulationMode="All">
-                                    <Image x:Name="resizerImage" Source="/Assets/resizer.png" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                                        <Image.RenderTransform>
-                                            <RotateTransform CenterX="0.5" CenterY="0.5" Angle="90" />
-                                        </Image.RenderTransform>
-                                    </Image>
-                                </Grid>
-                                <Grid.RenderTransform>
-                                    <TranslateTransform Y="0"></TranslateTransform>
-                                </Grid.RenderTransform>
+                                    </Grid>
+
+                                    <Grid x:Name="inkerButtons" Background="#f2f2f2">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center">
+                                            <Button x:Name="inkSpace" Click="OnInkSpace" Style="{StaticResource InkToTextMenuItem}" Background="#777777" Margin="0,5,0,0">
+                                                <TextBlock FontSize="10" Text="SPACE" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+                                            </Button>
+                                            <Button x:Name="inkPeriod" Click ="OnInkPeriod" Style="{StaticResource InkToTextMenuItem}" Background="#777777" Margin="0,5,0,0">
+                                                <TextBlock FontSize="10" Text="." VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+                                            </Button>
+                                            <!--<Button x:Name="inkBackspace" Click="OnInkBackspace" Style="{StaticResource InkToTextMenuItem}" Background="#9cc5c2">
+                                                <TextBlock Text="BACK" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+                                            </Button>-->
+                                            <Button x:Name="inkReturn" Click="OnInkReturn" Style="{StaticResource InkToTextMenuItem}" Background="#777777" Margin="0,5,0,0">
+                                                <TextBlock FontSize="10" Text="ENTER" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <Grid x:Name="resizer" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="15"  Background="#f2f2f2" ManipulationDelta="Resizer_OnManipulationDelta" ManipulationMode="All">
+                                        <!--<Image x:Name="resizerImage" Source="/Assets/resizer.png" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="10,10,0,0">
+                                            <Image.RenderTransform>
+                                                <RotateTransform CenterX="0.5" CenterY="0.5" Angle="90" />
+                                            </Image.RenderTransform>
+                                        </Image>-->
+                                        <TextBlock FontSize="20" Text="=" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,5"></TextBlock>
+
+                                    </Grid>
+
+                                </StackPanel>
                             </Grid>
 
                             <Grid x:Name="myGrid" Width="{Binding Width}" Height="{Binding Height}">

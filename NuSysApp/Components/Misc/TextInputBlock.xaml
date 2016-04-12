@@ -42,10 +42,8 @@
         </Grid.ColumnDefinitions>
 
         <Canvas x:Name="InkBubble" Visibility="Collapsed">
-            <Canvas.RenderTransform>
-                <TranslateTransform X="-40" Y =" -80"></TranslateTransform>
-            </Canvas.RenderTransform>
-            <Image Name="bubble"  Source="ms-appx:///Assets/menububble2.png" Width="200">
+
+            <Image Name="bubble" Source="ms-appx:///Assets/menububble2.png" Width="200">
             </Image>
             <!--{Binding Width, ElementName=bubble}-->
             <Grid x:Name="Inker" Width="194" Height="68" Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">

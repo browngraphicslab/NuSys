@@ -30,9 +30,9 @@
             <TextBlock Visibility="Collapsed" Grid.Row="0" x:Name="metadataButton" HorizontalAlignment="Right" Text="MetaData" Foreground="White" FontSize="24" Margin="0,0,25,0" Tapped="metaData_OnTapped"/>
             <TextBlock Grid.Row="0" x:Name="exitButton" HorizontalAlignment="Right" VerticalAlignment="Top" Text="x" Foreground="White" FontSize="24" Tapped="closeDV_OnTapped"/>
 
-            <StackPanel Grid.Row="1"  x:Name="TitleEnter" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,20">
+            <StackPanel Grid.Row="1" Canvas.ZIndex="100" x:Name="TitleEnter" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,20">
                 <!--<TextBlock Text="{Binding Title}" Foreground="White" FontSize="30" CharacterSpacing="45" HorizontalAlignment="Stretch"/>-->
-                <local:TextInputBlock  x:Name ="TitleBox" Text="{Binding Title}"  KeyUp="TitleChanged"  LeftJustified="False" SetHeight="30" HorizontalAlignment="Stretch">
+                <local:TextInputBlock  x:Name ="TitleBox" Text="{Binding Title}"  BubbleTop="False" KeyUp="TitleChanged"  LeftJustified="False" SetHeight="30" HorizontalAlignment="Stretch">
                 </local:TextInputBlock>
                 <Rectangle HorizontalAlignment="Stretch" Fill="White" Height="2"/>
             </StackPanel>
@@ -53,7 +53,7 @@
                     </Grid.ColumnDefinitions>
                     
                     <TextBlock Grid.Column="0" Text="TAGS" Foreground="White" FontSize="30" CharacterSpacing="45" VerticalAlignment="Center"></TextBlock>
-                    <local:TextInputBlock Grid.Column="1" x:Name ="NewTagBox" LeftJustified="False" SetHeight="30"  KeyUp="NewTagBox_OnKeyUp" HorizontalAlignment="Stretch">
+                    <local:TextInputBlock Grid.Column="1" x:Name ="NewTagBox" BubbleTop ="True" LeftJustified="False" SetHeight="30"  KeyUp="NewTagBox_OnKeyUp" HorizontalAlignment="Stretch">
                         </local:TextInputBlock>
                         <Button Grid.Column="2" x:Name="AddTagButton"  Height="30" Width="30" Content="+" Foreground="White" Click="AddTagButton_OnClick"  Background="DarkGray" VerticalAlignment="Center"></Button>
                     <Button Grid.Column="3" x:Name="SuggestButton"  Height="40" Width="100" Content="Suggest" Foreground="White" Click="AddTagButton_OnClick"  Background="DarkGray" VerticalAlignment="Center" Margin="10,0,0,0"></Button>

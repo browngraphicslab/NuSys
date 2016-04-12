@@ -43,7 +43,7 @@
             <Grid>
                 <Rectangle x:Name="Rect" Fill="LightGray" RadiusX="5" RadiusY="5" Width="260"  HorizontalAlignment="Left"/>
                 <StackPanel Orientation="Horizontal" >
-                    <local:TextInputBlock x:Name ="Annotation" LeftJustified="True" SetHeight="30" HorizontalAlignment="Stretch" Loaded="Annotation_Loaded"></local:TextInputBlock>
+                    <local:TextInputBlock x:Name ="Annotation" BubbleTop="True"  LeftJustified="False" SetHeight="30" HorizontalAlignment="Stretch" Loaded="Annotation_Loaded"></local:TextInputBlock>
                 </StackPanel>
             </Grid>
             <Button Margin="0,2,0,2" x:Name="Delete" Visibility="{Binding IsSelected, Converter={StaticResource vConverter}}" Click="Delete_OnClick" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">

@@ -103,7 +103,7 @@ namespace NuSysApp
             }
         }
 
-        private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        public void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
 
             if (_pointerId != uint.MaxValue)
@@ -121,6 +121,7 @@ namespace NuSysApp
             AddHandler(PointerReleasedEvent, _pointerReleasedHandler, true);
             IsPressed = true;
             _mode.OnPointerPressed(this, e);
+            
         }
 
         private void OnPointerMoved(object sender, PointerRoutedEventArgs e)
@@ -131,6 +132,7 @@ namespace NuSysApp
             }
 
             _mode.OnPointerMoved(this, e);
+          
         }
 
         private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
@@ -150,6 +152,7 @@ namespace NuSysApp
             IsPressed = false;
 
             _mode.OnPointerReleased(this, e);
+          
 
         }
 
