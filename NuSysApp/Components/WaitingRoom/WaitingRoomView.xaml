@@ -751,20 +751,20 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid Background="{StaticResource color2}">
-        <TextBlock Margin="0,80,0,0" VerticalAlignment="Top"  Height="75" Width="300" TextAlignment="Center" FontSize="45" Foreground="{StaticResource foreground6}" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">NuSys</TextBlock>
+    <Grid Background="{StaticResource color1}">
+        <TextBlock Margin="0,80,0,0" VerticalAlignment="Top"  Height="75" Width="300" TextAlignment="Center" FontSize="45" Foreground="{StaticResource darkforeground}" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">NuSys</TextBlock>
 
         <Grid x:Name="workspace" Visibility="Collapsed">
             <Grid.RenderTransform>
             <CompositeTransform/>
             </Grid.RenderTransform>
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Height="620" Margin="0,100,0,0">
-                <TextBlock Foreground="{StaticResource foreground6}" TextAlignment="Center" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" FontSize="24" Margin="0,0,0,10">make a workspace:</TextBlock>
-                <TextBox Style="{StaticResource LoginBox}" Foreground="{StaticResource foreground6}" Margin="0,0,0,10"  Name="NewWorkspaceName" FontSize="18" Height="30" Width="350" Background="{StaticResource color6}" PlaceholderText="Title"></TextBox>
+                <TextBlock Foreground="{StaticResource darkforeground}" TextAlignment="Center" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" FontSize="24" Margin="0,0,0,10">make a workspace:</TextBlock>
+                <TextBox Style="{StaticResource LoginBox}" Foreground="{StaticResource darkforeground}" Margin="0,0,0,10"  Name="NewWorkspaceName" FontSize="18" Height="30" Width="350" Background="{StaticResource color6}" PlaceholderText="Title"></TextBox>
                 <Button Click="NewWorkspaceOnClick" Name="NewWorkspaceButton" IsEnabled="False" Foreground="{StaticResource color2}" FontSize="20" Style="{StaticResource WaitingRoomButton}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="125" Background="{StaticResource color6}">
                     create
                 </Button>
-                <TextBlock Foreground="{StaticResource foreground6}" TextAlignment="Center" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" FontSize="24" Margin="0,20,0,10">choose a workspace:</TextBlock>
+                <TextBlock Foreground="{StaticResource darkforeground}" TextAlignment="Center" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" FontSize="24" Margin="0,20,0,10">choose a workspace:</TextBlock>
                 <ListBox Name="List" SelectionMode="Single" IsEnabled="True" Foreground="{StaticResource color2}" FontSize="24" Height="275" Width="350" Background="{StaticResource color6}" Margin="0,0,0,10">
                 </ListBox>
                 <Button Click="Join_Workspace_Click" Margin="0,0,0,20"  Name="JoinWorkspaceButton" IsEnabled="False" Foreground="{StaticResource color2}" FontSize="20" Style="{StaticResource WaitingRoomButton}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="125" Background="{StaticResource color6}">
@@ -772,7 +772,7 @@
                 </Button>
                
                 <Image Source="ms-appx:///Assets/icon_refresh.png" Height="25" Width="30"  Margin="10,10,10,0"></Image>
-                <TextBlock TextAlignment="Center" Foreground="{StaticResource foreground6}">Refresh</TextBlock>
+                <TextBlock TextAlignment="Center" Foreground="{StaticResource darkforeground}">Refresh</TextBlock>
             </StackPanel>
         </Grid>
             
@@ -784,9 +784,9 @@
             </Grid.RenderTransform>
             <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Height="200" Width="500">
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Height="200" Width="500">
-                    <TextBlock HorizontalAlignment="Center" Height="35" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Foreground="{StaticResource foreground6}" FontSize="20">Username:</TextBlock>
+                    <TextBlock HorizontalAlignment="Center" Height="35" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Foreground="{StaticResource darkforeground}" FontSize="20">Username:</TextBlock>
                     <TextBox Style="{StaticResource LoginBox}"  Name="usernameInput" HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Width="350" PlaceholderText="USERNAME"></TextBox>
-                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Margin="0,20,0,0" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Foreground="{StaticResource foreground6}" FontSize="20">Password:</TextBlock>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Margin="0,20,0,0" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Foreground="{StaticResource darkforeground}" FontSize="20">Password:</TextBlock>
                     <PasswordBox Style="{StaticResource PasswordBox}" Name="passwordInput" HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Width="350" PlaceholderText="PASSWORD"></PasswordBox>
                 </StackPanel>
 
