@@ -15,14 +15,16 @@
     <SolidColorBrush x:Key="color8" Color="DarkGray"/>  dark gray
     -->
 
+
     <SolidColorBrush x:Key="color1" Color="#FFC7DEDE"/>   <!-- lightest blue -->
     <SolidColorBrush x:Key="color2" Color="#FF6B9397"/>   <!-- medium blue -->
     <SolidColorBrush x:Key="color3" Color="#FF113D40"/>   <!-- darkest blue -->
-    <SolidColorBrush x:Key="color4" Color="#FFD397A0"/>   <!-- red -->
-    <SolidColorBrush x:Key="color5" Color="#8f98a1"/>   <!-- dark gray blue -->
+    <SolidColorBrush x:Key="color4" Color="#FFD397A0"/>   <!-- red 981A4D -->
+    <SolidColorBrush x:Key="color5" Color="#FFDBE7FE"/>   <!-- dv bg blue -->
     <SolidColorBrush x:Key="color6" Color="White"/>     <!-- background white-->
     <SolidColorBrush x:Key="foreground6" Color="White"/><!-- foreground white-->
     <SolidColorBrush x:Key="darkforeground" Color="DarkSlateGray"/><!-- foreground white-->
-    <SolidColorBrush x:Key="color7" Color="#FFD0D0D4"/> <!-- light gray-->
+    <SolidColorBrush x:Key="color7" Color="#E6E6E6"/> <!-- light gray-->
     <SolidColorBrush x:Key="color8" Color="DarkGray"/>  <!-- dark gray-->
+    <SolidColorBrush x:Key="color9" Color="#C8C8C8"/>
 </ResourceDictionary>

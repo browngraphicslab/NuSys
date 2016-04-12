@@ -203,7 +203,7 @@ namespace NuSysApp
 
             Button tagBlock = new Button();
             tagBlock.Tapped += TagBlock_Tapped;
-            tagBlock.Background = new SolidColorBrush(Constants.color9);
+            tagBlock.Background = new SolidColorBrush(Constants.salmonColor);
             tagBlock.Content = stackPanel;
             tagBlock.Height = 30;
             tagBlock.Padding = new Thickness(5);

@@ -123,7 +123,7 @@ namespace NuSysApp
             {
                 //sorry about this - should also be in frontend and not in viewmodel
                 Button tagBlock = new Button();
-                tagBlock.Background = new SolidColorBrush(Constants.color9);
+                tagBlock.Background = new SolidColorBrush(Constants.salmonColor);
                 tagBlock.Content = tag;
                 tagBlock.Height = 30;
                 tagBlock.Padding = new Thickness(5);
