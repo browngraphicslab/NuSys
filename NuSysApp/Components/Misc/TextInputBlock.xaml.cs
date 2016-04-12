@@ -212,7 +212,10 @@ namespace NuSysApp
                 _lines.Add(nm);
                 var texts = await InkToText(_lines);
                 if (texts.Count > 0)
+                {
                     TextBox.Text = _savedForInking + " " + texts[0];
+                    TextChanged?.Invoke(this, TextBox.Text.Trim());
+                }
             };
         }
 

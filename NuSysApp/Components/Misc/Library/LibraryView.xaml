@@ -265,7 +265,8 @@
                 </PivotItem.Header>
             </PivotItem>
         </Pivot>
-        <TextBox x:Name="Searchfield" Style="{StaticResource SearchBoxStyle}"  TextChanging="TextBox_OnTextChanging"  PlaceholderText="SEARCH" FontSize="16" BorderThickness="1" BorderBrush="#9cc5c2"  Background="White"  Foreground="White" VerticalAlignment="Bottom" Height="38" Width="400" HorizontalAlignment="Left"></TextBox>
+        <!--<TextBox x:Name="Searchfield" Style="{StaticResource SearchBoxStyle}"  TextChanging="TextBox_OnTextChanging"  PlaceholderText="SEARCH" FontSize="16" BorderThickness="1" BorderBrush="#9cc5c2"  Background="White"  Foreground="White" VerticalAlignment="Bottom" Height="38" Width="400" HorizontalAlignment="Left"></TextBox>-->
+        <local:TextInputBlock x:Name ="Searchfield" BubbleTop="True" TextChanged="TextBox_OnTextChanging"  LeftJustified="False" SetHeight="38" VerticalAlignment="Bottom" Width="400"  HorizontalAlignment="Left"></local:TextInputBlock>
 
         <!--<Image Tapped="Folder_Tapped" Source ="ms-appx:///Assets/icon_upload.png" Margin="320,542,13,506" Height="30" VerticalAlignment="Bottom"></Image>-->
         <!--<Image Source="ms-appx:///Assets/icon_search.png" Height="20"  Margin="320,512,0,0"/>-->
@@ -275,7 +276,6 @@
 
         <Image x:Name="Graph" Source="ms-appx:///Assets/icon_new_workspace.png"  Height="20" VerticalAlignment="Top" Margin="0,15,10,0" ManipulationMode="TranslateX, TranslateY" PointerPressed="Graph_OnPointerPressed" ManipulationStarted="Graph_OnManipulationStarted" ManipulationDelta="Graph_OnManipulationDelta" ManipulationCompleted="Graph_OnManipulationCompleted" 
                HorizontalAlignment="Right"/>
-
         <!--<ComboBox x:Name="SortBox" SelectionChanged="ComboBox1_OnSelectionChanged" Width="100" PlaceholderText="Sort by..." Margin="330,50,0,0" Foreground="White">
             <x:String>Title</x:String>
             <x:String>Node type</x:String>
