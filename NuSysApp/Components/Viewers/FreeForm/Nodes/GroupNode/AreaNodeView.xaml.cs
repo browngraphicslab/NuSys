@@ -28,6 +28,7 @@ namespace NuSysApp
         private ElementType _elementType;
         private Image _dragItem;
         private DragOutMode _dragOutMode;
+        private DuplicateNodeMode _duplicateNodeMode;
 
         public AreaNodeView(AreaNodeViewModel vm)
         {
@@ -47,6 +48,7 @@ namespace NuSysApp
             _dragOutMode = new DragOutMode(this);
             _dragOutMode.Activate();
 
+            
         }
 
 

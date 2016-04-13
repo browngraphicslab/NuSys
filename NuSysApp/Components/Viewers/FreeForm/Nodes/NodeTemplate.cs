@@ -210,16 +210,35 @@ namespace NuSysApp
             xCanvas.Children.Remove(_dragItem);
 
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
-            var p = args.GetCurrentPoint(null).Position;
+            var p = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
             var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(p.X, p.Y, 300, 300));
-
+            var send = (FrameworkElement) sender;
             if (_currenDragMode == DragMode.Duplicate)
             {
-
+               
                 var vm = (ElementViewModel)DataContext;
-                vm.Controller.RequestDuplicate(r.X, r.Y, new Message(await vm.Model.Pack()));
-            }
+                
 
+                var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
+                hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement) is GroupNodeView).ToList();
+                if (hitsStart.Any())
+                {
+                    var first = (FrameworkElement) hitsStart.First();
+                    var vm1 = (GroupNodeViewModel) first.DataContext;
+                    var groupnode = (GroupNodeView)first;
+                    var np = new Point(p.X - vm1.Model.Width / 2, p.Y - vm1.Model.Height / 2);
+                    var canvas = groupnode.FreeFormView.AtomContainer;
+                    var targetPoint = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(canvas).TransformPoint(p);
+                    p = args.GetCurrentPoint(first).Position; ;
+                   
+                   vm.Controller.RequestDuplicate(targetPoint.X, targetPoint.Y, new Message(await vm.Model.Pack()));
+                }
+                else
+                {
+                    vm.Controller.RequestDuplicate(r.X, r.Y, new Message(await vm.Model.Pack()));
+                }
+            }
+            
             /*
             if (_currenDragMode == DragMode.Tag)
             {
