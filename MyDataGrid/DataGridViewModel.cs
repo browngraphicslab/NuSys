@@ -12,5 +12,11 @@ namespace MyDataGrid
 
         public ObservableCollection<HarshHeader> Header { get; set; } 
 
+        public ObservableCollection<GridRowCell> Data { get; set; } 
+
+        public int NumRows { get; set; }
+
+        public int NumCols { get; set; }
+
     }
 }

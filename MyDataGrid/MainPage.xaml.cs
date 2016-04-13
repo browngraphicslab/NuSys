@@ -25,19 +25,30 @@ namespace MyDataGrid
     {
         public MainPage()
         {
-          
-
             
             var header1 = new HarshHeader {ColIndex = 0, Title = "Header0"};
             var header2 = new HarshHeader {ColIndex = 1, Title = "Header1"};
             var header3 = new HarshHeader {ColIndex = 2, Title = "Header2"};
             var header4 = new HarshHeader {ColIndex = 3, Title = "Header3"};
 
+            var row1 = new GridRowCell {ColIndex = 0, RowIndex = 0, Title = "R0C0"};
+            var row2 = new GridRowCell { ColIndex = 1, RowIndex = 0, Title = "R1C0" };
+            var row3 = new GridRowCell { ColIndex = 2, RowIndex = 0, Title = "R2C0" };
+            var row4 = new GridRowCell { ColIndex = 3, RowIndex = 0, Title = "R3C0" };
+
             var vm = new DataGridViewModel();
             vm.Header = new ObservableCollection<HarshHeader>{header1, header2, header3, header4};
-            
+            vm.Data = new ObservableCollection<GridRowCell> {row1, row2, row3, row4};
+            vm.NumCols = vm.Header.Count;
+            vm.NumRows = vm.Data.Count/vm.Header.Count;
             DataContext = vm;
             this.InitializeComponent();
+
+
+            var dg = new DataGrid(vm);
+            dg.Width = 500;
+            dg.Height = 500;
+            main.Children.Add(dg);
 
         }
     }

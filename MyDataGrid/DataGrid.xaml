@@ -10,28 +10,82 @@
     d:DesignWidth="400">
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="LightGray">
-        <ItemsControl ItemsSource="{Binding Header}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel x:Name="colContainer" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" />
-                </ItemsPanelTemplate>
+        <StackPanel Orientation="Vertical">
+            <ItemsControl ItemsSource="{Binding Header}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel x:Name="colContainer" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                    </ItemsPanelTemplate>
 
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Grid x:Name="grid" DataContext="{Binding}">
-                        <TextBlock Text="{Binding Title}" HorizontalAlignment="Left"></TextBlock>
-                        <Rectangle Fill="Red" Width="10" Height="20" HorizontalAlignment="Right" ManipulationMode="TranslateX" ManipulationDelta="UIElement_OnManipulationDelta">
-                            <Rectangle.RenderTransform>
-                                <TranslateTransform X="-10"></TranslateTransform>
-                            </Rectangle.RenderTransform>
-                        </Rectangle>
-                    </Grid>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid x:Name="grid" DataContext="{Binding}" Width="100">
+                            <TextBlock Text="{Binding Title}" HorizontalAlignment="Left"></TextBlock>
+                            <Rectangle Fill="Red" Width="10" Height="20" HorizontalAlignment="Right" ManipulationMode="TranslateX" ManipulationDelta="UIElement_OnManipulationDelta">
+                                <Rectangle.RenderTransform>
+                                    <TranslateTransform X="-10"></TranslateTransform>
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
             
 
-        </ItemsControl>
+            </ItemsControl>
 
+            <ScrollViewer>
+                <local:GridAwareItemsControl ItemsSource="{Binding Data}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Grid local:GridAutoLayout.NumberOfRows="{Binding NumRows}"
+                                  local:GridAutoLayout.NumberOfColumns="{Binding NumCols}">
+                            </Grid>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+
+                            <TextBlock Text="{Binding Title}" Grid.Row="{Binding RowIndex}" Grid.Column="{Binding ColIndex}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></TextBlock>
+
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </local:GridAwareItemsControl>
+                <!--<Grid x:Name="rowTable">
+                    <ItemsControl ItemsSource="{Binding Rows}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+
+                                <ItemsControl ItemsSource="{Binding}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <Canvas/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid x:Name="rowGrid" DataContext="{Binding}" Grid.Row="{Binding RowIndex}" Grid.Column="{Binding ColIndex}">
+                                                <TextBlock Text="{Binding Title}"  HorizontalAlignment="Left"></TextBlock>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>-->
+
+            </ScrollViewer>
+
+        </StackPanel>
     </Grid>
+
+    
+
 </UserControl>
+

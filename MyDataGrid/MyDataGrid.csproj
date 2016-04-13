@@ -102,6 +102,9 @@
     <Compile Include="DataGrid.xaml.cs">
       <DependentUpon>DataGrid.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GridAutoLayout.cs" />
+    <Compile Include="GridAwareItemsControl.cs" />
+    <Compile Include="GridRowCell.cs" />
     <Compile Include="HarshHeader.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>

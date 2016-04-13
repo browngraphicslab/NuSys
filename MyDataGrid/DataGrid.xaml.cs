@@ -21,9 +21,21 @@ namespace MyDataGrid
 {
     public sealed partial class DataGrid : UserControl
     {
-        public DataGrid()
+        public DataGrid(DataGridViewModel vm)
         {
             this.InitializeComponent();
+
+
+            //foreach (var row in vm.Rows)
+            //{
+            //    rowTable.RowDefinitions.Add(new RowDefinition());
+            //}
+
+            //foreach (var col in vm.Rows[0])
+            //{
+            //    rowTable.ColumnDefinitions.Add(new ColumnDefinition {Width = new GridLength(100)});
+            //}
+            
         }
 
         private void UIElement_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
