@@ -29,14 +29,20 @@ namespace NuSysApp
         private bool _needToCreateSizeDependentResources;
         private bool _needToRedrawInkSurface;
 
+        public delegate void InkStrokeEventHandler(PhilInqCanvas canvas, InkStroke stroke);
+        public event InkStrokeEventHandler InkStrokeAdded;
+        public event InkStrokeEventHandler InkStrokeRemoved;
+
         private double _prevZoom = 1;
 
+        private bool _inkEnabled;
         public bool InkEnabled
         {
-            get { return inkCanvas.InkPresenter.IsInputEnabled; }
+            get { return _inkEnabled; }
             set
             {
                 SelectColor();
+                _inkEnabled = value;
                 inkCanvas.InkPresenter.IsInputEnabled = value;
             }
         }
@@ -49,15 +55,16 @@ namespace NuSysApp
             get { return _mode; }
             set
             {
-
                 switch (value)
                 {
                     case InqCanvasMode.Disabled:
                         InkEnabled = false;
+                        inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = InkInputProcessingMode.None;
                         break;
                     case InqCanvasMode.Ink:
                         InkEnabled = true;
-                        inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = InkInputProcessingMode.Inking;
+                        if (inkCanvas.InkPresenter.InputProcessingConfiguration.Mode != InkInputProcessingMode.Inking)
+                            inkCanvas.InkPresenter.InputProcessingConfiguration.Mode = InkInputProcessingMode.Inking;
                         break;
                     case InqCanvasMode.Erase:
                         InkEnabled = true;
@@ -88,16 +95,10 @@ namespace NuSysApp
         {
             this.InitializeComponent();
 
-            inkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen;
+            inkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Mouse | Windows.UI.Core.CoreInputDeviceTypes.Touch;
 
-            // By default, pen barrel button or right mouse button is processed for inking
-            // Set the configuration to instead allow processing these input on the UI thread
-           
-            inkCanvas.InkPresenter.InputProcessingConfiguration.RightDragAction =
-                InkInputRightDragAction.LeaveUnprocessed;
+            inkCanvas.InkPresenter.InputProcessingConfiguration.RightDragAction = InkInputRightDragAction.LeaveUnprocessed;
 
-
-           
             inkCanvas.InkPresenter.UnprocessedInput.PointerPressed += UnprocessedInput_PointerPressed;
             inkCanvas.InkPresenter.UnprocessedInput.PointerMoved += UnprocessedInput_PointerMoved;
             inkCanvas.InkPresenter.UnprocessedInput.PointerReleased += UnprocessedInput_PointerReleased;
@@ -105,10 +106,17 @@ namespace NuSysApp
             inkCanvas.InkPresenter.StrokeInput.StrokeStarted += StrokeInput_StrokeStarted;
             inkCanvas.InkPresenter.StrokesCollected += InkPresenter_StrokesCollected;
             inkCanvas.InkPresenter.StrokesErased += InkPresenter_StrokesErased;
-            
+
             _inkSynchronizer = inkCanvas.InkPresenter.ActivateCustomDrying();
- 
+            inkCanvas.InkPresenter.IsInputEnabled = false;
             _needToCreateSizeDependentResources = true;
+        }
+
+        public void DeleteStroke(InkStroke stroke)
+        {
+            stroke.Selected = true;
+            inkManager.DeleteSelected();
+            Invalidate(true);
         }
 
         public void Invalidate(bool redraw = false)
@@ -136,6 +144,7 @@ namespace NuSysApp
                 s.DrawingAttributes = drawingAttributes;
                 s.PointTransform = m;
                 inkManager.AddStroke(s);
+                var ss = s.GetRenderingSegments().ToArray();
             }
 
             Debug.Assert(_pendingDry == null);
@@ -146,9 +155,16 @@ namespace NuSysApp
             {
                 p.DrawingAttributes = drawingAttributes;
                 p.PointTransform = m;
+
+                var s = p.GetRenderingSegments().ToArray();
             }
 
+            
+
             canvasControl.Invalidate();
+            foreach ( var inkStroke in _pendingDry) { 
+                InkStrokeAdded?.Invoke(this, inkStroke);
+            }
         }
 
         private void StrokeInput_StrokeStarted(InkStrokeInput sender, Windows.UI.Core.PointerEventArgs args)
@@ -204,13 +220,32 @@ namespace NuSysApp
             var pos = Transform.Inverse.TransformPoint(args.CurrentPoint.RawPosition);
             _selectionPolylinePoints.Add(pos);
 
+
             inkManager.SelectWithLine(_selectionPolylinePoints[0], _selectionPolylinePoints[_selectionPolylinePoints.Count-1]);
+            var selected1 = GetSelectedStrokes();
             inkManager.DeleteSelected();
             inkManager.SelectWithPolyLine(_selectionPolylinePoints);
+            var selected2 = GetSelectedStrokes();
             inkManager.DeleteSelected();
             _selectionPolylinePoints = null;
             
+            foreach(var selected in selected1)
+            {
+                InkStrokeRemoved?.Invoke(this, selected);
+            }
+
+            foreach (var selected in selected2)
+            {
+                InkStrokeRemoved?.Invoke(this, selected);
+            }
+
             Invalidate(true);
+        }
+
+        private IEnumerable<InkStroke> GetSelectedStrokes()
+        {
+            var selectedStrokes = new List<InkStroke>();
+            return inkManager.GetStrokes().ToArray().Where(stroke => stroke.Selected == true);           
         }
 
         private void DrawSelectionLasso(CanvasControl sender, CanvasDrawingSession ds)
@@ -337,11 +372,9 @@ namespace NuSysApp
 
         private void control_Unloaded(object sender, RoutedEventArgs e)
         {
-            // Explicitly remove references to allow the Win2D controls to get garbage collected
             canvasControl.RemoveFromVisualTree();
             canvasControl = null;
 
-            // If we don't unregister these events, the control will leak.
             inkCanvas.InkPresenter.UnprocessedInput.PointerPressed -= UnprocessedInput_PointerPressed;
             inkCanvas.InkPresenter.UnprocessedInput.PointerMoved -= UnprocessedInput_PointerMoved;
             inkCanvas.InkPresenter.UnprocessedInput.PointerReleased -= UnprocessedInput_PointerReleased;

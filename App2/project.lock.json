@@ -3,6 +3,15 @@
   "version": 2,
   "targets": {
     "UAP,Version=v10.0": {
+      "GeoAPI/1.7.4": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
+        }
+      },
       "Microsoft.ApplicationInsights/1.0.0": {
         "type": "package",
         "compile": {
@@ -300,6 +309,25 @@
         },
         "runtime": {
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
+        }
+      },
+      "NetTopologySuite/1.14.0": {
+        "type": "package",
+        "dependencies": {
+          "GeoAPI": "[1.7.4, 1.8.0)"
+        },
+        "frameworkAssemblies": [
+          "System"
+        ],
+        "compile": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll": {}
         }
       },
       "System.AppContext/4.0.0": {
@@ -1944,6 +1972,15 @@
       }
     },
     "UAP,Version=v10.0/win10-arm": {
+      "GeoAPI/1.7.4": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
+        }
+      },
       "Microsoft.ApplicationInsights/1.0.0": {
         "type": "package",
         "compile": {
@@ -2234,6 +2271,25 @@
         },
         "runtime": {
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
+        }
+      },
+      "NetTopologySuite/1.14.0": {
+        "type": "package",
+        "dependencies": {
+          "GeoAPI": "[1.7.4, 1.8.0)"
+        },
+        "frameworkAssemblies": [
+          "System"
+        ],
+        "compile": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll": {}
         }
       },
       "System.AppContext/4.0.0": {
@@ -3731,6 +3787,15 @@
       }
     },
     "UAP,Version=v10.0/win10-arm-aot": {
+      "GeoAPI/1.7.4": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
+        }
+      },
       "Microsoft.ApplicationInsights/1.0.0": {
         "type": "package",
         "compile": {
@@ -4007,6 +4072,25 @@
         },
         "runtime": {
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
+        }
+      },
+      "NetTopologySuite/1.14.0": {
+        "type": "package",
+        "dependencies": {
+          "GeoAPI": "[1.7.4, 1.8.0)"
+        },
+        "frameworkAssemblies": [
+          "System"
+        ],
+        "compile": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll": {}
         }
       },
       "System.AppContext/4.0.0": {
@@ -5481,6 +5565,15 @@
       }
     },
     "UAP,Version=v10.0/win10-x64": {
+      "GeoAPI/1.7.4": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
+        }
+      },
       "Microsoft.ApplicationInsights/1.0.0": {
         "type": "package",
         "compile": {
@@ -5778,6 +5871,25 @@
         },
         "runtime": {
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
+        }
+      },
+      "NetTopologySuite/1.14.0": {
+        "type": "package",
+        "dependencies": {
+          "GeoAPI": "[1.7.4, 1.8.0)"
+        },
+        "frameworkAssemblies": [
+          "System"
+        ],
+        "compile": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll": {}
         }
       },
       "System.AppContext/4.0.0": {
@@ -7275,6 +7387,15 @@
       }
     },
     "UAP,Version=v10.0/win10-x64-aot": {
+      "GeoAPI/1.7.4": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
+        }
+      },
       "Microsoft.ApplicationInsights/1.0.0": {
         "type": "package",
         "compile": {
@@ -7551,6 +7672,25 @@
         },
         "runtime": {
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
+        }
+      },
+      "NetTopologySuite/1.14.0": {
+        "type": "package",
+        "dependencies": {
+          "GeoAPI": "[1.7.4, 1.8.0)"
+        },
+        "frameworkAssemblies": [
+          "System"
+        ],
+        "compile": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll": {}
         }
       },
       "System.AppContext/4.0.0": {
@@ -9025,6 +9165,15 @@
       }
     },
     "UAP,Version=v10.0/win10-x86": {
+      "GeoAPI/1.7.4": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
+        }
+      },
       "Microsoft.ApplicationInsights/1.0.0": {
         "type": "package",
         "compile": {
@@ -9322,6 +9471,25 @@
         },
         "runtime": {
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
+        }
+      },
+      "NetTopologySuite/1.14.0": {
+        "type": "package",
+        "dependencies": {
+          "GeoAPI": "[1.7.4, 1.8.0)"
+        },
+        "frameworkAssemblies": [
+          "System"
+        ],
+        "compile": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll": {}
         }
       },
       "System.AppContext/4.0.0": {
@@ -10819,6 +10987,15 @@
       }
     },
     "UAP,Version=v10.0/win10-x86-aot": {
+      "GeoAPI/1.7.4": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
+        }
+      },
       "Microsoft.ApplicationInsights/1.0.0": {
         "type": "package",
         "compile": {
@@ -11095,6 +11272,25 @@
         },
         "runtime": {
           "lib/dotnet/Microsoft.Win32.Primitives.dll": {}
+        }
+      },
+      "NetTopologySuite/1.14.0": {
+        "type": "package",
+        "dependencies": {
+          "GeoAPI": "[1.7.4, 1.8.0)"
+        },
+        "frameworkAssemblies": [
+          "System"
+        ],
+        "compile": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll": {},
+          "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll": {}
         }
       },
       "System.AppContext/4.0.0": {
@@ -12570,6 +12766,26 @@
     }
   },
   "libraries": {
+    "GeoAPI/1.7.4": {
+      "sha512": "joDULkwmUsXSZPsqQ6H62QmQOi54t3TWyhiKDb48PVUfIox1nSy1RRuEIDQ51h/jBmgb+ZeCsUmMoETVddKJ1A==",
+      "type": "package",
+      "files": [
+        "GeoAPI.1.7.4.nupkg.sha512",
+        "GeoAPI.nuspec",
+        "lib/net20/GeoAPI.dll",
+        "lib/net20/GeoAPI.xml",
+        "lib/net35-client/GeoAPI.dll",
+        "lib/net35-client/GeoAPI.xml",
+        "lib/net40-client/GeoAPI.dll",
+        "lib/net40-client/GeoAPI.xml",
+        "lib/net403-client/GeoAPI.dll",
+        "lib/net403-client/GeoAPI.xml",
+        "lib/net45/GeoAPI.dll",
+        "lib/net45/GeoAPI.xml",
+        "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll",
+        "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.xml"
+      ]
+    },
     "Microsoft.ApplicationInsights/1.0.0": {
       "sha512": "HZ47/thX57SOuIivSvIbsR6L9CCb/Yt3IyB2i4KHmmNlf3DO+lqFwWIKDdbDNWKX+qh0Rg20/JSMPK0dwUsYYw==",
       "type": "Package",
@@ -13269,6 +13485,40 @@
         "ref/net46/Microsoft.Win32.Primitives.dll",
         "ref/xamarinios10/_._",
         "ref/xamarinmac20/_._"
+      ]
+    },
+    "NetTopologySuite/1.14.0": {
+      "sha512": "WZxN1WPRELed8vrTFZXc1lxRuLB29hJMx7W6FiisgZc27XGV+1Q9tdwb9ESAimc1i1sFfG7jQqVW9v090wtchQ==",
+      "type": "package",
+      "files": [
+        "NetTopologySuite.1.14.0.nupkg.sha512",
+        "NetTopologySuite.nuspec",
+        "lib/net20/NetTopologySuite.dll",
+        "lib/net20/NetTopologySuite.xml",
+        "lib/net20/PowerCollections.dll",
+        "lib/net20/PowerCollections.xml",
+        "lib/net35-client/NetTopologySuite.dll",
+        "lib/net35-client/NetTopologySuite.xml",
+        "lib/net35-client/PowerCollections.dll",
+        "lib/net35-client/PowerCollections.xml",
+        "lib/net40-client/NetTopologySuite.dll",
+        "lib/net40-client/NetTopologySuite.xml",
+        "lib/net40-client/PowerCollections.dll",
+        "lib/net40-client/PowerCollections.xml",
+        "lib/net403-client/NetTopologySuite.dll",
+        "lib/net403-client/NetTopologySuite.xml",
+        "lib/net403-client/PowerCollections.dll",
+        "lib/net403-client/PowerCollections.xml",
+        "lib/net45/NetTopologySuite.dll",
+        "lib/net45/NetTopologySuite.xml",
+        "lib/net45/PowerCollections.dll",
+        "lib/net45/PowerCollections.xml",
+        "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.dll",
+        "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.Bootstrapper.NetTopologySuite.xml",
+        "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.dll",
+        "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/NetTopologySuite.xml",
+        "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll",
+        "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.xml"
       ]
     },
     "System.AppContext/4.0.0": {
@@ -15989,10 +16239,12 @@
   },
   "projectFileDependencyGroups": {
     "": [
+      "GeoAPI >= 1.7.4",
       "Microsoft.ApplicationInsights >= 1.0.0",
       "Microsoft.ApplicationInsights.PersistenceChannel >= 1.0.0",
       "Microsoft.ApplicationInsights.WindowsApps >= 1.0.0",
       "Microsoft.NETCore.UniversalWindowsPlatform >= 5.0.0",
+      "NetTopologySuite >= 1.14.0",
       "win2D.uwp >= 1.14.0"
     ],
     "UAP,Version=v10.0": []

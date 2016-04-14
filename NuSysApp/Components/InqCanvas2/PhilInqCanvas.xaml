@@ -10,8 +10,8 @@
     d:DesignWidth="400"
     x:Name="pp">
 
-    <Grid x:Name="xContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <Grid x:Name="xContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
         <xaml:CanvasControl x:Name="canvasControl" CreateResources="canvasControl_CreateResources" Draw="canvasControl_Draw" />
-        <InkCanvas x:Name="inkCanvas" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <InkCanvas x:Name="inkCanvas" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
     </Grid>
 </UserControl>

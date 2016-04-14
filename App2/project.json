@@ -1,9 +1,11 @@
 ﻿{
   "dependencies": {
+    "GeoAPI": "1.7.4",
     "Microsoft.ApplicationInsights": "1.0.0",
     "Microsoft.ApplicationInsights.PersistenceChannel": "1.0.0",
     "Microsoft.ApplicationInsights.WindowsApps": "1.0.0",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
+    "NetTopologySuite": "1.14.0",
     "win2D.uwp": "1.14.0"
   },
   "frameworks": {

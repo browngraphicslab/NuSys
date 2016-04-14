@@ -1,21 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Navigation;
-using Microsoft.Graphics.Canvas.UI.Xaml;
 using Windows.Security.ExchangeActiveSyncProvisioning;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -28,40 +16,20 @@ namespace App2
     public sealed partial class MainPage : Page
     {
         private DispatcherTimer _timer;
+        private WetDryInkCanvas _wetDryCanvas;
 
         public MainPage()
         {
             this.InitializeComponent();
 
+            Clip = new RectangleGeometry { Rect = new Rect { X = 0, Y = 0, Width = 1000, Height = 1000 } };
             var analyticsInfo = Windows.System.Profile.AnalyticsInfo.VersionInfo;
-            // get the device manufacturer and model name
+  
             EasClientDeviceInformation eas = new EasClientDeviceInformation();
             var DeviceManufacturer = eas.SystemManufacturer;
             var DeviceModel = eas.SystemProductName;
 
-            xToggleInk.Click += delegate(object sender, RoutedEventArgs args)
-            {
-                inqCanvas.Mode = PhilInqCanvas.InqCanvasMode.Ink;
-            };
-
-
-            xSelect.Click += delegate (object sender, RoutedEventArgs args)
-            {
-                inqCanvas.Mode = PhilInqCanvas.InqCanvasMode.Disabled;
-            };
-
-            xErase.Click += delegate (object sender, RoutedEventArgs args)
-            {
-                inqCanvas.Mode = PhilInqCanvas.InqCanvasMode.Erase;
-            };
-
-
-
-            SizeChanged += delegate(object sender, SizeChangedEventArgs args)
-            {
-                inqCanvas.Width = args.NewSize.Width;
-                inqCanvas.Height = args.NewSize.Height;
-            };
+            Loaded += OnLoaded;            
 
             xAtomCanvas.RenderTransform = new CompositeTransform
             {
@@ -72,34 +40,36 @@ namespace App2
                 TranslateX = -50000,
                 TranslateY = -50000
             };
-
-            inqCanvas.Transform = (CompositeTransform)xAtomCanvas.RenderTransform;
            
             ManipulationMode = ManipulationModes.All;
             ManipulationDelta += OnManipulationDelta;
-            ManipulationStarting += OnManipulationStarting;
+            ManipulationStarted += OnManipulationStarted;
             ManipulationCompleted += OnManipulationCompleted;
             PointerWheelChanged += OnPointerWheelChanged;
 
             _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromMilliseconds(5);
+            _timer.Interval = TimeSpan.FromMilliseconds(10);
             _timer.Tick += delegate(object sender, object o)
             {
                 _timer.Stop();
-                inqCanvas.Transform = (CompositeTransform) xAtomCanvas.RenderTransform;
-                inqCanvas.Invalidate(true);
+                _wetDryCanvas.Redraw(); 
                 _timer.Start();
-            };
+            };            
+        }
 
-            
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            _wetDryCanvas = new WetDryInkCanvas(wetCanvas, dryCanvas);
+            _wetDryCanvas.Transform = (CompositeTransform)xAtomCanvas.RenderTransform;
         }
 
         private async void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs manipulationCompletedRoutedEventArgs)
         {
+            if (manipulationCompletedRoutedEventArgs.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen)
+                return;
             _timer.Stop();
-            inqCanvas.Invalidate(true);
 
-    
+            _wetDryCanvas.Redraw();  
         }
 
         protected void OnPointerWheelChanged(object sender, PointerRoutedEventArgs e)
@@ -147,18 +117,23 @@ namespace App2
             compositeTransform.CenterX = cent.X;
             compositeTransform.CenterY = cent.Y;
 
-            inqCanvas.Transform = (CompositeTransform)xAtomCanvas.RenderTransform;
-            inqCanvas.Invalidate(true);
+            //    inqCanvas.Transform = (CompositeTransform)xAtomCanvas.RenderTransform;
+            //    inqCanvas.Invalidate(true);
+            _wetDryCanvas.Redraw();
         }
 
-        protected void OnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
+        protected void OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
+            if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen)
+                return;
+
             _timer.Start();
-            e.Container = this;
         }
 
         protected void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+            if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen)
+                return;
 
             var compositeTransform = (CompositeTransform)xAtomCanvas.RenderTransform;
 

@@ -9,15 +9,16 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Shapes;
 using MyToolkit.UI;
+using Windows.UI.Input.Inking;
 
 namespace NuSysApp
 {
     public class GestureMode : AbstractWorkspaceViewMode
     {
-        private InqCanvasModel _inqCanvasModel;
+ 
         private long _tLineFinalized;
         private DateTime _tFirstPress;
-        private InqLineModel _inqLine;
+        private InkStroke _inqLine;
         private bool _wasGesture;
         private bool _released;
        
@@ -27,7 +28,7 @@ namespace NuSysApp
         {
             var wvm = (FreeFormViewerViewModel)_view.DataContext;
             _cview = (FreeFormViewer) view;
-            _inqCanvasModel = wvm.Model.InqCanvas;
+         //   _cview.InqCanvas.InkStrokeAdded += OnLineFinalized;
             
             _view.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
             _view.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
@@ -36,7 +37,7 @@ namespace NuSysApp
 
         public override async Task Activate()
         {
-            _inqCanvasModel.LineFinalizedLocally += OnLineFinalized;
+       //     _cview.InqCanvas.InkStrokeAdded += OnLineFinalized;
         }
 
         private void OnPointerReleased(object source, PointerRoutedEventArgs args)
@@ -75,23 +76,22 @@ namespace NuSysApp
         {
             var screenPoints = new Polyline();
             var t = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
-            foreach (var point in _inqLine.Points)
+            foreach (var point in _inqLine.GetInkPoints())
             {
-                var np = t.TransformPoint(new Point(point.X * Constants.MaxCanvasSize, point.Y * Constants.MaxCanvasSize));
+                var np = t.TransformPoint(new Point(point.Position.X * Constants.MaxCanvasSize, point.Position.Y * Constants.MaxCanvasSize));
                 screenPoints.Points.Add(np);
             }
 
             var hull = new SelectionHull();
             var numSelections = hull.Compute(screenPoints, SessionController.Instance.SessionView.MainCanvas);
-            if (numSelections > 0) { 
-                _inqLine.Delete();
-
+            if (numSelections > 0) {
+           //     _cview.InqCanvas.DeleteStroke(_inqLine);
             }
         }
 
-        private void OnLineFinalized(InqLineModel inqLine)
+        private void OnLineFinalized(PhilInqCanvas canvas, InkStroke stroke)
         {
-            _inqLine = inqLine;
+            _inqLine = stroke;
             _tFirstPress = DateTime.Now;
         }
      
@@ -119,8 +119,7 @@ namespace NuSysApp
 
         public override async Task Deactivate()
         {
-            _cview.InqCanvas.IsEnabled = false;
-            _inqCanvasModel.LineFinalizedLocally -= OnLineFinalized;
+           // _cview.InqCanvas.InkStrokeAdded += OnLineFinalized;
         }
 
 

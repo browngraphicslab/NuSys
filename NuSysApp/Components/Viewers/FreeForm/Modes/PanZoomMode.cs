@@ -19,39 +19,59 @@ namespace NuSysApp
             _cview = view as FreeFormViewer;
 
             _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromMilliseconds(5);
-            _timer.Tick += delegate (object sender, object o)
-            {
-                _timer.Stop();
-                _cview.InqCanvas.Transform = (CompositeTransform)_cview.AtomCanvas.RenderTransform;
-                _cview.InqCanvas.Invalidate(true);
-                _timer.Start();
-            };
+            _timer.Interval = TimeSpan.FromMilliseconds(10);
+        }
+
+        private void OnTick (object sender, object o)
+        {
+            _timer.Stop();
+            _timer.Tick -= OnTick;
+            _cview.InqCanvas.Transform = (CompositeTransform)_cview.AtomCanvas.RenderTransform;
+            _cview.InqCanvas.Redraw();
+            _timer.Tick += OnTick;
+            _timer.Start();
         }
 
         public override async Task Activate()
         {
             _view.ManipulationMode = ManipulationModes.All;
-            _view.ManipulationDelta += OnManipulationDelta;
-            _view.ManipulationStarting += OnManipulationStarting;
-            _view.ManipulationCompleted += ViewOnManipulationCompleted;
+            _view.ManipulationStarted += OnManipulationStarted;
             _view.PointerWheelChanged += OnPointerWheelChanged;
+            _view.ManipulationDelta += OnManipulationDelta;
+            _view.ManipulationCompleted += ViewOnManipulationCompleted;
         }
-
-        private void ViewOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs manipulationCompletedRoutedEventArgs)
-        {
-            _timer.Stop();
-            _cview.InqCanvas.Invalidate(true);
-        }
-
+        
         public override async Task Deactivate()
         {
             _view.ManipulationMode = ManipulationModes.None;
+            _view.ManipulationStarted -= OnManipulationStarted;
             _view.ManipulationDelta -= OnManipulationDelta;
-            _view.ManipulationStarting -= OnManipulationStarting;
             _view.ManipulationCompleted -= ViewOnManipulationCompleted;
             _view.PointerWheelChanged -= OnPointerWheelChanged;
+
+            _timer.Stop();
+            _timer.Tick -= OnTick;
         }
+
+        private void OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+            if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen)
+                return;
+            _timer.Tick -= OnTick;
+            _timer.Tick += OnTick;
+            _timer.Start();
+        }
+
+        private void ViewOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen)
+                return;
+            _timer.Stop();
+            _timer.Tick -= OnTick;
+            _view.ManipulationCompleted -= ViewOnManipulationCompleted;
+        }
+
+
         protected void OnPointerWheelChanged(object sender, PointerRoutedEventArgs e)
         {
             var vm = (FreeFormViewerViewModel)_view.DataContext;
@@ -96,25 +116,13 @@ namespace NuSysApp
 
             compositeTransform.CenterX = cent.X;
             compositeTransform.CenterY = cent.Y;
-            vm.CompositeTransform = compositeTransform;
-
-            if (_cview == null)
-            {
-                return;
-            }
-            _cview.InqCanvas.Transform = compositeTransform;
-            _cview.InqCanvas.Invalidate(true);
-
-        }
-
-        protected void OnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
-        {
-            _timer.Start();
-            e.Container = _view;
         }
 
         protected void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+            if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen)
+                return;
+
             if (!(((FrameworkElement)e.OriginalSource).DataContext is FreeFormViewerViewModel))
                 return;
             
@@ -163,7 +171,7 @@ namespace NuSysApp
                 compositeTransform.TranslateY += e.Delta.Translation.Y;
             }
 
-            vm.CompositeTransform = compositeTransform;
+            _cview.InqCanvas.Redraw();
         }
     }
 }

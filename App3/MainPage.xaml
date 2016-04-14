@@ -1,0 +1,34 @@
+﻿<Page
+    x:Class="App3.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:App3"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid x:Name="xGrid" Width="500" Height="500">
+            <local:GridAwareItemsControl ItemsSource="{Binding Data}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Grid local:GridAutoLayout.NumberOfRows="{Binding Rows}"
+                  local:GridAutoLayout.NumberOfColumns="{Binding Columns}">
+                        </Grid>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock
+                Grid.Row="{Binding X}"
+                Grid.Column="{Binding Y}"
+                    Text="{Binding X}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </local:GridAwareItemsControl>
+        </Grid>
+
+
+    </Grid>
+
+</Page>

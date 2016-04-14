@@ -3,19 +3,25 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:NuSysApp"
+    xmlns:xaml="using:Microsoft.Graphics.Canvas.UI.Xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:NuSysApp"
     mc:Ignorable="d"
     d:DesignHeight="300"
-    d:DesignWidth="400">
+    d:DesignWidth="400"
+    x:Name="xFreeFormViewer">
 
-    <Canvas x:Name="xOuterWrapper">
+    <Canvas x:Name="xOuterWrapper" Background="Transparent">
 
-        <local:PhilInqCanvas x:Name="inqCanvas" Background="LightSteelBlue"></local:PhilInqCanvas>
-        <Canvas x:Name="xWrapper" >
+        <Grid x:Name="xInqCanvasContainer" Width="{Binding ElementName=xFreeFormViewer, Path=Width}" Height="{Binding ElementName=xFreeFormViewer, Path=Height}" VerticalAlignment="Stretch" Background="White">
+            <xaml:CanvasControl  x:Name="dryCanvas"  />
+            <xaml:CanvasControl x:Name="wetCanvas" />
+        </Grid>
 
-            <Canvas x:Name="xAtomCanvas" HorizontalAlignment="Left" Background="Transparent" Width="100000" Height="100000" RenderTransform="{Binding CompositeTransform}">
+        <Canvas x:Name="xWrapper">
+   
+            <Canvas x:Name="xAtomCanvas" HorizontalAlignment="Left" Width="100000" Height="100000" RenderTransform="{Binding CompositeTransform}">
                 <ItemsControl x:Name="IC"  ItemsSource="{Binding AtomViewList}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -29,7 +35,6 @@
             
 
         </Canvas>
-       
     </Canvas>
    
 </UserControl>
