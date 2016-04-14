@@ -256,7 +256,7 @@ namespace NuSysApp
         {
             Button tagBlock = new Button();
             tagBlock.Content = text;
-            tagBlock.Foreground = new SolidColorBrush(Colors.White);
+            tagBlock.Foreground = new SolidColorBrush(Constants.foreground6);
             tagBlock.FontStyle = FontStyle.Italic;
             tagBlock.Height = 40;
             tagBlock.Margin = new Thickness(2, 2, 2, 2);

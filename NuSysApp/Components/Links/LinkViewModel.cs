@@ -26,7 +26,7 @@ namespace NuSysApp
             Anchor = new Point2d((int) (OutElementController.Model.X + (Math.Abs(OutElementController.Model.X - InElementController.Model.X)/2)),
                 (int) (InElementController.Model.Y + (Math.Abs(OutElementController.Model.Y - InElementController.Model.Y)/2)));
 
-            Color = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
+            Color = new SolidColorBrush(Constants.color2);
    
 
             InElementController.PositionChanged += InElementControllerOnPositionChanged;
@@ -91,7 +91,7 @@ namespace NuSysApp
                 base.IsSelected = value;
                 Color = value
                     ? new SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0xFF, 0xAA, 0x2D))
-                    : new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
+                    : new SolidColorBrush(Constants.color2);
                 RaisePropertyChanged("Color");
                 RaisePropertyChanged("IsSelected");
             }

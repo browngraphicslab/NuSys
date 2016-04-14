@@ -9,9 +9,17 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
     <Grid>
-        <Grid MaxHeight="600" Width="300" Background="#8f98a1" CornerRadius="7">
-            <Grid MaxHeight="420" MinHeight="150" Margin="20,20,20,100" Background="White">
+        <Grid MaxHeight="600" Width="300" Background="{StaticResource color5}" CornerRadius="7">
+            <Grid MaxHeight="420" MinHeight="150" Margin="20,20,20,100" Background="{StaticResource color6}">
             <Grid Height="300" Name="DialogPanel" Margin="5,5,5,5">
                 <ScrollViewer Name="Scroller" Height="300" VerticalScrollBarVisibility="Auto" ManipulationStarted="UIElement_OnManipulationStarted" ManipulationCompleted="UIElement_OnManipulationCompleted">
                     <ItemsControl Name="Texts"></ItemsControl>
@@ -19,8 +27,8 @@
             </Grid>
             </Grid>
             <Grid Height="90" Width="260"  Margin="20,0,20,5" VerticalAlignment="Bottom">
-                <TextBox Name="TextBox" Width ="200" Height="60" Background="White"  Margin="0,0,0,0" BorderThickness="0" HorizontalAlignment="Left"></TextBox>
-                <Button Height="60" HorizontalAlignment="Right"  Width="60" Click="Enter_Click" Foreground="White">Send</Button>
+                <TextBox Name="TextBox" Width ="200" Height="60" Background="{StaticResource color6}"  Margin="0,0,0,0" BorderThickness="0" HorizontalAlignment="Left"></TextBox>
+                <Button Height="60" HorizontalAlignment="Right"  Width="60" Click="Enter_Click" Foreground="{StaticResource foreground6}">Send</Button>
             </Grid>
         </Grid>
     </Grid>

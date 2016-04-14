@@ -118,18 +118,6 @@ namespace NuSysApp
 
 
            // await Library.Reload();
-            ChatPopup.OnNewTextsChanged += delegate(int newTexts)
-            {
-                if (newTexts > 0)
-                {
-                    ChatNotifs.Opacity = 1;
-                    NotifNumber.Text = newTexts.ToString();
-                }
-                else
-                {
-                    ChatNotifs.Opacity = 0;
-                }
-            };
         }
         private void NewNetworkUser(NetworkUser user)
         {
@@ -206,8 +194,19 @@ namespace NuSysApp
 
             if (sender == NextNode)
             {
+
                 _presentationModeInstance.MoveToNext();
             }
+
+            /*
+                if (!IsPenMode)
+                    return;
+                _activeFreeFormViewer.SwitchMode(Options.SelectNode, false);
+                _prevOptions = Options.SelectNode;
+                IsPenMode = false;
+                xBtnPen.BorderBrush = new SolidColorBrush(Constants.color4);
+                PenCircle.Background = new SolidColorBrush(Constants.color4);
+                */
 
             if (sender == PreviousNode)
             {

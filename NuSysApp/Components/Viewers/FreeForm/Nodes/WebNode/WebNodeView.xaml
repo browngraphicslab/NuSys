@@ -12,10 +12,18 @@
     RenderTransform="{Binding Transform}"
     IsDoubleTapEnabled="True">
 
+    <local:AnimatableUserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </local:AnimatableUserControl.Resources>
+
     <local:NodeTemplate x:Name="nodeTpl" Background="LightBlue">
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Vertical">
-                <Button Margin="0,2,0,2" x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
+                <Button Margin="0,2,0,2" x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
                     <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
                 </Button>
             </StackPanel>
@@ -29,7 +37,7 @@
             <Grid>
                 <WebView x:Name="xWebView" Width ="{Binding Width}" Height ="{Binding Height}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  IsHitTestVisible ="False" NavigationStarting="XWebView_OnNavigationStarting" NavigationCompleted="XWebView_OnNavigationCompleted" Margin="0,37,0,0" />
                 <Border Background="#99000000" VerticalAlignment="Top" Width="{Binding Width}" Height="39">
-                    <TextBox x:Name="xUrlBox"  Tag="NoManipulation" Text="{Binding Url}" KeyUp="OnKeyUp" Height="37" Foreground="White" FontSize="18"></TextBox>
+                    <TextBox x:Name="xUrlBox"  Tag="NoManipulation" Text="{Binding Url}" KeyUp="OnKeyUp" Height="37" Foreground="{StaticResource foreground6}" FontSize="18"></TextBox>
                 </Border>
                 <!--</Canvas>-->
             </Grid>

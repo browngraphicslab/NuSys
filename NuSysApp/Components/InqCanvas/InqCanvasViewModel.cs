@@ -32,7 +32,7 @@ namespace NuSysApp
             //CurrentLine = new List<RawVector2>();
             //_source = new InqCanvasImageSource((int)canvasSize.Width, (int)canvasSize.Height, true);
             //_source.BeginDraw();
-            //_source.Clear(Windows.UI.Colors.White);
+            //_source.Clear(Windows.UI.Constants.color6);
             //_source.EndDraw();
 
             if (model.Lines == null)

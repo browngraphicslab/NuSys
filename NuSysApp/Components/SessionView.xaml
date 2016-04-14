@@ -11,30 +11,36 @@
     >
 
     <Page.Resources>
-        <Style x:Key="CircleButton" TargetType="Button">
-            <Setter Property="Foreground" Value="#FFFFFF"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="HorizontalAlignment" Value="Left"/>
-            <Setter Property="VerticalAlignment" Value="Bottom"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Grid>
-                            <Border x:Name="Background" CornerRadius="50" Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}"/>
-                            <ContentPresenter
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="CircleButton" TargetType="Button">
+                <Setter Property="Foreground" Value="#FFFFFF"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+                <Setter Property="VerticalAlignment" Value="Bottom"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Grid>
+                                <Border x:Name="Background" CornerRadius="50" Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}"/>
+                                <ContentPresenter
 		                        x:Name="contentPresenter"
 		                        Content="{TemplateBinding Content}"
 		                        ContentTemplate="{TemplateBinding ContentTemplate}"
 		                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
 		                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 		                        Margin="{TemplateBinding Padding}"/>
-                            <Rectangle x:Name="DisabledVisualElement" RadiusX="33" RadiusY="33" Fill="Transparent" Opacity="0" IsHitTestVisible="false" />
-                            <Rectangle x:Name="FocusVisualElement" RadiusX="33" RadiusY="33" Margin="1" Stroke="#FFFFFF" StrokeThickness="1" Opacity="0" IsHitTestVisible="False" />
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+                                <Rectangle x:Name="DisabledVisualElement" RadiusX="33" RadiusY="33" Fill="Transparent" Opacity="0" IsHitTestVisible="false" />
+                                <Rectangle x:Name="FocusVisualElement" RadiusX="33" RadiusY="33" Margin="1" Stroke="#FFFFFF" StrokeThickness="1" Opacity="0" IsHitTestVisible="False" />
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
     </Page.Resources>
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="xOuterMost" >
@@ -53,6 +59,7 @@
         <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5,0,0,50"></local:ChatPopupView >
 
 
+
         <Button x:Name="NextNode" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="70,10,5,10" Visibility="Collapsed">
             <Image Source="/Assets/icon_pdf_right.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Button>
@@ -63,12 +70,6 @@
             <Image Source="/Assets/icon_whitex.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Button>
 
-
-            <Grid x:Name="xBtnPen" CornerRadius="50"  BorderBrush="#c59e9c" BorderThickness="3"  Width="60" Height="60">
-            <Grid x:Name="PenCircle" CornerRadius="50" Width="50" Height="50" Background="#c59e9c">
-                <Image Source="../Assets/node icons/pen.png" Height="30"></Image>
-            </Grid>
-        </Grid>
 
         <local:FloatingMenuView x:Name="xFloatingMenu" Canvas.Left="120" Canvas.Top="125"/>
         
