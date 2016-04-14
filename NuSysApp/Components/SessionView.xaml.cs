@@ -240,12 +240,6 @@ namespace NuSysApp
             xPresentation.Visibility = Visibility.Collapsed;
         }
 
-        public bool IsPresentationMode
-        {
-            get { return (_presentationModeInstance != null); }
-            
-        }
-
         private void Presentation_OnClick(object sender, RoutedEventArgs e)
         {
             if (sender == xPresentation)
