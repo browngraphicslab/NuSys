@@ -125,7 +125,6 @@ namespace NuSysApp
 
             if (!(((FrameworkElement)e.OriginalSource).DataContext is FreeFormViewerViewModel))
                 return;
-            
             var vm = (FreeFormViewerViewModel)_view.DataContext;
 
             var compositeTransform = vm.CompositeTransform;

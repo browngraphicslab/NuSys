@@ -30,6 +30,8 @@ namespace NuSysApp
         private FreeFormViewer _activeFreeFormViewer;
         private Options _prevOptions = Options.SelectNode;
 
+        private PresentationMode _presentationModeInstance = null;
+
         private ContentImporter _contentImporter = new ContentImporter();
 
         public bool IsPenMode { get; private set; }
@@ -167,6 +169,54 @@ namespace NuSysApp
             {
                 FloatingMenu.ActivatePenMode(false);
             }            
+        }
+
+        public void EnterPresentationMode(ElementModel em)
+        {
+            _presentationModeInstance = new PresentationMode(em);
+            NextNode.Visibility = _presentationModeInstance.Next() ? Visibility.Visible : Visibility.Collapsed;
+            PreviousNode.Visibility = _presentationModeInstance.Previous() ? Visibility.Visible : Visibility.Collapsed;
+            FloatingMenu.Visibility = Visibility.Collapsed;
+            xPresentation.Visibility = Visibility.Visible;
+        }
+
+        public void ExitPresentationMode()
+        {
+            _presentationModeInstance.ExitMode();
+            _presentationModeInstance = null;
+            FloatingMenu.Visibility = Visibility.Visible;
+            NextNode.Visibility = Visibility.Collapsed;
+            PreviousNode.Visibility = Visibility.Collapsed;
+            xPresentation.Visibility = Visibility.Collapsed;
+        }
+
+        public bool IsPresentationMode
+        {
+            get { return (_presentationModeInstance != null); }
+            
+        }
+
+        private void Presentation_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (sender == xPresentation)
+            {
+                ExitPresentationMode();
+                return;
+            }
+
+            if (sender == NextNode)
+            {
+                _presentationModeInstance.MoveToNext();
+            }
+
+            if (sender == PreviousNode)
+            {
+                _presentationModeInstance.MoveToPrevious();
+            }
+
+            // only show next and prev buttons if next and prev nodes exist
+            NextNode.Visibility = _presentationModeInstance.Next() ? Visibility.Visible : Visibility.Collapsed;
+            PreviousNode.Visibility = _presentationModeInstance.Previous() ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public async Task LoadWorkspaceFromServer(IEnumerable<Message> nodeMessages, string collectionId)

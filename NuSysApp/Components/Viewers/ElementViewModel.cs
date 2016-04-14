@@ -26,7 +26,7 @@ namespace NuSysApp
         private CompositeTransform _inkScale;
         private CompositeTransform _transform = new CompositeTransform();
         private ElementController _controller;
-        protected bool _isSelected, _isVisible;
+        protected bool _isSelected, _isVisible, _isPresenting;
 
         #endregion Private Members
 
@@ -223,7 +223,7 @@ namespace NuSysApp
         #region Public Properties
 
         public ObservableCollection<LinkElementController> LinkList { get; set; }
-
+        
         public virtual bool IsSelected
         {
             get { return _isSelected; }
@@ -445,4 +445,5 @@ namespace NuSysApp
 
         #endregion Public Properties
     }
+
 }

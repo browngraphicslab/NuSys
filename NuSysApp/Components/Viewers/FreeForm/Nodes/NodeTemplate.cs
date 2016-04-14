@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -42,6 +43,7 @@ namespace NuSysApp
         public Canvas xCanvas = null;
         public Button DuplicateElement = null;
         public Button Link = null;
+        public Button PresentationMode = null;
 
         private Image _dragItem;
 
@@ -112,6 +114,8 @@ namespace NuSysApp
             Link.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             Link.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
 
+            PresentationMode = (Button) GetTemplateChild("PresentationMode");
+            PresentationMode.Click += OnPresentationClick;
 
             btnDelete = (Button)GetTemplateChild("btnDelete");
             btnDelete.Click += OnBtnDeleteClick;
@@ -157,7 +161,7 @@ namespace NuSysApp
             base.OnApplyTemplate();
             OnTemplateReady?.Invoke();
         }
-
+        
         private void TitleOnTextChanged(object sender, TextChangedEventArgs textChangedEventArgs)
         {
             var vm = (ElementViewModel)this.DataContext;
@@ -348,6 +352,26 @@ namespace NuSysApp
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(model.Id));
         }
 
+        private void OnPresentationClick(object sender, RoutedEventArgs e)
+        {
+            
+            var vm = ((ElementViewModel)this.DataContext);
+            var sv = SessionController.Instance.SessionView;
+
+            // unselect start element
+            vm.IsSelected = false;
+            vm.IsEditing = false;
+            highlight.Visibility = Visibility.Collapsed;
+
+            if (sv.IsPresentationMode)
+            {
+                sv.ExitPresentationMode();
+            }
+            else
+            {
+                sv.EnterPresentationMode(vm.Model);
+            }
+        }
 
         private void OnResizerManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
