@@ -16,9 +16,7 @@ using NuSysApp.Nodes.AudioNode;
 namespace NuSysApp
 {
     public class AudioNodeModel : ElementModel
-    {
-        //private ObservableCollection<LinkedTimeBlockViewModel> _linkedTimeBlocks;
-
+    { 
         private ObservableCollection<LinkedTimeBlockModel> _linkedTimeModels;
 
         private MediaController _controller;

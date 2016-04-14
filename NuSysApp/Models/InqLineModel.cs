@@ -34,7 +34,6 @@ namespace NuSysApp
             StrokeThickness = 3;
         }
 
-
         public void AddPoint(Point2d p)
         {
             Points.Add(p);

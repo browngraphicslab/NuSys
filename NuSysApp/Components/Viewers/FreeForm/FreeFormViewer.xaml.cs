@@ -3,6 +3,10 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.Foundation;
+using Windows.UI.Xaml.Media;
+using System.Diagnostics;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Input.Inking;
 
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -15,7 +19,6 @@ namespace NuSysApp
     public sealed partial class FreeFormViewer
     {
         private AbstractWorkspaceViewMode _mode;
-        private InqCanvasView _inqCanvas;
         private NodeManipulationMode _nodeManipulationMode;
         private CreateGroupMode _createGroupMode;
         private DuplicateNodeMode _duplicateMode;
@@ -28,22 +31,27 @@ namespace NuSysApp
         private MultiMode _mainMode;
         private MultiMode _simpleEditMode;
         private MultiMode _simpleEditGroupMode;
+        private GlobalInkMode _globalInkMode;
         private AbstractWorkspaceViewMode _prevMode;
+        private WetDryInkCanvas _inqCanvas;
 
         public FreeFormViewer(FreeFormViewerViewModel vm)
         {
             this.InitializeComponent();
- 
-            var inqCanvasModel = vm.Controller.Model.InqCanvas;
-            var inqCanvasViewModel = new InqCanvasViewModel(inqCanvasModel, new Size(Constants.MaxCanvasSize, Constants.MaxCanvasSize));
-            _inqCanvas = new InqCanvasView(inqCanvasViewModel);
-            _inqCanvas.Width = Window.Current.Bounds.Width;
-            _inqCanvas.Height = Window.Current.Bounds.Height;
-            xOuterWrapper.Children.Add(_inqCanvas);
 
+            // var inqCanvasModel = vm.Controller.Model.InqCanvas;
+            // var inqCanvasViewModel = new InqCanvasViewModel(inqCanvasModel, new Size(Constants.MaxCanvasSize, Constants.MaxCanvasSize));
+            // _inqCanvas = new InqCanvasView(inqCanvasViewModel);
+            // _inqCanvas.Width = Window.Current.Bounds.Width;
+            // _inqCanvas.Height = Window.Current.Bounds.Height;
+
+            _inqCanvas = new WetDryInkCanvas(wetCanvas, dryCanvas);
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
+                _inqCanvas.InkStrokeAdded += InkStrokedAdded;
+                _inqCanvas.InkStrokeRemoved += InkStrokedRemoved;
+
                 _nodeManipulationMode = new NodeManipulationMode(this);
                 _createGroupMode = new CreateGroupMode(this);
                 _duplicateMode = new DuplicateNodeMode(this);
@@ -51,33 +59,40 @@ namespace NuSysApp
                 _gestureMode = new GestureMode(this);
                 _selectMode = new SelectMode(this);
                 _floatingMenuMode = new FloatingMenuMode(this);
+                _globalInkMode = new GlobalInkMode(this);
 
                 _tagMode = new TagNodeMode(this);
                 _linkMode = new LinkMode(this);
-                _mainMode = new MultiMode(this, _selectMode, _floatingMenuMode, _gestureMode, _nodeManipulationMode, _createGroupMode, _duplicateMode, _panZoomMode, _tagMode, _linkMode);
-                _simpleEditMode = new MultiMode(this, _selectMode, _panZoomMode, _nodeManipulationMode, _floatingMenuMode);
-                _simpleEditGroupMode = new MultiMode(this, _selectMode, _nodeManipulationMode, _floatingMenuMode);
+                _mainMode = new MultiMode(this, _panZoomMode, _nodeManipulationMode, _createGroupMode, _floatingMenuMode);
+                _simpleEditMode = new MultiMode(this, _panZoomMode, _nodeManipulationMode, _createGroupMode, _floatingMenuMode);
+                _simpleEditGroupMode = new MultiMode(this,  _panZoomMode, _floatingMenuMode);
+
                 SwitchMode(Options.SelectNode, false);
             };
-            
-            // TODO:refactor
-            /*
-            CompositeTransform ct = new CompositeTransform();
-            ct.CenterX = wsModel.CenterX;
-            ct.CenterY = wsModel.CenterY;
-            ct.ScaleX = wsModel.Zoom;
-            ct.ScaleY = wsModel.Zoom;
-            ct.TranslateX = wsModel.LocationX;
-            ct.TranslateY = wsModel.LocationY;
-            _inqCanvas.Transform = ct;
-            */
 
+            SizeChanged += delegate(object sender, SizeChangedEventArgs args)
+            {
+                xInqCanvasContainer.Width = args.NewSize.Width;
+                xInqCanvasContainer.Height = args.NewSize.Height;
+            };
+
+            // TODO:refactor
             _inqCanvas.Transform = vm.CompositeTransform;
 
             vm.SelectionChanged += VmOnSelectionChanged;
             vm.Controller.Model.InqCanvas.LineFinalized += InqCanvasOnLineFinalized;
 
             vm.Controller.Disposed += ControllerOnDisposed;
+        }
+
+        private void InkStrokedAdded(WetDryInkCanvas canvas, InkStroke stroke)
+        {
+            Debug.WriteLine("line added");
+        }
+
+        private void InkStrokedRemoved(WetDryInkCanvas canvas, InkStroke stroke)
+        {
+            Debug.WriteLine("line removed");
         }
 
         private void ControllerOnDisposed(object source)
@@ -138,8 +153,8 @@ namespace NuSysApp
             if (vm.Selections.Count == 0)
             {
                 SetViewMode(_mainMode);
-                var oldIndex = xOuterWrapper.Children.IndexOf(_inqCanvas);
-                xOuterWrapper.Children.Move((uint)oldIndex, (uint)(xOuterWrapper.Children.Count - 1));
+                //var oldIndex = xOuterWrapper.Children.IndexOf(_inqCanvas);
+                //xOuterWrapper.Children.Move((uint)oldIndex, (uint)(xOuterWrapper.Children.Count - 1));
             }
             else if (vm.Selections.Count == 1)
             {
@@ -147,14 +162,14 @@ namespace NuSysApp
                     SetViewMode(_simpleEditGroupMode);
                 else
                     SetViewMode(_simpleEditMode);
-                var oldIndex = xOuterWrapper.Children.IndexOf(_inqCanvas);
-                xOuterWrapper.Children.Move((uint)oldIndex, 0);
+              //  var oldIndex = xOuterWrapper.Children.IndexOf(_inqCanvas);
+              //  xOuterWrapper.Children.Move((uint)oldIndex, 0);
             }
             else
             {
                 SetViewMode(_mainMode);
-                var oldIndex = xOuterWrapper.Children.IndexOf(_inqCanvas);
-                xOuterWrapper.Children.Move((uint)oldIndex, 0);
+              //  var oldIndex = xOuterWrapper.Children.IndexOf(_inqCanvas);
+               // xOuterWrapper.Children.Move((uint)oldIndex, 0);
             }
         }
 
@@ -178,7 +193,7 @@ namespace NuSysApp
             get { return xWrapper; }
         }
 
-        public InqCanvasView InqCanvas
+        public WetDryInkCanvas InqCanvas
         {
             get { return _inqCanvas; }
         }
@@ -208,7 +223,7 @@ namespace NuSysApp
                         SetViewMode(_mainMode);
                     break;
                 case Options.PenGlobalInk:
-                    await SetViewMode(new MultiMode(this, new GlobalInkMode(this), new LinkMode(this), _gestureMode));
+                  //  await SetViewMode(_globalInkMode);
                     break;
             }
         }

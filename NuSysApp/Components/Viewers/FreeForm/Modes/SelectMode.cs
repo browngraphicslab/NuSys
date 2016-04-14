@@ -119,7 +119,7 @@ namespace NuSysApp
         private async void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
             _released = true;
-            e.Handled = true;
+       //     e.Handled = true;
         }
 
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)

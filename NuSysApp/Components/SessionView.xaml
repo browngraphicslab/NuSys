@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"  
+    Background="Transparent"
     >
 
     <Page.Resources>
@@ -36,7 +37,7 @@
         </Style>
     </Page.Resources>
 
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="xOuterMost" >
         <Canvas x:Name="mainCanvas" Background="Transparent" AllowDrop="True" DragLeave="OnDrop" IsHitTestVisible="True">
        
         <Button Visibility="Collapsed" x:Name="ChatButton" Style="{StaticResource CircleButton}" Click="ChatButton_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="5,10,5,10">
@@ -52,11 +53,7 @@
             <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5,0,0,50"></local:ChatPopupView >
 
 
-        <Grid x:Name="xBtnPen" CornerRadius="50"  BorderBrush="#c59e9c" BorderThickness="3"  Width="60" Height="60">
-            <Grid x:Name="PenCircle" CornerRadius="50" Width="50" Height="50" Background="#c59e9c">
-                <Image Source="../Assets/node icons/pen.png" Height="30"></Image>
-            </Grid>
-        </Grid>
+ 
 
         <local:FloatingMenuView x:Name="xFloatingMenu" Canvas.Left="120" Canvas.Top="125"/>
         
@@ -68,5 +65,6 @@
             <local:LoadingScreen></local:LoadingScreen>
             
         </Grid>
+     
     </Grid>
 </Page>

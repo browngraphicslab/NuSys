@@ -4,32 +4,32 @@ namespace NuSysApp
 {
     public class LineSegment
     {
-        public Vector2 End;
-        public Vector2 Start;
+        public Vector2d End;
+        public Vector2d Start;
 
         public LineSegment()
         {
         }
 
-        public LineSegment(Vector2 start, Vector2 end)
+        public LineSegment(Vector2d start, Vector2d end)
         {
             Start = start;
             End = end;
         }
 
-        public bool Intersects(LineSegment other, out Vector2 intersectionPoint)
+        public bool Intersects(LineSegment other, out Vector2d intersectionPoint)
         {
             // algorithm based on
             // http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
 
             // TODO: remove redudant vector operations for performance optimization 
 
-            intersectionPoint = new Vector2();
+            intersectionPoint = new Vector2d();
 
-            Vector2 p = Start;
-            Vector2 q = other.Start;
-            Vector2 r = End - Start;
-            Vector2 s = other.End - other.Start;
+            Vector2d p = Start;
+            Vector2d q = other.Start;
+            Vector2d r = End - Start;
+            Vector2d s = other.End - other.Start;
 
             double t = (q - p).Cross(s/r.Cross(s));
             double u = (q - p).Cross(r/r.Cross(s));

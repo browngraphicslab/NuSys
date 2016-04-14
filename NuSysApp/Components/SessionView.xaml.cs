@@ -61,27 +61,22 @@ namespace NuSysApp
             CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
             CoreWindow.GetForCurrentThread().KeyUp += OnKeyUp;
 
-            PointerEntered += OnPointerEntered;
-            PointerExited += OnPointerExited;
             SessionController.Instance.SessionView = this;
 
             SizeChanged +=
                 delegate(object sender, SizeChangedEventArgs args)
                 {
                     Clip = new RectangleGeometry {Rect = new Rect(0, 0, args.NewSize.Width, args.NewSize.Height)};
-                    Canvas.SetTop(xBtnPen, (args.NewSize.Height- xBtnPen.Height)/2);
-                    Canvas.SetLeft(xBtnPen, 10);
+                    if (_activeFreeFormViewer != null)
+                    {
+                        _activeFreeFormViewer.Width = args.NewSize.Width;
+                        _activeFreeFormViewer.Height = args.NewSize.Height;                        
+                    }
+         
                 };
 
-            xBtnPen.PointerPressed += delegate(object sender, PointerRoutedEventArgs args)
-            {
-                ActivatePenMode(true);
-                args.Handled = true;
-            };
-            xBtnPen.PointerExited += delegate (object sender, PointerRoutedEventArgs args)
-            {
-                ActivatePenMode(false);            
-            };
+        
+    
 
             xWorkspaceTitle.IsActivated = true;
 
@@ -151,26 +146,9 @@ namespace NuSysApp
 
         private void OnPointerExited(object sender, PointerRoutedEventArgs eventArgs)
         {
-            if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen && xDetailViewer.Opacity < 0.1)
+            if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen && _prevOptions == Options.PenGlobalInk)
             {
-                var source = (FrameworkElement) eventArgs.OriginalSource;
-
-                _activeFreeFormViewer.SwitchMode(Options.SelectNode, false);
-                _prevOptions = Options.SelectNode;
-                IsPenMode = false;
-            }
-        }
-
-        private void OnPointerEntered(object sender, PointerRoutedEventArgs eventArgs)
-        {
-            if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen && _prevOptions != Options.PenGlobalInk &&
-                xDetailViewer.Opacity < 0.1)
-            {
-                var source = (FrameworkElement) eventArgs.OriginalSource;
-
-                _activeFreeFormViewer.SwitchMode(Options.PenGlobalInk, false);
-                _prevOptions = Options.PenGlobalInk;
-                IsPenMode = true;
+               
             }
         }
 
@@ -179,7 +157,7 @@ namespace NuSysApp
 
             if (args.VirtualKey == VirtualKey.Shift && _prevOptions != Options.PenGlobalInk)
             {
-                ActivatePenMode(true);
+                FloatingMenu.ActivatePenMode(true);
             }
         }
 
@@ -187,36 +165,8 @@ namespace NuSysApp
         {
             if (args.VirtualKey == VirtualKey.Shift)
             {
-                ActivatePenMode(false);
-            }
-        }
-
-        private void ActivatePenMode(bool val)
-        {
-     
-            if (val)
-            {
-                if (IsPenMode)
-                    return;
-                _activeFreeFormViewer.SwitchMode(Options.PenGlobalInk, false);
-                _prevOptions = Options.PenGlobalInk;
-                IsPenMode = true;
-                xBtnPen.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 197, 118, 97));
-                PenCircle.Background = new SolidColorBrush(Color.FromArgb(255, 197, 118, 97));
-        
-            }
-            else
-            {
-                if (!IsPenMode)
-                    return;
-                _activeFreeFormViewer.SwitchMode(Options.SelectNode, false);
-                _prevOptions = Options.SelectNode;
-                IsPenMode = false;
-                xBtnPen.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 197, 158, 156));
-                PenCircle.Background = new SolidColorBrush(Color.FromArgb(255, 197, 158, 156));
-
-            }
-            
+                FloatingMenu.ActivatePenMode(false);
+            }            
         }
 
         public async Task LoadWorkspaceFromServer(IEnumerable<Message> nodeMessages, string collectionId)
@@ -409,6 +359,8 @@ namespace NuSysApp
             var freeFormViewerViewModel = new FreeFormViewerViewModel(collectionController);
 
             _activeFreeFormViewer = new FreeFormViewer(freeFormViewerViewModel);
+            _activeFreeFormViewer.Width = ActualWidth;
+            _activeFreeFormViewer.Height = ActualHeight;
             mainCanvas.Children.Insert(0, _activeFreeFormViewer);
 
             _activeFreeFormViewer.DataContext = freeFormViewerViewModel;
@@ -424,11 +376,8 @@ namespace NuSysApp
 
             xWorkspaceTitle.KeyUp += UpdateTitle;
             xWorkspaceTitle.DropCompleted += UpdateTitle;
-            //xWorkspaceTitle.Paste += UpdateTitle;
 
             freeFormViewerViewModel.Controller.LibraryElementModel.OnTitleChanged += TitleChanged;
-         //   Canvas.SetLeft(xWorkspaceTitle, mainCanvas.ActualWidth - xWorkspaceTitle.ActualWidth - 50);
-            //Canvas.SetLeft(xRecord, mainCanvas.ActualWidth - xRecord.ActualWidth*2);
             Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;
             Canvas.SetLeft(Users, 5);
             Canvas.SetTop(Users, xWorkspaceTitle.ActualHeight);
@@ -438,12 +387,9 @@ namespace NuSysApp
             Canvas.SetTop(ChatButton, mainCanvas.ActualHeight - 70);
             Canvas.SetLeft(ChatNotifs, 37);
             Canvas.SetTop(ChatNotifs, mainCanvas.ActualHeight - 67);
-            //overlayCanvas.Width = mainCanvas.ActualWidth;
-            //overlayCanvas.Height = mainCanvas.ActualHeight;
             Canvas.SetTop(xSearchWindowView, 25);
             Canvas.SetLeft(xSearchWindowView, 50);
-
-
+                        
             ChatPopup.Visibility = Visibility.Collapsed;
         }
 
@@ -595,6 +541,8 @@ namespace NuSysApp
                 FloatingMenu.Visibility = Visibility.Collapsed;
             }
         }
+
+        public Grid OuterMost { get { return xOuterMost; } }
         public FreeFormViewer FreeFormViewer { get { return _activeFreeFormViewer; } }
     }
 }

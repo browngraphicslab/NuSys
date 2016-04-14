@@ -231,6 +231,10 @@
     </Compile>
     <Compile Include="Classas.cs" />
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
+    <Compile Include="Components\InqCanvas2\PhilInqCanvas.xaml.cs">
+      <DependentUpon>PhilInqCanvas.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\InqCanvas\WetDryInkCanvas.cs" />
     <Compile Include="Components\ISelectable.cs" />
     <Compile Include="Components\LoadingScreen.xaml.cs">
       <DependentUpon>LoadingScreen.xaml</DependentUpon>
@@ -280,10 +284,10 @@
     <Compile Include="Components\GroupChat\DialogBlock.xaml.cs">
       <DependentUpon>DialogBlock.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\TextEditor\InqCanvas\Gestures\Gesturizer.cs" />
-    <Compile Include="Components\TextEditor\InqCanvas\Gestures\IGesture.cs" />
-    <Compile Include="Components\TextEditor\InqCanvas\Gestures\ScribbleGesture.cs" />
-    <Compile Include="Components\TextEditor\InqCanvas\InqCanvasView.xaml.cs">
+    <Compile Include="Components\InqCanvas\Gestures\Gesturizer.cs" />
+    <Compile Include="Components\InqCanvas\Gestures\IGesture.cs" />
+    <Compile Include="Components\InqCanvas\Gestures\ScribbleGesture.cs" />
+    <Compile Include="Components\InqCanvas\InqCanvasView.xaml.cs">
       <DependentUpon>InqCanvasView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Links\BezierLinkView.xaml.cs">
@@ -456,14 +460,14 @@
     <Compile Include="Util\Statistics.cs" />
     <Compile Include="Util\Telemetry.cs" />
     <Compile Include="Util\UITask.cs" />
-    <Compile Include="Components\TextEditor\InqCanvas\InqCanvasViewModel.cs" />
+    <Compile Include="Components\InqCanvas\InqCanvasViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoNodeViewModel.cs" />
     <Compile Include="Components\Misc\FloatingMenuButtonView.xaml.cs">
       <DependentUpon>FloatingMenuButtonView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\TextEditor\InqCanvas\DrawInqMode.cs" />
-    <Compile Include="Components\TextEditor\InqCanvas\EraseInqMode.cs" />
-    <Compile Include="Components\TextEditor\InqCanvas\IInqMode.cs" />
+    <Compile Include="Components\InqCanvas\DrawInqMode.cs" />
+    <Compile Include="Components\InqCanvas\EraseInqMode.cs" />
+    <Compile Include="Components\InqCanvas\IInqMode.cs" />
     <Compile Include="Util\TextBoxExtended.cs" />
     <Compile Include="Util\TwoFingerScrollViewer.cs" />
     <Compile Include="Converters\SubstractConverter.cs" />
@@ -601,7 +605,8 @@
     <Compile Include="Components\WaitingRoom\WaitingRoomView.xaml.cs">
       <DependentUpon>WaitingRoomView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Util\Vector2.cs" />
+    <Compile Include="Util\Utils.cs" />
+    <Compile Include="Util\Vector2d.cs" />
     <Compile Include="Util\WrapPanel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -640,6 +645,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Components\InqCanvas2\PhilInqCanvas.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Components\LoadingScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -700,7 +709,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\TextEditor\InqCanvas\InqCanvasView.xaml">
+    <Page Include="Components\InqCanvas\InqCanvasView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -918,6 +927,7 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
