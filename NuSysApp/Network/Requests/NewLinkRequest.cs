@@ -10,13 +10,16 @@ namespace NuSysApp
     public class NewLinkRequest : Request
     {
         public NewLinkRequest(Message m) : base(RequestType.NewLinkRequest,m){}
-        public NewLinkRequest(string id1, string id2, string creator, string contentId, string id = null) : base(RequestType.NewLinkRequest)
+        public NewLinkRequest(string id1, string id2, string creator, string contentId, Dictionary<string, object> inFineGrainDictionary, Dictionary<string, object> outFineGrainDictionary, string id = null) : base(RequestType.NewLinkRequest)
         {
             _message["id1"] = id1;
             _message["id2"] = id2;
             _message["id"] = id ?? SessionController.Instance.GenerateId();
             _message["creator"] = creator;
             _message["contentId"] = contentId;
+
+            _message["inFGDictionary"] = inFineGrainDictionary;
+            _message["outFGDictionary"] = outFineGrainDictionary;
         }
         public override async Task CheckOutgoingRequest()
         {

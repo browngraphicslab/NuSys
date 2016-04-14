@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
 using Newtonsoft.Json;
 
 namespace NuSysApp
@@ -18,6 +19,8 @@ namespace NuSysApp
         private double _width;
         private double _x;
         private double _y;
+
+        public List<Rectangle> Regions; 
         
         public Dictionary<string, object> Metadata = new Dictionary<string, object>();
 
@@ -27,6 +30,7 @@ namespace NuSysApp
             SetMetaData("tags", new List<string>());
             SetMetaData("groups", new List<string>());
             InqCanvas = new InqCanvasModel(id);
+            Regions = new List<Rectangle>();
         }
 
         public ElementType ElementType { get; set; }

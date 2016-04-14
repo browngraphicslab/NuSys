@@ -170,13 +170,41 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
         }
 
-        public virtual async Task RequestLinkTo(string otherId)
+        public virtual async Task RequestLinkTo(string otherId, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
         {
             var contentId = SessionController.Instance.GenerateId();
             var libraryElementRequest = new CreateNewLibraryElementRequest(contentId,null,ElementType.Link, "NEW LINK");
-            var request = new NewLinkRequest(Model.Id, otherId, Model.ParentCollectionId,contentId);
+            var request = new NewLinkRequest(Model.Id, otherId, Model.ParentCollectionId,contentId, inFGDictionary, outFGDictionary);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
+        }
+
+        public Dictionary<string, object> CreateImageDictionary(double x, double y, double height, double width)
+        {
+            Dictionary<string, object> dic = new Dictionary<string, object>();
+            dic.Add("x", x);
+            dic.Add("y", x);
+            dic.Add("height", x);
+            dic.Add("width", x);
+            return dic;
+        }
+
+        public Dictionary<string, object> CreateMediaDictionary(TimeSpan start, TimeSpan end)
+        {
+            Dictionary<string, object> dic = new Dictionary<string, object>();
+            dic.Add("start", start);
+            dic.Add("end", end);
+            return dic;
+        }
+
+        public Dictionary<string, object> CreateTextDictionary(double x, double y, double height, double width)
+        {
+            Dictionary<string, object> dic = new Dictionary<string, object>();
+            dic.Add("x", x);
+            dic.Add("y", x);
+            dic.Add("height", x);
+            dic.Add("width", x);
+            return dic;
         }
 
         public virtual async Task RequestMoveToCollection(string newCollectionContentID, double x=50000, double y=50000)
