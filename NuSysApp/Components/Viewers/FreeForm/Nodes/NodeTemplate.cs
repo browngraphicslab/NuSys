@@ -4,13 +4,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Devices.Input;
 using Windows.Foundation;
-using Windows.Graphics.Display;
-using Windows.Graphics.Imaging;
-using Windows.Storage;
-using Windows.Storage.Pickers;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -51,7 +46,6 @@ namespace NuSysApp
         public Button DuplicateElement = null;
         public Button Link = null;
         public Button PresentationMode = null;
-        public Button TestButton = null;
 
         private Image _dragItem;
 
@@ -123,9 +117,6 @@ namespace NuSysApp
 
             PresentationMode = (Button) GetTemplateChild("PresentationMode");
             PresentationMode.Click += OnPresentationClick;
-
-            TestButton = (Button)GetTemplateChild("TestButton");
-            TestButton.Click += OnTestButtonClick; ;
 
             btnDelete = (Button)GetTemplateChild("btnDelete");
             btnDelete.Click += OnBtnDeleteClick;
@@ -322,13 +313,11 @@ namespace NuSysApp
 
                     if (rectangles.Count() == 2)
                     {
-                        //I took this out because if you add this then the scrub bar value which i guess is a rectangle becomes yellow as well if you 
-                        //drag a fg link ontop of the scrub bar.
-                        //Debug.WriteLine("link dropped on image");
-                        //var second = (Rectangle) rectangles.ElementAt(1);
-                        //second.Fill = new SolidColorBrush(Colors.Yellow);
-                        //second.Opacity = 0.2;
-                        //second.Stroke = new SolidColorBrush(Colors.Red);
+                        Debug.WriteLine("link dropped on image");
+                        var second = (Rectangle) rectangles.ElementAt(1);
+                        second.Fill = new SolidColorBrush(Colors.Yellow);
+                        second.Opacity = 0.2;
+                        second.Stroke = new SolidColorBrush(Colors.Red);
                     }
                     if (hitsStart2.Any())
                     {
@@ -430,73 +419,6 @@ namespace NuSysApp
             highlight.Visibility = Visibility.Collapsed;
             
             sv.EnterPresentationMode(vm.Model);
-        }
-
-        private async void OnTestButtonClick(object sender, RoutedEventArgs e)
-        {
-
-            var vm = ((ElementViewModel)this.DataContext);
-            var sv = SessionController.Instance.SessionView;
-
-            var r = new RenderTargetBitmap();
-            
-            //var view = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => ((ElementViewModel)item.DataContext).Controller.Model.Id == vm.Id)?.First();
-            await r.RenderAsync(sv.MainCanvas);
-            this.SaveImage(r);
-
-            // make into image
-            Image im = new Image();
-            im.Source = r;
-            sv.FreeFormViewer.AtomCanvas.Children.Add(im);
-            //Canvas.SetLeft(im, vm.Model.X);
-            //Canvas.SetTop(im, vm.Model.Y);
-        }
-
-        /// <summary> 
-        /// Event handler for the "Save Image.." button. 
-        /// </summary> 
-        /// <param name="sender"></param> 
-        /// <param name="e"></param> 
-        private async void SaveImage(RenderTargetBitmap renderTargetBitmap)
-        {
-           
-
-            // Render to an image at the current system scale and retrieve pixel contents 
-            
-           
-            var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();
-
-            var savePicker = new FileSavePicker();
-            savePicker.DefaultFileExtension = ".png";
-            savePicker.FileTypeChoices.Add(".png", new List<string> { ".png" });
-            savePicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
-            savePicker.SuggestedFileName = "snapshot.png";
-
-            // Prompt the user to select a file 
-            var saveFile = await savePicker.PickSaveFileAsync();
-
-            // Verify the user selected a file 
-            if (saveFile == null)
-                return;
-
-            // Encode the image to the selected file on disk 
-            using (var fileStream = await saveFile.OpenAsync(FileAccessMode.ReadWrite))
-            {
-                var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, fileStream);
-
-                encoder.SetPixelData(
-                    BitmapPixelFormat.Bgra8,
-                    BitmapAlphaMode.Ignore,
-                    (uint)renderTargetBitmap.PixelWidth,
-                    (uint)renderTargetBitmap.PixelHeight,
-                    DisplayInformation.GetForCurrentView().LogicalDpi,
-                    DisplayInformation.GetForCurrentView().LogicalDpi,
-                    pixelBuffer.ToArray());
-
-                await encoder.FlushAsync();
-            }
-
-           
         }
 
         private void OnResizerManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
