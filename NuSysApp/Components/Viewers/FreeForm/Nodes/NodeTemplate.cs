@@ -46,6 +46,7 @@ namespace NuSysApp
         public Button DuplicateElement = null;
         public Button Link = null;
         public Button PresentationMode = null;
+        public Button isSearched = null;
 
         private Image _dragItem;
 
@@ -65,6 +66,7 @@ namespace NuSysApp
             vm.PropertyChanged -= OnPropertyChanged;
             vm.Controller.UserChanged -= ControllerOnUserChanged;
             vm.Controller.LibraryElementModel.OnLightupContent -= LibraryElementModelOnOnLightupContent;
+            vm.Controller.LibraryElementModel.OnSearched -= LibraryElementModelOnSearched;
             vm.Controller.LibraryElementModel.OnTitleChanged -= LibraryElementModelOnOnTitleChanged;
 
             if (title != null)
@@ -97,6 +99,8 @@ namespace NuSysApp
             bg = (Grid)GetTemplateChild("bg");
             hitArea = (Rectangle)GetTemplateChild("HitArea");
 
+            isSearched = (Button) GetTemplateChild("isSearched");
+            
             //inkCanvas = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(vm.Width, vm.Height)));
 
             //(GetTemplateChild("xContainer") as Grid).Children.Add(inkCanvas);
@@ -156,6 +160,7 @@ namespace NuSysApp
             {
 
                 vm.Controller.LibraryElementModel.OnLightupContent += LibraryElementModelOnOnLightupContent;
+                vm.Controller.LibraryElementModel.OnSearched += LibraryElementModelOnSearched;
 
             }
             vm.PropertyChanged += OnPropertyChanged;
@@ -210,6 +215,10 @@ namespace NuSysApp
             highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(100, 156, 197, 194));
         }
 
+        private void LibraryElementModelOnSearched(LibraryElementModel model, bool searched)
+        {
+            isSearched.Visibility = searched ? Visibility.Visible : Visibility.Collapsed;
+        }
         private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)
         {
             xCanvas.Children.Remove(_dragItem);
