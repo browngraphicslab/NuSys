@@ -36,11 +36,25 @@ namespace NuSysApp
 
             var model = (CollectionElementModel)vm.Model;
 
-         //   _views = new ObservableCollection<FrameworkElement>();
 
-           // _factory = new FreeFormNodeViewFactory();
+            List<Uri> AllowedUris = new List<Uri>();
+            AllowedUris.Add(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
 
-           // this.AddChildren();
+
+            Loaded += async delegate (object sender, RoutedEventArgs args)
+            {
+                await SessionController.Instance.InitializeRecog();
+                SetHeight(SessionController.Instance.SessionView.ActualHeight / 2);
+            };
+
+            MyWebView.NavigationCompleted += MyWebViewOnNavigationCompleted;
+            MyWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
+
+            //   _views = new ObservableCollection<FrameworkElement>();
+
+            // _factory = new FreeFormNodeViewFactory();
+
+            // this.AddChildren();
 
             //Loaded += delegate (object sender, RoutedEventArgs args)
             //{
@@ -52,11 +66,61 @@ namespace NuSysApp
             //    xGrid.Height = xGrid.ActualHeight / ratio;
             //};
 
+            MyWebView.ScriptNotify += wvBrowser_ScriptNotify;
+
+
             vm.Controller.Disposed += ControllerOnDisposed;
         }
 
+
+        private void UpdateModelText(String s)
+        {
+             ((ElementCollectionViewModel)DataContext).Controller.LibraryElementModel.SetContentData((ElementCollectionViewModel)DataContext, s);
+        }
+
+        void wvBrowser_ScriptNotify(object sender, NotifyEventArgs e)
+        {
+            // The string received from the JavaScript code can be found in e.Value
+            string data = e.Value;
+            //Debug.WriteLine(data);
+
+            if (data != "")
+            {
+                UpdateModelText(data);
+
+            }
+        }
+
+        private void MyWebViewOnNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
+        {
+            if (((ElementCollectionViewModel)DataContext).Text != "")
+            {
+                UpdateText(((ElementCollectionViewModel)DataContext).Text);
+            }
+        }
+
+        private async void UpdateText(String str)
+        {
+            if (!string.IsNullOrEmpty(str))
+            {
+                String[] myString = { str };
+                IEnumerable<String> s = myString;
+                MyWebView.InvokeScriptAsync("InsertText", s);
+            }
+        }
+
+        public void SetHeight(double parentHeight)
+        {
+            MyWebView.Height = parentHeight;
+        }
+
+
         private void ControllerOnDisposed(object source)
         {
+            var vm = (ElementCollectionViewModel)DataContext;
+            MyWebView.NavigationCompleted -= MyWebViewOnNavigationCompleted;
+            MyWebView.ScriptNotify -= wvBrowser_ScriptNotify;
+            vm.Controller.Disposed -= ControllerOnDisposed;
             DataContext = null;
         }
 
@@ -115,7 +179,5 @@ namespace NuSysApp
             }
              */
         }
-
-
     }
 }

@@ -31,7 +31,11 @@ namespace NuSysApp
         public ObservableCollection<StackPanel> Metadata { get; set; }
 
         private ElementViewModel _currentElementViewModel;
- 
+        public ElementController CurrentElementController { get; set; }
+
+        public delegate void TitleChangedHandler(object source, string newTitle);
+        public event TitleChangedHandler TitleChanged;
+
         public DetailViewerViewModel()
 
         {
@@ -49,14 +53,16 @@ namespace NuSysApp
 
         public async Task<bool> ShowElement(ElementController controller)
         {
+            CurrentElementController = controller;
             View = await _viewFactory.CreateFromSendable(controller);
             if (View == null)
                 return false;
             _nodeModel = controller.Model;
             Title = controller.LibraryElementModel.Title;
+            this.ChangeTitle(this, controller.LibraryElementModel.Title);
 
             controller.MetadataChange += ControllerOnMetadataChange;
-            controller.LibraryElementModel.OnTitleChanged += LibraryElementModelOnOnTitleChanged;
+            controller.LibraryElementModel.OnTitleChanged += ChangeTitle;
             
             var tempvm = (ElementViewModel) View.DataContext;
             tempvm.PropertyChanged += NodeVMPropertChanged;
@@ -69,11 +75,14 @@ namespace NuSysApp
             return true;
         }
 
-        private void LibraryElementModelOnOnTitleChanged(object sender, string newTitle)
+
+        public void ChangeTitle(object sender, string title)
         {
-            Title = newTitle;
-            RaisePropertyChanged("Title");
+            TitleChanged?.Invoke(this, title);
+            Title = title;
         }
+
+
 
         private void ControllerOnMetadataChange(object source, string key)
         {

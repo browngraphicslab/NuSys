@@ -176,6 +176,7 @@
     <Content Include="Assets\logos\Wide310x150Logo.scale-100.png" />
     <Content Include="Assets\menububble.png" />
     <Content Include="Assets\menububble2.png" />
+    <Content Include="Assets\menububblebtm.png" />
     <Content Include="Assets\menu_bubble.png" />
     <Content Include="Assets\node icons\delete.png" />
     <Content Include="Assets\node icons\icon_duplicate.png" />
@@ -241,6 +242,9 @@
     </Compile>
     <Compile Include="Components\Misc\TextInputBlock.xaml.cs">
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\ElementCollectionDetailView.xaml.cs">
+      <DependentUpon>ElementCollectionDetailView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\WaitingRoom\SelectionHull.cs" />
     <Compile Include="Components\Viewers\Detail\DetailNodeViewFactory.cs" />
@@ -664,6 +668,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\Detail\Views\AudioDetailView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\ElementCollectionDetailView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

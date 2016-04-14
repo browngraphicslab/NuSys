@@ -235,6 +235,7 @@ namespace NuSysApp
                 }
 
                 _isSelected = value;
+                _controller.Selected(value);
                 RaisePropertyChanged("IsSelected");
             }
         }
