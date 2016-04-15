@@ -5,6 +5,8 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
+using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -19,12 +21,36 @@ namespace NuSysApp
 {
     public sealed partial class MultiSelectMenuView : UserControl
     {
+        public InkStroke Stroke { get; set; }
+
         public MultiSelectMenuView()
         {
             this.InitializeComponent();
 
             DeleteButton.Click += DeleteButtonOnClick;
             GroupButton.Click += GroupButtonOnClick;
+            AdornmentButton.Click += AdormentButtonClick;
+        }
+
+        private void AdormentButtonClick(object sender, RoutedEventArgs e)
+        {
+
+
+
+            var m = new Message();
+            m["width"] = 400;
+            m["height"] = 400;
+            m["color"] = Colors.Red;
+            m["nodeType"] = ElementType.Area.ToString();
+            m["points"] = Stroke.GetInkPoints();
+            m["autoCreate"] = true;
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddAdorment(Stroke);
+
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.RemoveStroke(Stroke);
+
+            //  await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
         }
 
         private async void GroupButtonOnClick(object sender, RoutedEventArgs routedEventArgs)

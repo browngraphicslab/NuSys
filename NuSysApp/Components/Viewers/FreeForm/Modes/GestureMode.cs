@@ -28,7 +28,7 @@ namespace NuSysApp
         {
             var wvm = (FreeFormViewerViewModel)_view.DataContext;
             _cview = (FreeFormViewer) view;
-         //   _cview.InqCanvas.InkStrokeAdded += OnLineFinalized;
+ 
             
             _view.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
             _view.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
@@ -37,7 +37,12 @@ namespace NuSysApp
 
         public override async Task Activate()
         {
-       //     _cview.InqCanvas.InkStrokeAdded += OnLineFinalized;
+            _cview.InqCanvas.InkStrokeAdded += OnLineFinalized;
+        }
+
+        public override async Task Deactivate()
+        {
+            _cview.InqCanvas.InkStrokeAdded += OnLineFinalized;
         }
 
         private void OnPointerReleased(object source, PointerRoutedEventArgs args)
@@ -64,6 +69,10 @@ namespace NuSysApp
             
             SelectionByStroke();
 
+
+
+            _cview.MultiMenu.Stroke = _inqLine;
+
             var p = args.GetCurrentPoint(null).Position;
             _cview.MultiMenu.Visibility = Visibility.Visible;
             Canvas.SetLeft(_cview.MultiMenu,  p.X + 10);
@@ -84,45 +93,17 @@ namespace NuSysApp
 
             var hull = new SelectionHull();
             var numSelections = hull.Compute(screenPoints, SessionController.Instance.SessionView.MainCanvas);
-            if (numSelections > 0) {
-           //     _cview.InqCanvas.DeleteStroke(_inqLine);
-            }
+          
         }
 
-        private void OnLineFinalized(PhilInqCanvas canvas, InkStroke stroke)
+        private void OnLineFinalized(WetDryInkCanvas canvas, InkStroke stroke)
         {
             _inqLine = stroke;
             _tFirstPress = DateTime.Now;
         }
      
 
-        private async void CreateAreaNode(InqLineModel line)
-        {
-            line.Points.Add(line.Points.First());
-            var bb = Geometry.InqToBoudingRect(line);
-            var transPoints = line.Points.Select(p => new Point2d(p.X * Constants.MaxCanvasSize - bb.X, p.Y * Constants.MaxCanvasSize - bb.Y ));
-          
-            var m = new Message();
-            m["x"] = bb.X;
-            m["y"] = bb.Y;
-            m["width"] = 400;
-            m["height"] = 400;
-            m["nodeType"] = ElementType.Area.ToString();
-            m["points"] = transPoints;
-            m["autoCreate"] = true;
-            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId ;
-
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
-
-        }
-
-
-        public override async Task Deactivate()
-        {
-           // _cview.InqCanvas.InkStrokeAdded += OnLineFinalized;
-        }
-
-
+      
         /*
         private async Task<bool> CheckForTagCreation(InqLineModel line)
         {

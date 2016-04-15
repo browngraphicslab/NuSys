@@ -13,12 +13,15 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Button Grid.Column="0" x:Name="DeleteButton" Style="{StaticResource NodeSubMenuItem}" Background="#BDCCD4">
             <Image Source="ms-appx:///Assets/node icons/delete.png" Height="20" Width="20"></Image>
         </Button>
-
         <Button Grid.Column="1" x:Name="GroupButton" Style="{StaticResource NodeSubMenuItem}" Background="#BDCCD4">
+            <Image Source="ms-appx:///Assets/node icons/icon_new_collection.png" Height="20" Width="20"></Image>
+        </Button>
+        <Button Grid.Column="2" x:Name="AdornmentButton" Style="{StaticResource NodeSubMenuItem}" Background="#BDCCD4">
             <Image Source="ms-appx:///Assets/node icons/icon_new_collection.png" Height="20" Width="20"></Image>
         </Button>
     </Grid>
