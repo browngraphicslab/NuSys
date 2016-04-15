@@ -19,7 +19,7 @@ namespace NuSysApp
             _cview = view as FreeFormViewer;
 
             _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromMilliseconds(10);
+            _timer.Interval = TimeSpan.FromMilliseconds(5);
         }
 
         private void OnTick (object sender, object o)
@@ -120,7 +120,7 @@ namespace NuSysApp
 
             compositeTransform.CenterX = cent.X;
             compositeTransform.CenterY = cent.Y;
-
+            vm.CompositeTransform = compositeTransform;
             e.Handled = true;
         }
 

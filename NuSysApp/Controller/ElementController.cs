@@ -207,6 +207,15 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }
 
+        public virtual async Task RequestPresentationLinkTo(string otherId, LinkedTimeBlock block = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
+        {
+            var contentId = SessionController.Instance.GenerateId();
+            var libraryElementRequest = new CreateNewLibraryElementRequest(contentId, null, ElementType.Link, "NEW PRESENTATION LINK");
+            var request = new NewLinkRequest(Model.Id, otherId, Model.ParentCollectionId, contentId, block, inFGDictionary, outFGDictionary, null, true);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+        }
+
         public Dictionary<string, object> CreateImageDictionary(double x, double y, double height, double width)
         {
             Dictionary<string, object> dic = new Dictionary<string, object>();

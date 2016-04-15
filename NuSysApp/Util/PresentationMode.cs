@@ -21,13 +21,32 @@ namespace NuSysApp.Util
         private ElementModel _nextNode = null;
         private ElementModel _currentNode;
         private CompositeTransform _originalTransform;
+        private DispatcherTimer _timer;
+        private Storyboard _storyboard;
 
         public PresentationMode(ElementModel start)
         {
+            _timer = new DispatcherTimer();
+            _timer.Interval = TimeSpan.FromMilliseconds(5);
+            _timer.Tick += OnTick;
+
+            _storyboard = new Storyboard();
+            _storyboard.Completed += OnAnimationCompleted;
+
             _currentNode = start;
             _originalTransform = MakeShallowCopy(SessionController.Instance.ActiveFreeFormViewer.CompositeTransform);
             Load();
             FullScreen();
+        }
+
+        private void OnAnimationCompleted(object sender, object e)
+        {
+            _timer.Stop();
+        }
+
+        private void OnTick(object sender, object e)
+        {
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Redraw();
         }
 
         /// <summary>
@@ -158,8 +177,12 @@ namespace NuSysApp.Util
         {           
             // Create a duration of 2 seconds.
             Duration duration = new Duration(TimeSpan.FromSeconds(1));
+            _timer.Start();
+            _storyboard.Stop();
+            _storyboard.Children.Clear();
 
-            Storyboard storyboard = new Storyboard();
+            Storyboard storyboard = _storyboard;
+
             storyboard.Duration = duration;
             DoubleAnimation scaleAnimationX = MakeAnimationElement(scale, "ScaleX", duration);
             DoubleAnimation scaleAnimationY = MakeAnimationElement(scale, "ScaleY", duration);

@@ -45,12 +45,13 @@ namespace NuSysApp
         public Canvas xCanvas = null;
         public Button DuplicateElement = null;
         public Button Link = null;
+        public Button PresentationLink = null;
         public Button PresentationMode = null;
         public Button isSearched = null;
 
         private Image _dragItem;
 
-        private enum DragMode { Duplicate, Tag, Link };
+        private enum DragMode { Duplicate, Tag, Link, PresentationLink };
         private DragMode _currenDragMode = DragMode.Duplicate;
 
         public NodeTemplate()
@@ -111,10 +112,16 @@ namespace NuSysApp
 
             DuplicateElement = (Button)GetTemplateChild("DuplicateElement");
             Link = (Button)GetTemplateChild("Link");
+            PresentationLink = (Button)GetTemplateChild("PresentationLink");
             xCanvas = (Canvas)GetTemplateChild("xCanvas");
 
             DuplicateElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             DuplicateElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
+            Link.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
+            Link.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
+
+            PresentationLink.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
+            PresentationLink.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
 
             Link.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             Link.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
@@ -253,44 +260,9 @@ namespace NuSysApp
                 }
             }
             
-            /*
-            if (_currenDragMode == DragMode.Tag)
-            {
-                var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
-                // hitsStart = hitsStart.Where(uiElem => uiElem);
-                hitsStart = hitsStart.Where(ui => (ui as FrameworkElement).Name == "Tags");
-                if (hitsStart.Any())
-                {
-                    var el = (FrameworkElement)hitsStart.First();
-                    var vm = (ElementViewModel)el.DataContext;
-                    var tags = (List<string>)vm.Model.GetMetaData("tags");
-                    tags.Add(_text);
-                    vm.Controller.SetMetadata("tags", tags);
+         
 
-                }
-                else {
-
-                    var contentId = SessionController.Instance.GenerateId();
-
-                    var dict = new Message();
-                    dict["width"] = 300;
-                    dict["height"] = 150;
-                    dict["nodeType"] = ElementType.Tag.ToString();
-                    dict["x"] = r.X;
-                    dict["y"] = r.Y;
-                    dict["title"] = _text;
-                    dict["contentId"] = contentId;
-                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
-                    dict["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
-
-                    var request = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Tag, dict.ContainsKey("title") ? dict["title"].ToString() : null));
-                }
-            }
-            */
-
-            if (_currenDragMode == DragMode.Link)
+            if (_currenDragMode == DragMode.Link || _currenDragMode == DragMode.PresentationLink)
             {
                 Debug.WriteLine("dragging link");
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
@@ -311,7 +283,6 @@ namespace NuSysApp
                     var first = (FrameworkElement)hitsStart.First();
 
                     var rectangles = hitsStart.OfType<Rectangle>();
-                    Debug.WriteLine("!!!!!!!!!!!!!!!!!!!!!" + rectangles.Count());
 
                     var dc = (ElementViewModel)first.DataContext;
                     var vm = (ElementViewModel)DataContext;
@@ -322,7 +293,6 @@ namespace NuSysApp
 
                     if (rectangles.Count() == 2)
                     {
-                        Debug.WriteLine("link dropped on image");
                         var second = (Rectangle) rectangles.ElementAt(1);
                         second.Fill = new SolidColorBrush(Colors.Yellow);
                         second.Opacity = 0.2;
@@ -344,20 +314,17 @@ namespace NuSysApp
                                 vm.Controller.RequestLinkTo(dc.Id, (LinkedTimeBlock) element, inFgDictionary,
                                     outFgDictionary);
                                 (element as LinkedTimeBlock).changeColor();
-                                //vm.Controller.RequestLinkTo(dc.Id, (LinkedTimeBlock)element);
 
                             }
                         }
                     }
                     else
                     {
-                        vm.Controller.RequestLinkTo(dc.Id);
+                        if (_currenDragMode == DragMode.Link)
+                            vm.Controller.RequestLinkTo(dc.Id);
+                        if (_currenDragMode == DragMode.PresentationLink)
+                            vm.Controller.RequestPresentationLinkTo(dc.Id);
                     }
-
-                    //Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100, 100, 200);
-                    //Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100, 100, 100);
-                    //Debug.WriteLine("nodetemplate");
-                    //vm.Controller.RequestLinkTo(dc.Id, inFgDictionary, outFgDictionary);
                 }
             }
 
@@ -389,6 +356,11 @@ namespace NuSysApp
             if (sender == Link)
             {
                 _currenDragMode = DragMode.Link;
+            }
+
+            if (sender == PresentationLink)
+            {
+                _currenDragMode = DragMode.PresentationLink;
             }
 
 
