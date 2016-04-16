@@ -8,6 +8,7 @@ using System.Diagnostics;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Input.Inking;
 using System.Collections.Generic;
+using System.Linq;
 using Windows.UI;
 using Microsoft.Graphics.Canvas.Geometry;
 
@@ -56,16 +57,25 @@ namespace NuSysApp
                 _inqCanvas.AdornmentAdded += AdormnentAdded;
                 _inqCanvas.AdornmentRemoved += AdornmentRemoved;
 
-                foreach (var stroke in (vm.Controller.LibraryElementModel as CollectionLibraryElementModel).InkLines)
+                var collectionModel = (CollectionLibraryElementModel)SessionController.Instance.ContentController.Get(vm.Controller.LibraryElementModel.Id);
+
+              
+
+                collectionModel.OnInkAdded += delegate(string id)
                 {
-                    var x = InkStorage._inkStrokes[stroke];
-                    if (x.Item1 == "ink") {
+                    var x = InkStorage._inkStrokes[id];
+                    if (x.Item1 == "ink")
+                    {
                         _inqCanvas.AddStroke(x.Item2);
-                    } else
+                        _inqCanvas.Redraw();
+                    }
+                    else
                     {
                         _inqCanvas.AddAdorment(x.Item2);
-                    }                    
-                }
+                        _inqCanvas.Redraw();
+                    }
+
+                };
 
                 _nodeManipulationMode = new NodeManipulationMode(this);
                 _createGroupMode = new CreateGroupMode(this);
@@ -100,6 +110,7 @@ namespace NuSysApp
             var request = InkStorage.CreateRemoveInkRequest(new Tuple<string, InkStroke>("adornment", stroke));
             if (request == null)
                 return;
+
         }
 
         private void AdormnentAdded(WetDryInkCanvas canvas, InkStroke inkStroke)
@@ -108,7 +119,14 @@ namespace NuSysApp
             InkStorage._inkStrokes.Add(id, new Tuple<string, InkStroke>("adornment", inkStroke));
 
             var request = InkStorage.CreateAddInkRequest(id, inkStroke, "adornment", Colors.Black);
-            //SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+
+            var m = new Message();
+            m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.Id;
+            var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
+            model.InkLines.Add(id);
+            m["inklines"] = model.InkLines;
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(m));
         }
 
         private void InkStrokedAdded(WetDryInkCanvas canvas, InkStroke stroke)
@@ -117,15 +135,30 @@ namespace NuSysApp
             InkStorage._inkStrokes.Add(id, new Tuple<string, InkStroke>("ink", stroke));
 
             var request = InkStorage.CreateAddInkRequest(id, stroke, "ink", Colors.Black );
-            //SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+
+            var m = new Message();
+            m["contentId"] = ((ElementViewModel) DataContext).Controller.LibraryElementModel.Id;
+            var model = ((ElementViewModel) DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
+            model.InkLines.Add(id);
+            m["inklines"] = model.InkLines;
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(m));
+
         }
 
         private void InkStrokedRemoved(WetDryInkCanvas canvas, InkStroke stroke)
         {
             var request = InkStorage.CreateRemoveInkRequest(new Tuple<string, InkStroke>("ink", stroke));
             if (request == null)
-                return;         
-            //SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                return;
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request.Item1);
+
+            var m = new Message();
+            m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.Id;
+            var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
+            model.InkLines.Remove(request.Item2);
+            m["inklines"] = model.InkLines;
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(m));
         }
 
         private void ControllerOnDisposed(object source)

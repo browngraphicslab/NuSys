@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Input.Inking;
+using Newtonsoft.Json;
 
 namespace NuSysApp
 {
@@ -36,6 +38,26 @@ namespace NuSysApp
             if (_message.ContainsKey("data"))
             {
                 content.Data = _message.GetString("data");
+            }
+            if (_message.ContainsKey("inklines"))
+            {
+
+                var inkIds = _message.GetList<string>("inklines");
+                var libModel = (CollectionLibraryElementModel)content;
+                var oldInkLines = libModel.InkLines;
+                var added = inkIds.Except(oldInkLines);
+                var removed = oldInkLines.Except(inkIds);
+
+                foreach (var idremoved in removed)
+                {
+                    libModel.RemoveInk(idremoved);
+                }
+
+                foreach (var idadded in added)
+                {
+                    libModel.AddInk(idadded);
+                }
+
             }
         }
     }

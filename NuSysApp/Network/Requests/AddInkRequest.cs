@@ -40,7 +40,7 @@ namespace NuSysApp
             var id = _message.Get("id");
             var data = JsonConvert.DeserializeObject<Dictionary<string,string>>(props.GetString("data"));
             var inkpoints = JsonConvert.DeserializeObject<List<InkPoint>>(data["inkpoints"]);
-            var type = JsonConvert.DeserializeObject<string>(data["type"]);
+            var type = data["type"];
 
             if (type == "adornment")
             {

@@ -18,8 +18,9 @@ namespace NuSysApp
         public static AddInkRequest CreateAddInkRequest(string id, InkStroke stroke, string type, Color color)
         {
             var data = new Dictionary<string, string>();
-            data["inkpoints"] = JsonConvert.SerializeObject(stroke.GetInkPoints());
+            data["inkpoints"] = JsonConvert.SerializeObject(stroke.GetInkPoints().ToArray());
             data["type"] = type;
+            data["id"] = id;
             data["color"] = JsonConvert.SerializeObject(new int[3] { color.R, color.G, color.B });
 
             var msg = new Message();
@@ -28,15 +29,23 @@ namespace NuSysApp
             return new AddInkRequest(msg);
         }
 
-        public static RemoveInkRequest CreateRemoveInkRequest(Tuple<string, InkStroke> stroke)
+        public static Tuple<RemoveInkRequest,string> CreateRemoveInkRequest(Tuple<string, InkStroke> stroke)
         {
-            if (!InkStorage._inkStrokes.ContainsValue(stroke))
+            var foundId = string.Empty;
+            foreach (var inkStroke in InkStorage._inkStrokes)
+            {
+                if (inkStroke.Value.Item2 == stroke.Item2)
+                {
+                    foundId = inkStroke.Key;
+                }
+            }
+
+            if (foundId == string.Empty)
                 return null;
 
-            var id = InkStorage._inkStrokes.GetKeyByValue(stroke);
             var msg = new Message();
-            msg[id] = id;
-            return new RemoveInkRequest(msg);
+            msg["id"] = foundId;
+            return new Tuple<RemoveInkRequest, string>(new RemoveInkRequest(msg),foundId);
         }
 
         

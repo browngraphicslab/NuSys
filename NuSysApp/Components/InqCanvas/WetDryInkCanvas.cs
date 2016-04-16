@@ -84,7 +84,9 @@ namespace NuSysApp
 
         public void AddStroke(InkStroke stroke)
         {
-            _dryStrokes.Add(stroke);
+            _inkManager.AddStroke(stroke);
+            _dryStrokes = _inkManager.GetStrokes().ToList();
+            Redraw();
         }
 
         public void RemoveStroke(InkStroke stroke)
@@ -117,8 +119,6 @@ namespace NuSysApp
         {
             var ds = args.DrawingSession;
                 ds.Clear(Colors.Transparent);
-
-            ds.Blend = CanvasBlend.Min;
 
             var dryStrokes = _dryStrokes;
                 foreach (var s in dryStrokes)
@@ -189,6 +189,10 @@ namespace NuSysApp
         {
             if (e.Pointer.PointerDeviceType != Windows.Devices.Input.PointerDeviceType.Pen)
                 return;
+
+            if (_currentStroke == null)
+                return;
+
             _wetCanvas.PointerMoved -= OnPointerMoved;
 
             _drawingColor = Colors.Black;
