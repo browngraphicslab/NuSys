@@ -248,6 +248,7 @@
       <DependentUpon>ElementCollectionDetailView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\InkStorage.cs" />
+    <Compile Include="Components\Viewers\FreeForm\InkWrapper.cs" />
     <Compile Include="Components\WaitingRoom\SelectionHull.cs" />
     <Compile Include="Components\Viewers\Detail\DetailNodeViewFactory.cs" />
     <Compile Include="Components\Viewers\Detail\DetailViewerView.xaml.cs">

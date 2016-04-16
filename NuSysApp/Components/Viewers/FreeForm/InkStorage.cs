@@ -13,7 +13,7 @@ namespace NuSysApp
     public class InkStorage
     {
 
-        public static BiDictionary<string, Tuple<string, InkStroke>> _inkStrokes = new BiDictionary<string, Tuple<string, InkStroke>>();
+        public static BiDictionary<string, InkWrapper> _inkStrokes = new BiDictionary<string, InkWrapper>();
 
         public static AddInkRequest CreateAddInkRequest(string id, InkStroke stroke, string type, Color color)
         {
@@ -29,12 +29,12 @@ namespace NuSysApp
             return new AddInkRequest(msg);
         }
 
-        public static Tuple<RemoveInkRequest,string> CreateRemoveInkRequest(Tuple<string, InkStroke> stroke)
+        public static Tuple<RemoveInkRequest,string> CreateRemoveInkRequest(InkWrapper wrapper)
         {
             var foundId = string.Empty;
             foreach (var inkStroke in InkStorage._inkStrokes)
             {
-                if (inkStroke.Value.Item2 == stroke.Item2)
+                if (inkStroke.Value.Equals(wrapper))
                 {
                     foundId = inkStroke.Key;
                 }

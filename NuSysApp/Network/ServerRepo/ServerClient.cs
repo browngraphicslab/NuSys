@@ -211,12 +211,12 @@ namespace NuSysApp
                             var inkpoints = JsonConvert.DeserializeObject<List<InkPoint>>(inkdict["inkpoints"].ToString());
                             var inktype = inkdict["type"] as string;
                             var inkid = inkdict["id"] as string;
-
+                            
                             var builder = new InkStrokeBuilder();
                             var inkstroke = builder.CreateStrokeFromInkPoints(inkpoints, Matrix3x2.Identity);
 
-                            var newTuple = new Tuple<string, InkStroke>(inktype, inkstroke);
-                            InkStorage._inkStrokes.Add(inkid, newTuple);
+                            var newWrapper = new InkWrapper(inkstroke, inktype);
+                            InkStorage._inkStrokes.Add(inkid, newWrapper);
                             newInkLines.Add(inkid);                            
                         }
 
