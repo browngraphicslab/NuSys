@@ -200,15 +200,15 @@ namespace NuSysApp
                     }
 
 
-                    if (dict.ContainsKey("inklines"))
+                    if (dict.ContainsKey("inklist"))
                     {
                         HashSet<InkStroke> set = new HashSet<InkStroke>();
-                        var inklines = JsonConvert.DeserializeObject<List<string>>((string)dict["inklines"], settings);
+                        var inklines = JsonConvert.DeserializeObject<List<string>>(dict["inklist"].ToString(), settings);
                         var newInkLines = new HashSet<string>();
                         foreach (var inkline in inklines)
                         {
                             var inkdict = JsonConvert.DeserializeObject<Dictionary<string, object>>(inkline, settings);
-                            var inkpoints = inkdict["inkpoints"] as List<InkPoint>;
+                            var inkpoints = JsonConvert.DeserializeObject<List<InkPoint>>(inkdict["inkpoints"].ToString());
                             var inktype = inkdict["type"] as string;
                             var inkid = inkdict["id"] as string;
 
@@ -220,21 +220,23 @@ namespace NuSysApp
                             newInkLines.Add(inkid);                            
                         }
 
-                        var libModel = ((CollectionLibraryElementModel)SessionController.Instance.IdToControllers[id].LibraryElementModel);
+                        var libModel = ((CollectionLibraryElementModel)SessionController.Instance.ContentController.Get(id));
                         var oldInkLines = libModel.InkLines;
                         var added = newInkLines.Except(oldInkLines);
                         var removed = oldInkLines.Except(newInkLines);
 
-                        foreach (var idremoved in removed)
+                        await UITask.Run(() =>
                         {
-                            libModel.RemoveInk(idremoved);
-                        }
+                            foreach (var idremoved in removed)
+                            {
+                                libModel.RemoveInk(idremoved);
+                            }
 
-                        foreach (var idadded in added)
-                        {
-                            libModel.AddInk(idadded);
-                        }
-
+                            foreach (var idadded in added)
+                            {
+                                libModel.AddInk(idadded);
+                            }
+                        });
                     }
 
                     LibraryElementModel content = SessionController.Instance.ContentController.Get(libraryId);

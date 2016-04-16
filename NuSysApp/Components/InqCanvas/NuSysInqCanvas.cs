@@ -37,6 +37,8 @@ namespace NuSysApp
             _adornments.Remove(geom);
             if (fireEvent)
                 AdornmentAdded?.Invoke(this, inkStroke);
+
+            Redraw();
         }
 
         public void AddAdorment(IEnumerable<InkPoint> points, bool fireEvent = true)
@@ -52,7 +54,9 @@ namespace NuSysApp
             _adornments.Add(geom);
 
             if (fireEvent)
-                AdornmentAdded?.Invoke(this, stroke); 
+                AdornmentAdded?.Invoke(this, stroke);
+
+            Redraw();
         }
 
         protected override void OnDryCanvasDraw(CanvasControl sender, CanvasDrawEventArgs args)
@@ -60,20 +64,9 @@ namespace NuSysApp
             base.OnDryCanvasDraw(sender, args);
 
             var ds = args.DrawingSession;
-            var inv = (MatrixTransform)Transform.Inverse.Inverse;
-            var m = new Matrix3x2((float)inv.Matrix.M11, (float)inv.Matrix.M12, (float)inv.Matrix.M21,
-                (float)inv.Matrix.M22, (float)inv.Matrix.OffsetX, (float)inv.Matrix.OffsetY);
-
-            ds.Transform = m;
             foreach(var adornment in _adornments) {
                 ds.FillGeometry(adornment, Colors.Red);
             }
         }
-
-        protected override void OnPointerReleased(object sender, PointerRoutedEventArgs e)
-        {
-            base.OnPointerReleased(sender, e);
-        }
-
     }
 }

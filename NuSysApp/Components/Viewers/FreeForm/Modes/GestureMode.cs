@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -47,11 +48,16 @@ namespace NuSysApp
 
         private void OnPointerReleased(object source, PointerRoutedEventArgs args)
         {
+            if (args.Pointer.PointerDeviceType == PointerDeviceType.Pen)
+                return;
             _released = true;
         }
 
         private async void  OnPointerPressed(object source, PointerRoutedEventArgs args)
         {
+            if (args.Pointer.PointerDeviceType == PointerDeviceType.Pen)
+                return;
+
             _released = false;
             if (SessionController.Instance.SessionView.IsPenMode)
                 return;

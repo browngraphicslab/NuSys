@@ -257,6 +257,11 @@ namespace NuSysApp
 
             var dict = new Dictionary<string, Message>();
 
+            Task.Run(async delegate
+            {
+                SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(collectionId);
+            });
+
             foreach (var msg in nodeMessages)
             {
                 msg["creator"] = collectionId;
@@ -347,6 +352,10 @@ namespace NuSysApp
             {
                 case ElementType.Collection:
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(message));
+                    Task.Run(async delegate
+                    {
+                        SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(id);
+                    });
                     if (loadCollections)
                     {
                         var messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(libraryId);

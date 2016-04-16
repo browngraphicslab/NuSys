@@ -21,9 +21,9 @@ namespace NuSysApp
                 throw new Exception("AddInkRequest must contain 'id'");
             }
   
-            SetServerEchoType(ServerEchoType.EveryoneButSender);
-            SetServerItemType(ServerItemType.Content);
-            SetServerRequestType(ServerRequestType.Update);
+            SetServerEchoType(ServerEchoType.ForcedEveryone);
+            SetServerItemType(ServerItemType.Ink);
+            SetServerRequestType(ServerRequestType.Remove);
             SetServerIgnore(false);
         }
         public override async Task ExecuteRequestFunction()
