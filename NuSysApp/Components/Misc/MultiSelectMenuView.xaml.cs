@@ -23,6 +23,8 @@ namespace NuSysApp
     {
         public InkStroke Stroke { get; set; }
 
+        public static Color SelectedColor { get; set; }
+
         public MultiSelectMenuView()
         {
             this.InitializeComponent();
@@ -30,27 +32,13 @@ namespace NuSysApp
             DeleteButton.Click += DeleteButtonOnClick;
             GroupButton.Click += GroupButtonOnClick;
             AdornmentButton.Click += AdormentButtonClick;
+
+            SelectedColor = Colors.Black;
         }
 
         private void AdormentButtonClick(object sender, RoutedEventArgs e)
-        {
-
-
-
-            var m = new Message();
-            m["width"] = 400;
-            m["height"] = 400;
-            m["color"] = Colors.Red;
-            m["nodeType"] = ElementType.Area.ToString();
-            m["points"] = Stroke.GetInkPoints();
-            m["autoCreate"] = true;
-            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
-
-            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddAdorment(Stroke);
-
-            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.RemoveStroke(Stroke);
-
-            //  await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
+        {          
+            ColorPicker.Visibility = (ColorPicker.Visibility == Visibility.Collapsed) ?Visibility.Visible : Visibility.Collapsed;
         }
 
         private async void GroupButtonOnClick(object sender, RoutedEventArgs routedEventArgs)
@@ -137,6 +125,22 @@ namespace NuSysApp
         public Button Group
         {
             get { return GroupButton; }
+        }
+
+        private void Rectangle_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            var m = new Message();
+            m["width"] = 400;
+            m["height"] = 400;
+            m["color"] = Colors.Red;
+            m["nodeType"] = ElementType.Area.ToString();
+            m["points"] = Stroke.GetInkPoints();
+            m["autoCreate"] = true;
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddAdorment(Stroke);
+
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.RemoveStroke(Stroke);
         }
     }
 }
