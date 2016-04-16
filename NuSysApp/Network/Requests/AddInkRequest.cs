@@ -41,11 +41,13 @@ namespace NuSysApp
             var data = JsonConvert.DeserializeObject<Dictionary<string,string>>(props.GetString("data"));
             var inkpoints = JsonConvert.DeserializeObject<List<InkPoint>>(data["inkpoints"]);
             var type = data["type"];
+            var rgb = JsonConvert.DeserializeObject<byte[]>(data["color"]);
+            var color = Color.FromArgb(255, rgb[0], rgb[1], rgb[2]);
 
             if (type == "adornment")
             {
                 if (!InkStorage._inkStrokes.ContainsKey("id"))
-                    SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddAdorment(inkpoints, false);
+                    SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddAdorment(inkpoints, color, false);
             }
             else
             {

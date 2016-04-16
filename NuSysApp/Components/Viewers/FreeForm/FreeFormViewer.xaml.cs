@@ -71,7 +71,7 @@ namespace NuSysApp
                     }
                     else
                     {
-                        _inqCanvas.AddAdorment(x.Stroke);
+                        _inqCanvas.AddAdorment(x.Stroke, x.Color, false);
                         _inqCanvas.Redraw();
                     }
 
@@ -118,15 +118,15 @@ namespace NuSysApp
             var id = SessionController.Instance.GenerateId();
             InkStorage._inkStrokes.Add(id, new InkWrapper(inkStroke, "adornment"));//"adornment", inkStroke));
 
-            var request = InkStorage.CreateAddInkRequest(id, inkStroke, "adornment", Colors.Black);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            var request = InkStorage.CreateAddInkRequest(id, inkStroke, "adornment", MultiSelectMenuView.SelectedColor);
+         //   SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
 
             var m = new Message();
             m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.Id;
             var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
             model.InkLines.Add(id);
-            m["inklines"] = model.InkLines;
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(m));
+            m["inklines"] = new HashSet<string>(model.InkLines);
+           // SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(m));
         }
 
         private void InkStrokedAdded(WetDryInkCanvas canvas, InkStroke stroke)
@@ -135,14 +135,14 @@ namespace NuSysApp
             InkStorage._inkStrokes.Add(id, new InkWrapper(stroke, "ink"));
 
             var request = InkStorage.CreateAddInkRequest(id, stroke, "ink", Colors.Black );
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+         //   SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
 
             var m = new Message();
             m["contentId"] = ((ElementViewModel) DataContext).Controller.LibraryElementModel.Id;
             var model = ((ElementViewModel) DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
             model.InkLines.Add(id);
-            m["inklines"] = model.InkLines;
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(m));
+            m["inklines"] = new HashSet<string>(model.InkLines);
+        //    SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(m));
 
         }
 
@@ -151,14 +151,14 @@ namespace NuSysApp
             var request = InkStorage.CreateRemoveInkRequest(new InkWrapper(stroke, "ink"));
             if (request == null)
                 return;
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request.Item1);
+          //  SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request.Item1);
 
             var m = new Message();
             m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.Id;
             var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
             model.InkLines.Remove(request.Item2);
-            m["inklines"] = model.InkLines;
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(m));
+            m["inklines"] = new HashSet<string>(model.InkLines);
+         //   SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(m));
         }
 
         private void ControllerOnDisposed(object source)

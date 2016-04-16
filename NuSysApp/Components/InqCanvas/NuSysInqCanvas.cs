@@ -20,6 +20,8 @@ namespace NuSysApp
         public event AdornmentEventHandler AdornmentAdded;
         public event AdornmentEventHandler AdornmentRemoved;
 
+
+        private List<Color> _colors = new List<Color>();
         private HashSet<CanvasGeometry> _adornments = new HashSet<CanvasGeometry>();
         private Dictionary<InkStroke, CanvasGeometry> _inkStrokes = new Dictionary<InkStroke, CanvasGeometry>();
 
@@ -41,13 +43,14 @@ namespace NuSysApp
             Redraw();
         }
 
-        public void AddAdorment(IEnumerable<InkPoint> points, bool fireEvent = true)
+        public void AddAdorment(IEnumerable<InkPoint> points, Color color, bool fireEvent = true)
         {
-            AddAdorment(strokeBuilder.CreateStrokeFromInkPoints(points, Matrix3x2.Identity), fireEvent);
+            AddAdorment(strokeBuilder.CreateStrokeFromInkPoints(points, Matrix3x2.Identity), color, fireEvent);
         }
 
-        public void AddAdorment(InkStroke stroke, bool fireEvent = true)
+        public void AddAdorment(InkStroke stroke, Color color, bool fireEvent = true)
         {
+            _colors.Add(color);
             var multipoint = new MultiPoint(stroke.GetInkPoints().Select(p => new NetTopologySuite.Geometries.Point(p.Position.X, p.Position.Y)).ToArray());
             var ch = multipoint.ConvexHull().Coordinates.Select(p => new Vector2((float)p.X, (float)p.Y)).ToArray();
             var geom = CanvasGeometry.CreatePolygon(_dryCanvas, ch);
@@ -63,9 +66,10 @@ namespace NuSysApp
         {
             base.OnDryCanvasDraw(sender, args);
 
+            var ads = _adornments.ToArray();
             var ds = args.DrawingSession;
-            foreach(var adornment in _adornments) {
-                ds.FillGeometry(adornment, Colors.Red);
+            for(var i = 0; i < _adornments.Count; i++) { 
+                ds.FillGeometry(ads[i], _colors[i]);
             }
         }
     }

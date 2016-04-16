@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Shapes;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -129,6 +130,10 @@ namespace NuSysApp
 
         private void Rectangle_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
+            var rect = (Rectangle)sender;
+            var brush = (SolidColorBrush)rect.Fill;
+            SelectedColor = brush.Color;
+
             var m = new Message();
             m["width"] = 400;
             m["height"] = 400;
@@ -138,9 +143,11 @@ namespace NuSysApp
             m["autoCreate"] = true;
             m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
-            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddAdorment(Stroke);
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddAdorment(Stroke, SelectedColor);
 
             SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.RemoveStroke(Stroke);
+
+            Visibility = Visibility.Collapsed;
         }
     }
 }
