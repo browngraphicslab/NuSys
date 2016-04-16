@@ -34,8 +34,8 @@ namespace NuSysApp
             if (InkStorage._inkStrokes.ContainsKey("id"))
             {
                 var stroke = InkStorage._inkStrokes[id];
-                SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.RemoveAdorment(stroke.Item2, false);
-                SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.RemoveStroke(stroke.Item2);
+                SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.RemoveAdorment(stroke.Stroke, false);
+                SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.RemoveStroke(stroke.Stroke);
             }
         }
     }

@@ -64,14 +64,14 @@ namespace NuSysApp
                 collectionModel.OnInkAdded += delegate(string id)
                 {
                     var x = InkStorage._inkStrokes[id];
-                    if (x.Item1 == "ink")
+                    if (x.Type == "ink")
                     {
-                        _inqCanvas.AddStroke(x.Item2);
+                        _inqCanvas.AddStroke(x.Stroke);
                         _inqCanvas.Redraw();
                     }
                     else
                     {
-                        _inqCanvas.AddAdorment(x.Item2);
+                        _inqCanvas.AddAdorment(x.Stroke);
                         _inqCanvas.Redraw();
                     }
 
@@ -107,7 +107,7 @@ namespace NuSysApp
 
         private void AdornmentRemoved(WetDryInkCanvas canvas, InkStroke stroke)
         {
-            var request = InkStorage.CreateRemoveInkRequest(new Tuple<string, InkStroke>("adornment", stroke));
+            var request = InkStorage.CreateRemoveInkRequest(new InkWrapper(stroke, "adornment"));
             if (request == null)
                 return;
 
@@ -116,7 +116,7 @@ namespace NuSysApp
         private void AdormnentAdded(WetDryInkCanvas canvas, InkStroke inkStroke)
         {
             var id = SessionController.Instance.GenerateId();
-            InkStorage._inkStrokes.Add(id, new Tuple<string, InkStroke>("adornment", inkStroke));
+            InkStorage._inkStrokes.Add(id, new InkWrapper(inkStroke, "adornment"));//"adornment", inkStroke));
 
             var request = InkStorage.CreateAddInkRequest(id, inkStroke, "adornment", Colors.Black);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
@@ -132,7 +132,7 @@ namespace NuSysApp
         private void InkStrokedAdded(WetDryInkCanvas canvas, InkStroke stroke)
         {
             var id = SessionController.Instance.GenerateId();
-            InkStorage._inkStrokes.Add(id, new Tuple<string, InkStroke>("ink", stroke));
+            InkStorage._inkStrokes.Add(id, new InkWrapper(stroke, "ink"));
 
             var request = InkStorage.CreateAddInkRequest(id, stroke, "ink", Colors.Black );
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
@@ -148,7 +148,7 @@ namespace NuSysApp
 
         private void InkStrokedRemoved(WetDryInkCanvas canvas, InkStroke stroke)
         {
-            var request = InkStorage.CreateRemoveInkRequest(new Tuple<string, InkStroke>("ink", stroke));
+            var request = InkStorage.CreateRemoveInkRequest(new InkWrapper(stroke, "ink"));
             if (request == null)
                 return;
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request.Item1);
