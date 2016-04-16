@@ -30,19 +30,22 @@ namespace NuSysApp
             _cview = (FreeFormViewer) view;
  
             
-            _view.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
-            _view.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
+ 
             _tFirstPress = DateTime.Now.Subtract(TimeSpan.FromMinutes(1));
         }
 
         public override async Task Activate()
         {
+            _view.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
+            _view.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
             _cview.InqCanvas.InkStrokeAdded += OnLineFinalized;
         }
 
         public override async Task Deactivate()
         {
-            _cview.InqCanvas.InkStrokeAdded += OnLineFinalized;
+            _cview.InqCanvas.InkStrokeAdded -= OnLineFinalized;
+            _view.RemoveHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed));
+            _view.RemoveHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased));
         }
 
         private void OnPointerReleased(object source, PointerRoutedEventArgs args)
@@ -57,7 +60,7 @@ namespace NuSysApp
                 return;
 
             var s = DateTime.Now.Subtract(_tFirstPress).TotalSeconds;
-            if (s > 1)
+            if (s > 1.5)
             {
                 var f = (FrameworkElement)args.OriginalSource;
                 var pc = f.FindParentDataContext();
