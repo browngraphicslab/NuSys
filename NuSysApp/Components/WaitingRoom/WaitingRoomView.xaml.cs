@@ -335,10 +335,11 @@ namespace NuSysApp
                 }
                 else
                 {
-                   // loggedInText.Text = "Log in failed!";
+                    loggedInText.Text = "Log in failed!";
+                    /*
                     if (!createNewUser) { 
                         Login(true);
-                    }
+                    }*/
                 }
 
             }

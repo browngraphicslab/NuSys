@@ -72,6 +72,7 @@ namespace NuSysApp
             _timer.Stop();
             _timer.Tick -= OnTick;
             _view.ManipulationCompleted -= ViewOnManipulationCompleted;
+            e.Handled = true;
         }
 
 
@@ -119,6 +120,8 @@ namespace NuSysApp
 
             compositeTransform.CenterX = cent.X;
             compositeTransform.CenterY = cent.Y;
+
+            e.Handled = true;
         }
 
         protected void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -175,6 +178,8 @@ namespace NuSysApp
 
             if (_cview != null)
                 _cview.InqCanvas.Redraw();
+            e.Handled = true;
+            
         }
     }
 }
