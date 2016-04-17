@@ -29,17 +29,26 @@ namespace NuSysApp
         public MultiSelectMenuView()
         {
             this.InitializeComponent();
-
+            DataContext = new object();
             DeleteButton.Click += DeleteButtonOnClick;
             GroupButton.Click += GroupButtonOnClick;
-            AdornmentButton.Click += AdormentButtonClick;
+            AdornmentButton.Tapped += AdormentButtonClick;
 
             SelectedColor = Colors.Black;
         }
 
-        private void AdormentButtonClick(object sender, RoutedEventArgs e)
-        {          
-            ColorPicker.Visibility = (ColorPicker.Visibility == Visibility.Collapsed) ?Visibility.Visible : Visibility.Collapsed;
+        public void Show()
+        {
+            ColorPicker.Visibility = Visibility.Collapsed;
+            Visibility = Visibility.Visible;
+            Buttons.Visibility = Visibility.Visible;
+        }
+
+        private void AdormentButtonClick(object sender, TappedRoutedEventArgs e)
+        {
+            ColorPicker.Visibility = Visibility.Visible;
+            Buttons.Visibility = Visibility.Collapsed;
+            e.Handled = true;
         }
 
         private async void GroupButtonOnClick(object sender, RoutedEventArgs routedEventArgs)

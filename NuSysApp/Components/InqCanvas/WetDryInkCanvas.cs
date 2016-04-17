@@ -30,7 +30,7 @@ namespace NuSysApp
 
         protected InkManager _inkManager = new InkManager();
 
-        protected List<InkPoint> _currentStroke;
+        protected List<InkPoint> _currentStroke = new List<InkPoint>();
         protected List<InkStroke> _dryStrokes = new List<InkStroke>();
         protected InkStrokeBuilder _strokeBuilder = new InkStrokeBuilder();
         protected bool _isEraser;
@@ -137,12 +137,10 @@ namespace NuSysApp
 
         protected virtual void OnWetCanvasDraw(CanvasControl sender, CanvasDrawEventArgs args)
         {
-            if (_currentStroke == null)
-                return;
             var ds = args.DrawingSession;
                 ds.Clear(Colors.Transparent);
 
-                if (_currentStroke != null) {  
+                if (_currentStroke.Count > 0) {  
                     try {     
                     var stroke =  strokeBuilder.CreateStrokeFromInkPoints(_currentStroke, Matrix3x2.Identity);
                     stroke.DrawingAttributes = GetDrawingAttributes();
@@ -164,6 +162,8 @@ namespace NuSysApp
         {
             if (e.Pointer.PointerDeviceType != Windows.Devices.Input.PointerDeviceType.Pen)
                 return;
+
+            _currentStroke.Clear();
 
             _capturedPointer = e.Pointer;
             _wetCanvas.CapturePointer(_capturedPointer);
@@ -190,10 +190,7 @@ namespace NuSysApp
             if (e.Pointer.PointerDeviceType != Windows.Devices.Input.PointerDeviceType.Pen)
                 return;
 
-            if (_currentStroke == null)
-                return;
-
-            _wetCanvas.PointerMoved -= OnPointerMoved;
+           _wetCanvas.PointerMoved -= OnPointerMoved;
 
             _drawingColor = Colors.Black;
 
@@ -202,8 +199,7 @@ namespace NuSysApp
                 _currentStroke.Add(new InkPoint(_inverseTransform.TransformPoint(p.RawPosition), p.Properties.Pressure));
             }
             var stroke = strokeBuilder.CreateStrokeFromInkPoints(_currentStroke, Matrix3x2.Identity);
-            _currentStroke = null;
-                       
+                             
 
             if (_isEraser)
             {
@@ -254,7 +250,7 @@ namespace NuSysApp
             foreach (var p in e.GetIntermediatePoints(_wetCanvas).Reverse())
             {
                 _currentStroke.Add(new InkPoint(_inverseTransform.TransformPoint(p.RawPosition), p.Properties.Pressure));
-            }            
+            }             
           
             _wetCanvas.Invalidate();
         }
@@ -267,7 +263,7 @@ namespace NuSysApp
     }
 }
 
-static class Extensions {
+public static class Extensions {
     public static GeoAPI.Geometries.ILineString GetLineString(this IEnumerable<Point> s)
     {
         GeoAPI.Geometries.Coordinate[] coords;

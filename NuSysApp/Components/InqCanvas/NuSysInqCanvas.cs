@@ -38,7 +38,7 @@ namespace NuSysApp
 
             _adornments.Remove(geom);
             if (fireEvent)
-                AdornmentAdded?.Invoke(this, inkStroke);
+                AdornmentRemoved?.Invoke(this, inkStroke);
 
             Redraw();
         }
@@ -55,6 +55,7 @@ namespace NuSysApp
             var ch = multipoint.ConvexHull().Coordinates.Select(p => new Vector2((float)p.X, (float)p.Y)).ToArray();
             var geom = CanvasGeometry.CreatePolygon(_dryCanvas, ch);
             _adornments.Add(geom);
+            _inkStrokes.Add(stroke, geom);
 
             if (fireEvent)
                 AdornmentAdded?.Invoke(this, stroke);
@@ -72,5 +73,33 @@ namespace NuSysApp
                 ds.FillGeometry(ads[i], _colors[i]);
             }
         }
+
+        protected override void OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            if (e.Pointer.PointerDeviceType != Windows.Devices.Input.PointerDeviceType.Pen)
+                return;
+   //         bool isEraser = e.GetCurrentPoint(null).Properties.IsEraser;
+            base.OnPointerReleased(sender, e);
+            
+            if ( _isEraser && _currentStroke.Count > 0)
+            {
+                var currentStroke = _currentStroke.Select(p => p.Position).GetLineString();
+                foreach(var stroke in _inkStrokes.Keys.ToArray())
+                {
+                    var pts = stroke.GetInkPoints().Select(p => p.Position).GetLineString();
+                    if (currentStroke.Intersects(pts))
+                    {
+                        RemoveAdorment(stroke);
+                    }
+                }
+
+
+            }
+
+            _currentStroke.Clear();
+
+            Redraw();
+        }
+
     }
 }

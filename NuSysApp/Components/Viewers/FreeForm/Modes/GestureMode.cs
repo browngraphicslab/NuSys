@@ -28,9 +28,7 @@ namespace NuSysApp
         public GestureMode(FreeFormViewer view) : base(view)
         {
             var wvm = (FreeFormViewerViewModel)_view.DataContext;
-            _cview = (FreeFormViewer) view;
- 
-            
+            _cview = (FreeFormViewer) view;           
  
             _tFirstPress = DateTime.Now.Subtract(TimeSpan.FromMinutes(1));
         }
@@ -51,9 +49,7 @@ namespace NuSysApp
 
         private void OnPointerReleased(object source, PointerRoutedEventArgs args)
         {
-            if (args.Pointer.PointerDeviceType == PointerDeviceType.Pen)
-                return;
-            _released = true;
+             _released = true;
         }
 
         private async void  OnPointerPressed(object source, PointerRoutedEventArgs args)
@@ -62,31 +58,31 @@ namespace NuSysApp
                 return;
 
             _released = false;
-            if (SessionController.Instance.SessionView.IsPenMode)
-                return;
 
             var s = DateTime.Now.Subtract(_tFirstPress).TotalSeconds;
             if (s > 1.5)
             {
                 var f = (FrameworkElement)args.OriginalSource;
-                var pc = f.FindParentDataContext();
-                await Task.Delay(200);
-                if (_released && SessionController.Instance.ActiveFreeFormViewer.Selections.Count < 2 || (pc is FreeFormViewerViewModel))
+                var pc = f.DataContext;
+                if (_released &&  (pc is FreeFormViewerViewModel))
                     _cview.MultiMenu.Visibility = Visibility.Collapsed;
+
                 return;
             }
             
-            SelectionByStroke();
+            //SelectionByStroke();
 
 
 
             _cview.MultiMenu.Stroke = _inqLine;
 
-            var p = args.GetCurrentPoint(null).Position;
-            _cview.MultiMenu.Visibility = Visibility.Visible;
-            Canvas.SetLeft(_cview.MultiMenu,  p.X + 10);
-            Canvas.SetTop(_cview.MultiMenu, p.Y - 60);
-
+            var refPoint = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(args.GetCurrentPoint(null).Position);
+            if (_cview.MultiMenu.Visibility == Visibility.Collapsed && IsPointCloseToInk(refPoint)) { 
+                var p = args.GetCurrentPoint(null).Position;
+                _cview.MultiMenu.Show();
+                Canvas.SetLeft(_cview.MultiMenu,  p.X + 10);
+                Canvas.SetTop(_cview.MultiMenu, p.Y - 60);
+            } 
             args.Handled = true;
         }
 
@@ -109,6 +105,18 @@ namespace NuSysApp
         {
             _inqLine = stroke;
             _tFirstPress = DateTime.Now;
+        }
+
+        private bool IsPointCloseToInk(Point p)
+        {
+            var minDist = double.PositiveInfinity;
+            foreach(var inqPoint in _inqLine.GetInkPoints())
+            {
+                var dist = Math.Sqrt((p.X - inqPoint.Position.X) * (p.X - inqPoint.Position.X) + (p.Y - inqPoint.Position.Y) * (p.Y - inqPoint.Position.Y));
+                if (dist < minDist)
+                    minDist = dist;
+            }
+            return minDist < 100;
         }
      
 
