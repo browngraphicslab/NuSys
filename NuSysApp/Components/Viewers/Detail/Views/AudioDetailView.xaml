@@ -7,8 +7,16 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignWidth="400" Height="798">
-    <Border x:Name="xBorder" BorderThickness="2" BorderBrush="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <Grid x:Name="grid"  Background="DarkGray" CornerRadius="10" Margin="10,123,10,0">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid x:Name="grid"  Background="{StaticResource color8}" CornerRadius="10" Margin="10,123,10,0">
         <Grid.Resources>
             <local:PositionToStringConverter x:Key="PositionToStringConverter"/>
         </Grid.Resources>

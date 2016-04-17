@@ -95,7 +95,6 @@ namespace NuSysApp
             bg = (Grid)GetTemplateChild("bg");
             hitArea = (Rectangle)GetTemplateChild("HitArea");
 
-
             //inkCanvas = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(vm.Width, vm.Height)));
 
             //(GetTemplateChild("xContainer") as Grid).Children.Add(inkCanvas);
@@ -195,7 +194,7 @@ namespace NuSysApp
             }
             else
             {
-                highlight.Visibility = Visibility.Visible;
+             //   highlight.Visibility = Visibility.Visible;
             }
             highlight.BorderBrush = new SolidColorBrush(user.Color);
             userName.Foreground = new SolidColorBrush(user.Color);
@@ -204,9 +203,9 @@ namespace NuSysApp
 
         private void LibraryElementModelOnOnLightupContent(LibraryElementModel model, bool lightup)
         {
-            highlight.Visibility = lightup ? Visibility.Visible : Visibility.Collapsed;
-            highlight.BorderThickness = new Thickness(5);
-            highlight.BorderBrush = new SolidColorBrush(Colors.Aqua);
+          //  highlight.Visibility = lightup ? Visibility.Visible : Visibility.Collapsed;
+            highlight.Background = new SolidColorBrush(Color.FromArgb(100, 156, 197, 194));
+            highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(100, 156, 197, 194));
         }
 
         private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)
@@ -214,16 +213,35 @@ namespace NuSysApp
             xCanvas.Children.Remove(_dragItem);
 
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
-            var p = args.GetCurrentPoint(null).Position;
+            var p = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
             var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(p.X, p.Y, 300, 300));
-
+            var send = (FrameworkElement) sender;
             if (_currenDragMode == DragMode.Duplicate)
             {
-
+               
                 var vm = (ElementViewModel)DataContext;
-                vm.Controller.RequestDuplicate(r.X, r.Y, new Message(await vm.Model.Pack()));
-            }
+                
 
+                var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
+                hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement) is GroupNodeView).ToList();
+                if (hitsStart.Any())
+                {
+                    var first = (FrameworkElement) hitsStart.First();
+                    var vm1 = (GroupNodeViewModel) first.DataContext;
+                    var groupnode = (GroupNodeView)first;
+                    var np = new Point(p.X - vm1.Model.Width / 2, p.Y - vm1.Model.Height / 2);
+                    var canvas = groupnode.FreeFormView.AtomContainer;
+                    var targetPoint = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(canvas).TransformPoint(p);
+                    p = args.GetCurrentPoint(first).Position; ;
+                   
+                   vm.Controller.RequestDuplicate(targetPoint.X, targetPoint.Y, new Message(await vm.Model.Pack()));
+                }
+                else
+                {
+                    vm.Controller.RequestDuplicate(r.X, r.Y, new Message(await vm.Model.Pack()));
+                }
+            }
+            
             /*
             if (_currenDragMode == DragMode.Tag)
             {
@@ -378,20 +396,26 @@ namespace NuSysApp
             {
                 if (vm.IsSelected)
                 {
+                    highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 156, 197, 194));
+                    highlight.BorderThickness = new Thickness(2);
+                    highlight.Background = new SolidColorBrush(Colors.Transparent);
                     bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 156, 197, 194));
                     bg.BorderThickness = new Thickness(2);
                     hitArea.Visibility = Visibility.Visible;
                 }
                 if (vm.IsEditing)
                 {
+                    highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 131, 166, 163));
+                    highlight.BorderThickness = new Thickness(2);
+                    highlight.Background = new SolidColorBrush(Colors.Transparent);
                     bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 197, 158, 156));
                     bg.BorderThickness = new Thickness(2);
                     hitArea.Visibility = Visibility.Collapsed;
                 }
                 if (!(vm.IsEditing || vm.IsSelected))
                 {
-                    bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 131, 166, 163));
-                    bg.BorderThickness = new Thickness(1);
+                    highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 131, 166, 163));
+                    highlight.BorderThickness = new Thickness(1);
                     hitArea.Visibility = Visibility.Visible;
                 }
             }

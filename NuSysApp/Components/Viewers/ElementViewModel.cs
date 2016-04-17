@@ -123,12 +123,12 @@ namespace NuSysApp
             {
                 //sorry about this - should also be in frontend and not in viewmodel
                 Button tagBlock = new Button();
-                tagBlock.Background = new SolidColorBrush(Colors.DarkSalmon);
+                tagBlock.Background = new SolidColorBrush(Constants.salmonColor);
                 tagBlock.Content = tag;
                 tagBlock.Height = 30;
                 tagBlock.Padding = new Thickness(5);
                 tagBlock.BorderThickness = new Thickness(0);
-                tagBlock.Foreground = new SolidColorBrush(Colors.White);
+                tagBlock.Foreground = new SolidColorBrush(Constants.foreground6);
                 tagBlock.Margin = new Thickness(2, 2, 2, 2);///
                 tagBlock.Opacity = 0.75;
                 tagBlock.FontStyle = FontStyle.Italic;
@@ -235,6 +235,7 @@ namespace NuSysApp
                 }
 
                 _isSelected = value;
+                _controller.Selected(value);
                 RaisePropertyChanged("IsSelected");
             }
         }

@@ -17,7 +17,6 @@ namespace NuSysApp
             var fm = SessionController.Instance.SessionView.FloatingMenu.Panel;
             fm.ManipulationMode = ManipulationModes.All;
             fm.ManipulationDelta += OnManipulationDelta;
-
         }
 
         public override async Task Deactivate()

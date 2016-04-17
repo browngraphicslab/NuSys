@@ -8,7 +8,16 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
-    <Border x:Name="xBorder" BorderThickness="2" BorderBrush="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid x:Name="grid">
         <!--<TextBlock x:Name="MessageBox" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>-->
         <Grid.Resources>

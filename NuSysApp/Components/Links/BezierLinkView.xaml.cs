@@ -177,5 +177,10 @@ namespace NuSysApp
             var controller = (LinkElementController)vm.Controller;
             await controller.RequestDelete();
         }
+
+        private void Annotation_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

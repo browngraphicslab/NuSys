@@ -11,11 +11,17 @@
     xmlns:converters="using:NuSysApp"
 >
     <converters:AnimatableUserControl.Resources>
-        <converters:BoolToVisibilityConverter x:Key="bConverter"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <converters:BoolToVisibilityConverter x:Key="bConverter"/>
+        </ResourceDictionary>
     </converters:AnimatableUserControl.Resources>
     <Canvas Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}" >
         <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
-        <Path x:Name="BezierLink" Stroke="{Binding Color}" StrokeThickness="30" Opacity=".5" CompositeMode="MinBlend">
+        <Path x:Name="BezierLink" Stroke="{Binding Color}" StrokeThickness="30" Opacity=".28" CompositeMode="MinBlend">
             <Path.Data>
                 <PathGeometry>
                     <PathGeometry.Figures>
@@ -39,14 +45,14 @@
                 </PathGeometry>
             </Path.Data>
         </Path>
-        <StackPanel x:Name="AnnotationContainer" Orientation="Vertical">
+        <StackPanel x:Name="AnnotationContainer" Orientation="Vertical" >
             <Grid>
-            <Rectangle x:Name="Rect" Fill="Gray" RadiusX="5" RadiusY="5" Width="260"  HorizontalAlignment="Left"/>
-                <StackPanel Orientation="Horizontal" >
-                <local:TextInputBlock x:Name ="Annotation" LeftJustified="False" SetHeight="30" HorizontalAlignment="Stretch"></local:TextInputBlock>
-            </StackPanel>
+                <Rectangle x:Name="Rect" Fill="LightGray" RadiusX="5" RadiusY="5" Width="260"  HorizontalAlignment="Left"/>
+                <StackPanel Orientation="Horizontal" IsHitTestVisible="{Binding IsSelected}" >
+                    <local:TextInputBlock x:Name ="Annotation" BubbleTop="True"  LeftJustified="False" SetHeight="30" HorizontalAlignment="Stretch" Loaded="Annotation_Loaded"></local:TextInputBlock>
+                </StackPanel>
             </Grid>
-            <Button Margin="0,2,0,2" x:Name="Delete" Visibility="{Binding IsSelected, Converter={StaticResource vConverter}}" Click="Delete_OnClick" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
+            <Button Margin="0,2,0,2" x:Name="Delete" Visibility="{Binding IsSelected, Converter={StaticResource vConverter}}" Click="Delete_OnClick" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
                 <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
             </Button>
         </StackPanel>

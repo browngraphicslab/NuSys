@@ -1,5 +1,6 @@
 ﻿{
   "dependencies": {
+    "GeoAPI": "1.7.4",
     "HtmlAgilityPack": "1.4.9",
     "Microsoft.ApplicationInsights": "1.0.0",
     "Microsoft.ApplicationInsights.PersistenceChannel": "1.0.0",
@@ -8,6 +9,7 @@
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
     "MyToolkit.Extended": "2.5.9",
     "NAudio": "1.7.3",
+    "NetTopologySuite": "1.14.0",
     "Newtonsoft.Json": "8.0.1",
     "SharpDX": "3.0.1",
     "SharpDX.Direct2D1": "3.0.1",

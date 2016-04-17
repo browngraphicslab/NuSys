@@ -14,20 +14,30 @@ namespace NuSysApp
 
         public delegate void TextBindingChangedHandler(object source, string text);
         public event TextBindingChangedHandler TextBindingChanged;
+        public delegate void TextUnselectedHandler(object source);
+        public event TextUnselectedHandler TextUnselected;
 
         public TextNodeViewModel(ElementController controller) : base(controller)
         {           
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 164, 220, 255));
             Text = controller.LibraryElementModel?.Data;
             ((TextNodeController) controller).TextChanged += TextChanged;
+            ((TextNodeController) controller).SelectionChanged += SelectionChanged;
+           controller.Disposed += ControllerOnDisposed;
+        }
 
-            controller.Disposed += ControllerOnDisposed;
-
+        private void SelectionChanged(object source, bool selected)
+        {
+            if (!selected)
+            {
+                TextUnselected?.Invoke(this);
+            }
         }
 
         private void ControllerOnDisposed(object source)
         {
             ((TextNodeController)Controller).TextChanged -= TextChanged;
+            ((TextNodeController)Controller).SelectionChanged -= SelectionChanged;
             Controller.Disposed -= ControllerOnDisposed;
         }
 

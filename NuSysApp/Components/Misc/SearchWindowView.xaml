@@ -9,10 +9,11 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
-
     <StackPanel Width="400">
         <StackPanel Orientation ="Horizontal">
-            <TextBox Name="searchBox" BorderBrush="#d6d6d6" Foreground="#606d7a"  BorderThickness="1" PlaceholderText="Search" FontFamily="ms-appx:///Assets/fonts/FiraSans-Hair.otf" FontSize="20"  Width="400"  Height="35" Margin="0,0,0,0"></TextBox>
+            <!--<TextBox Name="searchBox" BorderBrush="#d6d6d6" Foreground="#606d7a"  BorderThickness="1" PlaceholderText="Search" FontFamily="ms-appx:///Assets/fonts/FiraSans-Hair.otf" FontSize="20"  Width="400"  Height="35" Margin="0,0,0,0"></TextBox>-->
+            <local:TextInputBlock x:Name ="searchBox" BubbleTop="True"  LeftJustified="False" SetHeight="30" HorizontalAlignment="Stretch" Width="400"></local:TextInputBlock>
+
             <!--<local:SearchButton x:Name="btnSearch" Margin ="0" Icon="ms-appx:///Assets/icon_mainmenu_search.png"  />-->
         </StackPanel>
 

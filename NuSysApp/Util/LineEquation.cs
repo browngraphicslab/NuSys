@@ -19,13 +19,13 @@ namespace NuSysApp
             return A + B*x;
         }
 
-        public Vector2 GetDirection()
+        public Vector2d GetDirection()
         {
             int x0 = 0;
             double y0 = GetY(x0);
             int x1 = 10;
             double y1 = GetY(x1);
-            return (new Vector2(x1, y1) - new Vector2(x0, y0)).GetNormalized();
+            return (new Vector2d(x1, y1) - new Vector2d(x0, y0)).GetNormalized();
         }
     }
 }

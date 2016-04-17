@@ -14,7 +14,9 @@ namespace NuSysApp
 {
     public class ElementCollectionViewModel: ElementViewModel
     {
-        
+        public string Text { get; set; }
+
+
         public ObservableCollection<FrameworkElement> AtomViewList { get; set; } 
         protected INodeViewFactory _nodeViewFactory = new FreeFormNodeViewFactory();
        
@@ -22,7 +24,8 @@ namespace NuSysApp
         {
             controller.ChildAdded += OnChildAdded;
             controller.ChildRemoved += OnChildRemoved;
-            
+            Text = controller.LibraryElementModel?.Data;
+
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
             AtomViewList = new ObservableCollection<FrameworkElement>();
         }

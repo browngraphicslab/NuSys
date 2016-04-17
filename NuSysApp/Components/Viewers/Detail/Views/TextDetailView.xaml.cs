@@ -58,12 +58,17 @@ namespace NuSysApp
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
                 await SessionController.Instance.InitializeRecog();
-                
+                SetHeight(SessionController.Instance.SessionView.ActualHeight/2);
+
+
             };
+
+
 
             SizeChanged += delegate(object sender, SizeChangedEventArgs args)
             {
-       
+                SetHeight(SessionController.Instance.SessionView.ActualHeight/2);
+
             };
 
             MyWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
@@ -75,6 +80,11 @@ namespace NuSysApp
 
             vm.Controller.Disposed += ControllerOnDisposed;
 
+        }
+
+        public void SetHeight(double parentHeight)
+        {
+            MyWebView.Height = parentHeight;
         }
 
         private void ControllerOnDisposed(object source)

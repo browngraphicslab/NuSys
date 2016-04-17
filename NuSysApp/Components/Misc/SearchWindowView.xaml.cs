@@ -30,12 +30,12 @@ namespace NuSysApp
         public SearchWindowView()
         {
             this.InitializeComponent();
-            searchBox.TextChanging += SearchBoxOnTextChanged;
+            searchBox.TextChanged += SearchBoxOnTextChanged;
             DataContext = new SearchWindowViewModel();
             _instance = this;
         }
 
-        private void SearchBoxOnTextChanged(object sender, TextBoxTextChangingEventArgs routedEventArgs)
+        private void SearchBoxOnTextChanged(object sender, String routedEventArgs)
         {
             var vm = (SearchWindowViewModel)DataContext;
             vm.SearchFor(searchBox.Text.ToLower());

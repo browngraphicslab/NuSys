@@ -112,10 +112,10 @@ namespace NuSysApp
             ((LibraryViewable)(WorkspacePivot?.Content)).Sort(((ComboBox)sender)?.SelectedItem.ToString());
         }
 
-        private void TextBox_OnTextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
+        private void TextBox_OnTextChanging(Object sender, String args)
         {
             //((LibraryViewable)(WorkspacePivot?.Content)).SetItems(SessionController.Instance.ContentController.Values.Where(item => item.Type != ElementType.Link).ToArray());
-            ((LibraryViewable)(WorkspacePivot?.Content)).Search(sender.Text.ToLower());
+            ((LibraryViewable)(WorkspacePivot?.Content)).Search(args.ToLower());
             _propertiesWindow.Visibility = Visibility.Collapsed;
         }
 

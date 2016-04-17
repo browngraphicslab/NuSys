@@ -14,6 +14,8 @@ using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Newtonsoft.Json;
 using NuSysApp.Network.Requests.SystemRequests;
+using Windows.UI.Input.Inking;
+using System.Numerics;
 
 namespace NuSysApp
 {
@@ -184,6 +186,7 @@ namespace NuSysApp
                     }
 
                     var contentData = (string)dict["data"] ?? "";
+
                     var id = (string) dict["id"];
                     var type = (ElementType) Enum.Parse(typeof (ElementType), (string) dict["type"], true);
                     var title = dict.ContainsKey("title") ? (string)dict["title"] : null;
@@ -194,6 +197,46 @@ namespace NuSysApp
                     if (NeededLibraryDataIDs.Contains(id))
                     {
                         NeededLibraryDataIDs.Remove(id);
+                    }
+
+
+                    if (dict.ContainsKey("inklist"))
+                    {
+                        HashSet<InkStroke> set = new HashSet<InkStroke>();
+                        var inklines = JsonConvert.DeserializeObject<List<string>>(dict["inklist"].ToString(), settings);
+                        var newInkLines = new HashSet<string>();
+                        foreach (var inkline in inklines)
+                        {
+                            var inkdict = JsonConvert.DeserializeObject<Dictionary<string, object>>(inkline, settings);
+                            var inkpoints = JsonConvert.DeserializeObject<List<InkPoint>>(inkdict["inkpoints"].ToString());
+                            var inktype = inkdict["type"] as string;
+                            var inkid = inkdict["id"] as string;
+                            
+                            var builder = new InkStrokeBuilder();
+                            var inkstroke = builder.CreateStrokeFromInkPoints(inkpoints, Matrix3x2.Identity);
+
+                            var newWrapper = new InkWrapper(inkstroke, inktype);
+                            InkStorage._inkStrokes.Add(inkid, newWrapper);
+                            newInkLines.Add(inkid);                            
+                        }
+
+                        var libModel = ((CollectionLibraryElementModel)SessionController.Instance.ContentController.Get(id));
+                        var oldInkLines = libModel.InkLines;
+                        var added = newInkLines.Except(oldInkLines);
+                        var removed = oldInkLines.Except(newInkLines);
+
+                        await UITask.Run(() =>
+                        {
+                            foreach (var idremoved in removed)
+                            {
+                                libModel.RemoveInk(idremoved);
+                            }
+
+                            foreach (var idadded in added)
+                            {
+                                libModel.AddInk(idadded);
+                            }
+                        });
                     }
 
                     LibraryElementModel content = SessionController.Instance.ContentController.Get(libraryId);
