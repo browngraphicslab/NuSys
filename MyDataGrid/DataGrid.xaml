@@ -11,11 +11,11 @@
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="LightGray" x:Name="mainGrid">
         <StackPanel Orientation="Vertical" x:Name="mainSP">
-            <ItemsControl ItemsSource="{Binding Header}">
+            <local:GridAwareItemsControl ItemsSource="{Binding Header}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <!--<StackPanel x:Name="colContainer" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" />-->
-                        <Grid local:GridAutoLayout.NumberOfColumns="{Binding NumCols}" local:GridAutoLayout.NumberOfRows="1" x:Name="headerGrid" Width="500" />
+                        <Grid local:GridAutoLayout.NumberOfColumns="{Binding NumCols}" local:GridAutoLayout.NumberOfRows="1" x:Name="headerGrid" Width="500"/>
                     </ItemsPanelTemplate>
 
                 </ItemsControl.ItemsPanel>
@@ -33,7 +33,7 @@
                 </ItemsControl.ItemTemplate>
             
 
-            </ItemsControl>
+            </local:GridAwareItemsControl>
 
             <ScrollViewer x:Name="scrollViewer" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" Height="480">
                 <ScrollViewer.Content>
