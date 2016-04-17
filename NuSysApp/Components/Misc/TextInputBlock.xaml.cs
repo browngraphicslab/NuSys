@@ -124,6 +124,7 @@ namespace NuSysApp
         private void TextBox_OnTextChanged(object sender, TextChangedEventArgs args)
         {
             this.Text = this.TextBox.Text;
+            TextChanged?.Invoke(this, this.Text);
         }
 
         public string Text
@@ -214,7 +215,7 @@ namespace NuSysApp
                 if (texts.Count > 0)
                 {
                     TextBox.Text = _savedForInking + " " + texts[0];
-                    this.Text = this.TextBox.Text;
+                    this.Text = this.TextBox.Text.Trim();
                 }
                 TextChanged?.Invoke(this, TextBox.Text.Trim());
             };
