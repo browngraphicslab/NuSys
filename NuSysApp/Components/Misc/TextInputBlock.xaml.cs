@@ -214,8 +214,9 @@ namespace NuSysApp
                 if (texts.Count > 0)
                 {
                     TextBox.Text = _savedForInking + " " + texts[0];
-                    TextChanged?.Invoke(this, TextBox.Text.Trim());
+                    this.Text = this.TextBox.Text;
                 }
+                TextChanged?.Invoke(this, TextBox.Text.Trim());
             };
         }
 
@@ -322,8 +323,9 @@ namespace NuSysApp
             else
             {
                 InkBubble.Visibility = Visibility.Collapsed;
+                this.Text = this.TextBox.Text.Trim();
+                TextChanged?.Invoke(this, TextBox.Text.Trim());
                 SetImage("ms-appx:///Assets/icon_node_ink.png", InkImg);
-
             }
             _isInking = !_isInking;
         }
