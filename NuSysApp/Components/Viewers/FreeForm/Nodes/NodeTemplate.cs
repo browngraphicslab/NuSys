@@ -259,17 +259,43 @@ namespace NuSysApp
 
             if (_currenDragMode == DragMode.Link)
             {
+                Debug.WriteLine("dragging link");
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
+
                 hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementViewModel).ToList();
+
+                foreach (var e in hitsStart)
+                {
+                    Debug.WriteLine(e);
+                }
+
                 if (hitsStart.Any())
                 {
                     var first = (FrameworkElement)hitsStart.First();
+
+                    var rectangles = hitsStart.OfType<Rectangle>();
+                    Debug.WriteLine("!!!!!!!!!!!!!!!!!!!!!" + rectangles.Count());
+
                     var dc = (ElementViewModel)first.DataContext;
                     var vm = (ElementViewModel)DataContext;
                     if (vm == dc || (dc is FreeFormViewerViewModel) || dc is LinkViewModel)
                     {
                         return;
                     }
+
+                    if (rectangles.Count() == 2)
+                    {
+                        Debug.WriteLine("link dropped on image");
+                        var second = (Rectangle) rectangles.ElementAt(1);
+                        second.Fill = new SolidColorBrush(Colors.Yellow);
+                        second.Opacity = 0.2;
+                        second.Stroke = new SolidColorBrush(Colors.Red);
+                    }
+                    else
+                    {
+                        Debug.WriteLine("number of rectangles not 2");
+                    }
+
                     Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100, 100, 200);
                     Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100, 100, 100);
                     Debug.WriteLine("nodetemplate");

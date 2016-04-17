@@ -30,7 +30,9 @@ namespace NuSysApp
             DataContext = vm;
             _drawingRegion = false;
             TempRegion = new Rectangle();
-            TempRegion.Fill = new SolidColorBrush(Colors.Red);
+            TempRegion.Fill = new SolidColorBrush(Colors.Transparent);
+            TempRegion.StrokeThickness = 2;
+            TempRegion.Stroke = new SolidColorBrush(Colors.Red);
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
@@ -110,7 +112,11 @@ namespace NuSysApp
                 Rectangle region = new Rectangle();
                 region.Height = TempRegion.Height;
                 region.Width = TempRegion.Width;
-                region.Fill = new SolidColorBrush(Colors.Blue);
+                region.Fill = new SolidColorBrush(Colors.Transparent);
+                region.StrokeThickness = 2;
+                region.Stroke = new SolidColorBrush(Colors.Black);
+
+
                 Canvas.SetLeft(region, Canvas.GetLeft(TempRegion));
                 Canvas.SetTop(region, Canvas.GetTop(TempRegion));
                 (DataContext as ImageElementViewModel).Model.Regions.Add(region);

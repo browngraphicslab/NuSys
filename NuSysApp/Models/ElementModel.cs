@@ -196,6 +196,8 @@ namespace NuSysApp
                 Metadata[data.Key] = data.Value;
             }
 
+
+
             X = props.GetDouble("x", X);
             Y = props.GetDouble("y", Y);
             Width = props.GetDouble("width", Width);
