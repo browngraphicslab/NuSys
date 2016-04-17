@@ -46,11 +46,13 @@ namespace NuSysApp
 
             if (type == "adornment")
             {
+                return;
                 if (!InkStorage._inkStrokes.ContainsKey("id"))
                     SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddAdorment(inkpoints, color, false);
             }
             else
             {
+                return;
                 if (!InkStorage._inkStrokes.ContainsKey("id"))
                     SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddStroke(inkpoints);
             }

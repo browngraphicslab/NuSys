@@ -95,7 +95,6 @@ namespace NuSysApp
             bg = (Grid)GetTemplateChild("bg");
             hitArea = (Rectangle)GetTemplateChild("HitArea");
 
-
             //inkCanvas = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(vm.Width, vm.Height)));
 
             //(GetTemplateChild("xContainer") as Grid).Children.Add(inkCanvas);
@@ -195,7 +194,7 @@ namespace NuSysApp
             }
             else
             {
-                highlight.Visibility = Visibility.Visible;
+             //   highlight.Visibility = Visibility.Visible;
             }
             highlight.BorderBrush = new SolidColorBrush(user.Color);
             userName.Foreground = new SolidColorBrush(user.Color);
@@ -204,7 +203,7 @@ namespace NuSysApp
 
         private void LibraryElementModelOnOnLightupContent(LibraryElementModel model, bool lightup)
         {
-            highlight.Visibility = lightup ? Visibility.Visible : Visibility.Collapsed;
+          //  highlight.Visibility = lightup ? Visibility.Visible : Visibility.Collapsed;
             highlight.Background = new SolidColorBrush(Color.FromArgb(100, 156, 197, 194));
             highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(100, 156, 197, 194));
         }

@@ -123,7 +123,8 @@ namespace NuSysApp
             var dryStrokes = _dryStrokes;
                 foreach (var s in dryStrokes)
                 {
-                    var attr = GetDrawingAttributes();  
+                    var attr = GetDrawingAttributes();
+                    attr.Color = Colors.Black;
                     s.DrawingAttributes = attr;                    
                 }
 

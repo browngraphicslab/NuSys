@@ -81,7 +81,7 @@
 
                                 </Grid>
                                 <Canvas>
-                                    <Border x:Name="xHighlight" Width="{Binding Width}" BorderThickness="4" CornerRadius="5,5,0,0" />
+                                    <Border x:Name="xHighlight" Width="{Binding Width}" BorderThickness="4" CornerRadius="5,5,0,0" Visibility="Collapsed" />
                                 </Canvas>
                                 <Canvas>
                                     <TextBlock x:Name="xUserName"  Text="" Margin="0,-67.5,0,0" FontSize="22.5"></TextBlock>
