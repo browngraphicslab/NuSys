@@ -256,12 +256,6 @@ namespace NuSysApp
             xDetailViewer.DataContext = new DetailViewerViewModel();
 
             var dict = new Dictionary<string, Message>();
-
-            Task.Run(async delegate
-            {
-                SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(collectionId);
-            });
-
             foreach (var msg in nodeMessages)
             {
                 msg["creator"] = collectionId;
@@ -286,6 +280,11 @@ namespace NuSysApp
             Debug.WriteLine("done joining collection: " + collectionId);
 
             xLoadingGrid.Visibility = Visibility.Collapsed;
+
+            Task.Run(async delegate
+            {
+                SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(collectionId);
+            });
 
             /*
             foreach (var msg in nodeMessages)
@@ -354,7 +353,7 @@ namespace NuSysApp
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(message));
                     Task.Run(async delegate
                     {
-                        SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(id);
+                        SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(libraryId);
                     });
                     if (loadCollections)
                     {
