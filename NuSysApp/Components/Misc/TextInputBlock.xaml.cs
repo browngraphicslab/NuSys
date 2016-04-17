@@ -115,6 +115,9 @@ namespace NuSysApp
                     bottom.X = -40;
                     bottom.Y = 50;
                     InkBubble.RenderTransform = bottom;
+                    Thickness m = Inker.Margin;
+                    m.Top = 3;
+                    Inker.Margin = m;
                     SetImage("ms-appx:///Assets/menububblebtm.png", bubble);
 
                 }
@@ -233,6 +236,7 @@ namespace NuSysApp
             marker.HorizontalAlignment = HorizontalAlignment.Left;
             curr.Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(1, 242, 242, 242));
             marker.Stroke = new SolidColorBrush(Colors.LightSlateGray);
+
             marker.Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(1, 242, 242, 242));
             Inker.Children.Add(curr);
             Inker.Children.Add(_inqView);

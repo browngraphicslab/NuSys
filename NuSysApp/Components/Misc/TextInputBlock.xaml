@@ -46,7 +46,7 @@
             <Image Name="bubble" Source="ms-appx:///Assets/menububble2.png" Width="200">
             </Image>
             <!--{Binding Width, ElementName=bubble}-->
-            <Grid x:Name="Inker" Width="194" Height="68" Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Grid x:Name="Inker" Width="190" Height="71" Margin="5,0,0,0" Background="Transparent" VerticalAlignment="Stretch" HorizontalAlignment="Left">
                 
             </Grid>
 
