@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -27,48 +28,61 @@ namespace NuSysApp
         public GestureMode(FreeFormViewer view) : base(view)
         {
             var wvm = (FreeFormViewerViewModel)_view.DataContext;
-            _cview = (FreeFormViewer) view;
-         //   _cview.InqCanvas.InkStrokeAdded += OnLineFinalized;
-            
-            _view.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
-            _view.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
+            _cview = (FreeFormViewer) view;           
+ 
             _tFirstPress = DateTime.Now.Subtract(TimeSpan.FromMinutes(1));
         }
 
         public override async Task Activate()
         {
-       //     _cview.InqCanvas.InkStrokeAdded += OnLineFinalized;
+            _view.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
+            _view.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
+            _cview.InqCanvas.InkStrokeAdded += OnLineFinalized;
+        }
+
+        public override async Task Deactivate()
+        {
+            _cview.InqCanvas.InkStrokeAdded -= OnLineFinalized;
+            _view.RemoveHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed));
+            _view.RemoveHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased));
         }
 
         private void OnPointerReleased(object source, PointerRoutedEventArgs args)
         {
-            _released = true;
+             _released = true;
         }
 
         private async void  OnPointerPressed(object source, PointerRoutedEventArgs args)
         {
-            _released = false;
-            if (SessionController.Instance.SessionView.IsPenMode)
+            if (args.Pointer.PointerDeviceType == PointerDeviceType.Pen)
                 return;
 
+            _released = false;
+
             var s = DateTime.Now.Subtract(_tFirstPress).TotalSeconds;
-            if (s > 1)
+            if (s > 1.5)
             {
                 var f = (FrameworkElement)args.OriginalSource;
-                var pc = f.FindParentDataContext();
-                await Task.Delay(200);
-                if (_released && SessionController.Instance.ActiveFreeFormViewer.Selections.Count < 2 || (pc is FreeFormViewerViewModel))
+                var pc = f.DataContext;
+                if (_released &&  (pc is FreeFormViewerViewModel))
                     _cview.MultiMenu.Visibility = Visibility.Collapsed;
+
                 return;
             }
             
-            SelectionByStroke();
+            //SelectionByStroke();
 
-            var p = args.GetCurrentPoint(null).Position;
-            _cview.MultiMenu.Visibility = Visibility.Visible;
-            Canvas.SetLeft(_cview.MultiMenu,  p.X + 10);
-            Canvas.SetTop(_cview.MultiMenu, p.Y - 60);
 
+
+            _cview.MultiMenu.Stroke = _inqLine;
+
+            var refPoint = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(args.GetCurrentPoint(null).Position);
+            if (_cview.MultiMenu.Visibility == Visibility.Collapsed && IsPointCloseToInk(refPoint)) { 
+                var p = args.GetCurrentPoint(null).Position;
+                _cview.MultiMenu.Show();
+                Canvas.SetLeft(_cview.MultiMenu,  p.X + 10);
+                Canvas.SetTop(_cview.MultiMenu, p.Y - 60);
+            } 
             args.Handled = true;
         }
 
@@ -84,45 +98,29 @@ namespace NuSysApp
 
             var hull = new SelectionHull();
             var numSelections = hull.Compute(screenPoints, SessionController.Instance.SessionView.MainCanvas);
-            if (numSelections > 0) {
-           //     _cview.InqCanvas.DeleteStroke(_inqLine);
-            }
+          
         }
 
-        private void OnLineFinalized(PhilInqCanvas canvas, InkStroke stroke)
+        private void OnLineFinalized(WetDryInkCanvas canvas, InkStroke stroke)
         {
             _inqLine = stroke;
             _tFirstPress = DateTime.Now;
         }
+
+        private bool IsPointCloseToInk(Point p)
+        {
+            var minDist = double.PositiveInfinity;
+            foreach(var inqPoint in _inqLine.GetInkPoints())
+            {
+                var dist = Math.Sqrt((p.X - inqPoint.Position.X) * (p.X - inqPoint.Position.X) + (p.Y - inqPoint.Position.Y) * (p.Y - inqPoint.Position.Y));
+                if (dist < minDist)
+                    minDist = dist;
+            }
+            return minDist < 100;
+        }
      
 
-        private async void CreateAreaNode(InqLineModel line)
-        {
-            line.Points.Add(line.Points.First());
-            var bb = Geometry.InqToBoudingRect(line);
-            var transPoints = line.Points.Select(p => new Point2d(p.X * Constants.MaxCanvasSize - bb.X, p.Y * Constants.MaxCanvasSize - bb.Y ));
-          
-            var m = new Message();
-            m["x"] = bb.X;
-            m["y"] = bb.Y;
-            m["width"] = 400;
-            m["height"] = 400;
-            m["nodeType"] = ElementType.Area.ToString();
-            m["points"] = transPoints;
-            m["autoCreate"] = true;
-            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId ;
-
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
-
-        }
-
-
-        public override async Task Deactivate()
-        {
-           // _cview.InqCanvas.InkStrokeAdded += OnLineFinalized;
-        }
-
-
+      
         /*
         private async Task<bool> CheckForTagCreation(InqLineModel line)
         {

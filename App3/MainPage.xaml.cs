@@ -45,9 +45,10 @@ namespace App3
             var builder = new InkStrokeBuilder();
             var l = new List<InkStroke>();
             l.Add(builder.CreateStrokeFromInkPoints(inkpoints, System.Numerics.Matrix3x2.CreateTranslation( new System.Numerics.Vector2(0,0))));
-            var converted = JsonConvert.SerializeObject(l);
-            var deserialized = JsonConvert.DeserializeObject<List<string>>(converted);
+            var converted = JsonConvert.SerializeObject(inkpoints);
+            var deserialized = JsonConvert.DeserializeObject<List<InkPoint>>(converted);
 
+           
 
 
         }

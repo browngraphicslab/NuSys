@@ -24,18 +24,32 @@ namespace NuSysApp
         public event InkStrokeEventHandler InkStrokeAdded;
         public event InkStrokeEventHandler InkStrokeRemoved;
 
-        private CanvasControl _wetCanvas;
-        private CanvasControl _dryCanvas;
-        private InkStrokeBuilder strokeBuilder = new InkStrokeBuilder();
+        protected CanvasControl _wetCanvas;
+        protected CanvasControl _dryCanvas;
+        protected InkStrokeBuilder strokeBuilder = new InkStrokeBuilder();
 
-        private InkManager _inkManager = new InkManager();
+        protected InkManager _inkManager = new InkManager();
 
-        private List<InkPoint> _currentStroke;
-        private InkStrokeBuilder _strokeBuilder = new InkStrokeBuilder();
-        private bool _isEraser;
+        protected List<InkPoint> _currentStroke = new List<InkPoint>();
+        protected List<InkStroke> _dryStrokes = new List<InkStroke>();
+        protected InkStrokeBuilder _strokeBuilder = new InkStrokeBuilder();
+        protected bool _isEraser;
+        protected Pointer _capturedPointer;
 
-        private Color _drawingColor = Colors.Black;
-        public CompositeTransform Transform { get; set; }
+        protected Color _drawingColor = Colors.Black;
+
+        protected GeneralTransform _inverseTransform;
+        protected CompositeTransform _transform;
+        public CompositeTransform Transform { get
+            {
+                return _transform;
+            }
+            set
+            {
+                _transform = value;
+                _inverseTransform = _transform.Inverse;
+            }
+        }
         
         
         public WetDryInkCanvas(CanvasControl wetCanvas, CanvasControl dryCanvas)
@@ -47,6 +61,7 @@ namespace NuSysApp
 
             _wetCanvas.PointerPressed += OnPointerPressed;
             _wetCanvas.PointerReleased += OnPointerReleased;
+            _wetCanvas.PointerMoved -= OnPointerMoved;
             strokeBuilder.SetDefaultDrawingAttributes( GetDrawingAttributes());
            
             _wetCanvas.Draw += OnWetCanvasDraw;
@@ -54,7 +69,35 @@ namespace NuSysApp
            
         }
 
-        private InkDrawingAttributes GetDrawingAttributes()
+        public void Dispose()
+        {
+            _wetCanvas.PointerPressed -= OnPointerPressed;
+            _wetCanvas.PointerReleased -= OnPointerReleased;
+            _wetCanvas.Draw -= OnWetCanvasDraw;
+            _dryCanvas.Draw -= OnDryCanvasDraw;
+        }
+
+        public void AddStroke(IEnumerable<InkPoint> points)
+        {
+            AddStroke(strokeBuilder.CreateStrokeFromInkPoints(points, Matrix3x2.Identity));
+        }
+
+        public void AddStroke(InkStroke stroke)
+        {
+            _inkManager.AddStroke(stroke);
+            _dryStrokes = _inkManager.GetStrokes().ToList();
+            Redraw();
+        }
+
+        public void RemoveStroke(InkStroke stroke)
+        {
+            stroke.Selected = true;
+            _inkManager.DeleteSelected();
+            _dryStrokes = _inkManager.GetStrokes().ToList();
+            Redraw();
+        }
+
+        protected InkDrawingAttributes GetDrawingAttributes()
         {
             var _drawingAttributes = new InkDrawingAttributes {
                 PenTip = PenTipShape.Circle,
@@ -72,12 +115,12 @@ namespace NuSysApp
             _dryCanvas.Invalidate();
         }
 
-        private void OnDryCanvasDraw(CanvasControl sender, CanvasDrawEventArgs args)
+        protected virtual void OnDryCanvasDraw(CanvasControl sender, CanvasDrawEventArgs args)
         {
             var ds = args.DrawingSession;
                 ds.Clear(Colors.Transparent);
 
-            var dryStrokes = _inkManager.GetStrokes().ToArray();
+            var dryStrokes = _dryStrokes;
                 foreach (var s in dryStrokes)
                 {
                     var attr = GetDrawingAttributes();  
@@ -92,19 +135,21 @@ namespace NuSysApp
                 ds.DrawInk(dryStrokes);
         }
 
-        private void OnWetCanvasDraw(CanvasControl sender, CanvasDrawEventArgs args)
+        protected virtual void OnWetCanvasDraw(CanvasControl sender, CanvasDrawEventArgs args)
         {
-            if (_currentStroke == null)
-                return;
             var ds = args.DrawingSession;
                 ds.Clear(Colors.Transparent);
 
-                if (_currentStroke != null) {  
+                if (_currentStroke.Count > 0) {  
                     try {     
                     var stroke =  strokeBuilder.CreateStrokeFromInkPoints(_currentStroke, Matrix3x2.Identity);
-                    var attr = GetDrawingAttributes();
-                    attr.Size = new Size(4 * Transform.ScaleX, 4 * Transform.ScaleY);
-                    stroke.DrawingAttributes = attr;
+                    stroke.DrawingAttributes = GetDrawingAttributes();
+
+                    var inv = (MatrixTransform)Transform.Inverse.Inverse;
+                    var m = new Matrix3x2((float)inv.Matrix.M11, (float)inv.Matrix.M12, (float)inv.Matrix.M21,
+                        (float)inv.Matrix.M22, (float)inv.Matrix.OffsetX, (float)inv.Matrix.OffsetY);
+
+                    ds.Transform = m;
                     ds.DrawInk(new List<InkStroke> { stroke });
                     } catch
                     {
@@ -118,6 +163,11 @@ namespace NuSysApp
             if (e.Pointer.PointerDeviceType != Windows.Devices.Input.PointerDeviceType.Pen)
                 return;
 
+            _currentStroke.Clear();
+
+            _capturedPointer = e.Pointer;
+            _wetCanvas.CapturePointer(_capturedPointer);
+
             _isEraser = e.GetCurrentPoint(null).Properties.IsEraser;
             if (_isEraser)
                 _drawingColor = Colors.DarkRed;
@@ -128,46 +178,38 @@ namespace NuSysApp
 
             foreach (var p in e.GetIntermediatePoints(_wetCanvas).Reverse())
             {
-                _currentStroke.Add(new InkPoint(p.RawPosition, p.Properties.Pressure));
+                _currentStroke.Add(new InkPoint(_inverseTransform.TransformPoint(p.RawPosition), p.Properties.Pressure));
             }
 
             _wetCanvas.PointerMoved += OnPointerMoved;
             _wetCanvas.Invalidate();
         }
 
-        private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        protected virtual void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
             if (e.Pointer.PointerDeviceType != Windows.Devices.Input.PointerDeviceType.Pen)
                 return;
-            _wetCanvas.PointerMoved -= OnPointerMoved;
+
+           _wetCanvas.PointerMoved -= OnPointerMoved;
 
             _drawingColor = Colors.Black;
 
             foreach (var p in e.GetIntermediatePoints(_wetCanvas).Reverse())
             {
-                _currentStroke.Add(new InkPoint(p.RawPosition, p.Properties.Pressure));
+                _currentStroke.Add(new InkPoint(_inverseTransform.TransformPoint(p.RawPosition), p.Properties.Pressure));
             }
             var stroke = strokeBuilder.CreateStrokeFromInkPoints(_currentStroke, Matrix3x2.Identity);
-            _currentStroke = null;
-            
-            var inv = (MatrixTransform)Transform.Inverse;
-            var m = new Matrix3x2((float)inv.Matrix.M11, (float)inv.Matrix.M12, (float)inv.Matrix.M21,
-                (float)inv.Matrix.M22, (float)inv.Matrix.OffsetX, (float)inv.Matrix.OffsetY);
-            stroke.PointTransform = m;
+                             
 
             if (_isEraser)
             {
-
                 var allStrokes = _inkManager.GetStrokes().ToArray();
-                var thisStroke = stroke.GetInkPoints().Select(p => inv.TransformPoint(p.Position));
+                var thisStroke = stroke.GetInkPoints().Select(p => p.Position);
                 var thisLineString = thisStroke.GetLineString(); ;
 
                 foreach (var otherStroke in allStrokes)
                 {
-                    var otherMatrix = otherStroke.PointTransform;
-                    var mt = new Matrix { M11 = otherMatrix.M11, M12 = otherMatrix.M12, M21 = otherMatrix.M21, M22 = otherMatrix.M22, OffsetX = otherMatrix.M31, OffsetY = otherMatrix.M32 };
-                    var mt2 = new MatrixTransform { Matrix = mt };
-                    var pts = otherStroke.GetInkPoints().Select(p => mt2.TransformPoint(p.Position) );
+                    var pts = otherStroke.GetInkPoints().Select(p => p.Position );
                     if (thisLineString.Intersects(pts.GetLineString())) {
                         otherStroke.Selected = true;
                     }
@@ -191,20 +233,14 @@ namespace NuSysApp
                 }
 
             } else { 
-                _inkManager.AddStroke(stroke);
+                _inkManager.AddStroke(stroke);                
+                InkStrokeAdded?.Invoke(this, stroke);
             }
-
+            _dryStrokes = _inkManager.GetStrokes().ToList();
+            _wetCanvas.ReleasePointerCapture(_capturedPointer);
             _wetCanvas.Invalidate();
-            _dryCanvas.Invalidate();
-            
+            _dryCanvas.Invalidate();            
         }
-
-        private IEnumerable<InkStroke> GetSelectedStrokes()
-        {
-            var selectedStrokes = new List<InkStroke>();
-            return _inkManager.GetStrokes().ToArray().Where(stroke => stroke.Selected == true);
-        }
-
 
         private void OnPointerMoved(object sender, PointerRoutedEventArgs e)
         {
@@ -213,15 +249,21 @@ namespace NuSysApp
 
             foreach (var p in e.GetIntermediatePoints(_wetCanvas).Reverse())
             {
-                _currentStroke.Add(new InkPoint(p.RawPosition, p.Properties.Pressure));
-            }            
+                _currentStroke.Add(new InkPoint(_inverseTransform.TransformPoint(p.RawPosition), p.Properties.Pressure));
+            }             
           
             _wetCanvas.Invalidate();
+        }
+
+        private IEnumerable<InkStroke> GetSelectedStrokes()
+        {
+            var selectedStrokes = new List<InkStroke>();
+            return _inkManager.GetStrokes().ToArray().Where(stroke => stroke.Selected == true);
         }
     }
 }
 
-static class Extensions {
+public static class Extensions {
     public static GeoAPI.Geometries.ILineString GetLineString(this IEnumerable<Point> s)
     {
         GeoAPI.Geometries.Coordinate[] coords;
