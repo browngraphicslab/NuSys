@@ -6,7 +6,8 @@
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    __.prototype = b.prototype;
+    d.prototype = new __();
 };
 /**
  * @namespace Top level namespace for collections, a TypeScript data structure library.
@@ -2736,14 +2737,6 @@ var HighlightBrush = (function () {
     };
     return HighlightBrush;
 })();
-var GestureType;
-(function (GestureType) {
-    GestureType[GestureType["Null"] = 0] = "Null";
-    GestureType[GestureType["Diagonal"] = 1] = "Diagonal";
-    GestureType[GestureType["Vertical"] = 2] = "Vertical";
-    GestureType[GestureType["Horizontal"] = 3] = "Horizontal";
-    GestureType[GestureType["Scribble"] = 4] = "Scribble";
-})(GestureType || (GestureType = {}));
 /// <reference path="brush/BrushStroke.ts"/>
 var InkCanvas = (function () {
     function InkCanvas(canvas) {
@@ -3003,144 +2996,6 @@ var StrokeType;
     StrokeType[StrokeType["Scribble"] = 4] = "Scribble";
     StrokeType[StrokeType["MultiLine"] = 5] = "MultiLine";
 })(StrokeType || (StrokeType = {}));
-var AbstractSelection = (function () {
-    function AbstractSelection(className) {
-        this.selectedElements = new Array();
-        this.selectedTags = new Array();
-        this.className = className;
-    }
-    AbstractSelection.prototype.start = function (x, y) { };
-    AbstractSelection.prototype.update = function (x, y) { };
-    AbstractSelection.prototype.end = function (x, y) { };
-    AbstractSelection.prototype.select = function () {
-        var _this = this;
-        console.log("select");
-        console.log(this.selectedElements);
-        this.selectedElements.forEach(function (selectedElement) {
-            if (selectedElement.type == "marquee") {
-                _this.parseSelections(selectedElement);
-                _this.highlightSelection(selectedElement);
-            }
-            else {
-                console.log("-=-=====--=");
-                var foundElement = $(selectedElement.tagName)[selectedElement.index];
-                if (foundElement.tagName.toLowerCase() == "img") {
-                    var label = $("<span>Selected</span>");
-                    //label.css({ position: "absolute", display: "block", background: "lightgrey", width: "50px", height: "20px", color: "black", "font-size": "12px" });
-                    label.css({ position: "absolute", display: "block", background: "yellow", width: "50px", height: "20px", color: "black", "font-size": "12px", padding: "3px 3px", "font-weight": "bold" });
-                    $("body").append(label);
-                    label.css("top", $(foundElement).offset().top);
-                    label.css("left", $(foundElement).offset().left);
-                }
-                else {
-                    $(foundElement).css("background-color", "yellow");
-                }
-            }
-        });
-    };
-    AbstractSelection.prototype.deselect = function () {
-        console.log("deselect");
-        this.selectedElements.forEach(function (selectedElement) {
-            var foundElement = $(selectedElement.tagName)[selectedElement.index];
-            $(foundElement).css("background-color", "");
-        });
-    };
-    AbstractSelection.prototype.highlightCallback = function (parElement, obj) {
-        var words = parElement.childNodes; //[obj["txtnIndx"]];
-        console.log(words);
-        var wordList = words[obj["txtnIndx"]]["childNodes"];
-        console.log("===================================WORDLIST");
-        console.log(wordList);
-        console.log(obj);
-        var word = wordList[obj["wordIndx"]];
-        console.log(word);
-        //    $(word).replaceWith("<word style=\"background-color: yellow\">" + word[obj["wordIndx"]].textContent + "</word>");
-        //   word["style"]["backgroundColor"] = "yellow";
-        $(word).css("background-color", "yellow");
-    };
-    ;
-    AbstractSelection.prototype.parseString = function (node, par, obj, callback) {
-        $(node).replaceWith("<words>" + $(node).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
-        //callback(par, obj);
-    };
-    AbstractSelection.prototype.highlightSelection = function (obj) {
-        var tagName = obj["tagName"];
-        if (tagName != "WORD" && tagName != "HILIGHT") {
-            $(tagName)[obj["index"]].style.backgroundColor = "yellow";
-        }
-        else {
-            var parent = $(obj["par"])[obj["parIndex"]];
-            var textN = parent.childNodes[obj["txtnIndx"]];
-            if (tagName == "WORD") {
-                var word = textN.childNodes[obj["wordIndx"]];
-                $(word).css("background-color", "yellow");
-            }
-            else {
-                $(textN).css("background-color", "yellow");
-            }
-        }
-    };
-    AbstractSelection.prototype.parseSelections = function (obj) {
-        console.log("=======parseSelections====");
-        console.log(obj);
-        var tagName = obj["tagName"];
-        if (tagName != "WORD" && tagName != "HILIGHT") {
-            console.log(tagName + "=======================");
-            console.log(tagName != "WORD");
-            return;
-        }
-        //  var tag = obj["par"] + "," +obj["parIndex"] + ","+obj["txtnIndx"] ;
-        //  if (this.selectedTags.indexOf(tag) > -1 || obj["txtnIndx"]==-1) {
-        //      return;
-        //  }
-        // this.selectedTags.push(tag);
-        // console.log(tag);
-        var parElement = $(obj["par"])[obj["parIndex"]];
-        console.log(parElement);
-        var textN = parElement.childNodes[obj["txtnIndx"]];
-        console.log(textN);
-        if (!textN) {
-            return;
-        }
-        if (textN.nodeName == "#text") {
-            if (tagName == "WORD") {
-                console.log("W------------------------");
-                console.log($(textN));
-                $(textN).replaceWith("<words>" + $(textN).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
-            }
-            else if (tagName == "HILIGHT") {
-                console.log("H-----------------------");
-                console.log($(textN));
-                $(textN).replaceWith("<hilight>" + $(textN).text() + "</hilight>");
-            }
-        }
-    };
-    AbstractSelection.prototype.selectMarqueeHighlights = function (obj) {
-        var tagName = obj["tagName"];
-        if (tagName == "WORD") {
-            console.log("W------------------------");
-            var parElement = $(obj["par"])[obj["parIndex"]];
-            var textN = parElement.childNodes[obj["txtnIndx"]];
-            this.parseString(textN, parElement, obj, this.highlightCallback);
-            console.log(textN);
-        }
-        else if (tagName == "HILIGHT") {
-            var parElement = $(obj["par"])[obj["parIndex"]];
-            var textN = parElement.childNodes[obj["txtnIndx"]];
-            $(textN).replaceWith("<hilight>" + $(textN).text() + "</hilight>");
-            $(parElement.childNodes[obj["txtnIndx"]]).css("background-color", "yellow");
-        }
-        else {
-            console.log(tagName);
-            var foundElement = $(tagName)[obj["index"]];
-            $(foundElement).css("background-color", "yellow");
-        }
-    };
-    AbstractSelection.prototype.getBoundingRect = function () { return null; };
-    AbstractSelection.prototype.analyzeContent = function () { };
-    AbstractSelection.prototype.getContent = function () { return null; };
-    return AbstractSelection;
-})();
 /// <reference path="../../lib/collections.ts"/>
 var BracketSelection = (function (_super) {
     __extends(BracketSelection, _super);
@@ -3782,6 +3637,14 @@ var MarqueeSelection = (function (_super) {
     };
     return MarqueeSelection;
 })(AbstractSelection);
+var GestureType;
+(function (GestureType) {
+    GestureType[GestureType["Null"] = 0] = "Null";
+    GestureType[GestureType["Diagonal"] = 1] = "Diagonal";
+    GestureType[GestureType["Vertical"] = 2] = "Vertical";
+    GestureType[GestureType["Horizontal"] = 3] = "Horizontal";
+    GestureType[GestureType["Scribble"] = 4] = "Scribble";
+})(GestureType || (GestureType = {}));
 /// <reference path="../ink/GestureType.ts"/>
 var MultiLineSelection = (function (_super) {
     __extends(MultiLineSelection, _super);
@@ -3999,6 +3862,144 @@ var UnknownSelection = (function (_super) {
     };
     return UnknownSelection;
 })(AbstractSelection);
+var AbstractSelection = (function () {
+    function AbstractSelection(className) {
+        this.selectedElements = new Array();
+        this.selectedTags = new Array();
+        this.className = className;
+    }
+    AbstractSelection.prototype.start = function (x, y) { };
+    AbstractSelection.prototype.update = function (x, y) { };
+    AbstractSelection.prototype.end = function (x, y) { };
+    AbstractSelection.prototype.select = function () {
+        var _this = this;
+        console.log("select");
+        console.log(this.selectedElements);
+        this.selectedElements.forEach(function (selectedElement) {
+            if (selectedElement.type == "marquee") {
+                _this.parseSelections(selectedElement);
+                _this.highlightSelection(selectedElement);
+            }
+            else {
+                console.log("-=-=====--=");
+                var foundElement = $(selectedElement.tagName)[selectedElement.index];
+                if (foundElement.tagName.toLowerCase() == "img") {
+                    var label = $("<span>Selected</span>");
+                    //label.css({ position: "absolute", display: "block", background: "lightgrey", width: "50px", height: "20px", color: "black", "font-size": "12px" });
+                    label.css({ position: "absolute", display: "block", background: "yellow", width: "50px", height: "20px", color: "black", "font-size": "12px", padding: "3px 3px", "font-weight": "bold" });
+                    $("body").append(label);
+                    label.css("top", $(foundElement).offset().top);
+                    label.css("left", $(foundElement).offset().left);
+                }
+                else {
+                    $(foundElement).css("background-color", "yellow");
+                }
+            }
+        });
+    };
+    AbstractSelection.prototype.deselect = function () {
+        console.log("deselect");
+        this.selectedElements.forEach(function (selectedElement) {
+            var foundElement = $(selectedElement.tagName)[selectedElement.index];
+            $(foundElement).css("background-color", "");
+        });
+    };
+    AbstractSelection.prototype.highlightCallback = function (parElement, obj) {
+        var words = parElement.childNodes; //[obj["txtnIndx"]];
+        console.log(words);
+        var wordList = words[obj["txtnIndx"]]["childNodes"];
+        console.log("===================================WORDLIST");
+        console.log(wordList);
+        console.log(obj);
+        var word = wordList[obj["wordIndx"]];
+        console.log(word);
+        //    $(word).replaceWith("<word style=\"background-color: yellow\">" + word[obj["wordIndx"]].textContent + "</word>");
+        //   word["style"]["backgroundColor"] = "yellow";
+        $(word).css("background-color", "yellow");
+    };
+    ;
+    AbstractSelection.prototype.parseString = function (node, par, obj, callback) {
+        $(node).replaceWith("<words>" + $(node).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
+        //callback(par, obj);
+    };
+    AbstractSelection.prototype.highlightSelection = function (obj) {
+        var tagName = obj["tagName"];
+        if (tagName != "WORD" && tagName != "HILIGHT") {
+            $(tagName)[obj["index"]].style.backgroundColor = "yellow";
+        }
+        else {
+            var parent = $(obj["par"])[obj["parIndex"]];
+            var textN = parent.childNodes[obj["txtnIndx"]];
+            if (tagName == "WORD") {
+                var word = textN.childNodes[obj["wordIndx"]];
+                $(word).css("background-color", "yellow");
+            }
+            else {
+                $(textN).css("background-color", "yellow");
+            }
+        }
+    };
+    AbstractSelection.prototype.parseSelections = function (obj) {
+        console.log("=======parseSelections====");
+        console.log(obj);
+        var tagName = obj["tagName"];
+        if (tagName != "WORD" && tagName != "HILIGHT") {
+            console.log(tagName + "=======================");
+            console.log(tagName != "WORD");
+            return;
+        }
+        //  var tag = obj["par"] + "," +obj["parIndex"] + ","+obj["txtnIndx"] ;
+        //  if (this.selectedTags.indexOf(tag) > -1 || obj["txtnIndx"]==-1) {
+        //      return;
+        //  }
+        // this.selectedTags.push(tag);
+        // console.log(tag);
+        var parElement = $(obj["par"])[obj["parIndex"]];
+        console.log(parElement);
+        var textN = parElement.childNodes[obj["txtnIndx"]];
+        console.log(textN);
+        if (!textN) {
+            return;
+        }
+        if (textN.nodeName == "#text") {
+            if (tagName == "WORD") {
+                console.log("W------------------------");
+                console.log($(textN));
+                $(textN).replaceWith("<words>" + $(textN).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
+            }
+            else if (tagName == "HILIGHT") {
+                console.log("H-----------------------");
+                console.log($(textN));
+                $(textN).replaceWith("<hilight>" + $(textN).text() + "</hilight>");
+            }
+        }
+    };
+    AbstractSelection.prototype.selectMarqueeHighlights = function (obj) {
+        var tagName = obj["tagName"];
+        if (tagName == "WORD") {
+            console.log("W------------------------");
+            var parElement = $(obj["par"])[obj["parIndex"]];
+            var textN = parElement.childNodes[obj["txtnIndx"]];
+            this.parseString(textN, parElement, obj, this.highlightCallback);
+            console.log(textN);
+        }
+        else if (tagName == "HILIGHT") {
+            var parElement = $(obj["par"])[obj["parIndex"]];
+            var textN = parElement.childNodes[obj["txtnIndx"]];
+            $(textN).replaceWith("<hilight>" + $(textN).text() + "</hilight>");
+            $(parElement.childNodes[obj["txtnIndx"]]).css("background-color", "yellow");
+        }
+        else {
+            console.log(tagName);
+            var foundElement = $(tagName)[obj["index"]];
+            $(foundElement).css("background-color", "yellow");
+        }
+    };
+    AbstractSelection.prototype.getBoundingRect = function () { return null; };
+    AbstractSelection.prototype.analyzeContent = function () { };
+    AbstractSelection.prototype.getContent = function () { return null; };
+    return AbstractSelection;
+})();
 /// <reference path="../../typings/jquery/jquery.d.ts"/>
 /// <reference path="../ink/InkCanvas.ts"/>
 /// <reference path="../ink/brush/BrushStroke.ts"/>

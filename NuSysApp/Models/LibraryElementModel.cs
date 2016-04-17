@@ -48,6 +48,9 @@ namespace NuSysApp
 
         public delegate void LightupContentEventHandler(LibraryElementModel sender, bool lightup);
         public event LightupContentEventHandler OnLightupContent;
+        
+        public delegate void IsSearchedEventHandler(LibraryElementModel sender, bool lightup);
+        public event IsSearchedEventHandler OnSearched;
         public ElementType Type { get; set; }
 
         public string Data
@@ -175,13 +178,18 @@ namespace NuSysApp
             var type = Type.ToString().ToLower();
             if (title.Contains(s) || type.Contains(s))
             {
+                OnSearched?.Invoke(this,true && !s.Equals(""));
                 return true;
             }
             foreach (var keyword in Keywords)
             {
                 if (keyword.StartsWith(s))
+                {
+                    OnSearched?.Invoke(this,true && !s.Equals(""));
                     return true;
+                }
             }
+            OnSearched?.Invoke(this,false);
             return false;
         }
 
