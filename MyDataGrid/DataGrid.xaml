@@ -9,20 +9,21 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="LightGray">
-        <StackPanel Orientation="Vertical">
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="LightGray" x:Name="mainGrid">
+        <StackPanel Orientation="Vertical" x:Name="mainSP">
             <ItemsControl ItemsSource="{Binding Header}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel x:Name="colContainer" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                        <!--<StackPanel x:Name="colContainer" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" />-->
+                        <Grid local:GridAutoLayout.NumberOfColumns="{Binding NumCols}" local:GridAutoLayout.NumberOfRows="1" x:Name="headerGrid" Width="500" />
                     </ItemsPanelTemplate>
 
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Grid x:Name="grid" DataContext="{Binding}" Width="100">
+                        <Grid x:Name="colGrid" DataContext="{Binding}" Grid.Column ="{Binding ColIndex}">
                             <TextBlock Text="{Binding Title}" HorizontalAlignment="Left"></TextBlock>
-                            <Rectangle Fill="Red" Width="10" Height="20" HorizontalAlignment="Right" ManipulationMode="TranslateX" ManipulationDelta="UIElement_OnManipulationDelta">
+                            <Rectangle Fill="LightSeaGreen" Width="10" Height="20" HorizontalAlignment="Right" ManipulationMode="TranslateX" ManipulationDelta="UIElement_OnManipulationDelta">
                                 <Rectangle.RenderTransform>
                                     <TranslateTransform X="-10"></TranslateTransform>
                                 </Rectangle.RenderTransform>
@@ -34,23 +35,27 @@
 
             </ItemsControl>
 
-            <ScrollViewer>
-                <local:GridAwareItemsControl ItemsSource="{Binding Data}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <Grid local:GridAutoLayout.NumberOfRows="{Binding NumRows}"
-                                  local:GridAutoLayout.NumberOfColumns="{Binding NumCols}">
-                            </Grid>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
+            <ScrollViewer x:Name="scrollViewer" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" Height="480">
+                <ScrollViewer.Content>
+                    <local:GridAwareItemsControl ItemsSource="{Binding Data}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Grid local:GridAutoLayout.NumberOfRows="{Binding NumRows}"
+                                  local:GridAutoLayout.NumberOfColumns="{Binding NumCols}"
+                                  x:Name="rowGrid">
+                                </Grid>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
 
-                            <TextBlock Text="{Binding Title}" Grid.Row="{Binding RowIndex}" Grid.Column="{Binding ColIndex}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></TextBlock>
+                                <TextBlock Text="{Binding Title}" Grid.Row="{Binding RowIndex}" Grid.Column="{Binding ColIndex}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></TextBlock>
 
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </local:GridAwareItemsControl>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </local:GridAwareItemsControl>
+                </ScrollViewer.Content>
+                
                 <!--<Grid x:Name="rowTable">
                     <ItemsControl ItemsSource="{Binding Rows}">
                         <ItemsControl.ItemsPanel>

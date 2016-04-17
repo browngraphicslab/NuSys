@@ -31,14 +31,19 @@ namespace MyDataGrid
             var header3 = new HarshHeader {ColIndex = 2, Title = "Header2"};
             var header4 = new HarshHeader {ColIndex = 3, Title = "Header3"};
 
-            var row1 = new GridRowCell {ColIndex = 0, RowIndex = 0, Title = "R0C0"};
-            var row2 = new GridRowCell { ColIndex = 1, RowIndex = 0, Title = "R1C0" };
-            var row3 = new GridRowCell { ColIndex = 2, RowIndex = 0, Title = "R2C0" };
-            var row4 = new GridRowCell { ColIndex = 3, RowIndex = 0, Title = "R3C0" };
+            //var row1 = new GridRowCell {ColIndex = 0, RowIndex = 0, Title = "R0C0"};
+            //var row2 = new GridRowCell { ColIndex = 1, RowIndex = 0, Title = "R1C0" };
+            //var row3 = new GridRowCell { ColIndex = 2, RowIndex = 0, Title = "R2C0" };
+            //var row4 = new GridRowCell { ColIndex = 3, RowIndex = 0, Title = "R3C0" };
+
+           // /,//var row5 = new GridRowCell { ColIndex = 0, RowIndex = 1, Title = "R0C0" };
+            //var row6 = new GridRowCell { ColIndex = 1, RowIndex = 1, Title = "R1C0" };
+            //var row7 = new GridRowCell { ColIndex = 2, RowIndex = 1, Title = "R2C0" };
+            //var row8 = new GridRowCell { ColIndex = 3, RowIndex = 1, Title = "R3C0" };
 
             var vm = new DataGridViewModel();
             vm.Header = new ObservableCollection<HarshHeader>{header1, header2, header3, header4};
-            vm.Data = new ObservableCollection<GridRowCell> {row1, row2, row3, row4};
+            vm.Data = this.MakeDummyRows(100, 4);
             vm.NumCols = vm.Header.Count;
             vm.NumRows = vm.Data.Count/vm.Header.Count;
             DataContext = vm;
@@ -51,5 +56,23 @@ namespace MyDataGrid
             main.Children.Add(dg);
 
         }
+
+        public ObservableCollection<GridRowCell> MakeDummyRows(int rowCount, int colCount)
+        {
+            var collection = new ObservableCollection<GridRowCell>();
+            for (int i = 0; i < rowCount; i++)
+            {
+                for (int j = 0; j < colCount; j++)
+                {
+                    var cell = new GridRowCell();
+                    cell.Title = i.ToString() + j.ToString();
+                    cell.RowIndex = i;
+                    cell.ColIndex = j;
+                    collection.Add(cell);
+
+                }
+            }
+            return collection;
+        } 
     }
 }
