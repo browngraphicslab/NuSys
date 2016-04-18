@@ -47,11 +47,6 @@ namespace NuSysApp
         private bool _isLoaded = false;
 
         private HashSet<string> _preloadedIDs = new HashSet<string>();
-
-        private Dictionary<string, Dictionary<string, object>> _contentDictionaries;
-
-        private delegate void ContentLoadedEventHandler(Dictionary<string, Dictionary<string, object>> dictionaries);
-        private event ContentLoadedEventHandler OnContentLoaded;
         public WaitingRoomView()
         {
             this.InitializeComponent();
@@ -120,12 +115,8 @@ namespace NuSysApp
                 {
                     List.Items.Add(i);
                 }
-                Task.Run(async delegate
-                {
-                    _contentDictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
-                    OnContentLoaded?.Invoke(_contentDictionaries);
-                });
-
+                
+               
             }
 
           
@@ -274,14 +265,67 @@ namespace NuSysApp
                         SlideOutLogin.Begin();
                         SlideInWorkspace.Begin();
 
-                        if (_contentDictionaries == null)
+                        await Task.Run(async delegate
                         {
-                            OnContentLoaded += LoadContent;
-                        }
-                        else
-                        {
-                            LoadContent(_contentDictionaries);
-                        }
+                            var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
+                            foreach (var kvp in dictionaries)
+                            {
+                                var id = (string)kvp.Value["id"];
+                                //var element = new LibraryElementModel(kvp.Value);
+
+                                var dict = kvp.Value;
+                                string title = null;
+                                ElementType type = ElementType.Text;
+                                string timestamp = "";
+
+
+                                if (dict.ContainsKey("library_element_creation_timestamp"))
+                                {
+                                    timestamp = dict["library_element_creation_timestamp"].ToString();
+                                }
+
+
+                                if (dict.ContainsKey("title"))
+                                {
+                                    title = (string)dict["title"]; // title
+                                }
+                                if (dict.ContainsKey("type"))
+                                {
+                                    try
+                                    {
+                                        type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        continue;
+                                    }
+                                }
+
+                                LibraryElementModel element;
+                                if (type == ElementType.Collection)
+                                {
+                                    element = new CollectionLibraryElementModel(id, title);
+                                }
+                                else
+                                {
+                                    element = new LibraryElementModel(id, type, title);
+                                }
+                                element.Timestamp = timestamp;
+                                if (SessionController.Instance.ContentController.Get(id) == null)
+                                {
+                                    SessionController.Instance.ContentController.Add(element);
+                                }
+                            }
+                            _isLoaded = true;
+                            if (_loggedIn)
+                            {
+                                UITask.Run(delegate {
+                                    JoinWorkspaceButton.IsEnabled = true;
+                                    JoinWorkspaceButton.Content = "Enter";
+                                    JoinWorkspaceButton.Visibility = Visibility.Visible;
+                                });
+                            }
+                        });
                     }
                     catch (ServerClient.IncomingDataReaderException loginException)
                     {
@@ -306,69 +350,6 @@ namespace NuSysApp
 
         }
 
-        private async void LoadContent(Dictionary<string,Dictionary<string,object>> dictionaries)
-        {
-            await Task.Run(async delegate
-            {
-                foreach (var kvp in dictionaries)
-                {
-                    var id = (string)kvp.Value["id"];
-                    //var element = new LibraryElementModel(kvp.Value);
-
-                    var dict = kvp.Value;
-                    string title = null;
-                    ElementType type = ElementType.Text;
-                    string timestamp = "";
-
-
-                    if (dict.ContainsKey("library_element_creation_timestamp"))
-                    {
-                        timestamp = dict["library_element_creation_timestamp"].ToString();
-                    }
-
-
-                    if (dict.ContainsKey("title"))
-                    {
-                        title = (string)dict["title"]; // title
-                    }
-                    if (dict.ContainsKey("type"))
-                    {
-                        try
-                        {
-                            type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
-                        }
-                        catch (Exception ex)
-                        {
-                            continue;
-                        }
-                    }
-
-                    LibraryElementModel element;
-                    if (type == ElementType.Collection)
-                    {
-                        element = new CollectionLibraryElementModel(id, title);
-                    }
-                    else
-                    {
-                        element = new LibraryElementModel(id, type, title);
-                    }
-                    element.Timestamp = timestamp;
-                    if (SessionController.Instance.ContentController.Get(id) == null)
-                    {
-                        SessionController.Instance.ContentController.Add(element);
-                    }
-                }
-                _isLoaded = true;
-                if (_loggedIn)
-                {
-                    UITask.Run(delegate {
-                        JoinWorkspaceButton.IsEnabled = true;
-                        JoinWorkspaceButton.Content = "Enter";
-                        JoinWorkspaceButton.Visibility = Visibility.Visible;
-                    });
-                }
-            });
-        }
         private void ContentControllerOnOnNewContent(LibraryElementModel element)
         {
             if (element.Type == ElementType.Collection && !_preloadedIDs.Contains(element.Id))
