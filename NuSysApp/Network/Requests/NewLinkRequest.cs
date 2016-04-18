@@ -20,10 +20,18 @@ namespace NuSysApp
             _message["creator"] = creator;
             _message["contentId"] = contentId;
 
-            _message["inFGDictionary"] = inFineGrainDictionary;
-            _message["outFGDictionary"] = outFineGrainDictionary;
-
-            _message["inFineGrain"] = (block.DataContext as LinkedTimeBlockViewModel).Model;
+            if (inFineGrainDictionary != null)
+            {
+                _message["inFGDictionary"] = inFineGrainDictionary;
+            }
+            if (outFineGrainDictionary != null)
+            {
+                _message["outFGDictionary"] = outFineGrainDictionary;
+            }
+            if (block != null)
+            {
+                _message["inFineGrain"] = (block.DataContext as LinkedTimeBlockViewModel).Model;
+            }
         }
         public override async Task CheckOutgoingRequest()
         {

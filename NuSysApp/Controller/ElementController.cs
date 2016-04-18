@@ -203,8 +203,8 @@ namespace NuSysApp
             var contentId = SessionController.Instance.GenerateId();
             var libraryElementRequest = new CreateNewLibraryElementRequest(contentId,null,ElementType.Link, "NEW LINK");
             var request = new NewLinkRequest(Model.Id, otherId, Model.ParentCollectionId,contentId, block, inFGDictionary, outFGDictionary);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }
 
         public Dictionary<string, object> CreateImageDictionary(double x, double y, double height, double width)

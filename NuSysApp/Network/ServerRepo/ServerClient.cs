@@ -208,16 +208,22 @@ namespace NuSysApp
                         foreach (var inkline in inklines)
                         {
                             var inkdict = JsonConvert.DeserializeObject<Dictionary<string, object>>(inkline, settings);
-                            var inkpoints = JsonConvert.DeserializeObject<List<InkPoint>>(inkdict["inkpoints"].ToString());
-                            var inktype = inkdict["type"] as string;
+                            //var inkpoints = JsonConvert.DeserializeObject<List<InkPoint>>(inkdict["inkpoints"].ToString());
+                            //var inktype = inkdict["type"] as string;
                             var inkid = inkdict["id"] as string;
+                            //var inkcolor = inkdict["color"];
+                            //var builder = new InkStrokeBuilder();
+                            //var inkstroke = builder.CreateStrokeFromInkPoints(inkpoints, Matrix3x2.Identity);
                             
-                            var builder = new InkStrokeBuilder();
-                            var inkstroke = builder.CreateStrokeFromInkPoints(inkpoints, Matrix3x2.Identity);
 
+                            /*
                             var newWrapper = new InkWrapper(inkstroke, inktype);
                             InkStorage._inkStrokes.Add(inkid, newWrapper);
-                            newInkLines.Add(inkid);                            
+                            newInkLines.Add(inkid);    */
+                            var m = new Message();
+                            m["data"] = inkline;
+                            m["id"] = inkid;
+                            SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new AddInkRequest(m));
                         }
 
                         var libModel = ((CollectionLibraryElementModel)SessionController.Instance.ContentController.Get(id));

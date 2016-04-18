@@ -319,21 +319,30 @@ namespace NuSysApp
                         second.Opacity = 0.2;
                         second.Stroke = new SolidColorBrush(Colors.Red);
                     }
-
-                    foreach (var element in hitsStart2)
+                    if (hitsStart2.Any())
                     {
-                        if (element is LinkedTimeBlock)
+                        foreach (var element in hitsStart2)
                         {
-                            Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100, 100,
-                                200);
-                            Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100, 100,
-                                100);
-                            Debug.WriteLine("test");
-                            vm.Controller.RequestLinkTo(dc.Id, (LinkedTimeBlock)element, inFgDictionary, outFgDictionary);
-                            (element as LinkedTimeBlock).changeColor();
-                            //vm.Controller.RequestLinkTo(dc.Id, (LinkedTimeBlock)element);
+                            if (element is LinkedTimeBlock)
+                            {
+                                Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100,
+                                    100,
+                                    200);
+                                Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100,
+                                    100,
+                                    100);
+                                Debug.WriteLine("test");
+                                vm.Controller.RequestLinkTo(dc.Id, (LinkedTimeBlock) element, inFgDictionary,
+                                    outFgDictionary);
+                                (element as LinkedTimeBlock).changeColor();
+                                //vm.Controller.RequestLinkTo(dc.Id, (LinkedTimeBlock)element);
 
+                            }
                         }
+                    }
+                    else
+                    {
+                        vm.Controller.RequestLinkTo(dc.Id);
                     }
 
                     //Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100, 100, 200);
