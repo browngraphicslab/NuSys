@@ -32,7 +32,7 @@ namespace MyDataGrid
                 {
                     columnDefinition.Width = new GridLength(mainGrid.ActualWidth / headerGrid.ColumnDefinitions.Count);
                 }
-                var rg = (Grid)scrollViewer.FindName("rowGrid");
+                var rg = (Grid)cellScrollViewer.FindName("rowGrid");
                 foreach (var columnDefinition in rg.ColumnDefinitions)
                 {
                     columnDefinition.Width = new GridLength(mainGrid.ActualWidth / rg.ColumnDefinitions.Count);
@@ -65,7 +65,7 @@ namespace MyDataGrid
             elem.Width = elem.ActualWidth + e.Delta.Translation.X;
 
 
-            var rg = (Grid)scrollViewer.FindName("rowGrid");
+            var rg = (Grid)cellScrollViewer.FindName("rowGrid");
             rg.ColumnDefinitions[harshheader.ColIndex].Width = new GridLength(elem.ActualWidth);
             headerGrid.ColumnDefinitions[harshheader.ColIndex].Width = new GridLength(elem.ActualWidth);
 
@@ -105,5 +105,17 @@ namespace MyDataGrid
             Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 1);
         }
 
+        private void ScrollViewer_OnViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
+        {
+            var s = (ScrollViewer) sender;
+            if (s.Name == "cellScrollViewer")
+            {
+                headerScrollViewer.ScrollToHorizontalOffset(e.FinalView.HorizontalOffset);
+            }
+            else
+            {
+                cellScrollViewer.ScrollToHorizontalOffset(e.FinalView.HorizontalOffset);
+            }
+        }
     }
 }

@@ -10,14 +10,13 @@
     d:DesignWidth="400">
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="LightGray" x:Name="mainGrid">
-        <ScrollViewer HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Visible" Width="500">
             <StackPanel Orientation="Vertical" x:Name="mainSP" HorizontalAlignment="Stretch">
-                <!--<ScrollViewer HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Disabled" Width="500" Name="headerScrollViewer" >-->
+                <ScrollViewer x:Name="headerScrollViewer" HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Disabled" Width="500" ViewChanging="ScrollViewer_OnViewChanging">
                 <local:GridAwareItemsControl ItemsSource="{Binding Header}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <!--<StackPanel x:Name="colContainer" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" />-->
-                            <Grid local:GridAutoLayout.NumberOfColumns="{Binding NumCols}" local:GridAutoLayout.NumberOfRows="1" x:Name="headerGrid" Width="500"/>
+                            <Grid local:GridAutoLayout.NumberOfColumns="{Binding NumCols}" local:GridAutoLayout.NumberOfRows="1" x:Name="headerGrid" Width="500" />
                         </ItemsPanelTemplate>
 
                     </ItemsControl.ItemsPanel>
@@ -33,10 +32,10 @@
 
 
                 </local:GridAwareItemsControl>
-                <!--</ScrollViewer>-->
+                </ScrollViewer>
 
 
-                <ScrollViewer x:Name="scrollViewer" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" HorizontalScrollMode ="Disabled" HorizontalScrollBarVisibility="Disabled"  Height="480" Width="500">
+                <ScrollViewer x:Name="cellScrollViewer" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" ViewChanging="ScrollViewer_OnViewChanging" HorizontalScrollMode ="Enabled" HorizontalScrollBarVisibility="Auto"  Height="480" Width="500">
                     <ScrollViewer.Content>
                         <local:GridAwareItemsControl ItemsSource="{Binding Data}">
                             <ItemsControl.ItemsPanel>
@@ -60,7 +59,6 @@
                 </ScrollViewer>
 
             </StackPanel>
-        </ScrollViewer>
         
     </Grid>
 
