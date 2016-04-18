@@ -13,6 +13,8 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
+using NuSysApp.Components.Nodes;
+using NuSysApp.Nodes.AudioNode;
 
 // The Templated Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234235
 
@@ -264,12 +266,16 @@ namespace NuSysApp
 
                 hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementViewModel).ToList();
 
-                foreach (var e in hitsStart)
+                var hitsStart2 = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
+
+                hitsStart2 = hitsStart2.Where(uiElem => (uiElem as FrameworkElement).DataContext is LinkedTimeBlockViewModel).ToList();
+
+                foreach (var e in hitsStart2)
                 {
                     Debug.WriteLine(e);
                 }
-
-                if (hitsStart.Any())
+                
+                 if (hitsStart.Any())
                 {
                     var first = (FrameworkElement)hitsStart.First();
 
@@ -291,15 +297,27 @@ namespace NuSysApp
                         second.Opacity = 0.2;
                         second.Stroke = new SolidColorBrush(Colors.Red);
                     }
-                    else
+
+                    foreach (var element in hitsStart2)
                     {
-                        Debug.WriteLine("number of rectangles not 2");
+                        if (element is LinkedTimeBlock)
+                        {
+                            Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100, 100,
+                                200);
+                            Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100, 100,
+                                100);
+                            Debug.WriteLine("test");
+                            vm.Controller.RequestLinkTo(dc.Id, (LinkedTimeBlock)element, inFgDictionary, outFgDictionary);
+                            (element as LinkedTimeBlock).changeColor();
+                            //vm.Controller.RequestLinkTo(dc.Id, (LinkedTimeBlock)element);
+
+                        }
                     }
 
-                    Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100, 100, 200);
-                    Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100, 100, 100);
-                    Debug.WriteLine("nodetemplate");
-                    vm.Controller.RequestLinkTo(dc.Id, inFgDictionary, outFgDictionary);
+                    //Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100, 100, 200);
+                    //Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100, 100, 100);
+                    //Debug.WriteLine("nodetemplate");
+                    //vm.Controller.RequestLinkTo(dc.Id, inFgDictionary, outFgDictionary);
                 }
             }
 

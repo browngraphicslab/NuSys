@@ -150,6 +150,7 @@ namespace NuSysApp
                     this.Annotation.Activate();
                     AnnotationContainer.Visibility = Visibility.Visible;
                     Delete.Visibility = Visibility.Visible;
+                    ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Select();
                 }
                 else
                 {
@@ -159,6 +160,7 @@ namespace NuSysApp
                     }
                     Delete.Visibility = Visibility.Collapsed;
                     this.Annotation.DeActivate();
+                    ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Deselect();
                 }
             }
         }

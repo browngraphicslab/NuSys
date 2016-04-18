@@ -40,10 +40,22 @@ namespace NuSysApp.Components.Nodes
             DataContext = vm;
             InitializeComponent();
             setUpLine(vm);
-            
+            vm.Model.OnSelect += OnLinkSelect;
+            vm.Model.OnDeselect += OnLinkDeselect;
             
         }
-        
+
+        private void OnLinkSelect(LinkedTimeBlockModel model)
+        {
+            line.Stroke = new SolidColorBrush(Colors.Red);
+            Debug.WriteLine("1");
+        }
+
+        private void OnLinkDeselect(LinkedTimeBlockModel model)
+        {
+            line.Stroke = new SolidColorBrush(Colors.Yellow);
+            Debug.WriteLine("2");
+        }
 
         public Line getLine()
         {
@@ -74,6 +86,11 @@ namespace NuSysApp.Components.Nodes
             line.Y1 = (double)vm.Line1["Y"];
             line.Y2 = (double)vm.Line1["Y"];
             line.Margin = new Thickness(0, (double)vm.Line1["TopMargin"], 0, 0);
+        }
+
+        public void changeColor()
+        {
+            //line.Fill = new SolidColorBrush(Colors.Red);
         }
     }
 }

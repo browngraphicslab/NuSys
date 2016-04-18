@@ -5,7 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.ApplicationSettings;
+using NuSysApp.Components.Nodes;
 using NuSysApp.Controller;
+using NuSysApp.Nodes.AudioNode;
 
 namespace NuSysApp
 {
@@ -49,9 +51,9 @@ namespace NuSysApp
         {
             _model = model;
             
-         //   Debug.WriteLine(_model.Title);
+         //   Debug.WriteLine(Model.Title);
 
-         //   LibraryElementModel.SetTitle(_model.Title);
+         //   LibraryElementModel.SetTitle(Model.Title);
 
             if (_model != null)
             {
@@ -119,6 +121,11 @@ namespace NuSysApp
             _debouncingDictionary.Add("y", y);
         }
 
+        public void SaveTimeBlock()
+        {
+            _debouncingDictionary.Add("linkedTimeModels", ((AudioNodeModel)Model).LinkedTimeModels);
+        }
+
         public void SetAlpha(double alpha)
         {
             Model.Alpha = alpha;
@@ -170,11 +177,11 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
         }
 
-        public virtual async Task RequestLinkTo(string otherId, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
+        public virtual async Task RequestLinkTo(string otherId, LinkedTimeBlock block = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
         {
             var contentId = SessionController.Instance.GenerateId();
             var libraryElementRequest = new CreateNewLibraryElementRequest(contentId,null,ElementType.Link, "NEW LINK");
-            var request = new NewLinkRequest(Model.Id, otherId, Model.ParentCollectionId,contentId, inFGDictionary, outFGDictionary);
+            var request = new NewLinkRequest(Model.Id, otherId, Model.ParentCollectionId,contentId, block, inFGDictionary, outFGDictionary);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
         }
