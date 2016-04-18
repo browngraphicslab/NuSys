@@ -164,7 +164,7 @@ namespace NuSysApp
             _presentationModeInstance = new PresentationMode(em);
             NextNode.Visibility = _presentationModeInstance.Next() ? Visibility.Visible : Visibility.Collapsed;
             PreviousNode.Visibility = _presentationModeInstance.Previous() ? Visibility.Visible : Visibility.Collapsed;
-            FloatingMenu.Visibility = Visibility.Collapsed;
+            //FloatingMenu.Visibility = Visibility.Collapsed;
             xPresentation.Visibility = Visibility.Visible;
         }
 
@@ -176,12 +176,6 @@ namespace NuSysApp
             NextNode.Visibility = Visibility.Collapsed;
             PreviousNode.Visibility = Visibility.Collapsed;
             xPresentation.Visibility = Visibility.Collapsed;
-        }
-
-        public bool IsPresentationMode
-        {
-            get { return (_presentationModeInstance != null); }
-            
         }
 
         private void Presentation_OnClick(object sender, RoutedEventArgs e)
