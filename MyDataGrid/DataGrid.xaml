@@ -11,31 +11,31 @@
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="LightGray" x:Name="mainGrid">
         <StackPanel Orientation="Vertical" x:Name="mainSP">
-            <local:GridAwareItemsControl ItemsSource="{Binding Header}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <!--<StackPanel x:Name="colContainer" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" />-->
-                        <Grid local:GridAutoLayout.NumberOfColumns="{Binding NumCols}" local:GridAutoLayout.NumberOfRows="1" x:Name="headerGrid" Width="500"/>
-                    </ItemsPanelTemplate>
+            <ScrollViewer HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Disabled" Width="500" Name="headerScrollViewer">
+                <local:GridAwareItemsControl ItemsSource="{Binding Header}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <!--<StackPanel x:Name="colContainer" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" />-->
+                            <Grid local:GridAutoLayout.NumberOfColumns="{Binding NumCols}" local:GridAutoLayout.NumberOfRows="1" x:Name="headerGrid" Width="500"/>
+                        </ItemsPanelTemplate>
 
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Grid x:Name="colGrid" DataContext="{Binding}" Grid.Column ="{Binding ColIndex}">
-                            <TextBlock Text="{Binding Title}" HorizontalAlignment="Left"></TextBlock>
-                            <Rectangle Fill="LightSeaGreen" Width="10" Height="20" HorizontalAlignment="Right" ManipulationMode="TranslateX" ManipulationDelta="UIElement_OnManipulationDelta">
-                                <Rectangle.RenderTransform>
-                                    <TranslateTransform X="-10"></TranslateTransform>
-                                </Rectangle.RenderTransform>
-                            </Rectangle>
-                        </Grid>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid x:Name="colGrid" DataContext="{Binding}" Grid.Column ="{Binding ColIndex}">
+                                <TextBlock Text="{Binding Title}" HorizontalAlignment="Left"></TextBlock>
+                                <Rectangle PointerEntered ="Rectangle_PointerEntered" PointerExited="Rectangle_PointerExited"  Fill="DarkSlateGray" Width="5" Height="20" HorizontalAlignment="Right" ManipulationMode="TranslateX" ManipulationDelta="UIElement_OnManipulationDelta">
+                                </Rectangle>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
 
-            </local:GridAwareItemsControl>
 
-            <ScrollViewer x:Name="scrollViewer" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" HorizontalScrollMode ="Auto" HorizontalScrollBarVisibility="Auto"  Height="480" Width="500">
+                </local:GridAwareItemsControl>
+            </ScrollViewer>
+           
+
+            <ScrollViewer x:Name="CellScrollViewer" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" HorizontalScrollMode ="Auto" HorizontalScrollBarVisibility="Auto"  Height="480" Width="500">
                 <ScrollViewer.Content>
                     <local:GridAwareItemsControl ItemsSource="{Binding Data}">
                         <ItemsControl.ItemsPanel>

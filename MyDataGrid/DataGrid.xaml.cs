@@ -58,7 +58,12 @@ namespace MyDataGrid
 
 
             var elem = FindFirstChild<Grid>(contentPresenter);
+            if(elem.ActualWidth + e.Delta.Translation.X <= 50)
+            {
+                return;
+            }
             elem.Width = elem.ActualWidth + e.Delta.Translation.X;
+
 
             var rg = (Grid)scrollViewer.FindName("rowGrid");
             rg.ColumnDefinitions[harshheader.ColIndex].Width = new GridLength(elem.ActualWidth);
@@ -88,6 +93,16 @@ namespace MyDataGrid
                 }
 
             return null;
+        }
+
+        private void Rectangle_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.SizeWestEast, 1);
+        }
+
+        private void Rectangle_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 1);
         }
     }
 }

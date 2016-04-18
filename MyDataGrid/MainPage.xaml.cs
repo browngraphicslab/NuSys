@@ -65,7 +65,7 @@ namespace MyDataGrid
                 for (int j = 0; j < colCount; j++)
                 {
                     var cell = new GridRowCell();
-                    cell.Title = i.ToString() + j.ToString();
+                    cell.Title = i.ToString() + j.ToString() + "this is too long to not overflow";
                     cell.RowIndex = i;
                     cell.ColIndex = j;
                     collection.Add(cell);
