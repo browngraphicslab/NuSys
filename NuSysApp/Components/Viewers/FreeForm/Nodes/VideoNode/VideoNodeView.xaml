@@ -24,8 +24,12 @@
     <local:NodeTemplate x:Name="nodeTpl" Background="{Binding Color}" BorderBrush="{StaticResource color6}">
 
         <local:NodeTemplate.SubMenu>
-            <StackPanel Orientation="Horizontal">
-                <Button Margin="0,2,0,2" x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
+
+            <StackPanel Orientation="Vertical">
+                <Button Margin="0,2,0,2" x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
+                    <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
+                </Button>
+                <Button Margin="0,2,0,2" x:Name="Region" Click="Region_OnClick"  Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
                     <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
                 </Button>
             </StackPanel>
@@ -44,7 +48,7 @@
                 <MediaElement Grid.Row="0" Grid.Column="0" AutoPlay ="False" MediaOpened="PlaybackElement_MediaOpened" x:Name="playbackElement" AreTransportControlsEnabled="False"  Stretch="Uniform"/>
                 <TextBlock x:Name="MessageBox" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
                 <CaptureElement Name="preview"/>
-                <ProgressBar x:Name ="scrubBar"  SizeChanged ="ScrubBar_OnSizeChanged" Height ="25" Grid.Row="1" Margin="10,10,10,10" Value = "0" Maximum="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan.TotalMilliseconds}" Tapped="SrubBar_OnTapped" PointerMoved="ScrubBar_OnPointerMoved" Opacity="0.3" />
+                <ProgressBar x:Name ="scrubBar" PointerReleased="ScrubBar_OnPointerReleased" SizeChanged ="ScrubBar_OnSizeChanged" Height ="25" Grid.Row="1" Margin="10,10,10,10" Value = "0" Maximum="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan.TotalMilliseconds}" Tapped="SrubBar_OnTapped" PointerMoved="ScrubBar_OnPointerMoved" Opacity="0.3" />
                 <Grid Grid.Row="2" HorizontalAlignment="Left">
                     <TextBlock  Margin="10,0,0,0" Text ="{Binding ElementName=playbackElement, Path=Position, Converter={StaticResource PositionToStringConverter}}"></TextBlock>
                 </Grid>

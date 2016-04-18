@@ -22,9 +22,14 @@
 
     <local:NodeTemplate x:Name="nodeTpl" Background="#dee5e9" Opacity="1">
         <local:NodeTemplate.SubMenu>
-            <Button Margin="0,2,0,2" x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
+            <StackPanel Orientation="Vertical">
+                    <Button Margin="0,2,0,2" x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
+                        <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
+            </Button>
+            <Button Margin="0,2,0,2" x:Name="Region" Click="Region_OnClick"  Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
                 <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
             </Button>
+            </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
             <Grid x:Name ="grid" Width="{Binding Width}">
@@ -37,7 +42,7 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Image x:Name="VisualizationImage" Height ="100"  Stretch="Fill" Grid.Row ="0" Margin="10,10,10,10"></Image>
-                <ProgressBar x:Name ="scrubBar" ValueChanged="ScrubBar_OnValueChanged" SizeChanged ="ScrubBar_OnSizeChanged" Height ="{Binding ElementName=VisualizationImage, Path=ActualHeight}"  Grid.Row="0" Margin="10,10,10,10" Value = "{Binding ElementName=playbackElement, Path = Position.TotalMilliseconds}" Maximum="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan.TotalMilliseconds}" Tapped="SrubBar_OnTapped" PointerMoved="ScrubBar_OnPointerMoved" Opacity="0.3" />
+                <ProgressBar x:Name ="scrubBar" ValueChanged="ScrubBar_OnValueChanged" SizeChanged ="ScrubBar_OnSizeChanged" Height ="{Binding ElementName=VisualizationImage, Path=ActualHeight}"  Grid.Row="0" Margin="10,10,10,10" Value = "{Binding ElementName=playbackElement, Path = Position.TotalMilliseconds}" Maximum="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan.TotalMilliseconds}" Tapped="SrubBar_OnTapped" PointerMoved="ScrubBar_OnPointerMoved" PointerReleased="ScrubBar_OnPointerReleased" Loaded="ScrubBar_OnLoaded" Opacity="0.3" />
                 <Grid Grid.Row="1" HorizontalAlignment="Left">
                     <TextBlock  Margin="10,0,0,0" Text ="{Binding ElementName=playbackElement, Path=Position, Converter={StaticResource PositionToStringConverter}}"></TextBlock>
                 </Grid>
@@ -56,7 +61,7 @@
                         <Image Source="ms-appx:///Assets/node icons/icon_stop.png" Height="20"></Image>
                     </Button>
 
-                    <MediaElement   x:Name="playbackElement" Loaded ="PlaybackElement_Onloaded"  Stretch="Fill" AudioCategory="Speech" AutoPlay="False" Position ="0"/>
+                    <MediaElement   x:Name="playbackElement" MediaOpened="PlaybackElement_OnMediaOpened" Loaded ="PlaybackElement_Onloaded"  Stretch="Fill" AudioCategory="Speech" AutoPlay="False" Position ="0"/>
                 </StackPanel>
 
 

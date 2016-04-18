@@ -13,15 +13,16 @@ namespace NuSysApp
         private ElementController InElementController;
         private ElementController OutElementController;
 
+        public LinkModel LinkModel { get; }
         public LinkViewModel(LinkElementController controller) : base(controller)
         {
-            var linkModel = (LinkModel)controller.Model;
+            LinkModel = (LinkModel)controller.Model;
 
             controller.AnnotationChanged += ControllerOnAnnotationChanged;
-            Annotation = linkModel.Annotation;
+            Annotation = LinkModel.Annotation;
 
-            InElementController = SessionController.Instance.IdToControllers[linkModel.InAtomId]; 
-            OutElementController = SessionController.Instance.IdToControllers[linkModel.OutAtomId];
+            InElementController = SessionController.Instance.IdToControllers[LinkModel.InAtomId]; 
+            OutElementController = SessionController.Instance.IdToControllers[LinkModel.OutAtomId];
 
             Anchor = new Point2d((int) (OutElementController.Model.X + (Math.Abs(OutElementController.Model.X - InElementController.Model.X)/2)),
                 (int) (InElementController.Model.Y + (Math.Abs(OutElementController.Model.Y - InElementController.Model.Y)/2)));

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -47,6 +48,42 @@ namespace NuSysApp
             {
                 UpdateControlPoints();
             };
+            Debug.WriteLine("fdsafdsa");
+            object value;
+            if (vm.LinkModel.InFGDictionary != null)
+            {
+                switch (SessionController.Instance.IdToControllers[vm.LinkModel.InAtomId].Model.ElementType)
+                {
+                    case ElementType.Image:
+                        Debug.WriteLine("This links from a image with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
+
+                        break;
+                    case ElementType.Text:
+                        Debug.WriteLine("This links from a text with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
+                        break;
+                    case ElementType.Audio:
+                        Debug.WriteLine("This links from a text with values " + vm.LinkModel.InFGDictionary.TryGetValue("start", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("end", out value));
+                        break;
+                }
+            }
+
+            if (vm.LinkModel.OutFGDictionary != null)
+            {
+                switch (SessionController.Instance.IdToControllers[vm.LinkModel.OutAtomId].Model.ElementType)
+                {
+                    case ElementType.Image:
+                        Debug.Write("to a image with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
+
+                        break;
+                    case ElementType.Text:
+                        Debug.Write("to a text with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
+
+                        break;
+                    case ElementType.Audio:
+                        Debug.Write("to a media with values " + vm.LinkModel.InFGDictionary.TryGetValue("start", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("end", out value));
+                        break;
+                }
+            }
         }
 
         private void LinkControllerOnPositionChanged(object source, double d, double d1, double dx, double dy)
@@ -113,6 +150,11 @@ namespace NuSysApp
                     this.Annotation.Activate();
                     AnnotationContainer.Visibility = Visibility.Visible;
                     Delete.Visibility = Visibility.Visible;
+                    if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
+                    {
+                        ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Select();
+                        this.JumpToLinkedTime();
+                    }
                 }
                 else
                 {
@@ -122,6 +164,55 @@ namespace NuSysApp
                     }
                     Delete.Visibility = Visibility.Collapsed;
                     this.Annotation.DeActivate();
+                    if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
+                    {
+                        ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Deselect();
+
+                    }
+                }
+            }
+        }
+
+        private void JumpToLinkedTime()
+        {
+
+            if (((LinkModel) (DataContext as LinkViewModel).Model).InFineGrain.Start.TotalMilliseconds <
+                ((LinkModel) (DataContext as LinkViewModel).Model).InFineGrain.End.TotalMilliseconds)
+            {
+                if (
+                    SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model
+                        .ElementType == ElementType.Video)
+                {
+                    (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
+                    VideoNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Start);
+
+                }
+                else if (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model
+                        .ElementType == ElementType.Audio)
+                {
+                    (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
+                    AudioNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Start);
+
+                }
+
+
+            }
+            else
+            {
+                if (
+                    SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model
+                        .ElementType == ElementType.Video)
+                {
+                    (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
+                    VideoNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.End);
+
+                }
+                else if (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model
+                        .ElementType == ElementType.Audio)
+                {
+                    (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
+                    AudioNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.End);
+
                 }
             }
         }

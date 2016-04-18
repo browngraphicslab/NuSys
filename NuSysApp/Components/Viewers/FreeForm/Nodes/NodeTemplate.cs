@@ -14,6 +14,8 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
+using NuSysApp.Components.Nodes;
+using NuSysApp.Nodes.AudioNode;
 
 // The Templated Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234235
 
@@ -281,18 +283,63 @@ namespace NuSysApp
 
             if (_currenDragMode == DragMode.Link)
             {
+                Debug.WriteLine("dragging link");
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
+
                 hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementViewModel).ToList();
-                if (hitsStart.Any())
+
+                var hitsStart2 = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
+
+                hitsStart2 = hitsStart2.Where(uiElem => (uiElem as FrameworkElement).DataContext is LinkedTimeBlockViewModel).ToList();
+
+                foreach (var e in hitsStart2)
+                {
+                    Debug.WriteLine(e);
+                }
+                
+                 if (hitsStart.Any())
                 {
                     var first = (FrameworkElement)hitsStart.First();
+
+                    var rectangles = hitsStart.OfType<Rectangle>();
+                    Debug.WriteLine("!!!!!!!!!!!!!!!!!!!!!" + rectangles.Count());
+
                     var dc = (ElementViewModel)first.DataContext;
                     var vm = (ElementViewModel)DataContext;
                     if (vm == dc || (dc is FreeFormViewerViewModel) || dc is LinkViewModel)
                     {
                         return;
                     }
-                    vm.Controller.RequestLinkTo(dc.Id);
+
+                    if (rectangles.Count() == 2)
+                    {
+                        Debug.WriteLine("link dropped on image");
+                        var second = (Rectangle) rectangles.ElementAt(1);
+                        second.Fill = new SolidColorBrush(Colors.Yellow);
+                        second.Opacity = 0.2;
+                        second.Stroke = new SolidColorBrush(Colors.Red);
+                    }
+
+                    foreach (var element in hitsStart2)
+                    {
+                        if (element is LinkedTimeBlock)
+                        {
+                            Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100, 100,
+                                200);
+                            Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100, 100,
+                                100);
+                            Debug.WriteLine("test");
+                            vm.Controller.RequestLinkTo(dc.Id, (LinkedTimeBlock)element, inFgDictionary, outFgDictionary);
+                            (element as LinkedTimeBlock).changeColor();
+                            //vm.Controller.RequestLinkTo(dc.Id, (LinkedTimeBlock)element);
+
+                        }
+                    }
+
+                    //Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100, 100, 200);
+                    //Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100, 100, 100);
+                    //Debug.WriteLine("nodetemplate");
+                    //vm.Controller.RequestLinkTo(dc.Id, inFgDictionary, outFgDictionary);
                 }
             }
 

@@ -467,6 +467,7 @@
     <Compile Include="Util\MediaUtil.cs" />
     <Compile Include="Util\Point2d.cs" />
     <Compile Include="Util\PresentationMode.cs" />
+    <Compile Include="Util\RectanglePoints.cs" />
     <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\Statistics.cs" />
     <Compile Include="Util\Telemetry.cs" />
