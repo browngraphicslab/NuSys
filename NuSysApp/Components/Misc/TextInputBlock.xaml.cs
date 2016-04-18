@@ -115,6 +115,9 @@ namespace NuSysApp
                     bottom.X = -40;
                     bottom.Y = 50;
                     InkBubble.RenderTransform = bottom;
+                    Thickness m = Inker.Margin;
+                    m.Top = 3;
+                    Inker.Margin = m;
                     SetImage("ms-appx:///Assets/menububblebtm.png", bubble);
 
                 }
@@ -124,6 +127,7 @@ namespace NuSysApp
         private void TextBox_OnTextChanged(object sender, TextChangedEventArgs args)
         {
             this.Text = this.TextBox.Text;
+            TextChanged?.Invoke(this, this.Text);
         }
 
         public string Text
@@ -214,8 +218,9 @@ namespace NuSysApp
                 if (texts.Count > 0)
                 {
                     TextBox.Text = _savedForInking + " " + texts[0];
-                    TextChanged?.Invoke(this, TextBox.Text.Trim());
+                    this.Text = this.TextBox.Text.Trim();
                 }
+                TextChanged?.Invoke(this, TextBox.Text.Trim());
             };
         }
 
@@ -231,6 +236,7 @@ namespace NuSysApp
             marker.HorizontalAlignment = HorizontalAlignment.Left;
             curr.Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(1, 242, 242, 242));
             marker.Stroke = new SolidColorBrush(Colors.LightSlateGray);
+
             marker.Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(1, 242, 242, 242));
             Inker.Children.Add(curr);
             Inker.Children.Add(_inqView);
@@ -322,8 +328,9 @@ namespace NuSysApp
             else
             {
                 InkBubble.Visibility = Visibility.Collapsed;
+                this.Text = this.TextBox.Text.Trim();
+                TextChanged?.Invoke(this, TextBox.Text.Trim());
                 SetImage("ms-appx:///Assets/icon_node_ink.png", InkImg);
-
             }
             _isInking = !_isInking;
         }
