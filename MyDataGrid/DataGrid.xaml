@@ -35,7 +35,7 @@
 
             </local:GridAwareItemsControl>
 
-            <ScrollViewer x:Name="scrollViewer" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" Height="480">
+            <ScrollViewer x:Name="scrollViewer" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" HorizontalScrollMode ="Auto" HorizontalScrollBarVisibility="Auto"  Height="480" Width="500">
                 <ScrollViewer.Content>
                     <local:GridAwareItemsControl ItemsSource="{Binding Data}">
                         <ItemsControl.ItemsPanel>

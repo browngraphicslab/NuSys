@@ -53,7 +53,7 @@ namespace MyDataGrid
           //  Debug.WriteLine(harshheader.Title);
           //  Debug.WriteLine(harshheader.ColIndex);
 
-            var headerGrid = FindName("headerGrid");
+            var headerGrid = (Grid) FindName("headerGrid");            
             var contentPresenter = (ContentPresenter)((Grid) headerGrid).Children[harshheader.ColIndex];
 
 
@@ -62,6 +62,7 @@ namespace MyDataGrid
 
             var rg = (Grid)scrollViewer.FindName("rowGrid");
             rg.ColumnDefinitions[harshheader.ColIndex].Width = new GridLength(elem.ActualWidth);
+            headerGrid.ColumnDefinitions[harshheader.ColIndex].Width = new GridLength(elem.ActualWidth);
 
         }
 
