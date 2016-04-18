@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,18 +37,40 @@ namespace NuSysApp
             if (props.ContainsKey("inFineGrain"))
             {
                 var v = JsonConvert.DeserializeObject<LinkedTimeBlockModel>(props.Get("inFineGrain"));
-                var list =
-                    ((AudioNodeModel) SessionController.Instance.IdToControllers[OutAtomId].Model)
-                        .LinkedTimeModels;
-                foreach (var element in list)
+                ObservableCollection<LinkedTimeBlockModel> list;
+                switch (SessionController.Instance.IdToControllers[OutAtomId].Model.ElementType)
                 {
-                    if (element.Start == v.Start && element.End == v.End)
-                    {
-                        InFineGrain = element;
-                        Debug.WriteLine(InFineGrain.ToString());
-                        //Debug.WriteLine(InFineGrain.);
+                    case ElementType.Image:
+
                         break;
-                    }
+                    case ElementType.Text:
+                        break;
+                    case ElementType.Audio:
+                        list =
+                    ((AudioNodeModel)SessionController.Instance.IdToControllers[OutAtomId].Model)
+                        .LinkedTimeModels;
+                        foreach (var element in list)
+                        {
+                            if (element.Start == v.Start && element.End == v.End)
+                            {
+                                InFineGrain = element;
+                                break;
+                            }
+                        }
+                        break;
+                    case ElementType.Video:
+                        list =
+                    ((VideoNodeModel)SessionController.Instance.IdToControllers[OutAtomId].Model)
+                        .LinkedTimeModels;
+                        foreach (var element in list)
+                        {
+                            if (element.Start == v.Start && element.End == v.End)
+                            {
+                                InFineGrain = element;
+                                break;
+                            }
+                        }
+                        break;
                 }
                
 

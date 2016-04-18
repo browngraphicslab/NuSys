@@ -25,12 +25,19 @@ namespace NuSysApp
 
         private readonly StorageFolder _rootFolder = NuSysStorages.Media;
         private StorageFile _audioFile;
+        public delegate void JumpEventHandler(TimeSpan time);
+        public event JumpEventHandler OnJump;
         public AudioNodeModel(string id) : base(id)
         {
             ElementType = ElementType.Audio;
             // _linkedTimeBlocks = new ObservableCollection<LinkedTimeBlockViewModel>();
             _linkedTimeModels = new ObservableCollection<LinkedTimeBlockModel>();
 
+        }
+
+        public void Jump(TimeSpan time)
+        {
+            OnJump?.Invoke(time);
         }
 
         public string FileName { get; set; }

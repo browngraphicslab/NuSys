@@ -150,7 +150,11 @@ namespace NuSysApp
                     this.Annotation.Activate();
                     AnnotationContainer.Visibility = Visibility.Visible;
                     Delete.Visibility = Visibility.Visible;
-                    ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Select();
+                    if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
+                    {
+                        ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Select();
+                        this.JumpToLinkedTime();
+                    }
                 }
                 else
                 {
@@ -160,7 +164,55 @@ namespace NuSysApp
                     }
                     Delete.Visibility = Visibility.Collapsed;
                     this.Annotation.DeActivate();
-                    ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Deselect();
+                    if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
+                    {
+                        ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Deselect();
+
+                    }
+                }
+            }
+        }
+
+        private void JumpToLinkedTime()
+        {
+
+            if (((LinkModel) (DataContext as LinkViewModel).Model).InFineGrain.Start.TotalMilliseconds <
+                ((LinkModel) (DataContext as LinkViewModel).Model).InFineGrain.End.TotalMilliseconds)
+            {
+                if (
+                    SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model
+                        .ElementType == ElementType.Video)
+                {
+                    (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
+                    VideoNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Start);
+
+                }
+                else if (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model
+                        .ElementType == ElementType.Audio)
+                {
+                    (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
+                    AudioNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Start);
+
+                }
+
+
+            }
+            else
+            {
+                if (
+                    SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model
+                        .ElementType == ElementType.Video)
+                {
+                    (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
+                    VideoNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.End);
+
+                }
+                else if (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model
+                        .ElementType == ElementType.Audio)
+                {
+                    (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
+                    AudioNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.End);
+
                 }
             }
         }

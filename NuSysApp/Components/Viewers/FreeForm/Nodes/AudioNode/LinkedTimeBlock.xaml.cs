@@ -67,7 +67,7 @@ namespace NuSysApp.Components.Nodes
 
             this.DataContext = vm;
             line.StrokeThickness = (double)vm.Line1["StrokeThickness"];
-            line.Stroke = (SolidColorBrush)vm.Line1["Stroke"];
+            line.Stroke = new SolidColorBrush(Colors.Yellow);
             line.Opacity = (double)vm.Line1["Opacity"];
             //line.Detailx1 = (double)vm.Line1["Detailx1"];
             //Binding b = new Binding();

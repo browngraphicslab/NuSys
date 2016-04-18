@@ -66,7 +66,12 @@ namespace NuSysApp
 
             vm.Controller.Disposed += ControllerOnDisposed;
 
-            
+            ((AudioNodeModel)vm.Model).OnJump += AudioNodeView_OnJump;
+        }
+
+        private void AudioNodeView_OnJump(TimeSpan time)
+        {
+            ((AudioNodeModel) ((DataContext as AudioNodeViewModel).Model)).Controller.ScrubJump(time);
         }
 
         private void AddAllLinksVisually()
