@@ -27,82 +27,62 @@ using MyToolkit.UI;
 
 namespace NuSysApp
 {
-    public sealed partial class LibraryList : UserControl, LibraryViewable
+    public sealed partial class LibraryFavorites : UserControl
     {
-        //public delegate void LibraryElementDragEventHandler(object sender, DragItemsStartingEventArgs e);
-        //public event LibraryElementDragEventHandler OnLibraryElementDrag;
+
         private LibraryElementPropertiesWindow _propertiesWindow;
         private double _x;
         private double _y;
 
-        private CompositeTransform _ct;
         private LibraryView _library;
-        public LibraryList(LibraryView library, LibraryPageViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
+        public LibraryFavorites(LibraryView library, LibraryFavoritesViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
         {
 
             this.DataContext = vm;
             this.InitializeComponent();
-            Loaded += delegate(object sender, RoutedEventArgs args)
+            _library = library;
+            _propertiesWindow = propertiesWindow;
+
+            vm.OnItemsChanged += ViewModel_OnItemsChanged;
+
+            /*
+            Loaded += delegate (object sender, RoutedEventArgs args)
             {
                 ((LibraryBucketViewModel)library.DataContext).OnNewContents += SetItems;
             };
-            ((LibraryBucketViewModel)library.DataContext).OnHighlightElement += Select;
-            _propertiesWindow = propertiesWindow;
-            _library = library;
-            //vm.OnItemsChanged += Update;
-            //Canvas.SetZIndex(Header, Canvas.GetZIndex(ListView)+1)
-            foreach (var element in vm.PageElements.ToArray())
-            {
-                element.OnLightupContent += Select;
-            }
+            */
+
+
+
+
         }
 
-        private void Select(LibraryElementModel model, bool lightup = true)
+        private void ViewModel_OnItemsChanged(object sender, bool favorited)
         {
-            ListView.SelectedItem = null;
-
-
-            if (ListView.ItemsSource == null)
-                return;
-
-            if (lightup)
-            {
-                if ((ObservableCollection<LibraryElementModel>) ListView.ItemsSource != null &&
-                    (((ObservableCollection<LibraryElementModel>) ListView.ItemsSource).Count ==
-                     SessionController.Instance.ContentController.Count ||
-                     ((ObservableCollection<LibraryElementModel>) ListView.ItemsSource).Contains(model)))
-                {
-                    ListView.SelectedItem = model;
-                    ListView.ScrollIntoView(model);
-                }
-            }
+            if (!favorited)
+                _propertiesWindow.Visibility = Visibility.Collapsed;
         }
 
         public void SetItems(ICollection<LibraryElementModel> elements)
         {
-            var col = ((LibraryPageViewModel) DataContext).PageElements;
+            var col = ((LibraryFavoritesViewModel)DataContext).PageElements;
             col.Clear();
             foreach (var libraryElementModel in elements)
             {
-                col.Add(libraryElementModel);
+
+                if (libraryElementModel.Favorited)
+                {
+                    col.Add(libraryElementModel);
+                    
+                }
+
+               
             }
-        }
-
-        public async Task Sort(string s)
-        {
-            await ((LibraryPageViewModel)this.DataContext).Sort(s);
-  //          this.SetItems(((LibraryPageViewModel)this.DataContext).PageElements);
-        }
-
-        public async Task Search(string s)
-        {
-            await ((LibraryPageViewModel)this.DataContext).Search(s);
-            //this.SetItems(((LibraryPageViewModel)this.DataContext).PageElements);
         }
 
         public async void Update()
         {
-            this.SetItems(((LibraryPageViewModel)this.DataContext).PageElements);
+            this.SetItems(((LibraryFavoritesViewModel)this.DataContext).PageElements);
         }
 
         private void LibraryListItem_OnPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -125,20 +105,6 @@ namespace NuSysApp
             var rect = view.LibraryDraggingRectangle;
             element.FireLightupContent(true);
         }
-        private async void Sort_Button_Click(object sender, RoutedEventArgs e)
-        {
-            string s = "nodetype";
-            switch (((Button)sender).Content.ToString())
-            {
-                case "title":
-                    s = "title";
-                    break;
-                case "date":
-                    s = "timestamp";
-                    break;
-            }
-            Sort(s);
-        }
         private void LibraryListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
@@ -148,8 +114,8 @@ namespace NuSysApp
                 return;
             }
 
-            
-            
+
+
 
             var view = SessionController.Instance.SessionView;
             view.LibraryDraggingRectangle.Visibility = Visibility.Collapsed;
@@ -184,10 +150,10 @@ namespace NuSysApp
                 return;
             }
 
-            var el = (FrameworkElement) sender;
+            var el = (FrameworkElement)sender;
             var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
-            
-            var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(sp, null).Where( i => i is LibraryView);
+
+            var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(sp, null).Where(i => i is LibraryView);
             if (itemsBelow.Any())
             {
                 SessionController.Instance.SessionView.LibraryDraggingRectangle.Visibility = Visibility.Collapsed;
@@ -228,15 +194,17 @@ namespace NuSysApp
             if (SessionController.Instance.SessionView.LibraryDraggingRectangle.Visibility == Visibility.Collapsed)
                 return;
             var r = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(_x, _y));
-            await _library.AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type,element.Id);
+            await _library.AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type, element.Id);
         }
 
         private void ListView_OnItemClick(object sender, ItemClickEventArgs e)
         {
-            _propertiesWindow.SetElement(((LibraryElementModel)e.ClickedItem));         
+            _propertiesWindow.SetElement(((LibraryElementModel)e.ClickedItem));
+        }
+
+        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
-
 }
-
-  

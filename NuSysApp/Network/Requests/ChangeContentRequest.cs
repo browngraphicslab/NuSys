@@ -37,6 +37,8 @@ namespace NuSysApp
             {
                 content.Data = _message.GetString("data");
             }
+
+
         }
     }
 }

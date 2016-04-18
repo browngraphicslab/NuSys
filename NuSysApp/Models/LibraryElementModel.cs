@@ -48,6 +48,12 @@ namespace NuSysApp
 
         public delegate void LightupContentEventHandler(LibraryElementModel sender, bool lightup);
         public event LightupContentEventHandler OnLightupContent;
+
+   
+        public delegate void ElementFavoritedEventHandler(LibraryElementModel sender, bool favorited);
+        public event ElementFavoritedEventHandler OnFavorited;
+
+
         public ElementType Type { get; set; }
 
         public string Data
@@ -60,6 +66,19 @@ namespace NuSysApp
                 OnContentChanged?.Invoke();
             }
         }
+
+        public bool Favorited {
+            get { return _favorited; }
+
+            set
+            {
+                _favorited = value;
+                //RaisePropertyChanged("Favorited");
+                OnFavorited?.Invoke(this, _favorited);
+
+            }
+        }
+
 
         public string Id { get; set; }
         public string Title {
@@ -74,17 +93,18 @@ namespace NuSysApp
         public string Creator { set; get; }
         public string Timestamp { get; set; }//TODO maybe put in a timestamp, maybe remove the field from the library
         private string _title;
-
+        private bool _favorited;
         public Dictionary<string,object> ViewUtilBucket = new Dictionary<string, object>();
         private string _data;
         private bool _loading = false;
-        public LibraryElementModel(string id, ElementType elementType, string contentName = null)
+        public LibraryElementModel(string id, ElementType elementType, string contentName = null, bool favorited = false)
         {
             Data = null;
             Id = id;
             Title = contentName;
             Type = elementType;
             Loaded = false;
+            Favorited = favorited;
             Keywords = new HashSet<string>();
             SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
         }
@@ -183,6 +203,21 @@ namespace NuSysApp
                     return true;
             }
             return false;
+        }
+        
+        public void SetFavorited(bool favorited)
+        {
+
+            Task.Run(async delegate
+            {
+                var m = new Message();
+                m["contentId"] = Id;
+                m["favorited"] = favorited;
+                var request = new ChangeContentRequest(m);
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            });
+            //OnFavorited?.Invoke(this, favorited);
+            Favorited = favorited;
         }
 
         public void SetTitle(string title)

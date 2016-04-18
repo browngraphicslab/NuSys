@@ -24,6 +24,10 @@ namespace NuSysApp
     {
         private int _count;
         private LibraryElementModel _currentElementModel;
+
+        public delegate void AddedToFavoriteHandler(object source, LibraryElementModel element);
+        public event AddedToFavoriteHandler AddedToFavorite;
+
         public LibraryElementPropertiesWindow()
         {
             this.InitializeComponent();
@@ -136,6 +140,16 @@ namespace NuSysApp
         private void CollapseArrow_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
+        }
+
+
+        private void Favorites_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+
+
+            AddedToFavorite?.Invoke(this, _currentElementModel);
+
+
         }
 
         public void setPreviewSource(BitmapImage image)

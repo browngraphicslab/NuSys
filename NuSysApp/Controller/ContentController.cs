@@ -23,6 +23,8 @@ namespace NuSysApp
 
         public delegate void ElementDeletedEventHandler(LibraryElementModel element);
         public event ElementDeletedEventHandler OnElementDelete;
+
+        
         public int Count
         {
             get { return _contents.Count; }

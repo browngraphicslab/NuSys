@@ -18,7 +18,19 @@
         <SolidColorBrush x:Key="ComboBoxItemSelectedDisabledBackgroundThemeBrush" Color="LightBlue" />
         <SolidColorBrush x:Key="ComboBoxItemSelectedDisabledForegroundThemeBrush" Color="White" />
         <SolidColorBrush x:Key="ComboBoxItemSelectedPointerOverBackgroundThemeBrush" Color="LightBlue" />
-        
+
+        <!--<SolidColorBrush x:Key="ComboBoxItemDisabledForegroundThemeBrush" Color="Red" /
+>>
+        <SolidColorBrush x:Key="ComboBoxItemPressedBackgroundThemeBrush" Color="Red"/>
+        <SolidColorBrush x:Key="ComboBoxItemPressedForegroundThemeBrush" Color="Red"/>
+        <SolidColorBrush x:Key="ComboBoxItemSelectedBackgroundThemeBrush" Color="Red" />
+        <SolidColorBrush x:Key="ComboBoxItemSelectedForegroundThemeBrush" Color="Red" />
+        <SolidColorBrush x:Key="ComboBoxItemPointerOverBackgroundThemeBrush" Color="Red" />
+        <SolidColorBrush x:Key="ComboBoxItemPointerOverForegroundThemeBrush" Color="Red" /
+        <SolidColorBrush x:Key="ComboBoxItemSelectedDisabledBackgroundThemeBrush" Color="Red" />
+        <SolidColorBrush x:Key="ComboBoxItemSelectedDisabledForegroundThemeBrush" Color="Red" />
+        <SolidColorBrush x:Key="ComboBoxItemSelectedPointerOverBackgroundThemeBrush" Color="Red" />-->
+
 
         <!--<Storyboard x:Key="slideout">
             <DoubleAnimation Duration="0:0:0.2" To="1.25" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenu"/>

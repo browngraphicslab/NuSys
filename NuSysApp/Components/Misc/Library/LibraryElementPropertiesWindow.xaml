@@ -80,12 +80,19 @@
     <Border x:Name="Border" Height="550" Width="400" Background="White" BorderBrush="#83A6A3" BorderThickness="1" Margin="0,0,0,0">
 
         <Grid Margin="-7,0,3,0">
+
             <Image Source="ms-appx:///Assets/icon_collapse.png" Tapped="CollapseArrow_OnTapped"  HorizontalAlignment="Right" Width="10" Margin="0,0,10,0"/>
+            <!--<Image Source="ms-appx:///Assets/icon_favorite.png" Tapped="Favorites_OnTapped" HorizontalAlignment="Right" Width="70" Margin="0,-210,10,210"> </Image>-->
+            <Button Padding="0"  Tapped="Favorites_OnTapped" Width="100" Height="45" VerticalAlignment="Top" 
+                        HorizontalAlignment="Center" Margin="303,10,10,468" Background="#83A6A3" Foreground="#E6EDEC" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+            Favorite
+            </Button>
+
             <StackPanel Padding="50" Orientation="Vertical" >
                 <Border Height="150" Width="150" BorderThickness="1" Margin="0,-30,0,0" BorderBrush="#E6EDEC" Visibility="Collapsed">
                     <Image x:Name="Preview" Height="150" Width="150" />
                 </Border>
-
+            
 
                 <!--<ListView.Header>
                         <Grid VerticalAlignment="Center" Background="#ECECEA ">
@@ -171,7 +178,7 @@
                 </Button>
             </StackPanel>
             <Button Name="EnterCollectionButton" Style="{StaticResource EnterButton}" Padding="0" Click="EnterCollection_OnClick" Width="60" Height="20" VerticalAlignment="Top" 
-                        HorizontalAlignment="Center" Margin="10,190,10,10" Background="#83A6A3" Foreground="#E6EDEC" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                        HorizontalAlignment="Center" Margin="10,330,10,10" Background="#83A6A3" Foreground="#E6EDEC" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
                 <TextBlock Margin="0,-4,0,0">enter</TextBlock>
             </Button>
         </Grid>

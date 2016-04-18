@@ -9,48 +9,87 @@ using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-namespace NuSysApp 
+namespace NuSysApp
 {
-    public class LibraryPageViewModel
+    public class LibraryFavoritesViewModel
     {
         public ObservableCollection<LibraryElementModel> PageElements { get; set; }
 
         private List<LibraryElementModel> _orgList;
 
-        private string _searchString = string.Empty;
+        //private string _searchString = string.Empty;
 
 
-        public delegate void ItemsChangedEventHandler();
+        public delegate void ItemsChangedEventHandler(object sender, bool favorited);
         public event ItemsChangedEventHandler OnItemsChanged;
-        public LibraryPageViewModel(ObservableCollection<LibraryElementModel> elements)
+        
+
+
+        public LibraryFavoritesViewModel(ObservableCollection<LibraryElementModel> elements)
         {
-            PageElements = elements;
+            SessionController.Instance.ContentController.Values.Where(item => item.Favorited == true);
+            PageElements = new ObservableCollection<LibraryElementModel>();
+            //PageElements = elements.Where(item => item.Favorited == true);
             _orgList = new List<LibraryElementModel>(elements);
+            foreach(var element in _orgList)
+            {
+                element.OnFavorited += LibraryElementModel_OnFavorited;
+                if (element.Favorited == true)
+                    PageElements.Add(element);
+            };
+
             SessionController.Instance.ContentController.OnNewContent += NewContent;
             SessionController.Instance.ContentController.OnElementDelete += DeleteContent;
+                
             
+
+
+            // SessionController.Instance.ContentController.OnNewFavorite += NewFavorite;
         }
 
+        private void LibraryElementModel_OnFavorited(LibraryElementModel element, bool favorited)
+        {
+
+
+            if (!PageElements.Contains(element))
+            {
+                PageElements.Add(element);
+            }
+            else
+            {
+                PageElements.Remove(element);
+            }
+
+            OnItemsChanged?.Invoke(this, favorited);
+        }
+
+        
 
         private void NewContent(LibraryElementModel content)
         {
             UITask.Run(() =>
             {
-                if(content.Type!= ElementType.Link)
-                    _orgList.Add(content);
-                Search(_searchString);
+                //if (content.Favorited == true)
+                content.OnFavorited += LibraryElementModel_OnFavorited;
+
+                _orgList.Add(content);
+
+                //Search(_searchString);
             });
 
         }
 
+        
         private void DeleteContent(LibraryElementModel content)
         {
             UITask.Run(() =>
             {
-                _orgList.Remove(content);
+                //_orgList.Remove(content);
                 PageElements.Remove(content);
             });
         }
+
+        /*
         public async Task Sort(string s)
         {
             List<LibraryElementModel> ordered = null;
@@ -84,14 +123,17 @@ namespace NuSysApp
                 {
                     PageElements.Add(item);
                 }
-          
+
             }
         }
+        */
+
+        /*
         public async Task Search(string s)
         {
             _searchString = s;
             PageElements.Clear();
-            
+
             foreach (var item in _orgList)
             {
                 if (item.InSearch(s))
@@ -100,6 +142,8 @@ namespace NuSysApp
                 }
             }
         }
+
+    */
 
     }
 }
