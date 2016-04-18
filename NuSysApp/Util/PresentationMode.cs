@@ -130,7 +130,8 @@ namespace NuSysApp.Util
             
             // Obtain correct scale value based on width/height ratio of passed in element
             double scale;
-            if (_currentNode.Width > _currentNode.Height) { 
+            if (_currentNode.Width > _currentNode.Height) {
+                translateY += 40;
                 scale = sv.ActualWidth / _currentNode.Width;
             }
             else
@@ -139,7 +140,7 @@ namespace NuSysApp.Util
             }
                 
             // Scale the active free form viewer so that the passed in element appears to be full screen.
-            scale = scale * .7; // adjustment so things don't get cut off
+            scale = scale * .6; // adjustment so things don't get cut off
 
             //THIS WORKS, BUT NO ANIMATION
             /*

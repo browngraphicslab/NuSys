@@ -361,15 +361,8 @@ namespace NuSysApp
             vm.IsSelected = false;
             vm.IsEditing = false;
             highlight.Visibility = Visibility.Collapsed;
-
-            if (sv.IsPresentationMode)
-            {
-                sv.ExitPresentationMode();
-            }
-            else
-            {
-                sv.EnterPresentationMode(vm.Model);
-            }
+            
+            sv.EnterPresentationMode(vm.Model);
         }
 
         private void OnResizerManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -427,6 +420,8 @@ namespace NuSysApp
                 }
             }
         }
+
+       
     }
 }
 
