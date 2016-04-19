@@ -9,6 +9,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using MyToolkit.Utilities;
+using System.Diagnostics;
 
 namespace NuSysApp.Util
 {
@@ -114,6 +115,9 @@ namespace NuSysApp.Util
 
         private void FullScreen()
         {
+            var transform = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
+            Debug.WriteLine("Center X: "+transform.CenterX+", Center Y: "+transform.CenterY);
+
             // Define some variables that will be used in future translation/scaling
 
             var sv = SessionController.Instance.SessionView;
@@ -140,7 +144,16 @@ namespace NuSysApp.Util
             }
                 
             // Scale the active free form viewer so that the passed in element appears to be full screen.
-            scale = scale * .6; // adjustment so things don't get cut off
+            
+
+            if (Math.Abs(_currentNode.Width - _currentNode.Height) <= 30)
+            {
+                scale = scale * .5;
+                Debug.WriteLine("hey");
+            }
+                
+            else
+                scale = scale * .5; // adjustment so things don't get cut off
 
             //THIS WORKS, BUT NO ANIMATION
             /*
@@ -158,15 +171,16 @@ namespace NuSysApp.Util
         {           
             // Create a duration of 2 seconds.
             Duration duration = new Duration(TimeSpan.FromSeconds(1));
+            var transform = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
 
             Storyboard storyboard = new Storyboard();
             storyboard.Duration = duration;
-            DoubleAnimation scaleAnimationX = MakeAnimationElement(scale, "ScaleX", duration);
-            DoubleAnimation scaleAnimationY = MakeAnimationElement(scale, "ScaleY", duration);
-            DoubleAnimation centerAnimationX = MakeAnimationElement(x, "CenterX", duration);
-            DoubleAnimation centerAnimationY = MakeAnimationElement(y, "CenterY", duration);
-            DoubleAnimation translateAnimationX = MakeAnimationElement(translateX, "TranslateX", duration);
-            DoubleAnimation translateAnimationY = MakeAnimationElement(translateY, "TranslateY", duration);
+            DoubleAnimation scaleAnimationX = MakeAnimationElement(scale, transform.ScaleX, "ScaleX", duration);
+            DoubleAnimation scaleAnimationY = MakeAnimationElement(scale, transform.ScaleY,"ScaleY", duration);
+            DoubleAnimation centerAnimationX = MakeAnimationElement(x, transform.CenterX, "CenterX", duration);
+            DoubleAnimation centerAnimationY = MakeAnimationElement(y, transform.CenterY,"CenterY", duration);
+            DoubleAnimation translateAnimationX = MakeAnimationElement(translateX, transform.TranslateX,"TranslateX", duration);
+            DoubleAnimation translateAnimationY = MakeAnimationElement(translateY, transform.TranslateY,"TranslateY", duration);
 
             storyboard.Children.Add(scaleAnimationX);
             storyboard.Children.Add(scaleAnimationY);
@@ -184,7 +198,7 @@ namespace NuSysApp.Util
 
         }
 
-        private DoubleAnimation MakeAnimationElement(double to, String name, Duration duration)
+        private DoubleAnimation MakeAnimationElement(double to, double from, String name, Duration duration)
         {
             var transform = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
             DoubleAnimation toReturn = new DoubleAnimation();
@@ -192,6 +206,8 @@ namespace NuSysApp.Util
             Storyboard.SetTarget(toReturn, transform);
             Storyboard.SetTargetProperty(toReturn, name);
             toReturn.To = to;
+            toReturn.From = from;
+            
             toReturn.EasingFunction = new QuadraticEase();
             return toReturn;
         }
