@@ -24,6 +24,10 @@ namespace NuSysApp
     {
         private int _count;
         private LibraryElementModel _currentElementModel;
+
+        public delegate void AddedToFavoriteHandler(object source, LibraryElementModel element);
+        public event AddedToFavoriteHandler AddedToFavorite;
+
         public LibraryElementPropertiesWindow()
         {
             this.InitializeComponent();
@@ -114,6 +118,8 @@ namespace NuSysApp
             ID.Text = element.Id ?? "";
             Creator.Text = element.Creator ?? "";
 
+            this.UpdateFavoriteButton();
+
             if (element.Type == ElementType.Collection)
             {
                 EnterCollectionButton.Visibility = Visibility.Visible;
@@ -123,6 +129,17 @@ namespace NuSysApp
                 EnterCollectionButton.Visibility = Visibility.Collapsed;
             }
         }
+
+        private void UpdateFavoriteButton()
+        {
+            if (_currentElementModel.Favorited)
+                //Favorite.Source = "ms-appx:///Assets/star_icon.png";
+                Favorite.Source = new BitmapImage(new Uri("ms-appx:///Assets/star_icon.png"));
+
+            else
+                Favorite.Source = new BitmapImage(new Uri("ms-appx:///Assets/star-xxl.png"));
+        }
+
         public void setLastEdited(string lastedited)
         {
             LastEdited.Text = lastedited;
@@ -136,6 +153,17 @@ namespace NuSysApp
         private void CollapseArrow_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             this.Visibility = Visibility.Collapsed;
+        }
+
+
+        private void Favorites_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+
+
+            AddedToFavorite?.Invoke(this, _currentElementModel);
+            this.UpdateFavoriteButton();
+
+
         }
 
         public void setPreviewSource(BitmapImage image)

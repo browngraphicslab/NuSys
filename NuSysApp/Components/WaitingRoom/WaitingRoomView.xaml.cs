@@ -275,6 +275,7 @@ namespace NuSysApp
 
                                 var dict = kvp.Value;
                                 string title = null;
+                                bool favorited = false;
                                 ElementType type = ElementType.Text;
                                 string timestamp = "";
 
@@ -283,7 +284,10 @@ namespace NuSysApp
                                 {
                                     timestamp = dict["library_element_creation_timestamp"].ToString();
                                 }
-
+                                if (dict.ContainsKey("favorited") && bool.Parse(dict["favorited"].ToString()) == true)
+                                {
+                                    favorited = true;
+                                }
 
                                 if (dict.ContainsKey("title"))
                                 {
@@ -304,12 +308,12 @@ namespace NuSysApp
                                 LibraryElementModel element;
                                 if (type == ElementType.Collection)
                                 {
-                                    element = new CollectionLibraryElementModel(id, title);
+                                    element = new CollectionLibraryElementModel(id, title, favorited);
                                 }
                                 else
                                 {
-                                    element = new LibraryElementModel(id, type, title);
-                                }
+                                    element = new LibraryElementModel(id, type, title, favorited);
+                               } 
                                 element.Timestamp = timestamp;
                                 if (SessionController.Instance.ContentController.Get(id) == null)
                                 {
