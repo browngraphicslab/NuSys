@@ -371,7 +371,7 @@ namespace NuSysApp
             vm.IsEditing = false;
             highlight.Visibility = Visibility.Collapsed;
             
-            sv.EnterPresentationMode(vm.Model);
+            sv.EnterPresentationMode(vm);
         }
 
         private async void OnTestButtonClick(object sender, RoutedEventArgs e)
@@ -383,7 +383,7 @@ namespace NuSysApp
             var r = new RenderTargetBitmap();
             
             //var view = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => ((ElementViewModel)item.DataContext).Controller.Model.Id == vm.Id)?.First();
-            await r.RenderAsync(sv.MainCanvas);
+            await r.RenderAsync(sv);
             this.SaveImage(r);
 
             // make into image
@@ -392,6 +392,10 @@ namespace NuSysApp
             sv.FreeFormViewer.AtomCanvas.Children.Add(im);
             //Canvas.SetLeft(im, vm.Model.X);
             //Canvas.SetTop(im, vm.Model.Y);
+
+            
+
+
         }
 
         /// <summary> 

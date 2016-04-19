@@ -24,6 +24,10 @@ namespace NuSysApp
         private double _x;
         private double _y;
 
+        public Rectangle Node
+        {
+            get { return _glass; }
+        }
 
         public MGlass(Canvas grid)
         {
