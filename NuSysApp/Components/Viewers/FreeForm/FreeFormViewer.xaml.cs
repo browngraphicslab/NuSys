@@ -110,6 +110,14 @@ namespace NuSysApp
             var request = InkStorage.CreateRemoveInkRequest(new InkWrapper(stroke, "adornment"));
             if (request == null)
                 return;
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request.Item1);
+
+            var m = new Message();
+            m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.Id;
+            var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
+            model.InkLines.Remove(request.Item2);
+            m["inklines"] = new HashSet<string>(model.InkLines);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(m));
 
         }
 
