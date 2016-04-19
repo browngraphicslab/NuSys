@@ -63,6 +63,11 @@ namespace NuSysApp.Util
             }
         }
 
+        public void GoToCurrent()
+        {
+            FullScreen();
+        }
+
         public bool Next()
         {
             return (_nextNode != null);
