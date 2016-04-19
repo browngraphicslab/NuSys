@@ -77,9 +77,11 @@ namespace NuSysApp
             _dryCanvas.Draw -= OnDryCanvasDraw;
         }
 
-        public void AddStroke(IEnumerable<InkPoint> points)
+        public InkStroke AddStroke(IEnumerable<InkPoint> points)
         {
-            AddStroke(strokeBuilder.CreateStrokeFromInkPoints(points, Matrix3x2.Identity));
+            var stroke = strokeBuilder.CreateStrokeFromInkPoints(points, Matrix3x2.Identity);
+            AddStroke(stroke);
+            return stroke;
         }
 
         public void AddStroke(InkStroke stroke)

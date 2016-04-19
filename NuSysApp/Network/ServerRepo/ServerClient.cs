@@ -223,6 +223,10 @@ namespace NuSysApp
                             var m = new Message();
                             m["data"] = inkline;
                             m["id"] = inkid;
+                            var model =
+                                SessionController.Instance.ContentController.Get(libraryId) as
+                                    CollectionLibraryElementModel;
+                            model.InkLines.Add(inkid);
                             SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new AddInkRequest(m));
                         }
 
