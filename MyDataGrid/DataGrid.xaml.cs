@@ -110,5 +110,10 @@ namespace MyDataGrid
             var hT = (TranslateTransform)cellScrollViewer.FindName("headerTransform");
             hT.X = e.NextView.HorizontalOffset * (-1);
         }
+
+        private void TextBlock_DropCompleted(UIElement sender, DropCompletedEventArgs args)
+        {
+            //do drop stuff here
+        }
     }
 }

@@ -55,7 +55,7 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
 
-                                    <TextBlock Text="{Binding Title}" Grid.Row="{Binding RowIndex}" Grid.Column="{Binding ColIndex}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></TextBlock>
+                                    <TextBlock Text="{Binding Title}" CanDrag ="True" DropCompleted="TextBlock_DropCompleted" Grid.Row="{Binding RowIndex}" Grid.Column="{Binding ColIndex}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></TextBlock>
 
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
