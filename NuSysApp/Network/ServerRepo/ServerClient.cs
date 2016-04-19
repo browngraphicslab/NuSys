@@ -232,8 +232,8 @@ namespace NuSysApp
 
                         var libModel = ((CollectionLibraryElementModel)SessionController.Instance.ContentController.Get(id));
                         var oldInkLines = libModel.InkLines;
-                        var added = newInkLines.Except(oldInkLines);
-                        var removed = oldInkLines.Except(newInkLines);
+                        var added = newInkLines.Except(oldInkLines).ToArray();
+                        var removed = oldInkLines.Except(newInkLines).ToArray();
 
                         await UITask.Run(() =>
                         {
@@ -280,7 +280,31 @@ namespace NuSysApp
             var serialized = JsonConvert.SerializeObject(dict,settings);
             await SendToServer(serialized);
         }
+        public async Task<IEnumerable<string>> SearchOverLibraryElements(string searchText)
+        {
+            await Task.Run(async delegate
+            {
+                try {
+                    HttpClient client = new HttpClient();
+                    var response = await client.GetAsync(GetUri("search/" + searchText));
 
+                    string data;
+                    using (var responseContent = response.Content)
+                    {
+                        data = await responseContent.ReadAsStringAsync();
+                    }
+                    JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+                    var list = JsonConvert.DeserializeObject<List<string>>(data, settings);
+                    return list;
+                }
+                catch(Exception e)
+                {
+                    Debug.WriteLine("Error searching on server");
+                    return null;
+                }
+            });
+            return null;
+        }
         public async Task SendMessageToServer(Message message)
         {
             await SendToServer(message.GetSerialized());
