@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using MyToolkit.UI;
 using SharpDX;
 using Point = Windows.Foundation.Point;
 
@@ -27,25 +28,27 @@ namespace NuSysApp
     {
         private bool _recordMode;
         private bool _inkMode;
-        private bool _textMode;
+        //private bool _textMode;
         private bool _isRecording;
         private bool _isInking;
         private bool _isActivated;
-        private string inkText;
+        private string _savedForInking="";
         private string _text;
 
         public delegate void TextInputBlockChangedHandler(object source, string title);
         public event TextInputBlockChangedHandler TextChanged;
 
         public static readonly DependencyProperty LeftJustifiedProperty = DependencyProperty.RegisterAttached("LeftJustified", typeof(bool), typeof(TextInputBlock), null);
+        public static readonly DependencyProperty BubbleTopProperty = DependencyProperty.RegisterAttached("BubbleLocation", typeof(bool), typeof(TextInputBlock), null);
         public static readonly DependencyProperty HeightProperty = DependencyProperty.RegisterAttached("SetHeight", typeof(double), typeof(TextInputBlock), null);
         public static readonly DependencyProperty ButtonBgProperty = DependencyProperty.RegisterAttached("ButtonBg", typeof(Windows.UI.Color), typeof(TextInputBlock), null);
+        public static readonly DependencyProperty TextProperty = DependencyProperty.RegisterAttached("Text", typeof(string), typeof(TextInputBlock), null);
 
-        
+
         public TextInputBlock()
         {
             _text = "";
-            _textMode = true;
+           // _textMode = true;
             _recordMode = false;
             _inkMode = false;
             _isRecording = false;
@@ -54,7 +57,7 @@ namespace NuSysApp
             this.InitializeComponent();
 
             TextBox.KeyUp += TextBoxOnKeyUp;
-       //     this.SetUpInking();
+            this.SetUpInking();
         }
 
         private void TextBoxOnKeyUp(object sender, KeyRoutedEventArgs keyRoutedEventArgs)
@@ -66,8 +69,8 @@ namespace NuSysApp
         {
             set
             {
-                MenuButton.Background = new SolidColorBrush(value);
-                TextButton.Background = new SolidColorBrush(value);
+               // MenuButton.Background = new SolidColorBrush(value);
+               // TextButton.Background = new SolidColorBrush(value);
                 RecordButton.Background = new SolidColorBrush(value);
                 InkButton.Background = new SolidColorBrush(value);
             }
@@ -79,13 +82,44 @@ namespace NuSysApp
             {
                 if (value)
                 {
+                    Grid.SetColumn(ButtonMenu, 1);
                     Grid.SetColumn(Input, 0);
-                    Grid.SetColumn(Buttons, 1);
+                    MainGrid.ColumnDefinitions[1].Width = new GridLength(85);
                 }
                 else
                 {
-                    Grid.SetColumn(Buttons, 0);
+                    Grid.SetColumn(ButtonMenu, 0);
                     Grid.SetColumn(Input, 1);
+                    MainGrid.ColumnDefinitions[0].Width = new GridLength(85);
+
+                }
+            }
+        }
+
+        public bool BubbleTop
+        {
+            set
+            {
+                if (value)
+                {
+                    TranslateTransform top = new TranslateTransform();
+                    top.X = -40;
+                    top.Y = -80;
+                    InkBubble.RenderTransform = top;
+                    SetImage("ms-appx:///Assets/menububble2.png", bubble);
+
+                }
+                else
+                {
+                    TranslateTransform bottom = new TranslateTransform();
+                    bottom.X = -40;
+                    bottom.Y = 50;
+                    InkBubble.RenderTransform = bottom;
+                    Thickness m = Inker.Margin;
+                    m.Top = 3;
+                    Inker.Margin = m;
+                    SetImage("ms-appx:///Assets/menububblebtm.png", bubble);
+
                 }
             }
         }
@@ -93,6 +127,7 @@ namespace NuSysApp
         private void TextBox_OnTextChanged(object sender, TextChangedEventArgs args)
         {
             this.Text = this.TextBox.Text;
+            TextChanged?.Invoke(this, this.Text);
         }
 
         public string Text
@@ -115,12 +150,12 @@ namespace NuSysApp
                 MainGrid.Height = value;
                 TextBox.Height = value;
                 TextBox.FontSize = value - 15;
-                MenuButton.Height = value;
-                ButtonImg.Height = value - 15;
-                ButtonImg.Width = value - 15;
-                TextButton.Height = value;
-                TextImg.Height = value - 10;
-                TextImg.Width = value - 10;
+                //MenuButton.Height = value;
+                //ButtonImg.Height = value - 15;
+                //ButtonImg.Width = value - 15;
+                //TextButton.Height = value;
+                //TextImg.Height = value - 10;
+                //TextImg.Width = value - 10;
                 RecordButton.Height = value;
                 RecordImg.Height = value - 10;
                 RecordImg.Width = value - 10;
@@ -130,72 +165,132 @@ namespace NuSysApp
             }
         }
 
+        //private void SetUpInking()
+        //{
+        //    var inqModel = new InqCanvasModel(SessionController.Instance.GenerateId());
+        //    var inqViewModel = new InqCanvasViewModel(inqModel, new Size(Inker.Width, Inker.Height));
+
+        //    var inqView = new InqCanvasView(inqViewModel);
+        //    inqView.IsEnabled = true;
+        //    Inker.Children.Clear();
+        //    Windows.UI.Xaml.Shapes.Rectangle r = new Windows.UI.Xaml.Shapes.Rectangle();
+        //    Inker.Children.Add(r);
+        //    Inker.Children.Add(inqView);
+
+        //    TextBox.Width = Width - 100;
+        //    List<InqLineModel> _lines = new List<InqLineModel>();
+
+        //    inqModel.LineFinalizedLocally += async delegate (InqLineModel model)
+        //    {
+        //        var nm = model.GetScaled(Constants.MaxCanvasSize);
+
+        //        _lines.Add(nm);
+
+        //        var texts = await InkToText(_lines);
+        //        if (texts.Count > 0)
+        //            TextBox.Text=_savedForInking + " " + texts[0];
+        //    };
+        //}
+
+
+        private InqCanvasView _inqView;
+       
+
+
         private void SetUpInking()
         {
+            _savedForInking = _text;
             var inqModel = new InqCanvasModel(SessionController.Instance.GenerateId());
-            var inqViewModel = new InqCanvasViewModel(inqModel, new Size(Width, Height));
+            var inqViewModel = new InqCanvasViewModel(inqModel, new Size(Inker.Width, Inker.Height));
 
-            var inqView = new InqCanvasView(inqViewModel);
-            inqView.IsEnabled = true;
-            InkBox.Children.Clear();
-            Windows.UI.Xaml.Shapes.Rectangle r = new Windows.UI.Xaml.Shapes.Rectangle();
+            _inqView = new InqCanvasView(inqViewModel);
+            _inqView.IsEnabled = true;
 
-            r.Fill = new SolidColorBrush(Colors.LightGray);
-            InkBox.Children.Add(r);
-            InkBox.Children.Add(inqView);
-
+            ResetInkingCanvas(); 
             TextBox.Width = Width - 100;
             List<InqLineModel> _lines = new List<InqLineModel>();
 
             inqModel.LineFinalizedLocally += async delegate (InqLineModel model)
             {
                 var nm = model.GetScaled(Constants.MaxCanvasSize);
-
                 _lines.Add(nm);
-
                 var texts = await InkToText(_lines);
                 if (texts.Count > 0)
-                    inkText = texts[0];
+                {
+                    TextBox.Text = _savedForInking + " " + texts[0];
+                    this.Text = this.TextBox.Text.Trim();
+                }
+                TextChanged?.Invoke(this, TextBox.Text.Trim());
             };
         }
 
-        private void MenuButton_OnClick(object sender, RoutedEventArgs e)
+        private void ResetInkingCanvas()
         {
-            if (!IsActivated)
-                return;
-            if (_inkMode)
-            {
-                if (!_isInking)
-                {
-                    SetUpInking();
-                    FlipOpen.Begin();
-                }
-                else
-                {
+            Inker.Children.Clear();
+            Windows.UI.Xaml.Shapes.Rectangle curr = new Windows.UI.Xaml.Shapes.Rectangle();
+            Windows.UI.Xaml.Shapes.Rectangle marker = new Windows.UI.Xaml.Shapes.Rectangle();
+            curr.Opacity = 0.5;
+            marker.Opacity = 0.1;
+            marker.Height = Inker.Height;
+            marker.Width = 30;
+            marker.HorizontalAlignment = HorizontalAlignment.Left;
+            curr.Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(1, 242, 242, 242));
+            marker.Stroke = new SolidColorBrush(Colors.LightSlateGray);
 
-                    TextBox.Text = inkText;
-                    TextChanged?.Invoke(this, TextBox.Text);
-                    inkText = "";
-                    ResetTextFromInk();
-                }
-                _isInking = !_isInking;
-            }
-            else if (InputMenu.Visibility == Visibility.Collapsed)
-            {
-                InputMenu.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                InputMenu.Visibility = Visibility.Collapsed;
-            }
+            marker.Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(1, 242, 242, 242));
+            Inker.Children.Add(curr);
+            Inker.Children.Add(_inqView);
+            Inker.Children.Add(marker);
+            marker.PointerPressed += InkerClick;
         }
+
+        private void InkerClick(Object sender, PointerRoutedEventArgs e)
+        {
+            SetUpInking();
+            e.Handled = false;
+            _inqView.OnPointerPressed(sender, e);
+        }
+
+
+        //private void MenuButton_OnClick(object sender, RoutedEventArgs e)
+        //{
+        //    if (!IsActivated)
+        //        return;
+        //    if (_inkMode)
+        //    {
+        //        if (!_isInking)
+        //        {
+        //            InkBubble.Visibility = Visibility.Visible;
+        //            SetUpInking();
+        //            FlipOpen.Begin();
+        //        }
+        //        else
+        //        {
+        //            InkBubble.Visibility = Visibility.Collapsed;
+
+        //            TextBox.Text = inkText;
+        //            TextChanged?.Invoke(this, TextBox.Text);
+        //            inkText = "";
+        //           ResetTextFromInk();
+        //        }
+        //        _isInking = !_isInking;
+        //    }
+        //    else if (InputMenu.Visibility == Visibility.Collapsed)
+        //    {
+        //        InputMenu.Visibility = Visibility.Visible;
+        //    }
+        //    else
+        //    {
+        //        InputMenu.Visibility = Visibility.Collapsed;
+        //    }
+        //}
 
         private async void RecordButton_OnClick(object sender, RoutedEventArgs e)
         {
             //record functionality
             RecordModeOn();
-            InputMenu.Visibility = Visibility.Collapsed;
-            this.SetButton("ms-appx:///Assets/icon_audionode_record.png");
+            //InputMenu.Visibility = Visibility.Collapsed;
+           // this.SetImage("ms-appx:///Assets/icon_audionode_record.png");
             var session = SessionController.Instance;
             if (!session.IsRecording)
             {
@@ -205,44 +300,49 @@ namespace NuSysApp
                     TextBox.Text = session.SpeechString;
                 }
             }
-            TextModeOn();
-            this.SetButton("ms-appx:///Assets/icon_node_text.png");
+           // TextModeOn();
+           // this.SetImage("ms-appx:///Assets/icon_node_text.png");
         }
 
-        private void ResetTextFromInk()
-        {
-            FlipClose.Begin();
-            TextModeOn();
-            this.SetButton("ms-appx:///Assets/icon_node_text.png");
-        }
+        //private void ResetTextFromInk()
+        //{
+           // FlipClose.Begin();
+            //TextModeOn();
+           // this.SetImage("ms-appx:///Assets/icon_node_text.png");
+       // }
 
         private void InkButton_OnClick(object sender, RoutedEventArgs e)
         {
             //ink functionality
             InkModeOn();
-            InputMenu.Visibility = Visibility.Collapsed;
+            //InputMenu.Visibility = Visibility.Collapsed;
             TextBox.Visibility = Visibility.Visible;
-            this.SetButton("ms-appx:///Assets/icon_node_ink.png");
+            //this.SetImage("ms-appx:///Assets/icon_node_ink.png");
             if (!_isInking)
             {
+                InkBubble.Visibility = Visibility.Visible;
                 SetUpInking();
-                FlipOpen.Begin();
+                SetImage("ms-appx:///Assets/icon_whitex.png", InkImg);
+                // FlipOpen.Begin();
             }
             else
             {
-                ResetTextFromInk();
+                InkBubble.Visibility = Visibility.Collapsed;
+                this.Text = this.TextBox.Text.Trim();
+                TextChanged?.Invoke(this, TextBox.Text.Trim());
+                SetImage("ms-appx:///Assets/icon_node_ink.png", InkImg);
             }
             _isInking = !_isInking;
         }
 
-        private void TextButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            //inkText default functionality
-            TextModeOn();
-            InputMenu.Visibility = Visibility.Collapsed;
-            this.SetButton("ms-appx:///Assets/icon_node_text.png");
-            TextBox.Visibility = Visibility.Visible;
-        }
+        //private void TextButton_OnClick(object sender, RoutedEventArgs e)
+        //{
+        //    //inkText default functionality
+        //    TextModeOn();
+        //    InputMenu.Visibility = Visibility.Collapsed;
+        //    this.SetImage("ms-appx:///Assets/icon_node_text.png");
+        //    TextBox.Visibility = Visibility.Visible;
+        //}
 
         public bool IsActivated
         {
@@ -253,50 +353,53 @@ namespace NuSysApp
         public void Activate()
         {
             IsActivated = true;
-            InputMenu.Visibility = Visibility.Visible;
+            //InputMenu.Visibility = Visibility.Visible;
+            ButtonMenu.Visibility = Visibility.Visible;
         }
 
         public void DeActivate()
         {
             IsActivated = false;
-            InputMenu.Visibility = Visibility.Collapsed;
+            //InputMenu.Visibility = Visibility.Collapsed;
+            ButtonMenu.Visibility = Visibility.Collapsed;
+
         }
 
-        public void TextModeOn()
-        {
-            _textMode = true;
-            _recordMode = false;
-            _inkMode = false;
-            TextButton.Visibility = Visibility.Collapsed;
-            InkButton.Visibility = Visibility.Visible;
-            RecordButton.Visibility = Visibility.Visible;
-        }
+        //public void TextModeOn()
+        //{
+        // _textMode = true;
+        //_recordMode = false;
+        //_inkMode = false;
+        // TextButton.Visibility = Visibility.Collapsed;
+        //    InkButton.Visibility = Visibility.Visible;
+        //    RecordButton.Visibility = Visibility.Visible;
+        //}
 
         public void RecordModeOn()
         {
-            _textMode = false;
+           // _textMode = false;
             _recordMode = true;
             _inkMode = false;
-            TextButton.Visibility = Visibility.Visible;
-            InkButton.Visibility = Visibility.Visible;
-            RecordButton.Visibility = Visibility.Collapsed;
+           // TextButton.Visibility = Visibility.Visible;
+            //InkButton.Visibility = Visibility.Visible;
+            //RecordButton.Visibility = Visibility.Collapsed;
         }
 
         public void InkModeOn()
         {
-            _textMode = false;
+           // _textMode = false;
             _recordMode = false;
             _inkMode = true;
-            TextButton.Visibility = Visibility.Visible;
-            InkButton.Visibility = Visibility.Collapsed;
-            RecordButton.Visibility = Visibility.Visible;
+           // TextButton.Visibility = Visibility.Visible;
+        //    InkButton.Visibility = Visibility.Collapsed;
+        //    RecordButton.Visibility = Visibility.Visible;
         }
 
-        public void SetButton(String url)
+        public void SetImage(String url, Image buttonName)
         {
             Uri imageUri = new Uri(url, UriKind.Absolute);
             BitmapImage imageBitmap = new BitmapImage(imageUri);
-            ButtonImg.Source = imageBitmap;
+            buttonName.Source = imageBitmap;
         }
 
 

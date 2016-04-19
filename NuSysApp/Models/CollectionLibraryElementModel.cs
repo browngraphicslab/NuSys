@@ -10,6 +10,13 @@ namespace NuSysApp
     {
         private HashSet<string> _children;
 
+        public HashSet<string> InkLines;
+        public int LastInkCount = 0;
+
+        public delegate void InkEventHandler(string id);
+        public event InkEventHandler OnInkAdded;
+        public event InkEventHandler OnInkRemoved;
+
         public delegate void ChildAddedEventHandler(string id);
         public event ChildAddedEventHandler OnChildAdded;
 
@@ -18,6 +25,19 @@ namespace NuSysApp
         public CollectionLibraryElementModel(string id, string contentName = null) : base(id, ElementType.Collection, contentName)
         {
             _children = new HashSet<string>();
+            InkLines = new HashSet<string>();
+        }
+
+        public void AddInk(string id)
+        {
+            InkLines.Add(id);
+            OnInkAdded?.Invoke(id);
+        }
+
+        public void RemoveInk(string id)
+        {
+            InkLines.Remove(id);
+            OnInkAdded?.Invoke(id);
         }
 
         public bool AddChild(string id)

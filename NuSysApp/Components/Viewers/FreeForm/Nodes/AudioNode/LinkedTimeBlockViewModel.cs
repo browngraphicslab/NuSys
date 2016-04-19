@@ -33,7 +33,7 @@ namespace NuSysApp.Nodes.AudioNode
         private double _detailx1;
         private double _detailx2;
         
-        private LinkedTimeBlockModel _model;
+        public LinkedTimeBlockModel Model { get; set; }
 
         public double Detailx2 {get { return _detailx2; }set{ _detailx2 = value; RaisePropertyChanged("Detailx2");}}
 
@@ -48,13 +48,13 @@ namespace NuSysApp.Nodes.AudioNode
             _startTime = (int)(_startRatio * scrubBar.Maximum);
             _endTime = (int)(_endRatio * scrubBar.Maximum);
             _line1 = new Dictionary<string, Object>();
-            _model = model;
+            Model = model;
 
             _nodeImageTuples = new ObservableCollection<Tuple<IThumbnailable, Image>>();
-            foreach (var element in model.LinkedNodes)
-            {
-                _nodeImageTuples.Add(new Tuple<IThumbnailable, Image>(element, null));
-            }
+            //foreach (var element in model.LinkedNodes)
+            //{
+            //    _nodeImageTuples.Add(new Tuple<IThumbnailable, Image>(element, null));
+            //}
             
             this.setUpLine1();
             RefreshThumbnail();
@@ -198,7 +198,7 @@ namespace NuSysApp.Nodes.AudioNode
                             gridView.Items.Remove((Image)sender);
 
                         }
-                        _model.LinkedNodes.Remove(_nodeImageTuples[i].Item1);
+                        //Model.LinkedNodes.Remove(_nodeImageTuples[i].Item1);
                         _nodeImageTuples.RemoveAt(i);
                         OnBlock = false;
                         ((Image)sender).ReleasePointerCapture(e.Pointer);
@@ -225,7 +225,7 @@ namespace NuSysApp.Nodes.AudioNode
                 {
                     if (((FrameworkElement)element).DataContext is ElementViewModel && element is IThumbnailable)
                     {
-                        _model.LinkedNodes.Add((IThumbnailable)element);
+                        //Model.LinkedNodes.Add((IThumbnailable)element);
                         _nodeImageTuples.Add(new Tuple<IThumbnailable, Image>((IThumbnailable)element, null));
                         OnBlock = false;
                         return;

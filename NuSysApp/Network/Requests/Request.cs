@@ -27,13 +27,16 @@ namespace NuSysApp
             CreateNewLibrayElementRequest,
             SubscribeToCollectionRequest,
             UnsubscribeFromCollectionRequest,
-            DeleteLibraryElementRequest
+            DeleteLibraryElementRequest,
+            AddInkRequest,
+            RemoveInkRequest
         }
 
         public enum ServerItemType
         {
             Content,
-            Alias
+            Alias,
+            Ink
         }
 
         public enum ServerRequestType

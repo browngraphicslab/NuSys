@@ -8,59 +8,65 @@
     mc:Ignorable="d">
 
     <Page.Resources>
-        <Storyboard x:Name="LoadingAnimation" RepeatBehavior="Forever">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="ellipse1">
-                <EasingDoubleKeyFrame KeyTime="0" Value="0.5"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="1"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:1.5" Value="1"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:2.5" Value="1"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:3" Value="0"/>
-            </DoubleAnimationUsingKeyFrames>
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="ellipse2">
-                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0.5"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.6" Value="1"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:1.5" Value="1"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:2.5" Value="1"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:3" Value="0"/>
-            </DoubleAnimationUsingKeyFrames>
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="ellipse3">
-                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.6" Value="0.5"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.9" Value="1"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:1.5" Value="1"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:2.5" Value="1"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:3" Value="0"/>
-            </DoubleAnimationUsingKeyFrames>
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="ellipse4">
-                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.6" Value="0"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.9" Value="0.5"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:1.2" Value="1"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:1.5" Value="1"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:2.5" Value="1"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:3" Value="0"/>
-            </DoubleAnimationUsingKeyFrames>
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="ellipse5">
-                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.6" Value="0"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:0.9" Value="0"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:1.2" Value="0.5"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:1.5" Value="1"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:2.5" Value="1"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:3" Value="0"/>
-            </DoubleAnimationUsingKeyFrames>
-        </Storyboard>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <Storyboard x:Name="LoadingAnimation" RepeatBehavior="Forever">
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="ellipse1">
+                    <EasingDoubleKeyFrame KeyTime="0" Value="0.5"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="1"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:1.5" Value="1"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:2.5" Value="1"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:3" Value="0"/>
+                </DoubleAnimationUsingKeyFrames>
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="ellipse2">
+                    <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0.5"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:0.6" Value="1"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:1.5" Value="1"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:2.5" Value="1"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:3" Value="0"/>
+                </DoubleAnimationUsingKeyFrames>
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="ellipse3">
+                    <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:0.6" Value="0.5"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:0.9" Value="1"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:1.5" Value="1"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:2.5" Value="1"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:3" Value="0"/>
+                </DoubleAnimationUsingKeyFrames>
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="ellipse4">
+                    <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:0.6" Value="0"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:0.9" Value="0.5"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:1.2" Value="1"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:1.5" Value="1"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:2.5" Value="1"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:3" Value="0"/>
+                </DoubleAnimationUsingKeyFrames>
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="ellipse5">
+                    <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:0.6" Value="0"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:0.9" Value="0"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:1.2" Value="0.5"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:1.5" Value="1"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:2.5" Value="1"/>
+                    <EasingDoubleKeyFrame KeyTime="0:0:3" Value="0"/>
+                </DoubleAnimationUsingKeyFrames>
+            </Storyboard>
+        </ResourceDictionary>
     </Page.Resources>
 
-    <Grid Background="#9cc5c2">
-        <TextBlock Margin="0,0,0,100" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="40"  FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" >Loading Collection</TextBlock>
+    <Grid Background="{StaticResource color1}">
+        <TextBlock Margin="0,0,0,100" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource darkforeground}" FontSize="40"  FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" >Loading Collection</TextBlock>
 
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="180" Height="50" Margin="0,50,0,0"  Orientation="Horizontal">
-            <Ellipse Opacity="0"  x:Name="ellipse1" Fill="White" Height="15" Width="15" Margin="10,10,10,10"></Ellipse>
-            <Ellipse Opacity="0"  x:Name="ellipse2" Fill="White" Height="15" Width="15" Margin="10,10,10,10"></Ellipse>
-            <Ellipse Opacity="0"  x:Name="ellipse3" Fill="White" Height="15" Width="15" Margin="10,10,10,10"></Ellipse>
-            <Ellipse Opacity="0"  x:Name="ellipse4" Fill="White" Height="15" Width="15" Margin="10,10,10,10"></Ellipse>
-            <Ellipse Opacity="0"  x:Name="ellipse5" Fill="White" Height="15" Width="15" Margin="10,10,10,10"></Ellipse>
+            <Ellipse Opacity="0"  x:Name="ellipse1" Fill="{StaticResource color6}" Height="15" Width="15" Margin="10,10,10,10"></Ellipse>
+            <Ellipse Opacity="0"  x:Name="ellipse2" Fill="{StaticResource color6}" Height="15" Width="15" Margin="10,10,10,10"></Ellipse>
+            <Ellipse Opacity="0"  x:Name="ellipse3" Fill="{StaticResource color6}" Height="15" Width="15" Margin="10,10,10,10"></Ellipse>
+            <Ellipse Opacity="0"  x:Name="ellipse4" Fill="{StaticResource color6}" Height="15" Width="15" Margin="10,10,10,10"></Ellipse>
+            <Ellipse Opacity="0"  x:Name="ellipse5" Fill="{StaticResource color6}" Height="15" Width="15" Margin="10,10,10,10"></Ellipse>
         </StackPanel>
 
     </Grid>

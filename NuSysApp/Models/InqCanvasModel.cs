@@ -58,6 +58,11 @@ namespace NuSysApp
             _lines.Remove(ln);
         }
 
+        public void clear()
+        {
+            _lines = new HashSet<InqLineModel>();
+        }
+
         public HashSet<InqLineModel> Lines {
             get { return _lines; }
          

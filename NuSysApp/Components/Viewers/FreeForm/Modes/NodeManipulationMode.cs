@@ -95,8 +95,8 @@ namespace NuSysApp
         
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            if (SessionController.Instance.SessionView.IsPenMode)
-                return;
+           // if (SessionController.Instance.SessionView.IsPenMode)
+           //     return;
             
             var s = (UserControl) sender;
             var vm = (ElementViewModel)s.DataContext;

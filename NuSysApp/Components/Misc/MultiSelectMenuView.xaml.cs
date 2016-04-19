@@ -5,6 +5,8 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
+using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -12,6 +14,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Shapes;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -19,12 +22,33 @@ namespace NuSysApp
 {
     public sealed partial class MultiSelectMenuView : UserControl
     {
+        public InkStroke Stroke { get; set; }
+
+        public static Color SelectedColor { get; set; }
+
         public MultiSelectMenuView()
         {
             this.InitializeComponent();
-
+            DataContext = new object();
             DeleteButton.Click += DeleteButtonOnClick;
             GroupButton.Click += GroupButtonOnClick;
+            AdornmentButton.Tapped += AdormentButtonClick;
+
+            SelectedColor = Colors.Black;
+        }
+
+        public void Show()
+        {
+            ColorPicker.Visibility = Visibility.Collapsed;
+            Visibility = Visibility.Visible;
+            Buttons.Visibility = Visibility.Visible;
+        }
+
+        private void AdormentButtonClick(object sender, TappedRoutedEventArgs e)
+        {
+            ColorPicker.Visibility = Visibility.Visible;
+            Buttons.Visibility = Visibility.Collapsed;
+            e.Handled = true;
         }
 
         private async void GroupButtonOnClick(object sender, RoutedEventArgs routedEventArgs)
@@ -111,6 +135,28 @@ namespace NuSysApp
         public Button Group
         {
             get { return GroupButton; }
+        }
+
+        private void Rectangle_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            var rect = (Rectangle)sender;
+            var brush = (SolidColorBrush)rect.Fill;
+            SelectedColor = brush.Color;
+
+            var m = new Message();
+            m["width"] = 400;
+            m["height"] = 400;
+            m["color"] = Colors.Red;
+            m["nodeType"] = ElementType.Area.ToString();
+            m["points"] = Stroke.GetInkPoints();
+            m["autoCreate"] = true;
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddAdorment(Stroke, SelectedColor);
+
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.RemoveStroke(Stroke);
+
+            Visibility = Visibility.Collapsed;
         }
     }
 }

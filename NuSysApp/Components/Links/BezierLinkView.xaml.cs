@@ -150,6 +150,11 @@ namespace NuSysApp
                     this.Annotation.Activate();
                     AnnotationContainer.Visibility = Visibility.Visible;
                     Delete.Visibility = Visibility.Visible;
+                    if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
+                    {
+                        ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Select();
+                        this.JumpToLinkedTime();
+                    }
                 }
                 else
                 {
@@ -159,6 +164,55 @@ namespace NuSysApp
                     }
                     Delete.Visibility = Visibility.Collapsed;
                     this.Annotation.DeActivate();
+                    if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
+                    {
+                        ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Deselect();
+
+                    }
+                }
+            }
+        }
+
+        private void JumpToLinkedTime()
+        {
+
+            if (((LinkModel) (DataContext as LinkViewModel).Model).InFineGrain.Start.TotalMilliseconds <
+                ((LinkModel) (DataContext as LinkViewModel).Model).InFineGrain.End.TotalMilliseconds)
+            {
+                if (
+                    SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model
+                        .ElementType == ElementType.Video)
+                {
+                    (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
+                    VideoNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Start);
+
+                }
+                else if (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model
+                        .ElementType == ElementType.Audio)
+                {
+                    (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
+                    AudioNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Start);
+
+                }
+
+
+            }
+            else
+            {
+                if (
+                    SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model
+                        .ElementType == ElementType.Video)
+                {
+                    (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
+                    VideoNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.End);
+
+                }
+                else if (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model
+                        .ElementType == ElementType.Audio)
+                {
+                    (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
+                    AudioNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.End);
+
                 }
             }
         }
@@ -213,6 +267,11 @@ namespace NuSysApp
             var vm = (LinkViewModel)this.DataContext;
             var controller = (LinkElementController)vm.Controller;
             await controller.RequestDelete();
+        }
+
+        private void Annotation_Loaded(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

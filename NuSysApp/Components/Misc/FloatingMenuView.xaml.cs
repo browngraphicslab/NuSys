@@ -34,6 +34,7 @@ namespace NuSysApp
         private ElementType _elementType;
         private LibraryView _lib;
         private LibraryElementPropertiesWindow libProp;
+        private bool IsPenMode;
         public FloatingMenuView()
         {
             RenderTransform = new CompositeTransform();
@@ -41,6 +42,7 @@ namespace NuSysApp
 
             btnLibrary.Tapped += BtnLibrary_Tapped;
             btnAddNode.Tapped += BtnAddNode_Tapped;
+            btnPen.Tapped += BtnPen_Tapped;
             libProp = new LibraryElementPropertiesWindow();
             _lib = new LibraryView(new LibraryBucketViewModel(), libProp, this);
             xWrapper.Children.Add(_lib);
@@ -68,6 +70,34 @@ namespace NuSysApp
             libProp.Visibility = Visibility.Collapsed;
         }
 
+        private void BtnPen_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            ActivatePenMode(!IsPenMode);
+        }
+
+        public void ActivatePenMode(bool val)
+        {
+
+            if (val)
+            {
+                if (IsPenMode)
+                    return;
+              //  SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Mode = PhilInqCanvas.InqCanvasMode.Ink;
+                IsPenMode = true;
+                btnPen.Background = new Windows.UI.Xaml.Media.SolidColorBrush(Color.FromArgb(255, 197, 118, 97));
+
+            }
+            else
+            {
+                if (!IsPenMode)
+                    return;
+              //  SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Mode = PhilInqCanvas.InqCanvasMode.Disabled;
+                IsPenMode = false;
+                btnPen.Background = new Windows.UI.Xaml.Media.SolidColorBrush(Color.FromArgb(255, 197, 158, 156));
+               
+
+            }
+        }
         private void AddNodeSubmenuButton(FrameworkElement btn)
         {
             btn.ManipulationMode = ManipulationModes.All;

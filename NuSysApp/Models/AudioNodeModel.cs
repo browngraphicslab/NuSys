@@ -16,21 +16,26 @@ using NuSysApp.Nodes.AudioNode;
 namespace NuSysApp
 {
     public class AudioNodeModel : ElementModel
-    {
-        //private ObservableCollection<LinkedTimeBlockViewModel> _linkedTimeBlocks;
-
+    { 
         private ObservableCollection<LinkedTimeBlockModel> _linkedTimeModels;
 
         private MediaController _controller;
 
         private readonly StorageFolder _rootFolder = NuSysStorages.Media;
         private StorageFile _audioFile;
+        public delegate void JumpEventHandler(TimeSpan time);
+        public event JumpEventHandler OnJump;
         public AudioNodeModel(string id) : base(id)
         {
             ElementType = ElementType.Audio;
             // _linkedTimeBlocks = new ObservableCollection<LinkedTimeBlockViewModel>();
             _linkedTimeModels = new ObservableCollection<LinkedTimeBlockModel>();
 
+        }
+
+        public void Jump(TimeSpan time)
+        {
+            OnJump?.Invoke(time);
         }
 
         public string FileName { get; set; }
@@ -50,6 +55,19 @@ namespace NuSysApp
         {
             var props = await base.Pack();
             props["fileName"] = FileName;
+            //Dictionary<string, object> linkedTimeBlockDic = new Dictionary<string, object>();
+            //for (int i = 0; i < _linkedTimeModels.Count; i++)
+            //{
+            //    Dictionary<string, TimeSpan> d = new Dictionary<string, TimeSpan>();
+            //    d.Add("start", _linkedTimeModels[i].Start);
+            //    d.Add("end", _linkedTimeModels[i].End);
+            //    linkedTimeBlockDic.Add("timeblock" + i, d);
+            //}
+            //if (_linkedTimeModels.Count != 0)
+            //{
+            //    props["linkedTimeModels"] = linkedTimeBlockDic;
+            //}
+
             return props;
         }
 
@@ -59,6 +77,17 @@ namespace NuSysApp
             {
                 FileName = props.GetString("fileName");
             }
+
+            if (props.ContainsKey("linkedTimeModels"))
+            {
+                _linkedTimeModels = new ObservableCollection<LinkedTimeBlockModel>(props.GetList<LinkedTimeBlockModel>("linkedTimeModels"));
+                //Dictionary<string, Dictionary<string, TimeSpan>> linkedTimeBlockDic = props.GetDict<string, Dictionary<string, TimeSpan>>("linkedTimeModels");
+                //for (int i = 0; i < linkedTimeBlockDic.Count; i++)
+                //{
+                //    _linkedTimeModels.Add(new LinkedTimeBlockModel(linkedTimeBlockDic["timeblock" + i]["start"], linkedTimeBlockDic["timeblock" + i]["end"]));
+                //}
+            }
+
             base.UnPack(props);
         }
     }

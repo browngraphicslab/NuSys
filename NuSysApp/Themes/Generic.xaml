@@ -6,6 +6,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     xmlns:local="using:NuSysApp">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
     <converters:SelectionToColorConverter x:Key="sConverter" />
     <converters:BoolToVisibilityConverter x:Key="vConverter" />
     <Style TargetType="local:NodeTemplate">
@@ -20,12 +25,12 @@
                             </Grid.RowDefinitions>
                             <Canvas x:Name="xCanvas" Grid.Row="0" Width="{Binding Width}" Height="{Binding Height}">
                                 <Grid x:Name="xTitleContainer" VerticalAlignment="Top" Width="{Binding Width}" >
-                                    <Border x:Name="Rect" Background="White" BorderBrush="#83A6A3" BorderThickness="1" Width="{Binding Width}"  />
+                                    <Border x:Name="Rect" Background="{StaticResource color6}" BorderBrush="{StaticResource color3}" BorderThickness="1" Width="{Binding Width}"  />
                                     <TextBox Padding="10,5,10,10" Margin="0,0" x:Name="xTitle" IsTabStop="{Binding IsSelected}" Foreground="#606d7a" Width="{Binding Width}"  IsHitTestVisible="{Binding IsSelected}" TextWrapping="NoWrap"  Text="{Binding Title, Mode=TwoWay}" MaxHeight="80" FontSize="18" BorderBrush="Transparent" Background="Transparent" TextAlignment="Center" VerticalAlignment="Center" BorderThickness="0"></TextBox>
                                     <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
                                 </Grid>
 
-                                <Grid Visibility="{Binding IsVisible, Converter={StaticResource vConverter}}" Name="bg" BorderBrush="#83A6A3" BorderThickness="1"  Background="White"
+                                <Grid Visibility="{Binding IsVisible, Converter={StaticResource vConverter}}" Name="bg" BorderBrush="{StaticResource color3}" BorderThickness="1"  Background="{StaticResource color6}"
                                   IsHitTestVisible="True"  Width="{Binding Width}"  Height="{Binding Height}">
 
                                     <Rectangle Height="{Binding Height}" Width="{Binding Width}" Margin="-2,-2"  />
@@ -42,15 +47,22 @@
                                         <Button x:Name="DuplicateElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}">
                                             <StackPanel>
                                                 <Image Source="ms-appx:///Assets/icon_duplicate.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                                                <TextBlock Text="Duplicate" TextAlignment="Center" Foreground="#9CC5C2" FontSize="12"></TextBlock>
+                                                <TextBlock Text="Duplicate" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
                                             </StackPanel>
                                         </Button>
                                         <Button x:Name="Link" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,70,0,0">
                                             <StackPanel>
                                                 <Image Source="ms-appx:///Assets/icon_link.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                                                <TextBlock Text="Link" TextAlignment="Center" Foreground="#9CC5C2" FontSize="12"></TextBlock>
+                                                <TextBlock Text="Link" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
                                             </StackPanel>
                                         </Button>
+                                        <Button x:Name="PresentationMode" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,140,0,0">
+                                            <StackPanel>
+                                                <Image Source="ms-appx:///Assets/powerpointIcon.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                                                <TextBlock Text="Present" TextAlignment="Center" Foreground="#9CC5C2" FontSize="12"></TextBlock>
+                                            </StackPanel>
+                                        </Button>
+
                                     </Canvas>
 
                                     <ContentControl Content="{TemplateBinding Inner}" x:Name="innerControl"  />
@@ -62,14 +74,14 @@
                       RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.IsEditingInk}" /> -->
 
 
-                                    <Path x:Name="Resizer" Fill="#83A6A3" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
+                                    <Path x:Name="Resizer" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
                       Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
                       Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" />
                                     <!--<TextBlock x:Name="Tags" VerticalAlignment="Bottom" FontSize="18" Text="{Binding Tags}"></TextBlock>-->
 
                                 </Grid>
                                 <Canvas>
-                                    <Border x:Name="xHighlight" Width="{Binding Width}" BorderThickness="4" CornerRadius="5,5,0,0" />
+                                    <Border x:Name="xHighlight" Width="{Binding Width}" BorderThickness="4" CornerRadius="5,5,0,0" Visibility="Collapsed" />
                                 </Canvas>
                                 <Canvas>
                                     <TextBlock x:Name="xUserName"  Text="" Margin="0,-67.5,0,0" FontSize="22.5"></TextBlock>

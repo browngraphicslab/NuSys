@@ -31,7 +31,11 @@ namespace NuSysApp
         public ObservableCollection<StackPanel> Metadata { get; set; }
 
         private ElementViewModel _currentElementViewModel;
- 
+        public ElementController CurrentElementController { get; set; }
+
+        public delegate void TitleChangedHandler(object source, string newTitle);
+        public event TitleChangedHandler TitleChanged;
+
         public DetailViewerViewModel()
 
         {
@@ -49,14 +53,16 @@ namespace NuSysApp
 
         public async Task<bool> ShowElement(ElementController controller)
         {
+            CurrentElementController = controller;
             View = await _viewFactory.CreateFromSendable(controller);
             if (View == null)
                 return false;
             _nodeModel = controller.Model;
             Title = controller.LibraryElementModel.Title;
+            this.ChangeTitle(this, controller.LibraryElementModel.Title);
 
             controller.MetadataChange += ControllerOnMetadataChange;
-            controller.LibraryElementModel.OnTitleChanged += LibraryElementModelOnOnTitleChanged;
+            controller.LibraryElementModel.OnTitleChanged += ChangeTitle;
             
             var tempvm = (ElementViewModel) View.DataContext;
             tempvm.PropertyChanged += NodeVMPropertChanged;
@@ -69,11 +75,14 @@ namespace NuSysApp
             return true;
         }
 
-        private void LibraryElementModelOnOnTitleChanged(object sender, string newTitle)
+
+        public void ChangeTitle(object sender, string title)
         {
-            Title = newTitle;
-            RaisePropertyChanged("Title");
+            TitleChanged?.Invoke(this, title);
+            Title = title;
         }
+
+
 
         private void ControllerOnMetadataChange(object source, string key)
         {
@@ -178,7 +187,7 @@ namespace NuSysApp
         public FrameworkElement MakeTagBlock(string text)
         {
             var deleteButton = new TextBlock() { Text = "X" };
-            deleteButton.Foreground = new SolidColorBrush(Colors.White);
+            deleteButton.Foreground = new SolidColorBrush(Constants.foreground6);
             deleteButton.FontSize = 15;
             deleteButton.FontWeight = FontWeights.Bold;
             deleteButton.Margin = new Thickness(0,0,3,0);
@@ -189,7 +198,7 @@ namespace NuSysApp
             deleteGrid.Tapped += DeleteGridOnTapped;
 
             var tagContent = new TextBlock() { Text = text };
-            tagContent.Foreground = new SolidColorBrush(Colors.White);
+            tagContent.Foreground = new SolidColorBrush(Constants.foreground6);
             tagContent.FontStyle = FontStyle.Italic;
             tagContent.HorizontalAlignment = HorizontalAlignment.Stretch;
 
@@ -203,12 +212,12 @@ namespace NuSysApp
 
             Button tagBlock = new Button();
             tagBlock.Tapped += TagBlock_Tapped;
-            tagBlock.Background = new SolidColorBrush(Colors.DarkSalmon);
+            tagBlock.Background = new SolidColorBrush(Constants.salmonColor);
             tagBlock.Content = stackPanel;
             tagBlock.Height = 30;
             tagBlock.Padding = new Thickness(5);
             tagBlock.BorderThickness = new Thickness(0);
-            tagBlock.Foreground = new SolidColorBrush(Colors.White);
+            tagBlock.Foreground = new SolidColorBrush(Constants.foreground6);
             tagBlock.Margin = new Thickness(5, 2, 2, 5);///
             tagBlock.Opacity = 0.75;
             tagBlock.FontStyle = FontStyle.Italic;
@@ -253,18 +262,18 @@ namespace NuSysApp
         public StackPanel MakeMetaDataBlock(string key, string val, bool editable)
         {
             var keyBox = new TextBlock {Text = key};
-            keyBox.Foreground = new SolidColorBrush(Colors.White);
+            keyBox.Foreground = new SolidColorBrush(Constants.foreground6);
             keyBox.FontSize = 18;
             keyBox.Height = 30;
 
             var colon = new TextBlock {Text = ":"};
-            colon.Foreground = new SolidColorBrush(Colors.White);
+            colon.Foreground = new SolidColorBrush(Constants.foreground6);
             colon.FontSize = 18;
             colon.Height = 30;
             colon.Padding = new Thickness(2, 0, 2, 0);
             
             TextBox valBox = new TextBox {Text = val};
-            valBox.Foreground = new SolidColorBrush(Colors.White);
+            valBox.Foreground = new SolidColorBrush(Constants.foreground6);
             valBox.FontSize = 18;
             valBox.MinWidth = 80;
             valBox.Height = 20;

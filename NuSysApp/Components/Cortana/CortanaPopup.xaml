@@ -8,9 +8,18 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
     <Popup x:Name="CortanaPopupBox">
         <Grid>
-            <TextBox x:Name="DictatedSpeech" Background="White" Foreground="DarkBlue" Height="150" 
+            <TextBox x:Name="DictatedSpeech" Background="{StaticResource color6}" Foreground="DarkBlue" Height="150" 
                      TextWrapping="Wrap" />
         </Grid>
     </Popup>

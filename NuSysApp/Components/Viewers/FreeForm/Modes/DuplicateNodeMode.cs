@@ -15,12 +15,12 @@ namespace NuSysApp
     {
         private ElementViewModel _selectedNode;
 
-        public DuplicateNodeMode(FreeFormViewer view) : base(view) { }
+        public DuplicateNodeMode(FrameworkElement view) : base(view) { }
 
         public override async Task Activate()
         {
             _view.IsRightTapEnabled = true;
-            FreeFormViewerViewModel wvm = (FreeFormViewerViewModel) _view.DataContext;
+            ElementCollectionViewModel wvm = (ElementCollectionViewModel) _view.DataContext;
 
             wvm.AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
             foreach (var userControl in wvm.AtomViewList.Where(s => s.DataContext is ElementViewModel))
@@ -49,7 +49,7 @@ namespace NuSysApp
 
         public override async Task Deactivate()
         {
-            FreeFormViewerViewModel wvm = (FreeFormViewerViewModel)_view.DataContext;
+            ElementCollectionViewModel wvm = (ElementCollectionViewModel)_view.DataContext;
             foreach (var userControl in wvm.AtomViewList.Where( s => s.DataContext is ElementViewModel))
             {
                 userControl.PointerPressed -= OnAtomPressed;

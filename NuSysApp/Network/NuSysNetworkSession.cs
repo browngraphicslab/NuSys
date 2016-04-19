@@ -207,6 +207,12 @@ namespace NuSysApp
                 case Request.RequestType.DeleteLibraryElementRequest:
                     request = new DeleteLibraryElementRequest(message);
                     break;
+                case Request.RequestType.AddInkRequest:
+                    request = new AddInkRequest(message);
+                    break;
+                case Request.RequestType.RemoveInkRequest:
+                    request = new RemoveInkRequest(message);
+                    break;
                 default:
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
             }

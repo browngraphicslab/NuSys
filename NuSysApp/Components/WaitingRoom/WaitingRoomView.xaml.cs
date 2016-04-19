@@ -181,10 +181,8 @@ namespace NuSysApp
 
                 //cred["user"] = Convert.ToBase64String(Encrypt(usernameInput.Text));
 
-                Random r = new Random();
-                int rInt = r.Next(0, 100); //for ints
 
-                cred["user"] = usernameInput.Text + rInt;
+                cred["user"] = usernameInput.Text;
                 cred["pass"] = Convert.ToBase64String(Encrypt(passwordInput.Password));
                 if (createNewUser)
                 {
@@ -337,10 +335,11 @@ namespace NuSysApp
                 }
                 else
                 {
-                   // loggedInText.Text = "Log in failed!";
+                    loggedInText.Text = "Log in failed!";
+                    /*
                     if (!createNewUser) { 
                         Login(true);
-                    }
+                    }*/
                 }
 
             }

@@ -83,8 +83,8 @@ namespace NuSysApp
             _isMouseDown = true;
             _startPoint = e.GetCurrentPoint(_view).Position;
             _currentPoint = e.GetCurrentPoint(_view).Position;
-            _canvasStartPoint = e.GetCurrentPoint(_cview.InqCanvas).Position;
-            _cview.InqCanvas.CapturePointer(e.Pointer);
+          //  _canvasStartPoint = e.GetCurrentPoint(_cview.InqCanvas).Position;
+            //_cview.InqCanvas.CapturePointer(e.Pointer);
         }
 
         private void View_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
@@ -117,7 +117,7 @@ namespace NuSysApp
         private async void View_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
             _isMouseDown = false;
-            _cview.InqCanvas.ReleasePointerCaptures();
+          //  _cview.InqCanvas.ReleasePointerCaptures();
             SelectContainedComponents();
             // TODO: add again
            // _view.InqCanvas.Children.Remove(_currentRect);
@@ -154,6 +154,7 @@ namespace NuSysApp
             Rect r = vm.CompositeTransform.Inverse.TransformBounds(new Rect(_startPoint, _currentPoint));
 
 
+            /*
             foreach (var atom in vm.AtomViewList)
             {
                 var atomPoint = atom.TransformToVisual(_cview.InqCanvas).TransformPoint(new Point(0, 0));
@@ -168,6 +169,7 @@ namespace NuSysApp
                     }
                 }
             }
+            */
 
             if (vm.MultiSelectedAtomViewModels.Count > 0)
             {

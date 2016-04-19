@@ -1,5 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using NuSysApp.Components.Nodes;
+using NuSysApp.Nodes.AudioNode;
 
 namespace NuSysApp
 {
@@ -16,6 +22,8 @@ namespace NuSysApp
         public string OutAtomId { get; set; }
         public string Annotation { get; set; }
 
+        public LinkedTimeBlockModel InFineGrain { get; set; }
+
         public Dictionary<string, object> InFGDictionary { get; set; }
         public Dictionary<string, object> OutFGDictionary { get; set; }
 
@@ -25,8 +33,48 @@ namespace NuSysApp
             OutAtomId = props.GetString("id2", InAtomId);
             InFGDictionary = props.GetDict<string, object>("inFGDictionary");
             OutFGDictionary = props.GetDict<string, object>("outFGDictionary");
-
             Annotation = props.GetString("annotation", "");
+            if (props.ContainsKey("inFineGrain"))
+            {
+                var v = JsonConvert.DeserializeObject<LinkedTimeBlockModel>(props.Get("inFineGrain"));
+                ObservableCollection<LinkedTimeBlockModel> list;
+                switch (SessionController.Instance.IdToControllers[OutAtomId].Model.ElementType)
+                {
+                    case ElementType.Image:
+
+                        break;
+                    case ElementType.Text:
+                        break;
+                    case ElementType.Audio:
+                        list =
+                    ((AudioNodeModel)SessionController.Instance.IdToControllers[OutAtomId].Model)
+                        .LinkedTimeModels;
+                        foreach (var element in list)
+                        {
+                            if (element.Start == v.Start && element.End == v.End)
+                            {
+                                InFineGrain = element;
+                                break;
+                            }
+                        }
+                        break;
+                    case ElementType.Video:
+                        list =
+                    ((VideoNodeModel)SessionController.Instance.IdToControllers[OutAtomId].Model)
+                        .LinkedTimeModels;
+                        foreach (var element in list)
+                        {
+                            if (element.Start == v.Start && element.End == v.End)
+                            {
+                                InFineGrain = element;
+                                break;
+                            }
+                        }
+                        break;
+                }
+               
+
+            }
             base.UnPack(props);
         }
 
@@ -39,6 +87,8 @@ namespace NuSysApp
             dict.Add("outFGDictionary", OutFGDictionary);
             dict.Add("type", ElementType.ToString());
             dict.Add("annotation", Annotation);
+            dict.Add("inFineGrain", InFineGrain);
+
             return dict;
         }
     }

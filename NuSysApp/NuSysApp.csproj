@@ -20,7 +20,7 @@
     <PackageCertificateKeyFile>NuSysApp_TemporaryKey.pfx</PackageCertificateKeyFile>
     <PackageCertificateThumbprint>974C917A8A98617A1A9C87ED850936A08B851273</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-    <AppxPackageDir>S:\deploy\</AppxPackageDir>
+    <AppxPackageDir>C:\Users\phili_n4ua7ts\Desktop\DEPLOY\</AppxPackageDir>
     <AppxBundlePlatforms>x86</AppxBundlePlatforms>
     <AppxBundle>Always</AppxBundle>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
@@ -176,6 +176,7 @@
     <Content Include="Assets\logos\Wide310x150Logo.scale-100.png" />
     <Content Include="Assets\menububble.png" />
     <Content Include="Assets\menububble2.png" />
+    <Content Include="Assets\menububblebtm.png" />
     <Content Include="Assets\menu_bubble.png" />
     <Content Include="Assets\node icons\delete.png" />
     <Content Include="Assets\node icons\icon_duplicate.png" />
@@ -231,6 +232,11 @@
     </Compile>
     <Compile Include="Classas.cs" />
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
+    <Compile Include="Components\InqCanvas2\PhilInqCanvas.xaml.cs">
+      <DependentUpon>PhilInqCanvas.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\InqCanvas\NuSysInqCanvas.cs" />
+    <Compile Include="Components\InqCanvas\WetDryInkCanvas.cs" />
     <Compile Include="Components\ISelectable.cs" />
     <Compile Include="Components\LoadingScreen.xaml.cs">
       <DependentUpon>LoadingScreen.xaml</DependentUpon>
@@ -238,6 +244,11 @@
     <Compile Include="Components\Misc\TextInputBlock.xaml.cs">
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\ElementCollectionDetailView.xaml.cs">
+      <DependentUpon>ElementCollectionDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\InkStorage.cs" />
+    <Compile Include="Components\Viewers\FreeForm\InkWrapper.cs" />
     <Compile Include="Components\WaitingRoom\SelectionHull.cs" />
     <Compile Include="Components\Viewers\Detail\DetailNodeViewFactory.cs" />
     <Compile Include="Components\Viewers\Detail\DetailViewerView.xaml.cs">
@@ -280,10 +291,10 @@
     <Compile Include="Components\GroupChat\DialogBlock.xaml.cs">
       <DependentUpon>DialogBlock.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\TextEditor\InqCanvas\Gestures\Gesturizer.cs" />
-    <Compile Include="Components\TextEditor\InqCanvas\Gestures\IGesture.cs" />
-    <Compile Include="Components\TextEditor\InqCanvas\Gestures\ScribbleGesture.cs" />
-    <Compile Include="Components\TextEditor\InqCanvas\InqCanvasView.xaml.cs">
+    <Compile Include="Components\InqCanvas\Gestures\Gesturizer.cs" />
+    <Compile Include="Components\InqCanvas\Gestures\IGesture.cs" />
+    <Compile Include="Components\InqCanvas\Gestures\ScribbleGesture.cs" />
+    <Compile Include="Components\InqCanvas\InqCanvasView.xaml.cs">
       <DependentUpon>InqCanvasView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Links\BezierLinkView.xaml.cs">
@@ -415,12 +426,14 @@
     <Compile Include="Network\NetworkSession.cs" />
     <Compile Include="Network\NetworkUser.cs" />
     <Compile Include="Network\NuSysNetworkSession.cs" />
+    <Compile Include="Network\Requests\RemoveInkRequest.cs" />
     <Compile Include="Network\Requests\ChangeContentRequest.cs" />
     <Compile Include="Network\Requests\ChatDialogRequest.cs" />
     <Compile Include="Network\Requests\CreateNewLibraryElementRequest.cs" />
     <Compile Include="Network\Requests\DeleteLibraryElementRequest.cs" />
     <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
     <Compile Include="Network\Requests\DuplicateNodeRequest.cs" />
+    <Compile Include="Network\Requests\AddInkRequest.cs" />
     <Compile Include="Network\Requests\NewLinkRequest.cs" />
     <Compile Include="Network\Requests\FinalizeInkRequest.cs" />
     <Compile Include="Network\Requests\NewElementRequest.cs" />
@@ -440,6 +453,7 @@
     <Compile Include="Network\Requests\UnsubscribeFromCollectionRequest.cs" />
     <Compile Include="Network\ServerRepo\ServerClient.cs" />
     <Compile Include="Network\StaticServerCalls.cs" />
+    <Compile Include="TransformHelper.cs" />
     <Compile Include="Util\AccessList.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
@@ -452,19 +466,20 @@
     <Compile Include="Util\MathUtil.cs" />
     <Compile Include="Util\MediaUtil.cs" />
     <Compile Include="Util\Point2d.cs" />
+    <Compile Include="Util\PresentationMode.cs" />
     <Compile Include="Util\RectanglePoints.cs" />
     <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\Statistics.cs" />
     <Compile Include="Util\Telemetry.cs" />
     <Compile Include="Util\UITask.cs" />
-    <Compile Include="Components\TextEditor\InqCanvas\InqCanvasViewModel.cs" />
+    <Compile Include="Components\InqCanvas\InqCanvasViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoNodeViewModel.cs" />
     <Compile Include="Components\Misc\FloatingMenuButtonView.xaml.cs">
       <DependentUpon>FloatingMenuButtonView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\TextEditor\InqCanvas\DrawInqMode.cs" />
-    <Compile Include="Components\TextEditor\InqCanvas\EraseInqMode.cs" />
-    <Compile Include="Components\TextEditor\InqCanvas\IInqMode.cs" />
+    <Compile Include="Components\InqCanvas\DrawInqMode.cs" />
+    <Compile Include="Components\InqCanvas\EraseInqMode.cs" />
+    <Compile Include="Components\InqCanvas\IInqMode.cs" />
     <Compile Include="Util\TextBoxExtended.cs" />
     <Compile Include="Util\TwoFingerScrollViewer.cs" />
     <Compile Include="Converters\SubstractConverter.cs" />
@@ -602,7 +617,8 @@
     <Compile Include="Components\WaitingRoom\WaitingRoomView.xaml.cs">
       <DependentUpon>WaitingRoomView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Util\Vector2.cs" />
+    <Compile Include="Util\Utils.cs" />
+    <Compile Include="Util\Vector2d.cs" />
     <Compile Include="Util\WrapPanel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -641,6 +657,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Components\InqCanvas2\PhilInqCanvas.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Components\LoadingScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -654,6 +674,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\Detail\Views\AudioDetailView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\ElementCollectionDetailView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -701,7 +725,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\TextEditor\InqCanvas\InqCanvasView.xaml">
+    <Page Include="Components\InqCanvas\InqCanvasView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -817,6 +841,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="ResourceDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -919,6 +948,7 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
