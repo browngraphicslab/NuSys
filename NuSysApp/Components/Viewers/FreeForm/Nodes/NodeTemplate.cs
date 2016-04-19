@@ -291,14 +291,10 @@ namespace NuSysApp
                         second.Opacity = 0.2;
                         second.Stroke = new SolidColorBrush(Colors.Red);
                     }
-                    else
-                    {
-                        Debug.WriteLine("number of rectangles not 2");
-                    }
 
                     Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100, 100, 200);
                     Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100, 100, 100);
-                    Debug.WriteLine("nodetemplate");
+
                     vm.Controller.RequestLinkTo(dc.Id, inFgDictionary, outFgDictionary);
                 }
             }

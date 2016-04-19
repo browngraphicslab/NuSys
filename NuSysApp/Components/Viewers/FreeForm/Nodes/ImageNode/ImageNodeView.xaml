@@ -14,7 +14,7 @@
 
     <local:NodeTemplate x:Name="nodeTpl" Background="LightBlue">
         <local:NodeTemplate.SubMenu>
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Vertical">
                 <Button Margin="0,2,0,2" x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
                     <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
                 </Button>
@@ -24,12 +24,22 @@
             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
+            
             <Grid PointerPressed="XImage_OnPointerPressed" PointerReleased="XImage_OnPointerReleased" PointerMoved="XImage_OnPointerMoved">
                 
                 <Image x:Name="xImage" Source="{Binding Image}" Stretch="Uniform" />
+                
                 <Canvas x:Name="Canvas" VerticalAlignment ="Top" HorizontalAlignment="Left">
+                    <ItemsControl x:Name="IC"  ItemsSource="{Binding RegionsList}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
                 </Canvas>
             </Grid>
+            
         </local:NodeTemplate.Inner>
     </local:NodeTemplate>
 </local:AnimatableUserControl>

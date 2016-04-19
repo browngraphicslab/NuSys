@@ -1,6 +1,7 @@
 ﻿using Windows.UI;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -19,6 +20,7 @@ using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Shapes;
 using MyToolkit.Utilities;
+using NuSysApp.Util;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -29,7 +31,6 @@ namespace NuSysApp
     {
         private MediaCapture _mediaCapture;
         private bool _isRecording;
-
 
         private bool _isopen;
         private string _text = string.Empty;
@@ -45,14 +46,15 @@ namespace NuSysApp
             Debug.WriteLine(_count);
             InitializeComponent();
             TextNodeWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
+
             DataContext = vm;
-  
-           
 
             vm.Controller.Disposed += ControllerOnDisposed;
             vm.TextBindingChanged += TextChanged;
             TextNodeWebView.NavigationCompleted += TextNodeWebViewOnNavigationCompleted;
             TextNodeWebView.ScriptNotify += wvBrowser_ScriptNotify;
+
+            //TextNodeWebView.InvokeScriptAsync("testTest", "hi this is working");
         }
 
         private void TextNodeWebViewOnNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
@@ -64,7 +66,6 @@ namespace NuSysApp
 
         private void TextChanged(object source, string text)
         {
-
              if (navigated)
              {
                  UpdateText(text);
@@ -241,5 +242,69 @@ namespace NuSysApp
             return result[0].GetTextCandidates().ToList();
 
         }
+
+        //private void XImage_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        //{
+        //    if (_drawingRegion)
+        //    {
+        //        Debug.WriteLine("here");
+        //        Canvas.Children.Add(TempRegion);
+        //        Canvas.SetLeft(TempRegion, e.GetCurrentPoint((UIElement)sender).Position.X);
+        //        Canvas.SetTop(TempRegion, e.GetCurrentPoint((UIElement)sender).Position.Y);
+        //        TempRegion.Opacity = 1;
+        //    }
+        //}
+
+        //private void XImage_OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        //{
+        //    if (_drawingRegion)
+        //    {
+
+        //        //add rectangle to model list
+        //        //remove temp rectangle
+        //        //have another method that reads all things from model and adds it.
+
+        //        ImageElementViewModel vm = (ImageElementViewModel)DataContext;
+
+        //        var width = vm.Model.Width;
+        //        var height = vm.Model.Height;
+
+        //        var leftRatio = Canvas.GetLeft(TempRegion) / width;
+        //        var topRatio = Canvas.GetTop(TempRegion) / height;
+
+        //        var widthRatio = TempRegion.Width / width;
+        //        var heightRatio = TempRegion.Height / Height;
+
+        //        RectanglePoints rectangle = new RectanglePoints(leftRatio, topRatio, widthRatio, heightRatio);
+
+        //        // add to controller
+        //        (DataContext as ImageElementViewModel).Controller.SetRegion(rectangle);
+        //        Rectangle rect = rectangle.getRectangle();
+
+        //        rect.Width = width * rectangle.getWidthRatio();
+        //        rect.Height = height * rectangle.getHeightRatio();
+        //        Canvas.Children.Add(rect);
+        //        Canvas.SetLeft(rect, rectangle.getLeftRatio() * width);
+        //        Canvas.SetTop(rect, rectangle.getTopRatio() * height);
+
+        //        // works?
+        //        Canvas.Children.Remove(TempRegion);
+
+        //        //(DataContext as ImageElementViewModel).RegionsList.Add(rect);
+        //        //(DataContext as ImageElementViewModel).Model.Regions.Add(rectangle);
+
+        //        _drawingRegion = false;
+        //        //this.AddRegionsToCanvas();
+        //    }
+        //}
+
+        //private void XImage_OnPointerMoved(object sender, PointerRoutedEventArgs e)
+        //{
+        //    if (e.GetCurrentPoint((UIElement)sender).Properties.IsLeftButtonPressed && _drawingRegion)
+        //    {
+        //        TempRegion.Height = e.GetCurrentPoint((UIElement)sender).Position.Y - Canvas.GetTop(TempRegion);
+        //        TempRegion.Width = e.GetCurrentPoint((UIElement)sender).Position.X - Canvas.GetLeft(TempRegion);
+        //    }
+        //}
     }
 }

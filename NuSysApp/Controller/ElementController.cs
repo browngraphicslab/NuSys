@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.ApplicationSettings;
 using NuSysApp.Controller;
+using NuSysApp.Util;
 
 namespace NuSysApp
 {
@@ -33,6 +34,8 @@ namespace NuSysApp
 
         public delegate void ContentLoadedHandler(object source, LibraryElementModel data);
 
+        public delegate void RegionChangedEventHandler(object source, RectanglePoints region);
+
         public delegate void LinkAddedEventHandler(object source, LinkElementController linkController);
 
         public event DisposeEventHandler Disposed;
@@ -44,6 +47,7 @@ namespace NuSysApp
         public event ScaleChangedEventHandler ScaleChanged;
         public event AlphaChangedEventHandler AlphaChanged;
         public event NetworkUserChangedEventHandler UserChanged;
+        public event RegionChangedEventHandler RegionChanged;
 
         public ElementController(ElementModel model)
         {
@@ -135,9 +139,15 @@ namespace NuSysApp
             _debouncingDictionary.Add("metadata", Model.Metadata);
         }
 
+        public void SetRegion(RectanglePoints region)
+        {
+            Model.Regions.Add(region);
+            RegionChanged?.Invoke(this, region);
+            _debouncingDictionary.Add("regions", Model.Regions);
+        }
+
         public void Delete()
         {
-            
             Deleted?.Invoke(this);
             SessionController.Instance.ActiveFreeFormViewer.DeselectAll();
 
@@ -270,6 +280,13 @@ namespace NuSysApp
                 var width = props.GetDouble("width", this.Model.Width);
                 var height = props.GetDouble("height", this.Model.Height);
                 SizeChanged?.Invoke(this,width,height);
+            }
+
+            if (props.ContainsKey("region"))
+            {
+                string region = props.Get("region");
+                Debug.WriteLine("REGIONS!!!!" + region);
+                //RegionChanged?.Invoke(this, region);
             }
         }
     }

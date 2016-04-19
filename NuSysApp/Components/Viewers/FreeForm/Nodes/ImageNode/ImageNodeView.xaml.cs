@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using NAudio.Wave;
+using NuSysApp.Util;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -34,6 +36,8 @@ namespace NuSysApp
             TempRegion.StrokeThickness = 2;
             TempRegion.Stroke = new SolidColorBrush(Colors.Red);
 
+            vm.Controller.SizeChanged += Controller_SizeChanged;
+
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
                 //nodeTpl.inkCanvas.ViewModel.CanvasSize = new Size(vm.Width, vm.Height);
@@ -48,6 +52,28 @@ namespace NuSysApp
             //XamlRenderingBackgroundTask x = new RenderTask(this.xImage);
 
             vm.Controller.Disposed += ControllerOnDisposed;
+        }
+
+        private void Controller_SizeChanged(object source, double width, double height)
+        {
+            Debug.WriteLine("sized changing!!!");
+            ObservableCollection<Rectangle> list = (DataContext as ImageElementViewModel).RegionsList;
+
+            foreach (var rectangle in list)
+            {
+                RectanglePoints rectPoint; 
+                (DataContext as ImageElementViewModel).rectToPoints.TryGetValue(rectangle, out rectPoint);
+
+                var leftRatio = rectPoint.getLeftRatio();
+                var topRatio = rectPoint.getTopRatio();
+                var widthRatio = rectPoint.getWidthRatio();
+                var heightRatio = rectPoint.getHeightRatio();
+                
+                Canvas.SetLeft(rectangle, width * leftRatio);
+                Canvas.SetTop(rectangle, height * topRatio);
+                rectangle.Width = width * widthRatio;
+                rectangle.Height = height * heightRatio;
+            }
         }
 
         private void ControllerOnDisposed(object source)
@@ -109,28 +135,38 @@ namespace NuSysApp
                 //add rectangle to model list
                 //remove temp rectangle
                 //have another method that reads all things from model and adds it.
-                Rectangle region = new Rectangle();
-                region.Height = TempRegion.Height;
-                region.Width = TempRegion.Width;
-                region.Fill = new SolidColorBrush(Colors.Transparent);
-                region.StrokeThickness = 2;
-                region.Stroke = new SolidColorBrush(Colors.Black);
 
+                ImageElementViewModel vm = (ImageElementViewModel) DataContext;
 
-                Canvas.SetLeft(region, Canvas.GetLeft(TempRegion));
-                Canvas.SetTop(region, Canvas.GetTop(TempRegion));
-                (DataContext as ImageElementViewModel).Model.Regions.Add(region);
+                var width = vm.Model.Width;
+                var height = vm.Model.Height;
+
+                var leftRatio = Canvas.GetLeft(TempRegion)/width;
+                var topRatio = Canvas.GetTop(TempRegion)/height;
+
+                var widthRatio = TempRegion.Width/width;
+                var heightRatio = TempRegion.Height/Height;
+
+                RectanglePoints rectangle = new RectanglePoints(leftRatio, topRatio, widthRatio, heightRatio);
+
+                // add to controller
+                (DataContext as ImageElementViewModel).Controller.SetRegion(rectangle);
+                Rectangle rect = rectangle.getRectangle();
+
+                rect.Width = width*rectangle.getWidthRatio();
+                rect.Height = height*rectangle.getHeightRatio();
+                Canvas.Children.Add(rect);
+                Canvas.SetLeft(rect, rectangle.getLeftRatio() * width);
+                Canvas.SetTop(rect, rectangle.getTopRatio() * height);
+
+                // works?
+                Canvas.Children.Remove(TempRegion);
+
+                //(DataContext as ImageElementViewModel).RegionsList.Add(rect);
+                //(DataContext as ImageElementViewModel).Model.Regions.Add(rectangle);
+
                 _drawingRegion = false;
-                this.AddRegionsToCanvas();
-            }
-        }
-
-        private void AddRegionsToCanvas()
-        {
-            Canvas.Children.Clear();
-            foreach (var element in (DataContext as ImageElementViewModel).Model.Regions)
-            {
-                Canvas.Children.Add(element);
+                //this.AddRegionsToCanvas();
             }
         }
 

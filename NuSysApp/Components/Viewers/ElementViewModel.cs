@@ -9,6 +9,7 @@ using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
 using NuSysApp.Controller;
 using NuSysApp.Util;
 
@@ -30,6 +31,9 @@ namespace NuSysApp
 
         #endregion Private Members
 
+        public ObservableCollection<Rectangle> RegionsList { get; set; }
+        public Dictionary<Rectangle, RectanglePoints> rectToPoints;
+
         public ElementViewModel(ElementController controller)
         {
             _controller = controller;
@@ -48,6 +52,24 @@ namespace NuSysApp
 
             Tags = new ObservableCollection<Button>();
             ReadFromModel();
+
+            rectToPoints = new Dictionary<Rectangle, RectanglePoints>();
+            RegionsList = new ObservableCollection<Rectangle>();
+
+            foreach (var element in Model.Regions)
+            {
+                var rect = element.getRectangle();
+                var nodeWidth = Model.Width;
+                var nodeHeight = Model.Height;
+                rect.Width = element.getWidthRatio() * nodeWidth;
+                rect.Height = element.getHeightRatio() * nodeHeight;
+
+                RegionsList.Add(rect);
+                rectToPoints.Add(rect, element);
+
+                Canvas.SetTop(rect, element.getTopRatio() * nodeHeight);
+                Canvas.SetLeft(rect, element.getLeftRatio() * nodeWidth);
+            }
         }
 
         private void ControllerOnDeleted(object source)

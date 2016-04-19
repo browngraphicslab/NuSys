@@ -137,7 +137,8 @@ namespace NuSysApp
         public string GetSerialized()
         {
             var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-            return JsonConvert.SerializeObject(_dict, settings);
+            var r = JsonConvert.SerializeObject(_dict, settings);
+            return r;
         }
     }
 }

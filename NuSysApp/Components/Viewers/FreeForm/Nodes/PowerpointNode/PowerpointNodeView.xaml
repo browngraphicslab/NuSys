@@ -21,11 +21,27 @@
                 <Button x:Name="EditInk" Click="OnEditInk" Style="{StaticResource NodeSubMenuItem}" Background="{Binding Color}">
                     <Image Source="ms-appx:///Assets/icon_global_ink.png" Height="30" Width="30"></Image>
                 </Button>
+                <Button Margin="0,2,0,2" x:Name="Region" Click="Region_OnClick"  Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
+                    <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
+                </Button>
             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
             <Grid Height="{Binding Height}" Width="{Binding Width}" HorizontalAlignment="Center">
-                <Image x:Name="xImage" Source="/Assets/powerpointIcon.png" Stretch="Uniform" HorizontalAlignment="Center"/>
+                <Grid PointerPressed="XImage_OnPointerPressed" PointerReleased="XImage_OnPointerReleased" PointerMoved="XImage_OnPointerMoved">
+
+                    <Image x:Name="xImage" Source="/Assets/powerpointIcon.png" Stretch="Uniform" HorizontalAlignment="Center"/>
+
+                    <Canvas x:Name="Canvas" VerticalAlignment ="Top" HorizontalAlignment="Left">
+                        <ItemsControl x:Name="IC"  ItemsSource="{Binding RegionsList}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <Canvas/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Canvas>
+                </Grid>
             </Grid>
         </local:NodeTemplate.Inner>
     </local:NodeTemplate>

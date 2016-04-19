@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using Newtonsoft.Json;
+using NuSysApp.Util;
 
 namespace NuSysApp
 {
@@ -20,7 +22,9 @@ namespace NuSysApp
         private double _x;
         private double _y;
 
-        public List<Rectangle> Regions; 
+        public List<RectanglePoints> Regions { get; set; }
+
+        public RectanglePoints Region { get; set; } 
         
         public Dictionary<string, object> Metadata = new Dictionary<string, object>();
 
@@ -30,7 +34,7 @@ namespace NuSysApp
             SetMetaData("tags", new List<string>());
             SetMetaData("groups", new List<string>());
             InqCanvas = new InqCanvasModel(id);
-            Regions = new List<Rectangle>();
+            Regions = new List<RectanglePoints>();
         }
 
         public ElementType ElementType { get; set; }
@@ -136,7 +140,6 @@ namespace NuSysApp
         public void SetMetaData(string key, object value)
         {
             Metadata[key] = value;
-            
         }
 
         public string[] GetMetaDataKeys()
@@ -165,6 +168,8 @@ namespace NuSysApp
             dict.Add("nodeType", ElementType.ToString());
             dict.Add("type", ElementType.ToString());
             dict.Add("contentId", LibraryId);
+
+            dict.Add("regions", Regions);
 
             var lines = new List<Dictionary<string, object>>();
             foreach (var inqLineModel in InqCanvas.Lines)
@@ -195,8 +200,6 @@ namespace NuSysApp
             {
                 Metadata[data.Key] = data.Value;
             }
-
-
 
             X = props.GetDouble("x", X);
             Y = props.GetDouble("y", Y);
@@ -229,7 +232,13 @@ namespace NuSysApp
             {
                 ParentCollectionId = props.GetString("creator", ParentCollectionId);
             }
+            if (props.ContainsKey("regions"))
+            {
+                string regions = props.Get("regions");
+                Debug.WriteLine("REGIONS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + regions);
 
+                Regions = props.GetList<RectanglePoints>("regions",new List<RectanglePoints>());
+            }
 
             InqCanvas.UnPack(props);
 
