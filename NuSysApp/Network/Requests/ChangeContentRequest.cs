@@ -28,24 +28,6 @@ namespace NuSysApp
             SetServerItemType(ServerItemType.Content);
             SetServerRequestType(ServerRequestType.Update);
         }
-
-        public override async Task CheckOutgoingRequest()
-        {
-            if (_message.ContainsKey("inklines"))
-            {
-                var lines = _message.GetObject("inklines") as HashSet<string>;
-                var s = _message.GetObject("inklines");
-                var model =
-                    SessionController.Instance.ContentController.Get(_message["contentId"].ToString()) as
-                        CollectionLibraryElementModel;
-                if (Math.Abs(model.LastInkCount - lines.Count) > 1)
-                {
-                    
-                }
-                model.LastInkCount = lines.Count;
-            }
-        }
-
         public override async Task ExecuteRequestFunction()
         {
             LibraryElementModel content = SessionController.Instance.ContentController.Get(_message.GetString("contentId"));

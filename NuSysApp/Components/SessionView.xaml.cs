@@ -109,7 +109,7 @@ namespace NuSysApp
             
             xDetailViewer.DataContext = new DetailViewerViewModel();
 
-            await SessionController.Instance.InitializeRecog();
+            //await SessionController.Instance.InitializeRecog();
 
             foreach(var user in SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values)
             {
