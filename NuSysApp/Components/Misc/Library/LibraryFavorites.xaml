@@ -12,8 +12,7 @@
 
     <Grid>
         <!--<Image Source="ms-appx:///Assets/icon_new_workspace.png" Height="300"/>-->
-        <TextBlock FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Width="400" TextAlignment="Center" Text="FAVORITES" Margin="-2,10,2,255"/>
-        <ListView ItemsSource="{Binding PageElements}" Margin="0,45,0,0" SelectionChanged="ListView_SelectionChanged">
+        <ListView ItemsSource="{Binding PageElements}" Margin="0,0,0,0" SelectionChanged="ListView_SelectionChanged">
 
             <ListView.Header>
                 <Grid VerticalAlignment="Center" Background="White ">
@@ -24,15 +23,26 @@
                         <ColumnDefinition Width="125" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock  HorizontalAlignment="Center" Grid.Column="0"  Foreground="#9cc5c2"   FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                    <!--<TextBlock  HorizontalAlignment="Left" Grid.Column="0"  Foreground="#9cc5c2"   FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
                         title
                     </TextBlock>
-                    <TextBlock HorizontalAlignment="Center" Grid.Column="1"  Foreground="#9cc5c2"  FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                    <TextBlock HorizontalAlignment="Left" Grid.Column="1"  Foreground="#9cc5c2"  FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
                         type
                     </TextBlock>
-                    <TextBlock  HorizontalAlignment="Center" Grid.Column="2" Foreground="#9cc5c2" FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                    <TextBlock  HorizontalAlignment="Left" Grid.Column="2" Foreground="#9cc5c2" FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
                         date
-                    </TextBlock>
+                    </TextBlock>-->
+
+
+                    <Button  HorizontalAlignment="Left" Grid.Column="0"  Background="Transparent"  Foreground="#9cc5c2"  FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                        title
+                    </Button>
+                    <Button HorizontalAlignment="Left" Grid.Column="1" Foreground="#9cc5c2" Background="Transparent"  FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                        type
+                    </Button>
+                    <Button  HorizontalAlignment="Left" Grid.Column="2" Foreground="#9cc5c2" Background="Transparent"  FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                        date
+                    </Button>
 
 
                 </Grid>

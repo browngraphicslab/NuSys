@@ -60,7 +60,7 @@ namespace NuSysApp
                 PageElements.Remove(element);
             }
 
-            OnItemsChanged?.Invoke(this, favorited);
+           // OnItemsChanged?.Invoke(this, favorited);
         }
 
         

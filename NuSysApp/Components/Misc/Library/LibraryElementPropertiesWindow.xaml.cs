@@ -118,6 +118,8 @@ namespace NuSysApp
             ID.Text = element.Id ?? "";
             Creator.Text = element.Creator ?? "";
 
+            this.UpdateFavoriteButton();
+
             if (element.Type == ElementType.Collection)
             {
                 EnterCollectionButton.Visibility = Visibility.Visible;
@@ -127,6 +129,17 @@ namespace NuSysApp
                 EnterCollectionButton.Visibility = Visibility.Collapsed;
             }
         }
+
+        private void UpdateFavoriteButton()
+        {
+            if (_currentElementModel.Favorited)
+                //Favorite.Source = "ms-appx:///Assets/star_icon.png";
+                Favorite.Source = new BitmapImage(new Uri("ms-appx:///Assets/star_icon.png"));
+
+            else
+                Favorite.Source = new BitmapImage(new Uri("ms-appx:///Assets/star-xxl.png"));
+        }
+
         public void setLastEdited(string lastedited)
         {
             LastEdited.Text = lastedited;
@@ -148,6 +161,7 @@ namespace NuSysApp
 
 
             AddedToFavorite?.Invoke(this, _currentElementModel);
+            this.UpdateFavoriteButton();
 
 
         }

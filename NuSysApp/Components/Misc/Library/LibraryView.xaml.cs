@@ -235,6 +235,9 @@ namespace NuSysApp
             else
             {
                 element?.SetFavorited(false);
+                if (WorkspacePivot.Content == _libraryFavorites) 
+                    _propertiesWindow.Visibility = Visibility.Collapsed;
+
             }
 
             /*
@@ -406,29 +409,26 @@ namespace NuSysApp
         }
         
 
-        private void Favorites_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        private void Favorites_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            //if (WorkspacePivot.Content != _libraryGrid)
-            //{
-            //    await _libraryGrid.Update();
-            //    WorkspacePivot.Content = _libraryGrid;
-            //}
 
             _propertiesWindow.Visibility = Visibility.Collapsed;
 
-            if (WorkspacePivot.Content != _libraryFavorites)
+            if ((WorkspacePivot.Content != _libraryFavorites) && ((Button)sender == btnFav))
             {
-                //switch to libraryFavorites
 
                 WorkspacePivot.Content = _libraryFavorites;
+                btnFav.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(60, 14, 73, 78));
+                btnAll.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(20, 230, 237, 236));
 
             }
-            else
+            else if ((WorkspacePivot.Content != _libraryList) && ((Button)sender==btnAll))
             {
                 WorkspacePivot.Content = _libraryList;
+                btnAll.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(60, 14, 73, 78));
+                btnFav.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(20, 230, 237, 236));
+
             }
-
-
 
         }
 

@@ -43,7 +43,7 @@ namespace NuSysApp
             _library = library;
             _propertiesWindow = propertiesWindow;
 
-            vm.OnItemsChanged += ViewModel_OnItemsChanged;
+            //vm.OnItemsChanged += ViewModel_OnItemsChanged;
 
             /*
             Loaded += delegate (object sender, RoutedEventArgs args)
@@ -59,7 +59,7 @@ namespace NuSysApp
 
         private void ViewModel_OnItemsChanged(object sender, bool favorited)
         {
-            if (!favorited)
+            if ((!favorited) && (true))
                 _propertiesWindow.Visibility = Visibility.Collapsed;
         }
 
