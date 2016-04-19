@@ -263,7 +263,6 @@ namespace NuSysApp
             tranformGroup.Children.Add(new TranslateTransform { X = center.X-9, Y = center.Y-9 });
 
             arrow.RenderTransform = tranformGroup;
-
         }
 
         private void UpdateEndPoints()

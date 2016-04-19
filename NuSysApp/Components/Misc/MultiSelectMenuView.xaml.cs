@@ -54,6 +54,10 @@ namespace NuSysApp
         private async void GroupButtonOnClick(object sender, RoutedEventArgs routedEventArgs)
         {
             var selections = SessionController.Instance.ActiveFreeFormViewer.Selections;
+            if (selections.Count == 0) {
+                Visibility = Visibility.Collapsed;
+                return;
+            }
             var bb = Geometry.NodesToBoudingRect(selections.Where(v =>  !(v is LinkViewModel)).ToList());       
 
             var metadata = new Dictionary<string, object>();
@@ -116,6 +120,8 @@ namespace NuSysApp
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
                 vm.Controller.RequestDelete();
             }
+
+            Visibility = Visibility.Collapsed;
         }
 
         private void DeleteButtonOnClick(object sender, RoutedEventArgs routedEventArgs)
@@ -125,6 +131,8 @@ namespace NuSysApp
             {
                 elementViewModel.Controller.RequestDelete();
             }
+
+            Visibility = Visibility.Collapsed;
         }
 
         public Button Delete

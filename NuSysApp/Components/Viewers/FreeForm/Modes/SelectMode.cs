@@ -64,6 +64,9 @@ namespace NuSysApp
 
         private async void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
+            if (SessionController.Instance.SessionView.FreeFormViewer.MultiMenu.Visibility == Visibility.Visible)
+                return;
+
             _released = false;
             await Task.Delay(200);
             if (!_released)
