@@ -11,7 +11,7 @@
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="LightGray" x:Name="mainGrid">
             <StackPanel Orientation="Vertical" x:Name="mainSP" HorizontalAlignment="Stretch">
-                <ScrollViewer x:Name="headerScrollViewer" HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Disabled" Width="500" ViewChanging="ScrollViewer_OnViewChanging">
+                <ScrollViewer x:Name="headerScrollViewer" HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden" VerticalScrollMode="Disabled" Width="500" ViewChanging="ScrollViewer_OnViewChanging">
                 <local:GridAwareItemsControl ItemsSource="{Binding Header}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
