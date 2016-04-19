@@ -308,7 +308,7 @@ namespace NuSysApp
         {
             await _serverClient.FetchLibraryElementData(id);
         }
-        public async Task<IEnumerable<string>> SearchOverLibraryElements(string searchText)
+        public async Task<HashSet<string>> SearchOverLibraryElements(string searchText)
         {
             return await _serverClient.SearchOverLibraryElements(searchText);
         }

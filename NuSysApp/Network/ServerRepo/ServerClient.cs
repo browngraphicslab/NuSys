@@ -280,9 +280,9 @@ namespace NuSysApp
             var serialized = JsonConvert.SerializeObject(dict,settings);
             await SendToServer(serialized);
         }
-        public async Task<IEnumerable<string>> SearchOverLibraryElements(string searchText)
+        public async Task<HashSet<string>> SearchOverLibraryElements(string searchText)
         {
-            await Task.Run(async delegate
+            return await Task.Run(async delegate
             {
                 try {
                     HttpClient client = new HttpClient();
@@ -294,7 +294,7 @@ namespace NuSysApp
                         data = await responseContent.ReadAsStringAsync();
                     }
                     JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                    var list = JsonConvert.DeserializeObject<List<string>>(data, settings);
+                    var list = JsonConvert.DeserializeObject<HashSet<string>>(data, settings);
                     return list;
                 }
                 catch(Exception e)
@@ -303,7 +303,6 @@ namespace NuSysApp
                     return null;
                 }
             });
-            return null;
         }
         public async Task SendMessageToServer(Message message)
         {
