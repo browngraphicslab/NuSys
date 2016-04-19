@@ -132,14 +132,13 @@ namespace NuSysApp.Util
 
         private void FullScreen()
         {
-            var transform = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
-            Debug.WriteLine("Center X: "+transform.CenterX+", Center Y: "+transform.CenterY);
 
             // Define some variables that will be used in future translation/scaling
-
+            var nodeWidth = _currentNode.Width;
+            var nodeHeight = _currentNode.Height + 40; // 40 for title adjustment
             var sv = SessionController.Instance.SessionView;
-            var x = _currentNode.Model.X + _currentNode.Width / 2;
-            var y = _currentNode.Model.Y + _currentNode.Height / 2;
+            var x = _currentNode.Model.X + nodeWidth / 2;
+            var y = _currentNode.Model.Y-40 + nodeHeight / 2;
             var widthAdjustment = sv.ActualWidth / 2;
             var heightAdjustment = sv.ActualHeight / 2;
 
@@ -148,46 +147,20 @@ namespace NuSysApp.Util
             var scaleY = 1;
             var translateX = widthAdjustment - x;
             var translateY = heightAdjustment - y;
-            
-            // Obtain correct scale value based on width/height ratio of passed in element
             double scale;
-            Debug.WriteLine("Width: "+_currentNode.Width+", Height: "+_currentNode.Height);
-            if (_currentNode.Width > _currentNode.Height) {
-                translateY += 40;
-               // Debug.WriteLine("SV Width: " + sv.ActualWidth);
-               // Debug.WriteLine("Node Width: " + _currentNode.Width);
-                scale = sv.ActualWidth / _currentNode.Width;
-              //  Debug.WriteLine("Scale: " + scale);
-
+           
+            // Scale based on the width and height proportions of the current node
+            if (nodeWidth > nodeHeight) {    
+               scale = sv.ActualWidth / nodeWidth;
+               scale = scale * .55;
             }
             else
-            {
-              //  Debug.WriteLine("SV Height: " + sv.ActualHeight);
-              ////  Debug.WriteLine("Node Height: " + _currentNode.Height);
-                scale = sv.ActualHeight / _currentNode.Height;
-             //   Debug.WriteLine("Scale: " + scale);
-            }
-                
-            // Scale the active free form viewer so that the passed in element appears to be full screen.
-            
-
-            if (Math.Abs(_currentNode.Width - _currentNode.Height) <= 30)
-            {
-                scale = scale * .5;
-                Debug.WriteLine("hey");
-            }
-                
-            else
-                scale = scale * .6; // adjustment so things don't get cut off
-
-            //THIS WORKS, BUT NO ANIMATION
-            /*
-            compositeTransform.CenterX = x;
-            compositeTransform.CenterY = y;
-            compositeTransform.ScaleX = scale;
-            compositeTransform.ScaleY = scale;
-            */
-
+            {         
+                scale = sv.ActualHeight / nodeHeight;
+                scale = scale * .7;    
+            }           
+          
+            // Call a helper method to set up the animation
             AnimatePresentation(scale, x, y, translateX, translateY);
 
         }
