@@ -25,7 +25,7 @@ namespace LdaLibrary //IT'S TIME TO DO SOME ESTIMATINGGGGGG! RAWRRRRR
                 {
                     return false;
                 }
-                await trnModel.data.localDict.writeWordMap(option.wordmap); //wordmap should be the equivalent of wordmapfile
+                //await trnModel.data.localDict.writeWordMap(option.wordmap); //wordmap should be the equivalent of wordmapfile
             }
             else if (option.estc)
             {
@@ -82,6 +82,8 @@ namespace LdaLibrary //IT'S TIME TO DO SOME ESTIMATINGGGGGG! RAWRRRRR
 
         public List<string> GetWordListOfTopic()
         {
+            if (trnModel == null)
+                return new List<string>();
             return trnModel.wordList;
         }
 
