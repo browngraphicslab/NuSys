@@ -38,6 +38,7 @@ namespace NuSysApp
         public Grid titleContainer = null;
         public TextBox title = null;
         public Border highlight = null;
+        public Border searchHighlight = null;
         public ItemsControl tags = null;
         public TextBlock userName = null;
         public Canvas xCanvas = null;
@@ -98,6 +99,7 @@ namespace NuSysApp
             hitArea = (Rectangle)GetTemplateChild("HitArea");
 
             isSearched = (Button) GetTemplateChild("isSearched");
+            searchHighlight = (Border) GetTemplateChild("Rect");
             
             //inkCanvas = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(vm.Width, vm.Height)));
 
@@ -216,6 +218,7 @@ namespace NuSysApp
         private void LibraryElementModelOnSearched(LibraryElementModel model, bool searched)
         {
             isSearched.Visibility = searched ? Visibility.Visible : Visibility.Collapsed;
+            searchHighlight.BorderThickness = searched ? new Thickness(5) : new Thickness(1);
         }
         private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)
         {
