@@ -107,15 +107,18 @@ namespace MyDataGrid
 
         private void ScrollViewer_OnViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
         {
-            var s = (ScrollViewer) sender;
-            if (s.Name == "cellScrollViewer")
-            {
-                headerScrollViewer.ScrollToHorizontalOffset(e.FinalView.HorizontalOffset);
-            }
-            else
-            {
-                cellScrollViewer.ScrollToHorizontalOffset(e.FinalView.HorizontalOffset);
-            }
+            //var s = (ScrollViewer) sender;
+            //if (s.Name == "cellScrollViewer")
+            //{
+            //    headerScrollViewer.ScrollToHorizontalOffset(e.FinalView.HorizontalOffset);
+            //}
+            //else
+            //{
+            //    cellScrollViewer.ScrollToHorizontalOffset(e.FinalView.HorizontalOffset);
+            //}
+            
+            var hT = (TranslateTransform)cellScrollViewer.FindName("headerTransform");
+            hT.X = e.NextView.HorizontalOffset * (-1);
         }
     }
 }

@@ -16,7 +16,14 @@
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <!--<StackPanel x:Name="colContainer" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" />-->
-                            <Grid local:GridAutoLayout.NumberOfColumns="{Binding NumCols}" local:GridAutoLayout.NumberOfRows="1" x:Name="headerGrid" Width="500" />
+                            <Grid local:GridAutoLayout.NumberOfColumns="{Binding NumCols}" local:GridAutoLayout.NumberOfRows="1" x:Name="headerGrid" Width="500" >
+                                <Grid.RenderTransform>
+                                    <TranslateTransform x:Name="headerTransform">
+                                    
+                                    </TranslateTransform>
+                                </Grid.RenderTransform>
+                            </Grid>
+
                         </ItemsPanelTemplate>
 
                     </ItemsControl.ItemsPanel>
