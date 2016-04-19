@@ -326,7 +326,15 @@ namespace NuSysApp
 
         private void Region_OnClick(object sender, RoutedEventArgs e)
         {
-            _addTimeBlockMode = true;
+            if (_addTimeBlockMode == false)
+            {
+                _addTimeBlockMode = true;
+
+            }
+            else
+            {
+                _addTimeBlockMode = false;
+            }
         }
 
         private void ScrubBar_OnPointerReleased(object sender, PointerRoutedEventArgs e)
