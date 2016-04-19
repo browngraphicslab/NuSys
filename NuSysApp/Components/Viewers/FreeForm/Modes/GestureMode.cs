@@ -96,8 +96,7 @@ namespace NuSysApp
             }
 
             var hull = new SelectionHull();
-            var numSelections = hull.Compute(screenPoints, SessionController.Instance.SessionView.MainCanvas);
-          
+            var numSelections = hull.Compute(screenPoints, SessionController.Instance.SessionView.MainCanvas);          
         }
 
         private void OnLineFinalized(WetDryInkCanvas canvas, InkStroke stroke)
