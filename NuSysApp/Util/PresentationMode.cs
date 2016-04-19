@@ -137,13 +137,23 @@ namespace NuSysApp.Util
 
         private void FullScreen()
         {
+            // Determines tag adjustment by getting the height of the tag container from the view
+            double tagAdjustment = 0;
+            var view = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
+                    item => ((ElementViewModel)item.DataContext).Model.Id == _currentNode.Id);
+            var found = view.Single().FindName("nodeTpl");
+            if (found != null)
+            {
+                var ss = (NodeTemplate)found;
+                tagAdjustment = ss.tags.ActualHeight;
+            }
 
             // Define some variables that will be used in future translation/scaling
             var nodeWidth = _currentNode.Width;
-            var nodeHeight = _currentNode.Height + 40; // 40 for title adjustment
+            var nodeHeight = _currentNode.Height + 40 + tagAdjustment; // 40 for title adjustment
             var sv = SessionController.Instance.SessionView;
             var x = _currentNode.Model.X + nodeWidth / 2;
-            var y = _currentNode.Model.Y-40 + nodeHeight / 2;
+            var y = _currentNode.Model.Y - 40 + nodeHeight / 2;
             var widthAdjustment = sv.ActualWidth / 2;
             var heightAdjustment = sv.ActualHeight / 2;
 
@@ -153,18 +163,22 @@ namespace NuSysApp.Util
             var translateX = widthAdjustment - x;
             var translateY = heightAdjustment - y;
             double scale;
-           
+
             // Scale based on the width and height proportions of the current node
-            if (nodeWidth > nodeHeight) {    
-               scale = sv.ActualWidth / nodeWidth;
-               scale = scale * .55;
+            if (nodeWidth > nodeHeight)
+            {
+                scale = sv.ActualWidth / nodeWidth;
+                if (nodeWidth - nodeHeight <= 20)
+                    scale = scale * .50;
+                else
+                    scale = scale * .55;
             }
             else
-            {         
+            {
                 scale = sv.ActualHeight / nodeHeight;
-                scale = scale * .7;    
-            }           
-          
+                scale = scale * .7;
+            }
+
             // Call a helper method to set up the animation
             AnimatePresentation(scale, x, y, translateX, translateY);
 
