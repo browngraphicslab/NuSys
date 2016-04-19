@@ -115,9 +115,7 @@ namespace NuSysApp.Util
 
         private void FullScreen()
         {
-            var transform = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
-            Debug.WriteLine("Center X: "+transform.CenterX+", Center Y: "+transform.CenterY);
-
+          
             // Define some variables that will be used in future translation/scaling
 
             var sv = SessionController.Instance.SessionView;

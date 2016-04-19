@@ -62,9 +62,7 @@
                                                 <TextBlock Text="Present" TextAlignment="Center" Foreground="#9CC5C2" FontSize="12"></TextBlock>
                                             </StackPanel>
                                         </Button>
-                                        <Button Name="TestButton" Width="60" Height="30" Content="Test" Background="Green" Margin="0,200,10,0">
-                    
-                                        </Button>
+                                        
 
                                     </Canvas>
 

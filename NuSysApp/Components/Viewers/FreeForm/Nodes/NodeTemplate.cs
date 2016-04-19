@@ -51,7 +51,7 @@ namespace NuSysApp
         public Button DuplicateElement = null;
         public Button Link = null;
         public Button PresentationMode = null;
-        public Button TestButton = null;
+       
 
         private Image _dragItem;
 
@@ -124,8 +124,6 @@ namespace NuSysApp
             PresentationMode = (Button) GetTemplateChild("PresentationMode");
             PresentationMode.Click += OnPresentationClick;
 
-            TestButton = (Button)GetTemplateChild("TestButton");
-            TestButton.Click += OnTestButtonClick; ;
 
             btnDelete = (Button)GetTemplateChild("btnDelete");
             btnDelete.Click += OnBtnDeleteClick;
@@ -432,25 +430,7 @@ namespace NuSysApp
             sv.EnterPresentationMode(vm.Model);
         }
 
-        private async void OnTestButtonClick(object sender, RoutedEventArgs e)
-        {
-
-            var vm = ((ElementViewModel)this.DataContext);
-            var sv = SessionController.Instance.SessionView;
-
-            var r = new RenderTargetBitmap();
-            
-            //var view = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => ((ElementViewModel)item.DataContext).Controller.Model.Id == vm.Id)?.First();
-            await r.RenderAsync(sv.MainCanvas);
-            this.SaveImage(r);
-
-            // make into image
-            Image im = new Image();
-            im.Source = r;
-            sv.FreeFormViewer.AtomCanvas.Children.Add(im);
-            //Canvas.SetLeft(im, vm.Model.X);
-            //Canvas.SetTop(im, vm.Model.Y);
-        }
+       
 
         /// <summary> 
         /// Event handler for the "Save Image.." button. 
