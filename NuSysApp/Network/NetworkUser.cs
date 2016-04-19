@@ -74,8 +74,6 @@ namespace NuSysApp
         }
         public void SetUserController(ElementController controller)
         {
-            controller.SetNetworkUser(null);
-
             if (controller != _controller)
             {
                 if (_controller != null)

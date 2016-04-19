@@ -322,11 +322,13 @@ namespace NuSysApp
 
                     if (rectangles.Count() == 2)
                     {
-                        Debug.WriteLine("link dropped on image");
-                        var second = (Rectangle) rectangles.ElementAt(1);
-                        second.Fill = new SolidColorBrush(Colors.Yellow);
-                        second.Opacity = 0.2;
-                        second.Stroke = new SolidColorBrush(Colors.Red);
+                        //I took this out because if you add this then the scrub bar value which i guess is a rectangle becomes yellow as well if you 
+                        //drag a fg link ontop of the scrub bar.
+                        //Debug.WriteLine("link dropped on image");
+                        //var second = (Rectangle) rectangles.ElementAt(1);
+                        //second.Fill = new SolidColorBrush(Colors.Yellow);
+                        //second.Opacity = 0.2;
+                        //second.Stroke = new SolidColorBrush(Colors.Red);
                     }
                     if (hitsStart2.Any())
                     {
