@@ -182,7 +182,7 @@ namespace NuSysApp
                 test.Add(filename);
                 test.Add("niters 10");
                 test.Add("ntopics 1");
-                test.Add("twords 10");
+                test.Add("twords 5");
                 test.Add("dir ");
                 test.Add("est true");
                 test.Add("alpha 12.5");

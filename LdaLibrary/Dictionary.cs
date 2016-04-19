@@ -139,7 +139,7 @@ namespace LdaLibrary
                 lines.Add(key + " " + value);
             }
 
-            await FileIO.WriteLinesAsync(TagExtractor.WordmapFile, lines);
+            //await FileIO.WriteLinesAsync(TagExtractor.WordmapFile, lines);
 
             // the above code should work
 
