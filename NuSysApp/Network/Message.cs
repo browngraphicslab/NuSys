@@ -74,6 +74,15 @@ namespace NuSysApp
             get { return Get(key); }
             set { _dict[key] = value; }
         }
+
+        public object GetObject(string key)
+        {
+            if (_dict.ContainsKey(key))
+            {
+                return _dict[key];
+            }
+            return null;
+        }
         public string Get(string key)
         {
             if (_dict.ContainsKey(key) && _dict[key] != null)

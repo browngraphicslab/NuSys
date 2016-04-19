@@ -22,7 +22,7 @@ namespace NuSysApp
 
         public bool Equals(InkWrapper wrapper)
         {
-            return wrapper.Color == Color && wrapper.Stroke == Stroke && wrapper.Type == Type;
+            return wrapper.Stroke == Stroke && wrapper.Type == Type;
         }
     }
 }

@@ -43,9 +43,11 @@ namespace NuSysApp
             Redraw();
         }
 
-        public void AddAdorment(IEnumerable<InkPoint> points, Color color, bool fireEvent = true)
+        public InkStroke AddAdorment(IEnumerable<InkPoint> points, Color color, bool fireEvent = true)
         {
-            AddAdorment(strokeBuilder.CreateStrokeFromInkPoints(points, Matrix3x2.Identity), color, fireEvent);
+            var stroke = strokeBuilder.CreateStrokeFromInkPoints(points, Matrix3x2.Identity);
+            AddAdorment(stroke, color, fireEvent);
+            return stroke;
         }
 
         public void AddAdorment(InkStroke stroke, Color color, bool fireEvent = true)

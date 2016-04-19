@@ -44,17 +44,28 @@ namespace NuSysApp
             var rgb = JsonConvert.DeserializeObject<byte[]>(data["color"]);
             var color = Color.FromArgb(255, rgb[0], rgb[1], rgb[2]);
 
+            if (InkStorage._inkStrokes.ContainsKey(id))
+            {
+                return;
+            }
+
             if (type == "adornment")
             {
-                
+
                 if (!InkStorage._inkStrokes.ContainsKey("id"))
-                    SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddAdorment(inkpoints, color, false);
+                {
+                    var stroke = SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddAdorment(inkpoints, color, false);
+                    InkStorage._inkStrokes.Add(id, new InkWrapper(stroke, "adornment", color));
+                }
             }
             else
             {
-                
+
                 if (!InkStorage._inkStrokes.ContainsKey("id"))
-                    SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddStroke(inkpoints);
+                {
+                    var stroke = SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddStroke(inkpoints);
+                    InkStorage._inkStrokes.Add(id,new InkWrapper(stroke,"ink",color));
+                }
             }
 
         }
