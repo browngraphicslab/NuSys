@@ -48,7 +48,7 @@ namespace NuSysApp
             {
                 UpdateControlPoints();
             };
-            Debug.WriteLine("fdsafdsa");
+
             object value;
             if (vm.LinkModel.InFGDictionary != null)
             {
@@ -229,6 +229,7 @@ namespace NuSysApp
         private void UpdateControlPoints()
         {
             this.UpdateEndPoints();
+            this.UpdateArrow();
 
 
             var vm = (LinkViewModel)this.DataContext;
@@ -248,6 +249,20 @@ namespace NuSysApp
 
             Canvas.SetLeft(AnnotationContainer, anchor1.X - distanceX / 2 - Rect.ActualWidth / 2);
             Canvas.SetTop(AnnotationContainer, anchor1.Y - distanceY / 2 - Rect.ActualHeight * 1.5);
+
+        }
+
+        private void UpdateArrow()
+        {
+            var center = new Point((pathfigure.StartPoint.X + curve.Point3.X)/2.0, (pathfigure.StartPoint.Y + curve.Point3.Y)/ 2.0);
+            var xDiff = curve.Point3.X - pathfigure.StartPoint.X;
+            var yDiff = curve.Point3.Y - pathfigure.StartPoint.Y;
+            var angle = Math.Atan2(yDiff, xDiff) * (180 / Math.PI);
+            var tranformGroup = new TransformGroup();
+            tranformGroup.Children.Add(new RotateTransform { Angle = angle, CenterX = 9, CenterY = 9 });
+            tranformGroup.Children.Add(new TranslateTransform { X = center.X-9, Y = center.Y-9 });
+
+            arrow.RenderTransform = tranformGroup;
 
         }
 

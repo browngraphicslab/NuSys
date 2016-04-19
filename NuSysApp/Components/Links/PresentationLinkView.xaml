@@ -23,28 +23,32 @@
         <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
         <Path x:Name="BezierLink" Stroke="Plum" StrokeThickness="30" Opacity=".28" CompositeMode="MinBlend">
             <Path.Data>
-                <PathGeometry>
-                    <PathGeometry.Figures>
-                        <PathFigureCollection>
-                            <!--this startpoint should be bound to node centerpoint-->
+                <GeometryGroup>
+                    <PathGeometry>
+                        <PathGeometry.Figures>
+                            <PathFigureCollection>
+                                <!--this startpoint should be bound to node centerpoint-->
 
-                            <PathFigure x:Name="pathfigure">
-                                <PathFigure.Segments>
-                                    <PathSegmentCollection>
+                                <PathFigure x:Name="pathfigure">
+                                    <PathFigure.Segments>
+                                        <PathSegmentCollection>
 
-                                        <!-- this bezier segment has 3 points of curvilinear change. -->
-                                        <!-- presumably these will also be bound to a location?? ex. point3 is endpoint, so should be connected to
+                                            <!-- this bezier segment has 3 points of curvilinear change. -->
+                                            <!-- presumably these will also be bound to a location?? ex. point3 is endpoint, so should be connected to
                                             node on the other end of the link -->
 
-                                        <BezierSegment x:Name="curve"/>
-                                    </PathSegmentCollection>
-                                </PathFigure.Segments>
-                            </PathFigure>
-                        </PathFigureCollection>
-                    </PathGeometry.Figures>
-                </PathGeometry>
+                                            <BezierSegment x:Name="curve"/>
+                                        </PathSegmentCollection>
+                                    </PathFigure.Segments>
+                                </PathFigure>
+                            </PathFigureCollection>
+                        </PathGeometry.Figures>
+                    </PathGeometry>
+                </GeometryGroup>
             </Path.Data>
         </Path>
+        <Polygon x:Name="arrow" Fill="White" Points="0,0 18,9, 0,18"/>
+
         <StackPanel x:Name="AnnotationContainer" Orientation="Vertical" Visibility="Collapsed" >
             <Grid>
                 <Rectangle x:Name="Rect" Fill="LightGray" RadiusX="5" RadiusY="5" Width="260"  HorizontalAlignment="Left"/>

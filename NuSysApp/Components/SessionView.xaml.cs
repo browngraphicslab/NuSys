@@ -55,7 +55,14 @@ namespace NuSysApp
         #endregion Private Members
 
         private int initChatNotifs;
+        private MGlass _glass;
 
+        public MGlass Glass
+        {
+            get { return _glass; }
+        }
+
+        
         public SessionView()
         {
             this.InitializeComponent();
@@ -88,6 +95,7 @@ namespace NuSysApp
             {
                 
             };
+            //_glass = new MGlass(MainCanvas);
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
@@ -159,7 +167,7 @@ namespace NuSysApp
             }            
         }
 
-        public void EnterPresentationMode(ElementModel em)
+        public void EnterPresentationMode(ElementViewModel em)
         {
             _presentationModeInstance = new PresentationMode(em);
             NextNode.Visibility = _presentationModeInstance.Next() ? Visibility.Visible : Visibility.Collapsed;

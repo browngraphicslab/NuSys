@@ -120,7 +120,8 @@ namespace NuSysApp
 
             compositeTransform.CenterX = cent.X;
             compositeTransform.CenterY = cent.Y;
-            vm.CompositeTransform = compositeTransform;
+            _cview.InqCanvas.Transform = compositeTransform;
+            _cview.InqCanvas.Redraw();
             e.Handled = true;
         }
 

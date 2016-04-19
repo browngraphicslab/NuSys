@@ -17,14 +17,14 @@ namespace NuSysApp.Util
     /// </summary>
     class PresentationMode
     {
-        private ElementModel _previousNode = null;
-        private ElementModel _nextNode = null;
-        private ElementModel _currentNode;
+        private ElementViewModel _previousNode = null;
+        private ElementViewModel _nextNode = null;
+        private ElementViewModel _currentNode;
         private CompositeTransform _originalTransform;
         private DispatcherTimer _timer;
         private Storyboard _storyboard;
 
-        public PresentationMode(ElementModel start)
+        public PresentationMode(ElementViewModel start)
         {
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromMilliseconds(5);
@@ -46,6 +46,7 @@ namespace NuSysApp.Util
 
         private void OnTick(object sender, object e)
         {
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Transform = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
             SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Redraw();
         }
 
@@ -55,13 +56,30 @@ namespace NuSysApp.Util
         /// <returns></returns>
         private void Load()
         {
-            var vmList = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
-                item => ((ElementViewModel)item.DataContext).Model.Id == _currentNode.Id);
+            var next = GetNextOrPrevNode(_currentNode, false);
+            if (next == null)
+            {
+                _nextNode = null;
+            } else
+            {
+                var nextVMList = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
+                    item => ((ElementViewModel)item.DataContext).Model.Id == next.Id);
 
-            var vm = (ElementViewModel)vmList.Single().DataContext;
+                _nextNode = (ElementViewModel)nextVMList.Single().DataContext;
+            }
 
-            _nextNode = GetNextOrPrevNode(vm, false);
-            _previousNode = GetNextOrPrevNode(vm, true);
+            var prev = GetNextOrPrevNode(_currentNode, true);
+            if (prev == null)
+            {
+                _previousNode = null;
+            }
+            else
+            {
+                var prevVMList = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
+                item => ((ElementViewModel)item.DataContext).Model.Id == prev.Id);
+
+                _previousNode = (ElementViewModel)prevVMList.Single().DataContext;
+            }
         }
 
         public bool Next()
@@ -136,8 +154,8 @@ namespace NuSysApp.Util
             // Define some variables that will be used in future translation/scaling
 
             var sv = SessionController.Instance.SessionView;
-            var x = _currentNode.X + _currentNode.Width / 2;
-            var y = _currentNode.Y + _currentNode.Height / 2;
+            var x = _currentNode.Model.X + _currentNode.Width / 2;
+            var y = _currentNode.Model.Y + _currentNode.Height / 2;
             var widthAdjustment = sv.ActualWidth / 2;
             var heightAdjustment = sv.ActualHeight / 2;
 
@@ -149,17 +167,34 @@ namespace NuSysApp.Util
             
             // Obtain correct scale value based on width/height ratio of passed in element
             double scale;
+
             if (_currentNode.Width > _currentNode.Height) {
                 translateY += 40;
+               // Debug.WriteLine("SV Width: " + sv.ActualWidth);
+               // Debug.WriteLine("Node Width: " + _currentNode.Width);
                 scale = sv.ActualWidth / _currentNode.Width;
+              //  Debug.WriteLine("Scale: " + scale);
+
             }
             else
             {
+              //  Debug.WriteLine("SV Height: " + sv.ActualHeight);
+              ////  Debug.WriteLine("Node Height: " + _currentNode.Height);
                 scale = sv.ActualHeight / _currentNode.Height;
+             //   Debug.WriteLine("Scale: " + scale);
             }
                 
             // Scale the active free form viewer so that the passed in element appears to be full screen.
-            scale = scale * .6; // adjustment so things don't get cut off
+
+
+            if (Math.Abs(_currentNode.Width - _currentNode.Height) <= 30)
+            {
+                scale = scale * .5;
+            }
+                
+            else
+                scale = scale * .6; // adjustment so things don't get cut off
+
 
             //THIS WORKS, BUT NO ANIMATION
             /*
@@ -178,11 +213,9 @@ namespace NuSysApp.Util
             // Create a duration of 2 seconds.
             Duration duration = new Duration(TimeSpan.FromSeconds(1));
             _timer.Start();
-            _storyboard.Stop();
-            _storyboard.Children.Clear();
-
-            Storyboard storyboard = _storyboard;
-
+       
+            Storyboard storyboard = new Storyboard();
+            
             storyboard.Duration = duration;
             DoubleAnimation scaleAnimationX = MakeAnimationElement(scale, "ScaleX", duration);
             DoubleAnimation scaleAnimationY = MakeAnimationElement(scale, "ScaleY", duration);
@@ -211,6 +244,7 @@ namespace NuSysApp.Util
         {
             var transform = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
             DoubleAnimation toReturn = new DoubleAnimation();
+            toReturn.EnableDependentAnimation = true;
             toReturn.Duration = duration;
             Storyboard.SetTarget(toReturn, transform);
             Storyboard.SetTargetProperty(toReturn, name);

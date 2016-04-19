@@ -91,6 +91,9 @@ namespace NuSysApp
         {
             _width = width;
             _height = height;
+
+
+
             UpdateAnchor();
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
@@ -149,6 +152,8 @@ namespace NuSysApp
             Transform.TranslateY = model.Y;
             Transform.ScaleX = model.ScaleX;
             Transform.ScaleY = model.ScaleY;
+
+
 
             Id = model.Id;
             Width = model.Width;

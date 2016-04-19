@@ -414,6 +414,7 @@
     <Compile Include="Effects\Anim.cs" />
     <Compile Include="Effects\AnimatableUserControl.cs" />
     <Compile Include="Effects\AnimatableNodeView.cs" />
+    <Compile Include="MGlass.cs" />
     <Compile Include="Models\AreaModel.cs" />
     <Compile Include="Models\CollectionLibraryElementModel.cs" />
     <Compile Include="Models\CollectionElementModel.cs" />

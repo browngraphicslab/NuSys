@@ -16,6 +16,11 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Components.Nodes;
 using NuSysApp.Nodes.AudioNode;
+using Windows.Graphics.Imaging;
+using Windows.Graphics.Display;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Storage;
+using Windows.Storage.Pickers;
 
 // The Templated Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234235
 
@@ -399,7 +404,79 @@ namespace NuSysApp
             vm.IsEditing = false;
             highlight.Visibility = Visibility.Collapsed;
             
-            sv.EnterPresentationMode(vm.Model);
+            sv.EnterPresentationMode(vm);
+        }
+
+
+        private async void OnTestButtonClick(object sender, RoutedEventArgs e)
+        {
+
+            var vm = ((ElementViewModel)this.DataContext);
+            var sv = SessionController.Instance.SessionView;
+
+            var r = new RenderTargetBitmap();
+            
+            //var view = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => ((ElementViewModel)item.DataContext).Controller.Model.Id == vm.Id)?.First();
+            await r.RenderAsync(sv);
+            this.SaveImage(r);
+
+            // make into image
+            Image im = new Image();
+            im.Source = r;
+            sv.FreeFormViewer.AtomCanvas.Children.Add(im);
+            //Canvas.SetLeft(im, vm.Model.X);
+            //Canvas.SetTop(im, vm.Model.Y);
+
+            
+
+
+        }
+
+        /// <summary> 
+        /// Event handler for the "Save Image.." button. 
+        /// </summary> 
+        /// <param name="sender"></param> 
+        /// <param name="e"></param> 
+        private async void SaveImage(RenderTargetBitmap renderTargetBitmap)
+        {
+           
+
+            // Render to an image at the current system scale and retrieve pixel contents 
+            
+           
+            var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();
+
+            var savePicker = new FileSavePicker();
+            savePicker.DefaultFileExtension = ".png";
+            savePicker.FileTypeChoices.Add(".png", new List<string> { ".png" });
+            savePicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+            savePicker.SuggestedFileName = "snapshot.png";
+
+            // Prompt the user to select a file 
+            var saveFile = await savePicker.PickSaveFileAsync();
+
+            // Verify the user selected a file 
+            if (saveFile == null)
+                return;
+
+            // Encode the image to the selected file on disk 
+            using (var fileStream = await saveFile.OpenAsync(FileAccessMode.ReadWrite))
+            {
+                var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, fileStream);
+
+                encoder.SetPixelData(
+                    BitmapPixelFormat.Bgra8,
+                    BitmapAlphaMode.Ignore,
+                    (uint)renderTargetBitmap.PixelWidth,
+                    (uint)renderTargetBitmap.PixelHeight,
+                    DisplayInformation.GetForCurrentView().LogicalDpi,
+                    DisplayInformation.GetForCurrentView().LogicalDpi,
+                    pixelBuffer.ToArray());
+
+                await encoder.FlushAsync();
+            }
+
+           
         }
 
         private void OnResizerManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
