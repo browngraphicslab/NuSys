@@ -284,7 +284,7 @@ namespace LdaLibrary
                 // await writer.WriteAsync(end,0,end.Length); // in the future, after it is runnable, see the length of "\n"
                 //lines.Add("");
             }
-            await FileIO.WriteLinesAsync(TagExtractor.Tassign, lines);
+            //await FileIO.WriteLinesAsync(TagExtractor.Tassign, lines);
  
             
 
@@ -309,7 +309,7 @@ namespace LdaLibrary
                 }
                 lines.Add(line);
             }
-            await FileIO.WriteLinesAsync(TagExtractor.Theta, lines);
+            //await FileIO.WriteLinesAsync(TagExtractor.Theta, lines);
             return true;
         }
 
@@ -325,7 +325,7 @@ namespace LdaLibrary
                 lines.Add(line);
             }
 
-            await FileIO.WriteLinesAsync(TagExtractor.Phi, lines);
+            //await FileIO.WriteLinesAsync(TagExtractor.Phi, lines);
 
             return true;
         }
