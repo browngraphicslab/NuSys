@@ -345,7 +345,7 @@ namespace LdaLibrary
             lines.Add("nwords=" + V);
             lines.Add("liters=" + liter);
 
-            await FileIO.WriteLinesAsync(TagExtractor.Others, lines);
+           // await FileIO.WriteLinesAsync(TagExtractor.Others, lines);
            
 
             return true;
@@ -394,7 +394,7 @@ namespace LdaLibrary
                     }
                 }
             } // end for each topic
-            await FileIO.WriteLinesAsync(TagExtractor.Twords, lines);
+            //await FileIO.WriteLinesAsync(TagExtractor.Twords, lines);
 
             return true;
         }
