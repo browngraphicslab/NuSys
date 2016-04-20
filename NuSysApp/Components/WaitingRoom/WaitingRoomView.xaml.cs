@@ -78,7 +78,14 @@ namespace NuSysApp
             
             Init();
 
-            PointerPressed += Prresseed;
+            SlideOutLogin.Completed += SlideOutLoginComplete;
+
+            AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(Prresseed), true);
+        }
+
+        private void SlideOutLoginComplete(object sender, object e)
+        {
+            login.Visibility = Visibility.Collapsed;
         }
 
         private void Prresseed(object sender, PointerRoutedEventArgs e)
