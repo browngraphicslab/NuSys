@@ -326,6 +326,11 @@ namespace NuSysApp
             return await _serverClient.GetContentWithoutData(contentIds);
         }
 
+        public async Task<string> DuplicateLibraryElement(string libraryElementId)
+        {
+            return await _serverClient.DuplicateLibraryElement(libraryElementId);
+        }
+
         public async Task<Dictionary<string,Dictionary<string,object>>> GetAllLibraryElements()
         {
             return await _serverClient.GetRepo();
