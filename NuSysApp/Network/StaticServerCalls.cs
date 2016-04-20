@@ -8,6 +8,39 @@ namespace NuSysApp
 {
     public class StaticServerCalls
     {
+        public static async Task<bool> CreateSnapshot()//returns true if successful
+        {
+            string libraryId = SessionController.Instance.ActiveFreeFormViewer.Controller.Model.LibraryId;
+            var collectionLibraryModel = SessionController.Instance.ContentController.Get(libraryId) as CollectionLibraryElementModel;
+            if (collectionLibraryModel == null)
+            {
+                return false;
+            }
+
+            var snapshotId = SessionController.Instance.GenerateId();
+
+            var m = new Message();
+            m["id"] = snapshotId;
+            m["type"] = ElementType.Collection.ToString();
+            m["inklines"] = collectionLibraryModel.InkLines;
+            m["favorited"] = true;
+            m["title"] = collectionLibraryModel.Title + " SNAPSHOT "+DateTime.Now;
+
+            var libraryElementRequest = new CreateNewLibraryElementRequest(m);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
+
+            var children = SessionController.Instance.IdToControllers.Where(item => item.Value.Model.ParentCollectionId == libraryId).ToArray();
+
+            foreach (var child in children)
+            {
+                var dict = await child.Value.Model.Pack();
+                dict["creator"] = snapshotId;
+                dict["id"] = SessionController.Instance.GenerateId();
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(new Message(dict)));
+            }
+
+            return true; 
+        }
         public static async Task<ElementCollectionController> PutCollectionInstanceOnMainCollection(double x, double y, string contentID, double width = 400, double height = 400, string id = null, CollectionElementModel.CollectionViewType collectionView = CollectionElementModel.CollectionViewType.List)
         {
             return await Task.Run(async delegate

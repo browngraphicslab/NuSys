@@ -269,7 +269,7 @@ namespace NuSysApp
             // transform hull points to global space
             for (int i = 0; i < _hull.Points.Count(); i++)
             {
-                _hull.Points[i] = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(_hull.Points[i]);
+              //  _hull.Points[i] = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(_hull.Points[i]);
             }
 
             // REMOVE COMMENTS FROM LINES BELOW TO SEE THE VISUAL HULL

@@ -37,7 +37,14 @@ namespace NuSysApp
                 var content = _user.Name ?? _user.ID;
                 if (content != "Me")
                 {
-                    _userName = content.Substring(0, 1).ToUpper();
+                    if (content.Length == 0)
+                    {
+                        _userName = "_";
+                    }
+                    else
+                    {
+                        _userName = content.Substring(0, 1).ToUpper();
+                    }
                 }
                 else
                 {

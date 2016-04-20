@@ -11,6 +11,7 @@ namespace NuSysApp
         private HashSet<string> _children;
 
         public HashSet<string> InkLines;
+        public int LastInkCount = 0;
 
         public delegate void InkEventHandler(string id);
         public event InkEventHandler OnInkAdded;
@@ -24,7 +25,9 @@ namespace NuSysApp
         public CollectionLibraryElementModel(string id, string contentName = null, bool favorited = false) : base(id, ElementType.Collection, contentName)
         {
             _children = new HashSet<string>();
+
             this.Favorited = favorited;
+
             InkLines = new HashSet<string>();
         }
 

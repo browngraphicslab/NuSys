@@ -31,10 +31,9 @@ namespace NuSysApp
 
         //public delegate void NewElementAvailableEventHandler(LibraryElement element);
         //public event NewElementAvailableEventHandler OnNewElementAvailable;
-
+        private LibraryFavorites _libraryFavorites;
         private LibraryList _libraryList;
         private LibraryGrid _libraryGrid;
-        private LibraryFavorites _libraryFavorites;
         private FloatingMenuView _menu;
         private double _graphButtonX;
         private double _graphButtonY;
@@ -48,19 +47,14 @@ namespace NuSysApp
             this.DataContext = vm;
             this.InitializeComponent();
             var data = SessionController.Instance.ContentController.Values.Where(item => item.Type != ElementType.Link);
-            var favorites = SessionController.Instance.ContentController.Values.Where(item => item.Favorited == true);
-
             _pageViewModel = new LibraryPageViewModel(new ObservableCollection<LibraryElementModel>(data));
             _favoritesViewModel = new LibraryFavoritesViewModel(new ObservableCollection<LibraryElementModel>(data));
-
-
             this.MakeViews(_pageViewModel, properties);
             _propertiesWindow = properties;
+            properties.AddedToFavorite += AddToFavorites;
             WorkspacePivot.Content = _libraryList;
             _menu = menu;
-
-            properties.AddedToFavorite += AddToFavorites;
-
+    
             vm.OnElementDeleted += delegate
             {
                 UITask.Run(delegate
@@ -76,16 +70,13 @@ namespace NuSysApp
 
         public async void ToggleVisiblity()
         {
-            Visibility = Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
-            if (Visibility == Visibility.Collapsed)
+            Visibility = Visibility == Visibility.Visible ? Visibility.Collapsed: Visibility.Visible;
+            if(Visibility == Visibility.Collapsed)
             {
                 _propertiesWindow.Visibility = Visibility.Collapsed;
                 LibraryElementModel.LitElement?.FireLightupContent(false);
             }
         }
-
-
-
         //public async Task InitializeLibrary()
         //{
         //    Task.Run(async delegate
@@ -111,14 +102,10 @@ namespace NuSysApp
         //    _elements.Add(element.ContentID, element);
         //    OnNewElementAvailable?.Invoke(element);
         //}
-
-
-
         public void MakeViews(LibraryPageViewModel pageViewModel, LibraryElementPropertiesWindow properties)
         {
             //_libraryGrid = new LibraryGrid(this, pageViewModel, properties);
             _libraryList = new LibraryList(this, pageViewModel, properties);
-
             _libraryFavorites = new LibraryFavorites(this, _favoritesViewModel, properties);
             //_libraryList.OnLibraryElementDrag += ((LibraryBucketViewModel)this.DataContext).ListViewBase_OnDragItemsStarting;
             //_libraryGrid.OnLibraryElementDrag += ((LibraryBucketViewModel)this.DataContext).GridViewDragStarting;
@@ -131,11 +118,11 @@ namespace NuSysApp
 
         private void TextBox_OnTextChanging(Object sender, String args)
         {
-            //((LibraryViewable)(WorkspacePivot?.Content)).SetItems(SessionController.Instance.ContentController.Values.Where(item => item.Type != ElementType.Link).ToArray
             if (WorkspacePivot.Content.Equals(_libraryList))
             {
                 ((LibraryViewable)(WorkspacePivot?.Content)).Search(((TextInputBlock)sender).Text.ToLower());
             }
+
             _propertiesWindow.Visibility = Visibility.Collapsed;
         }
 
@@ -152,8 +139,6 @@ namespace NuSysApp
         {
             _libraryList.Update();
         }
-
-        
 
         private async void GridButton_OnTapped(object sender, TappedRoutedEventArgs e)
         {
@@ -225,6 +210,7 @@ namespace NuSysApp
         //}
 
 
+
         private void AddToFavorites(object sender, LibraryElementModel element)
         {
             if (!element.Favorited)
@@ -255,6 +241,7 @@ namespace NuSysApp
             */
 
         }
+
         //Trent, this needs to be filled in in order for the importing to the library to work.
         private async void AddFile()
         {
@@ -432,6 +419,7 @@ namespace NuSysApp
 
         }
 
+
         private void Graph_OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
             // find x and y coordintes of pointer, to be used in graph image manipulation
@@ -506,53 +494,30 @@ namespace NuSysApp
             elementMsg["nodeType"] = ElementType.Collection;
             elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             elementMsg["id"] = newCollectionId;
-            if(WorkspacePivot.Content == _libraryList) 
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Search Results"));
-            else if(WorkspacePivot.Content == _libraryFavorites)
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Favorites"));
+
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Search Results"));
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
 
             //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
 
             var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(r.X, r.Y, contentId, 300, 300, newCollectionId);
-            if (WorkspacePivot.Content == _libraryList)
+            
+            foreach ( var libraryElementModel in _pageViewModel.PageElements.ToList().GetRange(0, Math.Min(_pageViewModel.PageElements.Count, 10)))
             {
-                foreach (var libraryElementModel in _pageViewModel.PageElements.ToList().GetRange(0, Math.Min(_pageViewModel.PageElements.Count, 10)))
-                {
-                    var dict = new Message();
-                    dict["title"] = libraryElementModel?.Title;
-                    dict["width"] = "300";
-                    dict["height"] = "300";
-                    dict["nodeType"] = libraryElementModel.Type.ToString();
-                    dict["x"] = "50000";
-                    dict["y"] = "50000";
-                    dict["contentId"] = libraryElementModel.Id;
-                    dict["metadata"] = metadata;
-                    dict["autoCreate"] = true;
-                    dict["creator"] = controller.LibraryElementModel.Id;
-                    var request = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-                }
-            }
-            else if (WorkspacePivot.Content == _libraryFavorites)
-            {
-                foreach (var libraryElementModel in _favoritesViewModel.PageElements.ToList().GetRange(0, Math.Min(_favoritesViewModel.PageElements.Count, 10)))
-                {
-                    var dict = new Message();
-                    dict["title"] = libraryElementModel?.Title;
-                    dict["width"] = "300";
-                    dict["height"] = "300";
-                    dict["nodeType"] = libraryElementModel.Type.ToString();
-                    dict["x"] = "50000";
-                    dict["y"] = "50000";
-                    dict["contentId"] = libraryElementModel.Id;
-                    dict["metadata"] = metadata;
-                    dict["autoCreate"] = true;
-                    dict["creator"] = controller.LibraryElementModel.Id;
-                    var request = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-                }
+                var dict = new Message();
+                dict["title"] = libraryElementModel?.Title;
+                dict["width"] = "300";
+                dict["height"] = "300";
+                dict["nodeType"] = libraryElementModel.Type.ToString();
+                dict["x"] = "50000";
+                dict["y"] = "50000";
+                dict["contentId"] = libraryElementModel.Id;
+                dict["metadata"] = metadata;
+                dict["autoCreate"] = true;
+                dict["creator"] = controller.LibraryElementModel.Id;
+                var request = new NewElementRequest(dict);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             }
         }
     }

@@ -9,7 +9,6 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using MyToolkit.Utilities;
-using System.Diagnostics;
 
 namespace NuSysApp.Util
 {
@@ -18,17 +17,37 @@ namespace NuSysApp.Util
     /// </summary>
     class PresentationMode
     {
-        private ElementModel _previousNode = null;
-        private ElementModel _nextNode = null;
-        private ElementModel _currentNode;
+        private ElementViewModel _previousNode = null;
+        private ElementViewModel _nextNode = null;
+        private ElementViewModel _currentNode;
         private CompositeTransform _originalTransform;
+        private DispatcherTimer _timer;
+        private Storyboard _storyboard;
 
-        public PresentationMode(ElementModel start)
+        public PresentationMode(ElementViewModel start)
         {
+            _timer = new DispatcherTimer();
+            _timer.Interval = TimeSpan.FromMilliseconds(5);
+            _timer.Tick += OnTick;
+
+            _storyboard = new Storyboard();
+            _storyboard.Completed += OnAnimationCompleted;
+
             _currentNode = start;
             _originalTransform = MakeShallowCopy(SessionController.Instance.ActiveFreeFormViewer.CompositeTransform);
             Load();
             FullScreen();
+        }
+
+        private void OnAnimationCompleted(object sender, object e)
+        {
+            _timer.Stop();
+        }
+
+        private void OnTick(object sender, object e)
+        {
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Transform = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Redraw();
         }
 
         /// <summary>
@@ -37,13 +56,35 @@ namespace NuSysApp.Util
         /// <returns></returns>
         private void Load()
         {
-            var vmList = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
-                item => ((ElementViewModel)item.DataContext).Model.Id == _currentNode.Id);
+            var next = GetNextOrPrevNode(_currentNode, false);
+            if (next == null)
+            {
+                _nextNode = null;
+            } else
+            {
+                var nextVMList = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
+                    item => ((ElementViewModel)item.DataContext).Model.Id == next.Id);
 
-            var vm = (ElementViewModel)vmList.Single().DataContext;
+                _nextNode = (ElementViewModel)nextVMList.Single().DataContext;
+            }
 
-            _nextNode = GetNextOrPrevNode(vm, false);
-            _previousNode = GetNextOrPrevNode(vm, true);
+            var prev = GetNextOrPrevNode(_currentNode, true);
+            if (prev == null)
+            {
+                _previousNode = null;
+            }
+            else
+            {
+                var prevVMList = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
+                item => ((ElementViewModel)item.DataContext).Model.Id == prev.Id);
+
+                _previousNode = (ElementViewModel)prevVMList.Single().DataContext;
+            }
+        }
+
+        public void GoToCurrent()
+        {
+            FullScreen();
         }
 
         public bool Next()
@@ -115,12 +156,25 @@ namespace NuSysApp.Util
 
         private void FullScreen()
         {
-          
-            // Define some variables that will be used in future translation/scaling
 
+            // Determines tag adjustment by getting the height of the tag container from the view
+            double tagAdjustment = 0;
+            var view = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
+                    item => ((ElementViewModel)item.DataContext).Model.Id == _currentNode.Id);
+            var found = view.Single().FindName("nodeTpl");
+            if (found != null)
+            {
+                var ss = (NodeTemplate)found;
+                tagAdjustment = ss.tags.ActualHeight;
+            }
+
+
+            // Define some variables that will be used in future translation/scaling
+            var nodeWidth = _currentNode.Width;
+            var nodeHeight = _currentNode.Height + 40 + tagAdjustment; // 40 for title adjustment
             var sv = SessionController.Instance.SessionView;
-            var x = _currentNode.X + _currentNode.Width / 2;
-            var y = _currentNode.Y + _currentNode.Height / 2;
+            var x = _currentNode.Model.X + nodeWidth / 2;
+            var y = _currentNode.Model.Y - 40 + nodeHeight / 2;
             var widthAdjustment = sv.ActualWidth / 2;
             var heightAdjustment = sv.ActualHeight / 2;
 
@@ -129,38 +183,28 @@ namespace NuSysApp.Util
             var scaleY = 1;
             var translateX = widthAdjustment - x;
             var translateY = heightAdjustment - y;
-            
-            // Obtain correct scale value based on width/height ratio of passed in element
             double scale;
-            if (_currentNode.Width > _currentNode.Height) {
-                translateY += 40;
-                scale = sv.ActualWidth / _currentNode.Width;
+
+
+            // Scale based on the width and height proportions of the current node
+            if (nodeWidth > nodeHeight)
+            {
+                scale = sv.ActualWidth / nodeWidth;
+                if (nodeWidth - nodeHeight <= 20)
+                    scale = scale * .50;
+                else
+                    scale = scale * .55;
             }
+
+    
             else
             {
-                scale = sv.ActualHeight / _currentNode.Height;
+                scale = sv.ActualHeight / nodeHeight;
+                scale = scale * .7;
             }
-                
-            // Scale the active free form viewer so that the passed in element appears to be full screen.
-            
 
-            if (Math.Abs(_currentNode.Width - _currentNode.Height) <= 30)
-            {
-                scale = scale * .5;
-                Debug.WriteLine("hey");
-            }
-                
-            else
-                scale = scale * .5; // adjustment so things don't get cut off
 
-            //THIS WORKS, BUT NO ANIMATION
-            /*
-            compositeTransform.CenterX = x;
-            compositeTransform.CenterY = y;
-            compositeTransform.ScaleX = scale;
-            compositeTransform.ScaleY = scale;
-            */
-
+            // Call a helper method to set up the animation
             AnimatePresentation(scale, x, y, translateX, translateY);
 
         }
@@ -169,16 +213,17 @@ namespace NuSysApp.Util
         {           
             // Create a duration of 2 seconds.
             Duration duration = new Duration(TimeSpan.FromSeconds(1));
-            var transform = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
-
+            _timer.Start();
+       
             Storyboard storyboard = new Storyboard();
+            
             storyboard.Duration = duration;
-            DoubleAnimation scaleAnimationX = MakeAnimationElement(scale, transform.ScaleX, "ScaleX", duration);
-            DoubleAnimation scaleAnimationY = MakeAnimationElement(scale, transform.ScaleY,"ScaleY", duration);
-            DoubleAnimation centerAnimationX = MakeAnimationElement(x, transform.CenterX, "CenterX", duration);
-            DoubleAnimation centerAnimationY = MakeAnimationElement(y, transform.CenterY,"CenterY", duration);
-            DoubleAnimation translateAnimationX = MakeAnimationElement(translateX, transform.TranslateX,"TranslateX", duration);
-            DoubleAnimation translateAnimationY = MakeAnimationElement(translateY, transform.TranslateY,"TranslateY", duration);
+            DoubleAnimation scaleAnimationX = MakeAnimationElement(scale, "ScaleX", duration);
+            DoubleAnimation scaleAnimationY = MakeAnimationElement(scale, "ScaleY", duration);
+            DoubleAnimation centerAnimationX = MakeAnimationElement(x, "CenterX", duration);
+            DoubleAnimation centerAnimationY = MakeAnimationElement(y, "CenterY", duration);
+            DoubleAnimation translateAnimationX = MakeAnimationElement(translateX, "TranslateX", duration);
+            DoubleAnimation translateAnimationY = MakeAnimationElement(translateY, "TranslateY", duration);
 
             storyboard.Children.Add(scaleAnimationX);
             storyboard.Children.Add(scaleAnimationY);
@@ -196,16 +241,15 @@ namespace NuSysApp.Util
 
         }
 
-        private DoubleAnimation MakeAnimationElement(double to, double from, String name, Duration duration)
+        private DoubleAnimation MakeAnimationElement(double to, String name, Duration duration)
         {
             var transform = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
             DoubleAnimation toReturn = new DoubleAnimation();
+            toReturn.EnableDependentAnimation = true;
             toReturn.Duration = duration;
             Storyboard.SetTarget(toReturn, transform);
             Storyboard.SetTargetProperty(toReturn, name);
             toReturn.To = to;
-            toReturn.From = from;
-            
             toReturn.EasingFunction = new QuadraticEase();
             return toReturn;
         }
