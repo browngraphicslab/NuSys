@@ -231,24 +231,6 @@ namespace NuSysApp
                                 SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new AddInkRequest(m));
                             }
                         }
-
-                        var libModel = ((CollectionLibraryElementModel)SessionController.Instance.ContentController.Get(id));
-                        var oldInkLines = libModel.InkLines;
-                        var added = newInkLines.Except(oldInkLines).ToArray();
-						var removed = oldInkLines.Except(newInkLines).ToArray();
-
-                        await UITask.Run(() =>
-                        {
-                            foreach (var idremoved in removed)
-                            {
-                                libModel.RemoveInk(idremoved);
-                            }
-
-                            foreach (var idadded in added)
-                            {
-                                libModel.AddInk(idadded);
-                            }
-                        });
                     }
 
                     LibraryElementModel content = SessionController.Instance.ContentController.Get(libraryId);
