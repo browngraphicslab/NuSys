@@ -42,23 +42,13 @@ namespace NuSysApp
             controller.AlphaChanged += OnAlphaChanged;
             controller.MetadataChange += OnMetadataChange;
             if (controller.LibraryElementModel != null)
-            {
                 controller.LibraryElementModel.OnTitleChanged += OnTitleChanged;
-
-
-            }
             controller.LinkedAdded += OnLinkedAdded;
             controller.Disposed += OnDisposed;
             controller.Deleted += ControllerOnDeleted;
 
             Tags = new ObservableCollection<Button>();
             ReadFromModel();
-        }
-
-        private void OnFavorited(bool favorited)
-        {
-            Favorited = favorited;
-            RaisePropertyChanged("Favorited");
         }
 
         private void ControllerOnDeleted(object source)
@@ -102,6 +92,9 @@ namespace NuSysApp
         {
             _width = width;
             _height = height;
+
+
+
             UpdateAnchor();
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
@@ -160,6 +153,8 @@ namespace NuSysApp
             Transform.TranslateY = model.Y;
             Transform.ScaleX = model.ScaleX;
             Transform.ScaleY = model.ScaleY;
+
+
 
             Id = model.Id;
             Width = model.Width;

@@ -155,7 +155,6 @@ namespace NuSysApp
             this.Visibility = Visibility.Collapsed;
         }
 
-
         private void Favorites_OnTapped(object sender, TappedRoutedEventArgs e)
         {
 

@@ -28,6 +28,7 @@
                                     <Border x:Name="Rect" Background="{StaticResource color6}" BorderBrush="{StaticResource color3}" BorderThickness="1" Width="{Binding Width}"  />
                                     <TextBox Padding="10,5,10,10" Margin="0,0" x:Name="xTitle" IsTabStop="{Binding IsSelected}" Foreground="#606d7a" Width="{Binding Width}"  IsHitTestVisible="{Binding IsSelected}" TextWrapping="NoWrap"  Text="{Binding Title, Mode=TwoWay}" MaxHeight="80" FontSize="18" BorderBrush="Transparent" Background="Transparent" TextAlignment="Center" VerticalAlignment="Center" BorderThickness="0"></TextBox>
                                     <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
+                                    <Button x:Name="isSearched" Visibility="Collapsed" Background="IndianRed">O</Button>
                                 </Grid>
 
                                 <Grid Visibility="{Binding IsVisible, Converter={StaticResource vConverter}}" Name="bg" BorderBrush="{StaticResource color3}" BorderThickness="1"  Background="{StaticResource color6}"
@@ -56,13 +57,18 @@
                                                 <TextBlock Text="Link" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
                                             </StackPanel>
                                         </Button>
-                                        <Button x:Name="PresentationMode" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,140,0,0">
+                                        <Button x:Name="PresentationLink" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,140,0,0">
+                                            <StackPanel>
+                                                <Image Source="ms-appx:///Assets/icon_presentation_link.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                                                <TextBlock Text="Link" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button x:Name="PresentationMode" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,210,0,0">
                                             <StackPanel>
                                                 <Image Source="ms-appx:///Assets/powerpointIcon.png" Height="28" Width="28" Stretch="Uniform"></Image>
                                                 <TextBlock Text="Present" TextAlignment="Center" Foreground="#9CC5C2" FontSize="12"></TextBlock>
                                             </StackPanel>
                                         </Button>
-                                        
 
                                     </Canvas>
 

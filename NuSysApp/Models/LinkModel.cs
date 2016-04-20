@@ -17,6 +17,8 @@ namespace NuSysApp
             ElementType = ElementType.Link;
         }
 
+        public bool IsPresentationLink { get; set; }
+
         public string InAtomId { get; set; }
 
         public string OutAtomId { get; set; }
@@ -29,6 +31,7 @@ namespace NuSysApp
 
         public override async Task UnPack(Message props)
         {
+            IsPresentationLink = props.GetBool("isPresentationLink", false);
             InAtomId = props.GetString("id1", InAtomId);
             OutAtomId = props.GetString("id2", InAtomId);
             InFGDictionary = props.GetDict<string, object>("inFGDictionary");
@@ -88,7 +91,7 @@ namespace NuSysApp
             dict.Add("type", ElementType.ToString());
             dict.Add("annotation", Annotation);
             dict.Add("inFineGrain", InFineGrain);
-
+            dict.Add("isPresentationLink", IsPresentationLink);
             return dict;
         }
     }

@@ -55,7 +55,7 @@ namespace NuSysApp
         #endregion Private Members
 
         private int initChatNotifs;
-
+        
         public SessionView()
         {
             this.InitializeComponent();
@@ -88,6 +88,7 @@ namespace NuSysApp
             {
                 
             };
+            //_glass = new MGlass(MainCanvas);
         }
 
         private async void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
@@ -109,7 +110,7 @@ namespace NuSysApp
             
             xDetailViewer.DataContext = new DetailViewerViewModel();
 
-            //await SessionController.Instance.InitializeRecog();
+            await SessionController.Instance.InitializeRecog();
 
             foreach(var user in SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values)
             {
@@ -159,22 +160,25 @@ namespace NuSysApp
             }            
         }
 
-        public void EnterPresentationMode(ElementModel em)
+        public void EnterPresentationMode(ElementViewModel em)
         {
             _presentationModeInstance = new PresentationMode(em);
-            NextNode.Visibility = _presentationModeInstance.Next() ? Visibility.Visible : Visibility.Collapsed;
-            PreviousNode.Visibility = _presentationModeInstance.Previous() ? Visibility.Visible : Visibility.Collapsed;
-            //FloatingMenu.Visibility = Visibility.Collapsed;
+
+            NextNode.Visibility = Visibility.Visible;
+            PreviousNode.Visibility = Visibility.Visible;
+            CurrentNode.Visibility = Visibility.Visible;
+
             xPresentation.Visibility = Visibility.Visible;
+            SetPresentationButtons();
         }
 
         public void ExitPresentationMode()
         {
             _presentationModeInstance.ExitMode();
             _presentationModeInstance = null;
-            FloatingMenu.Visibility = Visibility.Visible;
             NextNode.Visibility = Visibility.Collapsed;
             PreviousNode.Visibility = Visibility.Collapsed;
+            CurrentNode.Visibility = Visibility.Collapsed;
             xPresentation.Visibility = Visibility.Collapsed;
         }
 
@@ -207,9 +211,39 @@ namespace NuSysApp
                 _presentationModeInstance.MoveToPrevious();
             }
 
+            if (sender == CurrentNode)
+            {
+                _presentationModeInstance.GoToCurrent();
+            }
+
             // only show next and prev buttons if next and prev nodes exist
-            NextNode.Visibility = _presentationModeInstance.Next() ? Visibility.Visible : Visibility.Collapsed;
-            PreviousNode.Visibility = _presentationModeInstance.Previous() ? Visibility.Visible : Visibility.Collapsed;
+            SetPresentationButtons();
+        }
+
+        private void SetPresentationButtons()
+        {
+            if (_presentationModeInstance.Next())
+            {
+                NextNode.Opacity = 1;
+                NextNode.Click -= Presentation_OnClick;
+                NextNode.Click += Presentation_OnClick;
+            }
+            else
+            {
+                NextNode.Opacity = 0.6;
+                NextNode.Click -= Presentation_OnClick;
+            }
+            if (_presentationModeInstance.Previous())
+            {
+                PreviousNode.Opacity = 1;
+                PreviousNode.Click -= Presentation_OnClick;
+                PreviousNode.Click += Presentation_OnClick;
+            }
+            else
+            {
+                PreviousNode.Opacity = 0.6;
+                PreviousNode.Click -= Presentation_OnClick;
+            }
         }
 
         public async Task LoadWorkspaceFromServer(IEnumerable<Message> nodeMessages, string collectionId)

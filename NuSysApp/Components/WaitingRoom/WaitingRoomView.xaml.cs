@@ -273,9 +273,10 @@ namespace NuSysApp
                                 var id = (string)kvp.Value["id"];
                                 //var element = new LibraryElementModel(kvp.Value);
 
+
+                                bool favorited = false;
                                 var dict = kvp.Value;
                                 string title = null;
-                                bool favorited = false;
                                 ElementType type = ElementType.Text;
                                 string timestamp = "";
 
@@ -313,7 +314,7 @@ namespace NuSysApp
                                 else
                                 {
                                     element = new LibraryElementModel(id, type, title, favorited);
-                               } 
+                                }
                                 element.Timestamp = timestamp;
                                 if (SessionController.Instance.ContentController.Get(id) == null)
                                 {

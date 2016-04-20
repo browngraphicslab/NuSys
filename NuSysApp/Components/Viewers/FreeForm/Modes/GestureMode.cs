@@ -69,8 +69,8 @@ namespace NuSysApp
 
                 return;
             }
-            
-            //SelectionByStroke();
+
+            SelectionByStroke();
 
 
 
@@ -92,13 +92,11 @@ namespace NuSysApp
             var t = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
             foreach (var point in _inqLine.GetInkPoints())
             {
-                var np = t.TransformPoint(new Point(point.Position.X * Constants.MaxCanvasSize, point.Position.Y * Constants.MaxCanvasSize));
-                screenPoints.Points.Add(np);
+                screenPoints.Points.Add(new Point(point.Position.X, point.Position.Y));
             }
 
             var hull = new SelectionHull();
-            var numSelections = hull.Compute(screenPoints, SessionController.Instance.SessionView.MainCanvas);
-          
+            var numSelections = hull.Compute(screenPoints, SessionController.Instance.SessionView.MainCanvas);          
         }
 
         private void OnLineFinalized(WetDryInkCanvas canvas, InkStroke stroke)

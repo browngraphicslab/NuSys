@@ -35,6 +35,8 @@ namespace NuSysApp
             remove { _onLoaded -= value; }
         }
 
+        private bool _favorited;
+
         private event OnLoadedEventHandler _onLoaded;
 
         public delegate void ContentChangedEventHandler(ElementViewModel originalSenderViewModel = null);
@@ -48,11 +50,12 @@ namespace NuSysApp
 
         public delegate void LightupContentEventHandler(LibraryElementModel sender, bool lightup);
         public event LightupContentEventHandler OnLightupContent;
+        
+        public delegate void IsSearchedEventHandler(LibraryElementModel sender, bool lightup);
+        public event IsSearchedEventHandler OnSearched;
 
-   
         public delegate void ElementFavoritedEventHandler(LibraryElementModel sender, bool favorited);
         public event ElementFavoritedEventHandler OnFavorited;
-
 
         public ElementType Type { get; set; }
 
@@ -67,19 +70,6 @@ namespace NuSysApp
             }
         }
 
-        public bool Favorited {
-            get { return _favorited; }
-
-            set
-            {
-                _favorited = value;
-                //RaisePropertyChanged("Favorited");
-                OnFavorited?.Invoke(this, _favorited);
-
-            }
-        }
-
-
         public string Id { get; set; }
         public string Title {
             get { return _title; }
@@ -93,7 +83,7 @@ namespace NuSysApp
         public string Creator { set; get; }
         public string Timestamp { get; set; }//TODO maybe put in a timestamp, maybe remove the field from the library
         private string _title;
-        private bool _favorited;
+
         public Dictionary<string,object> ViewUtilBucket = new Dictionary<string, object>();
         private string _data;
         private bool _loading = false;
@@ -189,6 +179,7 @@ namespace NuSysApp
             Loaded = true;
             _onLoaded?.Invoke();
         }
+
         public void SetFavorited(bool favorited)
         {
 
@@ -202,6 +193,19 @@ namespace NuSysApp
             });
             //OnFavorited?.Invoke(this, favorited);
             Favorited = favorited;
+        }
+
+        public bool Favorited
+        {
+            get { return _favorited; }
+
+            set
+            {
+                _favorited = value;
+                //RaisePropertyChanged("Favorited");
+                OnFavorited?.Invoke(this, _favorited);
+
+            }
         }
 
         public void SetTitle(string title)

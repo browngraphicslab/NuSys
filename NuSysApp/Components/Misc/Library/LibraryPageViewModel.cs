@@ -28,9 +28,7 @@ namespace NuSysApp
             _orgList = new List<LibraryElementModel>(elements);
             SessionController.Instance.ContentController.OnNewContent += NewContent;
             SessionController.Instance.ContentController.OnElementDelete += DeleteContent;
-            
         }
-
 
         private void NewContent(LibraryElementModel content)
         {

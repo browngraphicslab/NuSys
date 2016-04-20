@@ -27,19 +27,16 @@ namespace NuSysApp
         protected CanvasControl _wetCanvas;
         protected CanvasControl _dryCanvas;
         protected InkStrokeBuilder strokeBuilder = new InkStrokeBuilder();
-
         protected InkManager _inkManager = new InkManager();
-
         protected List<InkPoint> _currentStroke = new List<InkPoint>();
         protected List<InkStroke> _dryStrokes = new List<InkStroke>();
         protected InkStrokeBuilder _strokeBuilder = new InkStrokeBuilder();
         protected bool _isEraser;
         protected Pointer _capturedPointer;
-
         protected Color _drawingColor = Colors.Black;
-
         protected GeneralTransform _inverseTransform;
         protected CompositeTransform _transform;
+
         public CompositeTransform Transform { get
             {
                 return _transform;

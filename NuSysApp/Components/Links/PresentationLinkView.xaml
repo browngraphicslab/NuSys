@@ -1,0 +1,64 @@
+﻿<converters:AnimatableUserControl
+    x:Class="NuSysApp.PresentationLinkView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:local="using:NuSysApp"
+    d:DesignHeight="300"
+    d:DesignWidth="400"
+    xmlns:converters="using:NuSysApp"
+>
+    <converters:AnimatableUserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <converters:BoolToVisibilityConverter x:Key="bConverter"/>
+        </ResourceDictionary>
+    </converters:AnimatableUserControl.Resources>
+    <Canvas Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}" >
+        <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
+        <Path x:Name="BezierLink" Stroke="Plum" StrokeThickness="30" Opacity=".28" CompositeMode="MinBlend">
+            <Path.Data>
+                <GeometryGroup>
+                    <PathGeometry>
+                        <PathGeometry.Figures>
+                            <PathFigureCollection>
+                                <!--this startpoint should be bound to node centerpoint-->
+
+                                <PathFigure x:Name="pathfigure">
+                                    <PathFigure.Segments>
+                                        <PathSegmentCollection>
+
+                                            <!-- this bezier segment has 3 points of curvilinear change. -->
+                                            <!-- presumably these will also be bound to a location?? ex. point3 is endpoint, so should be connected to
+                                            node on the other end of the link -->
+
+                                            <BezierSegment x:Name="curve"/>
+                                        </PathSegmentCollection>
+                                    </PathFigure.Segments>
+                                </PathFigure>
+                            </PathFigureCollection>
+                        </PathGeometry.Figures>
+                    </PathGeometry>
+                </GeometryGroup>
+            </Path.Data>
+        </Path>
+        <Polygon x:Name="arrow" Fill="White" Points="0,0 18,9, 0,18"/>
+
+        <StackPanel x:Name="AnnotationContainer" Orientation="Vertical" Visibility="Collapsed" >
+            <Grid>
+                <Rectangle x:Name="Rect" Fill="LightGray" RadiusX="5" RadiusY="5" Width="260"  HorizontalAlignment="Left"/>
+                <StackPanel Orientation="Horizontal" IsHitTestVisible="{Binding IsSelected}" >
+                    <local:TextInputBlock x:Name ="Annotation" BubbleTop="True"  LeftJustified="False" SetHeight="30" HorizontalAlignment="Stretch" Loaded="Annotation_Loaded"></local:TextInputBlock>
+                </StackPanel>
+            </Grid>
+            <Button Margin="0,2,0,2" x:Name="Delete" Visibility="{Binding IsSelected, Converter={StaticResource vConverter}}" Click="Delete_OnClick" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
+                <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
+            </Button>
+        </StackPanel>
+    </Canvas>
+</converters:AnimatableUserControl>
