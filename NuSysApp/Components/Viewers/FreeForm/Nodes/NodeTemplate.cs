@@ -408,30 +408,6 @@ namespace NuSysApp
         }
 
 
-        private async void OnTestButtonClick(object sender, RoutedEventArgs e)
-        {
-
-            var vm = ((ElementViewModel)this.DataContext);
-            var sv = SessionController.Instance.SessionView;
-
-            var r = new RenderTargetBitmap();
-            
-            //var view = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => ((ElementViewModel)item.DataContext).Controller.Model.Id == vm.Id)?.First();
-            await r.RenderAsync(sv);
-            this.SaveImage(r);
-
-            // make into image
-            Image im = new Image();
-            im.Source = r;
-            sv.FreeFormViewer.AtomCanvas.Children.Add(im);
-            //Canvas.SetLeft(im, vm.Model.X);
-            //Canvas.SetTop(im, vm.Model.Y);
-
-            
-
-
-        }
-
         /// <summary> 
         /// Event handler for the "Save Image.." button. 
         /// </summary> 

@@ -89,10 +89,12 @@ namespace NuSysApp
         {
             _searchString = s;
             PageElements.Clear();
-            
+
+            var valids = await SessionController.Instance.NuSysNetworkSession.SearchOverLibraryElements(s);
+
             foreach (var item in _orgList)
             {
-                if (item.InSearch(s))
+                if (valids.Contains(item.Id))
                 {
                     PageElements.Add(item);
                 }

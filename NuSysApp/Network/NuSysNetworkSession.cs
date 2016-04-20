@@ -308,6 +308,10 @@ namespace NuSysApp
         {
             await _serverClient.FetchLibraryElementData(id);
         }
+        public async Task<HashSet<string>> SearchOverLibraryElements(string searchText)
+        {
+            return await _serverClient.SearchOverLibraryElements(searchText);
+        }
 
         public async Task<List<Dictionary<string, object>>> GetContentInfo(List<string> contentIds)
         {

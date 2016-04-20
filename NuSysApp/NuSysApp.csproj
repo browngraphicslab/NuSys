@@ -20,7 +20,7 @@
     <PackageCertificateKeyFile>NuSysApp_TemporaryKey.pfx</PackageCertificateKeyFile>
     <PackageCertificateThumbprint>974C917A8A98617A1A9C87ED850936A08B851273</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-    <AppxPackageDir>C:\Users\phili_n4ua7ts\Desktop\DEPLOY\</AppxPackageDir>
+    <AppxPackageDir>C:\Users\nusys\Desktop\</AppxPackageDir>
     <AppxBundlePlatforms>x86</AppxBundlePlatforms>
     <AppxBundle>Always</AppxBundle>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
@@ -245,6 +245,10 @@
     <Compile Include="Components\LoadingScreen.xaml.cs">
       <DependentUpon>LoadingScreen.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Misc\Library\LibraryFavorites.xaml.cs">
+      <DependentUpon>LibraryFavorites.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\Library\LibraryFavoritesViewModel.cs" />
     <Compile Include="Components\Misc\TextInputBlock.xaml.cs">
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
@@ -647,6 +651,8 @@
     <Content Include="Assets\Square150x150Logo.scale-200.png" />
     <Content Include="Assets\Square44x44Logo.scale-200.png" />
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\star-xxl.png" />
+    <Content Include="Assets\star_icon.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\wordIcon.png" />
@@ -673,6 +679,10 @@
     <Page Include="Components\LoadingScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Misc\Library\LibraryFavorites.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Misc\TextInputBlock.xaml">
       <SubType>Designer</SubType>

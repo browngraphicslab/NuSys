@@ -22,9 +22,12 @@ namespace NuSysApp
 
         public delegate void ChildRemovedEventHandler(string id);
         public event ChildRemovedEventHandler OnChildRemoved;
-        public CollectionLibraryElementModel(string id, string contentName = null) : base(id, ElementType.Collection, contentName)
+        public CollectionLibraryElementModel(string id, string contentName = null, bool favorited = false) : base(id, ElementType.Collection, contentName)
         {
             _children = new HashSet<string>();
+
+            this.Favorited = favorited;
+
             InkLines = new HashSet<string>();
         }
 

@@ -25,7 +25,7 @@ namespace LdaLibrary //IT'S TIME TO DO SOME ESTIMATINGGGGGG! RAWRRRRR
                 {
                     return false;
                 }
-                await trnModel.data.localDict.writeWordMap(option.wordmap); //wordmap should be the equivalent of wordmapfile
+                //await trnModel.data.localDict.writeWordMap(option.wordmap); //wordmap should be the equivalent of wordmapfile
             }
             else if (option.estc)
             {
@@ -66,7 +66,7 @@ namespace LdaLibrary //IT'S TIME TO DO SOME ESTIMATINGGGGGG! RAWRRRRR
                         Debug.WriteLine("Saving the model at iteration " + trnModel.liter + " ...");
                         computeTheta();
                         computePhi();
-                        await trnModel.saveModel("model-" + Conversion.ZeroPad(trnModel.liter, 5));
+                        //await trnModel.saveModel("model-" + Conversion.ZeroPad(trnModel.liter, 5));
                     }
                 }
             } // end of iterations
@@ -76,12 +76,14 @@ namespace LdaLibrary //IT'S TIME TO DO SOME ESTIMATINGGGGGG! RAWRRRRR
 		    computeTheta();
 		    computePhi();
 		    trnModel.liter--;
-		    await trnModel.saveModel("model-final");
+		    //await trnModel.saveModel("model-final");
             return true;
         }
 
         public List<string> GetWordListOfTopic()
         {
+            if (trnModel == null)
+                return new List<string>();
             return trnModel.wordList;
         }
 

@@ -31,7 +31,7 @@ namespace NuSysApp
 
         //public delegate void NewElementAvailableEventHandler(LibraryElement element);
         //public event NewElementAvailableEventHandler OnNewElementAvailable;
-
+        private LibraryFavorites _libraryFavorites;
         private LibraryList _libraryList;
         private LibraryGrid _libraryGrid;
         private FloatingMenuView _menu;
@@ -39,6 +39,7 @@ namespace NuSysApp
         private double _graphButtonY;
         private LibraryElementPropertiesWindow _propertiesWindow;
         private LibraryPageViewModel _pageViewModel;
+        private LibraryFavoritesViewModel _favoritesViewModel;
 
         //private Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
         public LibraryView(LibraryBucketViewModel vm, LibraryElementPropertiesWindow properties, FloatingMenuView menu)
@@ -47,8 +48,10 @@ namespace NuSysApp
             this.InitializeComponent();
             var data = SessionController.Instance.ContentController.Values.Where(item => item.Type != ElementType.Link);
             _pageViewModel = new LibraryPageViewModel(new ObservableCollection<LibraryElementModel>(data));
+            _favoritesViewModel = new LibraryFavoritesViewModel(new ObservableCollection<LibraryElementModel>(data));
             this.MakeViews(_pageViewModel, properties);
             _propertiesWindow = properties;
+            properties.AddedToFavorite += AddToFavorites;
             WorkspacePivot.Content = _libraryList;
             _menu = menu;
     
@@ -103,6 +106,7 @@ namespace NuSysApp
         {
             //_libraryGrid = new LibraryGrid(this, pageViewModel, properties);
             _libraryList = new LibraryList(this, pageViewModel, properties);
+            _libraryFavorites = new LibraryFavorites(this, _favoritesViewModel, properties);
             //_libraryList.OnLibraryElementDrag += ((LibraryBucketViewModel)this.DataContext).ListViewBase_OnDragItemsStarting;
             //_libraryGrid.OnLibraryElementDrag += ((LibraryBucketViewModel)this.DataContext).GridViewDragStarting;
         }
@@ -114,8 +118,11 @@ namespace NuSysApp
 
         private void TextBox_OnTextChanging(Object sender, String args)
         {
-            //((LibraryViewable)(WorkspacePivot?.Content)).SetItems(SessionController.Instance.ContentController.Values.Where(item => item.Type != ElementType.Link).ToArray());
-            ((LibraryViewable)(WorkspacePivot?.Content)).Search(args.ToLower());
+            if (WorkspacePivot.Content.Equals(_libraryList))
+            {
+                ((LibraryViewable)(WorkspacePivot?.Content)).Search(((TextInputBlock)sender).Text.ToLower());
+            }
+
             _propertiesWindow.Visibility = Visibility.Collapsed;
         }
 
@@ -202,6 +209,38 @@ namespace NuSysApp
         //    });
         //}
 
+
+
+        private void AddToFavorites(object sender, LibraryElementModel element)
+        {
+            if (!element.Favorited)
+            {
+                element?.SetFavorited(true);
+            }
+
+            else
+            {
+                element?.SetFavorited(false);
+                if (WorkspacePivot.Content == _libraryFavorites) 
+                    _propertiesWindow.Visibility = Visibility.Collapsed;
+
+            }
+
+            /*
+
+            if (!_favoritesViewModel.PageElements.Contains(element))
+            {
+                _favoritesViewModel.PageElements.Add(element);
+            }
+            else
+            {
+                _favoritesViewModel.PageElements.Remove(element);
+                if(WorkspacePivot.Content == _libraryFavorites)
+                    _propertiesWindow.Visibility = Visibility.Collapsed;
+            }
+            */
+
+        }
 
         //Trent, this needs to be filled in in order for the importing to the library to work.
         private async void AddFile()
@@ -355,6 +394,31 @@ namespace NuSysApp
         {
             this.AddFile();
         }
+        
+
+        private void Favorites_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+
+            _propertiesWindow.Visibility = Visibility.Collapsed;
+
+            if ((WorkspacePivot.Content != _libraryFavorites) && ((Button)sender == btnFav))
+            {
+
+                WorkspacePivot.Content = _libraryFavorites;
+                btnFav.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(60, 14, 73, 78));
+                btnAll.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(20, 230, 237, 236));
+
+            }
+            else if ((WorkspacePivot.Content != _libraryList) && ((Button)sender==btnAll))
+            {
+                WorkspacePivot.Content = _libraryList;
+                btnAll.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(60, 14, 73, 78));
+                btnFav.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(20, 230, 237, 236));
+
+            }
+
+        }
+
 
         private void Graph_OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {

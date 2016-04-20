@@ -37,6 +37,28 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+
+            var vmListIn = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
+                item => ((ElementViewModel)item?.DataContext)?.Model?.Id == InElement?.Model?.Id);
+
+            if (vmListIn != null && vmListIn.Count() > 0)
+            {
+                var vmIn = (ElementViewModel)vmListIn?.Single()?.DataContext;
+
+                vmIn?.LinkList?.Remove(this);
+            }
+
+            var vmListOut = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
+                item => ((ElementViewModel)item?.DataContext)?.Model?.Id == OutElement?.Model?.Id);
+
+            if (vmListOut != null && vmListOut.Count() > 0)
+            {
+                var vmOut = (ElementViewModel)vmListOut?.Single()?.DataContext;
+
+                vmOut?.LinkList?.Remove(this);
+
+            }
+
             InElement = null;
             OutElement = null;
             PositionChanged -= OnPositionChanged;

@@ -27,6 +27,7 @@ namespace NuSysApp
         private CompositeTransform _transform = new CompositeTransform();
         private ElementController _controller;
         protected bool _isSelected, _isVisible, _isPresenting;
+        private bool Favorited;
 
         #endregion Private Members
 

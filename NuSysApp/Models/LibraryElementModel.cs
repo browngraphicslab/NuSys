@@ -35,6 +35,8 @@ namespace NuSysApp
             remove { _onLoaded -= value; }
         }
 
+        private bool _favorited;
+
         private event OnLoadedEventHandler _onLoaded;
 
         public delegate void ContentChangedEventHandler(ElementViewModel originalSenderViewModel = null);
@@ -51,6 +53,10 @@ namespace NuSysApp
         
         public delegate void IsSearchedEventHandler(LibraryElementModel sender, bool lightup);
         public event IsSearchedEventHandler OnSearched;
+
+        public delegate void ElementFavoritedEventHandler(LibraryElementModel sender, bool favorited);
+        public event ElementFavoritedEventHandler OnFavorited;
+
         public ElementType Type { get; set; }
 
         public string Data
@@ -81,13 +87,14 @@ namespace NuSysApp
         public Dictionary<string,object> ViewUtilBucket = new Dictionary<string, object>();
         private string _data;
         private bool _loading = false;
-        public LibraryElementModel(string id, ElementType elementType, string contentName = null)
+        public LibraryElementModel(string id, ElementType elementType, string contentName = null, bool favorited = false)
         {
             Data = null;
             Id = id;
             Title = contentName;
             Type = elementType;
             Loaded = false;
+            Favorited = favorited;
             Keywords = new HashSet<string>();
             SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
         }
@@ -172,25 +179,33 @@ namespace NuSysApp
             Loaded = true;
             _onLoaded?.Invoke();
         }
-        public bool InSearch(string s)
+
+        public void SetFavorited(bool favorited)
         {
-            var title = Title?.ToLower() ?? "";
-            var type = Type.ToString().ToLower();
-            if (title.Contains(s) || type.Contains(s))
+
+            Task.Run(async delegate
             {
-                OnSearched?.Invoke(this,true && !s.Equals(""));
-                return true;
-            }
-            foreach (var keyword in Keywords)
+                var m = new Message();
+                m["contentId"] = Id;
+                m["favorited"] = favorited;
+                var request = new ChangeContentRequest(m);
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            });
+            //OnFavorited?.Invoke(this, favorited);
+            Favorited = favorited;
+        }
+
+        public bool Favorited
+        {
+            get { return _favorited; }
+
+            set
             {
-                if (keyword.StartsWith(s))
-                {
-                    OnSearched?.Invoke(this,true && !s.Equals(""));
-                    return true;
-                }
+                _favorited = value;
+                //RaisePropertyChanged("Favorited");
+                OnFavorited?.Invoke(this, _favorited);
+
             }
-            OnSearched?.Invoke(this,false);
-            return false;
         }
 
         public void SetTitle(string title)
