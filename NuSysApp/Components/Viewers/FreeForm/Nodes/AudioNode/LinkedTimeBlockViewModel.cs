@@ -23,15 +23,18 @@ namespace NuSysApp.Nodes.AudioNode
         private double _endRatio;
         private int _startTime;
         private int _endTime;
-        private ProgressBar _scrubBar;
+        public ProgressBar _scrubBar;
         private ProgressBar _scrubBar2;
         private Boolean _onBlock = false;
+
+        
 
         private ObservableCollection<Tuple<IThumbnailable, Image>> _nodeImageTuples;
         
         private Dictionary<string, Object> _line1;
         private double _detailx1;
         private double _detailx2;
+        public TimeSpan _totalAudioDuration;
         
         public LinkedTimeBlockModel Model { get; set; }
 
@@ -41,13 +44,13 @@ namespace NuSysApp.Nodes.AudioNode
         
         public LinkedTimeBlockViewModel(LinkedTimeBlockModel model,  TimeSpan totalAudioDuration, ProgressBar scrubBar)
         {
+            _totalAudioDuration = totalAudioDuration;
             _scrubBar = scrubBar;
             Debug.WriteLine(model.Start.TotalMilliseconds);
             _startRatio = model.Start.TotalMilliseconds / totalAudioDuration.TotalMilliseconds;
             _endRatio = model.End.TotalMilliseconds / totalAudioDuration.TotalMilliseconds;
             _startTime = (int)(_startRatio * scrubBar.Maximum);
             _endTime = (int)(_endRatio * scrubBar.Maximum);
-            _line1 = new Dictionary<string, Object>();
             Model = model;
 
             _nodeImageTuples = new ObservableCollection<Tuple<IThumbnailable, Image>>();
@@ -57,11 +60,31 @@ namespace NuSysApp.Nodes.AudioNode
             //}
             
             this.setUpLine1();
-            RefreshThumbnail();
+            //RefreshThumbnail();
 
         }
 
-        
+        public void SetStart(TimeSpan time)
+        {
+            Model.Start = time;
+            _startRatio = Model.Start.TotalMilliseconds / _totalAudioDuration.TotalMilliseconds;
+            _startTime = (int)(_startRatio * _scrubBar.Maximum);
+            this.setUpLine1();
+
+
+        }
+
+        public void SetEnd(TimeSpan time)
+        {
+            Model.End = time;
+            _endRatio = Model.End.TotalMilliseconds / _totalAudioDuration.TotalMilliseconds;
+            _endTime = (int)(_endRatio * _scrubBar.Maximum);
+            this.setUpLine1();
+
+
+        }
+
+
 
         public async Task RefreshThumbnail()
         {
@@ -91,6 +114,7 @@ namespace NuSysApp.Nodes.AudioNode
 
         public void setUpLine1()
         {
+            _line1 = new Dictionary<string, Object>();
             double x = EndRatio * _scrubBar.ActualWidth;
             double y = StartRatio * _scrubBar.ActualWidth;
             _line1.Add("StrokeThickness", _scrubBar.ActualHeight);

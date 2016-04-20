@@ -930,6 +930,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+
     <Reference Include="SharpDX">
       <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.dll</HintPath>
     </Reference>
@@ -965,6 +966,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup />
