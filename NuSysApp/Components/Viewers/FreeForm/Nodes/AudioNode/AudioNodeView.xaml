@@ -32,7 +32,7 @@
             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
-            <Grid x:Name ="grid" Width="{Binding Width}">
+            <Grid x:Name ="grid" PointerPressed="Grid_OnPointerPressed" Width="{Binding Width}">
                 <Grid.Resources>
                     <local:PositionToStringConverter x:Key="PositionToStringConverter"/>
                 </Grid.Resources>

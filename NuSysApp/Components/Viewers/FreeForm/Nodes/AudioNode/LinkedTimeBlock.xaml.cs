@@ -1,32 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
-using Windows.Devices.Input;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI;
-using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
-using MyToolkit.UI;
 using NuSysApp.Nodes.AudioNode;
-using SharpDX.Direct2D1;
-using Image = Windows.UI.Xaml.Controls.Image;
-using SolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
+
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -34,15 +16,43 @@ namespace NuSysApp.Components.Nodes
 {
     public sealed partial class LinkedTimeBlock : UserControl
     {
+        private bool _handleOnePressed;
+        public delegate void TimeChangeHandler();
+        public event TimeChangeHandler OnTimeChange;
+        public static TextBox _box1;
+        //private TextBox _box2;
+        private bool hasMoved = false;
 
         public LinkedTimeBlock(LinkedTimeBlockViewModel vm)
         {
+            _box1 = new TextBox();
+            //_box2 = new TextBox();
+            _box1.LostFocus += Box1_LostFocus;
+            //_box2.LostFocus +=Box2_LostFocus;
+
             DataContext = vm;
             InitializeComponent();
             setUpLine(vm);
             vm.Model.OnSelect += OnLinkSelect;
             vm.Model.OnDeselect += OnLinkDeselect;
+            _handleOnePressed = false;
+            line.SetValue(Canvas.ZIndexProperty, 0);
+            HandleOne.SetValue(Canvas.ZIndexProperty, 2);
+            HandleTwo.SetValue(Canvas.ZIndexProperty, 2);
             
+
+        }
+
+        private void Box2_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var times = (sender as TextBox).Text.Split(':');
+            TimeSpan time = new TimeSpan(0, 0, Convert.ToInt32(times[0]), Convert.ToInt32(times[1]), Convert.ToInt32(times[2]));
+            if (time.TotalMilliseconds <= (DataContext as LinkedTimeBlockViewModel)._totalAudioDuration.TotalMilliseconds)
+            {
+                (DataContext as LinkedTimeBlockViewModel).SetEnd(time);
+                this.setUpLine((DataContext as LinkedTimeBlockViewModel));
+                OnTimeChange?.Invoke();
+            }
         }
 
         private void OnLinkSelect(LinkedTimeBlockModel model)
@@ -85,12 +95,251 @@ namespace NuSysApp.Components.Nodes
 
             line.Y1 = (double)vm.Line1["Y"];
             line.Y2 = (double)vm.Line1["Y"];
+            HandleOne.SetBinding(Line.X2Property, b1);
+            HandleOne.SetBinding(Line.X1Property, b1);
+            HandleTwo.SetBinding(Line.X2Property, b2);
+            HandleTwo.SetBinding(Line.X1Property, b2);
+
+            //_box1.SetBinding(Canvas.LeftProperty, b1);
+            Canvas.SetTop(_box1, 0);
+
+            //_box2.SetBinding(Canvas.LeftProperty, b2);
+            //Canvas.SetTop(_box1, 0);
+
             line.Margin = new Thickness(0, (double)vm.Line1["TopMargin"], 0, 0);
+
+            var y = Canvas.GetTop(vm._scrubBar) + vm._scrubBar.Margin.Top + vm._scrubBar.ActualHeight/4;
+            HandleOne.Y1 = y;
+            HandleOne.Y2 = y+vm._scrubBar.ActualHeight/2;
+            HandleTwo.Y1 = y;
+            HandleTwo.Y2 = y+ vm._scrubBar.ActualHeight / 2;
         }
 
         public void changeColor()
         {
             //line.Fill = new SolidColorBrush(Colors.Red);
+        }
+
+        private void HandleOne_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            //show text box ontop then hide if pressed again
+            //if (!Canvas.Children.Contains(_box1))
+            //{
+            //    _box1.Text = (DataContext as LinkedTimeBlockViewModel).Model.Start.Minutes + ":" +
+            //                 (DataContext as LinkedTimeBlockViewModel).Model.Start.Seconds + ":" +
+            //                 (DataContext as LinkedTimeBlockViewModel).Model.Start.Milliseconds;
+            //    LinkedTimeBlock.removeBox();
+
+            //    Canvas.Children.Add(_box1);
+            //}
+            //else
+            //{
+            //    Canvas.Children.Remove(_box1);
+            //}
+            hasMoved = false;
+
+
+        }
+
+        public static void removeBox()
+        {
+            if (_box1.Parent != null)
+            {
+                ((Canvas)_box1.Parent).Children.Remove(_box1);
+            }
+        }
+
+        private void Box1_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var times = (sender as TextBox).Text.Split(':');
+            TimeSpan time = new TimeSpan(0, 0, Convert.ToInt32(times[0]), Convert.ToInt32(times[1]), Convert.ToInt32(times[2]));
+            if (time.TotalMilliseconds <= (DataContext as LinkedTimeBlockViewModel)._totalAudioDuration.TotalMilliseconds)
+            {
+                
+                var block = (((sender as FrameworkElement).Parent as FrameworkElement).Parent as FrameworkElement);
+                while (!(block is LinkedTimeBlock))
+                {
+                    block = (block as FrameworkElement).Parent as FrameworkElement;
+                }
+                if (Canvas.GetLeft(_box1) == (block as LinkedTimeBlock).line.X1)
+                {
+                    (block.DataContext as LinkedTimeBlockViewModel).SetStart(time);
+                }
+                else if(Canvas.GetLeft(_box1) == (block as LinkedTimeBlock).line.X2)
+                {
+                    (block.DataContext as LinkedTimeBlockViewModel).SetEnd(time);
+                }
+                
+                (block as LinkedTimeBlock).setUpLine((block.DataContext as LinkedTimeBlockViewModel));
+                LinkedTimeBlock.removeBox();
+                OnTimeChange?.Invoke();
+                
+            }
+        }
+
+        private void HandleOne_OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            int milli = (int)(((HandleOne.X1 - Canvas.GetLeft((DataContext as LinkedTimeBlockViewModel)._scrubBar) - (DataContext as LinkedTimeBlockViewModel)._scrubBar.Margin.Left)/ (DataContext as LinkedTimeBlockViewModel)._scrubBar.ActualWidth) * (DataContext as LinkedTimeBlockViewModel)._totalAudioDuration.TotalMilliseconds);
+            TimeSpan time = new TimeSpan(0,0,0,0,milli);
+
+            (DataContext as LinkedTimeBlockViewModel).SetStart(time);
+            this.setUpLine((DataContext as LinkedTimeBlockViewModel));
+            if (hasMoved == false)
+            {
+                var test = Canvas.GetLeft(_box1);
+                var test2 = line.X1;
+                if (Canvas.GetLeft(_box1) == line.X1 && Canvas.Children.Contains(_box1))
+                {
+                    Canvas.Children.Remove(_box1);
+                }
+                else
+                {
+                    _box1.SetValue(Canvas.LeftProperty, line.X1);
+                    _box1.Text = (DataContext as LinkedTimeBlockViewModel).Model.Start.Minutes + ":" +
+                                 (DataContext as LinkedTimeBlockViewModel).Model.Start.Seconds + ":" +
+                                 (DataContext as LinkedTimeBlockViewModel).Model.Start.Milliseconds;
+                    LinkedTimeBlock.removeBox();
+                    Canvas.Children.Add(_box1);
+
+                }
+                
+                
+            }
+            else
+            {
+                Canvas.Children.Remove(_box1);
+            }
+            OnTimeChange?.Invoke();
+            hasMoved = false;
+
+
+
+        }
+
+        private void HandleOne_OnPointerMoved(object sender, PointerRoutedEventArgs e)
+        {
+            if (e.GetCurrentPoint((UIElement) sender).Properties.IsLeftButtonPressed)
+            {
+                if (e.GetCurrentPoint(grid).Position.X >=
+                    Canvas.GetLeft((DataContext as LinkedTimeBlockViewModel)._scrubBar) + (DataContext as LinkedTimeBlockViewModel)._scrubBar.Margin.Left &&
+                    e.GetCurrentPoint(grid).Position.X <=
+                    Canvas.GetLeft((DataContext as LinkedTimeBlockViewModel)._scrubBar) +
+                    (DataContext as LinkedTimeBlockViewModel)._scrubBar.ActualWidth + (DataContext as LinkedTimeBlockViewModel)._scrubBar.Margin.Left)
+                {
+
+                    ((UIElement)sender).CapturePointer(e.Pointer);
+                    line.X1 = e.GetCurrentPoint(grid).Position.X;
+                    HandleOne.X1 = e.GetCurrentPoint(grid).Position.X;
+                    HandleOne.X2 = e.GetCurrentPoint(grid).Position.X;
+                    _box1.SetValue(Canvas.LeftProperty, e.GetCurrentPoint(grid).Position.X);
+                    int milli = (int)(((HandleOne.X1 - Canvas.GetLeft((DataContext as LinkedTimeBlockViewModel)._scrubBar) - (DataContext as LinkedTimeBlockViewModel)._scrubBar.Margin.Left) / (DataContext as LinkedTimeBlockViewModel)._scrubBar.ActualWidth) * (DataContext as LinkedTimeBlockViewModel)._totalAudioDuration.TotalMilliseconds);
+                    TimeSpan time = new TimeSpan(0, 0, 0, 0, milli);
+                    _box1.Text = time.Minutes + ":" +
+                             time.Seconds + ":" +
+                             time.Milliseconds;
+                }
+                if (!Canvas.Children.Contains(_box1))
+                {
+                    LinkedTimeBlock.removeBox();
+                    Canvas.Children.Add(_box1);
+                }
+                hasMoved = true;
+
+            }
+        }
+
+        private void HandleTwo_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            //if (!Canvas.Children.Contains(_box2))
+            //{
+            //    _box2.Text = (DataContext as LinkedTimeBlockViewModel).Model.End.Minutes + ":" +
+            //                 (DataContext as LinkedTimeBlockViewModel).Model.End.Seconds + ":" +
+            //                 (DataContext as LinkedTimeBlockViewModel).Model.End.Milliseconds;
+            //    Canvas.Children.Add(_box2);
+            //}
+            //else
+            //{
+            //    Canvas.Children.Remove(_box2);
+            //}
+            hasMoved = false;
+        }
+
+        private void HandleTwo_OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            int milli = (int)(((HandleTwo.X1 - Canvas.GetLeft((DataContext as LinkedTimeBlockViewModel)._scrubBar) - (DataContext as LinkedTimeBlockViewModel)._scrubBar.Margin.Left) / (DataContext as LinkedTimeBlockViewModel)._scrubBar.ActualWidth) * (DataContext as LinkedTimeBlockViewModel)._totalAudioDuration.TotalMilliseconds);
+            TimeSpan time = new TimeSpan(0, 0, 0, 0, milli);
+
+            (DataContext as LinkedTimeBlockViewModel).SetEnd(time);
+            this.setUpLine((DataContext as LinkedTimeBlockViewModel));
+            OnTimeChange?.Invoke();
+
+            if (hasMoved == false)
+            {
+                if (Canvas.GetLeft(_box1) == line.X2 && Canvas.Children.Contains(_box1))
+                {
+                    Canvas.Children.Remove(_box1);
+                }
+                else
+                {
+                    _box1.SetValue(Canvas.LeftProperty, line.X2);
+                    _box1.Text = (DataContext as LinkedTimeBlockViewModel).Model.End.Minutes + ":" +
+                                 (DataContext as LinkedTimeBlockViewModel).Model.End.Seconds + ":" +
+                                 (DataContext as LinkedTimeBlockViewModel).Model.End.Milliseconds;
+                    LinkedTimeBlock.removeBox();
+                    Canvas.Children.Add(_box1);
+                }
+                
+                
+            }
+
+            else
+            {
+                Canvas.Children.Remove(_box1);
+            }
+
+            hasMoved = false;
+
+        }
+
+        private void HandleTwo_OnPointerMoved(object sender, PointerRoutedEventArgs e)
+        {
+            if (e.GetCurrentPoint((UIElement)sender).Properties.IsLeftButtonPressed)
+            {
+                hasMoved = true;
+                if (e.GetCurrentPoint(grid).Position.X >=
+                    Canvas.GetLeft((DataContext as LinkedTimeBlockViewModel)._scrubBar) + (DataContext as LinkedTimeBlockViewModel)._scrubBar.Margin.Left &&
+                    e.GetCurrentPoint(grid).Position.X <=
+                    Canvas.GetLeft((DataContext as LinkedTimeBlockViewModel)._scrubBar) +
+                    (DataContext as LinkedTimeBlockViewModel)._scrubBar.ActualWidth + (DataContext as LinkedTimeBlockViewModel)._scrubBar.Margin.Left) 
+                {
+                    ((UIElement)sender).CapturePointer(e.Pointer);
+                    line.X2 = e.GetCurrentPoint(grid).Position.X;
+                    HandleTwo.X1 = e.GetCurrentPoint(grid).Position.X;
+                    HandleTwo.X2 = e.GetCurrentPoint(grid).Position.X;
+                    _box1.SetValue(Canvas.LeftProperty, e.GetCurrentPoint(grid).Position.X);
+                    int milli = (int)(((HandleTwo.X1 - Canvas.GetLeft((DataContext as LinkedTimeBlockViewModel)._scrubBar) - (DataContext as LinkedTimeBlockViewModel)._scrubBar.Margin.Left) / (DataContext as LinkedTimeBlockViewModel)._scrubBar.ActualWidth) * (DataContext as LinkedTimeBlockViewModel)._totalAudioDuration.TotalMilliseconds);
+                    TimeSpan time = new TimeSpan(0, 0, 0, 0, milli);
+                    _box1.Text = time.Minutes + ":" +
+                             time.Seconds + ":" +
+                             time.Milliseconds;
+                }
+                if (!Canvas.Children.Contains(_box1))
+                {
+                    LinkedTimeBlock.removeBox();
+                    Canvas.Children.Add(_box1);
+                }
+
+            }
+        }
+
+        private void Line_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void Line_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            e.Handled = false;
         }
     }
 }
