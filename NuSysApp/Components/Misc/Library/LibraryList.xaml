@@ -83,7 +83,6 @@
                         <ColumnDefinition Width="125" />
                     </Grid.ColumnDefinitions>
 
-
                     <Button Style="{StaticResource SortButton}"  HorizontalAlignment="Left" Grid.Column="0" Click="Sort_Button_Click" Background="Transparent"  Foreground="{StaticResource color2}"  FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
                         title
                     </Button>

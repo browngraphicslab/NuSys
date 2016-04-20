@@ -241,6 +241,10 @@
     <Compile Include="Components\LoadingScreen.xaml.cs">
       <DependentUpon>LoadingScreen.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Misc\Library\LibraryFavorites.xaml.cs">
+      <DependentUpon>LibraryFavorites.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\Library\LibraryFavoritesViewModel.cs" />
     <Compile Include="Components\Misc\TextInputBlock.xaml.cs">
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
@@ -642,6 +646,8 @@
     <Content Include="Assets\Square150x150Logo.scale-200.png" />
     <Content Include="Assets\Square44x44Logo.scale-200.png" />
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\star-xxl.png" />
+    <Content Include="Assets\star_icon.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\wordIcon.png" />
@@ -662,6 +668,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\LoadingScreen.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Misc\Library\LibraryFavorites.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

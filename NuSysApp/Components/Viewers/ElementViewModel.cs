@@ -27,6 +27,7 @@ namespace NuSysApp
         private CompositeTransform _transform = new CompositeTransform();
         private ElementController _controller;
         protected bool _isSelected, _isVisible, _isPresenting;
+        private bool Favorited;
 
         #endregion Private Members
 
@@ -41,13 +42,23 @@ namespace NuSysApp
             controller.AlphaChanged += OnAlphaChanged;
             controller.MetadataChange += OnMetadataChange;
             if (controller.LibraryElementModel != null)
+            {
                 controller.LibraryElementModel.OnTitleChanged += OnTitleChanged;
+
+
+            }
             controller.LinkedAdded += OnLinkedAdded;
             controller.Disposed += OnDisposed;
             controller.Deleted += ControllerOnDeleted;
 
             Tags = new ObservableCollection<Button>();
             ReadFromModel();
+        }
+
+        private void OnFavorited(bool favorited)
+        {
+            Favorited = favorited;
+            RaisePropertyChanged("Favorited");
         }
 
         private void ControllerOnDeleted(object source)
