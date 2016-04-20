@@ -113,7 +113,7 @@ class InkCanvas {
     editPoint(points: Array<Point>, e): Point {
         var sampleStroke = points;
         var lines = [];
-        for (var i = 1; i < sampleStroke.length; i++) {
+        for (var i = 0; i < sampleStroke.length; i++) {
   //          console.log(e.clientY + ": " + sampleStroke[i].y + " : " + $(document).scrollTop() + " : " + this._scroll);
             if (Math.abs(e.clientX - sampleStroke[i].x) < 5  && Math.abs(e.clientY - sampleStroke[i].y + $(document).scrollTop() - this._scroll) < 5) {
                 this.focusPoint(sampleStroke[i]);

@@ -2726,7 +2726,7 @@ var InkCanvas = (function () {
     InkCanvas.prototype.editPoint = function (points, e) {
         var sampleStroke = points;
         var lines = [];
-        for (var i = 1; i < sampleStroke.length; i++) {
+        for (var i = 0; i < sampleStroke.length; i++) {
             //          console.log(e.clientY + ": " + sampleStroke[i].y + " : " + $(document).scrollTop() + " : " + this._scroll);
             if (Math.abs(e.clientX - sampleStroke[i].x) < 5 && Math.abs(e.clientY - sampleStroke[i].y + $(document).scrollTop() - this._scroll) < 5) {
                 this.focusPoint(sampleStroke[i]);
@@ -2972,22 +2972,17 @@ var Main = (function () {
                     document.body.removeChild(_this.canvas);
                     var editedSelection = new LassoSelection();
                     var editedStroke = new Stroke();
-                    editedSelection.yscroll = $(document).scrollTop();
                     editedStroke.points = _this.selectionOnHover.samplePoints;
                     var len = editedStroke.points.length;
-                    for (var i = 0; i < len; i++) {
-                        editedStroke.points[i] = new Point(editedStroke.points[i].x, editedStroke.points[i].y + _this.selectionOnHover.yscroll);
-                    }
                     editedSelection.stroke = editedStroke;
                     editedSelection.id = _this.selectionOnHover.id;
+                    editedSelection.yscroll = _this.selectionOnHover.yscroll;
                     console.log(editedSelection.yscroll);
                     editedSelection.end(0, 0);
                     editedSelection.type = StrokeType.Lasso;
                     editedSelection.url = _this.selectionOnHover.url;
                     editedSelection.tags = _this.selectionOnHover.tags;
-                    for (var i = 0; i < len; i++) {
-                        editedStroke.points[i] = new Point(editedStroke.points[i].x, editedStroke.points[i].y - _this.selectionOnHover.yscroll);
-                    }
+                    _this.addHtmlCssToStorage();
                     chrome.runtime.sendMessage({ msg: "edit_selection", data: editedSelection });
                     document.body.appendChild(_this.canvas);
                     return;
@@ -3008,11 +3003,12 @@ var Main = (function () {
             _this.isPointSelected = false;
             _this.is_editing_selection = false;
             _this.selection.stroke = _this.inkCanvas._activeStroke;
-            _this.selection.end(e.clientX, e.clientY);
             _this.selection.yscroll = $(document).scrollTop();
+            _this.selection.end(e.clientX, e.clientY);
             _this.selection.type = _this.currentStrokeType;
             _this.selection.url = _this._url;
             _this.selection.tags = $(_this.menuIframe).contents().find("#tagfield").val();
+            _this.addHtmlCssToStorage();
             console.log(_this.selection);
             if (_this.selection.getContent() != "" && _this.selection.getContent() != " ") {
                 _this.selections.push(_this.selection); //add selection to selections array 
@@ -3071,6 +3067,7 @@ var Main = (function () {
                 if (_this.isPointSelected) {
                     if (_this.pointIndex == -1) {
                         _this.pointIndex = _this.findReplacementStroke(sel.samplePoints, _this.pointAbove);
+                        return;
                     }
                     var newPoint = new Point(e.clientX, e.clientY + $(document).scrollTop() - _this.selectionOnHover.yscroll);
                     sel.samplePoints.join();
@@ -3273,7 +3270,7 @@ var Main = (function () {
         this.inkCanvas = new InkCanvas(this.canvas);
         this._url = window.location.protocol + "//" + window.location.host + window.location.pathname;
         this.set_message_listener();
-        //   this.showPreviousSelections();
+        this.addHtmlCssToStorage();
         this.body.addEventListener("mousedown", function (e) {
             if (_this.bubble_focused && !_this.isAboveBubble(e)) {
                 //set Bubble Speech.... 
@@ -3286,6 +3283,31 @@ var Main = (function () {
             }
         });
     }
+    Main.prototype.addHtmlCssToStorage = function () {
+        var page = {};
+        page["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        page["html"] = this.relativeToAbsolute($("html").html());
+        page["css"] = this.getAllCss();
+        console.log("add page ");
+        chrome.runtime.sendMessage({ msg: "add_copy", data: page });
+    };
+    Main.prototype.getAllCss = function () {
+        var css = "";
+        //    styletags = document.getElementsByTagName("style");
+        ////loop over all the style tags
+        //for (var i = 0; i < styletags.length; i++) {
+        //    css += styletags[i].innerHTML; //extract the css in the current style tag
+        //}
+        ////loop over all the external stylesheets
+        //for (var i = 0; i < document.styleSheets.length; i++) {
+        //    var currentsheet = document.styleSheets[i];
+        //    //loop over all the styling rules in this external stylesheet
+        //    for (var e = 0; e< currentsheet["cssRules"].length; e++) {
+        //        css += currentsheet["cssRules"][e].cssText; //extract all the styling rules
+        //    }
+        //}
+        return css;
+    };
     Main.prototype.showPreviousSelections = function () {
         var _this = this;
         chrome.storage.local.get(function (cTedStorage) {
@@ -3453,6 +3475,9 @@ var Main = (function () {
         });
         $(this.menuIframe).contents().find("#btnViewAll").click(function () {
             chrome.runtime.sendMessage({ msg: "view_all" });
+        });
+        $(this.menuIframe).contents().find("#btnPrevious").click(function () {
+            chrome.runtime.sendMessage({ msg: "show_copy", data: window.location.protocol + "//" + window.location.host + window.location.pathname });
         });
         $(this.menuIframe).contents().find("#toggle").change(function () {
             chrome.runtime.sendMessage({ msg: "set_active", data: $(_this.menuIframe).contents().find("#toggle").prop("checked") });
@@ -3649,6 +3674,124 @@ var Main = (function () {
     Main.prototype.isAboveBubble = function (e) {
         return (e.clientX > this.bubble.offsetLeft && e.clientX < this.bubble.offsetLeft + 200) && (e.clientY > this.bubble.offsetTop - $(window).scrollTop() && e.clientY < this.bubble.offsetTop + 200 - $(window).scrollTop());
         //return bool
+    };
+    Main.prototype.relativeToAbsolute = function (content) {
+        //////change relative href of hyperlink and src of image in html string to absolute
+        var res = content.split('href="');
+        var newval = res[0];
+        for (var i = 1; i < res.length; i++) {
+            newval += 'href="';
+            if (res[i].slice(0, 4) != "http") {
+                newval += window.location.protocol + "//" + window.location.host;
+            }
+            newval += res[i];
+        }
+        var src = newval.split('src="');
+        var finalval = src[0];
+        for (var i = 1; i < src.length; i++) {
+            finalval += 'src="https:';
+            if (src[i].slice(0, 4) != "http" && src[i].slice(0, 2) != "//") {
+                finalval += window.location["origin"];
+                var path = window.location.pathname;
+                var pathSplit = path.split('/');
+                var newpath = "";
+                var pIndex = pathSplit.length - 1;
+                $(pathSplit).each(function (indx, elem) {
+                    if (indx < pathSplit.length - 1) {
+                        newpath += (elem + "/");
+                    }
+                });
+                var newpathSplit = newpath.split("/");
+                var p = "";
+                pIndex = newpathSplit.length - 1;
+                if (src[i][0] == "/") {
+                    pIndex = pIndex - 1;
+                }
+                else {
+                    src[i] = "/" + src[i];
+                }
+                $(newpathSplit).each(function (index, elem) {
+                    if (index < pIndex) {
+                        p += (elem + "/");
+                    }
+                });
+                p = p.substring(0, p.length - 1);
+                newpath = p;
+                finalval += newpath;
+            }
+            finalval += src[i];
+        }
+        var src = newval.split('src="');
+        var finalval = src[0];
+        for (var i = 1; i < src.length; i++) {
+            finalval += 'src="';
+            if (src[i].slice(0, 4) != "http" && src[i].slice(0, 2) != "//") {
+                finalval += window.location["origin"];
+                var path = window.location.pathname;
+                var pathSplit = path.split('/');
+                var newpath = "";
+                var pIndex = pathSplit.length - 1;
+                $(pathSplit).each(function (indx, elem) {
+                    if (indx < pathSplit.length - 1) {
+                        newpath += (elem + "/");
+                    }
+                });
+                var newpathSplit = newpath.split("/");
+                var p = "";
+                pIndex = newpathSplit.length - 1;
+                if (src[i][0] == "/") {
+                    pIndex = pIndex - 1;
+                }
+                else {
+                    src[i] = "/" + src[i];
+                }
+                $(newpathSplit).each(function (index, elem) {
+                    if (index < pIndex) {
+                        p += (elem + "/");
+                    }
+                });
+                p = p.substring(0, p.length - 1);
+                newpath = p;
+                finalval += newpath;
+            }
+            finalval += src[i];
+        }
+        var srcset = newval.split('srcset="');
+        var finalval = srcset[0];
+        for (var i = 1; i < srcset.length; i++) {
+            finalval += 'srcset="https:';
+            if (srcset[i].slice(0, 4) != "http" && srcset[i].slice(0, 2) != "//") {
+                finalval += window.location["origin"];
+                var path = window.location.pathname;
+                var pathSplit = path.split('/');
+                var newpath = "";
+                var pIndex = pathSplit.length - 1;
+                $(pathSplit).each(function (indx, elem) {
+                    if (indx < pathSplit.length - 1) {
+                        newpath += (elem + "/");
+                    }
+                });
+                var newpathSplit = newpath.split("/");
+                var p = "";
+                pIndex = newpathSplit.length - 1;
+                if (srcset[i][0] == "/") {
+                    pIndex = pIndex - 1;
+                }
+                else {
+                    srcset[i] = "/" + srcset[i];
+                }
+                $(newpathSplit).each(function (index, elem) {
+                    if (index < pIndex) {
+                        p += (elem + "/");
+                    }
+                });
+                p = p.substring(0, p.length - 1);
+                newpath = p;
+                finalval += newpath;
+            }
+            finalval += srcset[i];
+        }
+        return finalval;
     };
     Main.prototype.switchSelection = function (strokeType) {
         console.log("Iselection switched to : " + strokeType);
@@ -3905,7 +4048,7 @@ var LassoSelection = (function (_super) {
     LassoSelection.prototype.end = function (x, y) {
         var points = this.stroke.sampleStroke().points;
         for (var i = 0; i < points.length; i++) {
-            points[i] = new Point(points[i].x, points[i].y - this.yscroll);
+            points[i] = new Point(points[i].x, points[i].y - $(document).scrollTop() + this.yscroll);
         }
         this.samplePoints = points;
         this._sampleLines = this.sampleLines(this.samplePoints);
@@ -4105,7 +4248,7 @@ var LassoSelection = (function (_super) {
                             }
                             if (!trueEl.childNodes[index].childNodes[j]["innerHTML"]) {
                                 if (trueEl.childNodes[index].childNodes[j].nodeName == "WORD") {
-                                    result += " ";
+                                    trueEl.childNodes[index].childNodes[j]["innerHTML"] = " ";
                                 }
                             }
                             else {
@@ -4596,7 +4739,7 @@ var MarqueeSelection = (function (_super) {
                             }
                             if (!trueEl.childNodes[index].childNodes[j]["innerHTML"]) {
                                 if (trueEl.childNodes[index].childNodes[j].nodeName == "WORD") {
-                                    result += " ";
+                                    trueEl.childNodes[index].childNodes[j]["innerHTML"] = " ";
                                 }
                             }
                             else {

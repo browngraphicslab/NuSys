@@ -74,8 +74,7 @@ class Main {
         this.inkCanvas = new InkCanvas(this.canvas);
         this._url = window.location.protocol + "//" + window.location.host + window.location.pathname;
         this.set_message_listener();
-     //   this.showPreviousSelections();
-
+        this.addHtmlCssToStorage();
         this.body.addEventListener("mousedown", (e) => {
             if (this.bubble_focused && !this.isAboveBubble(e)) {
                 //set Bubble Speech.... 
@@ -91,6 +90,34 @@ class Main {
 
     }
 
+    addHtmlCssToStorage(): void {
+        var page = {};
+        page["url"] = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        page["html"] = this.relativeToAbsolute($("html").html());
+        page["css"] = this.getAllCss();
+        console.log("add page ");
+        chrome.runtime.sendMessage({ msg: "add_copy", data: page});
+    }
+
+    getAllCss(): string {
+        var css = "";
+        //    styletags = document.getElementsByTagName("style");
+        ////loop over all the style tags
+        //for (var i = 0; i < styletags.length; i++) {
+        //    css += styletags[i].innerHTML; //extract the css in the current style tag
+        //}
+
+        ////loop over all the external stylesheets
+        //for (var i = 0; i < document.styleSheets.length; i++) {
+        //    var currentsheet = document.styleSheets[i];
+        //    //loop over all the styling rules in this external stylesheet
+        //    for (var e = 0; e< currentsheet["cssRules"].length; e++) {
+        //        css += currentsheet["cssRules"][e].cssText; //extract all the styling rules
+        //    }
+        //}
+
+        return css;
+    }
 
     showPreviousSelections(): void {
         chrome.storage.local.get((cTedStorage) => {
@@ -243,7 +270,7 @@ class Main {
 
         $(this.menuIframe).contents().find('html').html(this.menu.outerHTML);
         $(this.menuIframe).css("display", "none");      //initially set menu to display none.
-
+        
         $(this.menuIframe).contents().find("#btnExport").click((ev) => {
             chrome.runtime.sendMessage({ msg: "export" });
         });
@@ -263,6 +290,10 @@ class Main {
 
         $(this.menuIframe).contents().find("#btnViewAll").click(() => {
             chrome.runtime.sendMessage({ msg: "view_all" });
+        });
+
+        $(this.menuIframe).contents().find("#btnPrevious").click(() => {
+            chrome.runtime.sendMessage({ msg: "show_copy", data: window.location.protocol + "//" + window.location.host + window.location.pathname});
         });
 
         $(this.menuIframe).contents().find("#toggle").change(() => {
@@ -332,24 +363,20 @@ class Main {
                 document.body.removeChild(this.canvas);
                 var editedSelection = new LassoSelection();
                 var editedStroke = new Stroke();
-                editedSelection.yscroll = $(document).scrollTop();
                 editedStroke.points = this.selectionOnHover.samplePoints;
                 var len = editedStroke.points.length;
-               
-                for (var i = 0; i < len; i++) {
-                    editedStroke.points[i] = new Point(editedStroke.points[i].x, editedStroke.points[i].y + this.selectionOnHover.yscroll );
-                }
+
                 editedSelection.stroke = editedStroke;
                 editedSelection.id = this.selectionOnHover.id;
+                editedSelection.yscroll = this.selectionOnHover.yscroll;
                 console.log(editedSelection.yscroll);
 
                 editedSelection.end(0, 0);
                 editedSelection.type = StrokeType.Lasso;
                 editedSelection.url = this.selectionOnHover.url;
                 editedSelection.tags = this.selectionOnHover.tags;
-                for (var i = 0; i < len; i++) {
-                    editedStroke.points[i] = new Point(editedStroke.points[i].x, editedStroke.points[i].y - this.selectionOnHover.yscroll);
-                }
+
+                this.addHtmlCssToStorage();
                 chrome.runtime.sendMessage({ msg: "edit_selection", data: editedSelection });
                 document.body.appendChild(this.canvas);
 
@@ -377,11 +404,14 @@ class Main {
         this.isPointSelected = false;
         this.is_editing_selection = false;
         this.selection.stroke = this.inkCanvas._activeStroke;
-        this.selection.end(e.clientX, e.clientY);
         this.selection.yscroll = $(document).scrollTop();
+
+        this.selection.end(e.clientX, e.clientY);
         this.selection.type = this.currentStrokeType;
         this.selection.url = this._url;
         this.selection.tags = $(this.menuIframe).contents().find("#tagfield").val();
+        
+        this.addHtmlCssToStorage();
         console.log(this.selection);
         if (this.selection.getContent() != "" && this.selection.getContent() != " ") {
             this.selections.push(this.selection); //add selection to selections array 
@@ -501,8 +531,9 @@ class Main {
             var sel = this.selectionOnHover;
 
             if (this.isPointSelected) {
-                    if (this.pointIndex == -1) {
-                        this.pointIndex = this.findReplacementStroke(sel.samplePoints, this.pointAbove);
+                if (this.pointIndex == -1) {
+                    this.pointIndex = this.findReplacementStroke(sel.samplePoints, this.pointAbove);
+                    return;
                 }
                 var newPoint = new Point(e.clientX, e.clientY + $(document).scrollTop() - this.selectionOnHover.yscroll);
                     sel.samplePoints.join();
@@ -510,8 +541,6 @@ class Main {
                     sel.samplePoints.join();
                     this.inkCanvas.clear();
                     this.inkCanvas.drawPreviousGesture(sel);
-                
-
             }
 
             if (this.isLineSelected) {
@@ -783,6 +812,129 @@ class Main {
         //return bool
          
     }
+
+    relativeToAbsolute(content: string): string {
+        //////change relative href of hyperlink and src of image in html string to absolute
+        var res = content.split('href="');
+        var newval = res[0];
+        for (var i = 1; i < res.length; i++) {
+            newval += 'href="';
+            if (res[i].slice(0, 4) != "http") {
+                newval += window.location.protocol + "//" + window.location.host;
+            }
+            newval += res[i];
+        }
+        var src = newval.split('src="');
+        var finalval = src[0];
+        for (var i = 1; i < src.length; i++) {
+            finalval += 'src="https:';
+            if (src[i].slice(0, 4) != "http" && src[i].slice(0, 2) != "//") {
+                finalval += window.location["origin"];
+                var path = window.location.pathname;
+                var pathSplit = path.split('/');
+                var newpath = "";
+                var pIndex = pathSplit.length - 1;
+                $(pathSplit).each(function (indx, elem) {
+                    if (indx < pathSplit.length - 1) {
+                        newpath += (elem + "/");
+                    }
+                });
+                var newpathSplit = newpath.split("/");
+                var p = "";
+                pIndex = newpathSplit.length - 1;
+                if (src[i][0] == "/") {
+                    pIndex = pIndex - 1;
+                }
+                else {
+                    src[i] = "/" + src[i];
+                }
+                $(newpathSplit).each(function (index, elem) {
+                    if (index < pIndex) {
+                        p += (elem + "/");
+                    }
+                });
+                p = p.substring(0, p.length - 1);
+                newpath = p;
+                finalval += newpath;
+            }
+            finalval += src[i];
+        }
+        var src = newval.split('src="');
+
+        var finalval = src[0];
+        for (var i = 1; i < src.length; i++) {
+            finalval += 'src="';
+            if (src[i].slice(0, 4) != "http" && src[i].slice(0, 2) != "//") {
+                finalval += window.location["origin"];
+                var path = window.location.pathname;
+                var pathSplit = path.split('/');
+                var newpath = "";
+                var pIndex = pathSplit.length - 1;
+                $(pathSplit).each(function (indx, elem) {
+                    if (indx < pathSplit.length - 1) {
+                        newpath += (elem + "/");
+                    }
+                });
+                var newpathSplit = newpath.split("/");
+                var p = "";
+                pIndex = newpathSplit.length - 1;
+                if (src[i][0] == "/") {
+                    pIndex = pIndex - 1;
+                }
+                else {
+                    src[i] = "/" + src[i];
+                }
+                $(newpathSplit).each(function (index, elem) {
+                    if (index < pIndex) {
+                        p += (elem + "/");
+                    }
+                });
+                p = p.substring(0, p.length - 1);
+                newpath = p;
+                finalval += newpath;
+            }
+            finalval += src[i];
+        }
+
+        var srcset = newval.split('srcset="');
+        var finalval = srcset[0];
+
+        for (var i = 1; i < srcset.length; i++) {
+            finalval += 'srcset="https:';
+            if (srcset[i].slice(0, 4) != "http" && srcset[i].slice(0, 2) != "//") {
+                finalval += window.location["origin"];
+                var path = window.location.pathname;
+                var pathSplit = path.split('/');
+                var newpath = "";
+                var pIndex = pathSplit.length - 1;
+                $(pathSplit).each(function (indx, elem) {
+                    if (indx < pathSplit.length - 1) {
+                        newpath += (elem + "/");
+                    }
+                });
+                var newpathSplit = newpath.split("/");
+                var p = "";
+                pIndex = newpathSplit.length - 1;
+                if (srcset[i][0] == "/") {
+                    pIndex = pIndex - 1;
+                }
+                else {
+                    srcset[i] = "/" + srcset[i];
+                }
+                $(newpathSplit).each(function (index, elem) {
+                    if (index < pIndex) {
+                        p += (elem + "/");
+                    }
+                });
+                p = p.substring(0, p.length - 1);
+                newpath = p;
+                finalval += newpath;
+            }
+            finalval += srcset[i];
+        }
+        return finalval;
+    }
+
 
     switchSelection(strokeType) {
         console.log("Iselection switched to : " + strokeType);

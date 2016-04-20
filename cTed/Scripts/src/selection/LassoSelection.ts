@@ -16,7 +16,7 @@
     end(x: number, y: number): void {
         var points = this.stroke.sampleStroke().points;
         for (var i = 0; i < points.length; i++) {
-            points[i] = new Point(points[i].x, points[i].y - this.yscroll);
+            points[i] = new Point(points[i].x, points[i].y - $(document).scrollTop() + this.yscroll);
         }
         this.samplePoints = points;
         this._sampleLines = this.sampleLines(this.samplePoints);
@@ -233,7 +233,7 @@
                             }
                             if (!trueEl.childNodes[index].childNodes[j]["innerHTML"]) {
                                 if (trueEl.childNodes[index].childNodes[j].nodeName == "WORD") {
-                                    result += " ";
+                                    trueEl.childNodes[index].childNodes[j]["innerHTML"] = " ";
                                 }
                             }
                             else { result += trueEl.childNodes[index].childNodes[j]["innerHTML"]; }

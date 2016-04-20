@@ -21,7 +21,7 @@ var Background = (function () {
                 _this._isOpen = false;
             }
             else {
-                console.log("=========showMenu==================");
+                console.log("=========showMenu=======");
                 _this.msgAllTabs({ msg: "show_menu" });
                 _this._isOpen = true;
                 chrome.browserAction.setIcon({ path: { 19: "assets/icon_active.png", 38: "assets/icon_active.png" } });
@@ -46,12 +46,6 @@ var Background = (function () {
     };
     Background.prototype.initTab = function (tabId) {
         var _this = this;
-        chrome.tabs.executeScript(tabId, { file: "jquery.js" }, function (result) {
-            if (chrome.runtime.lastError) {
-                console.log("error in loading jquery");
-                return;
-            }
-        });
         chrome.tabs.executeScript(tabId, { file: "jquery.js" }, function (result) {
             if (chrome.runtime.lastError) {
                 console.log("error in loading jquery");
@@ -83,19 +77,66 @@ var Background = (function () {
             }
         });
         chrome.storage.local.clear(function () {
-            chrome.storage.local.set({ selections: [] });
+            chrome.storage.local.set({ selections: [], pages: [] });
         });
         chrome.runtime.onMessage.addListener(function (request, sender, response) {
             if (request.msg == "store_selection") {
                 console.log("store_selection to bg");
                 chrome.storage.local.get(function (cTedStorage) {
-                    console.log(cTedStorage);
                     cTedStorage["selections"].push(request.data);
                     console.log("storing selection");
                     chrome.storage.local.set(cTedStorage, function () {
                         //     printSelections();
+                        console.log("saving.......");
                         console.log(cTedStorage);
                         console.log("selection stored");
+                    });
+                });
+            }
+            if (request.msg == "show_copy") {
+                console.log("open previous copy");
+                chrome.storage.local.get(function (cTedStorage) {
+                    cTedStorage["pages"].forEach(function (p) {
+                        if (p.url == request.data) {
+                            console.log(p);
+                            var html = p["html"];
+                            console.log("===========================");
+                            console.log(html);
+                            //     var css = p["css"];
+                            alert("---");
+                            var w = window.open("", "Title", "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes");
+                            w.document.body.innerHTML = html;
+                        }
+                    });
+                });
+            }
+            if (request.msg == "add_copy") {
+                chrome.storage.local.get(function (cTedStorage) {
+                    var pages = cTedStorage["pages"];
+                    var exists = false;
+                    for (var i = 0; i < pages.length; i++) {
+                        if (pages[i].url == request.data.url) {
+                            pages[i] = request.data;
+                            exists = true;
+                            console.log("adding copy...");
+                            console.log(request.data.html);
+                            //        alert("00")
+                            continue;
+                        }
+                        console.log("----------------");
+                    }
+                    console.log("DDDDDD");
+                    if (exists) {
+                        console.log("------------------------------------------");
+                        console.log(pages);
+                        cTedStorage["pages"] = pages;
+                    }
+                    else {
+                        //    alert("new");
+                        cTedStorage["pages"].push(request.data);
+                    }
+                    chrome.storage.local.set(cTedStorage, function () {
+                        console.log("ADDED COPY");
                     });
                 });
             }

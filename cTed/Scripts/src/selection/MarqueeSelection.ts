@@ -96,7 +96,8 @@
                             }
                             if (!trueEl.childNodes[index].childNodes[j]["innerHTML"]) {
                                 if (trueEl.childNodes[index].childNodes[j].nodeName == "WORD") {
-                                    result += " ";
+                                    trueEl.childNodes[index].childNodes[j]["innerHTML"] = " ";
+                                 //   result += " ";
                                 }
                             }
                             else { result += trueEl.childNodes[index].childNodes[j]["innerHTML"]; }
