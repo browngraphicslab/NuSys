@@ -19,7 +19,7 @@
     <SolidColorBrush x:Key="color1" Color="#FFC7DEDE"/>   <!-- lightest blue -->
     <SolidColorBrush x:Key="color2" Color="#FF6B9397"/>   <!-- medium blue -->
     <SolidColorBrush x:Key="color3" Color="#FF113D40"/>   <!-- darkest blue -->
-    <SolidColorBrush x:Key="color4" Color="#FFD397A0"/>   <!-- red 981A4D -->
+    <SolidColorBrush x:Key="color4" Color="#981A4D"/>   <!-- red FFD397A0 -->
     <SolidColorBrush x:Key="color5" Color="#FFDBE7FE"/>   <!-- dv bg blue -->
     <SolidColorBrush x:Key="color6" Color="White"/>     <!-- background white-->
     <SolidColorBrush x:Key="foreground6" Color="White"/><!-- foreground white-->

@@ -644,6 +644,7 @@
     <Content Include="Assets\powerpointIcon.png" />
     <Content Include="Assets\resizer.png" />
     <Content Include="Assets\SmallLogo.scale-100.png" />
+    <Content Include="Assets\snapshot_icon.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\iframe.html" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
