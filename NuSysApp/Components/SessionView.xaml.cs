@@ -55,13 +55,6 @@ namespace NuSysApp
         #endregion Private Members
 
         private int initChatNotifs;
-        private MGlass _glass;
-
-        public MGlass Glass
-        {
-            get { return _glass; }
-        }
-
         
         public SessionView()
         {
