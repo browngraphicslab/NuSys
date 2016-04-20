@@ -40,6 +40,9 @@ namespace LdaLibrary //IT'S TIME TO DO SOME ESTIMATINGGGGGG! RAWRRRRR
 
         public async Task<bool> estimate() // IT TOOK DAYZZZZ TO GET HEYURRRR >:D
         {
+            if (trnModel == null)
+                return false;
+
             Debug.WriteLine("Sampling" + trnModel.niters + " iteration!!");
 
             int lastIter = trnModel.liter;
