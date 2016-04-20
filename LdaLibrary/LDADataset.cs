@@ -13,7 +13,7 @@ namespace LdaLibrary
         // Instance Variables
         //---------------------------------------------------------------
 
-        public Dictionary localDict;			// local dictionary	
+        public Dictionary localDict;	// local dictionary	
         public Document[] docs; 		// a list of documents	
         public int M; 			 		// number of documents
         public int V;			 		// number of words

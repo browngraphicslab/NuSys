@@ -230,7 +230,6 @@ namespace NuSysApp
         {
             this.UpdateEndPoints();
 
-
             var vm = (LinkViewModel)this.DataContext;
 
             var controller = (LinkElementController)vm.Controller;

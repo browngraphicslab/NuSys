@@ -22,6 +22,7 @@ using MyToolkit.Utilities;
 using Newtonsoft.Json;
 using NuSysApp;
 using NuSysApp.Util;
+using Windows.UI.Xaml.Input;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -76,6 +77,20 @@ namespace NuSysApp
             };
             
             Init();
+
+            SlideOutLogin.Completed += SlideOutLoginComplete;
+
+            AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(Prresseed), true);
+        }
+
+        private void SlideOutLoginComplete(object sender, object e)
+        {
+            login.Visibility = Visibility.Collapsed;
+        }
+
+        private void Prresseed(object sender, PointerRoutedEventArgs e)
+        {
+            Debug.WriteLine("asdasds");
         }
 
         private async void Init()
