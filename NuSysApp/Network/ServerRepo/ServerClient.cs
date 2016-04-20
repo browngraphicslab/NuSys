@@ -226,8 +226,10 @@ namespace NuSysApp
                             var model =
                                 SessionController.Instance.ContentController.Get(libraryId) as
                                     CollectionLibraryElementModel;
-                            model.InkLines.Add(inkid);
-                            SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new AddInkRequest(m));
+                            if (!model.InkLines.Contains(inkid)) { 
+                                model.InkLines.Add(inkid);
+                                SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new AddInkRequest(m));
+                            }
                         }
 
                         var libModel = ((CollectionLibraryElementModel)SessionController.Instance.ContentController.Get(id));
