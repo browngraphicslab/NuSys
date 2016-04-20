@@ -9,6 +9,14 @@
     mc:Ignorable="d"
 >
 
+    <local:AnimatableUserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </local:AnimatableUserControl.Resources>
+
     <!--<local:AnimatableUserControl.Resources>
         <local:BoolInvertConverter x:Key="iConverter"/>
 
@@ -75,11 +83,11 @@
                 <!--<Button x:Name="TextButton" Visibility ="Collapsed"  Click="TextButton_OnClick" Style="{StaticResource InputButton}" Margin="5 0 5 0">
                     <Image x:Name="TextImg" Source="ms-appx:///Assets/icon_node_text.png" MaxHeight="18" MaxWidth="18"/>
                 </Button>-->
-                
-                <Button x:Name="RecordButton"  Click="RecordButton_OnClick" Style="{StaticResource InputButton}"  Margin="5 0 5 0">
+
+            <Button x:Name="RecordButton"  Click="RecordButton_OnClick" Style="{StaticResource InputButton}" Margin="5 0 5 0">
                     <Image  x:Name="RecordImg" Source= "ms-appx:///Assets/icon_audionode_record.png" MaxHeight="18" MaxWidth="18"/>
                 </Button>
-                <Button x:Name="InkButton" Click="InkButton_OnClick" Style="{StaticResource InputButton}"  Margin="5 0 5 0">
+                <Button x:Name="InkButton" Click="InkButton_OnClick" Style="{StaticResource InputButton}" Margin="5 0 5 0">
                     <Image  x:Name="InkImg" Source="ms-appx:///Assets/icon_node_ink.png" MaxHeight="18" MaxWidth="18"/>
                 </Button>
             </StackPanel>

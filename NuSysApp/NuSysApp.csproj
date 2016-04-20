@@ -20,7 +20,7 @@
     <PackageCertificateKeyFile>NuSysApp_TemporaryKey.pfx</PackageCertificateKeyFile>
     <PackageCertificateThumbprint>974C917A8A98617A1A9C87ED850936A08B851273</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-    <AppxPackageDir>C:\Users\nusys\Desktop\</AppxPackageDir>
+    <AppxPackageDir>C:\Users\phili_n4ua7ts\Documents\</AppxPackageDir>
     <AppxBundlePlatforms>x86</AppxBundlePlatforms>
     <AppxBundle>Always</AppxBundle>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
@@ -644,6 +644,7 @@
     <Content Include="Assets\powerpointIcon.png" />
     <Content Include="Assets\resizer.png" />
     <Content Include="Assets\SmallLogo.scale-100.png" />
+    <Content Include="Assets\snapshot_icon.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Assets\iframe.html" />
     <Content Include="Assets\SplashScreen.scale-200.png" />

@@ -210,6 +210,8 @@ namespace NuSysApp
                 foreach (var otherStroke in allStrokes)
                 {
                     var pts = otherStroke.GetInkPoints().Select(p => p.Position );
+                    if (pts.Count() < 2)
+                        continue;
                     if (thisLineString.Intersects(pts.GetLineString())) {
                         otherStroke.Selected = true;
                     }

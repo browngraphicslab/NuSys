@@ -17,24 +17,33 @@
             </ResourceDictionary.MergedDictionaries>
 
             <Style x:Key="CircleButton" TargetType="Button">
-                <Setter Property="Foreground" Value="#FFFFFF"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="HorizontalAlignment" Value="Left"/>
-                <Setter Property="VerticalAlignment" Value="Bottom"/>
-                <Setter Property="Template">
+                <Setter Property="Template" >
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Grid>
-                                <Border x:Name="Background" CornerRadius="50" Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}"/>
-                                <ContentPresenter
-		                        x:Name="contentPresenter"
-		                        Content="{TemplateBinding Content}"
-		                        ContentTemplate="{TemplateBinding ContentTemplate}"
-		                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-		                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-		                        Margin="{TemplateBinding Padding}"/>
-                                <Rectangle x:Name="DisabledVisualElement" RadiusX="33" RadiusY="33" Fill="Transparent" Opacity="0" IsHitTestVisible="false" />
-                                <Rectangle x:Name="FocusVisualElement" RadiusX="33" RadiusY="33" Margin="1" Stroke="#FFFFFF" StrokeThickness="1" Opacity="0" IsHitTestVisible="False" />
+                            <Grid Width="60" Height="60">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="PointerOver">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Ellipse"
+                                                                   Storyboard.TargetProperty="Opacity">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value=".9" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Ellipse"
+                                                                           Storyboard.TargetProperty="Opacity">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="1"></DiscreteObjectKeyFrame>
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <Ellipse Height="60" Width ="60" Fill="{StaticResource color4}" VerticalAlignment="Bottom" x:Name="Ellipse" Opacity="1" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="10" HorizontalAlignment="Center"/>
+                                <ContentPresenter></ContentPresenter>
                             </Grid>
                         </ControlTemplate>
                     </Setter.Value>
@@ -54,8 +63,8 @@
         </Button>
         <StackPanel Name="Users" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="70">
         </StackPanel>
-            <Button x:Name="SnapshotButton" Click="SnapshotButton_OnClick" Style="{StaticResource CircleButton}" Height="50" Background="Aquamarine">
-                <TextBlock>SNAPSHOT</TextBlock>
+            <Button x:Name="SnapshotButton" Click="SnapshotButton_OnClick" Style="{StaticResource CircleButton}" Height="60" Margin="10,10,0,0">
+                <Image Source="ms-appx:///Assets/snapshot_icon.png" Width="25" Height="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
             </Button>
         <Image Name="LibraryDraggingNode" Source="ms-appx:///Assets/icon_new_workspace.png" Width="0" Height="0"></Image>
         <Image Name="DraggingGraphImage" Source="ms-appx:///Assets/icon_new_workspace.png" Width="0" Height="0"></Image>
@@ -80,7 +89,7 @@
         
         <local:SearchWindowView x:Name="xSearchWindowView" Visibility="Collapsed"></local:SearchWindowView>
         </Canvas>
-        <local:TextInputBlock x:Name ="xWorkspaceTitle" ButtonBg="SlateGray" BubbleTop="False"  LeftJustified="False" HorizontalAlignment="Right" VerticalAlignment="Top"  Width="{Binding ElementName=Properties, Path=Width}" Height="45" MinWidth="300"  MaxWidth="300"></local:TextInputBlock>
+        <local:TextInputBlock x:Name ="xWorkspaceTitle" ButtonBg="#FF6B9397" BubbleTop="False"  LeftJustified="False" HorizontalAlignment="Right" VerticalAlignment="Top"  Width="{Binding ElementName=Properties, Path=Width}" Height="45" MinWidth="300"  MaxWidth="300"></local:TextInputBlock>
         <local:DetailViewerView x:Name="xDetailViewer" HorizontalAlignment="Right"></local:DetailViewerView>
         <Grid x:Name="xLoadingGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#55000000" >
             <local:LoadingScreen></local:LoadingScreen>            
