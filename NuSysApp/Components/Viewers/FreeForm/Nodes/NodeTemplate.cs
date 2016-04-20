@@ -52,7 +52,9 @@ namespace NuSysApp
         public Button Link = null;
         public Button PresentationLink = null;
         public Button PresentationMode = null;
+
         public Button isSearched = null;
+
 
         private Image _dragItem;
 
@@ -405,54 +407,6 @@ namespace NuSysApp
             highlight.Visibility = Visibility.Collapsed;
             
             sv.EnterPresentationMode(vm);
-        }
-
-
-        /// <summary> 
-        /// Event handler for the "Save Image.." button. 
-        /// </summary> 
-        /// <param name="sender"></param> 
-        /// <param name="e"></param> 
-        private async void SaveImage(RenderTargetBitmap renderTargetBitmap)
-        {
-           
-
-            // Render to an image at the current system scale and retrieve pixel contents 
-            
-           
-            var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();
-
-            var savePicker = new FileSavePicker();
-            savePicker.DefaultFileExtension = ".png";
-            savePicker.FileTypeChoices.Add(".png", new List<string> { ".png" });
-            savePicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
-            savePicker.SuggestedFileName = "snapshot.png";
-
-            // Prompt the user to select a file 
-            var saveFile = await savePicker.PickSaveFileAsync();
-
-            // Verify the user selected a file 
-            if (saveFile == null)
-                return;
-
-            // Encode the image to the selected file on disk 
-            using (var fileStream = await saveFile.OpenAsync(FileAccessMode.ReadWrite))
-            {
-                var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, fileStream);
-
-                encoder.SetPixelData(
-                    BitmapPixelFormat.Bgra8,
-                    BitmapAlphaMode.Ignore,
-                    (uint)renderTargetBitmap.PixelWidth,
-                    (uint)renderTargetBitmap.PixelHeight,
-                    DisplayInformation.GetForCurrentView().LogicalDpi,
-                    DisplayInformation.GetForCurrentView().LogicalDpi,
-                    pixelBuffer.ToArray());
-
-                await encoder.FlushAsync();
-            }
-
-           
         }
 
         private void OnResizerManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
