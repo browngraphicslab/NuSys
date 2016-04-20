@@ -596,5 +596,10 @@ namespace NuSysApp
 
         public Grid OuterMost { get { return xOuterMost; } }
         public FreeFormViewer FreeFormViewer { get { return _activeFreeFormViewer; } }
+
+        private async void SnapshotButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            await StaticServerCalls.CreateSnapshot();
+        }
     }
 }

@@ -93,7 +93,10 @@ namespace NuSysApp
             PageElements.Clear();
 
             var valids = await SessionController.Instance.NuSysNetworkSession.SearchOverLibraryElements(s);
-
+            if (valids == null)
+            {
+                return;
+            }
             foreach (var item in _orgList)
             {
                 if (valids.Contains(item.Id))
