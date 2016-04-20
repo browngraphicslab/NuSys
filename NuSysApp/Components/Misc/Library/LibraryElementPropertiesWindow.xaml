@@ -86,20 +86,19 @@
     <Border x:Name="Border" Height="550" Width="400" Background="{StaticResource color6}" BorderBrush="{StaticResource color3}" BorderThickness="1" Margin="0,0,0,0">
 
         <Grid Margin="-7,0,3,0">
-
             <Image Source="ms-appx:///Assets/icon_collapse.png" Tapped="CollapseArrow_OnTapped"  HorizontalAlignment="Right" Width="10" Margin="0,0,10,0"/>
+
             <!--<Image Source="ms-appx:///Assets/icon_favorite.png" Tapped="Favorites_OnTapped" HorizontalAlignment="Right" Width="70" Margin="0,-210,10,210"> </Image>-->
             <Image x:Name="Favorite" Source="ms-appx:///Assets/star_icon.png" Tapped="Favorites_OnTapped" Width="100" Height="45" VerticalAlignment="Top" 
                         HorizontalAlignment="Center" Margin="303,10,10,468">
             </Image>
-            
             
 
             <StackPanel Padding="50" Orientation="Vertical" >
                 <Border Height="150" Width="150" BorderThickness="1" Margin="0,-30,0,0" BorderBrush="{StaticResource color1}" Visibility="Collapsed">
                     <Image x:Name="Preview" Height="150" Width="150" />
                 </Border>
-            
+
 
                 <!--<ListView.Header>
                         <Grid VerticalAlignment="Center" Background="#ECECEA ">

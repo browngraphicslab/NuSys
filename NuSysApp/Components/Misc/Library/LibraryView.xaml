@@ -283,6 +283,7 @@
             <Image Source="ms-appx:///Assets/icon_upload.png" Height="30"></Image>
         </Button>
 
+
         <Button x:Name="btnAll"  Tapped="Favorites_OnTapped" VerticalAlignment="Top" Margin="106,20,0,0" HorizontalAlignment="Left" Width="134" Height="36"  Background="#E6EDEC" BorderBrush="#9cc5c2" BorderThickness="2,2,2,0">
             <TextBlock Text="All" Margin="0,0,0,0" Foreground="#83A6A3" FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
 
@@ -291,6 +292,7 @@
             <TextBlock Text="Fav" Margin="0,0,0,0" Foreground="#83A6A3" FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
 
         </Button>
+
 
         <Image x:Name="Graph" Source="ms-appx:///Assets/icon_new_workspace.png"  Height="20" VerticalAlignment="Top" Margin="0,15,10,0" ManipulationMode="TranslateX, TranslateY" PointerPressed="Graph_OnPointerPressed" ManipulationStarted="Graph_OnManipulationStarted" ManipulationDelta="Graph_OnManipulationDelta" ManipulationCompleted="Graph_OnManipulationCompleted" 
                HorizontalAlignment="Right"/>

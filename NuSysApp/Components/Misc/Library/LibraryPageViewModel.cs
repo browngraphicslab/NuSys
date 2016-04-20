@@ -28,9 +28,7 @@ namespace NuSysApp
             _orgList = new List<LibraryElementModel>(elements);
             SessionController.Instance.ContentController.OnNewContent += NewContent;
             SessionController.Instance.ContentController.OnElementDelete += DeleteContent;
-            
         }
-
 
         private void NewContent(LibraryElementModel content)
         {
@@ -93,7 +91,10 @@ namespace NuSysApp
             PageElements.Clear();
 
             var valids = await SessionController.Instance.NuSysNetworkSession.SearchOverLibraryElements(s);
-
+            if (valids == null)
+            {
+                return;
+            }
             foreach (var item in _orgList)
             {
                 if (valids.Contains(item.Id))

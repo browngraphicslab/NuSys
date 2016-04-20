@@ -233,7 +233,7 @@ namespace NuSysApp
                         var libModel = ((CollectionLibraryElementModel)SessionController.Instance.ContentController.Get(id));
                         var oldInkLines = libModel.InkLines;
                         var added = newInkLines.Except(oldInkLines).ToArray();
-                        var removed = oldInkLines.Except(newInkLines).ToArray();
+						var removed = oldInkLines.Except(newInkLines).ToArray();
 
                         await UITask.Run(() =>
                         {

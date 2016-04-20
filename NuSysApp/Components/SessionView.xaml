@@ -54,17 +54,24 @@
         </Button>
         <StackPanel Name="Users" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="70">
         </StackPanel>
+            <Button x:Name="SnapshotButton" Click="SnapshotButton_OnClick" Style="{StaticResource CircleButton}" Height="50" Background="Aquamarine">
+                <TextBlock>SNAPSHOT</TextBlock>
+            </Button>
         <Image Name="LibraryDraggingNode" Source="ms-appx:///Assets/icon_new_workspace.png" Width="0" Height="0"></Image>
         <Image Name="DraggingGraphImage" Source="ms-appx:///Assets/icon_new_workspace.png" Width="0" Height="0"></Image>
         <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5,0,0,50"></local:ChatPopupView >
 
-        <Button x:Name="NextNode" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="70,10,5,10" Visibility="Collapsed">
-            <Image Source="/Assets/icon_pdf_right.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+
+            <Button x:Name="PreviousNode" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="50,40,0,10" Visibility="Collapsed">
+            <Image Source="/Assets/icon_pdf_left.png" Height="30" Width="30" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Button>
-        <Button x:Name="PreviousNode"  Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="10,10,5,10" Visibility="Collapsed">
-            <Image Source="/Assets/icon_pdf_left.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+        <Button x:Name="NextNode" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="115,40,0,10" Visibility="Collapsed">
+            <Image Source="/Assets/icon_pdf_right.png" Height="30" Width="30" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Button>
-        <Button x:Name="xPresentation" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="200,10,5,10" Visibility="Collapsed">
+        <Button x:Name="CurrentNode"  Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="180,40,0,10" Visibility="Collapsed">
+            <Image Source="/Assets/icon_mainmenu_node.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+        </Button>
+        <Button x:Name="xPresentation" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="245,40,0,10" Visibility="Collapsed">
             <Image Source="/Assets/icon_whitex.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Button>
 

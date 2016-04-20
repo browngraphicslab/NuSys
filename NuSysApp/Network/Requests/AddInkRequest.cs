@@ -48,14 +48,6 @@ namespace NuSysApp
             {
                 return;
             }
-            var model =
-                SessionController.Instance.ContentController.Get(
-                    SessionController.Instance.ActiveFreeFormViewer.ContentId) as CollectionLibraryElementModel;
-
-            if (model != null && !model.InkLines.Contains(id))
-            {
-                return;
-            }
 
             if (type == "adornment")
             {

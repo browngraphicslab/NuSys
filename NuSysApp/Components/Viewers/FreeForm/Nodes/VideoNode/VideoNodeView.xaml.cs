@@ -41,6 +41,7 @@ namespace NuSysApp
             _addTimeBlockMode = false;
             this.InitializeComponent();
             this.DataContext = vm;
+            //playbackElement.AutoPlay = false;
             if (SessionController.Instance.ContentController.ContainsAndLoaded(vm.Model.LibraryId))
             {
                 LoadVideo();
@@ -55,7 +56,9 @@ namespace NuSysApp
             vm.LinkedTimeModels.CollectionChanged += LinkedTimeBlocks_CollectionChanged;
             _timeBlocks = new List<LinkedTimeBlockViewModel>();
             scrubBar.SetValue(Canvas.ZIndexProperty, 1);
+            //  playbackElement.Play();
             playbackElement.Position = new TimeSpan(0);
+            //playbackElement.Stop();
 
             vm.Controller.Disposed += ControllerOnDisposed;
 
@@ -127,8 +130,6 @@ namespace NuSysApp
 
             TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)millliseconds);
             playbackElement.Position = time;
-            playbackElement.Play();
-            playbackElement.Pause();
         }
 
         private void ScrubBar_OnPointerMoved(object sender, PointerRoutedEventArgs e)

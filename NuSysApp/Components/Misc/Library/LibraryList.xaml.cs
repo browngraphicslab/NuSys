@@ -32,7 +32,9 @@ namespace NuSysApp
         //public delegate void LibraryElementDragEventHandler(object sender, DragItemsStartingEventArgs e);
         //public event LibraryElementDragEventHandler OnLibraryElementDrag;
         private LibraryElementPropertiesWindow _propertiesWindow;
+
         private double _x;
+
         private double _y;
 
         private CompositeTransform _ct;

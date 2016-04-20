@@ -4,13 +4,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Devices.Input;
 using Windows.Foundation;
-using Windows.Graphics.Display;
-using Windows.Graphics.Imaging;
-using Windows.Storage;
-using Windows.Storage.Pickers;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -21,6 +16,11 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Components.Nodes;
 using NuSysApp.Nodes.AudioNode;
+using Windows.Graphics.Imaging;
+using Windows.Graphics.Display;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Storage;
+using Windows.Storage.Pickers;
 
 // The Templated Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234235
 
@@ -50,12 +50,15 @@ namespace NuSysApp
         public Canvas xCanvas = null;
         public Button DuplicateElement = null;
         public Button Link = null;
+        public Button PresentationLink = null;
         public Button PresentationMode = null;
-       
+
+        public Button isSearched = null;
+
 
         private Image _dragItem;
 
-        private enum DragMode { Duplicate, Tag, Link };
+        private enum DragMode { Duplicate, Tag, Link, PresentationLink };
         private DragMode _currenDragMode = DragMode.Duplicate;
 
         public NodeTemplate()
@@ -71,6 +74,7 @@ namespace NuSysApp
             vm.PropertyChanged -= OnPropertyChanged;
             vm.Controller.UserChanged -= ControllerOnUserChanged;
             vm.Controller.LibraryElementModel.OnLightupContent -= LibraryElementModelOnOnLightupContent;
+            vm.Controller.LibraryElementModel.OnSearched -= LibraryElementModelOnSearched;
             vm.Controller.LibraryElementModel.OnTitleChanged -= LibraryElementModelOnOnTitleChanged;
 
             if (title != null)
@@ -103,6 +107,8 @@ namespace NuSysApp
             bg = (Grid)GetTemplateChild("bg");
             hitArea = (Rectangle)GetTemplateChild("HitArea");
 
+            isSearched = (Button) GetTemplateChild("isSearched");
+            
             //inkCanvas = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(vm.Width, vm.Height)));
 
             //(GetTemplateChild("xContainer") as Grid).Children.Add(inkCanvas);
@@ -113,17 +119,22 @@ namespace NuSysApp
 
             DuplicateElement = (Button)GetTemplateChild("DuplicateElement");
             Link = (Button)GetTemplateChild("Link");
+            PresentationLink = (Button)GetTemplateChild("PresentationLink");
             xCanvas = (Canvas)GetTemplateChild("xCanvas");
 
             DuplicateElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             DuplicateElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
+            Link.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
+            Link.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
+
+            PresentationLink.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
+            PresentationLink.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
 
             Link.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             Link.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
 
             PresentationMode = (Button) GetTemplateChild("PresentationMode");
             PresentationMode.Click += OnPresentationClick;
-
 
             btnDelete = (Button)GetTemplateChild("btnDelete");
             btnDelete.Click += OnBtnDeleteClick;
@@ -163,6 +174,7 @@ namespace NuSysApp
             {
 
                 vm.Controller.LibraryElementModel.OnLightupContent += LibraryElementModelOnOnLightupContent;
+                vm.Controller.LibraryElementModel.OnSearched += LibraryElementModelOnSearched;
 
             }
             vm.PropertyChanged += OnPropertyChanged;
@@ -217,6 +229,10 @@ namespace NuSysApp
             highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(100, 156, 197, 194));
         }
 
+        private void LibraryElementModelOnSearched(LibraryElementModel model, bool searched)
+        {
+            isSearched.Visibility = searched ? Visibility.Visible : Visibility.Collapsed;
+        }
         private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)
         {
             xCanvas.Children.Remove(_dragItem);
@@ -251,44 +267,9 @@ namespace NuSysApp
                 }
             }
             
-            /*
-            if (_currenDragMode == DragMode.Tag)
-            {
-                var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
-                // hitsStart = hitsStart.Where(uiElem => uiElem);
-                hitsStart = hitsStart.Where(ui => (ui as FrameworkElement).Name == "Tags");
-                if (hitsStart.Any())
-                {
-                    var el = (FrameworkElement)hitsStart.First();
-                    var vm = (ElementViewModel)el.DataContext;
-                    var tags = (List<string>)vm.Model.GetMetaData("tags");
-                    tags.Add(_text);
-                    vm.Controller.SetMetadata("tags", tags);
+         
 
-                }
-                else {
-
-                    var contentId = SessionController.Instance.GenerateId();
-
-                    var dict = new Message();
-                    dict["width"] = 300;
-                    dict["height"] = 150;
-                    dict["nodeType"] = ElementType.Tag.ToString();
-                    dict["x"] = r.X;
-                    dict["y"] = r.Y;
-                    dict["title"] = _text;
-                    dict["contentId"] = contentId;
-                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
-                    dict["creatorContentID"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
-
-                    var request = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Tag, dict.ContainsKey("title") ? dict["title"].ToString() : null));
-                }
-            }
-            */
-
-            if (_currenDragMode == DragMode.Link)
+            if (_currenDragMode == DragMode.Link || _currenDragMode == DragMode.PresentationLink)
             {
                 Debug.WriteLine("dragging link");
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
@@ -309,7 +290,6 @@ namespace NuSysApp
                     var first = (FrameworkElement)hitsStart.First();
 
                     var rectangles = hitsStart.OfType<Rectangle>();
-                    Debug.WriteLine("!!!!!!!!!!!!!!!!!!!!!" + rectangles.Count());
 
                     var dc = (ElementViewModel)first.DataContext;
                     var vm = (ElementViewModel)DataContext;
@@ -320,13 +300,10 @@ namespace NuSysApp
 
                     if (rectangles.Count() == 2)
                     {
-                        //I took this out because if you add this then the scrub bar value which i guess is a rectangle becomes yellow as well if you 
-                        //drag a fg link ontop of the scrub bar.
-                        //Debug.WriteLine("link dropped on image");
-                        //var second = (Rectangle) rectangles.ElementAt(1);
-                        //second.Fill = new SolidColorBrush(Colors.Yellow);
-                        //second.Opacity = 0.2;
-                        //second.Stroke = new SolidColorBrush(Colors.Red);
+                        var second = (Rectangle) rectangles.ElementAt(1);
+                        second.Fill = new SolidColorBrush(Colors.Yellow);
+                        second.Opacity = 0.2;
+                        second.Stroke = new SolidColorBrush(Colors.Red);
                     }
                     if (hitsStart2.Any())
                     {
@@ -344,20 +321,17 @@ namespace NuSysApp
                                 vm.Controller.RequestLinkTo(dc.Id, (LinkedTimeBlock) element, inFgDictionary,
                                     outFgDictionary);
                                 (element as LinkedTimeBlock).changeColor();
-                                //vm.Controller.RequestLinkTo(dc.Id, (LinkedTimeBlock)element);
 
                             }
                         }
                     }
                     else
                     {
-                        vm.Controller.RequestLinkTo(dc.Id);
+                        if (_currenDragMode == DragMode.Link)
+                            vm.Controller.RequestLinkTo(dc.Id);
+                        if (_currenDragMode == DragMode.PresentationLink)
+                            vm.Controller.RequestPresentationLinkTo(dc.Id);
                     }
-
-                    //Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100, 100, 200);
-                    //Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100, 100, 100);
-                    //Debug.WriteLine("nodetemplate");
-                    //vm.Controller.RequestLinkTo(dc.Id, inFgDictionary, outFgDictionary);
                 }
             }
 
@@ -389,6 +363,11 @@ namespace NuSysApp
             if (sender == Link)
             {
                 _currenDragMode = DragMode.Link;
+            }
+
+            if (sender == PresentationLink)
+            {
+                _currenDragMode = DragMode.PresentationLink;
             }
 
 
@@ -427,56 +406,7 @@ namespace NuSysApp
             vm.IsEditing = false;
             highlight.Visibility = Visibility.Collapsed;
             
-            sv.EnterPresentationMode(vm.Model);
-        }
-
-       
-
-        /// <summary> 
-        /// Event handler for the "Save Image.." button. 
-        /// </summary> 
-        /// <param name="sender"></param> 
-        /// <param name="e"></param> 
-        private async void SaveImage(RenderTargetBitmap renderTargetBitmap)
-        {
-           
-
-            // Render to an image at the current system scale and retrieve pixel contents 
-            
-           
-            var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();
-
-            var savePicker = new FileSavePicker();
-            savePicker.DefaultFileExtension = ".png";
-            savePicker.FileTypeChoices.Add(".png", new List<string> { ".png" });
-            savePicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
-            savePicker.SuggestedFileName = "snapshot.png";
-
-            // Prompt the user to select a file 
-            var saveFile = await savePicker.PickSaveFileAsync();
-
-            // Verify the user selected a file 
-            if (saveFile == null)
-                return;
-
-            // Encode the image to the selected file on disk 
-            using (var fileStream = await saveFile.OpenAsync(FileAccessMode.ReadWrite))
-            {
-                var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, fileStream);
-
-                encoder.SetPixelData(
-                    BitmapPixelFormat.Bgra8,
-                    BitmapAlphaMode.Ignore,
-                    (uint)renderTargetBitmap.PixelWidth,
-                    (uint)renderTargetBitmap.PixelHeight,
-                    DisplayInformation.GetForCurrentView().LogicalDpi,
-                    DisplayInformation.GetForCurrentView().LogicalDpi,
-                    pixelBuffer.ToArray());
-
-                await encoder.FlushAsync();
-            }
-
-           
+            sv.EnterPresentationMode(vm);
         }
 
         private void OnResizerManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
