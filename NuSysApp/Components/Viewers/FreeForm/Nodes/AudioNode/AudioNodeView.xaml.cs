@@ -69,7 +69,7 @@ namespace NuSysApp
             ((AudioNodeModel)vm.Model).OnJump += AudioNodeView_OnJump;
         }
 
-        private void AudioNodeView_OnJump(TimeSpan time)
+        public void AudioNodeView_OnJump(TimeSpan time)
         {
             ((AudioNodeModel) ((DataContext as AudioNodeViewModel).Model)).Controller.ScrubJump(time);
         }

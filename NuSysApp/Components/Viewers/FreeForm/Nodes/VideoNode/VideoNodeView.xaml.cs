@@ -89,7 +89,7 @@ namespace NuSysApp
             }
         }
 
-        private void VideoNodeView_OnJump(TimeSpan time)
+        public void VideoNodeView_OnJump(TimeSpan time)
         {
             playbackElement.Position = time;
             if (playbackElement.CurrentState != MediaElementState.Playing)

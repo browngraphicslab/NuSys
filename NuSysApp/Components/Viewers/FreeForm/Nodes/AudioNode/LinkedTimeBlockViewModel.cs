@@ -60,7 +60,7 @@ namespace NuSysApp.Nodes.AudioNode
             //}
             
             this.setUpLine1();
-            RefreshThumbnail();
+            //RefreshThumbnail();
 
         }
 
