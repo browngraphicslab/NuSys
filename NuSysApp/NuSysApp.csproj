@@ -642,6 +642,8 @@
     <Content Include="Assets\icon_node_x.png" />
     <Content Include="Assets\icon_node_x2.png" />
     <Content Include="Assets\powerpointIcon.png" />
+    <Content Include="Assets\presentation_backward.png" />
+    <Content Include="Assets\presentation_forward.png" />
     <Content Include="Assets\resizer.png" />
     <Content Include="Assets\SmallLogo.scale-100.png" />
     <Content Include="Assets\snapshot_icon.png" />
@@ -930,7 +932,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-
     <Reference Include="SharpDX">
       <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.dll</HintPath>
     </Reference>
@@ -966,7 +967,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup />
