@@ -121,6 +121,21 @@ namespace NuSysApp
             }
         }
 
+        public async Task<string> DuplicateLibraryElement(string libraryElementId)
+        {
+            return await Task.Run(async delegate
+            {
+                HttpClient client = new HttpClient();
+                var response = await client.GetAsync(GetUri("duplicate/" + libraryElementId));
+
+                string data;
+                using (var responseContent = response.Content)
+                {
+                    data = await responseContent.ReadAsStringAsync();
+                }
+                return data;
+            });
+        }
         public async Task<List<Dictionary<string,object>>> GetContentWithoutData(List<string> contentIds)
         {
             try

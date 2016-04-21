@@ -11,6 +11,7 @@ namespace NuSysApp
         public static async Task<bool> CreateSnapshot()//returns true if successful
         {
             string libraryId = SessionController.Instance.ActiveFreeFormViewer.Controller.Model.LibraryId;
+            return await SessionController.Instance.NuSysNetworkSession.DuplicateLibraryElement(libraryId) != null;
             var collectionLibraryModel = SessionController.Instance.ContentController.Get(libraryId) as CollectionLibraryElementModel;
             if (collectionLibraryModel == null)
             {
