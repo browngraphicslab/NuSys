@@ -183,7 +183,7 @@
                 </Button>
             </StackPanel>
             <Button Name="EnterCollectionButton" Style="{StaticResource EnterButton}" Padding="0" Click="EnterCollection_OnClick" Width="60" Height="20" VerticalAlignment="Top" 
-                        HorizontalAlignment="Center" Margin="10,190,10,10" Background="{StaticResource color3}" Foreground="{StaticResource color1}" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                        HorizontalAlignment="Center" Margin="10,80,10,10" Background="{StaticResource color3}" Foreground="{StaticResource color1}" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
                 <TextBlock Margin="0,-4,0,0">enter</TextBlock>
             </Button>
         </Grid>
