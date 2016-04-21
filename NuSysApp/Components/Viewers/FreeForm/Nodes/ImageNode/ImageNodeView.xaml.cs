@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
@@ -41,7 +42,9 @@ namespace NuSysApp
             TempRegion.StrokeThickness = 2;
             TempRegion.Stroke = new SolidColorBrush(Colors.Red);
 
-            vm.Controller.SizeChanged += Controller_SizeChanged;
+           // vm.Controller.SizeChanged += Controller_SizeChanged;
+
+            vm.PropertyChanged +=VmOnPropertyChanged; 
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
@@ -57,6 +60,19 @@ namespace NuSysApp
             //XamlRenderingBackgroundTask x = new RenderTask(this.xImage);
 
             vm.Controller.Disposed += ControllerOnDisposed;
+        }
+
+        private void VmOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Width" || e.PropertyName == "Height")
+            {
+                ObservableCollection<RectangleView> list1 = _vm.RegionsListTest;
+
+                foreach (var rectangle in list1)
+                {
+                    rectangle.setRectangleSize(_vm.Width, _vm.Height);
+                }
+            }
         }
 
         private void Controller_SizeChanged(object source, double width, double height)

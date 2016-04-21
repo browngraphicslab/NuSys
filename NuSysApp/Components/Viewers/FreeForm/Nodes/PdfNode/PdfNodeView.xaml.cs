@@ -39,7 +39,8 @@ namespace NuSysApp
             TempRegion.StrokeThickness = 2;
             TempRegion.Stroke = new SolidColorBrush(Colors.Red);
 
-            vm.Controller.SizeChanged += Controller_SizeChanged;
+            //vm.Controller.SizeChanged += Controller_SizeChanged;
+            vm.PropertyChanged += VmOnPropertyChanged;
 
             vm.Controller.Disposed += ControllerOnDisposed;
         }
@@ -53,6 +54,19 @@ namespace NuSysApp
             foreach (var rectangle in list1)
             {
                 rectangle.setRectangleSize(_vm.Width, _vm.Height);
+            }
+        }
+
+        private void VmOnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Width" || e.PropertyName == "Height")
+            {
+                ObservableCollection<RectangleView> list1 = _vm.RegionsListTest;
+
+                foreach (var rectangle in list1)
+                {
+                    rectangle.setRectangleSize(_vm.Width, _vm.Height);
+                }
             }
         }
 

@@ -71,8 +71,6 @@ namespace NuSysApp.Components.Viewers.FreeForm
 
         public void setRectangleSize(double nodeWidth, double nodeHeight)
         {
-            Debug.WriteLine("set rectangle size!!");
-
             _vm.NodeHeight = nodeHeight;
             _vm.NodeWidth = nodeWidth;
 
