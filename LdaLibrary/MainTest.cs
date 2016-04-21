@@ -38,15 +38,6 @@ namespace LdaLibrary
 
             estimator = new Estimator();
 
-            //string test = await GetWikiContent("The Beatles");
-            /*
-            if (true)
-            {
-                PDFReader test = new PDFReader();
-                test.test(args[0]);
-                return;
-            }*/
-
             Option option = new Option();
             /*
             if (true) // just here for testing for now

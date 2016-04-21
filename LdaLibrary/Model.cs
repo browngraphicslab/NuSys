@@ -271,7 +271,7 @@ namespace LdaLibrary
             string line = "";
 
             //write docs with topic assignments for words
-            for (i = 0; i < data.M; i++)
+            for (i = 0; i < (int)data.M; i++)
             {
                 for (j = 0; j < data.docs[i].length; ++j)
                 {
