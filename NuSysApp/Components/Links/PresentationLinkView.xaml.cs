@@ -259,8 +259,8 @@ namespace NuSysApp
             var yDiff = curve.Point3.Y - pathfigure.StartPoint.Y;
             var angle = Math.Atan2(yDiff, xDiff) * (180 / Math.PI);
             var tranformGroup = new TransformGroup();
-            tranformGroup.Children.Add(new RotateTransform { Angle = angle, CenterX = 9, CenterY = 9 });
-            tranformGroup.Children.Add(new TranslateTransform { X = center.X-9, Y = center.Y-9 });
+            tranformGroup.Children.Add(new RotateTransform { Angle = angle, CenterX = 20, CenterY = 20 });
+            tranformGroup.Children.Add(new TranslateTransform { X = center.X-20, Y = center.Y-20 });
 
             arrow.RenderTransform = tranformGroup;
         }
