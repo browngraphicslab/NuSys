@@ -249,6 +249,11 @@
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\InkStorage.cs" />
     <Compile Include="Components\Viewers\FreeForm\InkWrapper.cs" />
+    <Compile Include="Components\Viewers\FreeForm\RectangleModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\RectangleView.xaml.cs">
+      <DependentUpon>RectangleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\RectangleViewModel.cs" />
     <Compile Include="Components\WaitingRoom\SelectionHull.cs" />
     <Compile Include="Components\Viewers\Detail\DetailNodeViewFactory.cs" />
     <Compile Include="Components\Viewers\Detail\DetailViewerView.xaml.cs">
@@ -840,6 +845,10 @@
     <Page Include="Components\Viewers\FreeForm\Nodes\WordNode\WordNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\RectangleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ResourceDictionary.xaml">
       <SubType>Designer</SubType>

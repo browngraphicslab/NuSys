@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -13,6 +14,10 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
+using NuSysApp.Components.Nodes;
+using NuSysApp.Components.Viewers.FreeForm;
+using NuSysApp.Nodes.AudioNode;
+using NuSysApp.Viewers;
 
 // The Templated Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234235
 
@@ -42,6 +47,7 @@ namespace NuSysApp
         public Canvas xCanvas = null;
         public Button DuplicateElement = null;
         public Button Link = null;
+        public Button PresentationMode = null;
 
         private Image _dragItem;
 
@@ -93,7 +99,6 @@ namespace NuSysApp
             bg = (Grid)GetTemplateChild("bg");
             hitArea = (Rectangle)GetTemplateChild("HitArea");
 
-
             //inkCanvas = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(vm.Width, vm.Height)));
 
             //(GetTemplateChild("xContainer") as Grid).Children.Add(inkCanvas);
@@ -112,6 +117,8 @@ namespace NuSysApp
             Link.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             Link.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
 
+            PresentationMode = (Button) GetTemplateChild("PresentationMode");
+            PresentationMode.Click += OnPresentationClick;
 
             btnDelete = (Button)GetTemplateChild("btnDelete");
             btnDelete.Click += OnBtnDeleteClick;
@@ -157,7 +164,7 @@ namespace NuSysApp
             base.OnApplyTemplate();
             OnTemplateReady?.Invoke();
         }
-
+        
         private void TitleOnTextChanged(object sender, TextChangedEventArgs textChangedEventArgs)
         {
             var vm = (ElementViewModel)this.DataContext;
@@ -191,7 +198,7 @@ namespace NuSysApp
             }
             else
             {
-                highlight.Visibility = Visibility.Visible;
+             //   highlight.Visibility = Visibility.Visible;
             }
             highlight.BorderBrush = new SolidColorBrush(user.Color);
             userName.Foreground = new SolidColorBrush(user.Color);
@@ -200,9 +207,9 @@ namespace NuSysApp
 
         private void LibraryElementModelOnOnLightupContent(LibraryElementModel model, bool lightup)
         {
-            highlight.Visibility = lightup ? Visibility.Visible : Visibility.Collapsed;
-            highlight.BorderThickness = new Thickness(5);
-            highlight.BorderBrush = new SolidColorBrush(Colors.Aqua);
+          //  highlight.Visibility = lightup ? Visibility.Visible : Visibility.Collapsed;
+            highlight.Background = new SolidColorBrush(Color.FromArgb(100, 156, 197, 194));
+            highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(100, 156, 197, 194));
         }
 
         private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)
@@ -210,16 +217,36 @@ namespace NuSysApp
             xCanvas.Children.Remove(_dragItem);
 
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
-            var p = args.GetCurrentPoint(null).Position;
+            var p = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
             var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(p.X, p.Y, 300, 300));
-
+            var send = (FrameworkElement) sender;
             if (_currenDragMode == DragMode.Duplicate)
             {
-
+               
                 var vm = (ElementViewModel)DataContext;
-                vm.Controller.RequestDuplicate(r.X, r.Y, new Message(await vm.Model.Pack()));
-            }
+                
 
+                var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
+                hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement) is GroupNodeView).ToList();
+
+                if (hitsStart.Any())
+                {
+                    var first = (FrameworkElement) hitsStart.First();
+                    var vm1 = (GroupNodeViewModel) first.DataContext;
+                    var groupnode = (GroupNodeView)first;
+                    var np = new Point(p.X - vm1.Model.Width / 2, p.Y - vm1.Model.Height / 2);
+                    var canvas = groupnode.FreeFormView.AtomContainer;
+                    var targetPoint = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(canvas).TransformPoint(p);
+                    p = args.GetCurrentPoint(first).Position; ;
+                   
+                   vm.Controller.RequestDuplicate(targetPoint.X, targetPoint.Y, new Message(await vm.Model.Pack()));
+                }
+                else
+                {
+                    vm.Controller.RequestDuplicate(r.X, r.Y, new Message(await vm.Model.Pack()));
+                }
+            }
+            
             /*
             if (_currenDragMode == DragMode.Tag)
             {
@@ -259,49 +286,70 @@ namespace NuSysApp
 
             if (_currenDragMode == DragMode.Link)
             {
-                Debug.WriteLine("dragging link");
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
-
                 hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementViewModel).ToList();
 
-                foreach (var e in hitsStart)
-                {
-                    Debug.WriteLine(e);
-                }
+                var hitsStart2 = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
+                hitsStart2 = hitsStart2.Where(uiElem => (uiElem as FrameworkElement).DataContext is LinkedTimeBlockViewModel).ToList();
 
-                if (hitsStart.Any())
-                {
+                var hitRectangleView = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
+                hitRectangleView = hitRectangleView.Where(uiElem => (uiElem as FrameworkElement).DataContext is RectangleViewModel).ToList();
+                
+                if (hitsStart.Any()){
                     var first = (FrameworkElement)hitsStart.First();
-
-                    var rectangles = hitsStart.OfType<Rectangle>();
-                    Debug.WriteLine("!!!!!!!!!!!!!!!!!!!!!" + rectangles.Count());
-
                     var dc = (ElementViewModel)first.DataContext;
                     var vm = (ElementViewModel)DataContext;
+
                     if (vm == dc || (dc is FreeFormViewerViewModel) || dc is LinkViewModel)
                     {
                         return;
                     }
 
-                    if (rectangles.Count() == 2)
+                    if (hitRectangleView.Any())
                     {
-                        Debug.WriteLine("link dropped on image");
-                        var second = (Rectangle) rectangles.ElementAt(1);
-                        second.Fill = new SolidColorBrush(Colors.Yellow);
-                        second.Opacity = 0.2;
-                        second.Stroke = new SolidColorBrush(Colors.Red);
+                        foreach (var element in hitRectangleView)
+                        {
+                            if (element is RectangleView)
+                            {
+                                Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100,
+                                    100,
+                                    200);
+                                Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100,
+                                    100,
+                                    100);
+                                vm.Controller.RequestLinkTo(dc.Id, (RectangleView)element, null, inFgDictionary,
+                                    outFgDictionary);
+                            }
+                        }
+                    } else if (hitsStart2.Any()){
+                        foreach (var element in hitsStart2)
+                        {
+                            if (element is LinkedTimeBlock)
+                            {
+                                Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100,
+                                    100,
+                                    200);
+                                Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100,
+                                    100,
+                                    100);
+                                Debug.WriteLine("test");
+                                vm.Controller.RequestLinkTo(dc.Id, null, (LinkedTimeBlock) element, inFgDictionary,
+                                    outFgDictionary);
+                                //(element as LinkedTimeBlock).changeColor();
+                                //vm.Controller.RequestLinkTo(dc.Id, (LinkedTimeBlock)element);
+
+                            }
+                        }
                     }
-
-                    Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100, 100, 200);
-                    Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100, 100, 100);
-
-                    vm.Controller.RequestLinkTo(dc.Id, inFgDictionary, outFgDictionary);
+                    else
+                    {
+                        vm.Controller.RequestLinkTo(dc.Id);
+                    }
                 }
             }
 
             ReleasePointerCaptures();
             (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta));
-
         }
 
         private void BtnAddOnManipulationDelta(object sender, PointerRoutedEventArgs args)
@@ -354,6 +402,19 @@ namespace NuSysApp
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(model.Id));
         }
 
+        private void OnPresentationClick(object sender, RoutedEventArgs e)
+        {
+            
+            var vm = ((ElementViewModel)this.DataContext);
+            var sv = SessionController.Instance.SessionView;
+
+            // unselect start element
+            vm.IsSelected = false;
+            vm.IsEditing = false;
+            highlight.Visibility = Visibility.Collapsed;
+            
+            sv.EnterPresentationMode(vm.Model);
+        }
 
         private void OnResizerManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
@@ -386,24 +447,32 @@ namespace NuSysApp
             {
                 if (vm.IsSelected)
                 {
+                    highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 156, 197, 194));
+                    highlight.BorderThickness = new Thickness(2);
+                    highlight.Background = new SolidColorBrush(Colors.Transparent);
                     bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 156, 197, 194));
                     bg.BorderThickness = new Thickness(2);
                     hitArea.Visibility = Visibility.Visible;
                 }
                 if (vm.IsEditing)
                 {
+                    highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 131, 166, 163));
+                    highlight.BorderThickness = new Thickness(2);
+                    highlight.Background = new SolidColorBrush(Colors.Transparent);
                     bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 197, 158, 156));
                     bg.BorderThickness = new Thickness(2);
                     hitArea.Visibility = Visibility.Collapsed;
                 }
                 if (!(vm.IsEditing || vm.IsSelected))
                 {
-                    bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 131, 166, 163));
-                    bg.BorderThickness = new Thickness(1);
+                    highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 131, 166, 163));
+                    highlight.BorderThickness = new Thickness(1);
                     hitArea.Visibility = Visibility.Visible;
                 }
             }
         }
+
+       
     }
 }
 

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NuSysApp.Components.Nodes;
 using NuSysApp.Nodes.AudioNode;
+using NuSysApp.Viewers;
 
 namespace NuSysApp
 {
@@ -23,6 +24,7 @@ namespace NuSysApp
         public string Annotation { get; set; }
 
         public LinkedTimeBlockModel InFineGrain { get; set; }
+        public RectangleViewModel RectangleMod { get; set; }
 
         public Dictionary<string, object> InFGDictionary { get; set; }
         public Dictionary<string, object> OutFGDictionary { get; set; }
@@ -34,17 +36,32 @@ namespace NuSysApp
             InFGDictionary = props.GetDict<string, object>("inFGDictionary");
             OutFGDictionary = props.GetDict<string, object>("outFGDictionary");
             Annotation = props.GetString("annotation", "");
+
+            if (props.ContainsKey("rectangleMod"))
+            {
+                var viewModel = JsonConvert.DeserializeObject<RectangleViewModel>(props.Get("rectangleMod"));
+
+                List<RectangleViewModel> regionsList = ((ElementModel)SessionController.Instance.IdToControllers[OutAtomId].Model).RegionsModel;
+
+                foreach (var rectangle in regionsList)
+                {
+                    if (rectangle.LeftRatio == viewModel.LeftRatio && rectangle.TopRatio == viewModel.TopRatio &&
+                        rectangle.RectWidthRatio == viewModel.RectWidthRatio && rectangle.RectHeightRatio == viewModel.RectHeightRatio)
+                    {
+                        RectangleMod = rectangle;
+                        break;
+                    }
+                }
+            }
+
             if (props.ContainsKey("inFineGrain"))
             {
                 var v = JsonConvert.DeserializeObject<LinkedTimeBlockModel>(props.Get("inFineGrain"));
+                
                 ObservableCollection<LinkedTimeBlockModel> list;
+                
                 switch (SessionController.Instance.IdToControllers[OutAtomId].Model.ElementType)
                 {
-                    case ElementType.Image:
-
-                        break;
-                    case ElementType.Text:
-                        break;
                     case ElementType.Audio:
                         list =
                     ((AudioNodeModel)SessionController.Instance.IdToControllers[OutAtomId].Model)
@@ -88,6 +105,7 @@ namespace NuSysApp
             dict.Add("type", ElementType.ToString());
             dict.Add("annotation", Annotation);
             dict.Add("inFineGrain", InFineGrain);
+            dict.Add("rectangleModel", RectangleMod);
 
             return dict;
         }

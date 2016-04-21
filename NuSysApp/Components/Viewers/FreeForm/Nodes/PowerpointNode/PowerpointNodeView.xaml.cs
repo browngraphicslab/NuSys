@@ -22,21 +22,11 @@ namespace NuSysApp
 {
     public sealed partial class PowerpointNodeView : AnimatableUserControl, IThumbnailable
     {
-        private Boolean _drawingRegion;
-        private Rectangle TempRegion;
 
         public PowerpointNodeView(PowerpointNodeViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;
-
-            _drawingRegion = false;
-            TempRegion = new Rectangle();
-            TempRegion.Fill = new SolidColorBrush(Colors.Transparent);
-            TempRegion.StrokeThickness = 2;
-            TempRegion.Stroke = new SolidColorBrush(Colors.Red);
-
-            vm.Controller.SizeChanged += Controller_SizeChanged;
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
@@ -50,33 +40,6 @@ namespace NuSysApp
             nodeTpl.ToggleInkMode();
         }
 
-        private void Controller_SizeChanged(object source, double width, double height)
-        {
-            Debug.WriteLine("sized changing!!!");
-            ObservableCollection<Rectangle> list = (DataContext as ImageElementViewModel).RegionsList;
-
-            foreach (var rectangle in list)
-            {
-                RectanglePoints rectPoint;
-                (DataContext as ImageElementViewModel).rectToPoints.TryGetValue(rectangle, out rectPoint);
-
-                var leftRatio = rectPoint.getLeftRatio();
-                var topRatio = rectPoint.getTopRatio();
-                var widthRatio = rectPoint.getWidthRatio();
-                var heightRatio = rectPoint.getHeightRatio();
-
-                Canvas.SetLeft(rectangle, width * leftRatio);
-                Canvas.SetTop(rectangle, height * topRatio);
-                rectangle.Width = width * widthRatio;
-                rectangle.Height = height * heightRatio;
-            }
-        }
-
-        private void Region_OnClick(object sender, RoutedEventArgs e)
-        {
-            Debug.WriteLine("fdsafd");
-            _drawingRegion = true;
-        }
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
@@ -89,70 +52,6 @@ namespace NuSysApp
             var r = new RenderTargetBitmap();
             await r.RenderAsync(xImage, width, height);
             return r;
-        }
-
-        private void XImage_OnPointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            if (_drawingRegion)
-            {
-                Debug.WriteLine("here");
-                Canvas.Children.Add(TempRegion);
-                Canvas.SetLeft(TempRegion, e.GetCurrentPoint((UIElement)sender).Position.X);
-                Canvas.SetTop(TempRegion, e.GetCurrentPoint((UIElement)sender).Position.Y);
-                TempRegion.Opacity = 1;
-            }
-        }
-
-        private void XImage_OnPointerReleased(object sender, PointerRoutedEventArgs e)
-        {
-            if (_drawingRegion)
-            {
-
-                //add rectangle to model list
-                //remove temp rectangle
-                //have another method that reads all things from model and adds it.
-
-                ImageElementViewModel vm = (ImageElementViewModel)DataContext;
-
-                var width = vm.Model.Width;
-                var height = vm.Model.Height;
-
-                var leftRatio = Canvas.GetLeft(TempRegion) / width;
-                var topRatio = Canvas.GetTop(TempRegion) / height;
-
-                var widthRatio = TempRegion.Width / width;
-                var heightRatio = TempRegion.Height / Height;
-
-                RectanglePoints rectangle = new RectanglePoints(leftRatio, topRatio, widthRatio, heightRatio);
-
-                // add to controller
-                (DataContext as ImageElementViewModel).Controller.SetRegion(rectangle);
-                Rectangle rect = rectangle.getRectangle();
-
-                rect.Width = width * rectangle.getWidthRatio();
-                rect.Height = height * rectangle.getHeightRatio();
-                Canvas.Children.Add(rect);
-                Canvas.SetLeft(rect, rectangle.getLeftRatio() * width);
-                Canvas.SetTop(rect, rectangle.getTopRatio() * height);
-
-                // works?
-                Canvas.Children.Remove(TempRegion);
-
-                //(DataContext as ImageElementViewModel).RegionsList.Add(rect);
-                //(DataContext as ImageElementViewModel).Model.Regions.Add(rectangle);
-
-                _drawingRegion = false;
-                //this.AddRegionsToCanvas();
-            }
-        }
-
-        private void XImage_OnPointerMoved(object sender, PointerRoutedEventArgs e)
-        {
-            if (e.GetCurrentPoint((UIElement)sender).Properties.IsLeftButtonPressed && _drawingRegion)
-            {
-                TempRegion.Height = e.GetCurrentPoint((UIElement)sender).Position.Y - Canvas.GetTop(TempRegion);
-                TempRegion.Width = e.GetCurrentPoint((UIElement)sender).Position.X - Canvas.GetLeft(TempRegion);
-            }
         }
     }
 }

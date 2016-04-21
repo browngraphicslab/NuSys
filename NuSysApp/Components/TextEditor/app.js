@@ -60,10 +60,12 @@ var Editor = (function () {
         }, true);
         linkBoxOuter.addEventListener("mouseleave", function (e) {
             editor.markSelection("transparent");
-        });
+            linkBox.focus();
+        }, true);
         linkBox.addEventListener("click", function (e) {
             e.preventDefault();//
             e.stopImmediatePropagation();//
+            e.stopPropagation();
             linkBox.focus();//
         }, true);
         linkBox.addEventListener("focus", function (e) {
@@ -75,7 +77,7 @@ var Editor = (function () {
             }
         });
         linkBox.addEventListener("change", function (e) {
-            // editor.focus();
+            //editor.focus();
             editor.createLink(this);//
         });
         linkBox.addEventListener("blur", function (e) {

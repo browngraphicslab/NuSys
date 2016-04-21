@@ -74,6 +74,15 @@ namespace NuSysApp
             get { return Get(key); }
             set { _dict[key] = value; }
         }
+
+        public object GetObject(string key)
+        {
+            if (_dict.ContainsKey(key))
+            {
+                return _dict[key];
+            }
+            return null;
+        }
         public string Get(string key)
         {
             if (_dict.ContainsKey(key) && _dict[key] != null)
@@ -121,7 +130,18 @@ namespace NuSysApp
 
         public Dictionary<T, K> GetDict<T, K>(string key)
         {
-            return ContainsKey(key) ? JsonConvert.DeserializeObject<Dictionary<T, K>>(Get(key)) : new Dictionary<T, K>();
+            if (ContainsKey(key))
+            {
+                try
+                {
+                    return JsonConvert.DeserializeObject<Dictionary<T, K>>(Get(key));
+                }
+                catch (Exception e)
+                {
+                    return new Dictionary<T, K>();
+                }
+            }
+            return new Dictionary<T, K>();
         }
 
         public List<List<T>> GetNestedList<T>(string key)

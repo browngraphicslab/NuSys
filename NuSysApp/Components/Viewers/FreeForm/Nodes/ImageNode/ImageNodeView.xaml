@@ -12,6 +12,14 @@
     RenderTransform="{Binding Transform}"
     IsDoubleTapEnabled="True">
 
+    <local:AnimatableUserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </local:AnimatableUserControl.Resources>
+
     <local:NodeTemplate x:Name="nodeTpl" Background="LightBlue">
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Vertical">
@@ -30,7 +38,7 @@
                 <Image x:Name="xImage" Source="{Binding Image}" Stretch="Uniform" />
                 
                 <Canvas x:Name="Canvas" VerticalAlignment ="Top" HorizontalAlignment="Left">
-                    <ItemsControl x:Name="IC"  ItemsSource="{Binding RegionsList}">
+                    <ItemsControl x:Name="IC"  ItemsSource="{Binding RegionsListTest}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <Canvas/>

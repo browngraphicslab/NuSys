@@ -10,6 +10,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
+using NuSysApp.Components.Viewers.FreeForm;
 using NuSysApp.Controller;
 using NuSysApp.Util;
 
@@ -27,12 +28,11 @@ namespace NuSysApp
         private CompositeTransform _inkScale;
         private CompositeTransform _transform = new CompositeTransform();
         private ElementController _controller;
-        protected bool _isSelected, _isVisible;
+        protected bool _isSelected, _isVisible, _isPresenting;
 
         #endregion Private Members
 
-        public ObservableCollection<Rectangle> RegionsList { get; set; }
-        public Dictionary<Rectangle, RectanglePoints> rectToPoints;
+        public ObservableCollection<RectangleView> RegionsListTest { get; set; }
 
         public ElementViewModel(ElementController controller)
         {
@@ -53,22 +53,14 @@ namespace NuSysApp
             Tags = new ObservableCollection<Button>();
             ReadFromModel();
 
-            rectToPoints = new Dictionary<Rectangle, RectanglePoints>();
-            RegionsList = new ObservableCollection<Rectangle>();
+            RegionsListTest = new ObservableCollection<RectangleView>();
 
-            foreach (var element in Model.Regions)
+            foreach (var element in Model.RegionsModel)
             {
-                var rect = element.getRectangle();
-                var nodeWidth = Model.Width;
-                var nodeHeight = Model.Height;
-                rect.Width = element.getWidthRatio() * nodeWidth;
-                rect.Height = element.getHeightRatio() * nodeHeight;
-
-                RegionsList.Add(rect);
-                rectToPoints.Add(rect, element);
-
-                Canvas.SetTop(rect, element.getTopRatio() * nodeHeight);
-                Canvas.SetLeft(rect, element.getLeftRatio() * nodeWidth);
+                RectangleView rv = new RectangleView(element);
+                rv.setRectangleSize(_width, _height);
+                Debug.WriteLine(ElementType + " _width: " + _width + " _height: " + _height);
+                RegionsListTest.Add(rv);
             }
         }
 
@@ -145,12 +137,12 @@ namespace NuSysApp
             {
                 //sorry about this - should also be in frontend and not in viewmodel
                 Button tagBlock = new Button();
-                tagBlock.Background = new SolidColorBrush(Colors.DarkSalmon);
+                tagBlock.Background = new SolidColorBrush(Constants.salmonColor);
                 tagBlock.Content = tag;
                 tagBlock.Height = 30;
                 tagBlock.Padding = new Thickness(5);
                 tagBlock.BorderThickness = new Thickness(0);
-                tagBlock.Foreground = new SolidColorBrush(Colors.White);
+                tagBlock.Foreground = new SolidColorBrush(Constants.foreground6);
                 tagBlock.Margin = new Thickness(2, 2, 2, 2);///
                 tagBlock.Opacity = 0.75;
                 tagBlock.FontStyle = FontStyle.Italic;
@@ -245,7 +237,7 @@ namespace NuSysApp
         #region Public Properties
 
         public ObservableCollection<LinkElementController> LinkList { get; set; }
-
+        
         public virtual bool IsSelected
         {
             get { return _isSelected; }
@@ -257,6 +249,7 @@ namespace NuSysApp
                 }
 
                 _isSelected = value;
+                _controller.Selected(value);
                 RaisePropertyChanged("IsSelected");
             }
         }
@@ -467,4 +460,5 @@ namespace NuSysApp
 
         #endregion Public Properties
     }
+
 }

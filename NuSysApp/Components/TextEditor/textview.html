@@ -16,6 +16,11 @@
         document.getElementById("editor").innerHTML = text;
     }
 
+    function Blur() {
+        document.getElementById("editor").blur();
+        document.getElementById("editor").innerHTML+="";
+    }
+
     this.addEventListener("keyup", function() {
         window.external.notify(document.getElementById("editor").innerHTML);
     });

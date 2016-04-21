@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -11,7 +12,9 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
+using NuSysApp.Components.Viewers.FreeForm;
 using NuSysApp.Util;
+using NuSysApp.Viewers;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -21,9 +24,11 @@ namespace NuSysApp
     {
         private Boolean _drawingRegion;
         private Rectangle TempRegion;
+        private PdfNodeViewModel _vm;
 
         public PdfNodeView(PdfNodeViewModel vm)
         {
+            _vm = vm;
             InitializeComponent();
             //  IsDoubleTapEnabled = true;
             DataContext = vm;
@@ -41,24 +46,13 @@ namespace NuSysApp
 
         private void Controller_SizeChanged(object source, double width, double height)
         {
-            Debug.WriteLine("sized changing!!!");
-            Debug.WriteLine("width: " + width);
-            ObservableCollection<Rectangle> list = (DataContext as ElementViewModel).RegionsList;
+            ObservableCollection<RectangleView> list1 = _vm.RegionsListTest;
 
-            foreach (var rectangle in list)
+            Debug.WriteLine("width:" + _vm.Width + " height: " + _vm.Height);
+
+            foreach (var rectangle in list1)
             {
-                RectanglePoints rectPoint;
-                (DataContext as ElementViewModel).rectToPoints.TryGetValue(rectangle, out rectPoint);
-
-                var leftRatio = rectPoint.getLeftRatio();
-                var topRatio = rectPoint.getTopRatio();
-                var widthRatio = rectPoint.getWidthRatio();
-                var heightRatio = rectPoint.getHeightRatio();
-
-                Canvas.SetLeft(rectangle, width * leftRatio);
-                Canvas.SetTop(rectangle, height * topRatio);
-                rectangle.Width = width * widthRatio;
-                rectangle.Height = height * heightRatio;
+                rectangle.setRectangleSize(_vm.Width, _vm.Height);
             }
         }
 
@@ -145,31 +139,34 @@ namespace NuSysApp
         {
             if (_drawingRegion)
             {
-                ElementViewModel vm = (ElementViewModel)DataContext;
-
-                var width = vm.Model.Width;
-                var height = vm.Model.Height;
+                var width = _vm.Width;
+                var height = _vm.Height;
 
                 var leftRatio = Canvas.GetLeft(TempRegion) / width;
                 var topRatio = Canvas.GetTop(TempRegion) / height;
-
                 var widthRatio = TempRegion.Width / width;
-                var heightRatio = TempRegion.Height / Height;
+                var heightRatio = TempRegion.Height / height;
 
-                RectanglePoints rectangle = new RectanglePoints(leftRatio, topRatio, widthRatio, heightRatio);
+                //create dictionary
+                Dictionary<string, double> attributes = new Dictionary<string, double>();
+                attributes.Add("nodeWidth", width);
+                attributes.Add("nodeHeight", height);
+                attributes.Add("widthRatio", widthRatio);
+                attributes.Add("heightRatio", heightRatio);
+                attributes.Add("leftRatio", leftRatio);
+                attributes.Add("topRatio", topRatio);
+
+                RectangleViewModel rvm = new RectangleViewModel(new RectangleModel(), attributes);
+                RectangleView rv = new RectangleView(rvm);
 
                 // add to controller
-                (DataContext as ElementViewModel).Controller.SetRegion(rectangle);
-                Rectangle rect = rectangle.getRectangle();
-
-                rect.Width = width * rectangle.getWidthRatio();
-                rect.Height = height * rectangle.getHeightRatio();
-                Canvas.Children.Add(rect);
-                Canvas.SetLeft(rect, rectangle.getLeftRatio() * width);
-                Canvas.SetTop(rect, rectangle.getTopRatio() * height);
+                _vm.Controller.SetRegionModel(rvm);
+                _vm.RegionsListTest.Add(rv);
 
                 // works?
                 Canvas.Children.Remove(TempRegion);
+                TempRegion.Height = 0;
+                TempRegion.Width = 0;
 
                 _drawingRegion = false;
             }

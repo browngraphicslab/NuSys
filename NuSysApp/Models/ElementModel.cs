@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using Newtonsoft.Json;
+using NuSysApp.Components.Viewers.FreeForm;
 using NuSysApp.Util;
+using NuSysApp.Viewers;
 
 namespace NuSysApp
 {
@@ -23,8 +25,8 @@ namespace NuSysApp
         private double _y;
 
         public List<RectanglePoints> Regions { get; set; }
-
-        public RectanglePoints Region { get; set; } 
+        public List<RectangleView> RegionsTest { get; set; }
+        public List<RectangleViewModel> RegionsModel { get; set; }
         
         public Dictionary<string, object> Metadata = new Dictionary<string, object>();
 
@@ -35,6 +37,8 @@ namespace NuSysApp
             SetMetaData("groups", new List<string>());
             InqCanvas = new InqCanvasModel(id);
             Regions = new List<RectanglePoints>();
+            RegionsTest = new List<RectangleView>();
+            RegionsModel = new List<RectangleViewModel>();
         }
 
         public ElementType ElementType { get; set; }
@@ -170,6 +174,8 @@ namespace NuSysApp
             dict.Add("contentId", LibraryId);
 
             dict.Add("regions", Regions);
+            dict.Add("regionsTest", RegionsTest);
+            dict.Add("regionModels", RegionsModel);
 
             var lines = new List<Dictionary<string, object>>();
             foreach (var inqLineModel in InqCanvas.Lines)
@@ -238,6 +244,10 @@ namespace NuSysApp
                 Debug.WriteLine("REGIONS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + regions);
 
                 Regions = props.GetList<RectanglePoints>("regions",new List<RectanglePoints>());
+            }
+            if (props.ContainsKey("regionsModel"))
+            {
+                RegionsModel = props.GetList<RectangleViewModel>("regionsModel", new List<RectangleViewModel>());
             }
 
             InqCanvas.UnPack(props);
