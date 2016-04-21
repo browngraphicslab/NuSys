@@ -212,14 +212,13 @@ namespace NuSysApp
 
             Button tagBlock = new Button();
             tagBlock.Tapped += TagBlock_Tapped;
-            tagBlock.Background = new SolidColorBrush(Constants.salmonColor);
+            tagBlock.Background = new SolidColorBrush(Constants.color4);
             tagBlock.Content = stackPanel;
             tagBlock.Height = 30;
             tagBlock.Padding = new Thickness(5);
             tagBlock.BorderThickness = new Thickness(0);
             tagBlock.Foreground = new SolidColorBrush(Constants.foreground6);
             tagBlock.Margin = new Thickness(5, 2, 2, 5);///
-            tagBlock.Opacity = 0.75;
             tagBlock.FontStyle = FontStyle.Italic;
            // tagBlock.IsHitTestVisible = false;
 
