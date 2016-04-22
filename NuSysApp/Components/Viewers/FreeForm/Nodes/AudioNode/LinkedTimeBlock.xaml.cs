@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -85,20 +86,33 @@ namespace NuSysApp.Components.Nodes
             //Debug.WriteLine(d["Detailx2"]);
             //b.Mode = BindingMode.TwoWay;
             //line.Detailx2 = vm.Detailx2;
-                //.SetBinding(Line.X2Property, b);
-            Binding b1 = new Binding();
-            b1.Path = new PropertyPath("Detailx1");
-            line.SetBinding(Line.X1Property, b1);
-            Binding b2 = new Binding();
-            b2.Path = new PropertyPath("Detailx2"); 
-            line.SetBinding(Line.X2Property, b2);
+            //.SetBinding(Line.X2Property, b);
+            try
+            {
+                Binding b1 = new Binding();
+                b1.Path = new PropertyPath("Detailx1");
+                line.SetBinding(Line.X1Property, b1);
+                Binding b2 = new Binding();
+                b2.Path = new PropertyPath("Detailx2");
+                line.SetBinding(Line.X2Property, b2);
+
+                HandleOne.SetBinding(Line.X2Property, b1);
+                HandleOne.SetBinding(Line.X1Property, b1);
+                HandleTwo.SetBinding(Line.X2Property, b2);
+                HandleTwo.SetBinding(Line.X1Property, b2);
+            }
+            catch (Exception e)
+            {
+                
+            }
+                
 
             line.Y1 = (double)vm.Line1["Y"];
             line.Y2 = (double)vm.Line1["Y"];
-            HandleOne.SetBinding(Line.X2Property, b1);
-            HandleOne.SetBinding(Line.X1Property, b1);
-            HandleTwo.SetBinding(Line.X2Property, b2);
-            HandleTwo.SetBinding(Line.X1Property, b2);
+
+
+
+            
 
             //_box1.SetBinding(Canvas.LeftProperty, b1);
             Canvas.SetTop(_box1, 0);
@@ -113,16 +127,18 @@ namespace NuSysApp.Components.Nodes
             HandleOne.Y2 = y+vm._scrubBar.ActualHeight;
             HandleTwo.Y1 = y;
             HandleTwo.Y2 = y+ vm._scrubBar.ActualHeight;
-            vm._scrubBar.SizeChanged += ScrubBarOnSizeChanged;
             EllipseOne.SetValue(Canvas.TopProperty, y + vm._scrubBar.ActualHeight - 5);
             EllipseTwo.SetValue(Canvas.TopProperty, y + vm._scrubBar.ActualHeight - 5);
+            EllipseOne.SetValue(Canvas.LeftProperty, (DataContext as LinkedTimeBlockViewModel).Detailx1 - EllipseOne.ActualWidth / 2);
+            EllipseTwo.SetValue(Canvas.LeftProperty, (DataContext as LinkedTimeBlockViewModel).Detailx2 - EllipseTwo.ActualWidth / 2);
+            vm._scrubBar.SizeChanged += ScrubBarOnSizeChanged;
 
         }
 
         private void ScrubBarOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
         {
-            EllipseOne.SetValue(Canvas.LeftProperty, (DataContext as LinkedTimeBlockViewModel).StartRatio * (DataContext as LinkedTimeBlockViewModel)._scrubBar.ActualWidth-5);
-            EllipseTwo.SetValue(Canvas.LeftProperty, (DataContext as LinkedTimeBlockViewModel).EndRatio * (DataContext as LinkedTimeBlockViewModel)._scrubBar.ActualWidth-5);
+            EllipseOne.SetValue(Canvas.LeftProperty, (DataContext as LinkedTimeBlockViewModel).Detailx1 - EllipseOne.ActualWidth/2);
+            EllipseTwo.SetValue(Canvas.LeftProperty, (DataContext as LinkedTimeBlockViewModel).Detailx2 - EllipseTwo.ActualWidth/2);
             
         }
 
@@ -363,6 +379,9 @@ namespace NuSysApp.Components.Nodes
 
         private void Line_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+            
+            //((UIElement) sender).CapturePointer(e.Poi);
+            //((UIElement)sender).cap
             var line = sender as Line;
             if (line.X1 + e.Delta.Translation.X > Canvas.GetLeft((DataContext as LinkedTimeBlockViewModel)._scrubBar) + (DataContext as LinkedTimeBlockViewModel)._scrubBar.Margin.Left
                 && line.X1 + e.Delta.Translation.X < (DataContext as LinkedTimeBlockViewModel)._scrubBar.ActualWidth + Canvas.GetLeft((DataContext as LinkedTimeBlockViewModel)._scrubBar) + (DataContext as LinkedTimeBlockViewModel)._scrubBar.Margin.Left
@@ -377,6 +396,11 @@ namespace NuSysApp.Components.Nodes
                 HandleTwo.X2 += e.Delta.Translation.X;
                 EllipseTwo.SetValue(Canvas.LeftProperty, Canvas.GetLeft(EllipseTwo)+ e.Delta.Translation.X);
                 EllipseOne.SetValue(Canvas.LeftProperty, Canvas.GetLeft(EllipseOne) + e.Delta.Translation.X);
+                if (Canvas.Children.Contains(_box1))
+                {
+                    _box1.SetValue(Canvas.LeftProperty, Canvas.GetLeft(_box1) + e.Delta.Translation.X);
+
+                }
 
             }
             e.Handled = true;
@@ -384,9 +408,11 @@ namespace NuSysApp.Components.Nodes
 
         private void Line_OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
+            ((UIElement) sender).CapturePointer(e.Pointer);
             int milli = (int)((((e.GetCurrentPoint(this).Position.X + Canvas.GetLeft(this) - Canvas.GetLeft((DataContext as LinkedTimeBlockViewModel)._scrubBar) - (DataContext as LinkedTimeBlockViewModel)._scrubBar.Margin.Left)) / (DataContext as LinkedTimeBlockViewModel)._scrubBar.ActualWidth) * (DataContext as LinkedTimeBlockViewModel)._totalAudioDuration.TotalMilliseconds);
             TimeSpan time = new TimeSpan(0, 0, 0, 0, milli);
             this.jumpTo(time);
+           
         }
 
         private void HandleOne_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
@@ -418,7 +444,7 @@ namespace NuSysApp.Components.Nodes
 
         private void Line_OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
-
+            ((UIElement) sender).CapturePointer(e.Pointer);
             int milli = (int)(((HandleTwo.X1 - Canvas.GetLeft((DataContext as LinkedTimeBlockViewModel)._scrubBar) - (DataContext as LinkedTimeBlockViewModel)._scrubBar.Margin.Left) / (DataContext as LinkedTimeBlockViewModel)._scrubBar.ActualWidth) * (DataContext as LinkedTimeBlockViewModel)._totalAudioDuration.TotalMilliseconds);
             TimeSpan time = new TimeSpan(0, 0, 0, 0, milli);
             (DataContext as LinkedTimeBlockViewModel).SetEnd(time);

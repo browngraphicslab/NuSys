@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
@@ -8,16 +10,17 @@ using Windows.Storage.Streams;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Shapes;
+using NuSysApp.Util;
 
 namespace NuSysApp
 {
     public class ImageElementViewModel : ElementViewModel
-    {
-        
+    {    
         public ImageElementViewModel(ElementController controller) : base(controller)
         {
-            Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
             
+            Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));       
         }
 
         public override void Dispose()

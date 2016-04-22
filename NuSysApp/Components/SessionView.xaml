@@ -19,8 +19,6 @@
             <Style x:Key="CircleButton" TargetType="Button">
                 <Setter Property="Foreground" Value="#FFFFFF"/>
                 <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="HorizontalAlignment" Value="Left"/>
-                <Setter Property="VerticalAlignment" Value="Bottom"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
@@ -30,8 +28,6 @@
 		                        x:Name="contentPresenter"
 		                        Content="{TemplateBinding Content}"
 		                        ContentTemplate="{TemplateBinding ContentTemplate}"
-		                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-		                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
 		                        Margin="{TemplateBinding Padding}"/>
                                 <Rectangle x:Name="DisabledVisualElement" RadiusX="33" RadiusY="33" Fill="Transparent" Opacity="0" IsHitTestVisible="false" />
                                 <Rectangle x:Name="FocusVisualElement" RadiusX="33" RadiusY="33" Margin="1" Stroke="#FFFFFF" StrokeThickness="1" Opacity="0" IsHitTestVisible="False" />
@@ -55,24 +51,24 @@
         </Button>
         <StackPanel Name="Users" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="70">
         </StackPanel>
-            <Button x:Name="SnapshotButton" Click="SnapshotButton_OnClick" Style="{StaticResource CircleButton}" Background="#981A4D" Width="50" Height="50" Margin="10,10,0,0">
-                <Image Source="ms-appx:///Assets/snapshot_icon.png" Width="25" Height="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
-            </Button>
+        <Button x:Name="SnapshotButton" Click="SnapshotButton_OnClick" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource CircleButton}" Background="{StaticResource color4}" Width="50" Height="50" Margin="10,10,0,0">
+            <Image Source="ms-appx:///Assets/snapshot_icon.png" Width="25" Height="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+        </Button>
         <Image Name="LibraryDraggingNode" Source="ms-appx:///Assets/icon_new_workspace.png" Width="0" Height="0"></Image>
         <Image Name="DraggingGraphImage" Source="ms-appx:///Assets/icon_new_workspace.png" Width="0" Height="0"></Image>
         <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5,0,0,50"></local:ChatPopupView >
 
 
-            <Button x:Name="PreviousNode" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="50,40,0,10" Visibility="Collapsed">
-            <Image Source="/Assets/icon_pdf_left.png" Height="30" Width="30" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+        <Button x:Name="PreviousNode" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="#FF113D40" Width="50" Height="50" Margin="50,40,0,10" Visibility="Collapsed">
+            <Image Source="/Assets/presentation_backward.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,5,0"></Image>
         </Button>
-        <Button x:Name="NextNode" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="115,40,0,10" Visibility="Collapsed">
-            <Image Source="/Assets/icon_pdf_right.png" Height="30" Width="30" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+        <Button x:Name="NextNode" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="#FF113D40" Width="50" Height="50" Margin="115,40,0,10" Visibility="Collapsed">
+            <Image Source="/Assets/presentation_forward.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5,0,0,0"></Image>
         </Button>
-        <Button x:Name="CurrentNode"  Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="180,40,0,10" Visibility="Collapsed">
+        <Button x:Name="CurrentNode"  Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="#FF113D40" Width="50" Height="50" Margin="180,40,0,10" Visibility="Collapsed">
             <Image Source="/Assets/icon_mainmenu_node.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Button>
-        <Button x:Name="xPresentation" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="245,40,0,10" Visibility="Collapsed">
+        <Button x:Name="xPresentation" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="#FF113D40" Width="50" Height="50" Margin="245,40,0,10" Visibility="Collapsed">
             <Image Source="/Assets/icon_whitex.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Button>
 

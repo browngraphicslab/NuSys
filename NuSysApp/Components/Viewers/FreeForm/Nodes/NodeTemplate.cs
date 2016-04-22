@@ -15,12 +15,13 @@ using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Components.Nodes;
+using NuSysApp.Components.Viewers.FreeForm;
 using NuSysApp.Nodes.AudioNode;
 using Windows.Graphics.Imaging;
 using Windows.Graphics.Display;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Storage;
 using Windows.Storage.Pickers;
+using NuSysApp.Viewers;
 
 // The Templated Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234235
 
@@ -249,6 +250,7 @@ namespace NuSysApp
 
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
                 hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement) is GroupNodeView).ToList();
+
                 if (hitsStart.Any())
                 {
                     var first = (FrameworkElement) hitsStart.First();
@@ -271,42 +273,50 @@ namespace NuSysApp
 
             if (_currenDragMode == DragMode.Link || _currenDragMode == DragMode.PresentationLink)
             {
-                Debug.WriteLine("dragging link");
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
-
                 hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementViewModel).ToList();
 
                 var hitsStart2 = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
-
                 hitsStart2 = hitsStart2.Where(uiElem => (uiElem as FrameworkElement).DataContext is LinkedTimeBlockViewModel).ToList();
 
-                foreach (var e in hitsStart2)
-                {
-                    Debug.WriteLine(e);
-                }
+                var hitRectangleView = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
+                hitRectangleView = hitRectangleView.Where(uiElem => (uiElem as FrameworkElement).DataContext is RectangleViewModel).ToList();
                 
-                 if (hitsStart.Any())
-                {
+                if (hitsStart.Any()){
                     var first = (FrameworkElement)hitsStart.First();
-
-                    var rectangles = hitsStart.OfType<Rectangle>();
-
                     var dc = (ElementViewModel)first.DataContext;
                     var vm = (ElementViewModel)DataContext;
+
                     if (vm == dc || (dc is FreeFormViewerViewModel) || dc is LinkViewModel)
                     {
                         return;
                     }
 
-                    if (rectangles.Count() == 2)
+                    if (hitRectangleView.Any())
                     {
-                        var second = (Rectangle) rectangles.ElementAt(1);
-                        second.Fill = new SolidColorBrush(Colors.Yellow);
-                        second.Opacity = 0.2;
-                        second.Stroke = new SolidColorBrush(Colors.Red);
-                    }
-                    if (hitsStart2.Any())
-                    {
+                        foreach (var element in hitRectangleView)
+                        {
+                            if (element is RectangleView)
+                            {
+                                Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100,
+                                    100,
+                                    200);
+                                Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100,
+                                    100,
+                                    100);
+                                if (_currenDragMode == DragMode.PresentationLink)
+                                {
+                                    vm.Controller.RequestPresentationLinkTo(dc.Id, (RectangleView)element, null, inFgDictionary,
+                                        outFgDictionary);
+                                }
+                                else
+                                {
+                                    vm.Controller.RequestLinkTo(dc.Id, (RectangleView) element, null, inFgDictionary,
+                                        outFgDictionary);
+                                }
+                            }
+                        }
+                    } else if (hitsStart2.Any()){
                         foreach (var element in hitsStart2)
                         {
                             if (element is LinkedTimeBlock)
@@ -318,9 +328,18 @@ namespace NuSysApp
                                     100,
                                     100);
                                 Debug.WriteLine("test");
-                                vm.Controller.RequestLinkTo(dc.Id, (LinkedTimeBlock) element, inFgDictionary,
-                                    outFgDictionary);
-                                (element as LinkedTimeBlock).changeColor();
+                                if (_currenDragMode == DragMode.PresentationLink)
+                                {
+                                    vm.Controller.RequestPresentationLinkTo(dc.Id, null, (LinkedTimeBlock)element, inFgDictionary,
+                                           outFgDictionary);
+                                }
+                                else
+                                {
+                                    vm.Controller.RequestLinkTo(dc.Id, null, (LinkedTimeBlock) element, inFgDictionary,
+                                        outFgDictionary);
+                                }
+                                //(element as LinkedTimeBlock).changeColor();
+                                //vm.Controller.RequestLinkTo(dc.Id, (LinkedTimeBlock)element);
 
                             }
                         }
@@ -337,7 +356,6 @@ namespace NuSysApp
 
             ReleasePointerCaptures();
             (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta));
-
         }
 
         private void BtnAddOnManipulationDelta(object sender, PointerRoutedEventArgs args)

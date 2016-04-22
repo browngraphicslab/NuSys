@@ -9,6 +9,8 @@ using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
+using NuSysApp.Components.Viewers.FreeForm;
 using NuSysApp.Controller;
 using NuSysApp.Util;
 
@@ -31,6 +33,8 @@ namespace NuSysApp
 
         #endregion Private Members
 
+        public ObservableCollection<RectangleView> RegionsListTest { get; set; }
+
         public ElementViewModel(ElementController controller)
         {
             _controller = controller;
@@ -49,6 +53,16 @@ namespace NuSysApp
 
             Tags = new ObservableCollection<Button>();
             ReadFromModel();
+
+            RegionsListTest = new ObservableCollection<RectangleView>();
+
+            foreach (var element in Model.RegionsModel)
+            {
+                RectangleView rv = new RectangleView(element);
+                rv.setRectangleSize(_width, _height);
+                Debug.WriteLine(ElementType + " _width: " + _width + " _height: " + _height);
+                RegionsListTest.Add(rv);
+            }
         }
 
         private void ControllerOnDeleted(object source)
@@ -127,14 +141,13 @@ namespace NuSysApp
             {
                 //sorry about this - should also be in frontend and not in viewmodel
                 Button tagBlock = new Button();
-                tagBlock.Background = new SolidColorBrush(Constants.salmonColor);
+                tagBlock.Background = new SolidColorBrush(Constants.color4);
                 tagBlock.Content = tag;
                 tagBlock.Height = 30;
                 tagBlock.Padding = new Thickness(5);
                 tagBlock.BorderThickness = new Thickness(0);
                 tagBlock.Foreground = new SolidColorBrush(Constants.foreground6);
                 tagBlock.Margin = new Thickness(2, 2, 2, 2);///
-                tagBlock.Opacity = 0.75;
                 tagBlock.FontStyle = FontStyle.Italic;
                 tagBlock.IsHitTestVisible = false;
 

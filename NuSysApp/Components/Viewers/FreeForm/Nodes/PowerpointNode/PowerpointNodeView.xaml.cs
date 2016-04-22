@@ -1,15 +1,20 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics.Display;
 using Windows.Graphics.Imaging;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Shapes;
+using NuSysApp.Util;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -17,6 +22,7 @@ namespace NuSysApp
 {
     public sealed partial class PowerpointNodeView : AnimatableUserControl, IThumbnailable
     {
+
         public PowerpointNodeView(PowerpointNodeViewModel vm)
         {
             InitializeComponent();
@@ -33,6 +39,7 @@ namespace NuSysApp
         {
             nodeTpl.ToggleInkMode();
         }
+
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {

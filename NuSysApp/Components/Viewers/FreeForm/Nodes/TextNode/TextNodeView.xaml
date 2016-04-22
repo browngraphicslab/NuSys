@@ -78,8 +78,8 @@
                                 <StackPanel Orientation="Vertical">
                                     <Grid x:Name="inkerCanvas">
 
-                                    <Rectangle Height="100" Fill="Gray"></Rectangle>
-                                    <!--<Grid.Projection>
+                                        <Rectangle Height="100" Fill="Gray"></Rectangle>
+                                        <!--<Grid.Projection>
                                     <PlaneProjection RotationY="0"></PlaneProjection>
                                 </Grid.Projection>-->
                                     </Grid>

@@ -1,25 +1,58 @@
-﻿using Windows.UI.Xaml.Shapes;
+﻿using Windows.UI;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp.Util
 {
     public class RectanglePoints
     {
-        private double _x;
-        private double _y;
-        private double _width;
-        private double _height;
+        public double _leftRatio;
+        public double _topRatio;
+        public double _widthRatio;
+        public double _heightRatio;
 
-        public RectanglePoints(double x, double y, double width, double height)
+        public RectanglePoints(double leftRatio, double topRatio, double widthRatio, double heightRatio)
         {
-            _x = x;
-            _y = y;
-            _width = width;
-            _height = height;
+            _leftRatio = leftRatio;
+            _topRatio = topRatio;
+            _widthRatio = widthRatio;
+            _heightRatio = heightRatio;
         }
 
         public Rectangle getRectangle()
         {
-            return new Rectangle();
+            Rectangle rectangle = new Rectangle();
+
+            //rectangle.Width = _width;
+            //rectangle.Height = _height;
+            rectangle.StrokeThickness = 2;
+
+            rectangle.Stroke = new SolidColorBrush(Colors.Black);
+            rectangle.Fill = new SolidColorBrush(Colors.Transparent);
+
+            return rectangle;
         }
+
+        public double getLeftRatio()
+        {
+            return _leftRatio;
+        }
+
+        public double getTopRatio()
+        {
+            return _topRatio;
+        }
+
+        public double getWidthRatio()
+        {
+            return _widthRatio;
+        }
+
+        public double getHeightRatio()
+        {
+            return _heightRatio;
+        }
+
+
     }
 }

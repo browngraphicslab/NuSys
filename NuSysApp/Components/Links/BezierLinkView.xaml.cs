@@ -8,6 +8,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using NuSysApp.Controller;
+using NuSysApp.Viewers;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -155,6 +156,10 @@ namespace NuSysApp
                         ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Select();
                         this.JumpToLinkedTime();
                     }
+                    if (((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod != null)
+                    {
+                        ((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.Model.Select();
+                    }
                 }
                 else
                 {
@@ -167,7 +172,11 @@ namespace NuSysApp
                     if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
                     {
                         ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Deselect();
+                    }
 
+                    if (((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod != null)
+                    {
+                        ((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.Model.Deselect();
                     }
                 }
             }
@@ -192,7 +201,6 @@ namespace NuSysApp
                 {
                     (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
                     AudioNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Start);
-
                 }
 
 
