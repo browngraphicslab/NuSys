@@ -10,7 +10,7 @@
     "MyToolkit.Extended": "2.5.9",
     "NAudio": "1.7.3",
     "NetTopologySuite": "1.14.0",
-    "Newtonsoft.Json": "8.0.1",
+    "newtonsoft.json": "8.0.3",
     "SharpDX": "3.0.1",
     "SharpDX.Direct2D1": "3.0.1",
     "SharpDX.Direct3D11": "3.0.1",

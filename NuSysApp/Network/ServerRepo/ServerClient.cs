@@ -121,6 +121,21 @@ namespace NuSysApp
             }
         }
 
+        public async Task<string> DuplicateLibraryElement(string libraryElementId)
+        {
+            return await Task.Run(async delegate
+            {
+                HttpClient client = new HttpClient();
+                var response = await client.GetAsync(GetUri("duplicate/" + libraryElementId));
+
+                string data;
+                using (var responseContent = response.Content)
+                {
+                    data = await responseContent.ReadAsStringAsync();
+                }
+                return data;
+            });
+        }
         public async Task<List<Dictionary<string,object>>> GetContentWithoutData(List<string> contentIds)
         {
             try
@@ -231,24 +246,6 @@ namespace NuSysApp
                                 SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new AddInkRequest(m));
                             }
                         }
-
-                        var libModel = ((CollectionLibraryElementModel)SessionController.Instance.ContentController.Get(id));
-                        var oldInkLines = libModel.InkLines;
-                        var added = newInkLines.Except(oldInkLines).ToArray();
-						var removed = oldInkLines.Except(newInkLines).ToArray();
-
-                        await UITask.Run(() =>
-                        {
-                            foreach (var idremoved in removed)
-                            {
-                                libModel.RemoveInk(idremoved);
-                            }
-
-                            foreach (var idadded in added)
-                            {
-                                libModel.AddInk(idadded);
-                            }
-                        });
                     }
 
                     LibraryElementModel content = SessionController.Instance.ContentController.Get(libraryId);

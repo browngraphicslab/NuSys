@@ -21,7 +21,7 @@
     </converters:AnimatableUserControl.Resources>
     <Canvas Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}" >
         <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
-        <Path x:Name="BezierLink" Stroke="{Binding Color}" StrokeThickness="30" Opacity=".28" CompositeMode="MinBlend">
+        <Path x:Name="BezierLink" Stroke="{Binding Color}" StrokeThickness="30" Opacity=".28">
             <Path.Data>
                 <PathGeometry>
                     <PathGeometry.Figures>

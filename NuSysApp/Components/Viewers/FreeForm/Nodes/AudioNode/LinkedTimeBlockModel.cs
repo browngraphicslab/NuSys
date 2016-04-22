@@ -12,6 +12,9 @@ namespace NuSysApp.Nodes.AudioNode
         public delegate void selectHandler(LinkedTimeBlockModel playbackElement);
         public event selectHandler OnSelect;
 
+        public delegate void TimeChangeHandler();
+        public event TimeChangeHandler OnTimeChange;
+
         public delegate void deselectHandler(LinkedTimeBlockModel playbackElement);
         public event deselectHandler OnDeselect;
         private Boolean selected;
@@ -34,7 +37,7 @@ namespace NuSysApp.Nodes.AudioNode
         public TimeSpan Start
         {
             get { return _start; }
-            set { _start = value; }
+            set { _start = value; OnTimeChange?.Invoke();}
         }
 
         public void Select()
@@ -50,7 +53,7 @@ namespace NuSysApp.Nodes.AudioNode
         public TimeSpan End
         {
             get { return _end; }
-            set { _end = value; }
+            set { _end = value; OnTimeChange?.Invoke();}
         }
     }
 }

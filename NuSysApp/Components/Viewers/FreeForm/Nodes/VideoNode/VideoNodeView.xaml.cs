@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -39,6 +40,7 @@ namespace NuSysApp
         public VideoNodeView(VideoNodeViewModel vm)
         {
             _addTimeBlockMode = false;
+            vm.PropertyChanged += Node_SelectionChanged;
             this.InitializeComponent();
             this.DataContext = vm;
             //playbackElement.AutoPlay = false;
@@ -65,10 +67,42 @@ namespace NuSysApp
             ((VideoNodeModel)vm.Model).OnJump += VideoNodeView_OnJump;
 
         }
+        private void Node_SelectionChanged(object sender, PropertyChangedEventArgs e)
+        {
+            /*
+            if (e.PropertyName.Equals("IsSelected"))
+            {
+                var vm = (NodeViewModel)this.DataContext;
 
-        private void VideoNodeView_OnJump(TimeSpan time)
+                if (vm.IsSelected)
+                {
+                    //var slideout = (Storyboard)Application.Current.Resources["slideout"];
+                    slideout.Begin();
+                }
+                else
+                {
+                    //var slidein = (Storyboard)Application.Current.Resources["slidein"];
+                    slidein.Begin();
+                }
+            }*/
+            
+            if (LinkedTimeBlock._box1 != null && (LinkedTimeBlock._box1.FocusState == FocusState.Unfocused))
+            {
+                LinkedTimeBlock.removeBox();
+            }
+        }
+
+        public void VideoNodeView_OnJump(TimeSpan time)
         {
             playbackElement.Position = time;
+            if (playbackElement.CurrentState != MediaElementState.Playing)
+            {
+                Binding b = new Binding();
+                b.ElementName = "playbackElement";
+                b.Path = new PropertyPath("Position.TotalMilliseconds");
+                scrubBar.SetBinding(ProgressBar.ValueProperty, b);
+
+            }
         }
 
         private void ControllerOnDisposed(object source)
@@ -76,6 +110,7 @@ namespace NuSysApp
             playbackElement.Stop();
             var vm = (VideoNodeViewModel) DataContext;
             vm.Controller.LibraryElementModel.OnLoaded -= LoadVideo;
+            vm.PropertyChanged -= Node_SelectionChanged;
             vm.LinkedTimeModels.CollectionChanged -= LinkedTimeBlocks_CollectionChanged;
             vm.Controller.Disposed -= ControllerOnDisposed;
             nodeTpl.Dispose();
@@ -118,6 +153,9 @@ namespace NuSysApp
         {
             var timeBlockVM = new LinkedTimeBlockViewModel((DataContext as VideoNodeViewModel).LinkedTimeModels.Last(), playbackElement.NaturalDuration.TimeSpan, scrubBar);
             LinkedTimeBlock line = new LinkedTimeBlock(timeBlockVM);
+            line.OnTimeChange += ReSaveLinkModels;
+            line.SetValue(Canvas.ZIndexProperty, 1);
+
             Grid.SetRow(line, 1);
             _timeBlocks.Add(timeBlockVM);
             grid.Children.Add(line);
@@ -130,6 +168,17 @@ namespace NuSysApp
 
             TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)millliseconds);
             playbackElement.Position = time;
+
+            if (playbackElement.CurrentState != MediaElementState.Playing)
+            {
+                Binding b = new Binding();
+                b.ElementName = "playbackElement";
+                b.Path = new PropertyPath("Position.TotalMilliseconds");
+                scrubBar.SetBinding(ProgressBar.ValueProperty, b);
+
+                //playbackElement.Play();
+            }
+
         }
 
         private void ScrubBar_OnPointerMoved(object sender, PointerRoutedEventArgs e)
@@ -144,6 +193,15 @@ namespace NuSysApp
 
                     TimeSpan time = new TimeSpan(0, 0, (int)seconds);
                     playbackElement.Position = time;
+                    if (playbackElement.CurrentState != MediaElementState.Playing)
+                    {
+                        Binding b = new Binding();
+                        b.ElementName = "playbackElement";
+                        b.Path = new PropertyPath("Position.TotalMilliseconds");
+                        scrubBar.SetBinding(ProgressBar.ValueProperty, b);
+
+                        playbackElement.Play();
+                    }
                 }
                 else if (_addTimeBlockMode == true)
                 {
@@ -292,7 +350,17 @@ namespace NuSysApp
 
         private void Region_OnClick(object sender, RoutedEventArgs e)
         {
-            _addTimeBlockMode = true;
+            //if (_addTimeBlockMode == false)
+            //{
+            //    _addTimeBlockMode = true;
+            //}
+            //else
+            //{
+            //    _addTimeBlockMode = false;
+            //}
+            this.CreateTimeBlock(playbackElement.Position, new TimeSpan(0, 0, 0, 0, (int)playbackElement.Position.TotalMilliseconds + (int)(playbackElement.NaturalDuration.TimeSpan.TotalMilliseconds - playbackElement.Position.TotalMilliseconds) / 4));
+
+
 
         }
 
@@ -338,12 +406,23 @@ namespace NuSysApp
             {
                 var timeBlockVM = new LinkedTimeBlockViewModel(element, playbackElement.NaturalDuration.TimeSpan, scrubBar);
                 LinkedTimeBlock line = new LinkedTimeBlock(timeBlockVM);
+                line.OnTimeChange += ReSaveLinkModels;
+                line.SetValue(Canvas.ZIndexProperty, 1);
+
+
                 Grid.SetRow(line, 1);
                 _timeBlocks.Add(timeBlockVM);
                 grid.Children.Add(line);
                 timeBlockVM.setUpHandlers(line.getLine());
+
             }
             scrubBar.SizeChanged += ScrubBar_OnSizeChanged;
+
+        }
+
+        public void ReSaveLinkModels()
+        {
+            (DataContext as ElementViewModel).Controller.SaveTimeBlock();
 
         }
 

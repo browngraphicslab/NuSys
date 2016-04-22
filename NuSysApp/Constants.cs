@@ -66,7 +66,7 @@ namespace NuSysApp
         public static Color color1 = Color.FromArgb(255, 199, 222, 222);   // lightest blue
         public static Color color2 = Color.FromArgb(255, 107, 147, 151);   // medium blue
         public static Color color3 = Color.FromArgb(255, 17, 61, 64);      // darkest blue
-        public static Color color4 = Color.FromArgb(255, 211, 151, 160);   // red
+        public static Color color4 = Color.FromArgb(255, 152, 26, 77);     // red
         public static Color color5 = Color.FromArgb(255, 230, 230, 230);   // dv bg blue
         public static Color color6 = Colors.White;                         // white
         public static Color foreground6 = Colors.White;                    // foreground white

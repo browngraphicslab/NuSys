@@ -120,6 +120,7 @@
     <Compile Include="Model.cs" />
     <Compile Include="Option.cs" />
     <Compile Include="Pair.cs" />
+    <Compile Include="Parser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\LdaLibrary.rd.xml" />
   </ItemGroup>

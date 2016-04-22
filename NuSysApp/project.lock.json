@@ -299,7 +299,7 @@
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll": {}
         }
       },
-      "Newtonsoft.Json/8.0.1": {
+      "newtonsoft.json/8.0.3": {
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
         },
@@ -2121,7 +2121,7 @@
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll": {}
         }
       },
-      "Newtonsoft.Json/8.0.1": {
+      "newtonsoft.json/8.0.3": {
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
         },
@@ -3997,7 +3997,7 @@
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll": {}
         }
       },
-      "Newtonsoft.Json/8.0.1": {
+      "newtonsoft.json/8.0.3": {
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
         },
@@ -5878,7 +5878,7 @@
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll": {}
         }
       },
-      "Newtonsoft.Json/8.0.1": {
+      "newtonsoft.json/8.0.3": {
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
         },
@@ -7754,7 +7754,7 @@
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll": {}
         }
       },
-      "Newtonsoft.Json/8.0.1": {
+      "newtonsoft.json/8.0.3": {
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
         },
@@ -9635,7 +9635,7 @@
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll": {}
         }
       },
-      "Newtonsoft.Json/8.0.1": {
+      "newtonsoft.json/8.0.3": {
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
         },
@@ -11511,7 +11511,7 @@
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/PowerCollections.dll": {}
         }
       },
-      "Newtonsoft.Json/8.0.1": {
+      "newtonsoft.json/8.0.3": {
         "compile": {
           "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
         },
@@ -13947,8 +13947,8 @@
         "package/services/metadata/core-properties/9644b49024494e6588746f3182f29707.psmdcp"
       ]
     },
-    "Newtonsoft.Json/8.0.1": {
-      "sha512": "qFzqzune1D7hDz8kNavFwrJ0fv8qkwANGyUOPjP0I67DmNH04nmSCRB0g0LCIqogMKrBXjsiP43Z0E1huBvxOg==",
+    "newtonsoft.json/8.0.3": {
+      "sha512": "KGsYQdS2zLH+H8x2cZaSI7e+YZ4SFIbyy1YJQYl6GYBWjf5o4H1A68nxyq+WTyVSOJQ4GqS/DiPE+UseUizgMg==",
       "type": "Package",
       "files": [
         "[Content_Types].xml",
@@ -13966,7 +13966,7 @@
         "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll",
         "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.xml",
         "Newtonsoft.Json.nuspec",
-        "package/services/metadata/core-properties/ec951ab7a85848cfa5a19094817892b5.psmdcp",
+        "package/services/metadata/core-properties/199d932507f04f0285dade0302b87d22.psmdcp",
         "tools/install.ps1"
       ]
     },
@@ -16950,7 +16950,7 @@
       "MyToolkit.Extended >= 2.5.9",
       "NAudio >= 1.7.3",
       "NetTopologySuite >= 1.14.0",
-      "Newtonsoft.Json >= 8.0.1",
+      "newtonsoft.json >= 8.0.3",
       "SharpDX >= 3.0.1",
       "SharpDX.Direct2D1 >= 3.0.1",
       "SharpDX.Direct3D11 >= 3.0.1",

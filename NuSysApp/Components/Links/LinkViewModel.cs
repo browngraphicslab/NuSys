@@ -28,7 +28,10 @@ namespace NuSysApp
                 (int) (InElementController.Model.Y + (Math.Abs(OutElementController.Model.Y - InElementController.Model.Y)/2)));
 
             Color = new SolidColorBrush(Constants.color2);
-   
+            if (LinkModel.InFineGrain != null)
+            {
+                LinkModel.InFineGrain.OnTimeChange += InFineGrain_OnTimeChange;
+            }
 
             InElementController.PositionChanged += InElementControllerOnPositionChanged;
             OutElementController.PositionChanged += InElementControllerOnPositionChanged;
@@ -36,6 +39,11 @@ namespace NuSysApp
             OutElementController.SizeChanged += OutElementControllerOnSizeChanged;
 
             
+        }
+
+        private void InFineGrain_OnTimeChange()
+        {
+            ((LinkElementController)Controller).SaveTimeBlock();
         }
 
         public override Task Init()

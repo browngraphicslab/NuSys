@@ -69,7 +69,7 @@ namespace NuSysApp
             ((AudioNodeModel)vm.Model).OnJump += AudioNodeView_OnJump;
         }
 
-        private void AudioNodeView_OnJump(TimeSpan time)
+        public void AudioNodeView_OnJump(TimeSpan time)
         {
             ((AudioNodeModel) ((DataContext as AudioNodeViewModel).Model)).Controller.ScrubJump(time);
         }
@@ -80,6 +80,8 @@ namespace NuSysApp
             {
                 var timeBlockVM = new LinkedTimeBlockViewModel(element, ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan, scrubBar);
                 LinkedTimeBlock line = new LinkedTimeBlock(timeBlockVM);
+                line.SetValue(Canvas.ZIndexProperty, 1);
+                line.OnTimeChange += ReSaveLinkModels;
                 _timeBlocks.Add(timeBlockVM);
                 grid.Children.Add(line);
                 timeBlockVM.setUpHandlers(line.getLine());
@@ -140,6 +142,9 @@ namespace NuSysApp
             var timeBlockVM = new LinkedTimeBlockViewModel((DataContext as AudioNodeViewModel).LinkedTimeModels.Last(), playbackElement.NaturalDuration.TimeSpan, scrubBar);
 
             LinkedTimeBlock line = new LinkedTimeBlock(timeBlockVM);
+            line.SetValue(Canvas.ZIndexProperty, 1);
+            line.OnTimeChange += ReSaveLinkModels;
+
             _timeBlocks.Add(timeBlockVM);
             grid.Children.Add(line);
             (DataContext as ElementViewModel).Controller.SaveTimeBlock();
@@ -201,7 +206,6 @@ namespace NuSysApp
 
         private async void OnPause_Click(object sender, RoutedEventArgs e)
         {
-            this.AddAllLinksVisually();
             play.Opacity = 1;
             pause.Opacity = 0.3;
             ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Pause();
@@ -230,6 +234,10 @@ namespace NuSysApp
                     slidein.Begin();
                 }
             }*/
+            if (LinkedTimeBlock._box1 != null && (LinkedTimeBlock._box1.FocusState == FocusState.Unfocused))
+            {
+                LinkedTimeBlock.removeBox();
+            }
         }
 
         public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
@@ -326,7 +334,9 @@ namespace NuSysApp
 
         private void Region_OnClick(object sender, RoutedEventArgs e)
         {
-            _addTimeBlockMode = true;
+
+            this.CreateTimeBlock(playbackElement.Position, new TimeSpan(0,0,0,0,(int)playbackElement.Position.TotalMilliseconds + (int)(playbackElement.NaturalDuration.TimeSpan.TotalMilliseconds - playbackElement.Position.TotalMilliseconds)/4));
+
         }
 
         private void ScrubBar_OnPointerReleased(object sender, PointerRoutedEventArgs e)
@@ -369,8 +379,13 @@ namespace NuSysApp
         {
             LinkedTimeBlockModel model = new LinkedTimeBlockModel(start, end);
             LinkedTimeBlockViewModel link = new LinkedTimeBlockViewModel(model, ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan, scrubBar);
-
             (DataContext as AudioNodeViewModel).AddLinkTimeModel(model);
+
+        }
+
+        public void ReSaveLinkModels()
+        {
+            (DataContext as ElementViewModel).Controller.SaveTimeBlock();
 
         }
 
@@ -382,6 +397,15 @@ namespace NuSysApp
         private void PlaybackElement_OnMediaOpened(object sender, RoutedEventArgs e)
         {
             this.AddAllLinksVisually();
+        }
+
+        private void Grid_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            if ((LinkedTimeBlock._box1.FocusState == FocusState.Unfocused))
+            {
+                //LinkedTimeBlock.removeBox();
+            }
+            
         }
     }
 }
