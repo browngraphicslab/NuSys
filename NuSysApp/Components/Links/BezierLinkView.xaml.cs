@@ -49,7 +49,7 @@ namespace NuSysApp
             {
                 UpdateControlPoints();
             };
-            Debug.WriteLine("fdsafdsa");
+
             object value;
             if (vm.LinkModel.InFGDictionary != null)
             {
@@ -249,6 +249,8 @@ namespace NuSysApp
 
             curve.Point2 = new Point(anchor1.X - distanceX / 2, anchor2.Y);
             curve.Point1 = new Point(anchor2.X + distanceX / 2, anchor1.Y);
+            curveInner.Point2 = new Point(anchor1.X - distanceX / 2, anchor2.Y);
+            curveInner.Point1 = new Point(anchor2.X + distanceX / 2, anchor1.Y);
 
             Canvas.SetLeft(btnDelete, anchor1.X - distanceX / 2 - Rect.ActualWidth / 2);
             Canvas.SetTop(btnDelete, anchor1.Y - distanceY / 2);
@@ -267,6 +269,9 @@ namespace NuSysApp
 
             pathfigure.StartPoint = anchor1;
             curve.Point3 = anchor2;
+
+            pathfigureInner.StartPoint = anchor1;
+            curveInner.Point3 = anchor2;
         }
 
         private async void Delete_OnClick(object sender, RoutedEventArgs e)

@@ -33,6 +33,7 @@
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
             <Grid>
+
                 <Grid PointerPressed="XImage_OnPointerPressed" PointerReleased="XImage_OnPointerReleased" PointerMoved="XImage_OnPointerMoved">
                     <Image x:Name="xRenderedPdf"  Margin="3,3,3,3" Source="{Binding ImageSource}" Stretch="Uniform"/>
                     <Canvas x:Name="Canvas" VerticalAlignment ="Top" HorizontalAlignment="Left">
@@ -46,11 +47,12 @@
                     </Canvas>
                 </Grid>
                 <Button x:Name="pageLeft" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}" Height ="50" Width="50" VerticalAlignment="Center" Background=" Transparent" HorizontalAlignment="Left" Tapped="OnPageLeftClick" DoubleTapped="PageRight_OnDoubleTapped">
+
                     <Button.Content>
                         <Image Opacity=".8" Stretch="Uniform" Source="ms-appx:///Assets/icon_pdf_left.png" />
                     </Button.Content>
                 </Button>
-                <Button x:Name="pageRight" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}" Height ="50" Width="50" VerticalAlignment="Center" Background="Transparent" HorizontalAlignment="Right" Tapped="OnPageRightClick" DoubleTapped="PageRight_OnDoubleTapped">
+                <Button x:Name="pageRight" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}" Height ="50" Width="50" VerticalAlignment="Bottom" Background="Transparent" HorizontalAlignment="Right" Tapped="OnPageRightClick" DoubleTapped="PageRight_OnDoubleTapped">
                     <Button.Content>
                         <Image Opacity=".8" Stretch="Uniform" Source="ms-appx:///Assets/icon_pdf_right.png" />
                     </Button.Content>
