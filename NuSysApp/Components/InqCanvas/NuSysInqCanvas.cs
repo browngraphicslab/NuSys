@@ -36,6 +36,8 @@ namespace NuSysApp
 
             var geom = _inkStrokes[inkStroke];
             var index = _adornments.IndexOf(geom);
+            if (index == -1)
+                return;
             _colors.RemoveAt(index);
             _adornments.Remove(geom);
             if (fireEvent)

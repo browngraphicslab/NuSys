@@ -121,7 +121,36 @@ namespace NuSysApp
 
 
             var vm = (LinkViewModel)DataContext;
+            if (propertyChangedEventArgs.PropertyName == "IsSelected")
+            {
+                if (vm.IsSelected)
+                {
+                    AnnotationContainer.Visibility = Visibility.Visible;
+                    Delete.Visibility = Visibility.Visible;
+                    if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
+                    {
+                        ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Select();
+                        this.JumpToLinkedTime();
+                    }
+                    if (((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod != null)
+                    {
+                        ((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.Model.Select();
+                    }
+                }
+                else
+                {
+                    Delete.Visibility = Visibility.Collapsed;
+                    if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
+                    {
+                        ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Deselect();
+                    }
 
+                    if (((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod != null)
+                    {
+                        ((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.Model.Deselect();
+                    }
+                }
+            }
             if (propertyChangedEventArgs.PropertyName == "IsSelected")
             {
                 if (vm.IsSelected)
