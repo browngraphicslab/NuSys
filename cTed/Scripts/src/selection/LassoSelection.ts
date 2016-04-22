@@ -15,6 +15,8 @@
 
     end(x: number, y: number): void {
         var points = this.stroke.sampleStroke().points;
+        alert(points.length);
+
         for (var i = 0; i < points.length; i++) {
             points[i] = new Point(points[i].x, points[i].y - $(document).scrollTop() + this.yscroll);
         }
@@ -223,7 +225,7 @@
                     var index = indexList[i];
                     $(trueEl.childNodes[index]).replaceWith("<words>" + $(trueEl.childNodes[index]).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
                     var result = "";
-                    for (var j = 0; j < trueEl.childNodes[index].childNodes.length; j++) {
+                    for (var j = 0; j < trueEl.childNodes[index].childNodes.length - 1; j++) {
                         if (this.intersectWith(trueEl.childNodes[index].childNodes[j]) > 0) {
                             if (trueEl.childNodes[index].childNodes[j].style) {
                                 trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";

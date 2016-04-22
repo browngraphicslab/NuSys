@@ -2607,23 +2607,28 @@ var Stroke = (function () {
         var len = this.points.length;
         var ypre;
         var xpre;
-        var predg = 0;
+        var predg = -20;
         var prept = this.points[0];
         var strokeHash = {};
         var sampledStrokes = [];
         sampledStrokes.push(prept);
+        console.log(this.points);
         for (var i = 1; i < len; i++) {
-            //    var pt = this.nearestPointArea(this.points[i]);
             var pt = this.points[i];
-            if (Math.abs(predg - this.degree(pt, prept)) < 10 && i < len - 1) {
+            if ((Math.abs(predg - this.degree(pt, prept)) < 10 || this.tooClose(pt, prept)) && i < len - 1) {
                 continue;
             }
             predg = this.degree(pt, prept);
             sampledStrokes.push(this.points[i]);
+            prept = pt;
         }
         var res = new Stroke();
         res.points = sampledStrokes;
+        console.log(res.points);
         return res;
+    };
+    Stroke.prototype.tooClose = function (p1, p2) {
+        return (Math.abs(p1.x - p2.x) < 10 && Math.abs(p1.y - p2.y) < 10);
     };
     return Stroke;
 })();
@@ -2973,6 +2978,7 @@ var Main = (function () {
                     var editedSelection = new LassoSelection();
                     var editedStroke = new Stroke();
                     editedStroke.points = _this.selectionOnHover.samplePoints;
+                    alert(editedStroke.points.length);
                     var len = editedStroke.points.length;
                     editedSelection.stroke = editedStroke;
                     editedSelection.id = _this.selectionOnHover.id;
@@ -3003,6 +3009,7 @@ var Main = (function () {
             _this.isPointSelected = false;
             _this.is_editing_selection = false;
             _this.selection.stroke = _this.inkCanvas._activeStroke;
+            _this.selection.stroke = _this.selection.stroke.sampleStroke();
             _this.selection.yscroll = $(document).scrollTop();
             _this.selection.end(e.clientX, e.clientY);
             _this.selection.type = _this.currentStrokeType;
@@ -4047,6 +4054,7 @@ var LassoSelection = (function (_super) {
     };
     LassoSelection.prototype.end = function (x, y) {
         var points = this.stroke.sampleStroke().points;
+        alert(points.length);
         for (var i = 0; i < points.length; i++) {
             points[i] = new Point(points[i].x, points[i].y - $(document).scrollTop() + this.yscroll);
         }
@@ -4239,7 +4247,7 @@ var LassoSelection = (function (_super) {
                     var index = indexList[i];
                     $(trueEl.childNodes[index]).replaceWith("<words>" + $(trueEl.childNodes[index]).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
                     var result = "";
-                    for (var j = 0; j < trueEl.childNodes[index].childNodes.length; j++) {
+                    for (var j = 0; j < trueEl.childNodes[index].childNodes.length - 1; j++) {
                         if (this.intersectWith(trueEl.childNodes[index].childNodes[j]) > 0) {
                             if (trueEl.childNodes[index].childNodes[j].style) {
                                 trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
@@ -4727,10 +4735,16 @@ var MarqueeSelection = (function (_super) {
             if (!this.bound(el.childNodes[i], realNList[i])) {
                 if (el.childNodes[i].nodeName == "#text") {
                     var index = indexList[i];
+                    $(trueEl.childNodes[index]).text().replace("&nbsp;", '');
                     $(trueEl.childNodes[index]).replaceWith("<words>" + $(trueEl.childNodes[index]).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
+                    //     alert($(trueEl.childNodes[index]));
                     var result = "";
-                    for (var j = 0; j < trueEl.childNodes[index].childNodes.length; j++) {
+                    for (var j = 0; j < trueEl.childNodes[index].childNodes.length - 1; j++) {
+                        console.log(trueEl.childNodes[index].childNodes[j]);
                         if (this.intersectWith(trueEl.childNodes[index].childNodes[j])) {
+                            if (trueEl.childNodes[index].childNodes[j].nodeValue == String.fromCharCode(160)) {
+                                console.log("===========need to fix================");
+                            }
                             if (trueEl.childNodes[index].childNodes[j].style) {
                                 trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
                                 //      console.log(trueEl.childNodes[index]);
@@ -4740,6 +4754,7 @@ var MarqueeSelection = (function (_super) {
                             if (!trueEl.childNodes[index].childNodes[j]["innerHTML"]) {
                                 if (trueEl.childNodes[index].childNodes[j].nodeName == "WORD") {
                                     trueEl.childNodes[index].childNodes[j]["innerHTML"] = " ";
+                                    result += " ";
                                 }
                             }
                             else {

@@ -364,6 +364,7 @@ class Main {
                 var editedSelection = new LassoSelection();
                 var editedStroke = new Stroke();
                 editedStroke.points = this.selectionOnHover.samplePoints;
+                alert(editedStroke.points.length);
                 var len = editedStroke.points.length;
 
                 editedSelection.stroke = editedStroke;
@@ -404,6 +405,7 @@ class Main {
         this.isPointSelected = false;
         this.is_editing_selection = false;
         this.selection.stroke = this.inkCanvas._activeStroke;
+        this.selection.stroke = this.selection.stroke.sampleStroke();
         this.selection.yscroll = $(document).scrollTop();
 
         this.selection.end(e.clientX, e.clientY);

@@ -83,10 +83,18 @@
             if (!this.bound(el.childNodes[i], realNList[i])) {
                 if (el.childNodes[i].nodeName == "#text") {
                     var index = indexList[i];
+                    $(trueEl.childNodes[index]).text().replace("&nbsp;", '');
                     $(trueEl.childNodes[index]).replaceWith("<words>" + $(trueEl.childNodes[index]).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
+               //     alert($(trueEl.childNodes[index]));
                     var result = "";
-                    for (var j = 0; j < trueEl.childNodes[index].childNodes.length; j++) {
+                    for (var j = 0; j < trueEl.childNodes[index].childNodes.length - 1; j++) {
+                        console.log(trueEl.childNodes[index].childNodes[j]);
+
                         if (this.intersectWith(trueEl.childNodes[index].childNodes[j])) {
+                            if (trueEl.childNodes[index].childNodes[j].nodeValue == String.fromCharCode(160)) {
+                                console.log("===========need to fix================");
+                            }
+
                             if (trueEl.childNodes[index].childNodes[j].style) {
                                 trueEl.childNodes[index].childNodes[j].style.backgroundColor = "yellow";
                           //      console.log(trueEl.childNodes[index]);
@@ -97,7 +105,7 @@
                             if (!trueEl.childNodes[index].childNodes[j]["innerHTML"]) {
                                 if (trueEl.childNodes[index].childNodes[j].nodeName == "WORD") {
                                     trueEl.childNodes[index].childNodes[j]["innerHTML"] = " ";
-                                 //   result += " ";
+                                    result += " ";
                                 }
                             }
                             else { result += trueEl.childNodes[index].childNodes[j]["innerHTML"]; }

@@ -86,23 +86,31 @@ class Stroke {
         var len = this.points.length;
         var ypre;
         var xpre;
-        var predg = 0;
+        var predg = -20;
         var prept = this.points[0];
         var strokeHash = {};
         var sampledStrokes = [];
         sampledStrokes.push(prept);
+        console.log(this.points);
         for (var i = 1; i < len; i++) {
-        //    var pt = this.nearestPointArea(this.points[i]);
             var pt = this.points[i];
-            if (Math.abs(predg - this.degree(pt, prept)) < 10 && i < len-1) {
+
+            if ((Math.abs(predg - this.degree(pt, prept)) < 10 || this.tooClose(pt, prept)) && i < len - 1) {   
+                                                                         
                 continue;
             }
             predg = this.degree(pt, prept);
             sampledStrokes.push(this.points[i]);
+            prept = pt;
         }
         var res = new Stroke();
         res.points = sampledStrokes;
+        console.log(res.points);
         return res;
+    }
+
+    tooClose(p1, p2: Point): boolean {
+        return (Math.abs(p1.x - p2.x) < 10 && Math.abs(p1.y - p2.y) < 10);
     }
 
 }
