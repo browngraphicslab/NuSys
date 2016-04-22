@@ -41,7 +41,6 @@ namespace NuSysApp
         private LibraryView _library;
         public LibraryList(LibraryView library, LibraryPageViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
         {
-
             this.DataContext = vm;
             this.InitializeComponent();
             Loaded += delegate(object sender, RoutedEventArgs args)

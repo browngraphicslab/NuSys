@@ -47,6 +47,9 @@
         <local:NodeTemplate x:Name="nodeTpl" Background="{StaticResource color6}" BorderBrush="Transparent">
             <local:NodeTemplate.SubMenu>
                 <StackPanel Orientation="Vertical">
+                    <Button Margin="0,2,0,2" x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
+                        <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
+                    </Button>
                     <Button Margin="0,2,0,2"  x:Name="EditText"  Click="OnEditClick" Background="{StaticResource color2}" Style="{StaticResource NodeSubMenuItem}" Tag="bla">
                         <Image Source="ms-appx:///Assets/node icons/text.png" Height="25" Width="25" Stretch="Uniform"></Image>
                     </Button>
@@ -56,10 +59,6 @@
                     </Button>
                     <Button Background="{StaticResource color2}" Margin="0,2,0,2" x:Name="Record" Style="{StaticResource NodeSubMenuItem}">
                         <Image Source="ms-appx:///Assets/node icons/record.png" Height="25" Width="25" IsHitTestVisible="False"></Image>
-                    </Button>
-                    
-                    <Button Margin="0,2,0,2" x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
-                        <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
                     </Button>
                 </StackPanel>
             </local:NodeTemplate.SubMenu>
