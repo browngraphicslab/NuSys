@@ -12818,7 +12818,11 @@
     },
     "Microsoft.ApplicationInsights.WindowsApps/1.0.0": {
       "sha512": "fNCAjIwvbTV+G0dT14bgM5tptsqeSaKQaCrlq7QknOq1Xdm8ZmgsDYddMgXkvykyKLjWyU6fKuOpj6fsQJy+wQ==",
+<<<<<<< HEAD
       "type": "package",
+=======
+      "type": "Package",
+>>>>>>> origin/bettytextfixes
       "files": [
         "Microsoft.ApplicationInsights.WindowsApps.1.0.0.nupkg.sha512",
         "Microsoft.ApplicationInsights.WindowsApps.nuspec",
