@@ -42,7 +42,7 @@
 
             <StackPanel Grid.Row="1" Canvas.ZIndex="100" x:Name="TitleEnter" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,20">
                 <!--<TextBlock Text="{Binding Title}" Foreground="White" FontSize="30" CharacterSpacing="45" HorizontalAlignment="Stretch"/>-->
-                <local:TextInputBlock  x:Name ="TitleBox" Text="{Binding Title}" Foreground="{StaticResource darkforeground}"  BubbleTop="False" KeyUp="TitleChanged"  LeftJustified="False" SetHeight="30" HorizontalAlignment="Stretch">
+                <local:TextInputBlock  x:Name ="TitleBox" Text="{Binding Title}" Foreground="{StaticResource darkforeground}"  BubbleTop="False" KeyUp="TitleChanged"  LeftJustified="False" SetHeight="30" TextChanged ="OnTitleChanged" HorizontalAlignment="Stretch">
                 </local:TextInputBlock>
                 <Rectangle HorizontalAlignment="Stretch" Fill="{StaticResource darkforeground}" Height="2"/>
             </StackPanel>

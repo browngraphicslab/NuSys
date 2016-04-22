@@ -181,11 +181,6 @@ namespace NuSysApp
 
         }
 
-
-
-
-
-
         /*
         Opens up link from Text Detail View in new web node, in the network 
         */

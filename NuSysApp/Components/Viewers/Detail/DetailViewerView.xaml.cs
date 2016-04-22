@@ -158,6 +158,12 @@ namespace NuSysApp
             //vm.LibraryElementModelOnOnTitleChanged(this, TitleBox.Text);
         }
 
+        private void OnTitleChanged(object source, string title)
+        {
+            var vm = (DetailViewerViewModel)DataContext;
+            vm.CurrentElementController.LibraryElementModel.Title = TitleBox.Text;
+        }
+
         private async void AddTagButton_OnClick(object sender, RoutedEventArgs e)
         {
             await AddTag();
@@ -274,6 +280,8 @@ namespace NuSysApp
                 Canvas.SetLeft(this,30);
             }
         }
-        
+
+
     }
+    
 }
