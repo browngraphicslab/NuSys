@@ -46,13 +46,18 @@
                         </ItemsControl>
                     </Canvas>
                 </Grid>
-                <Button x:Name="pageLeft" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}" Height ="50" Width="50" VerticalAlignment="Center" Background=" Transparent" HorizontalAlignment="Left" Tapped="OnPageLeftClick" DoubleTapped="PageRight_OnDoubleTapped">
-
+                <Button x:Name="pageLeft" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}" Height ="50" Width="50" VerticalAlignment="Top" Background=" Transparent" HorizontalAlignment="Left" Tapped="OnPageLeftClick" DoubleTapped="PageRight_OnDoubleTapped">
+                    <Button.RenderTransform>
+                        <TranslateTransform X="-45"  Y="-45" />
+                    </Button.RenderTransform>
                     <Button.Content>
                         <Image Opacity=".8" Stretch="Uniform" Source="ms-appx:///Assets/icon_pdf_left.png" />
                     </Button.Content>
                 </Button>
-                <Button x:Name="pageRight" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}" Height ="50" Width="50" VerticalAlignment="Bottom" Background="Transparent" HorizontalAlignment="Right" Tapped="OnPageRightClick" DoubleTapped="PageRight_OnDoubleTapped">
+                <Button x:Name="pageRight" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}" Height ="50" Width="50" VerticalAlignment="Top" Background="Transparent" HorizontalAlignment="Right" Tapped="OnPageRightClick" DoubleTapped="PageRight_OnDoubleTapped">
+                    <Button.RenderTransform>
+                        <TranslateTransform X="45"  Y="-45" />
+                    </Button.RenderTransform>
                     <Button.Content>
                         <Image Opacity=".8" Stretch="Uniform" Source="ms-appx:///Assets/icon_pdf_right.png" />
                     </Button.Content>
