@@ -257,6 +257,7 @@ var Editor = (function () {
 window.onload = function () {
     var el = document.getElementById("editor");
     var prev = document.getElementById("preview");
+    Debug.writeln("hello");
     myEditor = new Editor(document, el, prev);
 };
 //# sourceMappingURL=app.js.map

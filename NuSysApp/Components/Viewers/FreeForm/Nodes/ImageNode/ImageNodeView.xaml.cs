@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
@@ -14,6 +17,9 @@ using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using NAudio.Wave;
+using NuSysApp.Components.Viewers.FreeForm;
+using NuSysApp.Util;
+using NuSysApp.Viewers;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -24,8 +30,10 @@ namespace NuSysApp
 
         private Boolean _drawingRegion;
         private Rectangle TempRegion;
+        private ImageElementViewModel _vm;
         public ImageNodeView(ImageElementViewModel vm)
         {
+            _vm = vm;
             InitializeComponent();
             DataContext = vm;
             _drawingRegion = false;
@@ -33,6 +41,10 @@ namespace NuSysApp
             TempRegion.Fill = new SolidColorBrush(Colors.Transparent);
             TempRegion.StrokeThickness = 2;
             TempRegion.Stroke = new SolidColorBrush(Colors.Red);
+
+           // vm.Controller.SizeChanged += Controller_SizeChanged;
+
+            vm.PropertyChanged +=VmOnPropertyChanged; 
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
@@ -48,6 +60,29 @@ namespace NuSysApp
             //XamlRenderingBackgroundTask x = new RenderTask(this.xImage);
 
             vm.Controller.Disposed += ControllerOnDisposed;
+        }
+
+        private void VmOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Width" || e.PropertyName == "Height")
+            {
+                ObservableCollection<RectangleView> list1 = _vm.RegionsListTest;
+
+                foreach (var rectangle in list1)
+                {
+                    rectangle.setRectangleSize(_vm.Width, _vm.Height);
+                }
+            }
+        }
+
+        private void Controller_SizeChanged(object source, double width, double height)
+        {
+            ObservableCollection<RectangleView> list1 = _vm.RegionsListTest;
+
+            foreach (var rectangle in list1)
+            {
+                rectangle.setRectangleSize(_vm.Width, _vm.Height);
+            }
         }
 
         private void ControllerOnDisposed(object source)
@@ -105,41 +140,49 @@ namespace NuSysApp
         {
             if (_drawingRegion)
             {
+                var width = _vm.Width;
+                var height = _vm.Height;
 
-                //add rectangle to model list
-                //remove temp rectangle
-                //have another method that reads all things from model and adds it.
-                Rectangle region = new Rectangle();
-                region.Height = TempRegion.Height;
-                region.Width = TempRegion.Width;
-                region.Fill = new SolidColorBrush(Colors.Transparent);
-                region.StrokeThickness = 2;
-                region.Stroke = new SolidColorBrush(Colors.Black);
+                var leftRatio = Canvas.GetLeft(TempRegion)/width;
+                var topRatio = Canvas.GetTop(TempRegion)/height;
+                var widthRatio = TempRegion.Width/width;
+                var heightRatio = TempRegion.Height/height;
 
+                //create dictionary
+                Dictionary<string, double> attributes = new Dictionary<string, double>();
+                attributes.Add("nodeWidth", width);
+                attributes.Add("nodeHeight", height);
+                attributes.Add("widthRatio", widthRatio);
+                attributes.Add("heightRatio", heightRatio);
+                attributes.Add("leftRatio", leftRatio);
+                attributes.Add("topRatio", topRatio);
 
-                Canvas.SetLeft(region, Canvas.GetLeft(TempRegion));
-                Canvas.SetTop(region, Canvas.GetTop(TempRegion));
-                (DataContext as ImageElementViewModel).Model.Regions.Add(region);
+                RectangleViewModel rvm = new RectangleViewModel(new RectangleModel(), attributes);
+                RectangleView rv = new RectangleView(rvm); 
+
+                // add to controller
+                _vm.Controller.SetRegionModel(rvm);
+                _vm.RegionsListTest.Add(rv);
+
+                // works?
+                Canvas.Children.Remove(TempRegion);
+                TempRegion.Height = 0;
+                TempRegion.Width = 0;
+
                 _drawingRegion = false;
-                this.AddRegionsToCanvas();
-            }
-        }
-
-        private void AddRegionsToCanvas()
-        {
-            Canvas.Children.Clear();
-            foreach (var element in (DataContext as ImageElementViewModel).Model.Regions)
-            {
-                Canvas.Children.Add(element);
             }
         }
 
         private void XImage_OnPointerMoved(object sender, PointerRoutedEventArgs e)
         {
-            if (e.GetCurrentPoint((UIElement)sender).Properties.IsLeftButtonPressed && _drawingRegion)
+            var uiSender = sender as UIElement;
+            if (e.GetCurrentPoint(uiSender).Properties.IsLeftButtonPressed && _drawingRegion)
             {
-                TempRegion.Height = e.GetCurrentPoint((UIElement)sender).Position.Y - Canvas.GetTop(TempRegion);
-                TempRegion.Width = e.GetCurrentPoint((UIElement)sender).Position.X - Canvas.GetLeft(TempRegion);
+                var point = e.GetCurrentPoint(uiSender);
+                var top = Canvas.GetTop(TempRegion);
+                var left = Canvas.GetLeft(TempRegion);
+                TempRegion.Height = Math.Max(point.Position.Y - top, 0);
+                TempRegion.Width = Math.Max(point.Position.X - left, 0);
             }
         }
     }
