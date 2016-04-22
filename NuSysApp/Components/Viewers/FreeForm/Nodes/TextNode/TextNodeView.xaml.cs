@@ -76,7 +76,7 @@ namespace NuSysApp
             TextNodeWebView.NavigationCompleted += TextNodeWebViewOnNavigationCompleted;
             TextNodeWebView.ScriptNotify += wvBrowser_ScriptNotify;
 
-            InitSpeechRecognition();
+            //InitSpeechRecognition();
 
             Record.AddHandler(PointerPressedEvent, new PointerEventHandler(RecordButton_OnClick), true);
             Record.AddHandler(PointerReleasedEvent, new PointerEventHandler(RecordButton_Released), true);
