@@ -80,6 +80,7 @@ namespace NuSysApp.Components.Nodes
             line.StrokeThickness = (double)vm.Line1["StrokeThickness"];
             line.Stroke = new SolidColorBrush(Colors.Yellow);
             line.Opacity = (double)vm.Line1["Opacity"];
+
             //line.Detailx1 = (double)vm.Line1["Detailx1"];
             //Binding b = new Binding();
             //b.Source = "Detailx2";
@@ -124,11 +125,14 @@ namespace NuSysApp.Components.Nodes
 
             var y = Canvas.GetTop(vm._scrubBar) + vm._scrubBar.Margin.Top + vm._scrubBar.ActualHeight/4;
             HandleOne.Y1 = y;
-            HandleOne.Y2 = y+vm._scrubBar.ActualHeight;
+            //HandleOne.Y2 = y+vm._scrubBar.ActualHeight;
             HandleTwo.Y1 = y;
-            HandleTwo.Y2 = y+ vm._scrubBar.ActualHeight;
-            EllipseOne.SetValue(Canvas.TopProperty, y + vm._scrubBar.ActualHeight - 5);
-            EllipseTwo.SetValue(Canvas.TopProperty, y + vm._scrubBar.ActualHeight - 5);
+            //HandleTwo.Y2 = y+ vm._scrubBar.ActualHeight;
+
+            HandleOne.Y2 = Canvas.GetTop(vm._scrubBar) + vm._scrubBar.ActualHeight + vm._scrubBar.Margin.Top + 5;
+            HandleTwo.Y2 = Canvas.GetTop(vm._scrubBar) + vm._scrubBar.ActualHeight + vm._scrubBar.Margin.Top + 5;
+            EllipseOne.SetValue(Canvas.TopProperty, Canvas.GetTop(vm._scrubBar) + vm._scrubBar.ActualHeight + vm._scrubBar.Margin.Top);
+            EllipseTwo.SetValue(Canvas.TopProperty, Canvas.GetTop(vm._scrubBar) + vm._scrubBar.ActualHeight + vm._scrubBar.Margin.Top);
             EllipseOne.SetValue(Canvas.LeftProperty, (DataContext as LinkedTimeBlockViewModel).Detailx1 - EllipseOne.ActualWidth / 2);
             EllipseTwo.SetValue(Canvas.LeftProperty, (DataContext as LinkedTimeBlockViewModel).Detailx2 - EllipseTwo.ActualWidth / 2);
             vm._scrubBar.SizeChanged += ScrubBarOnSizeChanged;
@@ -225,31 +229,31 @@ namespace NuSysApp.Components.Nodes
 
             (DataContext as LinkedTimeBlockViewModel).SetStart(time);
             this.setUpLine((DataContext as LinkedTimeBlockViewModel));
-            if (hasMoved == false)
-            {
-                var test = Canvas.GetLeft(_box1);
-                var test2 = line.X1;
-                if (Canvas.GetLeft(_box1) == line.X1 && Canvas.Children.Contains(_box1))
-                {
-                    Canvas.Children.Remove(_box1);
-                }
-                else
-                {
-                    _box1.SetValue(Canvas.LeftProperty, line.X1);
-                    _box1.Text = (DataContext as LinkedTimeBlockViewModel).Model.Start.Minutes + ":" +
-                                 (DataContext as LinkedTimeBlockViewModel).Model.Start.Seconds + ":" +
-                                 (DataContext as LinkedTimeBlockViewModel).Model.Start.Milliseconds;
-                    LinkedTimeBlock.removeBox();
-                    Canvas.Children.Add(_box1);
+            //if (hasMoved == false)
+            //{
+            //    var test = Canvas.GetLeft(_box1);
+            //    var test2 = line.X1;
+            //    if (Canvas.GetLeft(_box1) == line.X1 && Canvas.Children.Contains(_box1))
+            //    {
+            //        Canvas.Children.Remove(_box1);
+            //    }
+            //    else
+            //    {
+            //        _box1.SetValue(Canvas.LeftProperty, line.X1);
+            //        _box1.Text = (DataContext as LinkedTimeBlockViewModel).Model.Start.Minutes + ":" +
+            //                     (DataContext as LinkedTimeBlockViewModel).Model.Start.Seconds + ":" +
+            //                     (DataContext as LinkedTimeBlockViewModel).Model.Start.Milliseconds;
+            //        LinkedTimeBlock.removeBox();
+            //        Canvas.Children.Add(_box1);
 
-                }
+            //    }
                 
                 
-            }
-            else
-            {
+            //}
+            //else
+            //{
                 Canvas.Children.Remove(_box1);
-            }
+            //}
             OnTimeChange?.Invoke();
             hasMoved = false;
 
@@ -453,6 +457,41 @@ namespace NuSysApp.Components.Nodes
             (DataContext as LinkedTimeBlockViewModel).SetStart(time);
             this.setUpLine((DataContext as LinkedTimeBlockViewModel));
             OnTimeChange?.Invoke();
+        }
+
+        private void EllipseOne_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (Canvas.GetLeft(_box1) == line.X1 && Canvas.Children.Contains(_box1))
+            {
+                Canvas.Children.Remove(_box1);
+            }
+            else
+            {
+                _box1.SetValue(Canvas.LeftProperty, line.X1);
+                _box1.Text = (DataContext as LinkedTimeBlockViewModel).Model.Start.Minutes + ":" +
+                             (DataContext as LinkedTimeBlockViewModel).Model.Start.Seconds + ":" +
+                             (DataContext as LinkedTimeBlockViewModel).Model.Start.Milliseconds;
+                LinkedTimeBlock.removeBox();
+                Canvas.Children.Add(_box1);
+            }
+            e.Handled = true;
+        }
+        private void EllipseTwo_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (Canvas.GetLeft(_box1) == line.X2 && Canvas.Children.Contains(_box1))
+            {
+                Canvas.Children.Remove(_box1);
+            }
+            else
+            {
+                _box1.SetValue(Canvas.LeftProperty, line.X2);
+                _box1.Text = (DataContext as LinkedTimeBlockViewModel).Model.End.Minutes + ":" +
+                             (DataContext as LinkedTimeBlockViewModel).Model.End.Seconds + ":" +
+                             (DataContext as LinkedTimeBlockViewModel).Model.End.Milliseconds;
+                LinkedTimeBlock.removeBox();
+                Canvas.Children.Add(_box1);
+            }
+            e.Handled = true;
         }
     }
 }

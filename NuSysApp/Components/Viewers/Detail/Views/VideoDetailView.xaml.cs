@@ -159,6 +159,13 @@ namespace NuSysApp
             _temporaryLinkVisual.PointerMoved += ScrubBar_OnPointerMoved;
             _temporaryLinkVisual.PointerReleased += ScrubBar_OnPointerReleased;
             _temporaryLinkVisual.Opacity = 1;
+                Binding b = new Binding();
+                b.ElementName = "playbackElement";
+                b.Path = new PropertyPath("Position.TotalMilliseconds");
+                scrubBar.SetBinding(ProgressBar.ValueProperty, b);
+
+                playbackElement.Play();
+            
         }
 
         private void AddAllLinksVisually()
