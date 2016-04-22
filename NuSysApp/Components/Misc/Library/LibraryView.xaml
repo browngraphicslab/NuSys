@@ -241,9 +241,17 @@
 
     <Grid x:Name="Container" Width="450" Height="550" BorderBrush="{StaticResource color3}">
         <Pivot x:Name="Pivot" Background="{StaticResource color1}" BorderBrush="{StaticResource color3}" BorderThickness="1"  FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" IsLocked="True" Foreground="#74AFAD" Height="550">
+      
+            
             <PivotItem x:Name="WorkspacePivot" Background="{StaticResource color6}" Margin="0,8,0,37" Width="450" BorderBrush="{StaticResource color2}" BorderThickness="1">
+                <PivotItem.Header>
+                    <Grid>
+                        <TextBlock Text="Library" Margin="0,-20,0,0" Foreground="{StaticResource color3}" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
 
+                    </Grid>
+                </PivotItem.Header>
             </PivotItem>
+            
             <PivotItem x:Name="FilesPivot" Background="{StaticResource color6}" Margin="10,50,10,10">
                 <PivotItem.Header>
                     <Grid>
@@ -278,11 +286,11 @@
         </Button>
 
 
-        <Button x:Name="btnAll"  Tapped="Favorites_OnTapped" VerticalAlignment="Top" Margin="106,20,0,0" HorizontalAlignment="Left" Width="134" Height="36"  Background="#E6EDEC" BorderBrush="#9cc5c2" BorderThickness="2,2,2,0">
+        <Button x:Name="btnAll"  Tapped="Favorites_OnTapped" VerticalAlignment="Top" Margin="123,20,0,0" HorizontalAlignment="Left" Width="134" Height="36"  Background="#E6EDEC" BorderBrush="#9cc5c2" BorderThickness="2,2,2,0">
             <TextBlock Text="All" Margin="0,0,0,0" Foreground="#83A6A3" FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
 
         </Button>
-        <Button x:Name="btnFav" Tapped="Favorites_OnTapped"  VerticalAlignment="Top" Margin="245,20,0,0" HorizontalAlignment="Left" Height ="36" Width="72" Background="#E6EDEC" BorderBrush="#9cc5c2" BorderThickness="2,2,2,0">
+        <Button x:Name="btnFav" Tapped="Favorites_OnTapped"  VerticalAlignment="Top" Margin="268,20,0,0" HorizontalAlignment="Left" Height ="36" Width="72" Background="#E6EDEC" BorderBrush="#9cc5c2" BorderThickness="2,2,2,0">
             <TextBlock Text="Fav" Margin="0,0,0,0" Foreground="#83A6A3" FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
 
         </Button>
