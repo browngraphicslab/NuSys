@@ -239,7 +239,9 @@ namespace NuSysApp
                 InkStrokeAdded?.Invoke(this, stroke);
             }
             _dryStrokes = _inkManager.GetStrokes().ToList();
-            _wetCanvas.ReleasePointerCapture(_capturedPointer);
+            if (_capturedPointer != null) { 
+                _wetCanvas.ReleasePointerCapture(_capturedPointer);
+            }
             _wetCanvas.Invalidate();
             _dryCanvas.Invalidate();            
         }
