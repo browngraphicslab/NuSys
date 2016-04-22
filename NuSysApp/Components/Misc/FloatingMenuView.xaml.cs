@@ -165,6 +165,9 @@ namespace NuSysApp
 
         private async void BtnAddNodeOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs args)
         {
+            if (_dragItem != null && xWrapper.Children.Contains(_dragItem))
+                xWrapper.Children.Remove(_dragItem);
+
             if (sender == btnText)
                 _elementType = ElementType.Text;
             if (sender == btnRecording)
@@ -183,6 +186,8 @@ namespace NuSysApp
 
             img.RenderTransform = new CompositeTransform();
             img.Source = bmp;
+
+
             _dragItem = img;
 
             xWrapper.Children.Add(_dragItem);

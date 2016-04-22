@@ -114,14 +114,15 @@ namespace NuSysApp
             var zoomspeed = direction < 0 ? 0.95 : 1.05;//0.08 * direction;
             var translateSpeed = 10;
 
-            var center = compositeTransform.Inverse.TransformPoint(e.GetCurrentPoint(_view).Position);
             compositeTransform.ScaleX *= zoomspeed;
             compositeTransform.ScaleY *= zoomspeed;
 
             compositeTransform.CenterX = cent.X;
             compositeTransform.CenterY = cent.Y;
-            _cview.InqCanvas.Transform = compositeTransform;
-            _cview.InqCanvas.Redraw();
+            if (_cview.InqCanvas != null) { 
+                _cview.InqCanvas.Transform = compositeTransform;
+                _cview.InqCanvas.Redraw();
+            }
             e.Handled = true;
         }
 
