@@ -10,7 +10,8 @@
 </head>
 <body>
     <script type="text/javascript" language="javascript">
-    // Updates text in text node as it is added/edited in Text Editor
+        // Updates text in text node as it is added/edited in Text Editor
+
     function InsertText(text) {
         document.getElementById("editor").innerHTML = text;
     }
@@ -25,7 +26,7 @@
     });
 
     </script>
-    <div id="editor" class="view">
+    <div id="editor" class="view" spellcheck="false">
     </div>
     <div id="preview"></div>
 </body>

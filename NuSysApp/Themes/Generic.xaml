@@ -60,7 +60,7 @@
                                         <Button x:Name="PresentationLink" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,140,0,0">
                                             <StackPanel>
                                                 <Image Source="ms-appx:///Assets/icon_presentation_link.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                                                <TextBlock Text="Link" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
+                                                <TextBlock Text="Trail" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
                                             </StackPanel>
                                         </Button>
                                         <Button x:Name="PresentationMode" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,210,0,0">

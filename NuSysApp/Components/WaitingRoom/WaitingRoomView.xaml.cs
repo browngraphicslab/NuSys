@@ -38,7 +38,7 @@ namespace NuSysApp
         public static string InitialWorkspaceId { get; set; }
         public static string ServerName { get; private set; }
         public static string UserName { get; private set; }
-        public static string Password { get; private set; }
+        //public static string Password { get; private set; }
         public static string ServerSessionID { get; private set; }
 
         public static bool TEST_LOCAL_BOOLEAN = false;
@@ -64,7 +64,7 @@ namespace NuSysApp
           //  Telemetry.Init();
           //  Telemetry.TrackEvent("startup");
             
-            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.Auto;
+            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
 
             ServerName = TEST_LOCAL_BOOLEAN ? "localhost:54764" : "nusysrepo.azurewebsites.net";
             //ServerName = "172.20.10.4:54764";
@@ -294,7 +294,7 @@ namespace NuSysApp
                                 string title = null;
                                 ElementType type = ElementType.Text;
                                 string timestamp = "";
-
+                                string creator = null;
 
                                 if (dict.ContainsKey("library_element_creation_timestamp"))
                                 {
@@ -304,7 +304,10 @@ namespace NuSysApp
                                 {
                                     favorited = true;
                                 }
-
+                                if (dict.ContainsKey("creator_user_id"))
+                                {
+                                    creator = dict["creator_user_id"].ToString();
+                                }
                                 if (dict.ContainsKey("title"))
                                 {
                                     title = (string)dict["title"]; // title
@@ -330,6 +333,7 @@ namespace NuSysApp
                                 {
                                     element = new LibraryElementModel(id, type, title, favorited);
                                 }
+                                element.Creator = creator;
                                 element.Timestamp = timestamp;
                                 if (SessionController.Instance.ContentController.Get(id) == null)
                                 {

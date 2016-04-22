@@ -9,6 +9,8 @@ using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
+using NuSysApp.Components.Viewers.FreeForm;
 using NuSysApp.Controller;
 using NuSysApp.Util;
 
@@ -31,6 +33,8 @@ namespace NuSysApp
 
         #endregion Private Members
 
+        public ObservableCollection<RectangleView> RegionsListTest { get; set; }
+
         public ElementViewModel(ElementController controller)
         {
             _controller = controller;
@@ -49,6 +53,16 @@ namespace NuSysApp
 
             Tags = new ObservableCollection<Button>();
             ReadFromModel();
+
+            RegionsListTest = new ObservableCollection<RectangleView>();
+
+            foreach (var element in Model.RegionsModel)
+            {
+                RectangleView rv = new RectangleView(element);
+                rv.setRectangleSize(_width, _height);
+                Debug.WriteLine(ElementType + " _width: " + _width + " _height: " + _height);
+                RegionsListTest.Add(rv);
+            }
         }
 
         private void ControllerOnDeleted(object source)

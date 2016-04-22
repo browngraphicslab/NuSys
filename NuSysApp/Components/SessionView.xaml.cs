@@ -88,6 +88,7 @@ namespace NuSysApp
             {
                 
             };
+            MainCanvas.SizeChanged += Resize;
             //_glass = new MGlass(MainCanvas);
         }
 
@@ -464,6 +465,12 @@ namespace NuSysApp
             xWorkspaceTitle.DropCompleted += UpdateTitle;
 
             freeFormViewerViewModel.Controller.LibraryElementModel.OnTitleChanged += TitleChanged;
+
+            ChatPopup.Visibility = Visibility.Collapsed;
+        }
+
+        private void Resize(object sender, SizeChangedEventArgs e)
+        {
             Users.Height = mainCanvas.ActualHeight - xWorkspaceTitle.ActualHeight;
             Canvas.SetLeft(Users, 5);
             Canvas.SetTop(Users, xWorkspaceTitle.ActualHeight);
@@ -475,10 +482,9 @@ namespace NuSysApp
             Canvas.SetTop(ChatNotifs, mainCanvas.ActualHeight - 67);
             Canvas.SetTop(xSearchWindowView, 25);
             Canvas.SetLeft(xSearchWindowView, 50);
-                        
-            ChatPopup.Visibility = Visibility.Collapsed;
+            Canvas.SetLeft(SnapshotButton, MainCanvas.ActualWidth - 65);
+            Canvas.SetTop(SnapshotButton, MainCanvas.ActualHeight - 65);
         }
-
         private void UpdateTitle(object sender, object args)
         {
             var model = ((FreeFormViewerViewModel) _activeFreeFormViewer.DataContext).Model;

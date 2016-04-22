@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -12,9 +13,11 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using System.Diagnostics;
+using System.Text;
 using Windows.UI.Xaml.Media.Imaging;
 using System.Threading.Tasks;
 using Windows.Media.Capture;
+using Windows.Media.SpeechRecognition;
 using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Input.Inking;
@@ -22,6 +25,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Shapes;
 using MyToolkit.Converters;
 using MyToolkit.Utilities;
+using NuSysApp.Util;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -33,20 +37,26 @@ namespace NuSysApp
         private MediaCapture _mediaCapture;
         private bool _isRecording;
 
-
         private bool _isopen;
         private string _text = string.Empty;
 
-        private string _savedForInking = string.Empty;
 
         private static int _count = 0;
         private bool navigated = false;
-        private string speechString="";
-        private Stack _inkStack = new Stack();
 
+        // Inking variables
+        private string _saved = string.Empty;
         private InqCanvasView _inqView;
         private Rectangle _curr;
         private Rectangle _marker;
+
+
+        //speech to text variables
+        private SpeechRecognizer _speechRecognizer;
+        private CoreDispatcher _dispatcher;
+        private StringBuilder _dictatedTextBuilder;
+        private StringBuilder _hypothesisBuilder;
+
 
 
         public TextNodeView(TextNodeViewModel vm)
@@ -55,6 +65,7 @@ namespace NuSysApp
             Debug.WriteLine(_count);
             InitializeComponent();
             TextNodeWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
+
             DataContext = vm;
 
             this.SetUpInking();
@@ -64,6 +75,12 @@ namespace NuSysApp
             vm.TextUnselected += Blur;
             TextNodeWebView.NavigationCompleted += TextNodeWebViewOnNavigationCompleted;
             TextNodeWebView.ScriptNotify += wvBrowser_ScriptNotify;
+
+            //InitSpeechRecognition();
+
+            Record.AddHandler(PointerPressedEvent, new PointerEventHandler(RecordButton_OnClick), true);
+            Record.AddHandler(PointerReleasedEvent, new PointerEventHandler(RecordButton_Released), true);
+
         }
 
         private void TextNodeWebViewOnNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
@@ -71,11 +88,11 @@ namespace NuSysApp
             var vm = (TextNodeViewModel)DataContext;
             navigated = true;
             UpdateText(vm.Text);
+           
         }
 
         private void TextChanged(object source, string text)
         {
-
              if (navigated)
              {
                  UpdateText(text);
@@ -129,7 +146,7 @@ namespace NuSysApp
 
         private void OnInkClick(object sender, RoutedEventArgs e)
         {
-            _savedForInking = _text;
+            _saved = _text;
             if (!_isopen)
             {
                 SetUpInking();
@@ -164,7 +181,7 @@ namespace NuSysApp
             inkerCanvas.Children.Add(_inqView);
             inkerCanvas.Children.Add(_marker);
 
-            _savedForInking = _text;
+            _saved = _text;
             List<InqLineModel> lines = new List<InqLineModel>();
             inqModel.LineFinalizedLocally += async delegate (InqLineModel model)
             {
@@ -173,7 +190,7 @@ namespace NuSysApp
                 lines.Add(nm);
                 var texts = await InkToText(lines);
                 if (texts.Count > 0)
-                    UpdateText(_savedForInking + " " + texts[0]);
+                    UpdateText(_saved + " " + texts[0]);
                 UpdateController(_text);
             };
         }
@@ -243,6 +260,7 @@ namespace NuSysApp
             var vm = DataContext as ElementViewModel;
             var controller = (TextNodeController)vm.Controller;
             controller.LibraryElementModel?.SetContentData(vm, s);
+            _text = s;
         }
 
         public void SetImage(String url, Image buttonName)
@@ -283,34 +301,119 @@ namespace NuSysApp
          //       borderRect.Opacity = 0;
         }
 
+        #region Speech Recognition
+
+
+        private async Task InitSpeechRecognition()
+        {
+            this._dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
+            this._speechRecognizer = new SpeechRecognizer();
+            this._dictatedTextBuilder = new StringBuilder();
+            this._hypothesisBuilder = new StringBuilder();
+
+            await _speechRecognizer.CompileConstraintsAsync();
+            _speechRecognizer.HypothesisGenerated += SpeechRecognizer_HypothesisGenerated;
+            _speechRecognizer.ContinuousRecognitionSession.ResultGenerated +=
+        ContinuousRecognitionSession_ResultGenerated;
+            _speechRecognizer.ContinuousRecognitionSession.Completed +=
+      ContinuousRecognitionSession_Completed;
+        }
+
+        private async void SpeechRecognizer_HypothesisGenerated( SpeechRecognizer sender, SpeechRecognitionHypothesisGeneratedEventArgs args)
+        {
+            string hypothesis = args.Hypothesis.Text;
+            string textboxContent = _hypothesisBuilder.ToString() + " " + hypothesis + "...";
+
+            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                UpdateText(_saved + " " + textboxContent);
+                UpdateController(_text);
+            });
+        }
+
+        private async void ContinuousRecognitionSession_ResultGenerated(
+      SpeechContinuousRecognitionSession sender,
+      SpeechContinuousRecognitionResultGeneratedEventArgs args)
+        {
+
+            //if (args.Result.Confidence == SpeechRecognitionConfidence.Medium ||
+            //  args.Result.Confidence == SpeechRecognitionConfidence.High)
+            //{
+                _dictatedTextBuilder.Append(args.Result.Text + " ");
+
+                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    UpdateText(_saved + " " + _dictatedTextBuilder.ToString());
+                    UpdateController(_text);
+                    Debug.WriteLine(_dictatedTextBuilder.ToString());
+                });
+            //}
+        }
+
+        private async void ContinuousRecognitionSession_Completed(
+      SpeechContinuousRecognitionSession sender,
+      SpeechContinuousRecognitionCompletedEventArgs args)
+        {
+            if (args.Status != SpeechRecognitionResultStatus.Success)
+            {
+                if (args.Status == SpeechRecognitionResultStatus.TimeoutExceeded)
+                {
+                    await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        UpdateText(_saved + " " + _dictatedTextBuilder.ToString());
+                        UpdateController(_text);
+        
+                    });
+                }
+            }
+        }
+
 
         private async void RecordButton_OnClick(object sender, PointerRoutedEventArgs e)
         {
             _isRecording = true;
-            if(_isopen)
+            _saved = _text;
+            _dictatedTextBuilder = new StringBuilder();
+            _hypothesisBuilder = new StringBuilder();
+            if (_isopen)
             {
-                inker.Visibility =Visibility.Collapsed;
+                inker.Visibility = Visibility.Collapsed;
                 _isopen = false;
             }
-            var session = SessionController.Instance;
-            if (!session.IsRecording)
+            if (_speechRecognizer.State == SpeechRecognizerState.Idle)
             {
-                await session.TranscribeVoice();
-                speechString = session.SpeechString;
+                await _speechRecognizer.ContinuousRecognitionSession.StartAsync();
             }
+
+            //if (!session.IsRecording)
+            //{
+            //    _voiceTranscription = session.TranscribeVoice();
+            //    // speechString = session.SpeechString;
+            //    Debug.WriteLine("SESSION returned with: " + _voiceTranscription);
+            //}
         }
 
-        private void RecordButton_Released(object sender, PointerRoutedEventArgs e)
+
+
+        private async void RecordButton_Released(object sender, PointerRoutedEventArgs e)
         {
-            if (_isRecording)
+            //if (String.IsNullOrEmpty(speechString))
+            //{
+            //    speechString = await _voiceTranscription;
+            //    Debug.WriteLine("RECORD RELEASED WITH STRING: " + speechString);
+            //    UpdateText(_text + " " + speechString);
+            //    UpdateController(_text);
+            //}
+            //speechString = "";
+            if (_speechRecognizer.State != SpeechRecognizerState.Idle)
             {
-                Debug.WriteLine("RECORD RELEASED");
-                UpdateText(_text + " " + speechString);
-                UpdateController(_text);
+                await _speechRecognizer.ContinuousRecognitionSession.StopAsync();
             }
-            speechString = "";
             _isRecording = false;
         }
+
+        #endregion
+
 
 
         public async Task<List<string>> InkToText(List<InqLineModel> inqLineModels)
@@ -342,5 +445,69 @@ namespace NuSysApp
             _curr.Height += e.Delta.Translation.Y;
             _marker.Height += e.Delta.Translation.Y;
         }
+
+        //private void XImage_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        //{
+        //    if (_drawingRegion)
+        //    {
+        //        Debug.WriteLine("here");
+        //        Canvas.Children.Add(TempRegion);
+        //        Canvas.SetLeft(TempRegion, e.GetCurrentPoint((UIElement)sender).Position.X);
+        //        Canvas.SetTop(TempRegion, e.GetCurrentPoint((UIElement)sender).Position.Y);
+        //        TempRegion.Opacity = 1;
+        //    }
+        //}
+
+        //private void XImage_OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        //{
+        //    if (_drawingRegion)
+        //    {
+
+        //        //add rectangle to model list
+        //        //remove temp rectangle
+        //        //have another method that reads all things from model and adds it.
+
+        //        ImageElementViewModel vm = (ImageElementViewModel)DataContext;
+
+        //        var width = vm.Model.Width;
+        //        var height = vm.Model.Height;
+
+        //        var leftRatio = Canvas.GetLeft(TempRegion) / width;
+        //        var topRatio = Canvas.GetTop(TempRegion) / height;
+
+        //        var widthRatio = TempRegion.Width / width;
+        //        var heightRatio = TempRegion.Height / Height;
+
+        //        RectanglePoints rectangle = new RectanglePoints(leftRatio, topRatio, widthRatio, heightRatio);
+
+        //        // add to controller
+        //        (DataContext as ImageElementViewModel).Controller.SetRegion(rectangle);
+        //        Rectangle rect = rectangle.getRectangle();
+
+        //        rect.Width = width * rectangle.getWidthRatio();
+        //        rect.Height = height * rectangle.getHeightRatio();
+        //        Canvas.Children.Add(rect);
+        //        Canvas.SetLeft(rect, rectangle.getLeftRatio() * width);
+        //        Canvas.SetTop(rect, rectangle.getTopRatio() * height);
+
+        //        // works?
+        //        Canvas.Children.Remove(TempRegion);
+
+        //        //(DataContext as ImageElementViewModel).RegionsList.Add(rect);
+        //        //(DataContext as ImageElementViewModel).Model.Regions.Add(rectangle);
+
+        //        _drawingRegion = false;
+        //        //this.AddRegionsToCanvas();
+        //    }
+        //}
+
+        //private void XImage_OnPointerMoved(object sender, PointerRoutedEventArgs e)
+        //{
+        //    if (e.GetCurrentPoint((UIElement)sender).Properties.IsLeftButtonPressed && _drawingRegion)
+        //    {
+        //        TempRegion.Height = e.GetCurrentPoint((UIElement)sender).Position.Y - Canvas.GetTop(TempRegion);
+        //        TempRegion.Width = e.GetCurrentPoint((UIElement)sender).Position.X - Canvas.GetLeft(TempRegion);
+        //    }
+        //}
     }
 }

@@ -5,9 +5,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
 using System.Threading.Tasks;
 using Windows.Media.SpeechRecognition;
 using Windows.Storage;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
@@ -48,6 +50,7 @@ namespace NuSysApp
             get { return _contentController; }
         }
         public SpeechRecognizer Recognizer { get; set; }
+
 
         public bool IsRecording { get; set; }
 
@@ -145,6 +148,7 @@ namespace NuSysApp
 
         public async Task InitializeRecog()
         {
+
             await Task.Run(async () =>
             {
                 Recognizer = new SpeechRecognizer();
@@ -153,7 +157,10 @@ namespace NuSysApp
             });
         }
 
-        public async Task TranscribeVoice()
+
+
+
+        public async Task<String> TranscribeVoice()
         {
             string spokenString = "";
             // Create an instance of SpeechRecognizer. 
@@ -170,7 +177,7 @@ namespace NuSysApp
                 // If successful, display the recognition result. 
                 if (speechRecognitionResult.Status == SpeechRecognitionResultStatus.Success)
                 {
-                    spokenString = speechRecognitionResult.Text;
+                    spokenString =  speechRecognitionResult.Text;
                 }
             }
             catch (Exception ex)
@@ -201,13 +208,17 @@ namespace NuSysApp
             //var vm = (TextNodeViewModel)DataContext;
             //(vm.Model as TextNodeModel).Text = spokenString;
             SpeechString = spokenString;
+            return spokenString;
         }
 
-        private async void stopTranscribing(object o, RoutedEventArgs e)
+        public async Task<String> StopTranscribing()
         {
-            Recognizer.StopRecognitionAsync();
-            IsRecording = false;
-            // this.RecordVoice.Click -= stopTranscribing;
+            if (IsRecording)
+            {
+                await Recognizer.StopRecognitionAsync();
+            }
+            return SpeechString;
+
         }
 
         #endregion

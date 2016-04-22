@@ -22,7 +22,7 @@ namespace NuSysApp
 
 
         private List<Color> _colors = new List<Color>();
-        private HashSet<CanvasGeometry> _adornments = new HashSet<CanvasGeometry>();
+        private List<CanvasGeometry> _adornments = new List<CanvasGeometry>();
         private Dictionary<InkStroke, CanvasGeometry> _inkStrokes = new Dictionary<InkStroke, CanvasGeometry>();
 
         public NuSysInqCanvas(CanvasControl wetCanvas, CanvasControl dryCanvas) : base(wetCanvas, dryCanvas)
@@ -35,7 +35,10 @@ namespace NuSysApp
                 return;
 
             var geom = _inkStrokes[inkStroke];
-
+            var index = _adornments.IndexOf(geom);
+            if (index == -1)
+                return;
+            _colors.RemoveAt(index);
             _adornments.Remove(geom);
             if (fireEvent)
                 AdornmentRemoved?.Invoke(this, inkStroke);
