@@ -48,22 +48,27 @@ namespace NuSysApp
             {
                 return;
             }
-
-            if (type == "adornment")
+            var model = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel as CollectionLibraryElementModel;
+            if (model.InkLines.Contains(id))
             {
 
-                if (!InkStorage._inkStrokes.ContainsKey("id") && SessionController.Instance.SessionView != null)
+                if (type == "adornment")
                 {
-                    var stroke = SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddAdorment(inkpoints, color, false);
-                    InkStorage._inkStrokes.Add(id, new InkWrapper(stroke, "adornment", color));
+
+                    if (!InkStorage._inkStrokes.ContainsKey("id") && SessionController.Instance.SessionView != null)
+                    {
+                        var stroke = SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddAdorment(inkpoints, color, false);
+                        InkStorage._inkStrokes.Add(id, new InkWrapper(stroke, "adornment", color));
+                    }
                 }
-            }
-            else
-            {
-                if (!InkStorage._inkStrokes.ContainsKey("id") && SessionController.Instance.SessionView != null)
+                else
                 {
-                    var stroke = SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddStroke(inkpoints);
-                    InkStorage._inkStrokes.Add(id,new InkWrapper(stroke,"ink",color));
+
+                    if (!InkStorage._inkStrokes.ContainsKey("id") && SessionController.Instance.SessionView != null)
+                    {
+                        var stroke = SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddStroke(inkpoints);
+                        InkStorage._inkStrokes.Add(id, new InkWrapper(stroke, "ink", color));
+                    }
                 }
             }
 
