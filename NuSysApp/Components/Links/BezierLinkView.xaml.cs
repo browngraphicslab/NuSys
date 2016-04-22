@@ -48,7 +48,7 @@ namespace NuSysApp
             {
                 UpdateControlPoints();
             };
-            Debug.WriteLine("fdsafdsa");
+
             object value;
             if (vm.LinkModel.InFGDictionary != null)
             {

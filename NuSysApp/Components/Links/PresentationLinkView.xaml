@@ -50,12 +50,7 @@
         <Polygon x:Name="arrow" Fill="Black" Points="0,0 40,20, 0,40"/>
 
         <StackPanel x:Name="AnnotationContainer" Orientation="Vertical" Visibility="Collapsed" >
-            <Grid>
-                <Rectangle x:Name="Rect" Fill="LightGray" RadiusX="5" RadiusY="5" Width="260"  HorizontalAlignment="Left"/>
-                <StackPanel Orientation="Horizontal" IsHitTestVisible="{Binding IsSelected}" >
-                    <local:TextInputBlock x:Name ="Annotation" BubbleTop="True"  LeftJustified="False" SetHeight="30" HorizontalAlignment="Stretch" Loaded="Annotation_Loaded"></local:TextInputBlock>
-                </StackPanel>
-            </Grid>
+
             <Button Margin="0,2,0,2" x:Name="Delete" Visibility="{Binding IsSelected, Converter={StaticResource vConverter}}" Click="Delete_OnClick" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
                 <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
             </Button>
