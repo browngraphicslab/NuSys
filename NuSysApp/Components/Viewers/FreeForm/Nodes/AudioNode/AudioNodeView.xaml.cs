@@ -401,10 +401,10 @@ namespace NuSysApp
 
         private void Grid_OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            if ((LinkedTimeBlock._box1.FocusState == FocusState.Unfocused))
-            {
+            //if ((LinkedTimeBlock._box1.FocusState == FocusState.Unfocused))
+            //{
                 //LinkedTimeBlock.removeBox();
-            }
+            //}
             
         }
     }
