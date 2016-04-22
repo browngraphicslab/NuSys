@@ -6,8 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.ApplicationSettings;
 using NuSysApp.Components.Nodes;
+using NuSysApp.Components.Viewers.FreeForm;
 using NuSysApp.Controller;
+using NuSysApp.Util;
 using NuSysApp.Nodes.AudioNode;
+using NuSysApp.Viewers;
 
 namespace NuSysApp
 {
@@ -35,6 +38,8 @@ namespace NuSysApp
 
         public delegate void ContentLoadedHandler(object source, LibraryElementModel data);
 
+        public delegate void RegionTestChangedEventHandler(object source, RectangleViewModel region);
+
         public delegate void LinkAddedEventHandler(object source, LinkElementController linkController);
 
         public delegate void SelectionChangedHandler(object source, bool selected);
@@ -48,6 +53,7 @@ namespace NuSysApp
         public event ScaleChangedEventHandler ScaleChanged;
         public event AlphaChangedEventHandler AlphaChanged;
         public event NetworkUserChangedEventHandler UserChanged;
+        public event RegionTestChangedEventHandler RegionTestChanged;
         public event SelectionChangedHandler SelectionChanged;
 
         public ElementController(ElementModel model)
@@ -163,9 +169,16 @@ namespace NuSysApp
             _debouncingDictionary.Add("metadata", Model.Metadata);
         }
 
+        public void SetRegionModel(RectangleViewModel region)
+        {
+            Model.RegionsModel.Add(region);
+            RegionTestChanged?.Invoke(this, region);
+            _debouncingDictionary.Add("regionsModel", Model.RegionsModel);
+        }
+
+
         public void Delete()
         {
-            
             Deleted?.Invoke(this);
             SessionController.Instance.ActiveFreeFormViewer.DeselectAll();
 
@@ -198,20 +211,21 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
         }
 
-        public virtual async Task RequestLinkTo(string otherId, LinkedTimeBlock block = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
+        public virtual async Task RequestLinkTo(string otherId, RectangleView rectangle = null, LinkedTimeBlock block = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
         {
+            Debug.WriteLine("should only come up once");
             var contentId = SessionController.Instance.GenerateId();
             var libraryElementRequest = new CreateNewLibraryElementRequest(contentId,null,ElementType.Link, "NEW LINK");
-            var request = new NewLinkRequest(Model.Id, otherId, Model.ParentCollectionId,contentId, block, inFGDictionary, outFGDictionary);
+            var request = new NewLinkRequest(Model.Id, otherId, Model.ParentCollectionId,contentId, block, rectangle, inFGDictionary, outFGDictionary);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }
 
-        public virtual async Task RequestPresentationLinkTo(string otherId, LinkedTimeBlock block = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
+        public virtual async Task RequestPresentationLinkTo(string otherId, RectangleView rectangle = null, LinkedTimeBlock block = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
         {
             var contentId = SessionController.Instance.GenerateId();
             var libraryElementRequest = new CreateNewLibraryElementRequest(contentId, null, ElementType.Link, "NEW PRESENTATION LINK");
-            var request = new NewLinkRequest(Model.Id, otherId, Model.ParentCollectionId, contentId, block, inFGDictionary, outFGDictionary, null, true);
+            var request = new NewLinkRequest(Model.Id, otherId, Model.ParentCollectionId, contentId, block, rectangle, inFGDictionary, outFGDictionary, null, true);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }
@@ -307,6 +321,13 @@ namespace NuSysApp
                 var width = props.GetDouble("width", this.Model.Width);
                 var height = props.GetDouble("height", this.Model.Height);
                 SizeChanged?.Invoke(this,width,height);
+            }
+
+            if (props.ContainsKey("region"))
+            {
+                string region = props.Get("region");
+                Debug.WriteLine("REGIONS!!!!" + region);
+                //RegionChanged?.Invoke(this, region);
             }
         }
     }

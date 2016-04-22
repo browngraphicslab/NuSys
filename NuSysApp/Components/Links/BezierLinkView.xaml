@@ -21,22 +21,32 @@
     </converters:AnimatableUserControl.Resources>
     <Canvas Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}" >
         <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
-        <Path x:Name="BezierLink" Stroke="{Binding Color}" StrokeThickness="30" Opacity=".28">
+        <Path x:Name="BezierLink" Stroke="White" StrokeThickness="30">
             <Path.Data>
                 <PathGeometry>
                     <PathGeometry.Figures>
                         <PathFigureCollection>
-                            <!--this startpoint should be bound to node centerpoint-->
-
                             <PathFigure x:Name="pathfigure">
                                 <PathFigure.Segments>
                                     <PathSegmentCollection>
-
-                                        <!-- this bezier segment has 3 points of curvilinear change. -->
-                                        <!-- presumably these will also be bound to a location?? ex. point3 is endpoint, so should be connected to
-                                            node on the other end of the link -->
-
-                                        <BezierSegment x:Name="curve"/>
+                                         <BezierSegment x:Name="curve"/>
+                                    </PathSegmentCollection>
+                                </PathFigure.Segments>
+                            </PathFigure>
+                        </PathFigureCollection>
+                    </PathGeometry.Figures>
+                </PathGeometry>
+            </Path.Data>
+        </Path>
+        <Path x:Name="BezierLinkInner" Stroke="{Binding Color}" StrokeThickness="25" CompositeMode="MinBlend" Opacity="0.28">
+            <Path.Data>
+                <PathGeometry>
+                    <PathGeometry.Figures>
+                        <PathFigureCollection>
+                            <PathFigure x:Name="pathfigureInner">
+                                <PathFigure.Segments>
+                                    <PathSegmentCollection>
+                                        <BezierSegment x:Name="curveInner"/>
                                     </PathSegmentCollection>
                                 </PathFigure.Segments>
                             </PathFigure>

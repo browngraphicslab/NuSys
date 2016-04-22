@@ -22,25 +22,13 @@ namespace NuSysApp
 
             vm.PropertyChanged += OnPropertyChanged;
 
-           Annotation.IsActivated = false;
-           
-          //  vm.Controller.LibraryElementModel.OnTitleChanged+= ControllerOnTitleChanged;
+
+            //  vm.Controller.LibraryElementModel.OnTitleChanged+= ControllerOnTitleChanged;
             vm.Controller.Disposed += OnDisposed;
 
-            Annotation.SizeChanged += delegate (object sender, SizeChangedEventArgs args)
-            {
-                Rect.Width = args.NewSize.Width;
-                Rect.Height = args.NewSize.Height;
-            };
-
-            Annotation.Text = vm.Annotation;
-            Annotation.TextChanged += AnnotationOnTextChanged;
-
- 
-
-            var linkController = (LinkElementController) vm.Controller;
+            var linkController = (LinkElementController)vm.Controller;
             linkController.AnnotationChanged += LinkControllerOnAnnotationChanged;
-          //  linkController.PositionChanged += LinkControllerOnPositionChanged;
+            //  linkController.PositionChanged += LinkControllerOnPositionChanged;
 
             Canvas.SetZIndex(this, -2);//temporary fix to make sure events are propagated to nodes
 
@@ -93,29 +81,20 @@ namespace NuSysApp
 
         private void LinkControllerOnAnnotationChanged(string text)
         {
-            var vm = (LinkViewModel)DataContext;
-            Annotation.Text = text;
-            if (text != "" || vm.IsSelected)
-            {
-                Annotation.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                Annotation.Visibility = Visibility.Collapsed;
-            }
+
         }
 
         private void AnnotationOnTextChanged(object source, string title)
         {
-            var vm = (LinkViewModel) DataContext;
+            var vm = (LinkViewModel)DataContext;
             var controller = (LinkElementController)vm.Controller;
             controller.SetAnnotation(title);
         }
 
         private void ControllerOnTitleChanged(object source, string title)
         {
-       //     Annotation.Text = title;
-       //     AnnotationContainer.Visibility = title == "" ? Visibility.Collapsed : Visibility.Visible;
+            //     Annotation.Text = title;
+            //     AnnotationContainer.Visibility = title == "" ? Visibility.Collapsed : Visibility.Visible;
         }
 
         private void OnDisposed(object source)
@@ -125,19 +104,19 @@ namespace NuSysApp
             vm.Controller.Disposed -= OnDisposed;
             vm.Controller.LibraryElementModel.OnTitleChanged -= ControllerOnTitleChanged;
             //var linkController = (LinkElementController)vm.Controller;
-           // linkController.AnnotationChanged -= LinkControllerOnAnnotationChanged;
+            // linkController.AnnotationChanged -= LinkControllerOnAnnotationChanged;
             DataContext = null;
         }
 
         private void UpdateText()
         {
-          //  var vm = DataContext as LinkViewModel;
-          //  vm.Controller.LibraryElementModel.SetTitle(Annotation.Text);           
+            //  var vm = DataContext as LinkViewModel;
+            //  vm.Controller.LibraryElementModel.SetTitle(Annotation.Text);           
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
-            
+
             this.UpdateControlPoints();
 
 
@@ -147,7 +126,6 @@ namespace NuSysApp
             {
                 if (vm.IsSelected)
                 {
-                    this.Annotation.Activate();
                     AnnotationContainer.Visibility = Visibility.Visible;
                     Delete.Visibility = Visibility.Visible;
                     if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
@@ -158,12 +136,8 @@ namespace NuSysApp
                 }
                 else
                 {
-                    if (Annotation.Text == "")
-                    {
-                        AnnotationContainer.Visibility = Visibility.Collapsed;
-                    }
+
                     Delete.Visibility = Visibility.Collapsed;
-                    this.Annotation.DeActivate();
                     if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
                     {
                         ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Deselect();
@@ -176,8 +150,8 @@ namespace NuSysApp
         private void JumpToLinkedTime()
         {
 
-            if (((LinkModel) (DataContext as LinkViewModel).Model).InFineGrain.Start.TotalMilliseconds <
-                ((LinkModel) (DataContext as LinkViewModel).Model).InFineGrain.End.TotalMilliseconds)
+            if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Start.TotalMilliseconds <
+                ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.End.TotalMilliseconds)
             {
                 if (
                     SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model
@@ -244,23 +218,20 @@ namespace NuSysApp
             curve.Point2 = new Point(anchor1.X - distanceX / 2, anchor2.Y);
             curve.Point1 = new Point(anchor2.X + distanceX / 2, anchor1.Y);
 
-            Canvas.SetLeft(btnDelete, anchor1.X - distanceX / 2 - Rect.ActualWidth / 2);
-            Canvas.SetTop(btnDelete, anchor1.Y - distanceY / 2);
-
-            Canvas.SetLeft(AnnotationContainer, anchor1.X - distanceX / 2 - Rect.ActualWidth / 2);
-            Canvas.SetTop(AnnotationContainer, anchor1.Y - distanceY / 2 - Rect.ActualHeight * 1.5);
+            Canvas.SetLeft(AnnotationContainer, anchor1.X - distanceX / 2);
+            Canvas.SetTop(AnnotationContainer, anchor1.Y - distanceY / 2);
 
         }
 
         private void UpdateArrow()
         {
-            var center = new Point((pathfigure.StartPoint.X + curve.Point3.X)/2.0, (pathfigure.StartPoint.Y + curve.Point3.Y)/ 2.0);
+            var center = new Point((pathfigure.StartPoint.X + curve.Point3.X) / 2.0, (pathfigure.StartPoint.Y + curve.Point3.Y) / 2.0);
             var xDiff = curve.Point3.X - pathfigure.StartPoint.X;
             var yDiff = curve.Point3.Y - pathfigure.StartPoint.Y;
             var angle = Math.Atan2(yDiff, xDiff) * (180 / Math.PI);
             var tranformGroup = new TransformGroup();
-            tranformGroup.Children.Add(new RotateTransform { Angle = angle, CenterX = 9, CenterY = 9 });
-            tranformGroup.Children.Add(new TranslateTransform { X = center.X-9, Y = center.Y-9 });
+            tranformGroup.Children.Add(new RotateTransform { Angle = angle, CenterX = 20, CenterY = 20 });
+            tranformGroup.Children.Add(new TranslateTransform { X = center.X - 20, Y = center.Y - 20 });
 
             arrow.RenderTransform = tranformGroup;
         }
