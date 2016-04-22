@@ -35,10 +35,12 @@ namespace NuSysApp
         private List<LinkedTimeBlockViewModel> _timeBlocks;
         private bool _addTimeBlockMode;
         private Line _temporaryLinkVisual;
+        private bool _shouldBePlay;
 
 
         public VideoNodeView(VideoNodeViewModel vm)
         {
+            _shouldBePlay = false;
             _addTimeBlockMode = false;
             vm.PropertyChanged += Node_SelectionChanged;
             this.InitializeComponent();
@@ -200,8 +202,15 @@ namespace NuSysApp
                         b.Path = new PropertyPath("Position.TotalMilliseconds");
                         scrubBar.SetBinding(ProgressBar.ValueProperty, b);
 
-                        playbackElement.Play();
+                        //playbackElement.Play();
                     }
+                    else
+                    {
+                        ((UIElement)sender).CapturePointer(e.Pointer);
+                        playbackElement.Pause();
+                        _shouldBePlay = true;
+                    }
+
                 }
                 else if (_addTimeBlockMode == true)
                 {
@@ -366,6 +375,14 @@ namespace NuSysApp
 
         private void ScrubBar_OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
+            if (_shouldBePlay)
+            {
+                playbackElement.Play();
+                _shouldBePlay = false;
+                ((UIElement)sender).ReleasePointerCapture(e.Pointer);
+
+
+            }
             if (_addTimeBlockMode == true)
             {
                 if (grid.Children.Contains(_temporaryLinkVisual))

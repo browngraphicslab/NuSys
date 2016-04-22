@@ -12,10 +12,9 @@
     
     <Grid x:Name="grid">
         <Canvas x:Name="Canvas">
-            
-            <Line x:Name="HandleOne" DoubleTapped="HandleOne_OnDoubleTapped" PointerPressed="HandleOne_OnPointerPressed" PointerMoved="HandleOne_OnPointerMoved" PointerReleased="HandleOne_OnPointerReleased" Y1="30" Y2="80" X1="{Binding Detailx1}" X2 ="{Binding Detailx1}" StrokeThickness="5" Stroke="Black"></Line>
-            <Ellipse x:Name="EllipseOne" Width="30" DoubleTapped="HandleOne_OnDoubleTapped" Fill="Black" PointerPressed="HandleOne_OnPointerPressed" PointerMoved="HandleOne_OnPointerMoved" PointerReleased="HandleOne_OnPointerReleased" Height="20"></Ellipse>
-            <Line x:Name="HandleTwo" DoubleTapped="HandleTwo_OnDoubleTapped" PointerPressed="HandleTwo_OnPointerPressed" PointerMoved="HandleTwo_OnPointerMoved" PointerReleased="HandleTwo_OnPointerReleased" Y1="30" Y2="80" X1="{Binding Detailx2}" X2 ="{Binding Detailx2}" StrokeThickness="5" Stroke="Black"></Line>
+             <Line x:Name="HandleOne" DoubleTapped="HandleOne_OnDoubleTapped" PointerPressed="HandleOne_OnPointerPressed" PointerMoved="HandleOne_OnPointerMoved" PointerReleased="HandleOne_OnPointerReleased" Y1="30" Y2="80" X1="{Binding Detailx1}" X2 ="{Binding Detailx1}" StrokeThickness="5" Stroke="Black"></Line>
+             <Ellipse x:Name="EllipseOne" Width="30" DoubleTapped="HandleOne_OnDoubleTapped" Fill="Black" PointerPressed="HandleOne_OnPointerPressed" PointerMoved="HandleOne_OnPointerMoved" PointerReleased="HandleOne_OnPointerReleased" Height="20"></Ellipse>
+             <Line x:Name="HandleTwo" DoubleTapped="HandleTwo_OnDoubleTapped" PointerPressed="HandleTwo_OnPointerPressed" PointerMoved="HandleTwo_OnPointerMoved" PointerReleased="HandleTwo_OnPointerReleased" Y1="30" Y2="80" X1="{Binding Detailx2}" X2 ="{Binding Detailx2}" StrokeThickness="5" Stroke="Black"></Line>
             <Ellipse x:Name="EllipseTwo" DoubleTapped="HandleTwo_OnDoubleTapped" Width="30" Fill ="Black" PointerPressed="HandleTwo_OnPointerPressed" PointerMoved="HandleTwo_OnPointerMoved" PointerReleased="HandleTwo_OnPointerReleased" Height="20"></Ellipse>
             <Line x:Name ="line" PointerReleased="Line_OnPointerReleased" ManipulationMode="TranslateX" PointerPressed="Line_OnPointerPressed" ManipulationDelta="Line_OnManipulationDelta" X2="{Binding Detailx2}" X1="{Binding Detailx1}"></Line>
         </Canvas>
