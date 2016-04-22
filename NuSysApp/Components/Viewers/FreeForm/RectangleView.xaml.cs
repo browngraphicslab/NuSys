@@ -55,18 +55,14 @@ namespace NuSysApp.Components.Viewers.FreeForm
 
         private void OnLinkSelect()
         {
-            Debug.WriteLine("SELECT!!");
             rectangle.Fill = new SolidColorBrush(Colors.Yellow);
             rectangle.Opacity = 0.2;
-            Debug.WriteLine("rectangle view link selected!!");
         }
 
         private void OnLinkDeselect()
         {
-            Debug.WriteLine("DESLECT!!!");
             rectangle.Fill = new SolidColorBrush(Colors.Transparent);
             rectangle.Opacity = 1;
-            Debug.WriteLine("rectangle view link deselected!");
         }
 
         public void setRectangleSize(double nodeWidth, double nodeHeight)

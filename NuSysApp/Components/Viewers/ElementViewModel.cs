@@ -54,14 +54,15 @@ namespace NuSysApp
             ReadFromModel();
 
             RegionsListTest = new ObservableCollection<RectangleView>();
-
-            foreach (var element in Model.RegionsModel)
+            
+            if (ElementType == ElementType.Image)
             {
-                RectangleView rv = new RectangleView(element);
-                rv.setRectangleSize(_width, _height);
-                Debug.WriteLine(ElementType + " _width: " + _width + " _height: " + _height);
-                RegionsListTest.Add(rv);
-            }
+                foreach (var element in Model.RegionsModel)
+                {
+                    RectangleView rv = new RectangleView(element);
+                    RegionsListTest.Add(rv);
+                }
+            }   
         }
 
         private void ControllerOnDeleted(object source)
