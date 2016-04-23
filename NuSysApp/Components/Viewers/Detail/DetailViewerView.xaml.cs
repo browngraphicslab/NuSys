@@ -86,7 +86,7 @@ namespace NuSysApp
 
         public async Task LaunchLDA(string text)
         {
-            if (text == null || text == "")
+            if (String.IsNullOrEmpty(text) || string.IsNullOrWhiteSpace(text))
                 return;
             var dvm = (DetailViewerViewModel)DataContext;
             var cvm = (ElementViewModel) dvm.View.DataContext;
