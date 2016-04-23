@@ -162,7 +162,16 @@ namespace NuSysApp
 
             SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddAdorment(Stroke, SelectedColor);
 
-            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.RemoveStroke(Stroke);
+          
+            var request = InkStorage.CreateRemoveInkRequest(new InkWrapper(Stroke, "ink"));
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request.Item1);
+
+            var deleteMsg = new Message();
+            deleteMsg["contentId"] = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.Id;
+            var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
+            model.InkLines.Remove(request.Item2);
+            deleteMsg["inklines"] = new HashSet<string>(model.InkLines);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(deleteMsg));
 
             Visibility = Visibility.Collapsed;
         }
