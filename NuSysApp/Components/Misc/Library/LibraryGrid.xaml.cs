@@ -93,7 +93,7 @@ namespace NuSysApp
             ((LibraryPageViewModel)this.DataContext).PageElements = new ObservableCollection<LibraryElementModel>(elements);
         }
 
-        public async Task Sort(string s)
+        public async Task Sort(string s, bool reverse = false)
         {
             await ((LibraryPageViewModel)this.DataContext).Sort(s);
 

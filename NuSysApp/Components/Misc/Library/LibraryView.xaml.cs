@@ -11,6 +11,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage.Streams;
 using Windows.System;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -52,7 +53,7 @@ namespace NuSysApp
             this.MakeViews(_pageViewModel, properties);
             _propertiesWindow = properties;
             properties.AddedToFavorite += AddToFavorites;
-            WorkspacePivot.Content = _libraryList;
+            ListContainer.Children.Add(_libraryList);
             _menu = menu;
             this.updateTabs();
 
@@ -112,29 +113,17 @@ namespace NuSysApp
             //_libraryGrid.OnLibraryElementDrag += ((LibraryBucketViewModel)this.DataContext).GridViewDragStarting;
         }
 
-        private void ComboBox1_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ((LibraryViewable)(WorkspacePivot?.Content)).Sort(((ComboBox)sender)?.SelectedItem.ToString());
-        }
 
         private void TextBox_OnTextChanging(Object sender, String args)
         {
-            if (WorkspacePivot.Content.Equals(_libraryList))
+            if (ListContainer.Children[0] == _libraryList)
             {
-                ((LibraryViewable)(WorkspacePivot?.Content)).Search(((TextInputBlock)sender).Text.ToLower());
+                _libraryList.Search(((TextInputBlock)sender).Text.ToLower());
             }
 
             _propertiesWindow.Visibility = Visibility.Collapsed;
         }
 
-        private async void ListButton_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-            if (WorkspacePivot.Content != _libraryList)
-            {
-                _libraryList.Update();
-                WorkspacePivot.Content = _libraryList;
-            }
-        }
 
         public async void UpdateList()
         {
@@ -222,7 +211,7 @@ namespace NuSysApp
             else
             {
                 element?.SetFavorited(false);
-                if (WorkspacePivot.Content == _libraryFavorites)
+                if (ListContainer.Children[0] == _libraryFavorites)
                     _propertiesWindow.Visibility = Visibility.Collapsed;
 
             }
@@ -396,24 +385,26 @@ namespace NuSysApp
             this.AddFile();
         }
 
+        public FrameworkElement HeaderRow
+        {
+            get { return xHeaderRow; }
+        }
+
 
         private void Favorites_OnTapped(object sender, TappedRoutedEventArgs e)
         {
 
             _propertiesWindow.Visibility = Visibility.Collapsed;
 
-            if ((WorkspacePivot.Content != _libraryFavorites) && ((Button)sender == btnFav))
+            if (((Button)sender == btnFav))
             {
-
-                WorkspacePivot.Content = _libraryFavorites;
-
-
+                ListContainer.Children.Clear();
+                ListContainer.Children.Add(_libraryFavorites);
             }
-            else if ((WorkspacePivot.Content != _libraryList) && ((Button)sender == btnAll))
+            else if (((Button)sender == btnAll))
             {
-                WorkspacePivot.Content = _libraryList;
-
-
+                ListContainer.Children.Clear();
+                ListContainer.Children.Add(_libraryList);
             }
 
             this.updateTabs();
@@ -422,18 +413,15 @@ namespace NuSysApp
 
         private void updateTabs()
         {
-
-            if (WorkspacePivot.Content == _libraryFavorites)
+            if (ListContainer.Children[0] == _libraryFavorites)
             {
-                btnFav.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(60, 14, 73, 78));
-                btnAll.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(20, 230, 237, 236));
+                btnFav.Background = new SolidColorBrush(Colors.White);
+                btnAll.Background = (SolidColorBrush)Application.Current.Resources["color9"];
             }
-            else if (WorkspacePivot.Content == _libraryList)
+            else if (ListContainer.Children[0] == _libraryList)
             {
-
-
-                btnAll.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(60, 14, 73, 78));
-                btnFav.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(20, 230, 237, 236));
+                btnAll.Background = new SolidColorBrush(Colors.White);
+                btnFav.Background = (SolidColorBrush)Application.Current.Resources["color9"];
             }
         }
 
@@ -512,9 +500,9 @@ namespace NuSysApp
             elementMsg["nodeType"] = ElementType.Collection;
             elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             elementMsg["id"] = newCollectionId;
-            if (WorkspacePivot.Content == _libraryList)
+            if (ListContainer.Children[0] == _libraryList)
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Search Results"));
-            else if (WorkspacePivot.Content == _libraryFavorites)
+            else if (ListContainer.Children[0] == _libraryFavorites)
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Favorites"));
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
@@ -522,7 +510,7 @@ namespace NuSysApp
             //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
 
             var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(r.X, r.Y, contentId, 300, 300, newCollectionId);
-            if (WorkspacePivot.Content == _libraryList)
+            if (ListContainer.Children[0] == _libraryList)
             {
                 foreach (var libraryElementModel in _pageViewModel.PageElements.ToList().GetRange(0, Math.Min(_pageViewModel.PageElements.Count, 10)))
                 {
@@ -541,7 +529,7 @@ namespace NuSysApp
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
                 }
             }
-            else if (WorkspacePivot.Content == _libraryFavorites)
+            else if (ListContainer.Children[0] == _libraryFavorites)
             {
                 foreach (var libraryElementModel in _favoritesViewModel.PageElements.ToList().GetRange(0, Math.Min(_favoritesViewModel.PageElements.Count, 10)))
                 {

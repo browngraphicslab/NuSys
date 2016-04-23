@@ -26,7 +26,7 @@ namespace NuSysApp
         {
             _timer.Stop();
             _timer.Tick -= OnTick;
-            if (_cview != null)
+            if (_cview?.InqCanvas != null)
             {
                 _cview.InqCanvas.Transform = (CompositeTransform)_cview.AtomCanvas.RenderTransform;
                 _cview.InqCanvas.Redraw();
@@ -119,7 +119,7 @@ namespace NuSysApp
 
             compositeTransform.CenterX = cent.X;
             compositeTransform.CenterY = cent.Y;
-            if (_cview.InqCanvas != null) { 
+            if (_cview?.InqCanvas != null) { 
                 _cview.InqCanvas.Transform = compositeTransform;
                 _cview.InqCanvas.Redraw();
             }
@@ -178,7 +178,7 @@ namespace NuSysApp
                 compositeTransform.TranslateY += e.Delta.Translation.Y;
             }
 
-            if (_cview != null)
+            if (_cview?.InqCanvas != null)
                 _cview.InqCanvas.Redraw();
             e.Handled = true;
             

@@ -44,12 +44,13 @@ namespace NuSysApp
             var rgb = JsonConvert.DeserializeObject<byte[]>(data["color"]);
             var color = Color.FromArgb(255, rgb[0], rgb[1], rgb[2]);
 
-            if (InkStorage._inkStrokes.ContainsKey(id))
+            if (InkStorage._inkStrokes.ContainsKey(id) || SessionController.Instance.ActiveFreeFormViewer == null || SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel == null)
             {
                 return;
             }
             var model = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel as CollectionLibraryElementModel;
-            if (model.InkLines.Contains(id))
+
+            if (model != null && model.InkLines.Contains(id))
             {
 
                 if (type == "adornment")

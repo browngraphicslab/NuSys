@@ -239,64 +239,58 @@
     </UserControl.Resources>
 
 
-    <Grid x:Name="Container" Width="450" Height="550" BorderBrush="{StaticResource color3}">
-        <Pivot x:Name="Pivot" Background="{StaticResource color1}" BorderBrush="{StaticResource color3}" BorderThickness="1"  FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" IsLocked="True" Foreground="#74AFAD" Height="550">
-      
-            
-            <PivotItem x:Name="WorkspacePivot" Background="{StaticResource color6}" Margin="0,8,0,37" Width="450" BorderBrush="{StaticResource color2}" BorderThickness="1">
-                <PivotItem.Header>
-                    <Grid>
-                        <TextBlock Text="Library" Margin="0,-20,0,0" Foreground="{StaticResource color3}" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
+    <Grid x:Name="Container" Width="450" Height="500" BorderBrush="{StaticResource color3}">
+        <Grid x:Name="Pivot" Background="{StaticResource color2}" BorderBrush="{StaticResource color3}" BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="65"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="42"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid x:Name="xHeaderRow" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                    <StackPanel.RenderTransform>
+                        <TranslateTransform Y="3"></TranslateTransform>
+                    </StackPanel.RenderTransform>
+                <Button x:Name="btnAll"  Tapped="Favorites_OnTapped" VerticalAlignment="Top" HorizontalAlignment="Left" Width="72" Height="36"  Background="White"  Foreground="{StaticResource color3}" BorderBrush="{StaticResource color3}" BorderThickness="2,2,2,0">
+                    <TextBlock Text="All" Margin="0,0,0,0" Foreground="{StaticResource color3}" FontSize="18" FontWeight="Bold"  FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
+                </Button>
+                <Button x:Name="btnFav" Tapped="Favorites_OnTapped"  VerticalAlignment="Top" HorizontalAlignment="Left" Height ="36" Width="72" Background="White" Foreground="{StaticResource color3}" BorderBrush="{StaticResource color3}" BorderThickness="2,2,2,0">
+                    <TextBlock Text="Fav" Margin="0,0,0,0" Foreground="{StaticResource color3}" FontSize="18" FontWeight="Bold" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
+                </Button>
+                </StackPanel>
+            </Grid>
 
-                    </Grid>
-                </PivotItem.Header>
-            </PivotItem>
-            
-            <PivotItem x:Name="FilesPivot" Background="{StaticResource color6}" Margin="10,50,10,10">
-                <PivotItem.Header>
-                    <Grid>
-                        <TextBlock Text="Files"/>
-                    </Grid>
-                </PivotItem.Header>
-            </PivotItem>
-            <PivotItem x:Name="WebPivot" Background="{StaticResource color6}"  Margin="10,50,10,11">
-                <PivotItem.Header>
-                    <Grid>
-                        <TextBlock Text="Web"/>
-                    </Grid>
-                </PivotItem.Header>
-            </PivotItem>
-            <PivotItem x:Name="OfficePivot" Background="{StaticResource color6}" Margin="10,50,10,11">
-                <PivotItem.Header>
-                    <Grid>
-                        <TextBlock Text="Office"/>
-                    </Grid>
-                </PivotItem.Header>
-            </PivotItem>
-        </Pivot>
+            <Grid x:Name="ListContainer" Grid.Row="1" Background="{StaticResource color6}">
+                
+            </Grid>
 
-        <!--<TextBox x:Name="Searchfield" Style="{StaticResource SearchBoxStyle}"  TextChanging="TextBox_OnTextChanging"  PlaceholderText="SEARCH" FontSize="16" BorderThickness="1" BorderBrush="#9cc5c2"  Background="White"  Foreground="White" VerticalAlignment="Bottom" Height="38" Width="400" HorizontalAlignment="Left"></TextBox>-->
-        <local:TextInputBlock x:Name ="Searchfield" BubbleTop="True" TextChanged="TextBox_OnTextChanging"  LeftJustified="False" SetHeight="38" VerticalAlignment="Bottom" Width="400"  HorizontalAlignment="Left" ></local:TextInputBlock>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="50"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <!--<TextBox x:Name="Searchfield" Style="{StaticResource SearchBoxStyle}"  TextChanging="TextBox_OnTextChanging"  PlaceholderText="SEARCH" FontSize="16" BorderThickness="1" BorderBrush="#9cc5c2"  Background="White"  Foreground="White" VerticalAlignment="Bottom" Height="38" Width="400" HorizontalAlignment="Left"></TextBox>-->
+                <Canvas Grid.Column="0" Width="400" Height="38" Background="Transparent" VerticalAlignment="Bottom" >
+                    <local:TextInputBlock x:Name ="Searchfield"  Width="400"  BubbleTop="True" TextChanged="TextBox_OnTextChanging"  LeftJustified="False" SetHeight="34" HorizontalAlignment="Stretch" Height="34" ></local:TextInputBlock>
+                </Canvas>
+               
 
-
-        <!--<Image Tapped="Folder_Tapped" Source ="ms-appx:///Assets/icon_upload.png" Margin="320,542,13,506" Height="30" VerticalAlignment="Bottom"></Image>-->
-        <!--<Image Source="ms-appx:///Assets/icon_search.png" Height="20"  Margin="320,512,0,0"/>-->
-        <Button Style="{StaticResource LibraryButton}"  Height="40" Width="50" Margin="400,512,0,0" Tapped="Folder_Tapped" Background="{StaticResource color1}" BorderBrush="{StaticResource color2}" BorderThickness="2">
-            <Image Source="ms-appx:///Assets/icon_upload.png" Height="30"></Image>
-        </Button>
+                <!--<Image Tapped="Folder_Tapped" Source ="ms-appx:///Assets/icon_upload.png" Margin="320,542,13,506" Height="30" VerticalAlignment="Bottom"></Image>-->
+                <!--<Image Source="ms-appx:///Assets/icon_search.png" Height="20"  Margin="320,512,0,0"/>-->
+                <Button Grid.Column="1"  Height="40" Width="50"  Tapped="Folder_Tapped" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Bottom">
+                    <Image Source="ms-appx:///Assets/icon_upload.png" Height="30"></Image>
+                </Button>
 
 
-        <Button x:Name="btnAll"  Tapped="Favorites_OnTapped" VerticalAlignment="Top" Margin="123,20,0,0" HorizontalAlignment="Left" Width="134" Height="36"  Background="#E6EDEC" BorderBrush="#9cc5c2" BorderThickness="2,2,2,0">
-            <TextBlock Text="All" Margin="0,0,0,0" Foreground="#83A6A3" FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
-
-        </Button>
-        <Button x:Name="btnFav" Tapped="Favorites_OnTapped"  VerticalAlignment="Top" Margin="268,20,0,0" HorizontalAlignment="Left" Height ="36" Width="72" Background="#E6EDEC" BorderBrush="#9cc5c2" BorderThickness="2,2,2,0">
-            <TextBlock Text="Fav" Margin="0,0,0,0" Foreground="#83A6A3" FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
-
-        </Button>
+            </Grid>
 
 
-        <Image x:Name="Graph" Source="ms-appx:///Assets/icon_new_workspace.png"  Height="20" VerticalAlignment="Top" Margin="0,15,10,0" ManipulationMode="TranslateX, TranslateY" PointerPressed="Graph_OnPointerPressed" ManipulationStarted="Graph_OnManipulationStarted" ManipulationDelta="Graph_OnManipulationDelta" ManipulationCompleted="Graph_OnManipulationCompleted" 
-               HorizontalAlignment="Right"/>
+            <!--
+                <PivotItem x:Name="WorkspacePivot" Background="{StaticResource color6}" Margin="0,8,0,37" Width="450" BorderBrush="{StaticResource color2}" BorderThickness="1">
+ -->
+        </Grid>
+
+
+        
     </Grid>
 </UserControl>

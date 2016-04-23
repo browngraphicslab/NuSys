@@ -34,13 +34,13 @@
                     </TextBlock>-->
 
 
-                    <Button  HorizontalAlignment="Left" Grid.Column="0"  Background="Transparent"  Foreground="#9cc5c2"  FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                    <Button  HorizontalAlignment="Left" Grid.Column="0"  Background="Transparent"  Foreground="{StaticResource color2}"  FontSize="17" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
                         Title
                     </Button>
-                    <Button HorizontalAlignment="Left" Grid.Column="1" Foreground="#9cc5c2" Background="Transparent"  FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                    <Button HorizontalAlignment="Left" Grid.Column="1" Foreground="{StaticResource color2}" Background="Transparent"  FontSize="17" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
                         Type
                     </Button>
-                    <Button  HorizontalAlignment="Left" Grid.Column="2" Foreground="#9cc5c2" Background="Transparent"  FontSize="18" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                    <Button  HorizontalAlignment="Left" Grid.Column="2" Foreground="{StaticResource color2}" Background="Transparent"  FontSize="17" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
                         Date/Time
                     </Button>
 

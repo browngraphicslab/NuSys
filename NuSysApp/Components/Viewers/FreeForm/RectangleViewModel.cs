@@ -40,6 +40,9 @@ namespace NuSysApp.Viewers
             Model = model;
             Attributes = attributes;
 
+            if (attributes == null)
+                return;
+
             RectHeightRatio = Attributes["heightRatio"];
             RectWidthRatio = Attributes["widthRatio"];
             TopRatio = Attributes["topRatio"];
