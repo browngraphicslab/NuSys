@@ -49,10 +49,10 @@ namespace NuSysApp
                 PageElements.Remove(content);
             });
         }
-        public async Task Sort(string s)
+        public async Task Sort(string s, bool reverse = false)
         {
             List<LibraryElementModel> ordered = null;
-            switch (s.ToLower().Replace(" ", string.Empty))
+            switch (s)
             {
                 //case "title":
                 //    ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.Title);
@@ -60,13 +60,13 @@ namespace NuSysApp
                 //case "nodetype":
                 //    ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.NodeType.ToString());
                 //    break;
-                case "title":
+                case "Title":
                     ordered = new List<LibraryElementModel>(PageElements.OrderBy(l => ((LibraryElementModel)l).Title));
                     break;
-                case "nodetype":
+                case "Type":
                     ordered = new List<LibraryElementModel>(PageElements.OrderBy(l => ((LibraryElementModel)l).Type.ToString()));
                     break;
-                case "timestamp":
+                case "Date/Time":
                     ordered = new List<LibraryElementModel>(PageElements.OrderByDescending(l => ((LibraryElementModel)l).GetTimestampTicks()));
                     break;
                 default:
@@ -74,7 +74,10 @@ namespace NuSysApp
             }
             if (ordered != null)
             {
-
+                if (reverse)
+                {
+                    ordered.Reverse();
+                }
                 //  ObservableCollection<LibraryElementModel> newCollection = new ObservableCollection<LibraryElementModel>();
                 PageElements.Clear();
 

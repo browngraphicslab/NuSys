@@ -8,7 +8,7 @@ namespace NuSysApp
 {
     public interface LibraryViewable
     {
-        Task Sort(string s);
+        Task Sort(string s, bool reverse = false);
         Task Search(string s);
         void SetItems(ICollection<LibraryElementModel> elements);
     }

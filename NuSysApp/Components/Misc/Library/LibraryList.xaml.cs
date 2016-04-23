@@ -39,6 +39,7 @@ namespace NuSysApp
 
         private CompositeTransform _ct;
         private LibraryView _library;
+        private Dictionary<string, bool> _reverseTable = new Dictionary<string, bool>(); 
         public LibraryList(LibraryView library, LibraryPageViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
         {
             this.DataContext = vm;
@@ -89,9 +90,9 @@ namespace NuSysApp
             }
         }
 
-        public async Task Sort(string s)
+        public async Task Sort(string s, bool reverse = false)
         {
-            await ((LibraryPageViewModel)this.DataContext).Sort(s);
+            await ((LibraryPageViewModel)this.DataContext).Sort(s, reverse);
   //          this.SetItems(((LibraryPageViewModel)this.DataContext).PageElements);
         }
 
@@ -128,17 +129,12 @@ namespace NuSysApp
         }
         private async void Sort_Button_Click(object sender, RoutedEventArgs e)
         {
-            string s = "nodetype";
-            switch (((Button)sender).Content.ToString())
-            {
-                case "title":
-                    s = "title";
-                    break;
-                case "date":
-                    s = "timestamp";
-                    break;
-            }
-            Sort(s);
+            var btnStr = ((Button) sender).Content.ToString();
+            if (_reverseTable.ContainsKey(btnStr))
+                _reverseTable[btnStr] = !_reverseTable[btnStr];
+            else
+                _reverseTable.Add(btnStr, false);
+            Sort(btnStr, _reverseTable[btnStr]);
         }
         private void LibraryListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
