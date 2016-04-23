@@ -11,6 +11,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage.Streams;
 using Windows.System;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -52,9 +53,10 @@ namespace NuSysApp
             this.MakeViews(_pageViewModel, properties);
             _propertiesWindow = properties;
             properties.AddedToFavorite += AddToFavorites;
-            WorkspacePivot.Content = _libraryList;
+            ListContainer.Children.Add(_libraryList);
             _menu = menu;
-    
+            this.updateTabs();
+
             vm.OnElementDeleted += delegate
             {
                 UITask.Run(delegate
@@ -70,8 +72,8 @@ namespace NuSysApp
 
         public async void ToggleVisiblity()
         {
-            Visibility = Visibility == Visibility.Visible ? Visibility.Collapsed: Visibility.Visible;
-            if(Visibility == Visibility.Collapsed)
+            Visibility = Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+            if (Visibility == Visibility.Collapsed)
             {
                 _propertiesWindow.Visibility = Visibility.Collapsed;
                 LibraryElementModel.LitElement?.FireLightupContent(false);
@@ -111,29 +113,17 @@ namespace NuSysApp
             //_libraryGrid.OnLibraryElementDrag += ((LibraryBucketViewModel)this.DataContext).GridViewDragStarting;
         }
 
-        private void ComboBox1_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ((LibraryViewable)(WorkspacePivot?.Content)).Sort(((ComboBox)sender)?.SelectedItem.ToString());
-        }
 
         private void TextBox_OnTextChanging(Object sender, String args)
         {
-            if (WorkspacePivot.Content.Equals(_libraryList))
+            if (ListContainer.Children[0] == _libraryList)
             {
-                ((LibraryViewable)(WorkspacePivot?.Content)).Search(((TextInputBlock)sender).Text.ToLower());
+                _libraryList.Search(((TextInputBlock)sender).Text.ToLower());
             }
 
             _propertiesWindow.Visibility = Visibility.Collapsed;
         }
 
-        private async void ListButton_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-            if (WorkspacePivot.Content != _libraryList)
-            {
-                 _libraryList.Update();
-                WorkspacePivot.Content = _libraryList;
-            }
-        }
 
         public async void UpdateList()
         {
@@ -221,7 +211,7 @@ namespace NuSysApp
             else
             {
                 element?.SetFavorited(false);
-                if (WorkspacePivot.Content == _libraryFavorites) 
+                if (ListContainer.Children[0] == _libraryFavorites)
                     _propertiesWindow.Visibility = Visibility.Collapsed;
 
             }
@@ -265,7 +255,7 @@ namespace NuSysApp
                 data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
             }
             else if (Constants.WordFileTypes.Contains(fileType))
-            { 
+            {
                 elementType = ElementType.Word;
             }
             else if (Constants.PowerpointFileTypes.Contains(fileType))
@@ -319,7 +309,7 @@ namespace NuSysApp
                     fileBytes = new byte[stream.Size];
                     using (DataReader reader = new DataReader(stream))
                     {
-                        await reader.LoadAsync((uint) stream.Size);
+                        await reader.LoadAsync((uint)stream.Size);
                         reader.ReadBytes(fileBytes);
                     }
                 }
@@ -394,31 +384,46 @@ namespace NuSysApp
         {
             this.AddFile();
         }
-        
+
+        public FrameworkElement HeaderRow
+        {
+            get { return xHeaderRow; }
+        }
+
 
         private void Favorites_OnTapped(object sender, TappedRoutedEventArgs e)
         {
 
             _propertiesWindow.Visibility = Visibility.Collapsed;
 
-            if ((WorkspacePivot.Content != _libraryFavorites) && ((Button)sender == btnFav))
+            if (((Button)sender == btnFav))
             {
-
-                WorkspacePivot.Content = _libraryFavorites;
-                btnFav.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(60, 14, 73, 78));
-                btnAll.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(20, 230, 237, 236));
-
+                ListContainer.Children.Clear();
+                ListContainer.Children.Add(_libraryFavorites);
             }
-            else if ((WorkspacePivot.Content != _libraryList) && ((Button)sender==btnAll))
+            else if (((Button)sender == btnAll))
             {
-                WorkspacePivot.Content = _libraryList;
-                btnAll.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(60, 14, 73, 78));
-                btnFav.Background = new SolidColorBrush(Windows.UI.Color.FromArgb(20, 230, 237, 236));
-
+                ListContainer.Children.Clear();
+                ListContainer.Children.Add(_libraryList);
             }
+
+            this.updateTabs();
 
         }
 
+        private void updateTabs()
+        {
+            if (ListContainer.Children[0] == _libraryFavorites)
+            {
+                btnFav.Background = new SolidColorBrush(Colors.White);
+                btnAll.Background = (SolidColorBrush)Application.Current.Resources["color9"];
+            }
+            else if (ListContainer.Children[0] == _libraryList)
+            {
+                btnAll.Background = new SolidColorBrush(Colors.White);
+                btnFav.Background = (SolidColorBrush)Application.Current.Resources["color9"];
+            }
+        }
 
         private void Graph_OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
@@ -443,7 +448,7 @@ namespace NuSysApp
             t.TranslateY += _graphButtonY - (draggedGraphImage.Height / 2);
         }
 
-      
+
 
         private void Graph_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
@@ -464,16 +469,17 @@ namespace NuSysApp
             // extract composite transform and add the chart/graph based on the dropped location
             var t = (CompositeTransform)draggedGraphImage.RenderTransform;
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
-       //     var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(e.Position.X, e.Position.Y, 300, 300));
+            //     var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(e.Position.X, e.Position.Y, 300, 300));
             var r = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(t.TranslateX, t.TranslateY));
 
 
             // graph is added by passing in the bounding rectangle
             await AddGraph(r);
-            
+
         }
 
         // adds the graph/chart based on the location that the graph button was dragged to
+
         private async Task AddGraph(Point r)
         {
 
@@ -494,31 +500,56 @@ namespace NuSysApp
             elementMsg["nodeType"] = ElementType.Collection;
             elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             elementMsg["id"] = newCollectionId;
-
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Search Results"));
+            if (ListContainer.Children[0] == _libraryList)
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Search Results"));
+            else if (ListContainer.Children[0] == _libraryFavorites)
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Favorites"));
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
 
             //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
 
             var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(r.X, r.Y, contentId, 300, 300, newCollectionId);
-            
-            foreach ( var libraryElementModel in _pageViewModel.PageElements.ToList().GetRange(0, Math.Min(_pageViewModel.PageElements.Count, 10)))
+            if (ListContainer.Children[0] == _libraryList)
             {
-                var dict = new Message();
-                dict["title"] = libraryElementModel?.Title;
-                dict["width"] = "300";
-                dict["height"] = "300";
-                dict["nodeType"] = libraryElementModel.Type.ToString();
-                dict["x"] = "50000";
-                dict["y"] = "50000";
-                dict["contentId"] = libraryElementModel.Id;
-                dict["metadata"] = metadata;
-                dict["autoCreate"] = true;
-                dict["creator"] = controller.LibraryElementModel.Id;
-                var request = new NewElementRequest(dict);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                foreach (var libraryElementModel in _pageViewModel.PageElements.ToList().GetRange(0, Math.Min(_pageViewModel.PageElements.Count, 10)))
+                {
+                    var dict = new Message();
+                    dict["title"] = libraryElementModel?.Title;
+                    dict["width"] = "300";
+                    dict["height"] = "300";
+                    dict["nodeType"] = libraryElementModel.Type.ToString();
+                    dict["x"] = "50000";
+                    dict["y"] = "50000";
+                    dict["contentId"] = libraryElementModel.Id;
+                    dict["metadata"] = metadata;
+                    dict["autoCreate"] = true;
+                    dict["creator"] = controller.LibraryElementModel.Id;
+                    var request = new NewElementRequest(dict);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                }
+            }
+            else if (ListContainer.Children[0] == _libraryFavorites)
+            {
+                foreach (var libraryElementModel in _favoritesViewModel.PageElements.ToList().GetRange(0, Math.Min(_favoritesViewModel.PageElements.Count, 10)))
+                {
+                    var dict = new Message();
+                    dict["title"] = libraryElementModel?.Title;
+                    dict["width"] = "300";
+                    dict["height"] = "300";
+                    dict["nodeType"] = libraryElementModel.Type.ToString();
+                    dict["x"] = "50000";
+                    dict["y"] = "50000";
+                    dict["contentId"] = libraryElementModel.Id;
+                    dict["metadata"] = metadata;
+                    dict["autoCreate"] = true;
+                    dict["creator"] = controller.LibraryElementModel.Id;
+                    var request = new NewElementRequest(dict);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                }
             }
         }
+
     }
+
 }

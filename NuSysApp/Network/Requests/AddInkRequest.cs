@@ -44,17 +44,19 @@ namespace NuSysApp
             var rgb = JsonConvert.DeserializeObject<byte[]>(data["color"]);
             var color = Color.FromArgb(255, rgb[0], rgb[1], rgb[2]);
 
-            if (InkStorage._inkStrokes.ContainsKey(id))
+            if (InkStorage._inkStrokes.ContainsKey(id) || SessionController.Instance.ActiveFreeFormViewer == null || SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel == null)
             {
                 return;
             }
             var model = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel as CollectionLibraryElementModel;
-            if (model.InkLines.Contains(id))
+
+            if (model != null && model.InkLines.Contains(id))
             {
+
                 if (type == "adornment")
                 {
 
-                    if (!InkStorage._inkStrokes.ContainsKey("id"))
+                    if (!InkStorage._inkStrokes.ContainsKey("id") && SessionController.Instance.SessionView != null)
                     {
                         var stroke = SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddAdorment(inkpoints, color, false);
                         InkStorage._inkStrokes.Add(id, new InkWrapper(stroke, "adornment", color));
@@ -63,7 +65,7 @@ namespace NuSysApp
                 else
                 {
 
-                    if (!InkStorage._inkStrokes.ContainsKey("id"))
+                    if (!InkStorage._inkStrokes.ContainsKey("id") && SessionController.Instance.SessionView != null)
                     {
                         var stroke = SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddStroke(inkpoints);
                         InkStorage._inkStrokes.Add(id, new InkWrapper(stroke, "ink", color));

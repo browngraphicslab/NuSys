@@ -112,7 +112,9 @@ namespace NuSysApp
                 List<string> topics = await TagExtractor.launch(test, new List<string>() { text });
                 await UITask.Run(() =>
                 {
-                    cvm.Controller.SetMetadata("tags", topics);
+                    var tags = (List<string>)cvm.Controller.Model.GetMetaData("tags");
+                    tags.AddRange(topics);
+                    cvm.Controller.SetMetadata("tags", tags);
                 });
             });
         }
@@ -182,15 +184,7 @@ namespace NuSysApp
             NewTagBox.Text = "";
         }
 
-        private async void NewKey_OnKeyUp(object sender, KeyRoutedEventArgs e)
-        {
-            if (e.OriginalKey == VirtualKey.Enter)
-            {
-                await AddMetadataKey(e);
-                e.Handled = true;
-            }
-        }
-
+   
         private async Task AddMetadataKey(KeyRoutedEventArgs e)
         {
             var vm = (DetailViewerViewModel)DataContext;

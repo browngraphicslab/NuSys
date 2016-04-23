@@ -238,6 +238,12 @@ namespace NuSysApp
             var vm = (LinkViewModel)this.DataContext;
 
             var controller = (LinkElementController)vm.Controller;
+
+            if (controller.InElement == null)
+                return;
+            if (controller.OutElement == null)
+                return;
+
             var anchor1 = new Point(controller.InElement.Model.X + controller.InElement.Model.Width / 2, controller.InElement.Model.Y + controller.InElement.Model.Height / 2);
             var anchor2 = new Point(controller.OutElement.Model.X + controller.OutElement.Model.Width / 2, controller.OutElement.Model.Y + controller.OutElement.Model.Height / 2);
 
@@ -269,6 +275,10 @@ namespace NuSysApp
         {
             var vm = (LinkViewModel)this.DataContext;
             var controller = (LinkElementController)vm.Controller;
+            if (controller.InElement == null)
+                return;
+            if (controller.OutElement == null)
+                return;
             var anchor1 = new Point(controller.InElement.Model.X + controller.InElement.Model.Width / 2, controller.InElement.Model.Y + controller.InElement.Model.Height / 2);
             var anchor2 = new Point(controller.OutElement.Model.X + controller.OutElement.Model.Width / 2, controller.OutElement.Model.Y + controller.OutElement.Model.Height / 2);
 

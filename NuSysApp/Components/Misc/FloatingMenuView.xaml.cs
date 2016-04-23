@@ -52,13 +52,11 @@ namespace NuSysApp
             xAddNodeMenu.Visibility = Visibility.Collapsed;
 
             Canvas.SetTop(_lib, 100);
-            Canvas.SetLeft(_lib, 100);
+            //Canvas.SetLeft(_lib, 100);
             Canvas.SetTop(libProp, 100);
-            Canvas.SetLeft(libProp, 550);
+            Canvas.SetLeft(libProp, 450);
             AddNodeSubmenuButton(btnText);
             AddNodeSubmenuButton(btnRecording);
-            AddNodeSubmenuButton(btnTag);
-            AddNodeSubmenuButton(btnWeb);
             AddNodeSubmenuButton(btnNew);
         }
 
@@ -165,12 +163,13 @@ namespace NuSysApp
 
         private async void BtnAddNodeOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs args)
         {
+            if (_dragItem != null && xWrapper.Children.Contains(_dragItem))
+                xWrapper.Children.Remove(_dragItem);
+
             if (sender == btnText)
                 _elementType = ElementType.Text;
             if (sender == btnRecording)
                 _elementType = ElementType.Recording;
-            if (sender == btnWeb)
-                _elementType = ElementType.Web;
             if (sender == btnNew)
                 _elementType = ElementType.Collection;
 
@@ -183,6 +182,8 @@ namespace NuSysApp
 
             img.RenderTransform = new CompositeTransform();
             img.Source = bmp;
+
+
             _dragItem = img;
 
             xWrapper.Children.Add(_dragItem);
@@ -254,6 +255,11 @@ namespace NuSysApp
         public SessionView SessionView
         {
             get;set;
+        }
+
+        public LibraryView Library
+        {
+            get { return _lib; }
         }
     }
 }

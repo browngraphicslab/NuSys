@@ -18,6 +18,7 @@ using System.Collections.ObjectModel;
 using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
+using NuSysApp.Components.Viewers.FreeForm;
 
 namespace NuSysApp
 {
@@ -35,6 +36,15 @@ namespace NuSysApp
             var model = (PdfNodeModel) controller.Model;
             model.PageChange += OnPageChange;
             CurrentPageNumber = model.CurrentPageNumber;
+
+            if ((Model as PdfNodeModel).PageRegionDict.ContainsKey(CurrentPageNumber))
+            {
+                foreach (var element in (Model as PdfNodeModel).PageRegionDict[CurrentPageNumber])
+                {
+                    RectangleView rv = new RectangleView(element);
+                    RegionsListTest.Add(rv);
+                }
+            }  
         }
 
         public override void Dispose()

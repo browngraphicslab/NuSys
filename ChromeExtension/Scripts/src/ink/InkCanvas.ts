@@ -81,7 +81,7 @@ class InkCanvas {
             return true;
         }
         return false;
-        console.log("couldn't remove element");
+        //console.log("couldn't remove element");
     }
 
     update():void {

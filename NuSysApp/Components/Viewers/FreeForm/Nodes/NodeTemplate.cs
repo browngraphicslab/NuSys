@@ -131,9 +131,6 @@ namespace NuSysApp
             PresentationLink.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             PresentationLink.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
 
-            Link.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
-            Link.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
-
             PresentationMode = (Button) GetTemplateChild("PresentationMode");
             PresentationMode.Click += OnPresentationClick;
 
@@ -346,6 +343,12 @@ namespace NuSysApp
                     }
                     else
                     {
+                        if (dc.LinkList.Where(c => c.OutElement.Model.Id == vm.Id).Count() > 0 || vm.LinkList.Where(c => c.OutElement.Model.Id == dc.Id).Count() > 0)
+                        {
+                            return;
+                        }
+
+
                         if (_currenDragMode == DragMode.Link)
                             vm.Controller.RequestLinkTo(dc.Id);
                         if (_currenDragMode == DragMode.PresentationLink)
@@ -371,6 +374,7 @@ namespace NuSysApp
 
         private async void BtnAddOnManipulationStarting(object sender, PointerRoutedEventArgs args)
         {
+            Debug.WriteLine("Starting once!");
             CapturePointer(args.Pointer);
 
             if (sender == DuplicateElement)

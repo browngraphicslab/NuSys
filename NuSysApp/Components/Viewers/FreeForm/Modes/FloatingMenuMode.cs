@@ -15,6 +15,10 @@ namespace NuSysApp
             _view.RightTapped += OnRightTapped;
 
             var fm = SessionController.Instance.SessionView.FloatingMenu.Panel;
+            var lib = SessionController.Instance.SessionView.FloatingMenu.Library.HeaderRow;
+
+            lib.ManipulationMode = ManipulationModes.All;
+            lib.ManipulationDelta += OnManipulationDelta;
             fm.ManipulationMode = ManipulationModes.All;
             fm.ManipulationDelta += OnManipulationDelta;
         }
@@ -24,14 +28,16 @@ namespace NuSysApp
             _view.IsRightTapEnabled = false;
             _view.RightTapped-= OnRightTapped;
             var fm = SessionController.Instance.SessionView.FloatingMenu.Panel;
+            var lib = SessionController.Instance.SessionView.FloatingMenu.Library.HeaderRow;
+
+            lib.ManipulationMode = ManipulationModes.None;
+            lib.ManipulationDelta -= OnManipulationDelta;
             fm.ManipulationMode = ManipulationModes.None;
             fm.ManipulationDelta -= OnManipulationDelta;
         }
 
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            var os = (FrameworkElement) e.OriginalSource;
-
             var compositeTransform = (CompositeTransform)SessionController.Instance.SessionView.FloatingMenu.RenderTransform;
             compositeTransform.TranslateX += e.Delta.Translation.X;
             compositeTransform.TranslateY += e.Delta.Translation.Y;

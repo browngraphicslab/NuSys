@@ -45,18 +45,6 @@ namespace NuSysApp
             vm.Controller.Disposed += ControllerOnDisposed;
         }
 
-        private void Controller_SizeChanged(object source, double width, double height)
-        {
-            ObservableCollection<RectangleView> list1 = _vm.RegionsListTest;
-
-            Debug.WriteLine("width:" + _vm.Width + " height: " + _vm.Height);
-
-            foreach (var rectangle in list1)
-            {
-                rectangle.setRectangleSize(_vm.Width, _vm.Height);
-            }
-        }
-
         private void VmOnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "Width" || e.PropertyName == "Height")
@@ -66,6 +54,23 @@ namespace NuSysApp
                 foreach (var rectangle in list1)
                 {
                     rectangle.setRectangleSize(_vm.Width, _vm.Height);
+                }
+            }
+        }
+
+        public async Task onGoTo(int page)
+        {
+            await _vm.Goto(page);
+
+            _vm.RegionsListTest.Clear();
+
+            if ((_vm.Model as PdfNodeModel).PageRegionDict.ContainsKey(_vm.CurrentPageNumber))
+            {
+                foreach (var regionVm in (_vm.Model as PdfNodeModel).PageRegionDict[_vm.CurrentPageNumber])
+                {
+                    RectangleView rectangle = new RectangleView(regionVm);
+                    rectangle.setRectangleSize(_vm.Width, _vm.Height);
+                    _vm.RegionsListTest.Add(new RectangleView(regionVm));
                 }
             }
         }
@@ -88,11 +93,24 @@ namespace NuSysApp
         {
             var vm = (PdfNodeViewModel) this.DataContext;
             await vm.FlipLeft();
+
+            _vm.RegionsListTest.Clear();
+
+            if ((_vm.Model as PdfNodeModel).PageRegionDict.ContainsKey(vm.CurrentPageNumber))
+            {
+                foreach (var regionVm in (_vm.Model as PdfNodeModel).PageRegionDict[vm.CurrentPageNumber])
+                {
+                    RectangleView rectangle = new RectangleView(regionVm);
+                    rectangle.setRectangleSize(_vm.Width, _vm.Height);
+                    _vm.RegionsListTest.Add(new RectangleView(regionVm));
+                }
+            }
+
             //(nodeTpl.inkCanvas.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
             e.Handled = true;
 
             // nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
-//nodeTpl.inkCanvas.ReRenderLines();
+            //nodeTpl.inkCanvas.ReRenderLines();
 
         }
 
@@ -100,6 +118,19 @@ namespace NuSysApp
         {
             var vm = (PdfNodeViewModel) this.DataContext;
             await vm.FlipRight();
+
+            _vm.RegionsListTest.Clear();
+
+            if ((_vm.Model as PdfNodeModel).PageRegionDict.ContainsKey(vm.CurrentPageNumber))
+            {
+                foreach (var regionVm in (_vm.Model as PdfNodeModel).PageRegionDict[vm.CurrentPageNumber])
+                {
+                    RectangleView rectangle = new RectangleView(regionVm);
+                    rectangle.setRectangleSize(_vm.Width, _vm.Height);
+                    _vm.RegionsListTest.Add(new RectangleView(regionVm));
+                }
+            }
+
             //(nodeTpl.inkCanvas.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
             e.Handled = true;
 
@@ -169,12 +200,14 @@ namespace NuSysApp
                 attributes.Add("heightRatio", heightRatio);
                 attributes.Add("leftRatio", leftRatio);
                 attributes.Add("topRatio", topRatio);
+                attributes.Add("pdfPageNumber", _vm.CurrentPageNumber);
 
                 RectangleViewModel rvm = new RectangleViewModel(new RectangleModel(), attributes);
                 RectangleView rv = new RectangleView(rvm);
 
                 // add to controller
-                _vm.Controller.SetRegionModel(rvm);
+                //_vm.Controller.SetRegionModel(rvm);
+                _vm.Controller.AddPageRegion(_vm.CurrentPageNumber, rvm);
                 _vm.RegionsListTest.Add(rv);
 
                 // works?

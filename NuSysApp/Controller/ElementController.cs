@@ -176,6 +176,24 @@ namespace NuSysApp
             _debouncingDictionary.Add("regionsModel", Model.RegionsModel);
         }
 
+        public void AddPageRegion(int page, RectangleViewModel region)
+        {
+            if ((Model as PdfNodeModel).PageRegionDict.ContainsKey(page))
+            {
+                (Model as PdfNodeModel).PageRegionDict[page].Add(region);
+            }
+            else
+            {
+                (Model as PdfNodeModel).PageRegionDict[page] = new List<RectangleViewModel>() { region };
+            }
+
+            var m = new Message();
+            m["pageRegionDict"] = (Model as PdfNodeModel).PageRegionDict;
+            m["id"] = Model.Id;
+            var request = new SendableUpdateRequest(m, true);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            //_debouncingDictionary.Add("pageRegionDict", (Model as PdfNodeModel).PageRegionDict);
+        }
 
         public void Delete()
         {
@@ -213,7 +231,6 @@ namespace NuSysApp
 
         public virtual async Task RequestLinkTo(string otherId, RectangleView rectangle = null, LinkedTimeBlock block = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
         {
-            Debug.WriteLine("should only come up once");
             var contentId = SessionController.Instance.GenerateId();
             var libraryElementRequest = new CreateNewLibraryElementRequest(contentId,null,ElementType.Link, "NEW LINK");
             var request = new NewLinkRequest(Model.Id, otherId, Model.ParentCollectionId,contentId, block, rectangle, inFGDictionary, outFGDictionary);
