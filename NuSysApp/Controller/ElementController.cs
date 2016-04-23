@@ -107,13 +107,13 @@ namespace NuSysApp
 
         public void SetSize(double width, double height)
         {
-            if (width < 5 || height < 5)
+            if (width < 20 || height < 20)
             {
                 return;
             }
+
             Model.Width = width;
             Model.Height = height;
-
             SizeChanged?.Invoke(this, width, height);
 
             _debouncingDictionary.Add("width", width);

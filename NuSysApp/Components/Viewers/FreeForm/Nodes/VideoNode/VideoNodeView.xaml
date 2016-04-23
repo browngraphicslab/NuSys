@@ -30,7 +30,11 @@
                     <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
                 </Button>
                 <Button Margin="0,2,0,2" x:Name="Region" Click="Region_OnClick"  Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
-                    <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
+                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path5810" Fill="White" Data="M14 0h-12c-1.1 0-2 0.9-2 2v12c0 1.1 0.9 2 2 2h12c1.1 0 2-0.9 2-2v-12c0-1.1-0.9-2-2-2zM14 14h-12v-12h12v12z">
+                        <Path.RenderTransform>
+                            <CompositeTransform TranslateX="20" TranslateY="20" />
+                        </Path.RenderTransform>
+                    </Path>
                 </Button>
             </StackPanel>
         </local:NodeTemplate.SubMenu>

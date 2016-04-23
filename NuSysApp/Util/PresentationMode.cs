@@ -135,6 +135,10 @@ namespace NuSysApp.Util
         {
             foreach (LinkElementController link in vm.LinkList)
             {
+                var linkModel = (LinkModel) link.Model;
+                if (!linkModel.IsPresentationLink)
+                    continue;
+
                 if (link.OutElement.Model.Equals(vm.Model) && reverse)
                 {
                     return link.InElement.Model;

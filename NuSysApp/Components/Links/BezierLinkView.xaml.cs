@@ -88,11 +88,6 @@ namespace NuSysApp
             }
         }
 
-        private void LinkControllerOnPositionChanged(object source, double d, double d1, double dx, double dy)
-        {
-            throw new NotImplementedException();
-        }
-
         private void LinkControllerOnAnnotationChanged(string text)
         {
             var vm = (LinkViewModel)DataContext;

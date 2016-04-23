@@ -37,7 +37,7 @@
                                     <Button x:Name="isSearched" Visibility="Collapsed" Background="IndianRed">O</Button>
                                 </Grid>
 
-                                <Grid Visibility="Collapsed" Name="bg" BorderBrush="{StaticResource color3}" BorderThickness="1"  Background="{StaticResource color6}"
+                                <Grid Visibility="{Binding IsVisible, Converter={StaticResource vConverter}}" Name="bg" BorderBrush="{StaticResource color3}" BorderThickness="1"  Background="{StaticResource color6}"
                                   IsHitTestVisible="True"  Width="{Binding Width}"  Height="{Binding Height}">
 
                                     <Rectangle Height="{Binding Height}" Width="{Binding Width}" Margin="-2,-2"  />

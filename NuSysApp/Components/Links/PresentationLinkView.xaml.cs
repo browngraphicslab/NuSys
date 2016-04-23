@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -114,13 +115,14 @@ namespace NuSysApp
             //  vm.Controller.LibraryElementModel.SetTitle(Annotation.Text);           
         }
 
-        private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        private async void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
 
             this.UpdateControlPoints();
 
 
             var vm = (LinkViewModel)DataContext;
+
             if (propertyChangedEventArgs.PropertyName == "IsSelected")
             {
                 if (vm.IsSelected)
@@ -134,11 +136,31 @@ namespace NuSysApp
                     }
                     if (((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod != null)
                     {
+                        LinkModel model = ((LinkModel)(DataContext as LinkViewModel).Model);
+                        if (SessionController.Instance.IdToControllers[model.OutAtomId].Model.ElementType == ElementType.PDF)
+                        {
+                            PdfNodeModel pdfModel = (PdfNodeModel)SessionController.Instance.IdToControllers[model.OutAtomId].Model;
+                            var modelId = pdfModel.Id;
+
+                            var list =
+                                SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
+                                    item => ((ElementViewModel)item.DataContext).Model.Id == modelId);
+                            var view = list?.First();
+                            if (view == null)
+                            {
+                                return;
+                            }
+
+                            await ((PdfNodeView)view).onGoTo(((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.PdfPageNumber);
+                        }
+
                         ((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.Model.Select();
+
                     }
                 }
                 else
                 {
+
                     Delete.Visibility = Visibility.Collapsed;
                     if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
                     {
@@ -148,29 +170,6 @@ namespace NuSysApp
                     if (((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod != null)
                     {
                         ((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.Model.Deselect();
-                    }
-                }
-            }
-            if (propertyChangedEventArgs.PropertyName == "IsSelected")
-            {
-                if (vm.IsSelected)
-                {
-                    AnnotationContainer.Visibility = Visibility.Visible;
-                    Delete.Visibility = Visibility.Visible;
-                    if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
-                    {
-                        ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Select();
-                        this.JumpToLinkedTime();
-                    }
-                }
-                else
-                {
-
-                    Delete.Visibility = Visibility.Collapsed;
-                    if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
-                    {
-                        ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Deselect();
-
                     }
                 }
             }
@@ -195,7 +194,6 @@ namespace NuSysApp
                 {
                     (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
                     AudioNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Start);
-
                 }
 
 
@@ -219,6 +217,7 @@ namespace NuSysApp
                 }
             }
         }
+
 
         private void OnAtomPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
