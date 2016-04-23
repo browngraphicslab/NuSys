@@ -99,7 +99,7 @@
                                         </VisualState>
                                     </VisualStateGroup>
                                 </VisualStateManager.VisualStateGroups>
-                                <Ellipse Height="54" Width ="54" Fill="{StaticResource color2}" VerticalAlignment="Bottom" x:Name="Ellipse" Opacity="1" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="10" HorizontalAlignment="Center"/>
+                                <Ellipse Height="54" Width ="54" Fill="{StaticResource color3}" VerticalAlignment="Bottom" x:Name="Ellipse" Opacity="1" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="2" HorizontalAlignment="Center"/>
                                 <ContentPresenter></ContentPresenter>
                             </Grid>
                         </ControlTemplate>

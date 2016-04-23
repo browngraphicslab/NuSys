@@ -261,6 +261,11 @@ namespace NuSysApp
             get { return xWrapper; }
         }
 
+        public ItemsControl IControl
+        {
+            get { return IC; }
+        }
+
         public NuSysInqCanvas InqCanvas
         {
             get { return _inqCanvas; }

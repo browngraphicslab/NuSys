@@ -52,9 +52,9 @@ namespace NuSysApp
             xAddNodeMenu.Visibility = Visibility.Collapsed;
 
             Canvas.SetTop(_lib, 100);
-            Canvas.SetLeft(_lib, 100);
+            //Canvas.SetLeft(_lib, 100);
             Canvas.SetTop(libProp, 100);
-            Canvas.SetLeft(libProp, 550);
+            Canvas.SetLeft(libProp, 450);
             AddNodeSubmenuButton(btnText);
             AddNodeSubmenuButton(btnRecording);
             AddNodeSubmenuButton(btnTag);
@@ -259,6 +259,11 @@ namespace NuSysApp
         public SessionView SessionView
         {
             get;set;
+        }
+
+        public LibraryView Library
+        {
+            get { return _lib; }
         }
     }
 }
