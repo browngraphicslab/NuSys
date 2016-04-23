@@ -71,7 +71,10 @@ namespace NuSysApp
             {
                 //if (content.Favorited == true)
                 content.OnFavorited += LibraryElementModel_OnFavorited;
-
+                if (content.Favorited)
+                {
+                    LibraryElementModel_OnFavorited(content, true);
+                }
                 _orgList.Add(content);
 
                 //Search(_searchString);
