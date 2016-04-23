@@ -204,7 +204,6 @@ namespace NuSysApp
                 _favorited = value;
                 //RaisePropertyChanged("Favorited");
                 OnFavorited?.Invoke(this, _favorited);
-
             }
         }
 
