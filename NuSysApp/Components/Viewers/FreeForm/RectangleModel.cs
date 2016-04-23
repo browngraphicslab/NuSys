@@ -17,13 +17,11 @@ namespace NuSysApp.Viewers
 
         public void Select()
         {
-            Debug.WriteLine("SSSSSSSSSSSSSSSSSSSSS");
             OnSelect?.Invoke();
         }
 
         public void Deselect()
         {
-            Debug.WriteLine("DDDDDDDDDDDDDDDDDDD");
             OnDeselect?.Invoke();
         }
     }

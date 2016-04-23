@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using NuSysApp.Viewers;
 
 namespace NuSysApp
 {
@@ -9,6 +10,7 @@ namespace NuSysApp
     {
         private int _currentPageNumber;
         public MuPDFWinRT.Document Document { get; set; }
+        public Dictionary<int, List<RectangleViewModel>> PageRegionDict { get; set; }
 
         public int CurrentPageNumber {
             get { return _currentPageNumber; }
@@ -27,12 +29,14 @@ namespace NuSysApp
         public PdfNodeModel(string id) : base(id)
         {
             ElementType = ElementType.PDF;
+            PageRegionDict = new Dictionary<int, List<RectangleViewModel>>();
         }
         
         public override async Task<Dictionary<string, object>> Pack()
         {
             var props = await base.Pack();
             props.Add("page", CurrentPageNumber.ToString());
+            props.Add("pageRegionDict", PageRegionDict);
             return props;
         }
 
@@ -42,6 +46,12 @@ namespace NuSysApp
             {
                 CurrentPageNumber = props.GetInt("page", 0);
             }
+
+            if (props.ContainsKey("pageRegionDict"))
+            {
+                PageRegionDict = props.GetDict<int, List<RectangleViewModel>>("pageRegionDict");
+            }
+
             await base.UnPack(props);
         }
     }

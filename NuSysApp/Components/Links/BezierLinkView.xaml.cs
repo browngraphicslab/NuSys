@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -136,7 +137,7 @@ namespace NuSysApp
           //  vm.Controller.LibraryElementModel.SetTitle(Annotation.Text);           
         }
 
-        private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        private async void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             
             this.UpdateControlPoints();
@@ -158,7 +159,26 @@ namespace NuSysApp
                     }
                     if (((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod != null)
                     {
+                        LinkModel model = ((LinkModel)(DataContext as LinkViewModel).Model);
+                        if (SessionController.Instance.IdToControllers[model.OutAtomId].Model.ElementType == ElementType.PDF)
+                        {
+                            PdfNodeModel pdfModel = (PdfNodeModel)SessionController.Instance.IdToControllers[model.OutAtomId].Model;
+                            var modelId = pdfModel.Id;
+
+                            var list =
+                                SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
+                                    item => ((ElementViewModel)item.DataContext).Model.Id == modelId);
+                            var view = list?.First();
+                            if (view == null)
+                            {
+                                return;
+                            }
+                           
+                            await ((PdfNodeView)view).onGoTo(((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.PdfPageNumber);
+                        }
+
                         ((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.Model.Select();
+
                     }
                 }
                 else
