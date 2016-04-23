@@ -57,8 +57,6 @@ namespace NuSysApp
             Canvas.SetLeft(libProp, 450);
             AddNodeSubmenuButton(btnText);
             AddNodeSubmenuButton(btnRecording);
-            AddNodeSubmenuButton(btnTag);
-            AddNodeSubmenuButton(btnWeb);
             AddNodeSubmenuButton(btnNew);
         }
 
@@ -172,8 +170,6 @@ namespace NuSysApp
                 _elementType = ElementType.Text;
             if (sender == btnRecording)
                 _elementType = ElementType.Recording;
-            if (sender == btnWeb)
-                _elementType = ElementType.Web;
             if (sender == btnNew)
                 _elementType = ElementType.Collection;
 
