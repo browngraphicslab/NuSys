@@ -278,10 +278,12 @@
                 <!--<Image Tapped="Folder_Tapped" Source ="ms-appx:///Assets/icon_upload.png" Margin="320,542,13,506" Height="30" VerticalAlignment="Bottom"></Image>-->
                 <!--<Image Source="ms-appx:///Assets/icon_search.png" Height="20"  Margin="320,512,0,0"/>-->
                 <Button Grid.Column="1"  Height="40" Width="50"  Tapped="Folder_Tapped" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Bottom">
-                    <Image Source="ms-appx:///Assets/icon_upload.png" Height="30"></Image>
+                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path5260" Fill="White" Data="M 13 16 16 8 3 8 0 16 Z M 2 7 0 16 0 3 l 4.5 0 2 2 6.5 0 0 2 z">
+                        <Path.RenderTransform>
+                            <CompositeTransform TranslateY="-5" ScaleX="1.5" ScaleY="1.5"></CompositeTransform>
+                        </Path.RenderTransform>
+                    </Path>
                 </Button>
-
-
             </Grid>
 
 
