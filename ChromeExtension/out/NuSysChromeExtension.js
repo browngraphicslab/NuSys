@@ -1,14 +1,13 @@
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 // Copyright 2013 Basarat Ali Syed. All Rights Reserved.
 //
 // Licensed under MIT open source license http://opensource.org/licenses/MIT
 //
 // Orginal javascript code was by Mauricio Santos
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
 /**
  * @namespace Top level namespace for collections, a TypeScript data structure library.
  */
@@ -692,7 +691,7 @@ var collections;
             };
         };
         return LinkedList;
-    })();
+    }());
     collections.LinkedList = LinkedList; // End of linked list 
     var Dictionary = (function () {
         /**
@@ -865,7 +864,7 @@ var collections;
             return toret + "\n}";
         };
         return Dictionary;
-    })();
+    }());
     collections.Dictionary = Dictionary; // End of dictionary
     /**
      * This class is used by the LinkedDictionary Internally
@@ -882,7 +881,7 @@ var collections;
             this.next.prev = this.prev;
         };
         return LinkedDictionaryPair;
-    })();
+    }());
     var LinkedDictionary = (function (_super) {
         __extends(LinkedDictionary, _super);
         function LinkedDictionary(toStrFunction) {
@@ -1055,7 +1054,7 @@ var collections;
             }
         };
         return LinkedDictionary;
-    })(Dictionary);
+    }(Dictionary));
     collections.LinkedDictionary = LinkedDictionary; // End of LinkedDictionary
     // /**
     //  * Returns true if this dictionary is equal to the given dictionary.
@@ -1235,7 +1234,7 @@ var collections;
             return this.dict.isEmpty();
         };
         return MultiDictionary;
-    })();
+    }());
     collections.MultiDictionary = MultiDictionary; // end of multi dictionary 
     var Heap = (function () {
         /**
@@ -1457,7 +1456,7 @@ var collections;
             collections.arrays.forEach(this.data, callback);
         };
         return Heap;
-    })();
+    }());
     collections.Heap = Heap;
     var Stack = (function () {
         /**
@@ -1556,7 +1555,7 @@ var collections;
             this.list.forEach(callback);
         };
         return Stack;
-    })();
+    }());
     collections.Stack = Stack; // End of stack 
     var Queue = (function () {
         /**
@@ -1660,7 +1659,7 @@ var collections;
             this.list.forEach(callback);
         };
         return Queue;
-    })();
+    }());
     collections.Queue = Queue; // End of queue
     var PriorityQueue = (function () {
         /**
@@ -1767,7 +1766,7 @@ var collections;
             this.heap.forEach(callback);
         };
         return PriorityQueue;
-    })();
+    }());
     collections.PriorityQueue = PriorityQueue; // end of priority queue
     var Set = (function () {
         /**
@@ -1930,7 +1929,7 @@ var collections;
             return collections.arrays.toString(this.toArray());
         };
         return Set;
-    })();
+    }());
     collections.Set = Set; // end of Set
     var Bag = (function () {
         /**
@@ -2110,7 +2109,7 @@ var collections;
             this.dictionary.clear();
         };
         return Bag;
-    })();
+    }());
     collections.Bag = Bag; // End of bag 
     var BSTree = (function () {
         /**
@@ -2505,7 +2504,7 @@ var collections;
             };
         };
         return BSTree;
-    })();
+    }());
     collections.BSTree = BSTree; // end of BSTree
 })(collections || (collections = {})); // End of module 
 var BrushStroke = (function () {
@@ -2514,36 +2513,435 @@ var BrushStroke = (function () {
         this.stroke = stroke;
     }
     return BrushStroke;
-})();
-var MarqueeBrush = (function () {
-    function MarqueeBrush(x, y) {
-        this._startX = x;
-        this._startY = y;
+}());
+/// <reference path="brush/BrushStroke.ts"/>
+var InkCanvas = (function () {
+    function InkCanvas(canvas) {
+        this._canvas = canvas;
+        this._context = canvas.getContext("2d");
+        this._isDrawing = false;
+        this._brushStrokes = [];
+        this._brush = null;
+        this._scrollOffset = { x: 0, y: 0 };
     }
-    MarqueeBrush.prototype.init = function (x, y, inkCanvas) {
-        inkCanvas._context.lineWidth = 4;
-        inkCanvas._context.lineJoin = inkCanvas._context.lineCap = 'butt';
+    InkCanvas.prototype.drawStroke = function (stroke, brush) {
+        if (brush)
+            this._brush = brush;
+        this._scrollOffset = { x: 0, y: 0 };
+        this._isDrawing = true;
+        this._activeStroke = new BrushStroke(this._brush, new Stroke());
+        this._activeStroke.stroke.documentOffsetY = window.pageYOffset;
+        var first = stroke.points[0];
+        var last = stroke.points[stroke.points.length - 1];
+        this.startDrawing(first.x, first.y, brush);
+        for (var i = 1; i < stroke.points.length - 2; i++) {
+            this.draw(stroke.points[i].x, stroke.points[i].y);
+        }
+        this.endDrawing(last.x, last.y);
     };
-    MarqueeBrush.prototype.draw = function (x, y, inkCanvas) {
-        var canvas = inkCanvas._canvas;
+    InkCanvas.prototype.startDrawing = function (x, y, brush) {
+        if (brush)
+            this._brush = brush;
+        this._brush.init(x, y, this);
+        this._scrollOffset = { x: 0, y: 0 };
+        this._isDrawing = true;
+        this._activeStroke = new BrushStroke(this._brush, new Stroke());
+        this._activeStroke.stroke.documentOffsetY = window.pageYOffset;
+        this.draw(x, y);
+    };
+    InkCanvas.prototype.draw = function (x, y) {
+        if (this._isDrawing == false)
+            return;
+        this._activeStroke.stroke.points.push({ x: x, y: y });
+        this._brush.draw(x, y, this);
+    };
+    InkCanvas.prototype.endDrawing = function (x, y) {
+        this.draw(x, y);
+        this._isDrawing = false;
+        this._brushStrokes.push(this._activeStroke);
+    };
+    InkCanvas.prototype.addBrushStroke = function (brushStroke) {
+        if (this._brushStrokes.indexOf(brushStroke) == -1)
+            this._brushStrokes.push(brushStroke);
+    };
+    InkCanvas.prototype.removeBrushStroke = function (brushStroke) {
+        var index = this._brushStrokes.indexOf(brushStroke);
+        if (index > -1) {
+            this._brushStrokes.splice(index, 1);
+            return true;
+        }
+        return false;
+        //console.log("couldn't remove element");
+    };
+    InkCanvas.prototype.update = function () {
+        this._scrollOffset = { x: window.pageXOffset, y: window.pageYOffset };
+        this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
+        for (var i = 0; i < this._brushStrokes.length; i++) {
+            this._brushStrokes[i]["brush"].drawStroke(this._brushStrokes[i]["stroke"], this);
+        }
+    };
+    InkCanvas.prototype.setBrush = function (brush) {
+        this._brush = brush;
+        if (this._isDrawing) {
+            this._activeStroke.brush = brush;
+            var p = this._activeStroke.stroke.points[0];
+            this._brush.init(p.x, p.y, this);
+        }
+    };
+    InkCanvas.prototype.redrawActiveStroke = function () {
+        this.update();
+        this._activeStroke.brush.drawStroke(this._activeStroke.stroke, this);
+    };
+    ///called after lineSelection so that highlights for line selection disappear
+    ///bracket selections are yet updated
+    InkCanvas.prototype.removeStroke = function () {
+        this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
+        this.update();
+    };
+    InkCanvas.prototype.hide = function () {
+        console.log("hide canvas");
+    };
+    InkCanvas.prototype.reveal = function () {
+        console.log("reveal canvas");
+    };
+    return InkCanvas;
+}());
+var StrokeType;
+(function (StrokeType) {
+    StrokeType[StrokeType["Null"] = 0] = "Null";
+    StrokeType[StrokeType["Line"] = 1] = "Line";
+    StrokeType[StrokeType["Bracket"] = 2] = "Bracket";
+    StrokeType[StrokeType["Marquee"] = 3] = "Marquee";
+    StrokeType[StrokeType["Scribble"] = 4] = "Scribble";
+    StrokeType[StrokeType["MultiLine"] = 5] = "MultiLine";
+})(StrokeType || (StrokeType = {}));
+var HighlightBrush = (function () {
+    function HighlightBrush() {
+        this._img = new Image();
+        this._img.src = chrome.extension.getURL("assets/brush.png");
+    }
+    HighlightBrush.prototype.init = function (x, y, inkCanvas) {
+        // do nothing
+    };
+    HighlightBrush.prototype.draw = function (x, y, inkCanvas) {
+        inkCanvas._context.globalCompositeOperation = "xor";
+        inkCanvas._context.globalAlpha = 0.6;
+        inkCanvas._context.drawImage(this._img, x - 15, y - 15, 30, 30);
+    };
+    HighlightBrush.prototype.drawStroke = function (stroke, inkCanvas) {
+        for (var i = 0; i < stroke.points.length; i++) {
+            var p = stroke.points[i];
+            inkCanvas._context.globalCompositeOperation = "xor";
+            inkCanvas._context.globalAlpha = 0.6;
+            inkCanvas._context.drawImage(this._img, p.x - inkCanvas._scrollOffset.x + stroke.documentOffsetX - 15, p.y + stroke.documentOffsetY - inkCanvas._scrollOffset.y - 15, 30, 30);
+        }
+    };
+    return HighlightBrush;
+}());
+var SelectionBrush = (function () {
+    function SelectionBrush(rect) {
+        this._rect = rect;
+    }
+    SelectionBrush.prototype.init = function (x, y, inkCanvas) {
+        // do nothing
+    };
+    SelectionBrush.prototype.draw = function (x, y, inkCanvas) {
+        // do nothing.
+    };
+    SelectionBrush.prototype.drawStroke = function (stroke, inkCanvas) {
+        if (this._rect != null) {
+            stroke = new Stroke();
+            stroke.points.push({ x: this._rect.x, y: this._rect.y });
+            stroke.points.push({ x: this._rect.x + this._rect.w, y: this._rect.y + this._rect.h });
+        }
+        var startX = stroke.points[0].x;
+        var startY = stroke.points[0].y;
+        var w = stroke.points[stroke.points.length - 1].x - startX;
+        var h = stroke.points[stroke.points.length - 1].y - startY;
+        startX = startX - inkCanvas._scrollOffset.x + stroke.documentOffsetX;
+        startY = startY - inkCanvas._scrollOffset.y + stroke.documentOffsetY;
         var ctx = inkCanvas._context;
         ctx.globalCompositeOperation = "source-over";
+        ctx.globalAlpha = 0.6;
         ctx.beginPath();
-        ctx.lineWidth = 5;
-        ctx.strokeStyle = "rgb(222,214,0)";
-        ctx.setLineDash([6]);
-        ctx.rect(this._startX, this._startY, x - this._startX, y - this._startY);
-        ctx.stroke();
+        ctx.fillStyle = "rgb(222,214,0)";
+        ctx.fillRect(startX, startY, w, h);
+        ctx.fill();
     };
-    MarqueeBrush.prototype.drawStroke = function (stroke, inkCanvas) {
-        var firstPoint = stroke.points[0];
-        var lastPoint = stroke.points[stroke.points.length - 1];
-        this._startX = firstPoint.x - inkCanvas._scrollOffset.x + stroke.documentOffsetX;
-        this._startY = firstPoint.y - inkCanvas._scrollOffset.y + stroke.documentOffsetY;
-        this.draw(lastPoint.x - inkCanvas._scrollOffset.x + stroke.documentOffsetX, lastPoint.y - inkCanvas._scrollOffset.y + stroke.documentOffsetY, inkCanvas);
+    return SelectionBrush;
+}());
+var Rectangle = (function () {
+    function Rectangle(x, y, w, h) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+    }
+    Rectangle.prototype.intersectsRectangle = function (r2) {
+        return !(r2.x > this.x + this.w ||
+            r2.x + r2.w < this.x ||
+            r2.y > this.y + this.h ||
+            r2.y + r2.h < this.y);
     };
-    return MarqueeBrush;
-})();
+    return Rectangle;
+}());
+/// <reference path="../../typings/jquery/jquery.d.ts"/>
+var DomUtil = (function () {
+    function DomUtil() {
+    }
+    DomUtil.getCommonAncestor = function (a, b) {
+        var parentsa = $(a).parents().toArray();
+        var parentsb = $(b).parents().toArray();
+        parentsa.unshift(a);
+        parentsb.unshift(b);
+        var found = null;
+        $.each(parentsa, function () {
+            var thisa = this;
+            $.each(parentsb, function () {
+                if (thisa == this) {
+                    found = this;
+                    return false;
+                }
+            });
+            if (found)
+                return false;
+        });
+        return found;
+    };
+    return DomUtil;
+}());
+var AbstractSelection = (function () {
+    function AbstractSelection(className) {
+        this.selectedElements = new Array();
+        this.selectedTags = new Array();
+        this.className = className;
+    }
+    AbstractSelection.prototype.start = function (x, y) { };
+    AbstractSelection.prototype.update = function (x, y) { };
+    AbstractSelection.prototype.end = function (x, y) { };
+    AbstractSelection.prototype.select = function () {
+        var _this = this;
+        console.log("select");
+        console.log(this.selectedElements);
+        this.selectedElements.forEach(function (selectedElement) {
+            if (selectedElement.type == "marquee") {
+                _this.parseSelections(selectedElement);
+                _this.highlightSelection(selectedElement);
+            }
+            else {
+                console.log("-=-=====--=");
+                var foundElement = $(selectedElement.tagName)[selectedElement.index];
+                if (foundElement.tagName.toLowerCase() == "img") {
+                    var label = $("<span>Selected</span>");
+                    //label.css({ position: "absolute", display: "block", background: "lightgrey", width: "50px", height: "20px", color: "black", "font-size": "12px" });
+                    label.css({ position: "absolute", display: "block", background: "yellow", width: "50px", height: "20px", color: "black", "font-size": "12px", padding: "3px 3px", "font-weight": "bold" });
+                    $("body").append(label);
+                    label.css("top", $(foundElement).offset().top);
+                    label.css("left", $(foundElement).offset().left);
+                }
+                else {
+                    $(foundElement).css("background-color", "yellow");
+                }
+            }
+        });
+    };
+    AbstractSelection.prototype.deselect = function () {
+        console.log("deselect");
+        this.selectedElements.forEach(function (selectedElement) {
+            var foundElement = $(selectedElement.tagName)[selectedElement.index];
+            $(foundElement).css("background-color", "");
+        });
+    };
+    AbstractSelection.prototype.highlightCallback = function (parElement, obj) {
+        var words = parElement.childNodes; //[obj["txtnIndx"]];
+        console.log(words);
+        var wordList = words[obj["txtnIndx"]]["childNodes"];
+        console.log("===================================WORDLIST");
+        console.log(wordList);
+        console.log(obj);
+        var word = wordList[obj["wordIndx"]];
+        console.log(word);
+        //    $(word).replaceWith("<word style=\"background-color: yellow\">" + word[obj["wordIndx"]].textContent + "</word>");
+        //   word["style"]["backgroundColor"] = "yellow";
+        $(word).css("background-color", "yellow");
+    };
+    ;
+    AbstractSelection.prototype.parseString = function (node, par, obj, callback) {
+        $(node).replaceWith("<words>" + $(node).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
+        //callback(par, obj);
+    };
+    AbstractSelection.prototype.highlightSelection = function (obj) {
+        var tagName = obj["tagName"];
+        if (tagName != "WORD" && tagName != "HILIGHT") {
+            $(tagName)[obj["index"]].style.backgroundColor = "yellow";
+        }
+        else {
+            var parent = $(obj["par"])[obj["parIndex"]];
+            var textN = parent.childNodes[obj["txtnIndx"]];
+            if (tagName == "WORD") {
+                var word = textN.childNodes[obj["wordIndx"]];
+                $(word).css("background-color", "yellow");
+            }
+            else {
+                $(textN).css("background-color", "yellow");
+            }
+        }
+    };
+    AbstractSelection.prototype.parseSelections = function (obj) {
+        console.log("=======parseSelections====");
+        console.log(obj);
+        var tagName = obj["tagName"];
+        if (tagName != "WORD" && tagName != "HILIGHT") {
+            console.log(tagName + "=======================");
+            console.log(tagName != "WORD");
+            return;
+        }
+        //  var tag = obj["par"] + "," +obj["parIndex"] + ","+obj["txtnIndx"] ;
+        //  if (this.selectedTags.indexOf(tag) > -1 || obj["txtnIndx"]==-1) {
+        //      return;
+        //  }
+        // this.selectedTags.push(tag);
+        // console.log(tag);
+        var parElement = $(obj["par"])[obj["parIndex"]];
+        console.log(parElement);
+        var textN = parElement.childNodes[obj["txtnIndx"]];
+        console.log(textN);
+        if (!textN) {
+            return;
+        }
+        if (textN.nodeName == "#text") {
+            if (tagName == "WORD") {
+                console.log("W------------------------");
+                console.log($(textN));
+                $(textN).replaceWith("<words>" + $(textN).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
+            }
+            else if (tagName == "HILIGHT") {
+                console.log("H-----------------------");
+                console.log($(textN));
+                $(textN).replaceWith("<hilight>" + $(textN).text() + "</hilight>");
+            }
+        }
+    };
+    AbstractSelection.prototype.selectMarqueeHighlights = function (obj) {
+        var tagName = obj["tagName"];
+        if (tagName == "WORD") {
+            console.log("W------------------------");
+            var parElement = $(obj["par"])[obj["parIndex"]];
+            var textN = parElement.childNodes[obj["txtnIndx"]];
+            this.parseString(textN, parElement, obj, this.highlightCallback);
+            console.log(textN);
+        }
+        else if (tagName == "HILIGHT") {
+            var parElement = $(obj["par"])[obj["parIndex"]];
+            var textN = parElement.childNodes[obj["txtnIndx"]];
+            $(textN).replaceWith("<hilight>" + $(textN).text() + "</hilight>");
+            $(parElement.childNodes[obj["txtnIndx"]]).css("background-color", "yellow");
+        }
+        else {
+            console.log(tagName);
+            var foundElement = $(tagName)[obj["index"]];
+            $(foundElement).css("background-color", "yellow");
+        }
+    };
+    AbstractSelection.prototype.getBoundingRect = function () { return null; };
+    AbstractSelection.prototype.analyzeContent = function () { };
+    AbstractSelection.prototype.getContent = function () { return null; };
+    return AbstractSelection;
+}());
+/// <reference path="../../typings/jquery/jquery.d.ts"/>
+/// <reference path="../ink/InkCanvas.ts"/>
+/// <reference path="../ink/brush/BrushStroke.ts"/>
+/// <reference path="../ink/brush/HighlightBrush.ts"/>
+/// <reference path="../ink/brush/SelectionBrush.ts"/>
+/// <reference path="../util/Rectangle.ts"/>
+/// <reference path="../util/DomUtil.ts"/>
+/// <reference path="AbstractSelection.ts"/>
+var LineSelection = (function (_super) {
+    __extends(LineSelection, _super);
+    function LineSelection(inkCanvas, fromActiveStroke) {
+        if (fromActiveStroke === void 0) { fromActiveStroke = false; }
+        _super.call(this, "LineSelection");
+        this._brushStroke = null;
+        this._inkCanvas = inkCanvas;
+        console.log("making line selection");
+        if (fromActiveStroke) {
+            this._inkCanvas.setBrush(new HighlightBrush());
+            var t = this;
+            $.each(inkCanvas._activeStroke.stroke.points, function () {
+                t._inkCanvas.draw(this.x, this.y);
+            });
+        }
+    }
+    LineSelection.prototype.start = function (x, y) {
+        this._inkCanvas.startDrawing(x, y, new HighlightBrush());
+    };
+    LineSelection.prototype.update = function (x, y) {
+        this._inkCanvas.draw(x, y);
+    };
+    LineSelection.prototype.end = function (x, y) {
+        this._inkCanvas.endDrawing(x, y);
+        this._brushStroke = this._inkCanvas._activeStroke;
+        this.analyzeContent();
+        this.select();
+        this._inkCanvas.removeBrushStroke(this._brushStroke);
+        this._inkCanvas.update();
+    };
+    LineSelection.prototype.deselect = function () {
+        this._inkCanvas.removeBrushStroke(this._brushStroke);
+    };
+    LineSelection.prototype.getBoundingRect = function () {
+        var minX = 1000000;
+        var maxX = -1000000;
+        var minY = 1000000;
+        var maxY = -1000000;
+        for (var i = 0; i < this._clientRects.length; i++) {
+            var p = this._clientRects[i];
+            maxY = p.top + p.height > maxY ? p.top + p.height : maxY;
+            maxX = p.left + p.width > maxX ? p.left + p.width : maxX;
+            minX = p.left < minX ? p.left : minX;
+            minY = p.top < minY ? p.top : minY;
+        }
+        return new Rectangle(minX, minY + window.pageYOffset, maxX - minX, maxY - minY);
+    };
+    LineSelection.prototype.addWordTag = function (nodes) {
+        var _this = this;
+        $.each(nodes, function (index, value) {
+            if (value.nodeType == Node.TEXT_NODE) {
+                $(value).replaceWith($(value).text().replace(/([^,\s]*)/g, "<word>$1</word>"));
+            }
+            else if (value.childNodes.length > 0) {
+                _this.addWordTag(value.childNodes);
+            }
+        });
+    };
+    LineSelection.prototype.analyzeContent = function () {
+        console.log("analyzing content.");
+        var stroke = this._brushStroke.stroke;
+        var pStart = stroke.points[0];
+        var pEnd = stroke.points[stroke.points.length - 1];
+        // var nStart = document.elementFromPoint(pStart.x, pStart.y);
+        // var nEnd = document.elementFromPoint(pEnd.x, pEnd.y);
+        var startRange = document["caretRangeFromPoint"](pStart.x, pStart.y);
+        var endRange = document["caretRangeFromPoint"](pEnd.x, pEnd.y);
+        console.log("----------------");
+        console.log(startRange);
+        console.log(endRange);
+        console.log(startRange.startContainer.nodeValue);
+        console.log(startRange.startContainer.nodeValue.substring(0, startRange.startOffset));
+        console.log(startRange.startContainer.nodeValue.substring(startRange.startOffset, endRange.endOffset));
+        console.log(startRange.startContainer.nodeValue.substring(endRange.endOffset, endRange.endContainer.nodeValue.length));
+        this._content = startRange.startContainer.nodeValue.substring(startRange.startOffset, endRange.endOffset);
+        var newStart = document.createElement("span");
+        newStart.innerHTML = "<span>" + startRange.startContainer.nodeValue.substring(0, startRange.startOffset) + "</span>" + "<span style='background: yellow;'>" + startRange.startContainer.nodeValue.substring(startRange.startOffset, endRange.endOffset) + "</span>" + "<span>" + startRange.startContainer.nodeValue.substring(endRange.endOffset, endRange.endContainer.nodeValue.length) + "</span>";
+        startRange.startContainer.parentNode.replaceChild(newStart, startRange.startContainer);
+        //$(commonParent).replaceWith(original_content);
+        console.log("done analyzing line selection.");
+    };
+    LineSelection.prototype.getContent = function () {
+        return this._content;
+    };
+    return LineSelection;
+}(AbstractSelection));
 var LineBrush = (function () {
     function LineBrush() {
     }
@@ -2581,7 +2979,501 @@ var LineBrush = (function () {
         }
     };
     return LineBrush;
-})();
+}());
+/// <reference path="../../typings/jquery/jquery.d.ts"/>
+/// <reference path="../ink/InkCanvas.ts"/>
+/// <reference path="../ink/brush/BrushStroke.ts"/>
+/// <reference path="../ink/brush/HighlightBrush.ts"/>
+/// <reference path="../ink/brush/SelectionBrush.ts"/>
+/// <reference path="../ink/brush/LineBrush.ts"/>
+/// <reference path="../util/Rectangle.ts"/>
+/// <reference path="../util/DomUtil.ts"/>
+var UnknownSelection = (function (_super) {
+    __extends(UnknownSelection, _super);
+    function UnknownSelection(inkCanvas, fromActiveStroke) {
+        if (fromActiveStroke === void 0) { fromActiveStroke = false; }
+        _super.call(this, "UnknownSelection");
+        this._brushStroke = null;
+        this._inkCanvas = inkCanvas;
+        if (fromActiveStroke) {
+            inkCanvas.setBrush(new LineBrush());
+        }
+    }
+    UnknownSelection.prototype.start = function (x, y) {
+        this._inkCanvas.startDrawing(x, y, new LineBrush());
+    };
+    UnknownSelection.prototype.update = function (x, y) {
+        this._inkCanvas.draw(x, y);
+    };
+    UnknownSelection.prototype.end = function (x, y) {
+        this._inkCanvas.endDrawing(x, y);
+    };
+    UnknownSelection.prototype.deselect = function () {
+        this._inkCanvas.removeBrushStroke(this._brushStroke);
+    };
+    UnknownSelection.prototype.getBoundingRect = function () {
+        return this._brushStroke.stroke.getBoundingRect();
+    };
+    UnknownSelection.prototype.analyzeContent = function () {
+        // nothing to analyze.
+    };
+    UnknownSelection.prototype.getContent = function () {
+        return null;
+    };
+    return UnknownSelection;
+}(AbstractSelection));
+/// <reference path="../typings/chrome/chrome.d.ts"/>
+/// <reference path="../typings/jquery/jquery.d.ts"/>
+/// <reference path="ink/InkCanvas.ts"/>
+/// <reference path="ink/StrokeType.ts" />
+/// <reference path="selection/LineSelection.ts"/>
+/// <reference path="selection/UnknownSelection.ts"/>
+var Main = (function () {
+    function Main() {
+        var _this = this;
+        this.prevStrokeType = StrokeType.Line;
+        this.currentStrokeType = StrokeType.Line;
+        this.selections = new Array();
+        this.urlGroup = Date.now();
+        this.previousSelections = new Array();
+        this.mouseMove = function (e) {
+            if (!_this.isSelecting) {
+                return;
+            }
+            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee || _this.currentStrokeType == StrokeType.Line) {
+                var currType = GestireClassifier.getGestureType(_this.inkCanvas._activeStroke.stroke);
+                if (_this.currentStrokeType != StrokeType.Line && currType == GestureType.Horizontal) {
+                    _this.selection = new LineSelection(_this.inkCanvas, true);
+                    _this.currentStrokeType = StrokeType.Line;
+                    _this.inkCanvas.redrawActiveStroke();
+                }
+                if (_this.currentStrokeType != StrokeType.Marquee && currType == GestureType.Diagonal) {
+                    _this.selection = new MarqueeSelection(_this.inkCanvas, true);
+                    _this.currentStrokeType = StrokeType.Marquee;
+                    _this.inkCanvas.redrawActiveStroke();
+                }
+                if (_this.currentStrokeType != StrokeType.Bracket && currType == GestureType.Vertical) {
+                    _this.selection = new BracketSelection(_this.inkCanvas, true);
+                    _this.currentStrokeType = StrokeType.Bracket;
+                    _this.inkCanvas.redrawActiveStroke();
+                }
+                _this.selection.update(e.clientX, e.clientY);
+            }
+        };
+        this.documentDown = function (e) {
+            try {
+                document.body.removeChild(_this.canvas);
+            }
+            catch (e) {
+                console.log("no canvas visible." + e);
+            }
+            var hitElem = document.elementFromPoint(e.clientX, e.clientY);
+            console.log(hitElem);
+            if (hitElem.nodeName == "A") {
+                var link = hitElem.getAttribute("href").toString();
+                if (link.indexOf("http") == -1) {
+                    link = "http://" + window.location.host + link;
+                }
+                console.log(link);
+                window.open(link, "_self");
+            }
+            switch (_this.currentStrokeType) {
+                case StrokeType.MultiLine:
+                    _this.selection = new MultiLineSelection(_this.inkCanvas);
+                    break;
+                case StrokeType.Line:
+                case StrokeType.Bracket:
+                    _this.selection = new BracketSelection(_this.inkCanvas);
+                    break;
+                case StrokeType.Marquee:
+                    _this.selection = new MarqueeSelection(_this.inkCanvas);
+                    break;
+            }
+            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee || _this.currentStrokeType == StrokeType.Line) {
+                console.log("current selection: " + _this.currentStrokeType);
+                document.body.appendChild(_this.canvas);
+                _this.canvas.addEventListener("mousemove", _this.mouseMove);
+            }
+            else {
+                try {
+                    document.body.removeChild(_this.canvas);
+                }
+                catch (e) {
+                    console.log("no canvas visible." + e);
+                }
+            }
+            _this.selection.start(e.clientX, e.clientY);
+            _this.isSelecting = true;
+        };
+        this.documentScroll = function (e) {
+            _this.inkCanvas.update();
+        };
+        this.documentUp = function (e) {
+            console.log("document up");
+            if (!_this.isSelecting)
+                return;
+            _this.isSelecting = false;
+            if (_this.currentStrokeType == StrokeType.MultiLine)
+                _this.selection.end(e.clientX, e.clientY);
+            _this.selection.id = Date.now();
+            _this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            _this.selection.tags = $(_this.menuIframe).contents().find("#tagfield").val();
+            _this.selections.push(_this.selection);
+            chrome.runtime.sendMessage({ msg: "store_selection", data: _this.selection });
+            _this.selection = new MultiLineSelection(_this.inkCanvas);
+            _this.updateSelectedList();
+        };
+        this.windowUp = function (e) {
+            if (!_this.isSelecting)
+                return;
+            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee) {
+                _this.canvas.removeEventListener("mousemove", _this.mouseMove);
+                _this.inkCanvas.removeBrushStroke(_this.inkCanvas._activeStroke);
+                _this.inkCanvas.update();
+            }
+            _this.isSelecting = false;
+        };
+        this.canvasUp = function (e) {
+            console.log("canvas up");
+            if (!_this.isSelecting) {
+                return;
+            }
+            _this.canvas.removeEventListener("mousemove", _this.mouseMove);
+            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee || _this.currentStrokeType == StrokeType.Line) {
+                document.body.removeChild(_this.canvas);
+                $(_this.menuIframe).hide();
+                _this.selection.end(e.clientX, e.clientY);
+                var stroke = _this.inkCanvas._activeStroke.stroke.getCopy();
+                var currType = GestireClassifier.getGestureType(stroke);
+                if (currType == GestureType.Null) {
+                    console.log("JUST A TAP");
+                    document.body.appendChild(_this.canvas);
+                    _this.inkCanvas.update();
+                    return;
+                }
+                else {
+                    document.body.appendChild(_this.canvas);
+                    $(_this.menuIframe).show();
+                    _this.inkCanvas.update();
+                    _this.isSelecting = false;
+                }
+                _this.currentStrokeType = StrokeType.Bracket;
+            }
+            if (_this.selection.getContent() == "" || _this.selection.getContent() == " ") {
+                return;
+            }
+            _this.selection.id = Date.now();
+            _this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            _this.selection.tags = $(_this.menuIframe).contents().find("#tagfield").val();
+            _this.selections.push(_this.selection);
+            chrome.runtime.sendMessage({ msg: "store_selection", data: _this.selection });
+            _this.updateSelectedList();
+        };
+        console.log("Starting NuSys.");
+        // create and append canvas
+        var body = document.body, html = document.documentElement;
+        Main.DOC_WIDTH = Math.max(body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth);
+        Main.DOC_HEIGHT = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+        this.canvas = document.createElement("canvas");
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.canvas.style.position = "fixed";
+        this.canvas.style.top = "0";
+        this.canvas.style.left = "0"; //fixes canvas placements
+        this.canvas.style.zIndex = "998";
+        this.inkCanvas = new InkCanvas(this.canvas);
+        chrome.storage.local.get(null, function (data) {
+            _this.previousSelections = data["selections"];
+        });
+        chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+            console.log(request);
+            if (request.msg == "tags_changed") {
+                console.log("tags_changed");
+                $(_this.menuIframe).contents().find("#tagfield").val(request.data);
+            }
+            if (request.msg == "check_injection")
+                sendResponse(true);
+            if (request.msg == "init") {
+                _this.init(request.data);
+                sendResponse();
+            }
+            if (request.msg == "show_menu") {
+                _this.showMenu();
+            }
+            if (request.msg == "hide_menu") {
+                _this.hideMenu();
+            }
+            if (request.msg == "enable_selections") {
+                _this.toggleEnabled(true);
+            }
+            if (request.msg == "disable_selections") {
+                _this.toggleEnabled(false);
+            }
+            if (request.msg == "set_selections") {
+                _this.selections = [];
+                request.data.forEach(function (d) {
+                    var ls = null;
+                    if (d["className"] == "LineSelection")
+                        ls = new LineSelection(_this.inkCanvas);
+                    if (d["className"] == "BracketSelection")
+                        ls = new BracketSelection(_this.inkCanvas);
+                    if (d["className"] == "MarqueeSelection")
+                        ls = new MarqueeSelection(_this.inkCanvas);
+                    if (d["className"] == "MultiLineSelection")
+                        ls = new MultiLineSelection(_this.inkCanvas);
+                    $.extend(ls, d);
+                    ls._inkCanvas = _this.inkCanvas;
+                    if (ls._brushStroke != null) {
+                        var stroke = new Stroke();
+                        $.extend(stroke, ls._brushStroke.stroke);
+                        ls._brushStroke.stroke = stroke;
+                    }
+                    _this.selections.push(ls);
+                });
+                var count = 0;
+                _this.selections.forEach(function (sel) {
+                    if (sel instanceof MultiLineSelection) {
+                        console.log("found MultiSelection");
+                        sel.selectedElements.forEach(function (el) {
+                            var startNode = $(el.start.tagName)[el.start.parentIndex];
+                            var endNode = $(el.end.tagName)[el.end.parentIndex];
+                            var startParentData = count++;
+                            var endParentData = count++;
+                            if ($(startNode).attr("data-cTedId") == undefined) {
+                                $(startNode).attr("data-cTedId", startParentData);
+                            }
+                            else {
+                                startParentData = parseInt($(startNode).attr("data-cTedId"));
+                            }
+                            if ($(endNode).attr("data-cTedId") == undefined) {
+                                $(endNode).attr("data-cTedId", endParentData);
+                            }
+                            else {
+                                endParentData = parseInt($(endNode).attr("data-cTedId"));
+                            }
+                            $(endNode).attr("data-cTedId", endParentData);
+                            el.start.id = startParentData;
+                            el.end.id = endParentData;
+                        });
+                    }
+                });
+                sendResponse();
+                _this.updateSelectedList();
+            }
+        });
+    }
+    Main.prototype.init = function (menuHtml) {
+        var _this = this;
+        console.log("init!");
+        this.currentStrokeType = StrokeType.MultiLine;
+        document.addEventListener("mouseup", this.documentUp);
+        this.menuIframe = $("<iframe frameborder=0>")[0];
+        document.body.appendChild(this.menuIframe);
+        this.menu = $(menuHtml)[0];
+        $(this.menuIframe).css({ position: "fixed", top: "1px", right: "1px", width: "410px", height: "106px", "z-index": 1001 });
+        $(this.menuIframe).contents().find('html').html(this.menu.outerHTML);
+        $(this.menuIframe).css("display", "none");
+        $(this.menuIframe).contents().find("#btnExport").click(function (ev) {
+            chrome.runtime.sendMessage({ msg: "export" });
+        });
+        $(this.menuIframe).contents().find("#btnLineSelect").click(function (ev) {
+            if (_this.currentStrokeType == StrokeType.MultiLine)
+                return;
+            var other = $(_this.menuIframe).contents().find("#btnBlockSelect");
+            console.log("switching to multiline selection");
+            if ($(ev.target).hasClass("active")) {
+                $(ev.target).removeClass("active");
+            }
+            else {
+                $(ev.target).addClass("active");
+                $(other).removeClass("active");
+            }
+            _this.currentStrokeType = StrokeType.MultiLine;
+            document.addEventListener("mouseup", _this.documentUp);
+        });
+        $(this.menuIframe).contents().find("#btnBlockSelect").click(function (ev) {
+            if (_this.currentStrokeType == StrokeType.Bracket)
+                return;
+            var other = $(_this.menuIframe).contents().find("#btnLineSelect");
+            if ($(ev.target).hasClass("active")) {
+                $(ev.target).removeClass("active");
+            }
+            else {
+                $(ev.target).addClass("active");
+                $(other).removeClass("active");
+            }
+            _this.currentStrokeType = StrokeType.Bracket;
+            try {
+                document.body.appendChild(_this.canvas);
+            }
+            catch (ex) {
+                console.log("could't add canvas");
+            }
+            document.removeEventListener("mouseup", _this.documentUp);
+        });
+        $(this.menuIframe).contents().find("#tagfield").change(function () {
+            chrome.runtime.sendMessage({ msg: "tags_changed", data: $(_this.menuIframe).contents().find("#tagfield").val() });
+        });
+        $(this.menuIframe).contents().find("#btnViewAll").click(function () {
+            chrome.runtime.sendMessage({ msg: "view_all" });
+        });
+        $(this.menuIframe).contents().find("#toggle").change(function () {
+            chrome.runtime.sendMessage({ msg: "set_active", data: $(_this.menuIframe).contents().find("#toggle").prop("checked") });
+        });
+        $(this.menuIframe).contents().find("#btnExpand").click(function (ev) {
+            console.log("expand");
+            var list = $(_this.menuIframe).contents().find("#selected_list");
+            if ($(ev.target).hasClass("active")) {
+                $(ev.target).removeClass("active");
+                $(list).removeClass("open");
+                $(_this.menuIframe).height(106);
+            }
+            else {
+                $(ev.target).addClass("active");
+                $(list).addClass("open");
+                $(_this.menuIframe).height(500);
+            }
+        });
+        chrome.runtime.sendMessage({ msg: "query_active" }, function (isActive) {
+            $(_this.menuIframe).contents().find("#toggle").prop("checked", isActive);
+        });
+    };
+    Main.prototype.showMenu = function () {
+        this.isMenuVisible = true;
+        $(this.menuIframe).css("display", "block");
+    };
+    Main.prototype.hideMenu = function () {
+        this.isMenuVisible = false;
+        $(this.menuIframe).css("display", "none");
+    };
+    Main.prototype.toggleEnabled = function (flag) {
+        $(this.menuIframe).contents().find("#toggle").prop("checked", flag);
+        //called to add or remove canvas when toggle has been changed
+        this.isEnabled = flag;
+        this.selections.forEach(function (selection) {
+            if (flag) {
+                selection.select();
+            }
+            else
+                selection.deselect();
+        });
+        if (this.isEnabled) {
+            this.currentStrokeType = StrokeType.Bracket;
+            try {
+                document.body.appendChild(this.canvas);
+            }
+            catch (ex) {
+                console.log("could't add canvas");
+            }
+            document.removeEventListener("mouseup", this.documentUp);
+            window.addEventListener("mouseup", this.windowUp);
+            document.body.addEventListener("mousedown", this.documentDown);
+            document.addEventListener("scroll", this.documentScroll);
+            this.canvas.addEventListener("mouseup", this.canvasUp);
+            document.body.appendChild(this.canvas);
+            this.inkCanvas.update();
+        }
+        else {
+            window.removeEventListener("mouseup", this.windowUp);
+            document.body.removeEventListener("mousedown", this.documentDown);
+            document.removeEventListener("scroll", this.documentScroll);
+            this.canvas.removeEventListener("mouseup", this.canvasUp);
+            try {
+                document.body.removeChild(this.canvas);
+            }
+            catch (e) {
+                console.log("no canvas visible." + e);
+            }
+        }
+    };
+    Main.prototype.updateSelectedList = function () {
+        var list = $(this.menuIframe).contents().find("#selected_list");
+        list.empty();
+        this.selections.forEach(function (s) {
+            list.append("<div class='selected_list_item'>" + s.getContent() + "</div>");
+        });
+    };
+    Main.relativeToAbsolute = function (content) {
+        //////change relative href of hyperlink and src of image in html string to absolute
+        var res = content.split('href="');
+        var newval = res[0];
+        for (var i = 1; i < res.length; i++) {
+            newval += 'href="';
+            if (res[i].slice(0, 4) != "http") {
+                newval += window.location.protocol + "//" + window.location.host;
+            }
+            newval += res[i];
+        }
+        var src = newval.split('src="');
+        var finalval = src[0];
+        for (var i = 1; i < src.length; i++) {
+            finalval += 'src="';
+            if (src[i].slice(0, 4) != "http" && src[i].slice(0, 2) != "//") {
+                finalval += window.location["origin"];
+                var path = window.location.pathname;
+                var pathSplit = path.split('/');
+                var newpath = "";
+                var pIndex = pathSplit.length - 1;
+                $(pathSplit).each(function (indx, elem) {
+                    if (indx < pathSplit.length - 1) {
+                        newpath += (elem + "/");
+                    }
+                });
+                var newpathSplit = newpath.split("/");
+                var p = "";
+                pIndex = newpathSplit.length - 1;
+                if (src[i][0] == "/") {
+                    pIndex = pIndex - 1;
+                }
+                else {
+                    src[i] = "/" + src[i];
+                }
+                $(newpathSplit).each(function (index, elem) {
+                    if (index < pIndex) {
+                        p += (elem + "/");
+                    }
+                });
+                p = p.substring(0, p.length - 1);
+                newpath = p;
+                finalval += newpath;
+            }
+            finalval += src[i];
+        }
+        return finalval;
+    };
+    return Main;
+}());
+/// <reference path="Main.ts"/>
+var greeter = new Main();
+var MarqueeBrush = (function () {
+    function MarqueeBrush(x, y) {
+        this._startX = x;
+        this._startY = y;
+    }
+    MarqueeBrush.prototype.init = function (x, y, inkCanvas) {
+        inkCanvas._context.lineWidth = 4;
+        inkCanvas._context.lineJoin = inkCanvas._context.lineCap = 'butt';
+    };
+    MarqueeBrush.prototype.draw = function (x, y, inkCanvas) {
+        var canvas = inkCanvas._canvas;
+        var ctx = inkCanvas._context;
+        ctx.globalCompositeOperation = "source-over";
+        ctx.beginPath();
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = "rgb(222,214,0)";
+        ctx.setLineDash([6]);
+        ctx.rect(this._startX, this._startY, x - this._startX, y - this._startY);
+        ctx.stroke();
+    };
+    MarqueeBrush.prototype.drawStroke = function (stroke, inkCanvas) {
+        var firstPoint = stroke.points[0];
+        var lastPoint = stroke.points[stroke.points.length - 1];
+        this._startX = firstPoint.x - inkCanvas._scrollOffset.x + stroke.documentOffsetX;
+        this._startY = firstPoint.y - inkCanvas._scrollOffset.y + stroke.documentOffsetY;
+        this.draw(lastPoint.x - inkCanvas._scrollOffset.x + stroke.documentOffsetX, lastPoint.y - inkCanvas._scrollOffset.y + stroke.documentOffsetY, inkCanvas);
+    };
+    return MarqueeBrush;
+}());
 var MultiSelectionBrush = (function () {
     function MultiSelectionBrush(rect, toRemove) {
         this._rectlist = rect;
@@ -2617,7 +3509,7 @@ var MultiSelectionBrush = (function () {
         ctx.fill();
     };
     return MultiSelectionBrush;
-})();
+}());
 //var diff = this._rectlist.length - this._remList.length;
 //if (diff > 0) {
 //    console.log("add!!!!");
@@ -2682,168 +3574,6 @@ var MultiSelectionBrush = (function () {
 //    ctx.clearRect(startX, startY, w, h);
 //  ctx.fill();
 // this._list = new Array<ClientRect>(); 
-var SelectionBrush = (function () {
-    function SelectionBrush(rect) {
-        this._rect = rect;
-    }
-    SelectionBrush.prototype.init = function (x, y, inkCanvas) {
-        // do nothing
-    };
-    SelectionBrush.prototype.draw = function (x, y, inkCanvas) {
-        // do nothing.
-    };
-    SelectionBrush.prototype.drawStroke = function (stroke, inkCanvas) {
-        if (this._rect != null) {
-            stroke = new Stroke();
-            stroke.points.push({ x: this._rect.x, y: this._rect.y });
-            stroke.points.push({ x: this._rect.x + this._rect.w, y: this._rect.y + this._rect.h });
-        }
-        var startX = stroke.points[0].x;
-        var startY = stroke.points[0].y;
-        var w = stroke.points[stroke.points.length - 1].x - startX;
-        var h = stroke.points[stroke.points.length - 1].y - startY;
-        startX = startX - inkCanvas._scrollOffset.x + stroke.documentOffsetX;
-        startY = startY - inkCanvas._scrollOffset.y + stroke.documentOffsetY;
-        var ctx = inkCanvas._context;
-        ctx.globalCompositeOperation = "source-over";
-        ctx.globalAlpha = 0.6;
-        ctx.beginPath();
-        ctx.fillStyle = "rgb(222,214,0)";
-        ctx.fillRect(startX, startY, w, h);
-        ctx.fill();
-    };
-    return SelectionBrush;
-})();
-var HighlightBrush = (function () {
-    function HighlightBrush() {
-        this._img = new Image();
-        this._img.src = chrome.extension.getURL("assets/brush.png");
-    }
-    HighlightBrush.prototype.init = function (x, y, inkCanvas) {
-        // do nothing
-    };
-    HighlightBrush.prototype.draw = function (x, y, inkCanvas) {
-        inkCanvas._context.globalCompositeOperation = "xor";
-        inkCanvas._context.globalAlpha = 0.6;
-        inkCanvas._context.drawImage(this._img, x - 15, y - 15, 30, 30);
-    };
-    HighlightBrush.prototype.drawStroke = function (stroke, inkCanvas) {
-        for (var i = 0; i < stroke.points.length; i++) {
-            var p = stroke.points[i];
-            inkCanvas._context.globalCompositeOperation = "xor";
-            inkCanvas._context.globalAlpha = 0.6;
-            inkCanvas._context.drawImage(this._img, p.x - inkCanvas._scrollOffset.x + stroke.documentOffsetX - 15, p.y + stroke.documentOffsetY - inkCanvas._scrollOffset.y - 15, 30, 30);
-        }
-    };
-    return HighlightBrush;
-})();
-/// <reference path="brush/BrushStroke.ts"/>
-var InkCanvas = (function () {
-    function InkCanvas(canvas) {
-        this._canvas = canvas;
-        this._context = canvas.getContext("2d");
-        this._isDrawing = false;
-        this._brushStrokes = [];
-        this._brush = null;
-        this._scrollOffset = { x: 0, y: 0 };
-    }
-    InkCanvas.prototype.drawStroke = function (stroke, brush) {
-        if (brush)
-            this._brush = brush;
-        this._scrollOffset = { x: 0, y: 0 };
-        this._isDrawing = true;
-        this._activeStroke = new BrushStroke(this._brush, new Stroke());
-        this._activeStroke.stroke.documentOffsetY = window.pageYOffset;
-        var first = stroke.points[0];
-        var last = stroke.points[stroke.points.length - 1];
-        this.startDrawing(first.x, first.y, brush);
-        for (var i = 1; i < stroke.points.length - 2; i++) {
-            this.draw(stroke.points[i].x, stroke.points[i].y);
-        }
-        this.endDrawing(last.x, last.y);
-    };
-    InkCanvas.prototype.startDrawing = function (x, y, brush) {
-        if (brush)
-            this._brush = brush;
-        this._brush.init(x, y, this);
-        this._scrollOffset = { x: 0, y: 0 };
-        this._isDrawing = true;
-        this._activeStroke = new BrushStroke(this._brush, new Stroke());
-        this._activeStroke.stroke.documentOffsetY = window.pageYOffset;
-        this.draw(x, y);
-    };
-    InkCanvas.prototype.draw = function (x, y) {
-        if (this._isDrawing == false)
-            return;
-        this._activeStroke.stroke.points.push({ x: x, y: y });
-        this._brush.draw(x, y, this);
-    };
-    InkCanvas.prototype.endDrawing = function (x, y) {
-        this.draw(x, y);
-        this._isDrawing = false;
-        this._brushStrokes.push(this._activeStroke);
-    };
-    InkCanvas.prototype.addBrushStroke = function (brushStroke) {
-        if (this._brushStrokes.indexOf(brushStroke) == -1)
-            this._brushStrokes.push(brushStroke);
-    };
-    InkCanvas.prototype.removeBrushStroke = function (brushStroke) {
-        var index = this._brushStrokes.indexOf(brushStroke);
-        if (index > -1) {
-            this._brushStrokes.splice(index, 1);
-            return true;
-        }
-        return false;
-        console.log("couldn't remove element");
-    };
-    InkCanvas.prototype.update = function () {
-        this._scrollOffset = { x: window.pageXOffset, y: window.pageYOffset };
-        this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
-        for (var i = 0; i < this._brushStrokes.length; i++) {
-            this._brushStrokes[i]["brush"].drawStroke(this._brushStrokes[i]["stroke"], this);
-        }
-    };
-    InkCanvas.prototype.setBrush = function (brush) {
-        this._brush = brush;
-        if (this._isDrawing) {
-            this._activeStroke.brush = brush;
-            var p = this._activeStroke.stroke.points[0];
-            this._brush.init(p.x, p.y, this);
-        }
-    };
-    InkCanvas.prototype.redrawActiveStroke = function () {
-        this.update();
-        this._activeStroke.brush.drawStroke(this._activeStroke.stroke, this);
-    };
-    ///called after lineSelection so that highlights for line selection disappear
-    ///bracket selections are yet updated
-    InkCanvas.prototype.removeStroke = function () {
-        this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
-        this.update();
-    };
-    InkCanvas.prototype.hide = function () {
-        console.log("hide canvas");
-    };
-    InkCanvas.prototype.reveal = function () {
-        console.log("reveal canvas");
-    };
-    return InkCanvas;
-})();
-var Rectangle = (function () {
-    function Rectangle(x, y, w, h) {
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
-    }
-    Rectangle.prototype.intersectsRectangle = function (r2) {
-        return !(r2.x > this.x + this.w ||
-            r2.x + r2.w < this.x ||
-            r2.y > this.y + this.h ||
-            r2.y + r2.h < this.y);
-    };
-    return Rectangle;
-})();
 /// <reference path="../util/Rectangle.ts"/>
 var Stroke = (function () {
     function Stroke() {
@@ -2961,7 +3691,7 @@ var Stroke = (function () {
         return s;
     };
     return Stroke;
-})();
+}());
 var GestireClassifier = (function () {
     function GestireClassifier() {
     }
@@ -2986,16 +3716,7 @@ var GestireClassifier = (function () {
         }
     };
     return GestireClassifier;
-})();
-var StrokeType;
-(function (StrokeType) {
-    StrokeType[StrokeType["Null"] = 0] = "Null";
-    StrokeType[StrokeType["Line"] = 1] = "Line";
-    StrokeType[StrokeType["Bracket"] = 2] = "Bracket";
-    StrokeType[StrokeType["Marquee"] = 3] = "Marquee";
-    StrokeType[StrokeType["Scribble"] = 4] = "Scribble";
-    StrokeType[StrokeType["MultiLine"] = 5] = "MultiLine";
-})(StrokeType || (StrokeType = {}));
+}());
 /// <reference path="../../lib/collections.ts"/>
 var BracketSelection = (function (_super) {
     __extends(BracketSelection, _super);
@@ -3176,7 +3897,7 @@ var BracketSelection = (function (_super) {
         return this._content;
     };
     return BracketSelection;
-})(AbstractSelection);
+}(AbstractSelection));
 /// <reference path="../ink/brush/MarqueeBrush.ts" />
 ///find parent element p of word 
 ///find word index compared to container
@@ -3636,7 +4357,7 @@ var MarqueeSelection = (function (_super) {
         return this._content;
     };
     return MarqueeSelection;
-})(AbstractSelection);
+}(AbstractSelection));
 var GestureType;
 (function (GestureType) {
     GestureType[GestureType["Null"] = 0] = "Null";
@@ -3794,306 +4515,7 @@ var MultiLineSelection = (function (_super) {
         return this._content;
     };
     return MultiLineSelection;
-})(AbstractSelection);
-/// <reference path="../../typings/jquery/jquery.d.ts"/>
-var DomUtil = (function () {
-    function DomUtil() {
-    }
-    DomUtil.getCommonAncestor = function (a, b) {
-        var parentsa = $(a).parents().toArray();
-        var parentsb = $(b).parents().toArray();
-        parentsa.unshift(a);
-        parentsb.unshift(b);
-        var found = null;
-        $.each(parentsa, function () {
-            var thisa = this;
-            $.each(parentsb, function () {
-                if (thisa == this) {
-                    found = this;
-                    return false;
-                }
-            });
-            if (found)
-                return false;
-        });
-        return found;
-    };
-    return DomUtil;
-})();
-/// <reference path="../../typings/jquery/jquery.d.ts"/>
-/// <reference path="../ink/InkCanvas.ts"/>
-/// <reference path="../ink/brush/BrushStroke.ts"/>
-/// <reference path="../ink/brush/HighlightBrush.ts"/>
-/// <reference path="../ink/brush/SelectionBrush.ts"/>
-/// <reference path="../ink/brush/LineBrush.ts"/>
-/// <reference path="../util/Rectangle.ts"/>
-/// <reference path="../util/DomUtil.ts"/>
-var UnknownSelection = (function (_super) {
-    __extends(UnknownSelection, _super);
-    function UnknownSelection(inkCanvas, fromActiveStroke) {
-        if (fromActiveStroke === void 0) { fromActiveStroke = false; }
-        _super.call(this, "UnknownSelection");
-        this._brushStroke = null;
-        this._inkCanvas = inkCanvas;
-        if (fromActiveStroke) {
-            inkCanvas.setBrush(new LineBrush());
-        }
-    }
-    UnknownSelection.prototype.start = function (x, y) {
-        this._inkCanvas.startDrawing(x, y, new LineBrush());
-    };
-    UnknownSelection.prototype.update = function (x, y) {
-        this._inkCanvas.draw(x, y);
-    };
-    UnknownSelection.prototype.end = function (x, y) {
-        this._inkCanvas.endDrawing(x, y);
-    };
-    UnknownSelection.prototype.deselect = function () {
-        this._inkCanvas.removeBrushStroke(this._brushStroke);
-    };
-    UnknownSelection.prototype.getBoundingRect = function () {
-        return this._brushStroke.stroke.getBoundingRect();
-    };
-    UnknownSelection.prototype.analyzeContent = function () {
-        // nothing to analyze.
-    };
-    UnknownSelection.prototype.getContent = function () {
-        return null;
-    };
-    return UnknownSelection;
-})(AbstractSelection);
-var AbstractSelection = (function () {
-    function AbstractSelection(className) {
-        this.selectedElements = new Array();
-        this.selectedTags = new Array();
-        this.className = className;
-    }
-    AbstractSelection.prototype.start = function (x, y) { };
-    AbstractSelection.prototype.update = function (x, y) { };
-    AbstractSelection.prototype.end = function (x, y) { };
-    AbstractSelection.prototype.select = function () {
-        var _this = this;
-        console.log("select");
-        console.log(this.selectedElements);
-        this.selectedElements.forEach(function (selectedElement) {
-            if (selectedElement.type == "marquee") {
-                _this.parseSelections(selectedElement);
-                _this.highlightSelection(selectedElement);
-            }
-            else {
-                console.log("-=-=====--=");
-                var foundElement = $(selectedElement.tagName)[selectedElement.index];
-                if (foundElement.tagName.toLowerCase() == "img") {
-                    var label = $("<span>Selected</span>");
-                    //label.css({ position: "absolute", display: "block", background: "lightgrey", width: "50px", height: "20px", color: "black", "font-size": "12px" });
-                    label.css({ position: "absolute", display: "block", background: "yellow", width: "50px", height: "20px", color: "black", "font-size": "12px", padding: "3px 3px", "font-weight": "bold" });
-                    $("body").append(label);
-                    label.css("top", $(foundElement).offset().top);
-                    label.css("left", $(foundElement).offset().left);
-                }
-                else {
-                    $(foundElement).css("background-color", "yellow");
-                }
-            }
-        });
-    };
-    AbstractSelection.prototype.deselect = function () {
-        console.log("deselect");
-        this.selectedElements.forEach(function (selectedElement) {
-            var foundElement = $(selectedElement.tagName)[selectedElement.index];
-            $(foundElement).css("background-color", "");
-        });
-    };
-    AbstractSelection.prototype.highlightCallback = function (parElement, obj) {
-        var words = parElement.childNodes; //[obj["txtnIndx"]];
-        console.log(words);
-        var wordList = words[obj["txtnIndx"]]["childNodes"];
-        console.log("===================================WORDLIST");
-        console.log(wordList);
-        console.log(obj);
-        var word = wordList[obj["wordIndx"]];
-        console.log(word);
-        //    $(word).replaceWith("<word style=\"background-color: yellow\">" + word[obj["wordIndx"]].textContent + "</word>");
-        //   word["style"]["backgroundColor"] = "yellow";
-        $(word).css("background-color", "yellow");
-    };
-    ;
-    AbstractSelection.prototype.parseString = function (node, par, obj, callback) {
-        $(node).replaceWith("<words>" + $(node).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
-        //callback(par, obj);
-    };
-    AbstractSelection.prototype.highlightSelection = function (obj) {
-        var tagName = obj["tagName"];
-        if (tagName != "WORD" && tagName != "HILIGHT") {
-            $(tagName)[obj["index"]].style.backgroundColor = "yellow";
-        }
-        else {
-            var parent = $(obj["par"])[obj["parIndex"]];
-            var textN = parent.childNodes[obj["txtnIndx"]];
-            if (tagName == "WORD") {
-                var word = textN.childNodes[obj["wordIndx"]];
-                $(word).css("background-color", "yellow");
-            }
-            else {
-                $(textN).css("background-color", "yellow");
-            }
-        }
-    };
-    AbstractSelection.prototype.parseSelections = function (obj) {
-        console.log("=======parseSelections====");
-        console.log(obj);
-        var tagName = obj["tagName"];
-        if (tagName != "WORD" && tagName != "HILIGHT") {
-            console.log(tagName + "=======================");
-            console.log(tagName != "WORD");
-            return;
-        }
-        //  var tag = obj["par"] + "," +obj["parIndex"] + ","+obj["txtnIndx"] ;
-        //  if (this.selectedTags.indexOf(tag) > -1 || obj["txtnIndx"]==-1) {
-        //      return;
-        //  }
-        // this.selectedTags.push(tag);
-        // console.log(tag);
-        var parElement = $(obj["par"])[obj["parIndex"]];
-        console.log(parElement);
-        var textN = parElement.childNodes[obj["txtnIndx"]];
-        console.log(textN);
-        if (!textN) {
-            return;
-        }
-        if (textN.nodeName == "#text") {
-            if (tagName == "WORD") {
-                console.log("W------------------------");
-                console.log($(textN));
-                $(textN).replaceWith("<words>" + $(textN).text().replace(/([^\s]*)/g, "<word>$1</word>") + "</words>");
-            }
-            else if (tagName == "HILIGHT") {
-                console.log("H-----------------------");
-                console.log($(textN));
-                $(textN).replaceWith("<hilight>" + $(textN).text() + "</hilight>");
-            }
-        }
-    };
-    AbstractSelection.prototype.selectMarqueeHighlights = function (obj) {
-        var tagName = obj["tagName"];
-        if (tagName == "WORD") {
-            console.log("W------------------------");
-            var parElement = $(obj["par"])[obj["parIndex"]];
-            var textN = parElement.childNodes[obj["txtnIndx"]];
-            this.parseString(textN, parElement, obj, this.highlightCallback);
-            console.log(textN);
-        }
-        else if (tagName == "HILIGHT") {
-            var parElement = $(obj["par"])[obj["parIndex"]];
-            var textN = parElement.childNodes[obj["txtnIndx"]];
-            $(textN).replaceWith("<hilight>" + $(textN).text() + "</hilight>");
-            $(parElement.childNodes[obj["txtnIndx"]]).css("background-color", "yellow");
-        }
-        else {
-            console.log(tagName);
-            var foundElement = $(tagName)[obj["index"]];
-            $(foundElement).css("background-color", "yellow");
-        }
-    };
-    AbstractSelection.prototype.getBoundingRect = function () { return null; };
-    AbstractSelection.prototype.analyzeContent = function () { };
-    AbstractSelection.prototype.getContent = function () { return null; };
-    return AbstractSelection;
-})();
-/// <reference path="../../typings/jquery/jquery.d.ts"/>
-/// <reference path="../ink/InkCanvas.ts"/>
-/// <reference path="../ink/brush/BrushStroke.ts"/>
-/// <reference path="../ink/brush/HighlightBrush.ts"/>
-/// <reference path="../ink/brush/SelectionBrush.ts"/>
-/// <reference path="../util/Rectangle.ts"/>
-/// <reference path="../util/DomUtil.ts"/>
-/// <reference path="AbstractSelection.ts"/>
-var LineSelection = (function (_super) {
-    __extends(LineSelection, _super);
-    function LineSelection(inkCanvas, fromActiveStroke) {
-        if (fromActiveStroke === void 0) { fromActiveStroke = false; }
-        _super.call(this, "LineSelection");
-        this._brushStroke = null;
-        this._inkCanvas = inkCanvas;
-        console.log("making line selection");
-        if (fromActiveStroke) {
-            this._inkCanvas.setBrush(new HighlightBrush());
-            var t = this;
-            $.each(inkCanvas._activeStroke.stroke.points, function () {
-                t._inkCanvas.draw(this.x, this.y);
-            });
-        }
-    }
-    LineSelection.prototype.start = function (x, y) {
-        this._inkCanvas.startDrawing(x, y, new HighlightBrush());
-    };
-    LineSelection.prototype.update = function (x, y) {
-        this._inkCanvas.draw(x, y);
-    };
-    LineSelection.prototype.end = function (x, y) {
-        this._inkCanvas.endDrawing(x, y);
-        this._brushStroke = this._inkCanvas._activeStroke;
-        this.analyzeContent();
-        this.select();
-        this._inkCanvas.removeBrushStroke(this._brushStroke);
-        this._inkCanvas.update();
-    };
-    LineSelection.prototype.deselect = function () {
-        this._inkCanvas.removeBrushStroke(this._brushStroke);
-    };
-    LineSelection.prototype.getBoundingRect = function () {
-        var minX = 1000000;
-        var maxX = -1000000;
-        var minY = 1000000;
-        var maxY = -1000000;
-        for (var i = 0; i < this._clientRects.length; i++) {
-            var p = this._clientRects[i];
-            maxY = p.top + p.height > maxY ? p.top + p.height : maxY;
-            maxX = p.left + p.width > maxX ? p.left + p.width : maxX;
-            minX = p.left < minX ? p.left : minX;
-            minY = p.top < minY ? p.top : minY;
-        }
-        return new Rectangle(minX, minY + window.pageYOffset, maxX - minX, maxY - minY);
-    };
-    LineSelection.prototype.addWordTag = function (nodes) {
-        var _this = this;
-        $.each(nodes, function (index, value) {
-            if (value.nodeType == Node.TEXT_NODE) {
-                $(value).replaceWith($(value).text().replace(/([^,\s]*)/g, "<word>$1</word>"));
-            }
-            else if (value.childNodes.length > 0) {
-                _this.addWordTag(value.childNodes);
-            }
-        });
-    };
-    LineSelection.prototype.analyzeContent = function () {
-        console.log("analyzing content.");
-        var stroke = this._brushStroke.stroke;
-        var pStart = stroke.points[0];
-        var pEnd = stroke.points[stroke.points.length - 1];
-        // var nStart = document.elementFromPoint(pStart.x, pStart.y);
-        // var nEnd = document.elementFromPoint(pEnd.x, pEnd.y);
-        var startRange = document["caretRangeFromPoint"](pStart.x, pStart.y);
-        var endRange = document["caretRangeFromPoint"](pEnd.x, pEnd.y);
-        console.log("----------------");
-        console.log(startRange);
-        console.log(endRange);
-        console.log(startRange.startContainer.nodeValue);
-        console.log(startRange.startContainer.nodeValue.substring(0, startRange.startOffset));
-        console.log(startRange.startContainer.nodeValue.substring(startRange.startOffset, endRange.endOffset));
-        console.log(startRange.startContainer.nodeValue.substring(endRange.endOffset, endRange.endContainer.nodeValue.length));
-        this._content = startRange.startContainer.nodeValue.substring(startRange.startOffset, endRange.endOffset);
-        var newStart = document.createElement("span");
-        newStart.innerHTML = "<span>" + startRange.startContainer.nodeValue.substring(0, startRange.startOffset) + "</span>" + "<span style='background: yellow;'>" + startRange.startContainer.nodeValue.substring(startRange.startOffset, endRange.endOffset) + "</span>" + "<span>" + startRange.startContainer.nodeValue.substring(endRange.endOffset, endRange.endContainer.nodeValue.length) + "</span>";
-        startRange.startContainer.parentNode.replaceChild(newStart, startRange.startContainer);
-        //$(commonParent).replaceWith(original_content);
-        console.log("done analyzing line selection.");
-    };
-    LineSelection.prototype.getContent = function () {
-        return this._content;
-    };
-    return LineSelection;
-})(AbstractSelection);
+}(AbstractSelection));
 var Line = (function () {
     function Line() {
     }
@@ -4123,7 +4545,7 @@ var Line = (function () {
         return false; // No collision
     };
     return Line;
-})();
+}());
 var Statistics = (function () {
     function Statistics() {
     }
@@ -4154,7 +4576,7 @@ var Statistics = (function () {
         return Statistics.getNumWithSetDec(stdDev, numOfDec);
     };
     return Statistics;
-})();
+}());
 var Vector2 = (function () {
     function Vector2(x, y) {
         this.x = x;
@@ -4220,428 +4642,5 @@ var Vector2 = (function () {
         return this;
     };
     return Vector2;
-})();
-/// <reference path="../typings/chrome/chrome.d.ts"/>
-/// <reference path="../typings/jquery/jquery.d.ts"/>
-/// <reference path="ink/InkCanvas.ts"/>
-/// <reference path="ink/StrokeType.ts" />
-/// <reference path="selection/LineSelection.ts"/>
-/// <reference path="selection/UnknownSelection.ts"/>
-var Main = (function () {
-    function Main() {
-        var _this = this;
-        this.prevStrokeType = StrokeType.Line;
-        this.currentStrokeType = StrokeType.Line;
-        this.selections = new Array();
-        this.urlGroup = Date.now();
-        this.previousSelections = new Array();
-        this.mouseMove = function (e) {
-            if (!_this.isSelecting) {
-                return;
-            }
-            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee || _this.currentStrokeType == StrokeType.Line) {
-                var currType = GestireClassifier.getGestureType(_this.inkCanvas._activeStroke.stroke);
-                if (_this.currentStrokeType != StrokeType.Line && currType == GestureType.Horizontal) {
-                    _this.selection = new LineSelection(_this.inkCanvas, true);
-                    _this.currentStrokeType = StrokeType.Line;
-                    _this.inkCanvas.redrawActiveStroke();
-                }
-                if (_this.currentStrokeType != StrokeType.Marquee && currType == GestureType.Diagonal) {
-                    _this.selection = new MarqueeSelection(_this.inkCanvas, true);
-                    _this.currentStrokeType = StrokeType.Marquee;
-                    _this.inkCanvas.redrawActiveStroke();
-                }
-                if (_this.currentStrokeType != StrokeType.Bracket && currType == GestureType.Vertical) {
-                    _this.selection = new BracketSelection(_this.inkCanvas, true);
-                    _this.currentStrokeType = StrokeType.Bracket;
-                    _this.inkCanvas.redrawActiveStroke();
-                }
-                _this.selection.update(e.clientX, e.clientY);
-            }
-        };
-        this.documentDown = function (e) {
-            try {
-                document.body.removeChild(_this.canvas);
-            }
-            catch (e) {
-                console.log("no canvas visible." + e);
-            }
-            var hitElem = document.elementFromPoint(e.clientX, e.clientY);
-            console.log(hitElem);
-            if (hitElem.nodeName == "A") {
-                var link = hitElem.getAttribute("href").toString();
-                if (link.indexOf("http") == -1) {
-                    link = "http://" + window.location.host + link;
-                }
-                console.log(link);
-                window.open(link, "_self");
-            }
-            switch (_this.currentStrokeType) {
-                case StrokeType.MultiLine:
-                    _this.selection = new MultiLineSelection(_this.inkCanvas);
-                    break;
-                case StrokeType.Line:
-                case StrokeType.Bracket:
-                    _this.selection = new BracketSelection(_this.inkCanvas);
-                    break;
-                case StrokeType.Marquee:
-                    _this.selection = new MarqueeSelection(_this.inkCanvas);
-                    break;
-            }
-            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee || _this.currentStrokeType == StrokeType.Line) {
-                console.log("current selection: " + _this.currentStrokeType);
-                document.body.appendChild(_this.canvas);
-                _this.canvas.addEventListener("mousemove", _this.mouseMove);
-            }
-            else {
-                try {
-                    document.body.removeChild(_this.canvas);
-                }
-                catch (e) {
-                    console.log("no canvas visible." + e);
-                }
-            }
-            _this.selection.start(e.clientX, e.clientY);
-            _this.isSelecting = true;
-        };
-        this.documentScroll = function (e) {
-            _this.inkCanvas.update();
-        };
-        this.documentUp = function (e) {
-            console.log("document up");
-            if (!_this.isSelecting)
-                return;
-            _this.isSelecting = false;
-            if (_this.currentStrokeType == StrokeType.MultiLine)
-                _this.selection.end(e.clientX, e.clientY);
-            _this.selection.id = Date.now();
-            _this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            _this.selection.tags = $(_this.menuIframe).contents().find("#tagfield").val();
-            _this.selections.push(_this.selection);
-            chrome.runtime.sendMessage({ msg: "store_selection", data: _this.selection });
-            _this.selection = new MultiLineSelection(_this.inkCanvas);
-            _this.updateSelectedList();
-        };
-        this.windowUp = function (e) {
-            if (!_this.isSelecting)
-                return;
-            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee) {
-                _this.canvas.removeEventListener("mousemove", _this.mouseMove);
-                _this.inkCanvas.removeBrushStroke(_this.inkCanvas._activeStroke);
-                _this.inkCanvas.update();
-            }
-            _this.isSelecting = false;
-        };
-        this.canvasUp = function (e) {
-            console.log("canvas up");
-            if (!_this.isSelecting) {
-                return;
-            }
-            _this.canvas.removeEventListener("mousemove", _this.mouseMove);
-            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee || _this.currentStrokeType == StrokeType.Line) {
-                document.body.removeChild(_this.canvas);
-                $(_this.menuIframe).hide();
-                _this.selection.end(e.clientX, e.clientY);
-                var stroke = _this.inkCanvas._activeStroke.stroke.getCopy();
-                var currType = GestireClassifier.getGestureType(stroke);
-                if (currType == GestureType.Null) {
-                    console.log("JUST A TAP");
-                    document.body.appendChild(_this.canvas);
-                    _this.inkCanvas.update();
-                    return;
-                }
-                else {
-                    document.body.appendChild(_this.canvas);
-                    $(_this.menuIframe).show();
-                    _this.inkCanvas.update();
-                    _this.isSelecting = false;
-                }
-                _this.currentStrokeType = StrokeType.Bracket;
-            }
-            if (_this.selection.getContent() == "" || _this.selection.getContent() == " ") {
-                return;
-            }
-            _this.selection.id = Date.now();
-            _this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            _this.selection.tags = $(_this.menuIframe).contents().find("#tagfield").val();
-            _this.selections.push(_this.selection);
-            chrome.runtime.sendMessage({ msg: "store_selection", data: _this.selection });
-            _this.updateSelectedList();
-        };
-        console.log("Starting NuSys.");
-        // create and append canvas
-        var body = document.body, html = document.documentElement;
-        Main.DOC_WIDTH = Math.max(body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth);
-        Main.DOC_HEIGHT = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-        this.canvas = document.createElement("canvas");
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-        this.canvas.style.position = "fixed";
-        this.canvas.style.top = "0";
-        this.canvas.style.left = "0"; //fixes canvas placements
-        this.canvas.style.zIndex = "998";
-        this.inkCanvas = new InkCanvas(this.canvas);
-        chrome.storage.local.get(null, function (data) {
-            _this.previousSelections = data["selections"];
-        });
-        chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-            console.log(request);
-            if (request.msg == "tags_changed") {
-                console.log("tags_changed");
-                $(_this.menuIframe).contents().find("#tagfield").val(request.data);
-            }
-            if (request.msg == "check_injection")
-                sendResponse(true);
-            if (request.msg == "init") {
-                _this.init(request.data);
-                sendResponse();
-            }
-            if (request.msg == "show_menu") {
-                _this.showMenu();
-            }
-            if (request.msg == "hide_menu") {
-                _this.hideMenu();
-            }
-            if (request.msg == "enable_selections") {
-                _this.toggleEnabled(true);
-            }
-            if (request.msg == "disable_selections") {
-                _this.toggleEnabled(false);
-            }
-            if (request.msg == "set_selections") {
-                _this.selections = [];
-                request.data.forEach(function (d) {
-                    var ls = null;
-                    if (d["className"] == "LineSelection")
-                        ls = new LineSelection(_this.inkCanvas);
-                    if (d["className"] == "BracketSelection")
-                        ls = new BracketSelection(_this.inkCanvas);
-                    if (d["className"] == "MarqueeSelection")
-                        ls = new MarqueeSelection(_this.inkCanvas);
-                    if (d["className"] == "MultiLineSelection")
-                        ls = new MultiLineSelection(_this.inkCanvas);
-                    $.extend(ls, d);
-                    ls._inkCanvas = _this.inkCanvas;
-                    if (ls._brushStroke != null) {
-                        var stroke = new Stroke();
-                        $.extend(stroke, ls._brushStroke.stroke);
-                        ls._brushStroke.stroke = stroke;
-                    }
-                    _this.selections.push(ls);
-                });
-                var count = 0;
-                _this.selections.forEach(function (sel) {
-                    if (sel instanceof MultiLineSelection) {
-                        console.log("found MultiSelection");
-                        sel.selectedElements.forEach(function (el) {
-                            var startNode = $(el.start.tagName)[el.start.parentIndex];
-                            var endNode = $(el.end.tagName)[el.end.parentIndex];
-                            var startParentData = count++;
-                            var endParentData = count++;
-                            if ($(startNode).attr("data-cTedId") == undefined) {
-                                $(startNode).attr("data-cTedId", startParentData);
-                            }
-                            else {
-                                startParentData = parseInt($(startNode).attr("data-cTedId"));
-                            }
-                            if ($(endNode).attr("data-cTedId") == undefined) {
-                                $(endNode).attr("data-cTedId", endParentData);
-                            }
-                            else {
-                                endParentData = parseInt($(endNode).attr("data-cTedId"));
-                            }
-                            $(endNode).attr("data-cTedId", endParentData);
-                            el.start.id = startParentData;
-                            el.end.id = endParentData;
-                        });
-                    }
-                });
-                sendResponse();
-                _this.updateSelectedList();
-            }
-        });
-    }
-    Main.prototype.init = function (menuHtml) {
-        var _this = this;
-        console.log("init!");
-        this.currentStrokeType = StrokeType.MultiLine;
-        document.addEventListener("mouseup", this.documentUp);
-        this.menuIframe = $("<iframe frameborder=0>")[0];
-        document.body.appendChild(this.menuIframe);
-        this.menu = $(menuHtml)[0];
-        $(this.menuIframe).css({ position: "fixed", top: "1px", right: "1px", width: "410px", height: "106px", "z-index": 1001 });
-        $(this.menuIframe).contents().find('html').html(this.menu.outerHTML);
-        $(this.menuIframe).css("display", "none");
-        $(this.menuIframe).contents().find("#btnExport").click(function (ev) {
-            chrome.runtime.sendMessage({ msg: "export" });
-        });
-        $(this.menuIframe).contents().find("#btnLineSelect").click(function (ev) {
-            if (_this.currentStrokeType == StrokeType.MultiLine)
-                return;
-            var other = $(_this.menuIframe).contents().find("#btnBlockSelect");
-            console.log("switching to multiline selection");
-            if ($(ev.target).hasClass("active")) {
-                $(ev.target).removeClass("active");
-            }
-            else {
-                $(ev.target).addClass("active");
-                $(other).removeClass("active");
-            }
-            _this.currentStrokeType = StrokeType.MultiLine;
-            document.addEventListener("mouseup", _this.documentUp);
-        });
-        $(this.menuIframe).contents().find("#btnBlockSelect").click(function (ev) {
-            if (_this.currentStrokeType == StrokeType.Bracket)
-                return;
-            var other = $(_this.menuIframe).contents().find("#btnLineSelect");
-            if ($(ev.target).hasClass("active")) {
-                $(ev.target).removeClass("active");
-            }
-            else {
-                $(ev.target).addClass("active");
-                $(other).removeClass("active");
-            }
-            _this.currentStrokeType = StrokeType.Bracket;
-            try {
-                document.body.appendChild(_this.canvas);
-            }
-            catch (ex) {
-                console.log("could't add canvas");
-            }
-            document.removeEventListener("mouseup", _this.documentUp);
-        });
-        $(this.menuIframe).contents().find("#tagfield").change(function () {
-            chrome.runtime.sendMessage({ msg: "tags_changed", data: $(_this.menuIframe).contents().find("#tagfield").val() });
-        });
-        $(this.menuIframe).contents().find("#btnViewAll").click(function () {
-            chrome.runtime.sendMessage({ msg: "view_all" });
-        });
-        $(this.menuIframe).contents().find("#toggle").change(function () {
-            chrome.runtime.sendMessage({ msg: "set_active", data: $(_this.menuIframe).contents().find("#toggle").prop("checked") });
-        });
-        $(this.menuIframe).contents().find("#btnExpand").click(function (ev) {
-            console.log("expand");
-            var list = $(_this.menuIframe).contents().find("#selected_list");
-            if ($(ev.target).hasClass("active")) {
-                $(ev.target).removeClass("active");
-                $(list).removeClass("open");
-                $(_this.menuIframe).height(106);
-            }
-            else {
-                $(ev.target).addClass("active");
-                $(list).addClass("open");
-                $(_this.menuIframe).height(500);
-            }
-        });
-        chrome.runtime.sendMessage({ msg: "query_active" }, function (isActive) {
-            $(_this.menuIframe).contents().find("#toggle").prop("checked", isActive);
-        });
-    };
-    Main.prototype.showMenu = function () {
-        this.isMenuVisible = true;
-        $(this.menuIframe).css("display", "block");
-    };
-    Main.prototype.hideMenu = function () {
-        this.isMenuVisible = false;
-        $(this.menuIframe).css("display", "none");
-    };
-    Main.prototype.toggleEnabled = function (flag) {
-        $(this.menuIframe).contents().find("#toggle").prop("checked", flag);
-        //called to add or remove canvas when toggle has been changed
-        this.isEnabled = flag;
-        this.selections.forEach(function (selection) {
-            if (flag) {
-                selection.select();
-            }
-            else
-                selection.deselect();
-        });
-        if (this.isEnabled) {
-            this.currentStrokeType = StrokeType.Bracket;
-            try {
-                document.body.appendChild(this.canvas);
-            }
-            catch (ex) {
-                console.log("could't add canvas");
-            }
-            document.removeEventListener("mouseup", this.documentUp);
-            window.addEventListener("mouseup", this.windowUp);
-            document.body.addEventListener("mousedown", this.documentDown);
-            document.addEventListener("scroll", this.documentScroll);
-            this.canvas.addEventListener("mouseup", this.canvasUp);
-            document.body.appendChild(this.canvas);
-            this.inkCanvas.update();
-        }
-        else {
-            window.removeEventListener("mouseup", this.windowUp);
-            document.body.removeEventListener("mousedown", this.documentDown);
-            document.removeEventListener("scroll", this.documentScroll);
-            this.canvas.removeEventListener("mouseup", this.canvasUp);
-            try {
-                document.body.removeChild(this.canvas);
-            }
-            catch (e) {
-                console.log("no canvas visible." + e);
-            }
-        }
-    };
-    Main.prototype.updateSelectedList = function () {
-        var list = $(this.menuIframe).contents().find("#selected_list");
-        list.empty();
-        this.selections.forEach(function (s) {
-            list.append("<div class='selected_list_item'>" + s.getContent() + "</div>");
-        });
-    };
-    Main.relativeToAbsolute = function (content) {
-        //////change relative href of hyperlink and src of image in html string to absolute
-        var res = content.split('href="');
-        var newval = res[0];
-        for (var i = 1; i < res.length; i++) {
-            newval += 'href="';
-            if (res[i].slice(0, 4) != "http") {
-                newval += window.location.protocol + "//" + window.location.host;
-            }
-            newval += res[i];
-        }
-        var src = newval.split('src="');
-        var finalval = src[0];
-        for (var i = 1; i < src.length; i++) {
-            finalval += 'src="';
-            if (src[i].slice(0, 4) != "http" && src[i].slice(0, 2) != "//") {
-                finalval += window.location["origin"];
-                var path = window.location.pathname;
-                var pathSplit = path.split('/');
-                var newpath = "";
-                var pIndex = pathSplit.length - 1;
-                $(pathSplit).each(function (indx, elem) {
-                    if (indx < pathSplit.length - 1) {
-                        newpath += (elem + "/");
-                    }
-                });
-                var newpathSplit = newpath.split("/");
-                var p = "";
-                pIndex = newpathSplit.length - 1;
-                if (src[i][0] == "/") {
-                    pIndex = pIndex - 1;
-                }
-                else {
-                    src[i] = "/" + src[i];
-                }
-                $(newpathSplit).each(function (index, elem) {
-                    if (index < pIndex) {
-                        p += (elem + "/");
-                    }
-                });
-                p = p.substring(0, p.length - 1);
-                newpath = p;
-                finalval += newpath;
-            }
-            finalval += src[i];
-        }
-        return finalval;
-    };
-    return Main;
-})();
-/// <reference path="Main.ts"/>
-var greeter = new Main();
+}());
 //# sourceMappingURL=NuSysChromeExtension.js.map

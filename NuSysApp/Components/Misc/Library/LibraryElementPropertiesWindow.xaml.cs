@@ -134,10 +134,10 @@ namespace NuSysApp
         {
             if (_currentElementModel.Favorited)
                 //Favorite.Source = "ms-appx:///Assets/star_icon.png";
-                Favorite.Source = new BitmapImage(new Uri("ms-appx:///Assets/star_icon.png"));
+                Favorite.Source = new BitmapImage(new Uri("ms-appx:///Assets/icon_favorited.png"));
 
             else
-                Favorite.Source = new BitmapImage(new Uri("ms-appx:///Assets/star-xxl.png"));
+                Favorite.Source = new BitmapImage(new Uri("ms-appx:///Assets/icon_unfavorited.png"));
         }
 
         public void setLastEdited(string lastedited)

@@ -43,18 +43,40 @@ namespace NuSysApp
             if (props.ContainsKey("rectangleMod"))
             {
                 var viewModel = JsonConvert.DeserializeObject<RectangleViewModel>(props.Get("rectangleMod"));
+                List<RectangleViewModel> regionsList;
 
-                List<RectangleViewModel> regionsList = ((ElementModel)SessionController.Instance.IdToControllers[OutAtomId].Model).RegionsModel;
-
-                foreach (var rectangle in regionsList)
+                if (SessionController.Instance.IdToControllers[OutAtomId].Model.ElementType == ElementType.PDF)
                 {
-                    if (rectangle.LeftRatio == viewModel.LeftRatio && rectangle.TopRatio == viewModel.TopRatio &&
-                        rectangle.RectWidthRatio == viewModel.RectWidthRatio && rectangle.RectHeightRatio == viewModel.RectHeightRatio)
+                    PdfNodeModel model = (PdfNodeModel) SessionController.Instance.IdToControllers[OutAtomId].Model;
+                    foreach (KeyValuePair<int, List<RectangleViewModel>> entry in model.PageRegionDict)
                     {
-                        RectangleMod = rectangle;
-                        break;
+                        List<RectangleViewModel> list = entry.Value;
+                        foreach (var rectangleViewModel in list)
+                        {
+                            if (rectangleViewModel.LeftRatio == viewModel.LeftRatio && rectangleViewModel.TopRatio == viewModel.TopRatio &&
+                            rectangleViewModel.RectWidthRatio == viewModel.RectWidthRatio && rectangleViewModel.RectHeightRatio == viewModel.RectHeightRatio && 
+                            rectangleViewModel.PdfPageNumber == viewModel.PdfPageNumber)
+                            {
+                                RectangleMod = rectangleViewModel;
+                                break;
+                            }
+                        }
                     }
-                }
+
+                } else if (SessionController.Instance.IdToControllers[OutAtomId].Model.ElementType == ElementType.Image)
+                {
+                    regionsList = ((ElementModel)SessionController.Instance.IdToControllers[OutAtomId].Model).RegionsModel;
+
+                    foreach (var rectangle in regionsList)
+                    {
+                        if (rectangle.LeftRatio == viewModel.LeftRatio && rectangle.TopRatio == viewModel.TopRatio &&
+                            rectangle.RectWidthRatio == viewModel.RectWidthRatio && rectangle.RectHeightRatio == viewModel.RectHeightRatio)
+                        {
+                            RectangleMod = rectangle;
+                            break;
+                        }
+                    }
+                }    
             }
 
             if (props.ContainsKey("inFineGrain"))

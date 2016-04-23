@@ -21,6 +21,9 @@ namespace NuSysApp.Viewers
         public double NodeWidth { get { return _nodeWidth; } set { _nodeWidth = value; RaisePropertyChanged("NodeWidth"); } }
         public double NodeHeight { get { return _nodeHeight; } set { _nodeHeight = value; RaisePropertyChanged("NodeHeight"); } }
 
+        public int PdfPageNumber { get { return _pdfPageNumber; } set { _pdfPageNumber = value; RaisePropertyChanged("PdfPageNumber"); } }
+
+        private int _pdfPageNumber;
         private double _rectWidthRatio;
         private double _rectHeightRatio;
         private double _topRatio;
@@ -46,6 +49,11 @@ namespace NuSysApp.Viewers
             LeftRatio = Attributes["leftRatio"];
             NodeWidth = Attributes["nodeWidth"];
             NodeHeight = Attributes["nodeHeight"];
+
+            if (Attributes.ContainsKey("pdfPageNumber"))
+            {
+                PdfPageNumber = (int)Attributes["pdfPageNumber"];
+            }
 
             RectWidth = NodeWidth*RectWidthRatio;
             RectHeight = NodeHeight*RectHeightRatio;
