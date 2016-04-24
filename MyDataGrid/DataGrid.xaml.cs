@@ -21,10 +21,11 @@ namespace MyDataGrid
 {
     public sealed partial class DataGrid : UserControl
     {
-        
-        public DataGrid(DataGridViewModel vm)
+        private MainPage _main;
+        public DataGrid(DataGridViewModel vm, MainPage mainPage)
         {
             this.InitializeComponent();
+            _main = mainPage;
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
                 var mainGrid = (Grid)FindName("mainGrid");
@@ -122,5 +123,14 @@ namespace MyDataGrid
 
             //((DataGridViewModel) this.DataContext).Sort(index);
         }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            var currContext = (DataGridViewModel) this.DataContext;
+            currContext.Data[0].Title = "Changed!"; 
+            _main.Reset((DataGridViewModel)this.DataContext); 
+               
+        }
+
     }
 }

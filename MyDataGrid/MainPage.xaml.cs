@@ -23,8 +23,15 @@ namespace MyDataGrid
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        public MainPage(ObservableCollection<string> headerCollection, ObservableCollection<object> elementCollection)
+        public MainPage()
         {
+            this.DataContext = this.MakeDummyInput(100, 4);
+            ObservableCollection<ObservableCollection<string>> input = (ObservableCollection<ObservableCollection<string>>)this.DataContext;
+            ObservableCollection<string> headerCollection = input[0];
+            input.Remove(headerCollection);
+            ObservableCollection<ObservableCollection<string>> elementCollection =
+                (ObservableCollection<ObservableCollection<string>>) input;
+
             ObservableCollection<HarshHeader> headers = new ObservableCollection<HarshHeader>();
             ObservableCollection<GridRowCell> cells = new ObservableCollection<GridRowCell>();
             for (int i = 0; i < headerCollection.Count; i++)
@@ -72,7 +79,7 @@ namespace MyDataGrid
             this.InitializeComponent();
 
 
-            var dg = new DataGrid(vm);
+            var dg = new DataGrid(vm, this);
             dg.Width = 500;
             dg.Height = 500;
             main.Children.Add(dg);
@@ -95,6 +102,43 @@ namespace MyDataGrid
                 }
             }
             return collection;
-        } 
+        }
+
+        public ObservableCollection<ObservableCollection<string>> MakeDummyInput(int rowCount, int colCount)
+        {
+            ObservableCollection<ObservableCollection<string>> collection = new ObservableCollection<ObservableCollection<string>>();
+
+            ObservableCollection<string> headCollection = new ObservableCollection<string>();
+            headCollection.Add("Title");
+            headCollection.Add("Date");
+            headCollection.Add("Time");
+            headCollection.Add("Location");
+
+            collection.Add(headCollection);
+           
+
+            for (int i = 0; i < rowCount; i++)
+            {
+                ObservableCollection<string> data = new ObservableCollection<string>();
+                for (int j = 0; j < colCount; j++)
+                {
+                    data.Add("Row" + i + "Col" + j);
+                }
+
+                collection.Add(data);
+            }
+
+            return collection;
+
+        }
+
+        public void Reset(DataGridViewModel viewModel)
+        {
+            main.Children.Clear();
+            var dg = new DataGrid(viewModel, this);
+            dg.Width = 500;
+            dg.Height = 500;
+            main.Children.Add(dg);
+        }
     }
 }

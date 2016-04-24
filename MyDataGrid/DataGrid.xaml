@@ -10,8 +10,9 @@
     d:DesignWidth="400">
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" x:Name="mainGrid">
-            <StackPanel Orientation="Vertical" x:Name="mainSP" HorizontalAlignment="Stretch">
-                <ScrollViewer x:Name="headerScrollViewer" HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Disabled" VerticalScrollMode="Disabled" HorizontalAlignment="Stretch" ViewChanging="ScrollViewer_OnViewChanging" Width="10000">
+
+        <StackPanel Orientation="Vertical" x:Name="mainSP" HorizontalAlignment="Stretch">
+            <ScrollViewer x:Name="headerScrollViewer" HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Disabled" VerticalScrollMode="Disabled" HorizontalAlignment="Stretch" ViewChanging="ScrollViewer_OnViewChanging" Width="10000">
                 <local:GridAwareItemsControl ItemsSource="{Binding Header}" HorizontalAlignment="Stretch">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -20,7 +21,7 @@
 
                                 <Grid.RenderTransform>
                                     <TranslateTransform x:Name="headerTransform">
-                                    
+
                                     </TranslateTransform>
                                 </Grid.RenderTransform>
                             </Grid>
@@ -42,34 +43,33 @@
 
 
                 </local:GridAwareItemsControl>
-                </ScrollViewer>
+            </ScrollViewer>
 
 
-                <ScrollViewer x:Name="cellScrollViewer" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" ViewChanging="ScrollViewer_OnViewChanging" HorizontalScrollMode ="Enabled" HorizontalScrollBarVisibility="Auto"  Height="480" Width="500">
-                    <ScrollViewer.Content>
-                        <local:GridAwareItemsControl ItemsSource="{Binding Data}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <Grid local:GridAutoLayout.NumberOfRows="{Binding NumRows}"
+            <ScrollViewer x:Name="cellScrollViewer" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" ViewChanging="ScrollViewer_OnViewChanging" HorizontalScrollMode ="Enabled" HorizontalScrollBarVisibility="Auto"  Height="480" Width="500">
+                <ScrollViewer.Content>
+                    <local:GridAwareItemsControl ItemsSource="{Binding Data}" >
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Grid local:GridAutoLayout.NumberOfRows="{Binding NumRows}"
                                   local:GridAutoLayout.NumberOfColumns="{Binding NumCols}"
                                   x:Name="rowGrid">
-                                    </Grid>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <!--<Border BorderThickness="2 2 2 2" BorderBrush="Black" Width="125">-->
-                                        <TextBlock Text="{Binding Title}" Margin="4 10 4 10" CanDrag ="True" DropCompleted="TextBlock_DropCompleted" Grid.Row="{Binding RowIndex}" Grid.Column="{Binding ColIndex}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontWeight="Light"></TextBlock>
-                                    <!--</Border>-->
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </local:GridAwareItemsControl>
-                    </ScrollViewer.Content>
+                                </Grid>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <!--<Border BorderThickness="2 2 2 2" BorderBrush="Black" Width="125">-->
+                                <TextBlock Text="{Binding Title}" Margin="4 10 4 10" CanDrag ="True" DropCompleted="TextBlock_DropCompleted" Grid.Row="{Binding RowIndex}" Grid.Column="{Binding ColIndex}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontWeight="Light"></TextBlock>
+                                <!--</Border>-->
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </local:GridAwareItemsControl>
+                </ScrollViewer.Content>
 
-                </ScrollViewer>
+            </ScrollViewer>
 
-            </StackPanel>
-        
+        </StackPanel>
     </Grid>
 
     
