@@ -173,7 +173,6 @@ namespace NuSysApp
                         }
 
                         ((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.Model.Select();
-
                     }
                 }
                 else
