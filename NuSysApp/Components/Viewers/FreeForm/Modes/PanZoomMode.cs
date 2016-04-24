@@ -11,29 +11,38 @@ namespace NuSysApp
 {
     public class PanZoomMode : AbstractWorkspaceViewMode
     {
-        private DispatcherTimer _timer;
         private FreeFormViewer _cview;
+        private CompositeTransform _tempTransform = new CompositeTransform();
 
         public PanZoomMode(FrameworkElement view) : base(view)
         {
             _cview = view as FreeFormViewer;
-
-            _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromMilliseconds(5);
+            var vm = (FreeFormViewerViewModel)_view.DataContext;
+            _tempTransform.TranslateX = vm.CompositeTransform.TranslateX;
+            _tempTransform.TranslateY = vm.CompositeTransform.TranslateY;
+            _tempTransform.ScaleX = vm.CompositeTransform.ScaleX;
+            _tempTransform.ScaleY = vm.CompositeTransform.ScaleY;
+            _tempTransform.CenterX = vm.CompositeTransform.CenterX;
+            _tempTransform.CenterY = vm.CompositeTransform.CenterY;
         }
 
-        private void OnTick (object sender, object o)
+        private void CompositionTargetOnRendering(object sender, object o)
         {
-            _timer.Stop();
-            _timer.Tick -= OnTick;
             if (_cview?.InqCanvas != null)
             {
+                var vm = (FreeFormViewerViewModel)_view.DataContext;
+                vm.CompositeTransform.TranslateX = _tempTransform.TranslateX;
+                vm.CompositeTransform.TranslateY = _tempTransform.TranslateY;
+                vm.CompositeTransform.ScaleX = _tempTransform.ScaleX;
+                vm.CompositeTransform.ScaleY = _tempTransform.ScaleY;
+                vm.CompositeTransform.CenterX = _tempTransform.CenterX;
+                vm.CompositeTransform.CenterY = _tempTransform.CenterY;
                 _cview.InqCanvas.Transform = (CompositeTransform)_cview.AtomCanvas.RenderTransform;
                 _cview.InqCanvas.Redraw();
             }
-            _timer.Tick += OnTick;
-            _timer.Start();
         }
+
+    
 
         public override async Task Activate()
         {
@@ -42,6 +51,7 @@ namespace NuSysApp
             _view.PointerWheelChanged += OnPointerWheelChanged;
             _view.ManipulationDelta += OnManipulationDelta;
             _view.ManipulationCompleted += ViewOnManipulationCompleted;
+            CompositionTarget.Rendering += CompositionTargetOnRendering;
         }
         
         public override async Task Deactivate()
@@ -51,26 +61,20 @@ namespace NuSysApp
             _view.ManipulationDelta -= OnManipulationDelta;
             _view.ManipulationCompleted -= ViewOnManipulationCompleted;
             _view.PointerWheelChanged -= OnPointerWheelChanged;
-
-            _timer.Stop();
-            _timer.Tick -= OnTick;
+            CompositionTarget.Rendering -= CompositionTargetOnRendering;
         }
 
         private void OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen)
                 return;
-            _timer.Tick -= OnTick;
-            _timer.Tick += OnTick;
-            _timer.Start();
+        //    _timer.Start();
         }
 
         private void ViewOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen)
                 return;
-            _timer.Stop();
-            _timer.Tick -= OnTick;
             _view.ManipulationCompleted -= ViewOnManipulationCompleted;
             e.Handled = true;
         }
@@ -79,7 +83,7 @@ namespace NuSysApp
         protected void OnPointerWheelChanged(object sender, PointerRoutedEventArgs e)
         {
             var vm = (FreeFormViewerViewModel)_view.DataContext;
-            var compositeTransform = vm.CompositeTransform;
+            var compositeTransform = _tempTransform;
 
             var tmpTranslate = new TranslateTransform
             {
@@ -135,7 +139,7 @@ namespace NuSysApp
                 return;
             var vm = (FreeFormViewerViewModel)_view.DataContext;
 
-            var compositeTransform = vm.CompositeTransform;
+            var compositeTransform = _tempTransform;
 
             var tmpTranslate = new TranslateTransform
             {
