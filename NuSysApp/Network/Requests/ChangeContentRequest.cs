@@ -50,8 +50,8 @@ namespace NuSysApp
                 var inkIds = _message.GetList<string>("inklines");
                 var libModel = (CollectionLibraryElementModel)content;
                 var oldInkLines = libModel.InkLines;
-                var added = inkIds.Except(oldInkLines);
-                var removed = oldInkLines.Except(inkIds);
+                var added = inkIds.Except(oldInkLines).ToArray();
+                var removed = oldInkLines.Except(inkIds).ToArray();
 
                 foreach (var idremoved in removed)
                 {

@@ -83,9 +83,17 @@ namespace NuSysApp
 
         public void AddStroke(InkStroke stroke)
         {
-            _inkManager.AddStroke(stroke);
-            _dryStrokes = _inkManager.GetStrokes().ToList();
-            Redraw();
+            try
+            {
+                _inkManager.AddStroke(stroke);
+
+                _dryStrokes = _inkManager.GetStrokes().ToList();
+                Redraw();
+            }
+            catch (Exception e)
+            {
+                Redraw();
+            }
         }
 
         public void RemoveStroke(InkStroke stroke)

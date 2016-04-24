@@ -63,18 +63,20 @@ namespace NuSysApp
 
                 collectionModel.OnInkAdded += delegate(string id)
                 {
-                    var x = InkStorage._inkStrokes[id];
-                    if (x.Type == "ink")
+                    if (InkStorage._inkStrokes.ContainsKey(id))
                     {
-                        _inqCanvas.AddStroke(x.Stroke);
-                        _inqCanvas.Redraw();
+                        var x = InkStorage._inkStrokes[id];
+                        if (x.Type == "ink")
+                        {
+                            _inqCanvas.AddStroke(x.Stroke);
+                            _inqCanvas.Redraw();
+                        }
+                        else
+                        {
+                            _inqCanvas.AddAdorment(x.Stroke, x.Color, false);
+                            _inqCanvas.Redraw();
+                        }
                     }
-                    else
-                    {
-                        _inqCanvas.AddAdorment(x.Stroke, x.Color, false);
-                        _inqCanvas.Redraw();
-                    }
-
                 };
 
                 _nodeManipulationMode = new NodeManipulationMode(this);
