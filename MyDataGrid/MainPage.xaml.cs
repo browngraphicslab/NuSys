@@ -43,6 +43,7 @@ namespace MyDataGrid
                     newCell.ColIndex = j;
                     newCell.RowIndex = i;
                     newCell.Title = element[1];
+                    cells.Add(newCell);
                 }
                 
             }
@@ -64,7 +65,7 @@ namespace MyDataGrid
 
             var vm = new DataGridViewModel();
             vm.Header = headers;
-            vm.Data = this.MakeDummyRows(100, 4);
+            vm.Data = cells;
             vm.NumCols = vm.Header.Count;
             vm.NumRows = vm.Data.Count/vm.Header.Count;
             DataContext = vm;
