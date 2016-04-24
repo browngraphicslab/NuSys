@@ -86,7 +86,7 @@ namespace NuSysApp
 
         public async Task LaunchLDA(string text)
         {
-            if (text == null || text == "")
+            if (String.IsNullOrEmpty(text) || string.IsNullOrWhiteSpace(text))
                 return;
             var dvm = (DetailViewerViewModel)DataContext;
             var cvm = (ElementViewModel) dvm.View.DataContext;
@@ -113,7 +113,8 @@ namespace NuSysApp
                 await UITask.Run(() =>
                 {
                     var tags = (List<string>)cvm.Controller.Model.GetMetaData("tags");
-                    tags.AddRange(topics);
+                    if (topics.Count > 0)
+                        tags.AddRange(topics);
                     cvm.Controller.SetMetadata("tags", tags);
                 });
             });

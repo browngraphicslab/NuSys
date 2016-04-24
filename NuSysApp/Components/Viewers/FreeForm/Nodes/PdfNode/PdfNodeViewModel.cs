@@ -93,6 +93,7 @@ namespace NuSysApp
 
             await Goto(CurrentPageNumber);
             SetSize(Width, Height);
+            //LaunchLDA((PdfNodeModel)this.Model);
         }
 
         private async void OnPageChange(int page)

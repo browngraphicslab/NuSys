@@ -271,7 +271,7 @@ namespace LdaLibrary
             string line = "";
 
             //write docs with topic assignments for words
-            for (i = 0; i < data.M; i++)
+            for (i = 0; i < (int)data.M; i++)
             {
                 for (j = 0; j < data.docs[i].length; ++j)
                 {
@@ -390,7 +390,8 @@ namespace LdaLibrary
                     {
                         string word = data.localDict.getWord((int)wordsProbsList[i].Key);
                         lines.Add("\t" + word + " " + wordsProbsList[i].Value);
-                        wordList.Add(word);
+                        if (!String.IsNullOrEmpty(word) && !String.IsNullOrWhiteSpace(word))
+                            wordList.Add(word);
                     }
                 }
             } // end for each topic

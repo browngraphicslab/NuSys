@@ -241,104 +241,106 @@ namespace NuSysApp
             string data = "";
             string title = "";
 
-            var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
-            if (storageFile == null) return;
-
-            var fileType = storageFile.FileType.ToLower();
-            title = storageFile.DisplayName;
-
-            bool validFileType = true;
-
-            if (Constants.ImageFileTypes.Contains(fileType))
+            var storageFiles = await FileManager.PromptUserForFiles(Constants.AllFileTypes);
+            foreach (var storageFile in storageFiles)
             {
-                elementType = ElementType.Image;
-                data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
-            }
-            else if (Constants.WordFileTypes.Contains(fileType))
-            {
-                elementType = ElementType.Word;
-            }
-            else if (Constants.PowerpointFileTypes.Contains(fileType))
-            {
-                elementType = ElementType.Powerpoint;
-            }
-            else if (Constants.PdfFileTypes.Contains(fileType))
-            {
-                elementType = ElementType.PDF;
-                IRandomAccessStream s = await storageFile.OpenReadAsync();
+                if (storageFile == null) return;
 
-                byte[] fileBytes = null;
-                using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                var fileType = storageFile.FileType.ToLower();
+                title = storageFile.DisplayName;
+
+                bool validFileType = true;
+
+                if (Constants.ImageFileTypes.Contains(fileType))
                 {
-                    fileBytes = new byte[stream.Size];
-                    using (DataReader reader = new DataReader(stream))
-                    {
-                        await reader.LoadAsync((uint)stream.Size);
-                        reader.ReadBytes(fileBytes);
-                    }
+                    elementType = ElementType.Image;
+                    data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
                 }
-
-                data = Convert.ToBase64String(fileBytes);
-            }
-            else if (Constants.VideoFileTypes.Contains(fileType))
-            {
-                elementType = ElementType.Video;
-                IRandomAccessStream s = await storageFile.OpenReadAsync();
-
-                byte[] fileBytes = null;
-                using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                else if (Constants.WordFileTypes.Contains(fileType))
                 {
-                    fileBytes = new byte[stream.Size];
-                    using (DataReader reader = new DataReader(stream))
-                    {
-                        await reader.LoadAsync((uint)stream.Size);
-                        reader.ReadBytes(fileBytes);
-                    }
+                    elementType = ElementType.Word;
                 }
-
-                data = Convert.ToBase64String(fileBytes);
-            }
-            else if (Constants.AudioFileTypes.Contains(fileType))
-            {
-                elementType = ElementType.Audio;
-                IRandomAccessStream s = await storageFile.OpenReadAsync();
-
-                byte[] fileBytes = null;
-                using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                else if (Constants.PowerpointFileTypes.Contains(fileType))
                 {
-                    fileBytes = new byte[stream.Size];
-                    using (DataReader reader = new DataReader(stream))
-                    {
-                        await reader.LoadAsync((uint)stream.Size);
-                        reader.ReadBytes(fileBytes);
-                    }
+                    elementType = ElementType.Powerpoint;
                 }
+                else if (Constants.PdfFileTypes.Contains(fileType))
+                {
+                    elementType = ElementType.PDF;
+                    IRandomAccessStream s = await storageFile.OpenReadAsync();
 
-                data = Convert.ToBase64String(fileBytes);
+                    byte[] fileBytes = null;
+                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                    {
+                        fileBytes = new byte[stream.Size];
+                        using (DataReader reader = new DataReader(stream))
+                        {
+                            await reader.LoadAsync((uint)stream.Size);
+                            reader.ReadBytes(fileBytes);
+                        }
+                    }
+
+                    data = Convert.ToBase64String(fileBytes);
+                }
+                else if (Constants.VideoFileTypes.Contains(fileType))
+                {
+                    elementType = ElementType.Video;
+                    IRandomAccessStream s = await storageFile.OpenReadAsync();
+
+                    byte[] fileBytes = null;
+                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                    {
+                        fileBytes = new byte[stream.Size];
+                        using (DataReader reader = new DataReader(stream))
+                        {
+                            await reader.LoadAsync((uint)stream.Size);
+                            reader.ReadBytes(fileBytes);
+                        }
+                    }
+
+                    data = Convert.ToBase64String(fileBytes);
+                }
+                else if (Constants.AudioFileTypes.Contains(fileType))
+                {
+                    elementType = ElementType.Audio;
+                    IRandomAccessStream s = await storageFile.OpenReadAsync();
+
+                    byte[] fileBytes = null;
+                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                    {
+                        fileBytes = new byte[stream.Size];
+                        using (DataReader reader = new DataReader(stream))
+                        {
+                            await reader.LoadAsync((uint)stream.Size);
+                            reader.ReadBytes(fileBytes);
+                        }
+                    }
+
+                    data = Convert.ToBase64String(fileBytes);
+                }
+                else
+                {
+                    validFileType = false;
+                }
+                if (validFileType)
+                {
+                    var contentId = SessionController.Instance.GenerateId();
+
+                    await
+                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                            new CreateNewLibraryElementRequest(contentId, data, elementType, title));
+                    //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, data == null ? "" : data.ToString()), NetworkClient.PacketType.TCP, null, true);
+
+                    // TOOD: refresh library
+
+                    vm.ClearSelection();
+                    //   vm.ClearMultiSelection();
+                }
+                else
+                {
+                    Debug.WriteLine("tried to import invalid filetype");
+                }
             }
-            else
-            {
-                validFileType = false;
-            }
-            if (validFileType)
-            {
-                var contentId = SessionController.Instance.GenerateId();
-
-                await
-                    SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
-                        new CreateNewLibraryElementRequest(contentId, data, elementType, title));
-                //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, data == null ? "" : data.ToString()), NetworkClient.PacketType.TCP, null, true);
-
-                // TOOD: refresh library
-
-                vm.ClearSelection();
-                //   vm.ClearMultiSelection();
-            }
-            else
-            {
-                Debug.WriteLine("tried to import invalid filetype");
-            }
-
         }
         public async Task AddNode(Point pos, Size size, ElementType elementType, string libraryId)
         {

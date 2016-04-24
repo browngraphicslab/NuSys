@@ -5,6 +5,7 @@ using System.Diagnostics;
 using Windows.Storage;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace LdaLibrary
 {
@@ -21,7 +22,20 @@ namespace LdaLibrary
         public async static Task<List<string>> launch(List<string> args, List<string> documents)
         {
             await Init(args, documents);
-            return ListWordsOfTopic();
+            List<string> words = ListWordsOfTopic();
+            //List<string> wikiTopics = await RunParser(words);
+            return words;
+        }
+
+        public async static Task<List<string>> RunParser(List<string> topics)
+        {
+            Parser p = new Parser();
+            Dictionary<string, string> allText = new Dictionary<string, string>();
+            Dictionary<string, double> topicCount = new Dictionary<string, double>();
+            allText = await p.GetAllWikiContent(topics);
+            topicCount = p.GetTopicCount(allText, topics);
+            var sorted = topicCount.OrderBy(x => -x.Value).ToDictionary(x => x.Key, x => x.Value);
+            return sorted.Keys.ToList().GetRange(0,9);
         }
 
         public async static Task Init(List<string> args, List<string> documents )
@@ -37,15 +51,6 @@ namespace LdaLibrary
             Theta = await CreateFileIfNotExists(tmp, "theta.txt");
 
             estimator = new Estimator();
-
-            //string test = await GetWikiContent("The Beatles");
-            /*
-            if (true)
-            {
-                PDFReader test = new PDFReader();
-                test.test(args[0]);
-                return;
-            }*/
 
             Option option = new Option();
             /*
