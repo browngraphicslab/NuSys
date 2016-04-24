@@ -164,7 +164,8 @@ namespace NuSysApp
 
           
             var request = InkStorage.CreateRemoveInkRequest(new InkWrapper(Stroke, "ink"));
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request.Item1);
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.RemoveStroke(Stroke);
+            //SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request.Item1);
 
             var deleteMsg = new Message();
             deleteMsg["contentId"] = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.Id;

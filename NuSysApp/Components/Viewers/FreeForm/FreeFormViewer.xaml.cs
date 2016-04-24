@@ -126,15 +126,15 @@ namespace NuSysApp
             var id = SessionController.Instance.GenerateId();
             InkStorage._inkStrokes.Add(id, new InkWrapper(inkStroke, "adornment"));//"adornment", inkStroke));
 
+            var request = InkStorage.CreateAddInkRequest(id, inkStroke, "adornment", MultiSelectMenuView.SelectedColor);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+
             var m = new Message();
             m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.Id;
             var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
             model.InkLines.Add(id);
             m["inklines"] = new HashSet<string>(model.InkLines);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(m));
-
-            var request = InkStorage.CreateAddInkRequest(id, inkStroke, "adornment", MultiSelectMenuView.SelectedColor);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }
 
         private async void InkStrokedAdded(WetDryInkCanvas canvas, InkStroke stroke)
@@ -142,15 +142,15 @@ namespace NuSysApp
             var id = SessionController.Instance.GenerateId();
             InkStorage._inkStrokes.Add(id, new InkWrapper(stroke, "ink"));
 
+            var request = InkStorage.CreateAddInkRequest(id, stroke, "ink", Colors.Black );
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+
             var m = new Message();
             m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.Id;
             var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
             model.InkLines.Add(id);
             m["inklines"] = new HashSet<string>(model.InkLines);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(m));
-
-            var request = InkStorage.CreateAddInkRequest(id, stroke, "ink", Colors.Black );
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }
 
         private void InkStrokedRemoved(WetDryInkCanvas canvas, InkStroke stroke)
