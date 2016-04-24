@@ -21,6 +21,7 @@ namespace MyDataGrid
 {
     public sealed partial class DataGrid : UserControl
     {
+        
         public DataGrid(DataGridViewModel vm)
         {
             this.InitializeComponent();
@@ -39,8 +40,9 @@ namespace MyDataGrid
                 }
 
             };
-            
-            
+
+            this.DataContext = vm;
+
         }
 
         private void UIElement_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -104,13 +106,21 @@ namespace MyDataGrid
 
         private void ScrollViewer_OnViewChanging(object sender, ScrollViewerViewChangingEventArgs e)
         {
-            var hT = (TranslateTransform)cellScrollViewer.FindName("headerTransform");
+            var hT = (TranslateTransform)headerScrollViewer.FindName("headerTransform");
             hT.X = e.NextView.HorizontalOffset * (-1);
         }
 
         private void TextBlock_DropCompleted(UIElement sender, DropCompletedEventArgs args)
         {
             //do drop stuff here
+           
+        }
+
+        private void ColGrid_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var index = Grid.GetColumn((Grid)sender);
+
+            ((DataGridViewModel) this.DataContext).Sort(index);
         }
     }
 }

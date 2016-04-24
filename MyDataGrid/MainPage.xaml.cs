@@ -23,13 +23,19 @@ namespace MyDataGrid
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        public MainPage()
+        public MainPage(ObservableCollection<string> headerCollection, ObservableCollection<object> elementCollection)
         {
-            
-            var header1 = new HarshHeader {ColIndex = 0, Title = "Header0"};
-            var header2 = new HarshHeader {ColIndex = 1, Title = "Header1"};
-            var header3 = new HarshHeader {ColIndex = 2, Title = "Header2"};
-            var header4 = new HarshHeader {ColIndex = 3, Title = "Header3"};
+            ObservableCollection<HarshHeader> headers = new ObservableCollection<HarshHeader>();
+            for (int i = 0; i < headerCollection.Count; i++)
+            {
+                var newHeader = new HarshHeader {ColIndex = i, Title = headerCollection[i]};
+                headers.Add(newHeader);
+            }
+
+            //var header1 = new HarshHeader {ColIndex = 0, Title = "Header0"};
+            //var header2 = new HarshHeader {ColIndex = 1, Title = "Header1"};
+            //var header3 = new HarshHeader {ColIndex = 2, Title = "Header2"};
+            //var header4 = new HarshHeader {ColIndex = 3, Title = "Header3"};
 
             //var row1 = new GridRowCell {ColIndex = 0, RowIndex = 0, Title = "R0C0"};
             //var row2 = new GridRowCell { ColIndex = 1, RowIndex = 0, Title = "R1C0" };
@@ -42,7 +48,7 @@ namespace MyDataGrid
             //var row8 = new GridRowCell { ColIndex = 3, RowIndex = 1, Title = "R3C0" };
 
             var vm = new DataGridViewModel();
-            vm.Header = new ObservableCollection<HarshHeader>{header1, header2, header3, header4};
+            vm.Header = headers;
             vm.Data = this.MakeDummyRows(100, 4);
             vm.NumCols = vm.Header.Count;
             vm.NumRows = vm.Data.Count/vm.Header.Count;
