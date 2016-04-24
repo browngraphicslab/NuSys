@@ -11,11 +11,13 @@
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" x:Name="mainGrid">
             <StackPanel Orientation="Vertical" x:Name="mainSP" HorizontalAlignment="Stretch">
-                <ScrollViewer x:Name="headerScrollViewer" HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" VerticalScrollMode="Disabled" HorizontalAlignment="Stretch" ViewChanging="ScrollViewer_OnViewChanging">
+                <ScrollViewer x:Name="headerScrollViewer" HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Disabled" VerticalScrollMode="Disabled" HorizontalAlignment="Stretch" ViewChanging="ScrollViewer_OnViewChanging" Width="10000">
                 <local:GridAwareItemsControl ItemsSource="{Binding Header}" HorizontalAlignment="Stretch">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
+
                             <Grid local:GridAutoLayout.NumberOfColumns="{Binding NumCols}" local:GridAutoLayout.NumberOfRows="1" x:Name="headerGrid" HorizontalAlignment="Stretch">
+
                                 <Grid.RenderTransform>
                                     <TranslateTransform x:Name="headerTransform">
                                     
@@ -28,8 +30,10 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid x:Name="colGrid" DataContext="{Binding}" Grid.Column ="{Binding ColIndex}" BorderThickness="2 2 2 2" BorderBrush="Black" HorizontalAlignment="Stretch" PointerPressed="ColGrid_OnPointerPressed">
-                                <TextBlock Text="{Binding Title}" HorizontalAlignment="Center" Padding="10" FontWeight="Bold"></TextBlock>
+
+                            <Grid x:Name="colGrid" DataContext="{Binding}" Grid.Column ="{Binding ColIndex}" BorderThickness="2 2 2 2" BorderBrush="Black">
+                                <TextBlock Text="{Binding Title}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="10" FontWeight="Bold"></TextBlock>
+
                                 <Rectangle PointerEntered ="Rectangle_PointerEntered" PointerExited="Rectangle_PointerExited"  Fill="Transparent" Width="5" Height="20" HorizontalAlignment="Right" ManipulationMode="TranslateX" ManipulationDelta="UIElement_OnManipulationDelta">
                                 </Rectangle>
                             </Grid>

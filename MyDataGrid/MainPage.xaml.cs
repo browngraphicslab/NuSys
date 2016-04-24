@@ -26,10 +26,25 @@ namespace MyDataGrid
         public MainPage(ObservableCollection<string> headerCollection, ObservableCollection<object> elementCollection)
         {
             ObservableCollection<HarshHeader> headers = new ObservableCollection<HarshHeader>();
+            ObservableCollection<GridRowCell> cells = new ObservableCollection<GridRowCell>();
             for (int i = 0; i < headerCollection.Count; i++)
             {
                 var newHeader = new HarshHeader {ColIndex = i, Title = headerCollection[i]};
                 headers.Add(newHeader);
+            }
+
+            for (int i = 0; i < elementCollection.Count; i++)
+            {
+                var element = elementCollection[i];
+
+                for (int j = 0; j < headerCollection.Count; j++)
+                {
+                    var newCell = new GridRowCell();
+                    newCell.ColIndex = j;
+                    newCell.RowIndex = i;
+                    newCell.Title = element[1];
+                }
+                
             }
 
             //var header1 = new HarshHeader {ColIndex = 0, Title = "Header0"};

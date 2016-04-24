@@ -120,7 +120,7 @@ namespace MyDataGrid
         {
             var index = Grid.GetColumn((Grid)sender);
 
-            ((DataGridViewModel) this.DataContext).Sort(index);
+            //((DataGridViewModel) this.DataContext).Sort(index);
         }
     }
 }
