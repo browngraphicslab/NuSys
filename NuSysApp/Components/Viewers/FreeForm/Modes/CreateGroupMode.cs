@@ -109,6 +109,16 @@ namespace NuSysApp
             p.X -= 150;
             p.Y -= 150;
 
+            if (!SessionController.Instance.IdToControllers.ContainsKey(id1))
+            {
+                return;
+            }
+
+            if (!SessionController.Instance.IdToControllers.ContainsKey(id2))
+            {
+                return;
+            }
+
             var controller1 = SessionController.Instance.IdToControllers[id1];
             var controller2 = SessionController.Instance.IdToControllers[id2];
 

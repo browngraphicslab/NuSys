@@ -240,9 +240,6 @@ namespace NuSysApp
 
             var rect = view.LibraryDraggingRectangle;
 
-            rect.Width = 200;
-
-            rect.Height = 200;
 
 
 
@@ -262,18 +259,14 @@ namespace NuSysApp
 
             _y = e.GetCurrentPoint(view).Position.Y;
 
-            _ct.TranslateX += _x - (rect.Width / 2);
+            _ct.TranslateX += _x;
 
-            _ct.TranslateY += _y - (rect.Height / 2);
+            _ct.TranslateY += _y;
 
             //arbitrary z index
 
             Canvas.SetZIndex(rect, 3);
-
-
-
-
-
+            
 
 
             wrappedView.CapturePointer(e.Pointer);

@@ -41,7 +41,7 @@ namespace NuSysApp
             get { return ChatPopup; }
         }
 
-        public FrameworkElement LibraryDraggingRectangle
+        public LibraryDragElement LibraryDraggingRectangle
         {
             get { return LibraryDraggingNode; }
         }

@@ -110,8 +110,8 @@ namespace NuSysApp
         private void LibraryListItem_OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
             var view = SessionController.Instance.SessionView;
-            _x = e.GetCurrentPoint(view).Position.X;
-            _y = e.GetCurrentPoint(view).Position.Y;
+            _x = e.GetCurrentPoint(view).Position.X-25;
+            _y = e.GetCurrentPoint(view).Position.Y-25;
 
             LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
             element.FireLightupContent(true);
@@ -122,9 +122,6 @@ namespace NuSysApp
             LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
             _propertiesWindow.SetElement(element);
             _propertiesWindow.Visibility = Visibility.Visible;
-
-            var view = SessionController.Instance.SessionView;
-            var rect = view.LibraryDraggingRectangle;
             element.FireLightupContent(true);
         }
         private async void Sort_Button_Click(object sender, RoutedEventArgs e)
@@ -144,22 +141,18 @@ namespace NuSysApp
                 e.Handled = true;
                 return;
             }
-
             
-            
-
             var view = SessionController.Instance.SessionView;
-            view.LibraryDraggingRectangle.Visibility = Visibility.Collapsed;
+            view.LibraryDraggingRectangle.SwitchType(element.Type);
+            view.LibraryDraggingRectangle.Show();
             var rect = view.LibraryDraggingRectangle;
             Canvas.SetZIndex(rect, 3);
-            rect.Width = 100;
-            rect.Height = 100;
             rect.RenderTransform = new CompositeTransform();
             var t = (CompositeTransform)rect.RenderTransform;
 
 
-            t.TranslateX += _x - (rect.Width / 2);
-            t.TranslateY += _y - (rect.Height / 2);
+            t.TranslateX += _x;
+            t.TranslateY += _y;
 
             if (!SessionController.Instance.ContentController.ContainsAndLoaded(element.Id))
             {
@@ -187,11 +180,11 @@ namespace NuSysApp
             var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(sp, null).Where( i => i is LibraryView);
             if (itemsBelow.Any())
             {
-                SessionController.Instance.SessionView.LibraryDraggingRectangle.Visibility = Visibility.Collapsed;
+                SessionController.Instance.SessionView.LibraryDraggingRectangle.Hide();
             }
             else
             {
-                SessionController.Instance.SessionView.LibraryDraggingRectangle.Visibility = Visibility.Visible;
+                SessionController.Instance.SessionView.LibraryDraggingRectangle.Show();
 
             }
             var view = SessionController.Instance.SessionView;
@@ -219,11 +212,12 @@ namespace NuSysApp
             }
 
             var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
-            rect.Width = 0;
-            rect.Height = 0;
+           
 
-            if (SessionController.Instance.SessionView.LibraryDraggingRectangle.Visibility == Visibility.Collapsed)
+            if (rect.Visibility == Visibility.Collapsed)
                 return;
+
+            rect.Hide();
             var r = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(_x, _y));
             await _library.AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type,element.Id);
         }

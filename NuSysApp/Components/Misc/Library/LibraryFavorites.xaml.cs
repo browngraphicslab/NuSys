@@ -101,8 +101,6 @@ namespace NuSysApp
             _propertiesWindow.SetElement(element);
             _propertiesWindow.Visibility = Visibility.Visible;
 
-            var view = SessionController.Instance.SessionView;
-            var rect = view.LibraryDraggingRectangle;
             element.FireLightupContent(true);
         }
         private void LibraryListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -113,20 +111,11 @@ namespace NuSysApp
                 e.Handled = true;
                 return;
             }
-
-
-
-
+            
             var view = SessionController.Instance.SessionView;
-            view.LibraryDraggingRectangle.Visibility = Visibility.Collapsed;
             var rect = view.LibraryDraggingRectangle;
-            Canvas.SetZIndex(rect, 3);
-            rect.Width = 100;
-            rect.Height = 100;
             rect.RenderTransform = new CompositeTransform();
             var t = (CompositeTransform)rect.RenderTransform;
-
-
             t.TranslateX += _x - (rect.Width / 2);
             t.TranslateY += _y - (rect.Height / 2);
 
@@ -156,11 +145,11 @@ namespace NuSysApp
             var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(sp, null).Where(i => i is LibraryView);
             if (itemsBelow.Any())
             {
-                SessionController.Instance.SessionView.LibraryDraggingRectangle.Visibility = Visibility.Collapsed;
+                SessionController.Instance.SessionView.LibraryDraggingRectangle.Hide();
             }
             else
             {
-                SessionController.Instance.SessionView.LibraryDraggingRectangle.Visibility = Visibility.Visible;
+                SessionController.Instance.SessionView.LibraryDraggingRectangle.Show();
 
             }
             var view = SessionController.Instance.SessionView;
@@ -186,10 +175,6 @@ namespace NuSysApp
                 e.Handled = true;
                 return;
             }
-
-            var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
-            rect.Width = 0;
-            rect.Height = 0;
 
             if (SessionController.Instance.SessionView.LibraryDraggingRectangle.Visibility == Visibility.Collapsed)
                 return;

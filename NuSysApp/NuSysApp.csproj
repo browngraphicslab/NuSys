@@ -259,6 +259,9 @@
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\InkStorage.cs" />
     <Compile Include="Components\Viewers\FreeForm\InkWrapper.cs" />
+    <Compile Include="Components\Viewers\FreeForm\LibraryDragElement.xaml.cs">
+      <DependentUpon>LibraryDragElement.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Viewers\FreeForm\RectangleModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\RectangleView.xaml.cs">
       <DependentUpon>RectangleView.xaml</DependentUpon>
@@ -794,6 +797,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Misc\SearchButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\LibraryDragElement.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

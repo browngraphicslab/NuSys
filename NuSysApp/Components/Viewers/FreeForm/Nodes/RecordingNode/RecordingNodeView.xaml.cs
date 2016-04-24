@@ -29,7 +29,8 @@ namespace NuSysApp
 
             nodeTpl.OnTemplateReady += delegate
             {
-                nodeTpl.DuplicateElement.Visibility = nodeTpl.Link.Visibility = Visibility.Collapsed;
+                nodeTpl.DuplicateElement.Visibility = nodeTpl.Link.Visibility = nodeTpl.PresentationLink.Visibility = nodeTpl.PresentationMode.Visibility = Visibility.Collapsed;
+                nodeTpl.titleContainer.Visibility = Visibility.Collapsed;
             };
         }
 
