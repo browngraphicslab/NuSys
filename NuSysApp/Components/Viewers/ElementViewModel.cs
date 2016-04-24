@@ -167,12 +167,12 @@ namespace NuSysApp
             Transform.TranslateY = model.Y;
             Transform.ScaleX = model.ScaleX;
             Transform.ScaleY = model.ScaleY;
-
-
-
+            
             Id = model.Id;
+
             Width = model.Width;
             Height = model.Height;
+
             Alpha = model.Alpha;
             Title = model.Title;
             IsVisible = true;

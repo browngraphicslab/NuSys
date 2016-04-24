@@ -137,12 +137,13 @@ namespace NuSysApp
                         });
 
                     }
-                    if (dict.ContainsKey("favorited") && bool.Parse(dict["favorited"].ToString()))
+                    if (dict.ContainsKey("favorited"))
                     {
+                        bool favorited = bool.Parse(dict["favorited"].ToString());
                         var model = SessionController.Instance.ContentController.Get(id);
                         if (model != null)
                         {
-                            model.Favorited = true;
+                            model.Favorited = favorited;
                         }
                     }
                 });

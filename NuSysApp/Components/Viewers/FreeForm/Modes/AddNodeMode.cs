@@ -114,140 +114,151 @@ namespace NuSysApp
 
             var dict = new Message();
             Dictionary<string, object> metadata;
-            if (elementType == ElementType.Word || elementType == ElementType.Powerpoint || elementType == ElementType.Image || elementType == ElementType.PDF ||  elementType == ElementType.Video)
+            if (elementType == ElementType.Word || elementType == ElementType.Powerpoint || elementType == ElementType.Image || elementType == ElementType.PDF || elementType == ElementType.Video)
             {
-                var storageFile = await FileManager.PromptUserForFile(Constants.AllFileTypes);
-                if (storageFile == null) return;
-
-                var fileType = storageFile.FileType.ToLower();
-                dict["title"] = storageFile.DisplayName;
-
-
-                var token = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(storageFile);
-
-                try
+                var storageFiles = await FileManager.PromptUserForFiles(Constants.AllFileTypes);
+                if (storageFiles == null)
                 {
-             //       CheckFileType(fileType); TODO readd
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine("The file format you selected is currently unsupported");
                     return;
                 }
-
-                if (Constants.ImageFileTypes.Contains(fileType))
+                foreach (var storageFile in storageFiles)
                 {
-                    elementType = ElementType.Image;
-                    
-                    data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
-                }
+                    if (storageFile == null) return;
 
-                if (Constants.WordFileTypes.Contains(fileType))
-                {
-                    metadata = new Dictionary<string, object>();
-                    metadata["FilePath"] = storageFile.Path;
-                    metadata["Token"] = token.Trim();
+                    var fileType = storageFile.FileType.ToLower();
+                    dict["title"] = storageFile.DisplayName;
 
-                    dict["metadata"] = metadata;
 
-                    elementType = ElementType.Word;
+                    var token = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(storageFile);
 
-                    //data = File.ReadAllBytes(storageFile.Path);
-                }
-
-                if (Constants.PowerpointFileTypes.Contains(fileType))
-                {
-                    metadata = new Dictionary<string, object>();
-                    metadata["FilePath"] = storageFile.Path;
-                    metadata["Token"] = token.Trim();
-
-                    dict["metadata"] = metadata;
-
-                    elementType = ElementType.Powerpoint;
-
-                    //data = File.ReadAllBytes(storageFile.Path);
-                }
-
-                if (Constants.PdfFileTypes.Contains(fileType))
-                {
-                    elementType = ElementType.PDF;
-                    IRandomAccessStream s = await storageFile.OpenReadAsync();
-
-                    byte[] fileBytes = null;
-                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync()){
-                        fileBytes = new byte[stream.Size];
-                        using (DataReader reader = new DataReader(stream)){
-                            await reader.LoadAsync((uint)stream.Size);
-                            reader.ReadBytes(fileBytes);
-                        }
-                    }
-
-                    data = Convert.ToBase64String(fileBytes);
-                }
-                if (Constants.VideoFileTypes.Contains(fileType))
-                {
-                    elementType = ElementType.Video;
-                    IRandomAccessStream s = await storageFile.OpenReadAsync();
-
-                    byte[] fileBytes = null;
-                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync()){
-                        fileBytes = new byte[stream.Size];
-                        using (DataReader reader = new DataReader(stream)){
-                            await reader.LoadAsync((uint)stream.Size);
-                            reader.ReadBytes(fileBytes);
-                        }
-                    }
-
-                    data = Convert.ToBase64String(fileBytes);
-                }
-                if (Constants.AudioFileTypes.Contains(fileType))
-                {
-                    elementType = ElementType.Audio;
-                    IRandomAccessStream s = await storageFile.OpenReadAsync();
-
-                    byte[] fileBytes = null;
-                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                    try
                     {
-                        fileBytes = new byte[stream.Size];
-                        using (DataReader reader = new DataReader(stream))
-                        {
-                            await reader.LoadAsync((uint)stream.Size);
-                            reader.ReadBytes(fileBytes);
-                        }
+                        //       CheckFileType(fileType); TODO readd
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine("The file format you selected is currently unsupported");
+                        return;
                     }
 
-                    data = Convert.ToBase64String(fileBytes);
+                    if (Constants.ImageFileTypes.Contains(fileType))
+                    {
+                        elementType = ElementType.Image;
+
+                        data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
+                    }
+
+                    if (Constants.WordFileTypes.Contains(fileType))
+                    {
+                        metadata = new Dictionary<string, object>();
+                        metadata["FilePath"] = storageFile.Path;
+                        metadata["Token"] = token.Trim();
+
+                        dict["metadata"] = metadata;
+
+                        elementType = ElementType.Word;
+
+                        //data = File.ReadAllBytes(storageFile.Path);
+                    }
+
+                    if (Constants.PowerpointFileTypes.Contains(fileType))
+                    {
+                        metadata = new Dictionary<string, object>();
+                        metadata["FilePath"] = storageFile.Path;
+                        metadata["Token"] = token.Trim();
+
+                        dict["metadata"] = metadata;
+
+                        elementType = ElementType.Powerpoint;
+
+                        //data = File.ReadAllBytes(storageFile.Path);
+                    }
+
+                    if (Constants.PdfFileTypes.Contains(fileType))
+                    {
+                        elementType = ElementType.PDF;
+                        IRandomAccessStream s = await storageFile.OpenReadAsync();
+
+                        byte[] fileBytes = null;
+                        using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                        {
+                            fileBytes = new byte[stream.Size];
+                            using (DataReader reader = new DataReader(stream))
+                            {
+                                await reader.LoadAsync((uint)stream.Size);
+                                reader.ReadBytes(fileBytes);
+                            }
+                        }
+
+                        data = Convert.ToBase64String(fileBytes);
+                    }
+                    if (Constants.VideoFileTypes.Contains(fileType))
+                    {
+                        elementType = ElementType.Video;
+                        IRandomAccessStream s = await storageFile.OpenReadAsync();
+
+                        byte[] fileBytes = null;
+                        using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                        {
+                            fileBytes = new byte[stream.Size];
+                            using (DataReader reader = new DataReader(stream))
+                            {
+                                await reader.LoadAsync((uint)stream.Size);
+                                reader.ReadBytes(fileBytes);
+                            }
+                        }
+
+                        data = Convert.ToBase64String(fileBytes);
+                    }
+                    if (Constants.AudioFileTypes.Contains(fileType))
+                    {
+                        elementType = ElementType.Audio;
+                        IRandomAccessStream s = await storageFile.OpenReadAsync();
+
+                        byte[] fileBytes = null;
+                        using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                        {
+                            fileBytes = new byte[stream.Size];
+                            using (DataReader reader = new DataReader(stream))
+                            {
+                                await reader.LoadAsync((uint)stream.Size);
+                                reader.ReadBytes(fileBytes);
+                            }
+                        }
+
+                        data = Convert.ToBase64String(fileBytes);
+                    }
                 }
+                var contentId = SessionController.Instance.GenerateId();
+
+                metadata = new Dictionary<string, object>();
+                metadata["node_creation_date"] = DateTime.Now;
+
+                metadata["node_type"] = elementType + "Node";
+                Random rd = new Random(); //TODO remove
+                metadata["random_id"] = (int)rd.Next(100, 200);
+                metadata["random_id2"] = (int)rd.Next(1, 100);
+
+                dict = new Message();
+                dict["width"] = size.Width.ToString();
+                dict["height"] = size.Height.ToString();
+                dict["nodeType"] = elementType.ToString();
+                dict["x"] = p.X;
+                dict["y"] = p.Y;
+                dict["contentId"] = contentId;
+                dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                dict["metadata"] = metadata;
+                dict["autoCreate"] = true;
+
+                var request = new NewElementRequest(dict);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, data == null ? "" : data.ToString(), elementType, dict.ContainsKey("title") ? dict["title"].ToString() : null));
+                //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, data == null ? "" : data.ToString()), NetworkClient.PacketType.TCP, null, true);
+
+                vm.ClearSelection();
+                //   vm.ClearMultiSelection();
+
             }
-            var contentId = SessionController.Instance.GenerateId();
-
-            metadata = new Dictionary<string, object>();
-            metadata["node_creation_date"] = DateTime.Now;
-
-            metadata["node_type"] = elementType + "Node";
-            Random rd = new Random(); //TODO remove
-            metadata["random_id"] = (int)rd.Next(100, 200); 
-            metadata["random_id2"] = (int)rd.Next(1, 100);
-
-            dict = new Message();
-            dict["width"] = size.Width.ToString();
-            dict["height"] = size.Height.ToString();
-            dict["nodeType"] = elementType.ToString();
-            dict["x"] = p.X;
-            dict["y"] = p.Y;
-            dict["contentId"] = contentId;
-            dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
-            dict["metadata"] = metadata;
-            dict["autoCreate"] = true;
-
-            var request = new NewElementRequest(dict);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, data == null ? "" : data.ToString(), elementType, dict.ContainsKey("title") ? dict["title"].ToString() : null));
-            //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, data == null ? "" : data.ToString()), NetworkClient.PacketType.TCP, null, true);
-
-            vm.ClearSelection();
-         //   vm.ClearMultiSelection();
-
         
         }
     }

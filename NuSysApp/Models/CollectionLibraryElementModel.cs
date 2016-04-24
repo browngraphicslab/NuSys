@@ -11,7 +11,6 @@ namespace NuSysApp
         private HashSet<string> _children;
 
         public HashSet<string> InkLines;
-        public int LastInkCount = 0;
 
         public delegate void InkEventHandler(string id);
         public event InkEventHandler OnInkAdded;

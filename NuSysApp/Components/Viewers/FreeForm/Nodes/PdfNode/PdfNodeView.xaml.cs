@@ -164,7 +164,6 @@ namespace NuSysApp
 
         private void Region_OnClick(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("fdsafd");
             _drawingRegion = true;
         }
 
@@ -173,7 +172,8 @@ namespace NuSysApp
             if (_drawingRegion)
             {
                 Debug.WriteLine("here");
-                Canvas.Children.Add(TempRegion);
+                if (!Canvas.Children.Contains(TempRegion))
+                    Canvas.Children.Add(TempRegion);
                 Canvas.SetLeft(TempRegion, e.GetCurrentPoint((UIElement)sender).Position.X);
                 Canvas.SetTop(TempRegion, e.GetCurrentPoint((UIElement)sender).Position.Y);
                 TempRegion.Opacity = 1;

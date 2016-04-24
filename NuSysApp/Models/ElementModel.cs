@@ -85,6 +85,7 @@ namespace NuSysApp
             get { return _height; }
             set
             {
+                
                 _height = value;
             }
         }
