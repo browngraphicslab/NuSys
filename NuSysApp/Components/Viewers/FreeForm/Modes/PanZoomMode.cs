@@ -17,7 +17,6 @@ namespace NuSysApp
         public PanZoomMode(FrameworkElement view) : base(view)
         {
             _cview = view as FreeFormViewer;
-
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromMilliseconds(5);
         }
