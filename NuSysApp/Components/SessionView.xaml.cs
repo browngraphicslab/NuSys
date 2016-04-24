@@ -158,7 +158,27 @@ namespace NuSysApp
             if (args.VirtualKey == VirtualKey.Shift)
             {
                 FloatingMenu.ActivatePenMode(false);
-            }            
+            }
+
+            if (_presentationModeInstance != null && (args.VirtualKey == VirtualKey.Right || args.VirtualKey == VirtualKey.Up))
+            {
+                _presentationModeInstance.MoveToNext();
+            }
+
+            if (_presentationModeInstance != null && (args.VirtualKey == VirtualKey.Left || args.VirtualKey == VirtualKey.Down))
+            {
+                _presentationModeInstance.MoveToPrevious();
+            }
+
+            if (_presentationModeInstance != null && args.VirtualKey == VirtualKey.Space)
+            {
+                _presentationModeInstance.GoToCurrent();
+            }
+
+            if (_presentationModeInstance != null && args.VirtualKey == VirtualKey.Escape)
+            {
+                _presentationModeInstance.GoToCurrent();
+            }
         }
 
         public void EnterPresentationMode(ElementViewModel em)
