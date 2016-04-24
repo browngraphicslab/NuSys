@@ -30,6 +30,9 @@ namespace NuSysApp
 
         public Dictionary<string, ImageSource> Thumbnails = new Dictionary<string, ImageSource>();
 
+        public double ScreenWidth { get; set; }
+        public double ScreenHeight { get; set; }
+
         private SessionController()
         {
             IdToControllers = new ConcurrentDictionary<string, ElementController>();

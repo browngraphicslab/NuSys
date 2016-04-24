@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -11,27 +12,84 @@ namespace NuSysApp
 {
     public class PanZoomMode : AbstractWorkspaceViewMode
     {
-        private DispatcherTimer _timer;
+        //private DispatcherTimer _timer;
         private FreeFormViewer _cview;
+        private CompositeTransform _tempTransform;
+        private static PanZoomMode Instance;
+
+        private List<UIElement> _allElements = new List<UIElement>();
 
         public PanZoomMode(FrameworkElement view) : base(view)
         {
+            Instance = this;
             _cview = view as FreeFormViewer;
-            _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromMilliseconds(5);
+       //     _timer = new DispatcherTimer();
+        //    _timer.Interval = TimeSpan.FromMilliseconds(5);
+            var vm = (FreeFormViewerViewModel)_view.DataContext;
+            UpdateTempTransform(vm.CompositeTransform);
         }
+
+        public static void UpdateTempTransform( CompositeTransform compositeTransform )
+        {
+            Instance._tempTransform = new CompositeTransform
+            {
+                TranslateX = compositeTransform.TranslateX,
+                TranslateY = compositeTransform.TranslateY,
+                ScaleX = compositeTransform.ScaleX,
+                ScaleY = compositeTransform.ScaleY,
+                CenterX = compositeTransform.CenterX,
+                CenterY = compositeTransform.CenterY
+            };
+        }
+
+        private void CompositionTargetOnRendering(object sender, object o)
+        {
+            var vm = (FreeFormViewerViewModel)_view.DataContext;
+            var compositeTransform = vm.CompositeTransform;
+
+            compositeTransform.TranslateX = _tempTransform.TranslateX;
+            compositeTransform.TranslateY = _tempTransform.TranslateY;
+            compositeTransform.ScaleX = _tempTransform.ScaleX;
+            compositeTransform.ScaleY = _tempTransform.ScaleY;
+            compositeTransform.CenterX = _tempTransform.CenterX;
+            compositeTransform.CenterY = _tempTransform.CenterY;
+
+
+            if (_cview?.InqCanvas != null)
+            {
+                _cview.InqCanvas.Transform = compositeTransform;
+                _cview.InqCanvas.Redraw();
+            }
+
+            CullScreen();
+        }
+
+
+        private void CullScreen()
+        {
+            
+            var vm = (FreeFormViewerViewModel)_view.DataContext;
+            var sv = SessionController.Instance.SessionView.FreeFormViewer;
+            var rect = vm.CompositeTransform.Inverse.TransformBounds(new Rect(-200, -200, sv.Width + 400, sv.Height + 400));
+            foreach (var frameworkElement in vm.AtomViewList)
+            {
+                var dc = (ElementViewModel) frameworkElement.DataContext;
+                bool allIn = false;
+                foreach (var referencePoint in dc.ReferencePoints)
+                {
+                    allIn = rect.Contains(referencePoint);
+                    if (allIn)
+                        break;
+                }
+                dc.IsVisible = allIn;
+            }
+        }
+
+
 
         private void OnTick(object sender, object o)
         {
-            _timer.Stop();
-            _timer.Tick -= OnTick;
-            if (_cview?.InqCanvas != null)
-            {
-                _cview.InqCanvas.Transform = (CompositeTransform)_cview.AtomCanvas.RenderTransform;
-                _cview.InqCanvas.Redraw();
-            }
-            _timer.Tick += OnTick;
-            _timer.Start();
+
         }
 
         public override async Task Activate()
@@ -41,7 +99,10 @@ namespace NuSysApp
             _view.PointerWheelChanged += OnPointerWheelChanged;
             _view.ManipulationDelta += OnManipulationDelta;
             _view.ManipulationCompleted += ViewOnManipulationCompleted;
+            CompositionTarget.Rendering += CompositionTargetOnRendering;
         }
+
+
 
         public override async Task Deactivate()
         {
@@ -50,27 +111,28 @@ namespace NuSysApp
             _view.ManipulationDelta -= OnManipulationDelta;
             _view.ManipulationCompleted -= ViewOnManipulationCompleted;
             _view.PointerWheelChanged -= OnPointerWheelChanged;
+            CompositionTarget.Rendering -= CompositionTargetOnRendering;
 
-            _timer.Stop();
-            _timer.Tick -= OnTick;
+         //   _timer.Stop();
+         //   _timer.Tick -= OnTick;
         }
 
         private void OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen)
                 return;
-            _timer.Tick -= OnTick;
-            _timer.Tick += OnTick;
-            _timer.Start();
+         //   _timer.Tick -= OnTick;
+         //   _timer.Tick += OnTick;
+         //   _timer.Start();
         }
 
         private void ViewOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen)
                 return;
-            _timer.Stop();
-            _timer.Tick -= OnTick;
-            _view.ManipulationCompleted -= ViewOnManipulationCompleted;
+       //     _timer.Stop();
+       //     _timer.Tick -= OnTick;
+        //    _view.ManipulationCompleted -= ViewOnManipulationCompleted;
             e.Handled = true;
         }
 
@@ -78,7 +140,7 @@ namespace NuSysApp
         protected void OnPointerWheelChanged(object sender, PointerRoutedEventArgs e)
         {
             var vm = (FreeFormViewerViewModel)_view.DataContext;
-            var compositeTransform = vm.CompositeTransform;
+            var compositeTransform = _tempTransform;
 
             var tmpTranslate = new TranslateTransform
             {
@@ -135,7 +197,7 @@ namespace NuSysApp
                 return;
             var vm = (FreeFormViewerViewModel)_view.DataContext;
 
-            var compositeTransform = vm.CompositeTransform;
+            var compositeTransform = _tempTransform;
 
             var tmpTranslate = new TranslateTransform
             {
@@ -178,9 +240,6 @@ namespace NuSysApp
                 compositeTransform.TranslateX += e.Delta.Translation.X;
                 compositeTransform.TranslateY += e.Delta.Translation.Y;
             }
-
-            if (_cview?.InqCanvas != null)
-                _cview.InqCanvas.Redraw();
             e.Handled = true;
 
         }
