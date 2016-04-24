@@ -23,6 +23,10 @@ namespace NuSysApp.Viewers
 
         public int PdfPageNumber { get { return _pdfPageNumber; } set { _pdfPageNumber = value; RaisePropertyChanged("PdfPageNumber"); } }
 
+        public HashSet<string> ConnectedIds { get { return _connectedIds; } set { _connectedIds = value; RaisePropertyChanged("ConnectedIds"); } }
+
+        public HashSet<string> _connectedIds;
+
         private int _pdfPageNumber;
         private double _rectWidthRatio;
         private double _rectHeightRatio;
@@ -42,6 +46,8 @@ namespace NuSysApp.Viewers
 
             if (attributes == null)
                 return;
+
+            ConnectedIds = new HashSet<string>();
 
             RectHeightRatio = Attributes["heightRatio"];
             RectWidthRatio = Attributes["widthRatio"];

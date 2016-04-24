@@ -95,9 +95,15 @@ namespace NuSysApp.Util
         /// <summary>
         /// Full screen zooms into the next node found
         /// </summary>
-        public void MoveToNext()
+        public async void MoveToNext()
         {
             _currentNode = _nextNode;
+
+            if (_currentNode.ElementType == ElementType.PDF)
+            {
+                pdfChangePage();    
+            }
+
             Load();
             FullScreen();
         }
@@ -121,6 +127,31 @@ namespace NuSysApp.Util
             FullScreen();
         }
 
+        private async void pdfChangePage()
+        {
+            foreach (LinkElementController link in _currentNode.LinkList)
+            {
+                var linkModel = (LinkModel)link.Model;
+                if (!linkModel.IsPresentationLink)
+                    continue;
+                
+                PdfNodeModel pdfModel = (PdfNodeModel)SessionController.Instance.IdToControllers[linkModel.OutAtomId].Model;
+                var modelId = pdfModel.Id;
+
+                var list =
+                    SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
+                        item => ((ElementViewModel)item.DataContext).Model.Id == modelId);
+                var view = list?.First();
+                if (view == null)
+                {
+                    return;
+                }
+                
+                await((PdfNodeView)view).onGoTo(linkModel.RectangleMod.PdfPageNumber);
+                linkModel.RectangleMod.Model.Select();
+            }
+        }
+
         public void ExitMode()
         {
             AnimatePresentation(_originalTransform.ScaleX, _originalTransform.CenterX, _originalTransform.CenterY, _originalTransform.TranslateX, _originalTransform.TranslateY);
@@ -136,6 +167,7 @@ namespace NuSysApp.Util
             foreach (LinkElementController link in vm.LinkList)
             {
                 var linkModel = (LinkModel) link.Model;
+                
                 if (!linkModel.IsPresentationLink)
                     continue;
 
@@ -165,6 +197,8 @@ namespace NuSysApp.Util
             double tagAdjustment = 0;
             var view = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
                     item => ((ElementViewModel)item.DataContext).Model.Id == _currentNode.Id);
+
+            // one of these
             var found = view.Single().FindName("nodeTpl");
             if (found != null)
             {

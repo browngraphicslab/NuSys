@@ -291,27 +291,27 @@ namespace NuSysApp
 
                     if (hitRectangleView.Any())
                     {
-                        foreach (var element in hitRectangleView)
+                        // for now, only works if there one rectangle 
+                        if (hitRectangleView.OfType<RectangleView>().Count() == 1)
                         {
-                            if (element is RectangleView)
+                            RectangleView element = hitRectangleView.OfType<RectangleView>().First();
+                                                   
+                            Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100,
+                                100,
+                                200);
+                            Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100,
+                                100,
+                                100);
+                            if (_currenDragMode == DragMode.PresentationLink)
                             {
-                                Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100,
-                                    100,
-                                    200);
-                                Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100,
-                                    100,
-                                    100);
-                                if (_currenDragMode == DragMode.PresentationLink)
-                                {
-                                    vm.Controller.RequestPresentationLinkTo(dc.Id, (RectangleView)element, null, inFgDictionary,
-                                        outFgDictionary);
-                                }
-                                else
-                                {
-                                    vm.Controller.RequestLinkTo(dc.Id, (RectangleView) element, null, inFgDictionary,
-                                        outFgDictionary);
-                                }
+                                vm.Controller.RequestPresentationLinkTo(dc.Id, (RectangleView)element, null, inFgDictionary,
+                                    outFgDictionary);
                             }
+                            else
+                            {
+                                vm.Controller.RequestLinkTo(dc.Id, (RectangleView)element, null, inFgDictionary,
+                                    outFgDictionary);
+                            }         
                         }
                     } else if (hitsStart2.Any()){
                         foreach (var element in hitsStart2)
