@@ -100,7 +100,7 @@ namespace NuSysApp
                 test.Add(filename);
                 test.Add("niters 10");
                 test.Add("ntopics 1");
-                test.Add("twords 5");
+                test.Add("twords 10");
                 test.Add("dir ");
                 test.Add("est true");
                 test.Add("alpha 12.5");
@@ -113,7 +113,8 @@ namespace NuSysApp
                 await UITask.Run(() =>
                 {
                     var tags = (List<string>)cvm.Controller.Model.GetMetaData("tags");
-                    tags.AddRange(topics);
+                    if (topics.Count > 0)
+                        tags.AddRange(topics);
                     cvm.Controller.SetMetadata("tags", tags);
                 });
             });

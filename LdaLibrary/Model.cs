@@ -390,7 +390,8 @@ namespace LdaLibrary
                     {
                         string word = data.localDict.getWord((int)wordsProbsList[i].Key);
                         lines.Add("\t" + word + " " + wordsProbsList[i].Value);
-                        wordList.Add(word);
+                        if (!String.IsNullOrEmpty(word) && !String.IsNullOrWhiteSpace(word))
+                            wordList.Add(word);
                     }
                 }
             } // end for each topic
