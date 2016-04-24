@@ -34,7 +34,7 @@ namespace NuSysApp
             LibraryElementModel content = SessionController.Instance.ContentController.Get(_message.GetString("contentId"));
             if (_message.ContainsKey("title"))
             {
-                content.Title = _message.GetString("title");
+                content.SetTitle(_message.GetString("title"),false);
             }
             if (_message.ContainsKey("data"))
             {

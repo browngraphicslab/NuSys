@@ -73,7 +73,7 @@ namespace NuSysApp
         public string Id { get; set; }
         public string Title {
             get { return _title; }
-            set
+            private set
             {
                 _title = value;
                 RaisePropertyChanged("Title");
@@ -207,16 +207,19 @@ namespace NuSysApp
             }
         }
 
-        public void SetTitle(string title)
+        public void SetTitle(string title, bool sendRequest = true)
         {
-            Task.Run(async delegate
+            if (sendRequest)
             {
-                var m  = new Message();
-                m["contentId"] = Id;
-                m["title"] = title;
-                var request = new ChangeContentRequest(m);
-                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-            });
+                Task.Run(async delegate
+                {
+                    var m = new Message();
+                    m["contentId"] = Id;
+                    m["title"] = title;
+                    var request = new ChangeContentRequest(m);
+                    SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                });
+            }
             Title = title;
           //  OnTitleChanged?.Invoke(this, title);
         }
