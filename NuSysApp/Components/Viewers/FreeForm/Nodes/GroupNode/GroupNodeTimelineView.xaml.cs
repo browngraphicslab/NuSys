@@ -46,7 +46,7 @@ namespace NuSysApp
         private TimelineNodeViewFactory _factory;
         private int _counter;
         private int _count;
-
+        private List<string> _loadedList = new List<string>();
         public GroupNodeTimelineView(GroupNodeTimelineViewModel viewModel)
         {
             this.InitializeComponent();
@@ -257,6 +257,11 @@ namespace NuSysApp
                 {
                     controller.LibraryElementModel.OnLoaded += async delegate ()
                     {
+                        if (_loadedList.Contains(controller.LibraryElementModel.Id))
+                            return;
+
+                        _loadedList.Add(controller.LibraryElementModel.Id);
+
                         String title = controller.Model.Title;
                         Image image = await _factory.CreateFromSendable(controller);
                         Object secondItem = metadata;
@@ -329,7 +334,7 @@ namespace NuSysApp
                     AddMetaDataButtons(e.NewItems);
                 }
             }
-            ResortTimeline(_sortBy);
+            await ResortTimeline(_sortBy);
         }
 
         private void AddMetaDataButtons(IList list)

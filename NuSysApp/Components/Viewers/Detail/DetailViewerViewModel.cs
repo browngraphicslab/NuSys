@@ -94,6 +94,9 @@ namespace NuSysApp
 
         private void NodeVMPropertChanged(object sender, PropertyChangedEventArgs e)
         {
+            if (!(View.DataContext is ElementViewModel))
+                return;
+
             var tempvm = (ElementViewModel)View.DataContext;
             switch (e.PropertyName.ToLower())
             {
