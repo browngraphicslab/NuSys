@@ -65,11 +65,11 @@ namespace NuSysApp
                     var pvm = (PdfNodeViewModel) cvm;
                     LaunchLDA(pvm.GetAllText());
                 }
-                if (cvm is TextNodeViewModel)
+                /*if (cvm is TextNodeViewModel)
                 {
                     var tvm = (TextNodeViewModel)cvm;
                     LaunchLDA(tvm.Controller.LibraryElementModel.Data);
-                }
+                }*/
             };
 
 
@@ -100,7 +100,7 @@ namespace NuSysApp
                 test.Add(filename);
                 test.Add("niters 10");
                 test.Add("ntopics 1");
-                test.Add("twords 10");
+                test.Add("twords 5");
                 test.Add("dir ");
                 test.Add("est true");
                 test.Add("alpha 12.5");
@@ -126,7 +126,8 @@ namespace NuSysApp
             if (await vm.ShowElement(controller))
                 Visibility = Visibility.Visible;
 
-            if (controller.Model is TextElementModel || controller.Model is PdfNodeModel)
+            //if (controller.Model is TextElementModel || controller.Model is PdfNodeModel)
+            if (controller.Model is PdfNodeModel)
             {
                 SuggestButton.Visibility = Visibility.Visible;
             }
