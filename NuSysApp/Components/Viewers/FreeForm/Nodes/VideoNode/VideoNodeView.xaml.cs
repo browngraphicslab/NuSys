@@ -68,7 +68,14 @@ namespace NuSysApp
 
             ((VideoNodeModel)vm.Model).OnJump += VideoNodeView_OnJump;
 
+            playbackElement.MediaEnded += MediaEnded;
         }
+
+        private void MediaEnded(object sender, RoutedEventArgs e)
+        {
+            VideoNodeView_OnJump(new TimeSpan(0));
+        }
+
         private void Node_SelectionChanged(object sender, PropertyChangedEventArgs e)
         {
             /*

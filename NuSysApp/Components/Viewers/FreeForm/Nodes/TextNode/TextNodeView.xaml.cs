@@ -52,7 +52,7 @@ namespace NuSysApp
 
 
         //speech to text variables
-        private SpeechRecognizer _speechRecognizer;
+        private static SpeechRecognizer _speechRecognizer = new SpeechRecognizer();
         private CoreDispatcher _dispatcher;
         private StringBuilder _dictatedTextBuilder;
         private StringBuilder _hypothesisBuilder;
@@ -76,7 +76,7 @@ namespace NuSysApp
             TextNodeWebView.NavigationCompleted += TextNodeWebViewOnNavigationCompleted;
             TextNodeWebView.ScriptNotify += wvBrowser_ScriptNotify;
 
-            //InitSpeechRecognition();
+            InitSpeechRecognition();
 
             Record.AddHandler(PointerPressedEvent, new PointerEventHandler(RecordButton_OnClick), true);
             Record.AddHandler(PointerReleasedEvent, new PointerEventHandler(RecordButton_Released), true);
@@ -307,16 +307,39 @@ namespace NuSysApp
         private async Task InitSpeechRecognition()
         {
             this._dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
-            this._speechRecognizer = new SpeechRecognizer();
             this._dictatedTextBuilder = new StringBuilder();
             this._hypothesisBuilder = new StringBuilder();
 
+            ((ElementViewModel)DataContext).PropertyChanged += propertyChanged;
+
             await _speechRecognizer.CompileConstraintsAsync();
-            _speechRecognizer.HypothesisGenerated += SpeechRecognizer_HypothesisGenerated;
-            _speechRecognizer.ContinuousRecognitionSession.ResultGenerated +=
-        ContinuousRecognitionSession_ResultGenerated;
-            _speechRecognizer.ContinuousRecognitionSession.Completed +=
-      ContinuousRecognitionSession_Completed;
+        }
+
+        private void propertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName == "IsSelected")
+            {
+                if (((ElementViewModel)DataContext).IsSelected)
+                {
+                    _speechRecognizer.HypothesisGenerated += SpeechRecognizer_HypothesisGenerated;
+
+                    _speechRecognizer.ContinuousRecognitionSession.ResultGenerated +=
+                ContinuousRecognitionSession_ResultGenerated;
+
+                    _speechRecognizer.ContinuousRecognitionSession.Completed +=
+              ContinuousRecognitionSession_Completed;
+                }
+                else
+                {
+                    _speechRecognizer.HypothesisGenerated -= SpeechRecognizer_HypothesisGenerated;
+
+                    _speechRecognizer.ContinuousRecognitionSession.ResultGenerated -=
+                ContinuousRecognitionSession_ResultGenerated;
+
+                    _speechRecognizer.ContinuousRecognitionSession.Completed -=
+              ContinuousRecognitionSession_Completed;
+                }
+            }
         }
 
         private async void SpeechRecognizer_HypothesisGenerated( SpeechRecognizer sender, SpeechRecognitionHypothesisGeneratedEventArgs args)
@@ -335,11 +358,10 @@ namespace NuSysApp
       SpeechContinuousRecognitionSession sender,
       SpeechContinuousRecognitionResultGeneratedEventArgs args)
         {
-
             //if (args.Result.Confidence == SpeechRecognitionConfidence.Medium ||
             //  args.Result.Confidence == SpeechRecognitionConfidence.High)
             //{
-                _dictatedTextBuilder.Append(args.Result.Text + " ");
+            _dictatedTextBuilder.Append(args.Result.Text + " ");
 
                 await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {

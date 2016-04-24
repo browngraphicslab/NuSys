@@ -67,6 +67,13 @@ namespace NuSysApp
             vm.Controller.Disposed += ControllerOnDisposed;
 
             ((AudioNodeModel)vm.Model).OnJump += AudioNodeView_OnJump;
+
+            playbackElement.MediaEnded += MediaEnded;
+        }
+
+        private void MediaEnded(object sender, RoutedEventArgs e)
+        {
+            AudioNodeView_OnJump(new TimeSpan(0));
         }
 
         public void AudioNodeView_OnJump(TimeSpan time)

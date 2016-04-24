@@ -165,6 +165,11 @@ namespace NuSysApp.Util
             double tagAdjustment = 0;
             var view = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
                     item => ((ElementViewModel)item.DataContext).Model.Id == _currentNode.Id);
+
+            if(view.Count() == 0)
+            {
+                return;
+            }
             var found = view.Single().FindName("nodeTpl");
             if (found != null)
             {
