@@ -461,7 +461,7 @@ namespace NuSysApp
             xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");
 
             xWorkspaceTitle.KeyUp += UpdateTitle;
-            xWorkspaceTitle.TextChanged += UpdateTitle;
+         //   xWorkspaceTitle.TextChanged += UpdateTitle;
             xWorkspaceTitle.DropCompleted += UpdateTitle;
 
             freeFormViewerViewModel.Controller.LibraryElementModel.OnTitleChanged += TitleChanged;
