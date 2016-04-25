@@ -11,9 +11,6 @@
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" x:Name="mainGrid">
         <StackPanel Orientation="Vertical" x:Name="mainSP" HorizontalAlignment="Stretch">
-            <StackPanel Orientation="Vertical">
-                <Button Click="ButtonBase_OnClick">Click Me!</Button>
-            </StackPanel>
             <ScrollViewer x:Name="headerScrollViewer" HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Disabled" VerticalScrollMode="Disabled" HorizontalAlignment="Stretch" ViewChanging="ScrollViewer_OnViewChanging" Width="10000">
                 <local:GridAwareItemsControl ItemsSource="{Binding Header}" HorizontalAlignment="Stretch">
                     <ItemsControl.ItemsPanel>

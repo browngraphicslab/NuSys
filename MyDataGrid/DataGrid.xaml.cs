@@ -127,13 +127,6 @@ namespace MyDataGrid
             //((DataGridViewModel) this.DataContext).Sort(index);
         }
 
-        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
-        {
-            var currContext = (DataGridViewModel) this.DataContext;
-            currContext.Data[0].Title = "Changed!"; 
-            _main.Reset((DataGridViewModel)this.DataContext, _sortedIndex); 
-               
-        }
 
         private void TextBlock_PointerPressed(object sender, PointerRoutedEventArgs e)
         {            
