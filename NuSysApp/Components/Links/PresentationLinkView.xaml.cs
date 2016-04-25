@@ -22,7 +22,8 @@ namespace NuSysApp
             DataContext = vm;
 
             vm.PropertyChanged += OnPropertyChanged;
-
+            var color = Application.Current.Resources["color4"] as SolidColorBrush;
+            vm.Color = color;
 
             //  vm.Controller.LibraryElementModel.OnTitleChanged+= ControllerOnTitleChanged;
             vm.Controller.Disposed += OnDisposed;

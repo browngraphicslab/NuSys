@@ -37,8 +37,13 @@ namespace NuSysApp
             OutElementController.PositionChanged += InElementControllerOnPositionChanged;
             InElementController.SizeChanged += OutElementControllerOnSizeChanged;
             OutElementController.SizeChanged += OutElementControllerOnSizeChanged;
-
+            controller.ColorChanged += Controller_ColorChanged;
             
+        }
+
+        private void Controller_ColorChanged(SolidColorBrush color)
+        {
+            Color = color;
         }
 
         private void InFineGrain_OnTimeChange()
@@ -75,7 +80,7 @@ namespace NuSysApp
             OutElementController.PositionChanged -= InElementControllerOnPositionChanged;
             InElementController.SizeChanged -= OutElementControllerOnSizeChanged;
             OutElementController.SizeChanged -= OutElementControllerOnSizeChanged;
-
+            ((LinkElementController)Controller).ColorChanged -= Controller_ColorChanged;
             base.Dispose();
         }
       

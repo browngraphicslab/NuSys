@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI;
+using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
@@ -15,6 +17,9 @@ namespace NuSysApp
         public delegate void AnnotationChangedEventHandler(string text);
 
         public event AnnotationChangedEventHandler AnnotationChanged;
+
+        public delegate void ColorChangedEventHandler(SolidColorBrush color);
+        public event ColorChangedEventHandler ColorChanged;
 
         public ElementController InElement { get; set; }
         public ElementController OutElement { get; set; }
@@ -111,7 +116,11 @@ namespace NuSysApp
         {
             AnchorUpdated?.Invoke(this);
         }
-
+        public void SetColor(SolidColorBrush c)
+        {
+            Model.Color = c;
+            ColorChanged?.Invoke(c);
+        }
         public override Task UnPack(Message props)
         {
             if (props.ContainsKey("annotation"))
