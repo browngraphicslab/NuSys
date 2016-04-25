@@ -71,7 +71,7 @@ namespace NuSysApp
         protected override void OnDryCanvasDraw(CanvasControl sender, CanvasDrawEventArgs args)
         {
             base.OnDryCanvasDraw(sender, args);
-            return;
+
             var ads = _adornments.ToArray();
             var ds = args.DrawingSession;
             for(var i = 0; i < _adornments.Count; i++) { 

@@ -75,6 +75,12 @@ namespace NuSysApp
             {
                 var dc = (ElementViewModel) frameworkElement.DataContext;
                 bool allIn = false;
+                if (dc.ReferencePoints == null)
+                {
+                    dc.IsVisible = false;
+                    return;
+                }
+
                 foreach (var referencePoint in dc.ReferencePoints)
                 {
                     allIn = rect.Contains(referencePoint);
