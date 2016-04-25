@@ -294,7 +294,13 @@ public static class Extensions {
             coords[i] = new GeoAPI.Geometries.Coordinate(pt.X, pt.Y);
             i++;
         }
-
+        if(coords.Count() < 2)
+        {
+            var c = new Coordinate[2];
+            c[0] = coords[0];
+            c[1] = coords[0];
+            coords = c;
+        }
         return new NetTopologySuite.Geometries.LineString(coords);
     }
 }

@@ -359,7 +359,7 @@ namespace NuSysApp.Util
         {
             var transform = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
             DoubleAnimation toReturn = new DoubleAnimation();
-            toReturn.EnableDependentAnimation = true;
+            toReturn.EnableDependentAnimation = false;
             toReturn.Duration = duration;
             Storyboard.SetTarget(toReturn, transform);
             Storyboard.SetTargetProperty(toReturn, name);

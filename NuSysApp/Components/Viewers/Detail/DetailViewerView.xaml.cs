@@ -218,6 +218,8 @@ namespace NuSysApp
             var vm = (DetailViewerViewModel)DataContext;
             var textview = (vm.View as TextDetailView);
             textview?.Dispose();
+            var videoView = vm.View as VideoDetailView;
+            videoView?.Dispose();
         }
 
         private void metaData_OnTapped(object sender, TappedRoutedEventArgs e)
