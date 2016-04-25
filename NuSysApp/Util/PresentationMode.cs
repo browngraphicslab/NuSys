@@ -25,7 +25,7 @@ namespace NuSysApp.Util
         private DispatcherTimer _timer;
         private Storyboard _storyboard;
 
-        private SolidColorBrush _backwardColor = new SolidColorBrush(Colors.Bisque);
+        private SolidColorBrush _backwardColor = Application.Current.Resources["lighterredcolor"] as SolidColorBrush;
         private SolidColorBrush _forwardColor = Application.Current.Resources["color4"] as SolidColorBrush;
 
         private HashSet<LinkElementController> _linksUsed = new HashSet<LinkElementController>();

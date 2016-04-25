@@ -47,7 +47,7 @@
                 </GeometryGroup>
             </Path.Data>
         </Path>
-        <Polygon x:Name="arrow" Fill="Black" Points="0,0 40,20, 0,40"/>
+        <Polygon x:Name="arrow" Fill="{StaticResource color4}" Points="0,0 40,20, 0,40"/>
 
         <StackPanel x:Name="AnnotationContainer" Orientation="Vertical" Visibility="Collapsed" >
 
