@@ -117,6 +117,8 @@ namespace NuSysApp
              {
                  PointCollection pts = new PointCollection();
                  pts.Add(new Point2d(Anchor.X, Anchor.Y));
+                 pts.Add(new Point2d(OutElementController.Model.X, OutElementController.Model.Y));
+                 pts.Add(new Point2d(InElementController.Model.X, InElementController.Model.Y));
                  return pts;
  
              }
