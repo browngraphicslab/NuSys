@@ -54,13 +54,6 @@ namespace NuSysApp
             compositeTransform.CenterX = _tempTransform.CenterX;
             compositeTransform.CenterY = _tempTransform.CenterY;
 
-
-            if (_cview?.InqCanvas != null)
-            {
-                _cview.InqCanvas.Transform = compositeTransform;
-                _cview.InqCanvas.Redraw();
-            }
-
             CullScreen();
         }
 
@@ -91,12 +84,6 @@ namespace NuSysApp
             }
         }
 
-
-
-        private void OnTick(object sender, object o)
-        {
-
-        }
 
         public override async Task Activate()
         {
@@ -245,6 +232,13 @@ namespace NuSysApp
             {
                 compositeTransform.TranslateX += e.Delta.Translation.X;
                 compositeTransform.TranslateY += e.Delta.Translation.Y;
+            }
+
+
+            if (_cview?.InqCanvas != null)
+            {
+                _cview.InqCanvas.Transform = compositeTransform;
+                _cview.InqCanvas.Redraw();
             }
             e.Handled = true;
 
