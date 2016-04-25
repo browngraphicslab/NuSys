@@ -38,8 +38,12 @@
 
             
             <TextBlock Visibility="Collapsed" Grid.Row="0" x:Name="metadataButton" HorizontalAlignment="Right" Text="MetaData" Foreground="{StaticResource darkforeground}" FontSize="24" Margin="0,0,25,0" Tapped="metaData_OnTapped"/>
-            <Border Grid.Row="0" x:Name="exitButton" HorizontalAlignment="Right" VerticalAlignment="Top" Tapped="closeDV_OnTapped" Padding="5,5,5,5">
+            
+            <Border Grid.Row="0" Visibility="Collapsed" x:Name="exitButton" HorizontalAlignment="Right" VerticalAlignment="Top" Tapped="closeDV_OnTapped" Padding="5,5,5,5">
                 <TextBlock Text="x" Foreground="White" FontSize="24"/>
+            </Border>
+            <Border Grid.Row="0" x:Name="exitButton2" HorizontalAlignment="Left" VerticalAlignment="Top" Tapped="closeDV_OnTapped"  Padding="5,0,5,0">
+                <TextBlock Text="X" Foreground="White" FontSize="32"/>
             </Border>
 
             <StackPanel Grid.Row="1" Canvas.ZIndex="100" x:Name="TitleEnter" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,20">

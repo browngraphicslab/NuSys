@@ -14,6 +14,7 @@ namespace NuSysApp
         private ElementController OutElementController;
 
         public LinkModel LinkModel { get; }
+        private SolidColorBrush _defaultColor;
         public LinkViewModel(LinkElementController controller) : base(controller)
         {
             LinkModel = (LinkModel)controller.Model;
@@ -28,6 +29,7 @@ namespace NuSysApp
                 (int) (InElementController.Model.Y + (Math.Abs(OutElementController.Model.Y - InElementController.Model.Y)/2)));
 
             Color = new SolidColorBrush(Constants.color2);
+
             if (LinkModel.InFineGrain != null)
             {
                 LinkModel.InFineGrain.OnTimeChange += InFineGrain_OnTimeChange;
@@ -103,9 +105,13 @@ namespace NuSysApp
             set
             {
                 base.IsSelected = value;
+                if (value)
+                {
+                    _defaultColor = Color;
+                }
                 Color = value
                     ? new SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0xFF, 0xAA, 0x2D))
-                    : new SolidColorBrush(Constants.color2);
+                    : _defaultColor;
                 RaisePropertyChanged("Color");
                 RaisePropertyChanged("IsSelected");
             }
