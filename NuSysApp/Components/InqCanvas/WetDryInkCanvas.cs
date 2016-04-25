@@ -128,19 +128,19 @@ namespace NuSysApp
                 ds.Clear(Colors.Transparent);
 
             var dryStrokes = _dryStrokes;
-                foreach (var s in dryStrokes)
-                {
-                    var attr = GetDrawingAttributes();
-                    attr.Color = Colors.Black;
-                    s.DrawingAttributes = attr;                    
-                }
+            foreach (var s in dryStrokes)
+            {
+                var attr = GetDrawingAttributes();
+                attr.Color = Colors.Black;
+                s.DrawingAttributes = attr;                    
+            }
 
-                var inv = (MatrixTransform)Transform.Inverse.Inverse;
-                var m = new Matrix3x2((float)inv.Matrix.M11, (float)inv.Matrix.M12, (float)inv.Matrix.M21,
-                    (float)inv.Matrix.M22, (float)inv.Matrix.OffsetX, (float)inv.Matrix.OffsetY);
+            var inv = (MatrixTransform)Transform.Inverse.Inverse;
+            var m = new Matrix3x2((float)inv.Matrix.M11, (float)inv.Matrix.M12, (float)inv.Matrix.M21,
+                (float)inv.Matrix.M22, (float)inv.Matrix.OffsetX, (float)inv.Matrix.OffsetY);
 
-                ds.Transform = m;  
-                ds.DrawInk(dryStrokes);
+            ds.Transform = m;  
+            ds.DrawInk(dryStrokes);
         }
 
         protected virtual void OnWetCanvasDraw(CanvasControl sender, CanvasDrawEventArgs args)

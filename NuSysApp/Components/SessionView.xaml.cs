@@ -162,12 +162,21 @@ namespace NuSysApp
 
             if (_presentationModeInstance != null && (args.VirtualKey == VirtualKey.Right || args.VirtualKey == VirtualKey.Up))
             {
-                _presentationModeInstance.MoveToNext();
+                if (_presentationModeInstance.Next())
+                {
+                    _presentationModeInstance.MoveToNext();
+                    SetPresentationButtons();
+                }
             }
 
             if (_presentationModeInstance != null && (args.VirtualKey == VirtualKey.Left || args.VirtualKey == VirtualKey.Down))
             {
-                _presentationModeInstance.MoveToPrevious();
+                if (_presentationModeInstance.Previous())
+                {
+                    _presentationModeInstance.MoveToPrevious();
+                    SetPresentationButtons();
+                }
+
             }
 
             if (_presentationModeInstance != null && args.VirtualKey == VirtualKey.Space)
@@ -177,7 +186,7 @@ namespace NuSysApp
 
             if (_presentationModeInstance != null && args.VirtualKey == VirtualKey.Escape)
             {
-                _presentationModeInstance.GoToCurrent();
+                ExitPresentationMode();
             }
         }
 

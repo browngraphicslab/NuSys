@@ -67,6 +67,8 @@ namespace NuSysApp
         private async void OnPageLeftClick(object sender, RoutedEventArgs e)
         {
             var vm = (PdfNodeViewModel)this.DataContext;
+            if (vm == null)
+                return;
             await vm.FlipLeft();
             (_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
             //  nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
@@ -77,6 +79,8 @@ namespace NuSysApp
         private async void OnPageRightClick(object sender, RoutedEventArgs e)
         {
             var vm = (PdfNodeViewModel)this.DataContext;
+            if (vm == null)
+                return;
             await vm.FlipRight();
             (_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
             // (_inqCanvasView.DataContext as InqCanvasViewModel).Lines.Clear();

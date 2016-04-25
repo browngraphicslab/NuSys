@@ -217,8 +217,7 @@ namespace NuSysApp.Util
         /// <returns></returns>
         private ElementModel GetNextOrPrevNode(ElementViewModel vm, bool reverse)
         {
-            if(vm == null)
-            {
+            if (vm?.LinkList == null) {
                 return null;
             }
             foreach (LinkElementController link in vm.LinkList)
@@ -248,6 +247,8 @@ namespace NuSysApp.Util
 
         private void FullScreen()
         {
+            if (_currentNode == null)
+                return;
 
             // Determines tag adjustment by getting the height of the tag container from the view
             double tagAdjustment = 0;
@@ -317,9 +318,10 @@ namespace NuSysApp.Util
             Duration duration = new Duration(TimeSpan.FromSeconds(1));
             _timer.Start();
        
-            Storyboard storyboard = new Storyboard();
-            
-            storyboard.Duration = duration;
+            _storyboard.Stop();
+            _storyboard.Children.Clear();
+
+            _storyboard.Duration = duration;
             DoubleAnimation scaleAnimationX = MakeAnimationElement(scale, "ScaleX", duration);
             DoubleAnimation scaleAnimationY = MakeAnimationElement(scale, "ScaleY", duration);
             DoubleAnimation centerAnimationX = MakeAnimationElement(x, "CenterX", duration);
@@ -327,19 +329,29 @@ namespace NuSysApp.Util
             DoubleAnimation translateAnimationX = MakeAnimationElement(translateX, "TranslateX", duration);
             DoubleAnimation translateAnimationY = MakeAnimationElement(translateY, "TranslateY", duration);
 
-            storyboard.Children.Add(scaleAnimationX);
-            storyboard.Children.Add(scaleAnimationY);
-            storyboard.Children.Add(centerAnimationX);
-            storyboard.Children.Add(centerAnimationY);
-            storyboard.Children.Add(translateAnimationX);
-            storyboard.Children.Add(translateAnimationY);
+            _storyboard.Children.Add(scaleAnimationX);
+            _storyboard.Children.Add(scaleAnimationY);
+            _storyboard.Children.Add(centerAnimationX);
+            _storyboard.Children.Add(centerAnimationY);
+            _storyboard.Children.Add(translateAnimationX);
+            _storyboard.Children.Add(translateAnimationY);
 
             // Make the Storyboard a resource.
-            SessionController.Instance.SessionView.Resources.Add("PresentationStoryboard", storyboard);
+            SessionController.Instance.SessionView.Resources.Add("PresentationStoryboard", _storyboard);
 
             // Begin the animation.
-            storyboard.Begin();
+            _storyboard.Begin();
             SessionController.Instance.SessionView.Resources.Remove("PresentationStoryboard");
+
+            PanZoomMode.UpdateTempTransform(new CompositeTransform
+            {
+                TranslateX = translateX,
+                TranslateY = translateY,
+                ScaleX = scale,
+                ScaleY = scale,
+                CenterX = x,
+                CenterY = y
+            });
 
         }
 

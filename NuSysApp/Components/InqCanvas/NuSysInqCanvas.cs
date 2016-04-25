@@ -97,8 +97,6 @@ namespace NuSysApp
                         RemoveAdorment(stroke);
                     }
                 }
-
-
             }
 
             _currentStroke.Clear();

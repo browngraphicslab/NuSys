@@ -160,7 +160,7 @@ namespace NuSysApp
             {
                 titleContainer.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
                 highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
-                highlight.Height = vm.Height + title.ActualHeight - 5;
+          //      highlight.Height = vm.Height + title.ActualHeight - 5;
             };
 
 

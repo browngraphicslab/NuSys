@@ -23,8 +23,8 @@ namespace LdaLibrary
         {
             await Init(args, documents);
             List<string> words = ListWordsOfTopic();
-            //List<string> wikiTopics = await RunParser(words);
-            return words;
+            List<string> wikiTopics = await RunParser(words);
+            return wikiTopics;
         }
 
         public async static Task<List<string>> RunParser(List<string> topics)

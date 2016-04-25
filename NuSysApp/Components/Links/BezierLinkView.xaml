@@ -19,7 +19,7 @@
             <converters:BoolToVisibilityConverter x:Key="bConverter"/>
         </ResourceDictionary>
     </converters:AnimatableUserControl.Resources>
-    <Canvas Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}" >
+    <Canvas Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}">
         <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
         <Path x:Name="BezierLink" Stroke="White" StrokeThickness="30">
             <Path.Data>
@@ -57,7 +57,7 @@
         </Path>
         <StackPanel x:Name="AnnotationContainer" Orientation="Vertical" >
             <Grid>
-                <Rectangle x:Name="Rect" Fill="LightGray" RadiusX="5" RadiusY="5" Width="260"  HorizontalAlignment="Left"/>
+                <Rectangle x:Name="Rect" Fill="LightGray" Width="260"  HorizontalAlignment="Left"/>
                 <StackPanel Orientation="Horizontal" IsHitTestVisible="{Binding IsSelected}" >
                     <local:TextInputBlock x:Name ="Annotation" BubbleTop="True"  LeftJustified="False" SetHeight="30" HorizontalAlignment="Stretch" Loaded="Annotation_Loaded"></local:TextInputBlock>
                 </StackPanel>
