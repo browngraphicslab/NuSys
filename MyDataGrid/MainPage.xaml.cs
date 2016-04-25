@@ -118,11 +118,10 @@ namespace MyDataGrid
             Random r = new Random();
             for (int i = 0; i < rowCount; i++)
             {
-                ObservableCollection<string> data = new ObservableCollection<string>();
+                ObservableCollection<string> data = new ObservableCollection<string>();                
                 for (int j = 0; j < colCount; j++)
                 {
-                    string dummy = this.makeString(new Random());
-                    data.Add(dummy);
+                    data.Add(r.Next(0, 100).ToString());
                 }
 
                 collection.Add(data);
