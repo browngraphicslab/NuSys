@@ -150,7 +150,7 @@ namespace NuSysApp
             tags = (ItemsControl)GetTemplateChild("Tags");
 
             title = (TextBox)GetTemplateChild("xTitle");
-            title.TextChanged += TitleOnTextChanged;
+            title.KeyUp += TitleOnTextChanged;
 
             if (vm.Controller.LibraryElementModel != null)
                 vm.Controller.LibraryElementModel.OnTitleChanged += LibraryElementModelOnOnTitleChanged;
@@ -180,7 +180,7 @@ namespace NuSysApp
             OnTemplateReady?.Invoke();
         }
         
-        private void TitleOnTextChanged(object sender, TextChangedEventArgs textChangedEventArgs)
+        private void TitleOnTextChanged(object sender, object args)
         {
             var vm = (ElementViewModel)this.DataContext;
             titleContainer.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };

@@ -403,6 +403,7 @@ namespace NuSysApp
         {
             var libraryId = message.GetString("contentId");
             var id = message.GetString("id");
+            Debug.WriteLine("making element: " + id);
             var libraryModel = SessionController.Instance.ContentController.Get(libraryId);
             var type = libraryModel.Type;
             switch (type)
@@ -490,7 +491,6 @@ namespace NuSysApp
             xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");
 
             xWorkspaceTitle.KeyUp += UpdateTitle;
-         //   xWorkspaceTitle.TextChanged += UpdateTitle;
             xWorkspaceTitle.DropCompleted += UpdateTitle;
 
             freeFormViewerViewModel.Controller.LibraryElementModel.OnTitleChanged += TitleChanged;

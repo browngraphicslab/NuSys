@@ -231,7 +231,13 @@ namespace NuSysApp
                 TempRegion.Width = Math.Max(point.Position.X - left,0);
             }
         }
+
+        private void XImage_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            if (_drawingRegion)
+            {
+                XImage_OnPointerReleased(sender, e);
+            }
+        }
     }
-
-
 }

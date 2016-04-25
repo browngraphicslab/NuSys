@@ -73,6 +73,7 @@ namespace NuSysApp
             var vm = (VideoNodeViewModel)DataContext;
             vm.LinkedTimeModels.CollectionChanged -= LinkedTimeBlocks_CollectionChanged;
             scrubBar.SizeChanged -= ScrubBar_OnSizeChanged;
+            playbackElement.Stop();
             playbackElement.MediaEnded -= PlaybackElementOnMediaEnded;
             if (_temporaryLinkVisual != null) { 
             _temporaryLinkVisual.PointerMoved -= ScrubBar_OnPointerMoved;

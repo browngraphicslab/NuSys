@@ -9,6 +9,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using MyToolkit.Utilities;
+using Windows.UI;
 
 namespace NuSysApp.Util
 {
@@ -24,6 +25,10 @@ namespace NuSysApp.Util
         private DispatcherTimer _timer;
         private Storyboard _storyboard;
 
+        private SolidColorBrush _backwardColor = Application.Current.Resources["lighterredcolor"] as SolidColorBrush;
+        private SolidColorBrush _forwardColor = Application.Current.Resources["color4"] as SolidColorBrush;
+
+        private HashSet<LinkElementController> _linksUsed = new HashSet<LinkElementController>();
         public PresentationMode(ElementViewModel start)
         {
             _timer = new DispatcherTimer();
@@ -37,7 +42,35 @@ namespace NuSysApp.Util
             _originalTransform = MakeShallowCopy(SessionController.Instance.ActiveFreeFormViewer.CompositeTransform);
             Load();
             FullScreen();
+            UITask.Run(async delegate {
+                var curr = start;
+                var previous = curr;
+                LinkElementController linkController = null;
+                while (previous != null)
+                {
+                    var list = new List<LinkElementController>(previous.LinkList);
+                    var model = previous.Model;
+                    previous = null;
+                    foreach (LinkElementController link in list)
+                    {
+                        var linkModel = (LinkModel)link.Model;
+                        if (!linkModel.IsPresentationLink)
+                            continue;
+
+                        if (link.OutElement.Model.Equals(model))
+                        {
+                            var l = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => ((ElementViewModel)item.DataContext).Model.Id == link.InElement.Model.Id);
+                            previous = l?.First()?.DataContext as ElementViewModel;
+                            linkController = link; 
+                            break;
+                        }
+                    }
+                    _linksUsed.Add(linkController);
+                    linkController.SetColor(_backwardColor);
+                }
+            });
         }
+
 
         private void OnAnimationCompleted(object sender, object e)
         {
@@ -97,9 +130,29 @@ namespace NuSysApp.Util
         /// </summary>
         public void MoveToNext()
         {
+            SetColor(GetLinkBetweenNode(_nextNode), false);
             _currentNode = _nextNode;
             Load();
             FullScreen();
+        }
+        /*
+         * sets the color of the passing links
+         */
+        private void SetColor(LinkElementController controller, bool reverse)
+        {
+            if(controller == null)
+            {
+                return;
+            }
+            if (reverse)
+            {
+                controller.SetColor(_forwardColor);
+            }
+            else
+            {
+                controller.SetColor(_backwardColor);
+            }
+            _linksUsed.Add(controller);
         }
 
         /// <summary>
@@ -116,6 +169,7 @@ namespace NuSysApp.Util
         /// </summary>
         public void MoveToPrevious()
         {
+            SetColor(GetLinkBetweenNode(_previousNode), true);
             _currentNode = _previousNode;
             Load();
             FullScreen();
@@ -123,7 +177,37 @@ namespace NuSysApp.Util
 
         public void ExitMode()
         {
+            foreach(var link in _linksUsed)
+            {
+                if (link != null)
+                {
+                    link.SetColor(Application.Current.Resources["color4"] as SolidColorBrush);
+                }
+            }
             AnimatePresentation(_originalTransform.ScaleX, _originalTransform.CenterX, _originalTransform.CenterY, _originalTransform.TranslateX, _originalTransform.TranslateY);
+        }
+
+        private LinkElementController GetLinkBetweenNode(ElementViewModel model)
+        {
+            if(model == null)
+            {
+                return null;
+            }
+            var links = _currentNode.LinkList;
+            foreach(var link in links)
+            {
+                //var list = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => ((ElementViewModel)item.DataContext).Model.Id == link.InElement.Model.Id || ((ElementViewModel)item.DataContext).Model.Id == link.OutElement.Model.Id);
+                //var l = list.First()?.DataContext as LinkViewModel;
+                //if (l != null)
+                //{
+                //    return l;
+                //}
+                if(link.InElement.Model.Id == model.Model.Id || link.OutElement.Model.Id == model.Model.Id)
+                {
+                    return link;
+                }
+            }
+            return null;
         }
 
         /// <summary>
@@ -133,8 +217,9 @@ namespace NuSysApp.Util
         /// <returns></returns>
         private ElementModel GetNextOrPrevNode(ElementViewModel vm, bool reverse)
         {
-            if (vm?.LinkList == null)
+            if (vm?.LinkList == null) {
                 return null;
+            }
             foreach (LinkElementController link in vm.LinkList)
             {
                 var linkModel = (LinkModel) link.Model;
@@ -167,6 +252,11 @@ namespace NuSysApp.Util
 
             // Determines tag adjustment by getting the height of the tag container from the view
             double tagAdjustment = 0;
+
+            if(_currentNode == null)
+            {
+                return;
+            }
             var view = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
                     item => ((ElementViewModel)item.DataContext).Model.Id == _currentNode.Id);
 
