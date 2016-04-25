@@ -206,7 +206,8 @@ namespace NuSysApp
             _controller.ScaleChanged -= OnScaleChanged;
             _controller.AlphaChanged -= OnAlphaChanged;
             _controller.MetadataChange -= OnMetadataChange;
-            _controller.LibraryElementModel.OnTitleChanged -= OnTitleChanged;
+            if (_controller.LibraryElementModel != null)
+                _controller.LibraryElementModel.OnTitleChanged -= OnTitleChanged;
             _controller.LinkedAdded -= OnLinkedAdded;
             _controller.Disposed -= OnDisposed;
             

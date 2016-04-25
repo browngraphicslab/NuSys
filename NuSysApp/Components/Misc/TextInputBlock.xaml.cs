@@ -138,7 +138,7 @@ namespace NuSysApp
             }
             set
             {
-                this.TextBox.Text = value;
+                this.TextBox.Text = value??"";
                 _text = value;
             }
         }
