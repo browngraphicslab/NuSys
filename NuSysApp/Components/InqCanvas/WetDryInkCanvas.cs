@@ -128,9 +128,10 @@ namespace NuSysApp
                 ds.Clear(Colors.Transparent);
 
             var dryStrokes = _dryStrokes;
+            var aa = GetDrawingAttributes();
             foreach (var s in dryStrokes)
             {
-                var attr = GetDrawingAttributes();
+                var attr = aa;
                 attr.Color = Colors.Black;
                 s.DrawingAttributes = attr;                    
             }

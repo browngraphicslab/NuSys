@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -60,20 +61,23 @@ namespace NuSysApp
 
         private void CullScreen()
         {
-            
             var vm = (FreeFormViewerViewModel)_view.DataContext;
             var sv = SessionController.Instance.SessionView.FreeFormViewer;
             var rect = vm.CompositeTransform.Inverse.TransformBounds(new Rect(-200, -200, sv.Width + 400, sv.Height + 400));
-            foreach (var frameworkElement in vm.AtomViewList)
+            var atoms = vm.AtomViewList.ToArray();
+            foreach (var frameworkElement in atoms)
             {
                 var dc = (ElementViewModel) frameworkElement.DataContext;
-                bool allIn = false;
+                if (dc == null)
+                    continue;
+    
                 if (dc.ReferencePoints == null)
                 {
-                    dc.IsVisible = false;
+                    dc.IsVisible = true;
                     return;
                 }
-
+                
+                bool allIn = false;
                 foreach (var referencePoint in dc.ReferencePoints)
                 {
                     allIn = rect.Contains(referencePoint);
@@ -105,9 +109,6 @@ namespace NuSysApp
             _view.ManipulationCompleted -= ViewOnManipulationCompleted;
             _view.PointerWheelChanged -= OnPointerWheelChanged;
             CompositionTarget.Rendering -= CompositionTargetOnRendering;
-
-         //   _timer.Stop();
-         //   _timer.Tick -= OnTick;
         }
 
         private void OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -233,13 +234,13 @@ namespace NuSysApp
                 compositeTransform.TranslateX += e.Delta.Translation.X;
                 compositeTransform.TranslateY += e.Delta.Translation.Y;
             }
-
-
             if (_cview?.InqCanvas != null)
             {
                 _cview.InqCanvas.Transform = compositeTransform;
                 _cview.InqCanvas.Redraw();
             }
+
+
             e.Handled = true;
 
         }

@@ -22,7 +22,11 @@
         </StackPanel>
         <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid x:Name="xWrapper" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Image x:Name="xImg" Margin="3,3,3,3" Source="{Binding ImageSource}" Stretch="Uniform"/>
+                <Image x:Name="xImg" Margin="3,3,3,3" Source="{Binding ImageSource}" Stretch="Uniform">
+                    <Image.RenderTransform>
+                        <CompositeTransform></CompositeTransform>
+                    </Image.RenderTransform>
+                </Image>
                 <Button x:Name="pageLeft" Height ="50" Width="50" VerticalAlignment="Center" Background=" Transparent" HorizontalAlignment="Left" Click="OnPageLeftClick">
                     <Button.Content>
                         <Image Opacity=".8" Stretch="Uniform" Source="ms-appx:///Assets/icon_pdf_left.png" />

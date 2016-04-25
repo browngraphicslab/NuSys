@@ -30,7 +30,9 @@ namespace NuSysApp
             InitializeComponent();
             DataContext = vm;
             
-
+          //  xImg.ManipulationMode = ManipulationModes.All;
+          //  xImg.ManipulationDelta += OnManipulationDelta;
+            
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
                 _inqCanvasView = new InqCanvasView(new InqCanvasViewModel(vm.Model.InqCanvas, new Size(xImg.Width, xImg.Height)));
@@ -49,11 +51,19 @@ namespace NuSysApp
                     Rect = new Rect { X = 0, Y = 0, Width = _inqCanvasView.Width, Height = _inqCanvasView.Height }
                 };
 
+                xBorder.SizeChanged += XBorderOnSizeChanged;
+
+
             };
 
             vm.MakeTagList();
 
             vm.Controller.Disposed += ControllerOnDisposed;
+        }
+
+        private void XBorderOnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            xBorder.Clip = new RectangleGeometry {Rect= new Rect(0,0,e.NewSize.Width, e.NewSize.Height)};
         }
 
         private void ControllerOnDisposed(object source)
@@ -91,10 +101,63 @@ namespace NuSysApp
         private async void OnGoToSource(object sender, RoutedEventArgs e)
         {
             var model = (PdfNodeModel)((PdfNodeViewModel)DataContext).Model;
-
             string token = model.GetMetaData("Token")?.ToString();
-
             await AccessList.OpenFile(token);
+        }
+
+        protected void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen)
+                return;
+
+            var compositeTransform = (CompositeTransform)xImg.RenderTransform;
+
+            var tmpTranslate = new TranslateTransform
+            {
+                X = compositeTransform.CenterX,
+                Y = compositeTransform.CenterY
+            };
+
+            var center = compositeTransform.Inverse.TransformPoint(e.Position);
+
+            var localPoint = tmpTranslate.Inverse.TransformPoint(center);
+
+            //Now scale the point in local space
+            localPoint.X *= compositeTransform.ScaleX;
+            localPoint.Y *= compositeTransform.ScaleY;
+
+            //Transform local space into world space again
+            var worldPoint = tmpTranslate.TransformPoint(localPoint);
+
+            //Take the actual scaling...
+            var distance = new Point(
+                worldPoint.X - center.X,
+                worldPoint.Y - center.Y);
+
+            //...and balance the jump of the changed scaling origin by changing the translation            
+            
+            compositeTransform.TranslateX += distance.X;
+            compositeTransform.TranslateY += distance.Y;
+
+            //Also set the scaling values themselves, especially set the new scale center...
+            compositeTransform.ScaleX *= e.Delta.Scale;
+            compositeTransform.ScaleY *= e.Delta.Scale;
+
+            compositeTransform.CenterX = center.X;
+            compositeTransform.CenterY = center.Y;
+
+            //And consider a translational shift
+
+
+           compositeTransform.TranslateX += e.Delta.Translation.X;
+           compositeTransform.TranslateY += e.Delta.Translation.Y;
+
+            var minY = 0;
+            var maxY = Math.Max(xBorder.ActualHeight - xImg.ActualHeight*compositeTransform.ScaleY, 0);
+            compositeTransform.TranslateY = Math.Max(compositeTransform.TranslateY, minY);
+
+            e.Handled = true;
+
         }
     }
 }

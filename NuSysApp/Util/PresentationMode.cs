@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +26,8 @@ namespace NuSysApp.Util
         private DispatcherTimer _timer;
         private Storyboard _storyboard;
 
+        private CompositeTransform t;
+
         private SolidColorBrush _backwardColor = Application.Current.Resources["lighterredcolor"] as SolidColorBrush;
         private SolidColorBrush _forwardColor = Application.Current.Resources["color4"] as SolidColorBrush;
 
@@ -32,7 +35,7 @@ namespace NuSysApp.Util
         public PresentationMode(ElementViewModel start)
         {
             _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromMilliseconds(5);
+            _timer.Interval = TimeSpan.FromMilliseconds(1);
             _timer.Tick += OnTick;
 
             _storyboard = new Storyboard();
@@ -65,6 +68,9 @@ namespace NuSysApp.Util
                             break;
                         }
                     }
+                    if (linkController == null)
+                        continue;
+
                     _linksUsed.Add(linkController);
                     linkController.SetColor(_backwardColor);
                 }
@@ -74,13 +80,23 @@ namespace NuSysApp.Util
 
         private void OnAnimationCompleted(object sender, object e)
         {
-            _timer.Stop();
+            PanZoomMode.UpdateTempTransform(t);
+           // _timer.Stop();
+      //     CompositionTarget.Rendering += CompositionTargetOnRendering;
+        }
+
+        private void CompositionTargetOnRendering(object sender, object o)
+        {
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Redraw();
         }
 
         private void OnTick(object sender, object e)
         {
-            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Transform = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
+           // _timer.Stop();
+       
+           // Debug.WriteLine(SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Transform.TranslateX);
             SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Redraw();
+           // _timer.Start();
         }
 
         /// <summary>
@@ -316,18 +332,29 @@ namespace NuSysApp.Util
         {           
             // Create a duration of 2 seconds.
             Duration duration = new Duration(TimeSpan.FromSeconds(1));
-            _timer.Start();
-       
+
+            CompositionTarget.Rendering -= CompositionTargetOnRendering;
+
             _storyboard.Stop();
-            _storyboard.Children.Clear();
+            _storyboard = new Storyboard();
+            _storyboard.Completed += OnAnimationCompleted;
 
             _storyboard.Duration = duration;
-            DoubleAnimation scaleAnimationX = MakeAnimationElement(scale, "ScaleX", duration);
-            DoubleAnimation scaleAnimationY = MakeAnimationElement(scale, "ScaleY", duration);
-            DoubleAnimation centerAnimationX = MakeAnimationElement(x, "CenterX", duration);
-            DoubleAnimation centerAnimationY = MakeAnimationElement(y, "CenterY", duration);
-            DoubleAnimation translateAnimationX = MakeAnimationElement(translateX, "TranslateX", duration);
-            DoubleAnimation translateAnimationY = MakeAnimationElement(translateY, "TranslateY", duration);
+            var scaleAnimationX = MakeAnimationElement(scale, "ScaleX", duration);
+            var scaleAnimationY = MakeAnimationElement(scale, "ScaleY", duration);
+            var centerAnimationX = MakeAnimationElement(x, "CenterX", duration);
+            var centerAnimationY = MakeAnimationElement(y, "CenterY", duration);
+            var translateAnimationX = MakeAnimationElement(translateX, "TranslateX", duration);
+            var translateAnimationY = MakeAnimationElement(translateY, "TranslateY", duration);
+
+            var inqTransform = SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Transform;
+
+            var scaleAnimationXPrezi = MakeAnimationElement(scale, "ScaleX", duration, inqTransform, true);
+            var scaleAnimationYPrezi = MakeAnimationElement(scale, "ScaleY", duration, inqTransform, true);
+            var centerAnimationXPrezi = MakeAnimationElement(x, "CenterX", duration, inqTransform, true);
+            var centerAnimationYPrezi = MakeAnimationElement(y, "CenterY", duration, inqTransform, true);
+            var translateAnimationXPrezi = MakeAnimationElement(translateX, "TranslateX", duration, inqTransform, true);
+            var translateAnimationYPrezi = MakeAnimationElement(translateY, "TranslateY", duration, inqTransform, true);
 
             _storyboard.Children.Add(scaleAnimationX);
             _storyboard.Children.Add(scaleAnimationY);
@@ -335,15 +362,25 @@ namespace NuSysApp.Util
             _storyboard.Children.Add(centerAnimationY);
             _storyboard.Children.Add(translateAnimationX);
             _storyboard.Children.Add(translateAnimationY);
+            
+            /*
+            _storyboard.Children.Add(scaleAnimationXPrezi);
+            _storyboard.Children.Add(scaleAnimationYPrezi);
+            _storyboard.Children.Add(centerAnimationXPrezi);
+            _storyboard.Children.Add(centerAnimationYPrezi);
+            _storyboard.Children.Add(translateAnimationXPrezi);
+            _storyboard.Children.Add(translateAnimationYPrezi);
+            
+    */
 
             // Make the Storyboard a resource.
-            SessionController.Instance.SessionView.Resources.Add("PresentationStoryboard", _storyboard);
+            //SessionController.Instance.SessionView.Resources.Add("PresentationStoryboard", _storyboard);
 
             // Begin the animation.
             _storyboard.Begin();
-            SessionController.Instance.SessionView.Resources.Remove("PresentationStoryboard");
+//            SessionController.Instance.SessionView.Resources.Remove("PresentationStoryboard");
 
-            PanZoomMode.UpdateTempTransform(new CompositeTransform
+            var tt = new CompositeTransform
             {
                 TranslateX = translateX,
                 TranslateY = translateY,
@@ -351,18 +388,35 @@ namespace NuSysApp.Util
                 ScaleY = scale,
                 CenterX = x,
                 CenterY = y
-            });
+            };
+            t = new CompositeTransform
+            {
+                TranslateX = translateX,
+                TranslateY = translateY,
+                ScaleX = scale,
+                ScaleY = scale,
+                CenterX = x,
+                CenterY = y
+            };
+            PanZoomMode.UpdateTempTransform(tt);
 
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Transform = tt;
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Redraw();
         }
 
-        private DoubleAnimation MakeAnimationElement(double to, String name, Duration duration)
+        private DoubleAnimation MakeAnimationElement(double to, String name, Duration duration, CompositeTransform transform = null, bool dependent = false)
         {
-            var transform = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
-            DoubleAnimation toReturn = new DoubleAnimation();
-            toReturn.EnableDependentAnimation = false;
+
+            if (transform == null)
+                transform = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
+
+            var toReturn = new DoubleAnimation();
+            toReturn.EnableDependentAnimation = true;
             toReturn.Duration = duration;
             Storyboard.SetTarget(toReturn, transform);
             Storyboard.SetTargetProperty(toReturn, name);
+            Debug.WriteLine(transform);
+            Debug.WriteLine(name);
             toReturn.To = to;
             toReturn.EasingFunction = new QuadraticEase();
             return toReturn;

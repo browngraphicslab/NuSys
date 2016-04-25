@@ -375,6 +375,10 @@ namespace NuSysApp
         private async void BtnAddOnManipulationStarting(object sender, PointerRoutedEventArgs args)
         {
             Debug.WriteLine("Starting once!");
+
+            if (xCanvas.Children.Contains(_dragItem))
+                xCanvas.Children.Remove(_dragItem);
+
             CapturePointer(args.Pointer);
 
             if (sender == DuplicateElement)

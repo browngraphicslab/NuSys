@@ -431,8 +431,8 @@ namespace NuSysApp
 
                 // add each corner point to the list of reference points
                 PointCollection pts = new PointCollection();
-                pts.Add(new Point(x, y));
-                pts.Add(new Point(x + Width, y));
+                pts.Add(new Point(x, y));           // top left
+                pts.Add(new Point(x + Width, y)); 
                 pts.Add(new Point(x, y + Height));
                 pts.Add(new Point(x + Width, y + Height));
                 return pts;
