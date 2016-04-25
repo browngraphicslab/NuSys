@@ -78,8 +78,7 @@ namespace MyDataGrid
             DataContext = vm;
             this.InitializeComponent();
 
-
-            var dg = new DataGrid(vm, this);
+            var dg = new DataGrid(vm, this, -1);
             dg.Width = 500;
             dg.Height = 500;
             main.Children.Add(dg);
@@ -115,14 +114,14 @@ namespace MyDataGrid
             headCollection.Add("Location");
 
             collection.Add(headCollection);
-           
 
+            Random r = new Random();
             for (int i = 0; i < rowCount; i++)
             {
                 ObservableCollection<string> data = new ObservableCollection<string>();
                 for (int j = 0; j < colCount; j++)
                 {
-                    data.Add("Row" + i + "Col" + j);
+                    data.Add(r.Next(0, 100).ToString());
                 }
 
                 collection.Add(data);
@@ -132,10 +131,10 @@ namespace MyDataGrid
 
         }
 
-        public void Reset(DataGridViewModel viewModel)
+        public void Reset(DataGridViewModel viewModel, int sortedIndex)
         {
             main.Children.Clear();
-            var dg = new DataGrid(viewModel, this);
+            var dg = new DataGrid(viewModel, this, sortedIndex);
             dg.Width = 500;
             dg.Height = 500;
             main.Children.Add(dg);

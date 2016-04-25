@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -22,10 +23,12 @@ namespace MyDataGrid
     public sealed partial class DataGrid : UserControl
     {
         private MainPage _main;
-        public DataGrid(DataGridViewModel vm, MainPage mainPage)
+        private int _sortedIndex;
+        public DataGrid(DataGridViewModel vm, MainPage mainPage, int sortedIndex)
         {
             this.InitializeComponent();
             _main = mainPage;
+            _sortedIndex = sortedIndex;
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
                 var mainGrid = (Grid)FindName("mainGrid");
@@ -128,9 +131,63 @@ namespace MyDataGrid
         {
             var currContext = (DataGridViewModel) this.DataContext;
             currContext.Data[0].Title = "Changed!"; 
-            _main.Reset((DataGridViewModel)this.DataContext); 
+            _main.Reset((DataGridViewModel)this.DataContext, _sortedIndex); 
                
         }
 
+        private void TextBlock_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {            
+            var textblock = (TextBlock)sender;
+            HarshHeader col = (HarshHeader) textblock.DataContext;
+            int colIndex = col.ColIndex;
+            var currContext = (DataGridViewModel)this.DataContext;
+
+            //group cells into rows
+            List<ObservableCollection<GridRowCell>> rows = new List<ObservableCollection<GridRowCell>>();
+            for(int i = 0; i < currContext.NumRows; i++)
+            {
+                ObservableCollection<GridRowCell> row = new ObservableCollection<GridRowCell>();
+                for(int j = 0; j < currContext.NumCols; j++)
+                {
+                    row.Add(currContext.Data[i * currContext.NumCols + j]);
+                }
+                rows.Add(row);
+            }
+
+            //sort
+            IOrderedEnumerable<ObservableCollection<GridRowCell>> sorted_rows;
+            if (_sortedIndex == colIndex)
+            {
+                sorted_rows = rows.OrderByDescending(row => intCheck(row[colIndex].Title)).ThenByDescending(row => row[colIndex].Title);
+            } else
+            {
+                sorted_rows = rows.OrderBy(row => intCheck(row[colIndex].Title)).ThenBy(row => row[colIndex].Title);
+                _sortedIndex = colIndex;
+            }
+            
+            ObservableCollection<GridRowCell> sorted_cells = new ObservableCollection<GridRowCell>();
+            int k = 0;
+            foreach(var row in sorted_rows)
+            {
+                for(int j = 0; j < currContext.NumCols; j++)
+                {
+                    sorted_cells.Add(new GridRowCell{
+                        Title = row[j].Title,
+                        RowIndex = k,
+                        ColIndex = j
+                    });
+                }
+                k++;
+            }
+
+            currContext.Data = sorted_cells;
+            _main.Reset(currContext, _sortedIndex);
+        }
+        private int intCheck(string s)
+        {
+            int output;
+            var success = int.TryParse(s, out output);
+            return output;           
+        }
     }
 }
