@@ -92,10 +92,12 @@ namespace NuSysApp
             }
             d["id"] = _id;
             var message = new Message(d);
-
-            var request = new SendableUpdateRequest(message,saveToServer);
-            //Debug.WriteLine("sending debounce dict for id"+ _id);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request, NetworkClient.PacketType.TCP);
+            if (d.Count > 1)
+            {
+                var request = new SendableUpdateRequest(message, saveToServer);
+                //Debug.WriteLine("sending debounce dict for id"+ _id);
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request, NetworkClient.PacketType.TCP);
+            }
             _timing = false;
             _dict.Clear();
         }

@@ -117,7 +117,7 @@ namespace NuSysApp
             }
             catch (Exception e)
             {
-                throw new IncomingDataReaderException();
+                //throw new IncomingDataReaderException();
             }
         }
 

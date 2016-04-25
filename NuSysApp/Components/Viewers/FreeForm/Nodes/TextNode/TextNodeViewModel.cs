@@ -24,6 +24,10 @@ namespace NuSysApp
             ((TextNodeController) controller).TextChanged += TextChanged;
             ((TextNodeController) controller).SelectionChanged += SelectionChanged;
            controller.Disposed += ControllerOnDisposed;
+            if(Controller.Model.Height < 35)
+            {
+                Controller.SetSize(Controller.Model.Width, 35);
+            }
         }
 
         private void SelectionChanged(object source, bool selected)

@@ -70,7 +70,10 @@ namespace NuSysApp.Util
                     }
                     if (linkController == null)
                         continue;
-
+                    if(linkController != null && _linksUsed.Contains(linkController))
+                    {
+                        break;
+                    }
                     _linksUsed.Add(linkController);
                     linkController.SetColor(_backwardColor);
                 }

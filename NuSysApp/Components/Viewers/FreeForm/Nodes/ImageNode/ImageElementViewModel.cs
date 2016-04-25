@@ -64,6 +64,7 @@ namespace NuSysApp
 
                 // adjust the size of an image that is too large
                 Controller.LibraryElementModel.ViewUtilBucket["image"] = Image;
+                /*
                 if (Image.PixelHeight > 300 || Image.PixelWidth > 300)
                 {
                     double dim = Math.Max(Image.PixelWidth, Image.PixelHeight);
@@ -73,7 +74,9 @@ namespace NuSysApp
                 else
                 {
                     Controller.SetSize(Image.PixelWidth, Image.PixelHeight);
-                }
+                }*/
+                var ratio = Image.PixelHeight / Image.PixelWidth;
+                Controller.SetSize(Controller.Model.Width, Controller.Model.Width * ratio);
             }
             
             RaisePropertyChanged("Image");
