@@ -78,7 +78,7 @@ namespace MyDataGrid
             DataContext = vm;
             this.InitializeComponent();
 
-            var dg = new DataGrid(vm, this, -1);
+            var dg = new DataGrid(vm, this, -1, null);
             dg.Width = 500;
             dg.Height = 500;
             main.Children.Add(dg);
@@ -121,7 +121,8 @@ namespace MyDataGrid
                 ObservableCollection<string> data = new ObservableCollection<string>();
                 for (int j = 0; j < colCount; j++)
                 {
-                    data.Add(r.Next(0, 100).ToString());
+                    string dummy = this.makeString(new Random());
+                    data.Add(dummy);
                 }
 
                 collection.Add(data);
@@ -131,13 +132,28 @@ namespace MyDataGrid
 
         }
 
-        public void Reset(DataGridViewModel viewModel, int sortedIndex)
+        public void Reset(DataGridViewModel viewModel, int sortedIndex, List<ColumnDefinition> cols)
         {
             main.Children.Clear();
-            var dg = new DataGrid(viewModel, this, sortedIndex);
+            var dg = new DataGrid(viewModel, this, sortedIndex, cols);
             dg.Width = 500;
             dg.Height = 500;
             main.Children.Add(dg);
+        }
+
+        public string makeString(Random random)
+        {
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var stringChars = new char[8];
+
+            for (int i = 0; i < stringChars.Length; i++)
+            {
+                stringChars[i] = chars[random.Next(chars.Length)];
+            }
+
+            var finalString = new String(stringChars);
+
+            return finalString;
         }
     }
 }

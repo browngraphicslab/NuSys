@@ -24,24 +24,53 @@ namespace MyDataGrid
     {
         private MainPage _main;
         private int _sortedIndex;
-        public DataGrid(DataGridViewModel vm, MainPage mainPage, int sortedIndex)
+        private List<ColumnDefinition> _colDefinition;
+        public DataGrid(DataGridViewModel vm, MainPage mainPage, int sortedIndex, List<ColumnDefinition> colDefinition)
         {
             this.InitializeComponent();
             _main = mainPage;
             _sortedIndex = sortedIndex;
+            
+
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
                 var mainGrid = (Grid)FindName("mainGrid");
                 var headerGrid = (Grid)mainSP.FindName("headerGrid");
+                var rg = (Grid)cellScrollViewer.FindName("rowGrid");
+                if (colDefinition != null)
+                {
+                    int i = 0;
+                    foreach (var columnDefinition in headerGrid.ColumnDefinitions)
+                    {
+                        columnDefinition.Width = colDefinition[i].Width;
+                        i++;
+                    }
+                    int j = 0;
+                    foreach (var columnDefinition in rg.ColumnDefinitions)
+                    {
+                        columnDefinition.Width = colDefinition[j].Width;
+                        j++;
+                    }
+                }
+                else
+                {
+                    foreach (var columnDefinition in headerGrid.ColumnDefinitions)
+                    {
+                        columnDefinition.Width = new GridLength(mainGrid.ActualWidth / headerGrid.ColumnDefinitions.Count);
+                    }
+                    
+                    foreach (var columnDefinition in rg.ColumnDefinitions)
+                    {
+                        columnDefinition.Width = new GridLength(mainGrid.ActualWidth / rg.ColumnDefinitions.Count);
+                    }
+                }
+
+                IList<ColumnDefinition> colDefList = new List<ColumnDefinition>(headerGrid.ColumnDefinitions.Count);
                 foreach (var columnDefinition in headerGrid.ColumnDefinitions)
                 {
-                    columnDefinition.Width = new GridLength(mainGrid.ActualWidth / headerGrid.ColumnDefinitions.Count);
+                    colDefList.Add(columnDefinition);
                 }
-                var rg = (Grid)cellScrollViewer.FindName("rowGrid");
-                foreach (var columnDefinition in rg.ColumnDefinitions)
-                {
-                    columnDefinition.Width = new GridLength(mainGrid.ActualWidth / rg.ColumnDefinitions.Count);
-                }
+                _colDefinition = new List<ColumnDefinition>(headerGrid.ColumnDefinitions.Count);
 
             };
 
@@ -127,13 +156,6 @@ namespace MyDataGrid
             //((DataGridViewModel) this.DataContext).Sort(index);
         }
 
-        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
-        {
-            var currContext = (DataGridViewModel) this.DataContext;
-            currContext.Data[0].Title = "Changed!"; 
-            _main.Reset((DataGridViewModel)this.DataContext, _sortedIndex); 
-               
-        }
 
         private void TextBlock_PointerPressed(object sender, PointerRoutedEventArgs e)
         {            
@@ -181,7 +203,16 @@ namespace MyDataGrid
             }
 
             currContext.Data = sorted_cells;
-            _main.Reset(currContext, _sortedIndex);
+            var headerGrid = (Grid)mainSP.FindName("headerGrid");
+            if (_colDefinition != null)
+            {
+                _colDefinition.Clear();
+            }
+            foreach (var columnDefinition in headerGrid.ColumnDefinitions)
+            {
+                _colDefinition.Add(columnDefinition);
+            }
+            _main.Reset(currContext, _sortedIndex, _colDefinition);
         }
         private int intCheck(string s)
         {
