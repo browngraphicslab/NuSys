@@ -207,7 +207,15 @@ namespace NuSysApp
             {
                 _currentStroke.Add(new InkPoint(_inverseTransform.TransformPoint(p.RawPosition), p.Properties.Pressure));
             }
-            var stroke = strokeBuilder.CreateStrokeFromInkPoints(_currentStroke, Matrix3x2.Identity);
+            InkStroke stroke = null;
+            try
+            {
+                stroke = strokeBuilder.CreateStrokeFromInkPoints(_currentStroke, Matrix3x2.Identity);
+            }
+            catch(Exception ee)
+            {
+                return;
+            }
                              
 
             if (_isEraser)

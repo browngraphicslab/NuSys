@@ -100,7 +100,7 @@ namespace NuSysApp
 
         private void PlaybackElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            
         }
 
         private void ControllerOnDisposed(object source)
@@ -197,13 +197,20 @@ namespace NuSysApp
             vm.Controller.RequestDelete();
         }
 
-        private async void RenderImageSource(Grid RenderedGrid)
+        private async Task RenderImageSource(Grid RenderedGrid)
         {
 
             RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap();
             double x = grid.Height;
             grid.Width = RenderedGrid.Width * 2;
-            await renderTargetBitmap.RenderAsync(RenderedGrid, 1000, 100);
+            try
+            {
+                await renderTargetBitmap.RenderAsync(RenderedGrid, 1000, 100);
+            }
+            catch(Exception e)
+            {
+                return;
+            }
             grid.Width = x;
             VisualizationImage.Source = renderTargetBitmap;
             grid.Children.Remove(RenderedGrid);
@@ -311,10 +318,10 @@ namespace NuSysApp
                 (DataContext as AudioNodeViewModel).OnVisualizationLoaded += LoadPlaybackElement;
             }
         }
-        private void LoadPlaybackElement()
+        private async void LoadPlaybackElement()
         {
             grid.Children.Add((DataContext as AudioNodeViewModel).VisualGrid);
-            RenderImageSource((DataContext as AudioNodeViewModel).VisualGrid);
+            await RenderImageSource((DataContext as AudioNodeViewModel).VisualGrid);
             if (playbackElement.Source == null && _loaded == false)
             {
                 playbackElement.SetSource((DataContext as AudioNodeViewModel).AudioSource, "audio/mp3");
