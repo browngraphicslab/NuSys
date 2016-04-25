@@ -418,8 +418,6 @@ namespace NuSysApp.Util
             toReturn.Duration = duration;
             Storyboard.SetTarget(toReturn, transform);
             Storyboard.SetTargetProperty(toReturn, name);
-            Debug.WriteLine(transform);
-            Debug.WriteLine(name);
             toReturn.To = to;
             toReturn.EasingFunction = new QuadraticEase();
             return toReturn;
