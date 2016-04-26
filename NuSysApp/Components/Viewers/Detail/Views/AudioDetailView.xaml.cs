@@ -64,6 +64,16 @@ namespace NuSysApp
 
             vm.Controller.Disposed += ControllerOnDisposed;
 
+            ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.MediaOpened += PlaybackElement_MediaOpened;
+
+
+
+
+        }
+
+        private void PlaybackElement_MediaOpened(object sender, RoutedEventArgs e)
+        {
+            //this.AddAllLinksVisually();
         }
 
         private void ControllerOnDisposed(object source)
@@ -94,6 +104,8 @@ namespace NuSysApp
         {
             grid.Children.Add((DataContext as AudioNodeViewModel).VisualGrid);
             RenderImageSource((DataContext as AudioNodeViewModel).VisualGrid);
+            //this.AddAllLinksVisually();
+
         }
 
         private void ScrubBarOnLoaded(object sender, RoutedEventArgs routedEventArgs)

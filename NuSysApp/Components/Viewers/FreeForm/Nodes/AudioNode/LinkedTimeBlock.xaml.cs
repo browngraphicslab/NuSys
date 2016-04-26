@@ -97,6 +97,16 @@ namespace NuSysApp.Components.Nodes
                 b2.Path = new PropertyPath("Detailx2");
                 line.SetBinding(Line.X2Property, b2);
 
+                Binding b3 = new Binding();
+                b3.Path = new PropertyPath("Ellipsex1");
+                Binding b4 = new Binding();
+                b4.Path = new PropertyPath("Ellipsex2");
+
+                EllipseOne.SetBinding(Canvas.LeftProperty, b3);
+                EllipseTwo.SetBinding(Canvas.LeftProperty, b4);
+
+                
+
                 HandleOne.SetBinding(Line.X2Property, b1);
                 HandleOne.SetBinding(Line.X1Property, b1);
                 HandleTwo.SetBinding(Line.X2Property, b2);
@@ -133,16 +143,16 @@ namespace NuSysApp.Components.Nodes
             HandleTwo.Y2 = Canvas.GetTop(vm._scrubBar) + vm._scrubBar.ActualHeight + vm._scrubBar.Margin.Top + 5;
             EllipseOne.SetValue(Canvas.TopProperty, Canvas.GetTop(vm._scrubBar) + vm._scrubBar.ActualHeight + vm._scrubBar.Margin.Top);
             EllipseTwo.SetValue(Canvas.TopProperty, Canvas.GetTop(vm._scrubBar) + vm._scrubBar.ActualHeight + vm._scrubBar.Margin.Top);
-            EllipseOne.SetValue(Canvas.LeftProperty, (DataContext as LinkedTimeBlockViewModel).Detailx1 - EllipseOne.ActualWidth / 2);
-            EllipseTwo.SetValue(Canvas.LeftProperty, (DataContext as LinkedTimeBlockViewModel).Detailx2 - EllipseTwo.ActualWidth / 2);
+            //EllipseOne.SetValue(Canvas.LeftProperty, (DataContext as LinkedTimeBlockViewModel).Detailx1 - EllipseOne.ActualWidth / 2);
+            //EllipseTwo.SetValue(Canvas.LeftProperty, (DataContext as LinkedTimeBlockViewModel).Detailx2 - EllipseTwo.ActualWidth / 2);
             vm._scrubBar.SizeChanged += ScrubBarOnSizeChanged;
 
         }
 
         private void ScrubBarOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
         {
-            EllipseOne.SetValue(Canvas.LeftProperty, (DataContext as LinkedTimeBlockViewModel).Detailx1 - EllipseOne.ActualWidth/2);
-            EllipseTwo.SetValue(Canvas.LeftProperty, (DataContext as LinkedTimeBlockViewModel).Detailx2 - EllipseTwo.ActualWidth/2);
+            //EllipseOne.SetValue(Canvas.LeftProperty, (DataContext as LinkedTimeBlockViewModel).Detailx1 - EllipseOne.ActualWidth/2);
+            //EllipseTwo.SetValue(Canvas.LeftProperty, (DataContext as LinkedTimeBlockViewModel).Detailx2 - EllipseTwo.ActualWidth/2);
             
         }
 
@@ -276,7 +286,7 @@ namespace NuSysApp.Components.Nodes
                     line.X1 = e.GetCurrentPoint(grid).Position.X;
                     HandleOne.X1 = e.GetCurrentPoint(grid).Position.X;
                     HandleOne.X2 = e.GetCurrentPoint(grid).Position.X;
-                    _box1.SetValue(Canvas.LeftProperty, e.GetCurrentPoint(grid).Position.X);
+                    _box1.SetValue(Canvas.LeftProperty, line.X1);
                     int milli = (int)(((HandleOne.X1 - Canvas.GetLeft((DataContext as LinkedTimeBlockViewModel)._scrubBar) - (DataContext as LinkedTimeBlockViewModel)._scrubBar.Margin.Left) / (DataContext as LinkedTimeBlockViewModel)._scrubBar.ActualWidth) * (DataContext as LinkedTimeBlockViewModel)._totalAudioDuration.TotalMilliseconds);
                     TimeSpan time = new TimeSpan(0, 0, 0, 0, milli);
                     _box1.Text = time.Minutes + ":" +
@@ -363,7 +373,7 @@ namespace NuSysApp.Components.Nodes
                     line.X2 = e.GetCurrentPoint(grid).Position.X;
                     HandleTwo.X1 = e.GetCurrentPoint(grid).Position.X;
                     HandleTwo.X2 = e.GetCurrentPoint(grid).Position.X;
-                    _box1.SetValue(Canvas.LeftProperty, e.GetCurrentPoint(grid).Position.X);
+                    _box1.SetValue(Canvas.LeftProperty, line.X2);
                     int milli = (int)(((HandleTwo.X1 - Canvas.GetLeft((DataContext as LinkedTimeBlockViewModel)._scrubBar) - (DataContext as LinkedTimeBlockViewModel)._scrubBar.Margin.Left) / (DataContext as LinkedTimeBlockViewModel)._scrubBar.ActualWidth) * (DataContext as LinkedTimeBlockViewModel)._totalAudioDuration.TotalMilliseconds);
                     TimeSpan time = new TimeSpan(0, 0, 0, 0, milli);
                     _box1.Text = time.Minutes + ":" +
@@ -461,6 +471,7 @@ namespace NuSysApp.Components.Nodes
 
         private void EllipseOne_OnTapped(object sender, TappedRoutedEventArgs e)
         {
+            Debug.WriteLine(Canvas.GetLeft(_box1));
             if (Canvas.GetLeft(_box1) == line.X1 && Canvas.Children.Contains(_box1))
             {
                 Canvas.Children.Remove(_box1);

@@ -34,6 +34,8 @@ namespace NuSysApp.Nodes.AudioNode
         private Dictionary<string, Object> _line1;
         private double _detailx1;
         private double _detailx2;
+        private double _ellipsex1;
+        private double _ellipsex2;
         public TimeSpan _totalAudioDuration;
         
         public LinkedTimeBlockModel Model { get; set; }
@@ -41,7 +43,11 @@ namespace NuSysApp.Nodes.AudioNode
         public double Detailx2 {get { return _detailx2; }set{ _detailx2 = value; RaisePropertyChanged("Detailx2");}}
 
         public double Detailx1{get { return _detailx1; }set {_detailx1 = value;RaisePropertyChanged("Detailx1");}}
-        
+
+        public double Ellipsex2 { get { return _ellipsex2; } set { _ellipsex2 = value; RaisePropertyChanged("Ellipsex2"); } }
+
+        public double Ellipsex1 { get { return _ellipsex1; } set { _ellipsex1 = value; RaisePropertyChanged("Ellipsex1"); } }
+
         public LinkedTimeBlockViewModel(LinkedTimeBlockModel model,  TimeSpan totalAudioDuration, ProgressBar scrubBar)
         {
             _totalAudioDuration = totalAudioDuration;
@@ -122,6 +128,8 @@ namespace NuSysApp.Nodes.AudioNode
             _line1.Add("Opacity", 0.3);
             this.Detailx1 = y + Canvas.GetLeft(_scrubBar) + _scrubBar.Margin.Left;
             this.Detailx2 = x + Canvas.GetLeft(_scrubBar) + _scrubBar.Margin.Left;
+            this.Ellipsex1 = y + Canvas.GetLeft(_scrubBar) + _scrubBar.Margin.Left - 15;
+            this.Ellipsex2 = x + Canvas.GetLeft(_scrubBar) + _scrubBar.Margin.Left - 15;
             _line1.Add("Y", Canvas.GetTop(_scrubBar) + (double)_line1["StrokeThickness"] / 2);
             _line1.Add("TopMargin", _scrubBar.Margin.Top);
         }
@@ -133,6 +141,9 @@ namespace NuSysApp.Nodes.AudioNode
             double y = _startRatio * _scrubBar.ActualWidth;
             Detailx1 = y + Canvas.GetLeft(_scrubBar) + _scrubBar.Margin.Left;
             Detailx2 = x + Canvas.GetLeft(_scrubBar) + _scrubBar.Margin.Left;
+
+            Ellipsex1 = y + Canvas.GetLeft(_scrubBar) + _scrubBar.Margin.Left - 15;
+            Ellipsex2 = x + Canvas.GetLeft(_scrubBar) + _scrubBar.Margin.Left - 15;
             _line1["Y"] = Canvas.GetTop(_scrubBar) + (double)_line1["StrokeThickness"] / 2;
             _line1["TopMargin"] = _scrubBar.Margin.Top;
         }

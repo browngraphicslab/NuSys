@@ -329,6 +329,7 @@ namespace NuSysApp
                 _loaded = true;
             }
             playbackElement.MediaEnded += PlaybackElementOnMediaEnded;
+            //this.AddAllLinksVisually();
             
         }
 
