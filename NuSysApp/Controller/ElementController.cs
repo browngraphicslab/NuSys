@@ -105,7 +105,7 @@ namespace NuSysApp
             SelectionChanged?.Invoke(this, selected);
         }
 
-        public void SetSize(double width, double height)
+        public virtual void SetSize(double width, double height)
         {
             if (width < 20 || height < 20)
             {

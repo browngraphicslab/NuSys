@@ -239,6 +239,10 @@ namespace NuSysApp
             
         }
 
+        public virtual double GetRatio()
+        {
+            return 1;
+        }
  
 
         #region Public Properties

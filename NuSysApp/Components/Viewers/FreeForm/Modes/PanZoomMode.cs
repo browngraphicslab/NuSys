@@ -17,23 +17,18 @@ namespace NuSysApp
         //private DispatcherTimer _timer;
         private FreeFormViewer _cview;
         private CompositeTransform _tempTransform;
-        private static PanZoomMode Instance;
 
         private List<UIElement> _allElements = new List<UIElement>();
 
         public PanZoomMode(FrameworkElement view) : base(view)
         {
-            Instance = this;
             _cview = view as FreeFormViewer;
-       //     _timer = new DispatcherTimer();
-        //    _timer.Interval = TimeSpan.FromMilliseconds(5);
-            var vm = (FreeFormViewerViewModel)_view.DataContext;
-            UpdateTempTransform(vm.CompositeTransform);
+       
         }
-
-        public static void UpdateTempTransform( CompositeTransform compositeTransform )
+    
+        public void UpdateTempTransform( CompositeTransform compositeTransform )
         {
-            Instance._tempTransform = new CompositeTransform
+            _tempTransform = new CompositeTransform
             {
                 TranslateX = compositeTransform.TranslateX,
                 TranslateY = compositeTransform.TranslateY,
@@ -48,7 +43,6 @@ namespace NuSysApp
         {
             var vm = (FreeFormViewerViewModel)_view.DataContext;
             var compositeTransform = vm.CompositeTransform;
-
             compositeTransform.TranslateX = _tempTransform.TranslateX;
             compositeTransform.TranslateY = _tempTransform.TranslateY;
             compositeTransform.ScaleX = _tempTransform.ScaleX;
@@ -56,7 +50,9 @@ namespace NuSysApp
             compositeTransform.CenterX = _tempTransform.CenterX;
             compositeTransform.CenterY = _tempTransform.CenterY;
 
-            CullScreen();
+            if (_cview != null) { 
+                CullScreen();
+            }
         }
 
 
@@ -92,6 +88,8 @@ namespace NuSysApp
 
         public override async Task Activate()
         {
+            var vm = (FreeFormViewerViewModel)_view.DataContext;
+            UpdateTempTransform(vm.CompositeTransform);
             _view.ManipulationMode = ManipulationModes.All;
             _view.ManipulationStarted += OnManipulationStarted;
             _view.PointerWheelChanged += OnPointerWheelChanged;
@@ -104,12 +102,14 @@ namespace NuSysApp
 
         public override async Task Deactivate()
         {
+
             _view.ManipulationMode = ManipulationModes.None;
             _view.ManipulationStarted -= OnManipulationStarted;
             _view.ManipulationDelta -= OnManipulationDelta;
             _view.ManipulationCompleted -= ViewOnManipulationCompleted;
             _view.PointerWheelChanged -= OnPointerWheelChanged;
-            CompositionTarget.Rendering -= CompositionTargetOnRendering;
+            if (_cview != null)
+                CompositionTarget.Rendering -= CompositionTargetOnRendering;
         }
 
         private void OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)

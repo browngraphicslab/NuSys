@@ -52,7 +52,7 @@ namespace NuSysApp
 
 
         //speech to text variables
-        private static SpeechRecognizer _speechRecognizer = new SpeechRecognizer();
+        private static SpeechRecognizer _speechRecognizer;// = new SpeechRecognizer();
         private CoreDispatcher _dispatcher;
         private StringBuilder _dictatedTextBuilder;
         private StringBuilder _hypothesisBuilder;
@@ -76,7 +76,7 @@ namespace NuSysApp
             TextNodeWebView.NavigationCompleted += TextNodeWebViewOnNavigationCompleted;
             TextNodeWebView.ScriptNotify += wvBrowser_ScriptNotify;
 
-            InitSpeechRecognition();
+            //InitSpeechRecognition();
 
             Record.AddHandler(PointerPressedEvent, new PointerEventHandler(RecordButton_OnClick), true);
             Record.AddHandler(PointerReleasedEvent, new PointerEventHandler(RecordButton_Released), true);

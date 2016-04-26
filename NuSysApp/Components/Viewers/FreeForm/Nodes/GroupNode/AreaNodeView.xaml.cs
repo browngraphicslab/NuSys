@@ -42,8 +42,8 @@ namespace NuSysApp
             _nodeManipulationMode = new NodeManipulationMode(this, true);
             _nodeManipulationMode.Activate();
 
-            _panZoomMode = new PanZoomMode(this);
-            _panZoomMode.Activate();
+            //_panZoomMode = new PanZoomMode(this);
+            //_panZoomMode.Activate();
 
             _dragOutMode = new DragOutMode(this);
             _dragOutMode.Activate();

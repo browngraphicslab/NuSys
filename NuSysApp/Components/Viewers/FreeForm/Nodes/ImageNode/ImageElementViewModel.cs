@@ -56,49 +56,34 @@ namespace NuSysApp
             if (image != null)
             {
                 Image = image;
-                Controller.SetSize(Controller.Model.Width, Controller.Model.Width);
+                var ratio = (double)Image.PixelHeight / (double)Image.PixelWidth;
+                Controller.SetSize(Controller.Model.Width, Controller.Model.Width * ratio);
             }
             else
             {
                 Image = await MediaUtil.ByteArrayToBitmapImage(Convert.FromBase64String(Controller.LibraryElementModel.Data));
-
-                // adjust the size of an image that is too large
                 Controller.LibraryElementModel.ViewUtilBucket["image"] = Image;
-                /*
-                if (Image.PixelHeight > 300 || Image.PixelWidth > 300)
-                {
-                    double dim = Math.Max(Image.PixelWidth, Image.PixelHeight);
-                    double scale = Math.Floor(dim / 300);
-                    Controller.SetSize(Image.PixelWidth / scale, Image.PixelHeight / scale);
-                }
-                else
-                {
-                    Controller.SetSize(Image.PixelWidth, Image.PixelHeight);
-                }*/
-                var ratio = Image.PixelHeight / Image.PixelWidth;
+                var ratio = (double)Image.PixelHeight / (double)Image.PixelWidth;
                 Controller.SetSize(Controller.Model.Width, Controller.Model.Width * ratio);
             }
             
             RaisePropertyChanged("Image");
         }
-
+        /*
         public override void SetSize(double width, double height)
         {
             if (Image == null)
+            {
                 return;
+            }
 
-            if (Image.PixelWidth > Image.PixelHeight)
-            {
-                var r = Image.PixelHeight / (double)Image.PixelWidth;
-                base.SetSize(width, width * r);
-            }
-            else
-            {
-                var r = Image.PixelWidth / (double)Image.PixelHeight;
-                base.SetSize(height * r, height);
-            }
+            var ratio = (double)Image.PixelHeight / (double)Image.PixelWidth;
+            base.SetSize(width, width * ratio);
+        }*/
+        public override double GetRatio()
+        {
+            return Image == null ? 1 :(double)Image.PixelHeight / (double)Image.PixelWidth;
         }
-
         protected override void OnSizeChanged(object source, double width, double height)
         {
             SetSize(width,height);
