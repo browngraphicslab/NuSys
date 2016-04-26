@@ -24,6 +24,8 @@ namespace NuSysApp
         private MessageWebSocket _socket;
         private DataWriter _dataMessageWriter;
 
+        private HashSet<string> libraryIdsUsed = new HashSet<string>();
+
         public delegate void MessageRecievedEventHandler(Message message);
         public event MessageRecievedEventHandler OnMessageRecieved;
 
@@ -179,6 +181,11 @@ namespace NuSysApp
         {
             try
             {
+                if (libraryIdsUsed.Contains(libraryId))
+                {
+                    return;
+                }
+                libraryIdsUsed.Add(libraryId);
                 await Task.Run(async delegate
                 {
                     SessionController.Instance.ContentController.Get(libraryId).SetLoading(true);
