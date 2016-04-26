@@ -448,7 +448,14 @@ namespace NuSysApp
             if (resizeY > 0 && resizeX > 0)
             {
                 var ratio = vm.GetRatio();
-                vm.Controller.SetSize(resizeX , resizeX * ratio);
+                if(ratio == 1)
+                {
+                    vm.Controller.SetSize(resizeX, resizeY);
+                }
+                else
+                {
+                    vm.Controller.SetSize(resizeX, resizeX * ratio);
+                }
             }
             //   inkCanvas.Width = vm.Width;
             //   inkCanvas.Height = vm.Height;
