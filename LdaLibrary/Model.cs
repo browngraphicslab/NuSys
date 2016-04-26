@@ -395,7 +395,7 @@ namespace LdaLibrary
                     }
                 }
             } // end for each topic
-            //await FileIO.WriteLinesAsync(TagExtractor.Twords, lines);
+            await FileIO.WriteLinesAsync(TagExtractor.Twords, lines);
 
             return true;
         }
