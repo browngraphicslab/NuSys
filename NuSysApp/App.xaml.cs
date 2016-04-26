@@ -43,6 +43,13 @@ namespace NuSysApp
 
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+
+            Application.Current.UnhandledException += CurrentOnUnhandledException;
+        }
+
+        private void CurrentOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
+        {
+            Debug.WriteLine("Unhandled Exception");
         }
 
         /// <summary>
