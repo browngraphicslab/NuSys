@@ -448,7 +448,7 @@ namespace NuSysApp
             if (resizeY > 0 && resizeX > 0)
             {
                 var ratio = vm.GetRatio();
-                if(ratio == 1)
+                if(ratio == 1.01010101)
                 {
                     vm.Controller.SetSize(resizeX, resizeY);
                 }

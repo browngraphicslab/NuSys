@@ -241,7 +241,7 @@ namespace NuSysApp
 
         public virtual double GetRatio()
         {
-            return 1;
+            return 1.01010101;
         }
  
 
