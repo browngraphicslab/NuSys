@@ -81,16 +81,17 @@ namespace NuSysApp.Util
         }
 
 
-        private void OnAnimationCompleted(object sender, object e)
+        private async void OnAnimationCompleted(object sender, object e)
         {
-            PanZoomMode.UpdateTempTransform(t);
-           // _timer.Stop();
-      //     CompositionTarget.Rendering += CompositionTargetOnRendering;
+            return;
+     
+            // _timer.Stop();
+            //     CompositionTarget.Rendering += CompositionTargetOnRendering;
         }
 
         private void CompositionTargetOnRendering(object sender, object o)
         {
-            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Redraw();
+           // SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Redraw();
         }
 
         private void OnTick(object sender, object e)
@@ -333,6 +334,7 @@ namespace NuSysApp.Util
 
         private void AnimatePresentation(double scale, double x , double y, double translateX, double translateY)
         {           
+            Debug.WriteLine("target scale: " + scale);
             // Create a duration of 2 seconds.
             Duration duration = new Duration(TimeSpan.FromSeconds(1));
 
@@ -365,23 +367,6 @@ namespace NuSysApp.Util
             _storyboard.Children.Add(centerAnimationY);
             _storyboard.Children.Add(translateAnimationX);
             _storyboard.Children.Add(translateAnimationY);
-            
-            /*
-            _storyboard.Children.Add(scaleAnimationXPrezi);
-            _storyboard.Children.Add(scaleAnimationYPrezi);
-            _storyboard.Children.Add(centerAnimationXPrezi);
-            _storyboard.Children.Add(centerAnimationYPrezi);
-            _storyboard.Children.Add(translateAnimationXPrezi);
-            _storyboard.Children.Add(translateAnimationYPrezi);
-            
-    */
-
-            // Make the Storyboard a resource.
-            //SessionController.Instance.SessionView.Resources.Add("PresentationStoryboard", _storyboard);
-
-            // Begin the animation.
-            _storyboard.Begin();
-//            SessionController.Instance.SessionView.Resources.Remove("PresentationStoryboard");
 
             var tt = new CompositeTransform
             {
@@ -401,7 +386,28 @@ namespace NuSysApp.Util
                 CenterX = x,
                 CenterY = y
             };
-            PanZoomMode.UpdateTempTransform(tt);
+
+            SessionController.Instance.SessionView.FreeFormViewer.PanZoom.UpdateTempTransform(t);
+
+            /*
+            _storyboard.Children.Add(scaleAnimationXPrezi);
+            _storyboard.Children.Add(scaleAnimationYPrezi);
+            _storyboard.Children.Add(centerAnimationXPrezi);
+            _storyboard.Children.Add(centerAnimationYPrezi);
+            _storyboard.Children.Add(translateAnimationXPrezi);
+            _storyboard.Children.Add(translateAnimationYPrezi);
+            
+    */
+
+            // Make the Storyboard a resource.
+            //SessionController.Instance.SessionView.Resources.Add("PresentationStoryboard", _storyboard);
+
+            // Begin the animation.
+            _storyboard.Begin();
+//            SessionController.Instance.SessionView.Resources.Remove("PresentationStoryboard");
+
+            
+         
 
             SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Transform = tt;
             SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Redraw();

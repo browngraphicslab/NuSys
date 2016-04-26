@@ -83,6 +83,7 @@ namespace NuSysApp
                 _createGroupMode = new CreateGroupMode(this);
                 _duplicateMode = new DuplicateNodeMode(this);
                 _panZoomMode = new PanZoomMode(this);
+                _panZoomMode.UpdateTempTransform(vm.CompositeTransform);
                 _gestureMode = new GestureMode(this);
                 _selectMode = new SelectMode(this);
                 _floatingMenuMode = new FloatingMenuMode(this);
@@ -301,6 +302,13 @@ namespace NuSysApp
                     break;
             }
         }
+
+
+        public PanZoomMode PanZoom
+        {
+            get { return _panZoomMode; }
+        }
+
 
         public SelectMode SelectMode { get { return _selectMode; } }
     }
