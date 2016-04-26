@@ -150,11 +150,9 @@ namespace NuSysApp
                     memoryStream = stream;
                 }
                 playbackElement.SetSource(memoryStream, "video/mp4");
-                
                 ((VideoNodeViewModel) DataContext).Controller.LibraryElementModel.OnLoaded-= LoadVideo;
             }
             playbackElement.Position = new TimeSpan(0);
-
 
         }
 

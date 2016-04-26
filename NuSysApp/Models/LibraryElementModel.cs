@@ -7,6 +7,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml;
+using System.Diagnostics;
 
 namespace NuSysApp
 {
