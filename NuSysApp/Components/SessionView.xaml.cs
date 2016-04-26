@@ -111,7 +111,7 @@ namespace NuSysApp
             
             xDetailViewer.DataContext = new DetailViewerViewModel();
 
-            await SessionController.Instance.InitializeRecog();
+            //await SessionController.Instance.InitializeRecog();
 
             foreach(var user in SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values)
             {
@@ -437,8 +437,15 @@ namespace NuSysApp
                         if(messagesLeft.ContainsKey(id1) && messagesLeft.ContainsKey(id2))
                         {
                             await MakeElement(made, messagesLeft, messagesLeft[id1], loadCollections, levelsLeft);
-                            await MakeElement(made, messagesLeft, messagesLeft[id2], loadCollections, levelsLeft);
-                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(message));
+                            if (messagesLeft.ContainsKey(id2))
+                            {
+                                await MakeElement(made, messagesLeft, messagesLeft[id2], loadCollections, levelsLeft);
+                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(message));
+                            }
+                            else
+                            {
+                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(id1));
+                            }
                         }
                     }
                     else if (!made.Contains(id1))//id2 has been made, but id1 hasn't

@@ -13,11 +13,10 @@ namespace NuSysApp
 {
     public class ImageElementIntanceController : ElementController
     {
-        
+
         public ImageElementIntanceController(ElementModel model) : base(model)
         {
 
         }
-
     }
 }

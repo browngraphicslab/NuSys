@@ -447,7 +447,8 @@ namespace NuSysApp
             var resizeY = vm.Model.Height + e.Delta.Translation.Y / zoom;
             if (resizeY > 0 && resizeX > 0)
             {
-                vm.Controller.SetSize(resizeX, resizeY);
+                var ratio = vm.GetRatio();
+                vm.Controller.SetSize(resizeX , resizeX * ratio);
             }
             //   inkCanvas.Width = vm.Width;
             //   inkCanvas.Height = vm.Height;
