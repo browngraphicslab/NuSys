@@ -93,6 +93,7 @@ namespace NuSysApp
                     {
                         if (dict.ContainsKey("notification_type") )
                         {
+                            Debug.WriteLine("got notification "+ (string)dict["notification_type"]);
                             switch ((string)dict["notification_type"])
                             {
                                 case "content_available":
@@ -177,11 +178,15 @@ namespace NuSysApp
                 return new List<Dictionary<string, object>>();
             }
         }
-        public async Task FetchLibraryElementData(string libraryId)
+        public async Task FetchLibraryElementData(string libraryId, int tries = 0)
         {
             try
             {
                 if (libraryIdsUsed.Contains(libraryId))
+                {
+                    return;
+                }
+                if(tries > 30)
                 {
                     return;
                 }
@@ -198,6 +203,16 @@ namespace NuSysApp
                         data = await responseContent.ReadAsStringAsync();
                     }
 
+                    if(SessionController.Instance.ContentController.Get(libraryId) != null && SessionController.Instance.ContentController.Get(libraryId).Type == ElementType.Video)
+                    {
+                        if(data == "{}")
+                        {
+                            libraryIdsUsed.Remove(libraryId);
+                            await FetchLibraryElementData(libraryId, tries++);
+                            return;
+                        }
+                    }
+                    
                     JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                     var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(data, settings);
 
