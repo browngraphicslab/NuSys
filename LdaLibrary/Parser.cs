@@ -19,10 +19,10 @@ namespace LdaLibrary
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="category"></param>
-        /// <param name="topics"></param>
+        /// Get all the Wikipedia articles associated with the topics.</summary>
+        /// <param name="topics">List of topics.</param>
+        /// <returns>
+        /// Dictionary of (k,v) = (topic, text) pairs.</returns>
         public async Task<Dictionary<string,string>> GetAllWikiContent(List<string> topics)
         {
             Dictionary<string, string> allText = new Dictionary<string, string>();
@@ -58,6 +58,12 @@ namespace LdaLibrary
             return allText;
         }
 
+        /// <summary>
+        /// Get the most relevant page of a given topic.</summary>
+        /// <param name="topic">Topic.</param>
+        /// <param name="numPages">Number of most relevant pages.</param>
+        /// <returns>
+        /// Title of Wikipedia article(s) most relevant to the topic.</returns>
         public async Task<List<string>> GetTopPages(string topic, int numPages)
         {
             string formattedTopic = Regex.Replace(topic, @"\s+", "%20");
@@ -80,6 +86,12 @@ namespace LdaLibrary
             return pageList;
         }
 
+        /// <summary>
+        /// Do frequency counting of each topic in all the relevant articles.</summary>
+        /// <param name="allTopics">List of all potentially relevant topics.</param>
+        /// <param name="allWords">List of all relevant articles.</param>
+        /// <returns>
+        /// Returns (k,v) = (topic, number of occurrence) pair.</returns>
         public Dictionary<string,double> GetTopicCount(Dictionary<string,string> allTopics, List<string> allWords)
         {
             Dictionary<string, double> topicCount = new Dictionary<string, double>();
@@ -97,6 +109,11 @@ namespace LdaLibrary
             return topicCount;
         }
 
+        /// <summary>
+        /// Get the introduction text of a Wikipedia article (e.g. first paragraph)</summary>
+        /// <param name="content">Wikipedia article in HTML format.</param>
+        /// <returns>
+        /// Returns the introduction text.</returns>
         public string GetIntroText(string content)
         {
             if (!content.Contains("<h2>"))
@@ -115,6 +132,11 @@ namespace LdaLibrary
             return content;
         }
 
+        /// <summary>
+        /// Get plain text format of a Wikipedia article.</summary>
+        /// <param name="content">Wikipedia article in HTML format.</param>
+        /// <returns>
+        /// Returns parsed content.</returns>
         public string GetParsedContent(string content)
         {
             string noHTML = Regex.Replace(content, @"<[^>]+>|&nbsp;", "").Trim();
@@ -128,6 +150,11 @@ namespace LdaLibrary
             return splitText[1];
         }
 
+        /// <summary>
+        /// Get all possible pairs from a list of strings.</summary>
+        /// <param name="input">List of words.</param>
+        /// <returns>
+        /// List of word pairs.</returns>
         public List<string> GetWordPairs(List<string> input)
         {
             List<string> output = new List<string>();
@@ -144,6 +171,12 @@ namespace LdaLibrary
             return output;
         }
 
+        /// <summary>
+        /// Get all Wikipedia links in a Wikipedia article.</summary>
+        /// <param name="page">Title of the Wikipedia page.</param>
+        /// <param name="url">Callback link if the links are more than one page.</param>
+        /// <returns>
+        /// Returns the list of all links.</returns>
         public async Task<List<string>> GetWikiLink(string page, string url)
         {
             string linkPage, id;
@@ -176,6 +209,11 @@ namespace LdaLibrary
             return linkList.Concat(continuedLink).ToList();
         }
 
+        /// <summary>
+        /// Get all Wikipedia back links in a Wikipedia article.</summary>
+        /// <param name="page">Title of the Wikipedia page.</param>
+        /// <returns>
+        /// Returns the list of all back links.</returns>
         public async Task<List<string>> GetBackLinks(string page)
         {
             List<string> backLinkList = new List<string>();

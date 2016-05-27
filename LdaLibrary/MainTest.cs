@@ -19,14 +19,25 @@ namespace LdaLibrary
         public static StorageFile Theta;
         public static Estimator estimator;
 
+        /// <summary>
+        /// Launch topic modeling algorithm.</summary>
+        /// <param name="args">Parameters for the LDA algorithm.</param>
+        /// <param name="documents">List of document texts.</param>
+        /// <returns>
+        /// List of suggested topics.</returns>
         public async static Task<List<string>> launch(List<string> args, List<string> documents)
         {
             await Init(args, documents);
             List<string> words = ListWordsOfTopic();
-            //List<string> wikiTopics = await RunParser(words);
+            //List<string> wikiTopics = await RunParser(words); // uncomment this to incorporate Wikipedia API
             return words;
         }
 
+        /// <summary>
+        /// Execute all methods to incorporate Wikipedia corpus in topic suggestion.</summary>
+        /// <param name="topics">List of topics suggested by the LDA algorithm.</param>
+        /// <returns>
+        /// List of (modified) topics using Wikipedia API.</returns>
         public async static Task<List<string>> RunParser(List<string> topics)
         {
             Parser p = new Parser();
@@ -38,6 +49,10 @@ namespace LdaLibrary
             return sorted.Keys.ToList().GetRange(0,9);
         }
 
+        /// <summary>
+        /// Execute the LDA algorithm.</summary>
+        /// <param name="args">Parameters for the LDA algorithm.</param>
+        /// <param name="documents">List of document texts.</param>
         public async static Task Init(List<string> args, List<string> documents )
         {
 
