@@ -15,9 +15,9 @@ using Windows.UI;
 namespace NuSysApp.Util
 {
     /// <summary>
-    /// Implements PresentationMode for nodes.
+    /// Implements a prezi-like presentation mode.
     /// </summary>
-    class PresentationMode
+    class PresentationMode : IDisposable
     {
         private ElementViewModel _previousNode = null;
         private ElementViewModel _nextNode = null;
@@ -25,27 +25,28 @@ namespace NuSysApp.Util
         private CompositeTransform _originalTransform;
         private DispatcherTimer _timer;
         private Storyboard _storyboard;
-
-        private CompositeTransform t;
-
         private SolidColorBrush _backwardColor = Application.Current.Resources["lighterredcolor"] as SolidColorBrush;
         private SolidColorBrush _forwardColor = Application.Current.Resources["color4"] as SolidColorBrush;
-
         private HashSet<LinkElementController> _linksUsed = new HashSet<LinkElementController>();
+
         public PresentationMode(ElementViewModel start)
         {
+
+            if (start == null)
+            {
+                return;
+            }
+
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromMilliseconds(1);
             _timer.Tick += OnTick;
-
             _storyboard = new Storyboard();
-            _storyboard.Completed += OnAnimationCompleted;
-
             _currentNode = start;
             _originalTransform = MakeShallowCopy(SessionController.Instance.ActiveFreeFormViewer.CompositeTransform);
             Load();
             FullScreen();
-            UITask.Run(async delegate {
+            UITask.Run(async delegate
+            {
                 var curr = start;
                 var previous = curr;
                 LinkElementController linkController = null;
@@ -64,13 +65,13 @@ namespace NuSysApp.Util
                         {
                             var l = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => ((ElementViewModel)item.DataContext).Model.Id == link.InElement.Model.Id);
                             previous = l?.First()?.DataContext as ElementViewModel;
-                            linkController = link; 
+                            linkController = link;
                             break;
                         }
                     }
                     if (linkController == null)
                         continue;
-                    if(linkController != null && _linksUsed.Contains(linkController))
+                    if (linkController != null && _linksUsed.Contains(linkController))
                     {
                         break;
                     }
@@ -81,26 +82,11 @@ namespace NuSysApp.Util
         }
 
 
-        private async void OnAnimationCompleted(object sender, object e)
-        {
-            return;
-     
-            // _timer.Stop();
-            //     CompositionTarget.Rendering += CompositionTargetOnRendering;
-        }
-
-        private void CompositionTargetOnRendering(object sender, object o)
-        {
-           // SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Redraw();
-        }
 
         private void OnTick(object sender, object e)
         {
-           // _timer.Stop();
-       
-           // Debug.WriteLine(SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Transform.TranslateX);
             SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Redraw();
-           // _timer.Start();
+
         }
 
         /// <summary>
@@ -113,7 +99,8 @@ namespace NuSysApp.Util
             if (next == null)
             {
                 _nextNode = null;
-            } else
+            }
+            else
             {
                 var nextVMList = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
                     item => ((ElementViewModel)item.DataContext).Model.Id == next.Id);
@@ -155,12 +142,15 @@ namespace NuSysApp.Util
             Load();
             FullScreen();
         }
-        /*
-         * sets the color of the passing links
-         */
+     
+        /// <summary>
+        /// Sets the color of the passing links
+        /// </summary>
+        /// <param name="controller"></param>
+        /// <param name="reverse"></param>
         private void SetColor(LinkElementController controller, bool reverse)
         {
-            if(controller == null)
+            if (controller == null)
             {
                 return;
             }
@@ -195,9 +185,12 @@ namespace NuSysApp.Util
             FullScreen();
         }
 
+        /// <summary>
+        /// Exits presentation mode by resetting the original composite transform properties
+        /// </summary>
         public void ExitMode()
         {
-            foreach(var link in _linksUsed)
+            foreach (var link in _linksUsed)
             {
                 if (link != null)
                 {
@@ -209,20 +202,15 @@ namespace NuSysApp.Util
 
         private LinkElementController GetLinkBetweenNode(ElementViewModel model)
         {
-            if(model == null)
+            if (model == null)
             {
                 return null;
             }
             var links = _currentNode.LinkList;
-            foreach(var link in links)
+            foreach (var link in links)
             {
-                //var list = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => ((ElementViewModel)item.DataContext).Model.Id == link.InElement.Model.Id || ((ElementViewModel)item.DataContext).Model.Id == link.OutElement.Model.Id);
-                //var l = list.First()?.DataContext as LinkViewModel;
-                //if (l != null)
-                //{
-                //    return l;
-                //}
-                if(link.InElement.Model.Id == model.Model.Id || link.OutElement.Model.Id == model.Model.Id)
+
+                if (link.InElement.Model.Id == model.Model.Id || link.OutElement.Model.Id == model.Model.Id)
                 {
                     return link;
                 }
@@ -237,12 +225,13 @@ namespace NuSysApp.Util
         /// <returns></returns>
         private ElementModel GetNextOrPrevNode(ElementViewModel vm, bool reverse)
         {
-            if (vm?.LinkList == null) {
+            if (vm?.LinkList == null)
+            {
                 return null;
             }
             foreach (LinkElementController link in vm.LinkList)
             {
-                var linkModel = (LinkModel) link.Model;
+                var linkModel = (LinkModel)link.Model;
                 if (!linkModel.IsPresentationLink)
                     continue;
 
@@ -273,14 +262,14 @@ namespace NuSysApp.Util
             // Determines tag adjustment by getting the height of the tag container from the view
             double tagAdjustment = 0;
 
-            if(_currentNode == null)
+            if (_currentNode == null)
             {
                 return;
             }
             var view = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
                     item => ((ElementViewModel)item.DataContext).Model.Id == _currentNode.Id);
 
-            if(view.Count() == 0)
+            if (view.Count() == 0)
             {
                 return;
             }
@@ -319,7 +308,7 @@ namespace NuSysApp.Util
                     scale = scale * .55;
             }
 
-    
+
             else
             {
                 scale = sv.ActualHeight / nodeHeight;
@@ -332,42 +321,41 @@ namespace NuSysApp.Util
 
         }
 
-        private void AnimatePresentation(double scale, double x , double y, double translateX, double translateY)
-        {           
-            Debug.WriteLine("target scale: " + scale);
-            // Create a duration of 2 seconds.
-            Duration duration = new Duration(TimeSpan.FromSeconds(1));
+        /// <summary>
+        /// Animates the presentation by creating various DoubleAnimations, adding then to the storyboard,
+        /// and finally starting the story board
+        /// </summary>
+        /// <param name="scale"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="translateX"></param>
+        /// <param name="translateY"></param>
+        private void AnimatePresentation(double scale, double x, double y, double translateX, double translateY)
+        {
 
-            CompositionTarget.Rendering -= CompositionTargetOnRendering;
-
+            var duration = new Duration(TimeSpan.FromSeconds(1));
             _storyboard.Stop();
             _storyboard = new Storyboard();
-            _storyboard.Completed += OnAnimationCompleted;
+
 
             _storyboard.Duration = duration;
+
+            // Create a DoubleAnimation for each property to animate
             var scaleAnimationX = MakeAnimationElement(scale, "ScaleX", duration);
             var scaleAnimationY = MakeAnimationElement(scale, "ScaleY", duration);
             var centerAnimationX = MakeAnimationElement(x, "CenterX", duration);
             var centerAnimationY = MakeAnimationElement(y, "CenterY", duration);
             var translateAnimationX = MakeAnimationElement(translateX, "TranslateX", duration);
             var translateAnimationY = MakeAnimationElement(translateY, "TranslateY", duration);
+            var animationList = new List<DoubleAnimation>(new DoubleAnimation[] { scaleAnimationX, scaleAnimationY, centerAnimationX, centerAnimationY, translateAnimationX, translateAnimationY });
 
-            var inqTransform = SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Transform;
+            // Add each animation to the storyboard
+            foreach (var anim in animationList)
+            {
+                _storyboard.Children.Add(anim);
+            }
 
-            var scaleAnimationXPrezi = MakeAnimationElement(scale, "ScaleX", duration, inqTransform, true);
-            var scaleAnimationYPrezi = MakeAnimationElement(scale, "ScaleY", duration, inqTransform, true);
-            var centerAnimationXPrezi = MakeAnimationElement(x, "CenterX", duration, inqTransform, true);
-            var centerAnimationYPrezi = MakeAnimationElement(y, "CenterY", duration, inqTransform, true);
-            var translateAnimationXPrezi = MakeAnimationElement(translateX, "TranslateX", duration, inqTransform, true);
-            var translateAnimationYPrezi = MakeAnimationElement(translateY, "TranslateY", duration, inqTransform, true);
-
-            _storyboard.Children.Add(scaleAnimationX);
-            _storyboard.Children.Add(scaleAnimationY);
-            _storyboard.Children.Add(centerAnimationX);
-            _storyboard.Children.Add(centerAnimationY);
-            _storyboard.Children.Add(translateAnimationX);
-            _storyboard.Children.Add(translateAnimationY);
-
+            // Saves the final product as a composite transform and updates other transforms based on this
             var tt = new CompositeTransform
             {
                 TranslateX = translateX,
@@ -377,47 +365,32 @@ namespace NuSysApp.Util
                 CenterX = x,
                 CenterY = y
             };
-            t = new CompositeTransform
-            {
-                TranslateX = translateX,
-                TranslateY = translateY,
-                ScaleX = scale,
-                ScaleY = scale,
-                CenterX = x,
-                CenterY = y
-            };
-
-            SessionController.Instance.SessionView.FreeFormViewer.PanZoom.UpdateTempTransform(t);
-
-            /*
-            _storyboard.Children.Add(scaleAnimationXPrezi);
-            _storyboard.Children.Add(scaleAnimationYPrezi);
-            _storyboard.Children.Add(centerAnimationXPrezi);
-            _storyboard.Children.Add(centerAnimationYPrezi);
-            _storyboard.Children.Add(translateAnimationXPrezi);
-            _storyboard.Children.Add(translateAnimationYPrezi);
-            
-    */
-
-            // Make the Storyboard a resource.
-            //SessionController.Instance.SessionView.Resources.Add("PresentationStoryboard", _storyboard);
+            SessionController.Instance.SessionView.FreeFormViewer.PanZoom.UpdateTempTransform(tt);
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Transform = tt;
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Redraw();
 
             // Begin the animation.
             _storyboard.Begin();
-//            SessionController.Instance.SessionView.Resources.Remove("PresentationStoryboard");
 
-            
-         
-
-            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Transform = tt;
-            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Redraw();
         }
 
-        private DoubleAnimation MakeAnimationElement(double to, String name, Duration duration, CompositeTransform transform = null, bool dependent = false)
+        /// <summary>
+        /// Produces an animation element to animate a certain property transition using a storyboard
+        /// </summary>
+        /// <param name="to"></param>
+        /// <param name="name"></param>
+        /// <param name="duration"></param>
+        /// <param name="transform"></param>
+        /// <param name="dependent"></param>
+        /// <returns></returns>
+        private DoubleAnimation MakeAnimationElement(double to, String name, Duration duration,
+            CompositeTransform transform = null, bool dependent = false)
         {
 
             if (transform == null)
+            {
                 transform = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
+            }
 
             var toReturn = new DoubleAnimation();
             toReturn.EnableDependentAnimation = true;
@@ -429,9 +402,14 @@ namespace NuSysApp.Util
             return toReturn;
         }
 
+        /// <summary>
+        /// Produces and returns a copy of the passed in composite transform
+        /// </summary>
+        /// <param name="transform"></param>
+        /// <returns></returns>
         private CompositeTransform MakeShallowCopy(CompositeTransform transform)
         {
-            CompositeTransform newTransform = new CompositeTransform();
+            var newTransform = new CompositeTransform();
             newTransform.CenterX = transform.CenterX;
             newTransform.CenterY = transform.CenterY;
             newTransform.ScaleX = transform.ScaleX;
@@ -442,6 +420,22 @@ namespace NuSysApp.Util
             newTransform.SkewX = transform.SkewX;
             newTransform.SkewY = transform.SkewY;
             return newTransform;
+        }
+
+        /// <summary>
+        /// Removes all previously attached event listeners and object references, frees previously allocated memory
+        /// </summary>
+        public void Dispose()
+        {
+            _previousNode = null;
+            _nextNode = null;
+            _currentNode = null;
+            _originalTransform = null;
+            _timer = null;
+            _storyboard = null;
+            _backwardColor = null;
+            _forwardColor = null;
+            _linksUsed = null;
         }
     }
 }
