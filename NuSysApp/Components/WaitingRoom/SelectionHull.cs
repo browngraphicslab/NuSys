@@ -13,7 +13,7 @@ using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
-    public class SelectionHull
+    public class SelectionHull : IDisposable
     {
         private List<Point> _points;
         private int _min;
@@ -31,55 +31,65 @@ namespace NuSysApp
         /// NOTE!!!!!!!!!!!!
         /// If you want to visually confirm that addSelectionHull lasso works, remove the comments on the
         /// last 2 lines of the addSelectionHull() method
+        /// 
+        /// UPDATE: Whoever was the last person to work on this, please chime and and tell everyone
+        ///  what this class is being used for now! Not sure why the constructor was removed and what
+        ///  the compute method is doing. Thanks. -Z
         /// </summary>
         public SelectionHull()
         {
         }
 
+        /// <summary>
+        /// This will always return 0. Not sure what exactly is going on here.
+        /// </summary>
+        /// <param name="lasso"></param>
+        /// <param name="mainCanvas"></param>
+        /// <returns></returns>
         public int Compute(Polyline lasso, Canvas mainCanvas)
         {
             // handles bad point input
             if (lasso.Points.Count < 5)
                 return 0;
 
-            executeHousekeepingTasks(lasso, mainCanvas);
-            return executeHullTasks();
+            ExecuteHousekeepingTasks(lasso, mainCanvas);
+            return ExecuteHullTasks();
         }
 
         /// <summary>
         /// "Housekeeping tasks" - i.e. defining instance variables, deselecting all other nodes on the canvas, clearing artifact 
         /// UI elements from the workspace
         /// </summary>
-        private void executeHousekeepingTasks(Polyline lasso, Canvas mainCanvas)
+        private void ExecuteHousekeepingTasks(Polyline lasso, Canvas mainCanvas)
         {
             _mainCanvas = mainCanvas;
             SessionController.Instance.ActiveFreeFormViewer.DeselectAll();
             _points = new List<Point>(lasso.Points);
-            cleanMainCanvas();
+            CleanMainCanvas();
         }
 
         /// <summary>
         /// Executes hull tasks, i.e. sorting points and figuring out the hull. 
         /// </summary>
-        private int executeHullTasks()
+        private int ExecuteHullTasks()
         {
-            findBottomLeftMostPoint();
-            placeBottomLeftMostPointAtFirstPosition();
-            sortPoints();
-            figureOutConvexHull();
+            FindBottomLeftMostPoint();
+            PlaceBottomLeftMostPointAtFirstPosition();
+            SortPoints();
+            FigureOutConvexHull();
 
             // only make a hull if we have some points
             if (_hullPoints != null)
             {
-                addSelectionHull();
-                return selectContainedNodes(SessionController.Instance.ActiveFreeFormViewer.AllContent);
+                AddSelectionHull();
+                return SelectContainedNodes(SessionController.Instance.ActiveFreeFormViewer.AllContent);
             }
 
             return 0;
         }
 
         // Cleans artifact ui elements from the main canvas (i.e. the lasso polyline, any extraneous leftover shapes, etc.)
-        private void cleanMainCanvas()
+        private void CleanMainCanvas()
         {
             List<UIElement> toRemove = new List<UIElement>();
 
@@ -104,7 +114,7 @@ namespace NuSysApp
         }
 
         // finds the bottom-left most point by looping thru all of the points
-        private void findBottomLeftMostPoint()
+        private void FindBottomLeftMostPoint()
         {
             double yMin = _points[0].Y;
             _min = 0;
@@ -123,32 +133,32 @@ namespace NuSysApp
         }
 
         // swaps the bottom left point to be the first position
-        private void placeBottomLeftMostPointAtFirstPosition()
+        private void PlaceBottomLeftMostPointAtFirstPosition()
         {
-            this.swap(_points[0], _points[_min]);
+            this.Swap(_points[0], _points[_min]);
             _rootPoint = _points[0];
         }
 
         // swaps two points in the points list
-        private void swap(Point one, Point two)
+        private void Swap(Point one, Point two)
         {
             int indexOne = _points.IndexOf(one);
             int indexTwo = _points.IndexOf(two);
 
-            Point temp = one;
+            var temp = one;
             _points[indexOne] = _points[indexTwo];
             _points[indexTwo] = temp;
 
         }
 
         // sorts all of the points by polar angle in counterclockwise order around the bottom-left-most point
-        private void sortPoints()
+        private void SortPoints()
         {
             _sortedPoints = new SortedDictionary<double, Point>();
             for (int i = 0; i < _points.Count(); i++)
             {
-                Point point = _points[i];
-                double quant = quantifyAngle(point);
+                var point = _points[i];
+                double quant = QuantifyAngle(point);
 
                 // If the list doesn't have a pointat that angle yet, then add it
                 if (!_sortedPoints.ContainsKey(quant))
@@ -161,9 +171,9 @@ namespace NuSysApp
                 else if (_sortedPoints.ContainsKey(quant) && _sortedPoints[quant] != _rootPoint)
                 {
                     // distance of point already in the dictionary
-                    double d1 = distanceToRootPoint(_sortedPoints[quant]);
+                    double d1 = DistanceToRootPoint(_sortedPoints[quant]);
                     // distance of the new point to the root point
-                    double d2 = distanceToRootPoint(point);
+                    double d2 = DistanceToRootPoint(point);
 
                     // if the new point is farther away than the point already in the dictionary
                     if (d2 > d1)
@@ -176,20 +186,20 @@ namespace NuSysApp
         }
 
         // quantifies the polar angle based on the slope. For example, a quanitification of negative infinity would be an angle of 0, wherease a quantification of positive infinity would be an angle of 180 degrees
-        private double quantifyAngle(Point point)
+        private double QuantifyAngle(Point point)
         {
             double quant = -(point.X - _rootPoint.X) / (_rootPoint.Y - point.Y);
             return quant;
         }
 
         // returns square of distance to the root point
-        private double distanceToRootPoint(Point point)
+        private double DistanceToRootPoint(Point point)
         {
             return (point.X - _rootPoint.X) * (point.X - _rootPoint.X) + (point.Y - _rootPoint.Y) * (point.Y - _rootPoint.Y);
         }
 
         // figures out the points in the convex hull and stores it as a list
-        private void figureOutConvexHull()
+        private void FigureOutConvexHull()
         {
             List<Point> sortedPoints = new List<Point>(_sortedPoints.Values);
             if (sortedPoints.Count < 5)
@@ -204,7 +214,7 @@ namespace NuSysApp
             for (int i = 3; i < sortedPoints.Count(); i++)
             {
                 // keep removing the top while the angle formed by points next to top, top, and the point at index i makes a non-left turn
-                while (orientation(nextToTop(), _hullPoints.Peek(), sortedPoints[i]) != 2)
+                while (Orientation(NextToTop(), _hullPoints.Peek(), sortedPoints[i]) != 2)
                 {
                     if (_hullPoints.Count() < 3) return;
                     _hullPoints.Pop();
@@ -215,17 +225,17 @@ namespace NuSysApp
         }
 
         // returns the point right below the top-most point in the hull stack
-        private Point nextToTop()
+        private Point NextToTop()
         {
-            Point top = _hullPoints.Pop();
-            Point nextToTop = _hullPoints.Peek();
+            var top = _hullPoints.Pop();
+            var nextToTop = _hullPoints.Peek();
             _hullPoints.Push(top);
             return nextToTop;
         }
 
         // finds the orientation of the triplet (p,q,r)
         // returns 0 if collinear, 1 of clockwise, 2 if counterclockwise
-        private int orientation(Point r, Point q, Point p)
+        private int Orientation(Point r, Point q, Point p)
         {
             double val = (q.Y - p.Y) * (r.X - q.X) - (q.X - p.X) * (r.Y - q.Y);
             if (val == 0)
@@ -247,7 +257,7 @@ namespace NuSysApp
         /// The _visualHull represents the selection hull in local space, and you can add the visual hull to the main canvas to actually
         /// see the hull you have drawn.
         /// </summary>
-        private void addSelectionHull()
+        private void AddSelectionHull()
         {
             _hull = new Polygon();
             _visualHull = new Polygon();
@@ -255,7 +265,7 @@ namespace NuSysApp
             // give both hulls the proper points
             while (_hullPoints.Count() > 0)
             {
-                Point point = _hullPoints.Pop();
+                var point = _hullPoints.Pop();
                 _visualHull.Points.Add(point);
                 _hull.Points.Add(point);
             }
@@ -278,14 +288,14 @@ namespace NuSysApp
         }
 
         // selects contained atoms by figuring out the atoms in the selection hull
-        private int selectContainedNodes(List<ElementViewModel> atoms)
+        private int SelectContainedNodes(List<ElementViewModel> atoms)
         {
             var count = 0;
             foreach (var atom in atoms)
             {
-                foreach (Point refPoint in atom.ReferencePoints)
+                foreach (var refPoint in atom.ReferencePoints)
                 {
-                    if (this.isPointInHull(refPoint))
+                    if (this.IsPointInHull(refPoint))
                     {
                         SessionController.Instance.ActiveFreeFormViewer.AddSelection(atom);
                         count++;
@@ -297,10 +307,10 @@ namespace NuSysApp
             return count;
         }
 
-        private bool isPointInHull(Point testPoint)
+        private bool IsPointInHull(Point testPoint)
         {
             bool result = false;
-            PointCollection polygon = _hull.Points;
+            var polygon = _hull.Points;
 
             int j = polygon.Count() - 1;
             for (int i = 0; i < polygon.Count(); i++) //loop thru all points in the convex hull
@@ -317,6 +327,20 @@ namespace NuSysApp
                 j = i;
             }
             return result;
+        }
+
+        /// <summary>
+        /// Removes all previously attached event listeners and object references, frees previously allocated memory
+        /// </summary>
+        public void Dispose()
+        {
+            _points = null;
+            _sortedPoints = null;
+            _hullPoints = null;
+            _hull = null;
+            _visualHull = null;
+            _mainCanvas = null;
+
         }
     }
 }
