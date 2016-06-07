@@ -5,6 +5,7 @@
     xmlns:local="using:NuSysApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="using:NuSysApp.Components.Viewers.Detail.Views"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400"
@@ -36,12 +37,14 @@
                 <RowDefinition Height="100"></RowDefinition>
             </Grid.RowDefinitions>
 
-            
+            <!-- NOT USED!!!!! -->
             <TextBlock Visibility="Collapsed" Grid.Row="0" x:Name="metadataButton" HorizontalAlignment="Right" Text="MetaData" Foreground="{StaticResource darkforeground}" FontSize="24" Margin="0,0,25,0" Tapped="metaData_OnTapped"/>
-            
+
+            <!-- NOT USED!!!!! -->
             <Border Grid.Row="0" Visibility="Collapsed" x:Name="exitButton" HorizontalAlignment="Right" VerticalAlignment="Top" Tapped="closeDV_OnTapped" Padding="5,5,5,5">
                 <TextBlock Text="x" Foreground="White" FontSize="24"/>
             </Border>
+           
             <Border Grid.Row="0" x:Name="exitButton2" HorizontalAlignment="Left" VerticalAlignment="Top" Tapped="closeDV_OnTapped"  Padding="5,0,5,0">
                 <TextBlock Text="X" Foreground="White" FontSize="32"/>
             </Border>
@@ -53,7 +56,19 @@
                 <Rectangle HorizontalAlignment="Stretch" Fill="{StaticResource darkforeground}" Height="2"/>
             </StackPanel>
 
-            <ContentPresenter Grid.Row="2" x:Name ="nodeContent" Content="{Binding View}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></ContentPresenter>
+            <Pivot x:Name="xRootPivot" Grid.Row="2">
+                <PivotItem Header="Home">
+                    <!--Pivot content goes here-->
+                    <ContentPresenter Grid.Row="2" x:Name ="nodeContent" Content="{Binding View}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></ContentPresenter>
+                </PivotItem>
+                <PivotItem Header="Metadata Editor">
+                    <!--Pivot content goes here-->
+                    <views:MetadataEditorView></views:MetadataEditorView>
+                
+                </PivotItem>
+
+            </Pivot>
+            
             <Grid Grid.Row="3" x:Name="TagContainer"  HorizontalAlignment="Stretch" >
                 <Grid.RowDefinitions>
                     <RowDefinition></RowDefinition>

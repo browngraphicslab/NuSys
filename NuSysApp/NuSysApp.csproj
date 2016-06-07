@@ -254,8 +254,12 @@
     <Compile Include="Components\Misc\TextInputBlock.xaml.cs">
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\Entry.cs" />
     <Compile Include="Components\Viewers\Detail\Views\ElementCollectionDetailView.xaml.cs">
       <DependentUpon>ElementCollectionDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\MetadataEditorView.xaml.cs">
+      <DependentUpon>MetadataEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\InkStorage.cs" />
     <Compile Include="Components\Viewers\FreeForm\InkWrapper.cs" />
@@ -719,6 +723,10 @@
     <Page Include="Components\Viewers\Detail\Views\LinkDetailView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\MetadataEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\Detail\Views\PowerpointDetailView.xaml">
       <Generator>MSBuild:Compile</Generator>
