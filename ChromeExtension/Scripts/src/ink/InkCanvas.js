@@ -1,4 +1,3 @@
-/// <reference path="brush/BrushStroke.ts"/>
 var InkCanvas = (function () {
     function InkCanvas(canvas) {
         this._canvas = canvas;
@@ -55,7 +54,6 @@ var InkCanvas = (function () {
             return true;
         }
         return false;
-        console.log("couldn't remove element");
     };
     InkCanvas.prototype.update = function () {
         this._scrollOffset = { x: window.pageXOffset, y: window.pageYOffset };

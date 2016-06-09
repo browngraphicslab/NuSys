@@ -54,16 +54,16 @@ namespace NuSysApp
             //waitingroomanimation.Begin();
 
             //TelemetryConfiguration.Active.TelemetryChannel.DeveloperMode = true;
-          //  App.TelemetryClient.Context.Device.
+            //  App.TelemetryClient.Context.Device.
 
             App.TelemetryClient.InstrumentationKey = "8f830614-4100-43cd-a0c9-5b94ada7b3f6";
             App.TelemetryClient.Context.InstrumentationKey = "8f830614-4100-43cd-a0c9-5b94ada7b3f6";
-           
+
             App.TelemetryClient.TrackEvent("woo", new Dictionary<string, string>());
 
-          //  Telemetry.Init();
-          //  Telemetry.TrackEvent("startup");
-            
+            //  Telemetry.Init();
+            //  Telemetry.TrackEvent("startup");
+
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
 
             ServerName = TEST_LOCAL_BOOLEAN ? "localhost:54764" : "nusysrepo.azurewebsites.net";
@@ -75,7 +75,7 @@ namespace NuSysApp
                 ServerName = ServerNameText.Text;
                 Init();
             };
-            
+
             Init();
 
             SlideOutLogin.Completed += SlideOutLoginComplete;
@@ -113,11 +113,11 @@ namespace NuSysApp
                 var ii = new List<CollectionTextBox>();
                 foreach (var s in list)
                 {
-                    Dictionary<string, object> dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(s,settings);
+                    Dictionary<string, object> dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(s, settings);
                     var box = new CollectionTextBox();
-                    box.ID = dict.ContainsKey("id") ? (string) dict["id"] : null;//todo do error handinling since this shouldnt be null
+                    box.ID = dict.ContainsKey("id") ? (string)dict["id"] : null;//todo do error handinling since this shouldnt be null
                     if (dict.ContainsKey("title") && dict["title"] != null && dict["title"] != "")
-                        box.Text = (string) dict["title"];
+                        box.Text = (string)dict["title"];
                     else
                         box.Text = "Unnamed Collection";
                     //List.Items.Add(box);
@@ -125,16 +125,16 @@ namespace NuSysApp
                     _preloadedIDs.Add(box.ID);
                 }
 
-                ii.Sort( (a,b) => a.Text.CompareTo(b.Text));
+                ii.Sort((a, b) => a.Text.CompareTo(b.Text));
                 foreach (var i in ii)
                 {
                     List.Items.Add(i);
                 }
-                
-               
+
+
             }
 
-          
+
             catch (Exception e)
             {
                 Debug.WriteLine("not a valid server");
@@ -144,12 +144,12 @@ namespace NuSysApp
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof (SessionView));
+            this.Frame.Navigate(typeof(SessionView));
         }
         private async void NewWorkspaceOnClick(object sender, RoutedEventArgs e)
         {
             var name = NewWorkspaceName.Text;
-            var request = new CreateNewLibraryElementRequest(SessionController.Instance.GenerateId(),null,ElementType.Collection,name);
+            var request = new CreateNewLibraryElementRequest(SessionController.Instance.GenerateId(), null, ElementType.Collection, name);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             await Task.Delay(1000);
             Init();
@@ -161,7 +161,7 @@ namespace NuSysApp
                 SessionController.Instance.ContentController.OnNewContent -= ContentControllerOnOnNewContent;
 
                 var item = List.SelectedItems.First();
-                var id = ((CollectionTextBox) item).ID;
+                var id = ((CollectionTextBox)item).ID;
                 _firstLoadList = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(id);
                 InitialWorkspaceId = id;
                 this.Frame.Navigate(typeof(SessionView));
@@ -288,8 +288,8 @@ namespace NuSysApp
                                 var id = (string)kvp.Value["id"];
                                 //var element = new LibraryElementModel(kvp.Value);
 
-
                                 bool favorited = false;
+                                Dictionary<String, Tuple<string, Boolean>> metadata = new Dictionary<string, Tuple<string, Boolean>>();
                                 var dict = kvp.Value;
                                 string title = null;
                                 ElementType type = ElementType.Text;
@@ -304,6 +304,16 @@ namespace NuSysApp
                                 {
                                     favorited = true;
                                 }
+                                if (dict.ContainsKey("metadata"))
+                                {
+
+                                    if (dict["metadata"] != null)
+                                    {
+                                        metadata = JsonConvert.DeserializeObject<Dictionary<string, Tuple<string, Boolean>>>(dict["metadata"].ToString());
+                                    }
+
+                                }
+
                                 if (dict.ContainsKey("creator_user_id"))
                                 {
                                     creator = dict["creator_user_id"].ToString();
@@ -312,6 +322,8 @@ namespace NuSysApp
                                 {
                                     title = (string)dict["title"]; // title
                                 }
+
+
                                 if (dict.ContainsKey("type"))
                                 {
                                     try
@@ -327,11 +339,11 @@ namespace NuSysApp
                                 LibraryElementModel element;
                                 if (type == ElementType.Collection)
                                 {
-                                    element = new CollectionLibraryElementModel(id, title, favorited);
+                                    element = new CollectionLibraryElementModel(id, metadata, title, favorited);
                                 }
                                 else
                                 {
-                                    element = new LibraryElementModel(id, type, title, favorited);
+                                    element = new LibraryElementModel(id, type, metadata, title, favorited);
                                 }
                                 element.Creator = creator;
                                 element.Timestamp = timestamp;
@@ -354,7 +366,7 @@ namespace NuSysApp
                     catch (ServerClient.IncomingDataReaderException loginException)
                     {
                         loggedInText.Text = "Log in failed!";
-                   //     throw new Exception("Your account is probably already logged in");
+                        //     throw new Exception("Your account is probably already logged in");
                     }
                 }
                 else

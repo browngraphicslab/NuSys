@@ -8,6 +8,7 @@ using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace NuSysApp
 {
@@ -17,10 +18,12 @@ namespace NuSysApp
 
         public HashSet<string> Keywords { get; set; }
 
+
         public static LibraryElementModel LitElement;
 
         public delegate void OnLoadedEventHandler();
-        public event OnLoadedEventHandler OnLoaded {
+        public event OnLoadedEventHandler OnLoaded
+        {
             add
             {
                 _onLoaded += value;
@@ -51,12 +54,17 @@ namespace NuSysApp
 
         public delegate void LightupContentEventHandler(LibraryElementModel sender, bool lightup);
         public event LightupContentEventHandler OnLightupContent;
-        
+
         public delegate void IsSearchedEventHandler(LibraryElementModel sender, bool lightup);
         public event IsSearchedEventHandler OnSearched;
 
         public delegate void ElementFavoritedEventHandler(LibraryElementModel sender, bool favorited);
         public event ElementFavoritedEventHandler OnFavorited;
+
+        public delegate void ElementMetadataChangedEventHandler(LibraryElementModel sender);
+        public event ElementMetadataChangedEventHandler OnMetadataChanged;
+
+
 
         public ElementType Type { get; set; }
 
@@ -72,23 +80,39 @@ namespace NuSysApp
         }
 
         public string Id { get; set; }
-        public string Title {
+        public string Title
+        {
             get { return _title; }
             private set
             {
                 _title = value;
                 RaisePropertyChanged("Title");
                 OnTitleChanged?.Invoke(this, _title);
-            } 
+            }
         }
+
+        public Dictionary<string, Tuple<string, Boolean>> Metadata
+        {
+            get
+            {
+                return _metadata;
+            }
+            set
+            {
+                _metadata = value;
+                OnMetadataChanged?.Invoke(this);
+            }
+        }
+
         public string Creator { set; get; }
         public string Timestamp { get; set; }//TODO maybe put in a timestamp, maybe remove the field from the library
         private string _title;
 
-        public Dictionary<string,object> ViewUtilBucket = new Dictionary<string, object>();
+        public Dictionary<string, object> ViewUtilBucket = new Dictionary<string, object>();
         private string _data;
         private bool _loading = false;
-        public LibraryElementModel(string id, ElementType elementType, string contentName = null, bool favorited = false)
+        private Dictionary<string, Tuple<string,Boolean>> _metadata;
+        public LibraryElementModel(string id, ElementType elementType, Dictionary<string, Tuple<string,Boolean>> metadata = null, string contentName = null, bool favorited = false)
         {
             Data = null;
             Id = id;
@@ -97,8 +121,52 @@ namespace NuSysApp
             Loaded = false;
             Favorited = favorited;
             Keywords = new HashSet<string>();
+            //Metadata = new Dictionary<string, string>();
+            Metadata = metadata;
             SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
         }
+
+        public void AddMetadata(MetadataEntry entry)
+        {
+            //Keys should be unique; values obviously don't have to be.
+            if (Metadata.ContainsKey(entry.Key) || string.IsNullOrEmpty(entry.Value) || string.IsNullOrEmpty(entry.Value) || string.IsNullOrWhiteSpace(entry.Key) || string.IsNullOrWhiteSpace(entry.Value))
+                return;
+
+            //Metadata[k] = v;
+            Metadata.Add(entry.Key, new Tuple<string, bool>(entry.Value, entry.Mutability));
+            Task.Run(async delegate
+            {
+                JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+
+                var m = new Message();
+                m["contentId"] = Id;
+                m["metadata"] = JsonConvert.SerializeObject(Metadata, settings);
+                var request = new ChangeContentRequest(m);
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            });
+            //OnMetadataChanged?.Invoke(this);
+        }
+
+        public void RemoveMetadata(String k)
+        {
+            if (string.IsNullOrEmpty(k) || !Metadata.ContainsKey(k) || string.IsNullOrWhiteSpace(k))
+                return;
+
+            Metadata.Remove(k);
+
+            Task.Run(async delegate
+            {
+                var m = new Message();
+                m["contentId"] = Id;
+                m["metadata"] = JsonConvert.SerializeObject(Metadata);
+                var request = new ChangeContentRequest(m);
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            });
+
+            //OnMetadataChanged?.Invoke(this);
+
+        }
+
         public void FireLightupContent(bool lightup)
         {
             if (LitElement != null && LitElement != this)
@@ -113,7 +181,7 @@ namespace NuSysApp
             {
                 LitElement = null;
             }
-            OnLightupContent?.Invoke(this,lightup);
+            OnLightupContent?.Invoke(this, lightup);
         }
         protected virtual void OnSessionControllerEnterNewCollection()
         {
@@ -132,7 +200,7 @@ namespace NuSysApp
                 }
             }
             ds = OnTitleChanged?.GetInvocationList();
-            if(ds != null)
+            if (ds != null)
             {
                 foreach (var d in ds)
                 {
@@ -222,7 +290,7 @@ namespace NuSysApp
                 });
             }
             Title = title;
-          //  OnTitleChanged?.Invoke(this, title);
+            //  OnTitleChanged?.Invoke(this, title);
         }
         public void SetContentData(ElementViewModel originalSenderViewModel, string data)
         {
@@ -230,7 +298,7 @@ namespace NuSysApp
 
             Task.Run(async delegate
             {
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(Id,data));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(Id, data));
             });
             ViewUtilBucket = new Dictionary<string, object>();
             OnContentChanged?.Invoke(originalSenderViewModel);
@@ -244,10 +312,11 @@ namespace NuSysApp
         {
             if (!String.IsNullOrEmpty(Timestamp))
             {
-                try {
+                try
+                {
                     return DateTime.Parse(Timestamp).Ticks;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     return 0;
                 }

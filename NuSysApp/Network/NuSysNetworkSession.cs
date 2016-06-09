@@ -93,13 +93,14 @@ namespace NuSysApp
             await request.CheckOutgoingRequest();
             await ProcessIncomingSystemRequest(request.GetFinalMessage());
         }
-        private async void ContentAvailable(Dictionary<string,object> dict)
+        private async void ContentAvailable(Dictionary<string, object> dict)
         {
             if (dict.ContainsKey("id"))
             {
                 var id = (string)dict["id"];
                 string title = null;
                 ElementType type = ElementType.Text;
+                Dictionary<String, Tuple<string, Boolean>> metadata = new Dictionary<String, Tuple<string, Boolean>>();
                 if (dict.ContainsKey("title"))
                 {
                     title = (string)dict["title"];
@@ -107,6 +108,10 @@ namespace NuSysApp
                 if (dict.ContainsKey("type"))
                 {
                     type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
+                }
+                if (dict.ContainsKey("metadata"))
+                {
+                    metadata = (Dictionary<String, Tuple<string, Boolean>>)dict["metadata"];
                 }
 
                 UITask.Run(async delegate {
@@ -120,12 +125,12 @@ namespace NuSysApp
                         if (type == ElementType.Collection)
                         {
                             SessionController.Instance.ContentController.Add(
-                                new CollectionLibraryElementModel(id, title));
+                                new CollectionLibraryElementModel(id, metadata, title));
                         }
                         else
                         {
                             SessionController.Instance.ContentController.Add(
-                                new LibraryElementModel(id, type, title));
+                                new LibraryElementModel(id, type, metadata, title));
                         }
                     }
                     if (ServerClient.NeededLibraryDataIDs.Contains(id))
@@ -156,8 +161,8 @@ namespace NuSysApp
                 await ProcessIncomingRequest(m);
             }
             catch (Exception)
-            {   
-                
+            {
+
             }
         }
         private async Task ProcessIncomingRequest(Message message)
@@ -170,9 +175,9 @@ namespace NuSysApp
             }
             try
             {
-                requestType = (Request.RequestType) Enum.Parse(typeof (Request.RequestType), message.GetString("request_type"));
+                requestType = (Request.RequestType)Enum.Parse(typeof(Request.RequestType), message.GetString("request_type"));
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new InvalidRequestTypeException();
             }
@@ -332,14 +337,14 @@ namespace NuSysApp
             return await _serverClient.DuplicateLibraryElement(libraryElementId);
         }
 
-        public async Task<Dictionary<string,Dictionary<string,object>>> GetAllLibraryElements()
+        public async Task<Dictionary<string, Dictionary<string, object>>> GetAllLibraryElements()
         {
             return await _serverClient.GetRepo();
         }
 
         public async Task Login(string username, string password)
         {
-            
+
         }
     }
     public class NoRequestTypeException : Exception

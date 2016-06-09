@@ -29,8 +29,16 @@ namespace NuSysApp
 
         public DetailViewerView()
         {
-            InitializeComponent();
+
+
+            this.InitializeComponent();
+            //NICOLAS:
+            //xMetadataEditorView = (MetadataEditorView)GetTemplateChild("xMetadataEditorView");
+            xMetadataEditorView = (MetadataEditorView) FindName("xMetadataEditorView");
+            xMetadataEditorView.DetailViewerView = this;
+
             Visibility = Visibility.Collapsed;
+
             //NewTagBox.Activate();
 
 
@@ -148,12 +156,20 @@ namespace NuSysApp
                 SuggestButton.Visibility = Visibility.Collapsed;
             }
 
+
+            xMetadataEditorView.Update();
+            
+
+
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
 
             var vm = (DetailViewerViewModel) DataContext;
+
+
+
             Tags.ItemsSource = vm.Tags;
 
         }
@@ -172,6 +188,8 @@ namespace NuSysApp
             var vm = (DetailViewerViewModel)DataContext;
             vm.CurrentElementController.LibraryElementModel.SetTitle(TitleBox.Text);
             //vm.LibraryElementModelOnOnTitleChanged(this, TitleBox.Text);
+            
+
         }
 
         private async void AddTagButton_OnClick(object sender, RoutedEventArgs e)

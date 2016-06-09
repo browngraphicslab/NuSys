@@ -1,13 +1,7 @@
-// Copyright 2013 Basarat Ali Syed. All Rights Reserved.
-//
-// Licensed under MIT open source license http://opensource.org/licenses/MIT
-//
-// Orginal javascript code was by Mauricio Santos
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var collections;
 (function (collections) {

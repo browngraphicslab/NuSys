@@ -1,4 +1,3 @@
-/// <reference path="../util/Rectangle.ts"/>
 var Stroke = (function () {
     function Stroke() {
         this.documentOffsetX = 0;
