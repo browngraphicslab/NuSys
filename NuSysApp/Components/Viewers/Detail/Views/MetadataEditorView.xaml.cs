@@ -22,56 +22,71 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
+    /// <summary>
+    /// Defines back end logic for search, sort, and the list view in the metadata editor
+    /// </summary>
     public sealed partial class MetadataEditorView : UserControl
     {
 
-        private ObservableCollection<MetadataEntry> MetadataCollection;
+        private ObservableCollection<MetadataEntry> MetadataCollection { get; set; }
         private List<MetadataEntry> _orgList;
         // important for edge case, where your pointer goes over the button first instead of the whole grid
         private bool _edgeCaseButtonExited;
+        private bool _sortedDescending;
 
-        public DetailViewerView DetailViewerView { set; get; } 
+        public DetailViewerView DetailViewerView { set; get; }
 
+
+        /// <summary>
+        /// The observable collection will contain displayed entries, 
+        /// and _orgList will contain the original entries
+        /// </summary>
         public MetadataEditorView()
         {
             this.InitializeComponent();
-            //MetadataCollection=new ObservableCollection<Entry>(); //extract it from the LibraryElementModel
-            //sets the listener
-
             MetadataCollection = new ObservableCollection<MetadataEntry>();
             _orgList = new List<MetadataEntry>();
+            _sortedDescending = false;
         }
 
+        /// <summary>
+        /// Updates the MetadataCollection (the data displayed in the ListView) based
+        /// on the specific LibraryElement being investigated. The library element's 
+        /// metadata is obtained from the DetailViewer.
+        /// </summary>
         public void Update()
         {
-            //extract dictionary from libraryelementmodel.
-            //convert dictionary to observablecollection
-            //update Metadata observable collection
+            // Clear all previous lists/collections
+            MetadataCollection.Clear();
+            _orgList.Clear();
 
+            // Extract dictionary from libraryelementmodel.
             var vm = (DetailViewerViewModel)DetailViewerView.DataContext;
             var dict = vm.CurrentElementController.LibraryElementModel.Metadata;
 
-            //MetadataCollection = new ObservableCollection<Entry>();
-            MetadataCollection.Clear();
-            _orgList.Clear();
-            foreach (var key in dict.Keys) {
+            // Convert dictionary entries to MetadataEntries, and add to MetadataCollection
+            foreach (var key in dict.Keys)
+            {
+
+                // Create new entry from the dictionary information
                 var entry = new MetadataEntry(key, dict[key].Item1, dict[key].Item2);
                 _orgList.Add(entry);
                 xField.Text = "";
                 xValue.Text = "";
+
+                // If showing immutable data, add all entries
                 if (xToggleSwitch.IsOn)
                 {
                     MetadataCollection.Add(entry);
                 }
+
+                // Otherwise we only show mutable data
                 else if (entry.Mutability)
                 {
                     MetadataCollection.Add(entry);
                 }
 
             }
-
-          
-
         }
 
 
@@ -83,9 +98,7 @@ namespace NuSysApp
         private void ToggleSwitch_OnToggled(object sender, RoutedEventArgs e)
         {
             this.Update();
-           
         }
-
 
         /// <summary>
         /// Adds a new entry and resets text when the "insert" button is clicked
@@ -98,50 +111,39 @@ namespace NuSysApp
             var key = xField.Text;
             var val = xValue.Text;
 
+            // Obtains metadata dictionary, and uses it to handle bad input
             var vm = (DetailViewerViewModel)DetailViewerView.DataContext;
             var metadata = vm.CurrentElementController.LibraryElementModel.Metadata;
-
-
-            if (metadata.ContainsKey(key) || string.IsNullOrEmpty(val) || string.IsNullOrEmpty(val) || string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(val))
+            if (metadata.ContainsKey(key) || string.IsNullOrEmpty(key) || string.IsNullOrEmpty(val) || string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(val))
                 return;
 
-            
+
             var entry = new MetadataEntry(xField.Text, xValue.Text, true);
 
-            if (xField.Text == "mutabletest")
-                entry = new MetadataEntry(xField.Text, xValue.Text, false);
+            // Adds metadata entry to the library element and updates the listview
             vm.CurrentElementController.LibraryElementModel.AddMetadata(entry);
-
             this.Update();
             xField.Text = "";
             xValue.Text = "";
-
-            
-            
         }
 
 
         /// <summary>
-        /// Deletes the entry associated with the delete button clicked.
+        /// Deletes the metadata associated with the delete button clicked.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void XDeleteButton_OnClick(object sender, RoutedEventArgs e)
         {
+            // Finds the MetadataEntry, then uses that to delete the metadata from the lib element
             var button = sender as Button;
             var grid = button.GetVisualParent() as Grid;
             var entry = grid.DataContext as MetadataEntry;
-            
-
-
-
             var vm = (DetailViewerViewModel)DetailViewerView.DataContext;
-            var metadata = vm.CurrentElementController.LibraryElementModel.Metadata;
-
             vm.CurrentElementController.LibraryElementModel.RemoveMetadata(entry.Key);
 
+            // Finally, updates the ListView to reflect the changes
             this.Update();
-
         }
 
 
@@ -157,7 +159,7 @@ namespace NuSysApp
             var entry = grid.DataContext as MetadataEntry;
 
             // If the entry is mutable, toggle the visibility of the delete button
-            if (entry.Mutability)
+            if (entry != null && entry.Mutability)
             {
                 this.ToggleDeleteButtonVisibility(grid);
             }
@@ -211,19 +213,22 @@ namespace NuSysApp
         {
             var button = sender as Button;
             List<MetadataEntry> lst = new List<MetadataEntry>(MetadataCollection.OrderBy(a => a.Key));
-            if (button.Content.Equals("v"))
-            {
 
+            // CHANGE THIS WHEN YOU GET AN ICON
+            if (!_sortedDescending)
+            {
                 button.Content = "^";
+                _sortedDescending = true;
             }
             else
             {
                 lst.Reverse();
+                _sortedDescending = false;
                 button.Content = "v";
             }
 
+            // Clear old collection, re-add items in sorted order
             MetadataCollection.Clear();
-
             foreach (var entry in lst)
             {
                 MetadataCollection.Add(entry);
@@ -239,37 +244,40 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void SearchBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
+            // Extract the text, and revert list to normal if the box is empty
             var box = sender as TextBox;
             var text = box.Text;
-            var keyResult = new HashSet<MetadataEntry>();
-            var valResult = new HashSet<MetadataEntry>();
-
-            if (xToggleSwitch.IsOn)
-            {
-                keyResult = new HashSet<MetadataEntry>(_orgList.Where(w => this.StringContains(w.Key, text, StringComparison.OrdinalIgnoreCase)));
-                valResult = new HashSet<MetadataEntry>(_orgList.Where(w => this.StringContains(w.Value, text, StringComparison.OrdinalIgnoreCase)));
-            }
-            else
-            {
-                keyResult = new HashSet<MetadataEntry>(_orgList.Where(w => (this.StringContains(w.Key, text, StringComparison.OrdinalIgnoreCase)) && w.Mutability));
-                valResult = new HashSet<MetadataEntry>(_orgList.Where(w => (this.StringContains(w.Value, text, StringComparison.OrdinalIgnoreCase)) && w.Mutability));
-            }
-
             if (text == "")
             {
                 this.Update();
                 return;
             }
 
+            // Search results are stored in sets so there are no repeats
+            var keyResult = new HashSet<MetadataEntry>();
+            var valResult = new HashSet<MetadataEntry>();
 
+            // If toggle switch on, search thru both mutable and immutable entries
+            if (xToggleSwitch.IsOn)
+            {
+                keyResult = new HashSet<MetadataEntry>(_orgList.Where(w => this.StringContains(w.Key, text, StringComparison.OrdinalIgnoreCase)));
+                valResult = new HashSet<MetadataEntry>(_orgList.Where(w => this.StringContains(w.Value, text, StringComparison.OrdinalIgnoreCase)));
+            }
 
+            // Otherwise, the switch is off and only search through mutable entries
+            else
+            {
+                keyResult = new HashSet<MetadataEntry>(_orgList.Where(w => (this.StringContains(w.Key, text, StringComparison.OrdinalIgnoreCase)) && w.Mutability));
+                valResult = new HashSet<MetadataEntry>(_orgList.Where(w => (this.StringContains(w.Value, text, StringComparison.OrdinalIgnoreCase)) && w.Mutability));
+            }
+
+            // Join the result sets, and add them back to the observable collection
             keyResult.UnionWith(valResult);
             MetadataCollection.Clear();
             foreach (var element in keyResult)
             {
                 MetadataCollection.Add(element);
             }
-
         }
 
         /// <summary>
@@ -285,28 +293,34 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Saves modified entries 
+        /// Saves modified keys 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void TextBox_OnPointerExited(object sender, PointerRoutedEventArgs e)
+        private void KeyTextBox_OnPointerExited(object sender, PointerRoutedEventArgs e)
         {
 
             var textbox = sender as TextBox;
             var entry = textbox.DataContext as MetadataEntry;
             if (!textbox.Text.Equals(""))
             {
-                if (textbox.PlaceholderText.Equals("Enter a Field"))
-                {
-                    entry.Key = textbox.Text;
-                }
-                else
-                {
-                    entry.Value = textbox.Text;
-                }
+                entry.Key = textbox.Text;
             }
+        }
 
-
+        /// <summary>
+        /// Saves modified values 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ValueTextBox_OnPointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            var textbox = sender as TextBox;
+            var entry = textbox.DataContext as MetadataEntry;
+            if (!textbox.Text.Equals(""))
+            {
+                entry.Value = textbox.Text;
+            }
         }
     }
 }

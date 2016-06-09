@@ -121,18 +121,20 @@ namespace NuSysApp
             Loaded = false;
             Favorited = favorited;
             Keywords = new HashSet<string>();
-            //Metadata = new Dictionary<string, string>();
             Metadata = metadata;
             SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
         }
-
+        /// <summary>
+        /// Checks if entry is valid, then adds its data to the Metadata dictionary and sends the updated dictionary to the server.
+        /// </summary>
+        /// <param name="entry"></param>
+      
         public void AddMetadata(MetadataEntry entry)
         {
             //Keys should be unique; values obviously don't have to be.
             if (Metadata.ContainsKey(entry.Key) || string.IsNullOrEmpty(entry.Value) || string.IsNullOrEmpty(entry.Value) || string.IsNullOrWhiteSpace(entry.Key) || string.IsNullOrWhiteSpace(entry.Value))
                 return;
 
-            //Metadata[k] = v;
             Metadata.Add(entry.Key, new Tuple<string, bool>(entry.Value, entry.Mutability));
             Task.Run(async delegate
             {
@@ -146,7 +148,10 @@ namespace NuSysApp
             });
             //OnMetadataChanged?.Invoke(this);
         }
-
+        /// <summary>
+        /// Checks if the key string is valid, then updates the metadata dictionary and sends a message to the server with the new dictionary.
+        /// </summary>
+        /// <param name="k"></param>
         public void RemoveMetadata(String k)
         {
             if (string.IsNullOrEmpty(k) || !Metadata.ContainsKey(k) || string.IsNullOrWhiteSpace(k))

@@ -57,9 +57,9 @@
                     <!--Pivot content goes here-->
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"></RowDefinition>
-                            <RowDefinition Height="Auto"></RowDefinition>
-                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="6*"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
                         </Grid.RowDefinitions>
 
                         <local:MetadataEditorView x:Name="xMetadataEditorView"  Grid.Row="0"></local:MetadataEditorView>
