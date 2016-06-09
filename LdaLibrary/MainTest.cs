@@ -29,8 +29,8 @@ namespace LdaLibrary
         {
             await Init(args, documents);
             List<string> words = ListWordsOfTopic();
-            //List<string> wikiTopics = await RunParser(words); // uncomment this to incorporate Wikipedia API
-            return words;
+            List<string> wikiTopics = await RunParser(words); // uncomment this to incorporate Wikipedia API
+            return wikiTopics; // return "words" if Wikipedia API isn't used
         }
 
         /// <summary>
@@ -40,13 +40,14 @@ namespace LdaLibrary
         /// List of (modified) topics using Wikipedia API.</returns>
         public async static Task<List<string>> RunParser(List<string> topics)
         {
-            Parser p = new Parser();
             Dictionary<string, string> allText = new Dictionary<string, string>();
             Dictionary<string, double> topicCount = new Dictionary<string, double>();
-            allText = await p.GetAllWikiContent(topics);
-            topicCount = p.GetTopicCount(allText, topics);
+            List<string> allTopics = Parser.GetWordPairs(topics); // get all possible word pairs
+            allTopics.AddRange(topics);
+            allText = await Parser.GetAllWikiContent(allTopics);
+            topicCount = Parser.GetTopicCount(allText, allText.Keys.ToList());
             var sorted = topicCount.OrderBy(x => -x.Value).ToDictionary(x => x.Key, x => x.Value);
-            return sorted.Keys.ToList().GetRange(0,9);
+            return sorted.Keys.ToList().GetRange(0,4);
         }
 
         /// <summary>
