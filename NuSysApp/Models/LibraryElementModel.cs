@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -178,6 +177,18 @@ namespace NuSysApp
 
             //OnMetadataChanged?.Invoke(this);
 
+        }
+
+        public void AddRegion(Region r)
+        {
+           Regions.Add(r);
+            SessionController.Instance.NuSysNetworkSession.AddRegionToContent(this.Id, JsonConvert.SerializeObject(r));
+        }
+
+        public void RemoveRegion(Region r)
+        {
+           Regions.Remove(r); 
+           SessionController.Instance.NuSysNetworkSession.RemoveRegionFromContent(this.Id, JsonConvert.SerializeObject(r));
         }
 
         public void FireLightupContent(bool lightup)
