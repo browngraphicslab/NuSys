@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NuSysApp.Util.Regions
+namespace NuSysApp
 {
     class CompoundRegion : Region
     {
