@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using SQLite.Net.Attributes;
 using Windows.UI.Xaml.Media;
@@ -79,6 +80,8 @@ namespace NuSysApp
             }
         }
 
+        public ObservableCollection<Region> Regions { get; set; } 
+
         public string Id { get; set; }
         public string Title
         {
@@ -115,7 +118,8 @@ namespace NuSysApp
         private string _data;
         private bool _loading = false;
         private Dictionary<string, Tuple<string,Boolean>> _metadata;
-        public LibraryElementModel(string id, ElementType elementType, Dictionary<string, Tuple<string,Boolean>> metadata = null, string contentName = null, bool favorited = false)
+        
+        public LibraryElementModel(string id, ElementType elementType, Dictionary<string, Tuple<string,Boolean>> metadata = null, string contentName = null, bool favorited = false, ObservableCollection<Region> regions = null )
         {
             Data = null;
             Id = id;
@@ -125,6 +129,7 @@ namespace NuSysApp
             Favorited = favorited;
             Keywords = new HashSet<string>();
             Metadata = metadata;
+            Regions = regions ?? new ObservableCollection<Region>();
             SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
         }
         /// <summary>

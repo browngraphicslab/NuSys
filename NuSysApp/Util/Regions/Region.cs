@@ -7,9 +7,9 @@ using Windows.Foundation;
 
 namespace NuSysApp
 {
-    abstract class Region
+    public abstract class Region
     {
-        protected Region()
+        public Region()
         {
         }
     }
