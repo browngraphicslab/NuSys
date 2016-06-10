@@ -37,6 +37,11 @@ namespace NuSysApp
         {
             var time = DateTime.UtcNow.ToString();
             _message["library_element_creation_timestamp"] = time;
+            string url = null;
+            if (_message.ContainsKey("server_url"))
+            {
+                url = _message["server_url"].ToString();
+            }
 
             ElementType type = (ElementType) Enum.Parse(typeof (ElementType), (string) _message["type"], true);
 
@@ -55,6 +60,7 @@ namespace NuSysApp
             {
                 libraryElement.Load(_message.GetString("data"));
             }
+            libraryElement.ServerUrl = url;
         }
     }
 }

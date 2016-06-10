@@ -336,10 +336,13 @@ namespace NuSysApp
         {
             return await _serverClient.GetRepo();
         }
-
-        public async Task Login(string username, string password)
+        public async Task<bool> AddRegionToContent(string contentId, string regionString)
         {
-            
+            return await _serverClient.AddRegionToContent(contentId, regionString);
+        }
+        public async Task<bool> RemoveRegionFromContent(string contentId, string regionString)
+        {
+            return await _serverClient.RemoveRegionFromContent(contentId, regionString);
         }
     }
     public class NoRequestTypeException : Exception

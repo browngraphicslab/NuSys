@@ -10,27 +10,24 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Nodes.AudioNode;
+using Windows.Storage;
+using Windows.Storage.Streams;
 using NAudio;
 using NAudio.Wave;
+using System.Net;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace NuSysApp
 {
     public class AudioNodeViewModel: ElementViewModel
     {
         private Grid _visualGrid;
-        private IRandomAccessStream _stream;
 
         public delegate void BlockHitEventHandler(LinkedTimeBlockViewModel timeBlock);
         public event BlockHitEventHandler OnBlockHitEventHandler;
 
         public delegate void BlockLeaveEventHandler(LinkedTimeBlockViewModel timeBlock);
         public event BlockHitEventHandler OnBlockLeaveEventHandler;
-
-        public double PlaybackElement 
-        {
-            get { return ((AudioNodeModel)Model).Controller.PlaybackElement.Position.TotalMilliseconds; }
-        }
-
 
         public delegate void VisualizationLoadedEventHandler();
         public event VisualizationLoadedEventHandler OnVisualizationLoaded;
@@ -79,9 +76,18 @@ namespace NuSysApp
             base.SetSize(width, height);
         }
 
-        public IRandomAccessStream AudioSource
+        public string AudioSource
         {
-            get { return _stream; }
+            get
+            {
+                var url = Model.LibraryId + ".mp3";
+                if (Controller.LibraryElementModel.ServerUrl != null)
+                {
+                    url = Controller.LibraryElementModel.ServerUrl;
+                }
+                url = "http://" + WaitingRoomView.ServerName + "/" + url;
+                return url;
+            }
         }
         public override async Task Init()
         {
@@ -95,17 +101,25 @@ namespace NuSysApp
             }
         }
 
-        private void InitWhenReady()
+        private async void InitWhenReady()
         {
-            var byteArray = Convert.FromBase64String(SessionController.Instance.ContentController.Get(ContentId).Data);
-            MemoryStream s = new MemoryStream(byteArray);
-            _stream = s.AsRandomAccessStream();
-            Visualize();
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(AudioSource);
+            HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
+            Stream resStream = response.GetResponseStream();
+
+            byte[] dataBytes = new byte[(int)response.ContentLength];
+            resStream.Read(dataBytes, 0, (int)response.ContentLength);
+            resStream.Dispose();
+            Visualize(dataBytes);
         }
 
-        private async void Visualize()
+        private async void Visualize(byte[] bytes)
         {
-            WaveStream waveStream = new MediaFoundationReaderUniversal(_stream);
+            MemoryStream s = new MemoryStream(bytes);
+            var stream = s.AsRandomAccessStream();
+
+
+            WaveStream waveStream = new MediaFoundationReaderUniversal(stream);
             int bytesPerSample = (waveStream.WaveFormat.BitsPerSample / 8) * waveStream.WaveFormat.Channels;
             waveStream.Position = 0;
             int bytesRead = 1;

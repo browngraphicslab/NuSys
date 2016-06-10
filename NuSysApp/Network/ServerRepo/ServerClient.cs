@@ -139,6 +139,71 @@ namespace NuSysApp
                 return data;
             });
         }
+        public async Task<bool> AddRegionToContent(string contentId, string regionString)
+        {
+            return await Task.Run(async delegate
+            {
+                JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+                var dict = new Dictionary<string, object>();
+                dict["data"] = regionString;
+                dict["contentId"] = contentId;
+                var data = await SendDictionaryToServer("addregion", dict);
+                try
+                {
+                    var success = bool.Parse(data);
+                    return success;
+                }
+                catch (Exception boolParsException)
+                {
+                    Debug.WriteLine("error parsing bool returned from server");
+                }
+                return false;
+            });
+        }
+        public async Task<bool> RemoveRegionFromContent(string contentId, string regionString)
+        {
+            return await Task.Run(async delegate
+            {
+                JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+                var dict = new Dictionary<string, object>();
+                dict["data"] = regionString;
+                dict["contentId"] = contentId;
+                var data = await SendDictionaryToServer("removeregion", dict);
+                try
+                {
+                    var success = bool.Parse(data);
+                    return success;
+                }
+                catch (Exception boolParsException)
+                {
+                    Debug.WriteLine("error parsing bool returned from server");
+                }
+                return false;
+            });
+        }
+        public async Task<string> SendDictionaryToServer(string postName,Dictionary<string,object> dict)
+        {
+            dict["sessionID"] = WaitingRoomView.ServerSessionID;
+            var serialized = JsonConvert.SerializeObject(dict, new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii });
+            var client = new HttpClient(new HttpClientHandler { ClientCertificateOptions = ClientCertificateOption.Automatic });
+            var response = await client.PostAsync(GetUri(postName+"/"), new StringContent(serialized, Encoding.UTF8, "application/xml"));
+            string data;
+            using (var content = response.Content)
+            {
+                data = await content.ReadAsStringAsync();
+            }
+            try
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(data);
+                data = doc.ChildNodes[0].InnerText;
+            }
+            catch (Exception boolParsException)
+            {
+                Debug.WriteLine("error parsing string from sending dictionary to server");
+            }
+            return data;
+        }
         public async Task<List<Dictionary<string,object>>> GetContentWithoutData(List<string> contentIds)
         {
             try

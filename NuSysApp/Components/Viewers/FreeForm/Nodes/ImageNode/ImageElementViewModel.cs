@@ -50,23 +50,29 @@ namespace NuSysApp
 
         private async Task DisplayImage()
         {
+            /*
             var image = Controller.LibraryElementModel.ViewUtilBucket.ContainsKey("image")
                        ? (BitmapImage)Controller.LibraryElementModel.ViewUtilBucket["image"]
                        : null;
             if (image != null)
             {
                 Image = image;
-                var ratio = (double)Image.PixelHeight / (double)Image.PixelWidth;
-                Controller.SetSize(Controller.Model.Width, Controller.Model.Width * ratio);
             }
             else
             {
                 Image = await MediaUtil.ByteArrayToBitmapImage(Convert.FromBase64String(Controller.LibraryElementModel.Data));
                 Controller.LibraryElementModel.ViewUtilBucket["image"] = Image;
-                var ratio = (double)Image.PixelHeight / (double)Image.PixelWidth;
-                Controller.SetSize(Controller.Model.Width, Controller.Model.Width * ratio);
             }
-            
+            */
+            var url = Model.LibraryId + ".jpg";
+            if (Controller.LibraryElementModel.ServerUrl != null)
+            {
+                url = Controller.LibraryElementModel.ServerUrl;
+            }
+            Image = new BitmapImage();
+            Image.UriSource = new Uri("http://" + WaitingRoomView.ServerName + "/" + url);
+            var ratio = (double)Image.PixelHeight / (double)Image.PixelWidth;
+            Controller.SetSize(Controller.Model.Width, Controller.Model.Width * ratio);
             RaisePropertyChanged("Image");
         }
         /*

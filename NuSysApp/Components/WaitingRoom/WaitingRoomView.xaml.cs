@@ -295,7 +295,7 @@ namespace NuSysApp
                                 ElementType type = ElementType.Text;
                                 string timestamp = "";
                                 string creator = null;
-
+                                string serverUrl = null;
                                 if (dict.ContainsKey("library_element_creation_timestamp"))
                                 {
                                     timestamp = dict["library_element_creation_timestamp"].ToString();
@@ -311,6 +311,10 @@ namespace NuSysApp
                                 if (dict.ContainsKey("title"))
                                 {
                                     title = (string)dict["title"]; // title
+                                }
+                                if (dict.ContainsKey("server_url"))
+                                {
+                                    serverUrl = dict["server_url"].ToString();
                                 }
                                 if (dict.ContainsKey("type"))
                                 {
@@ -335,6 +339,7 @@ namespace NuSysApp
                                 }
                                 element.Creator = creator;
                                 element.Timestamp = timestamp;
+                                element.ServerUrl = serverUrl;
                                 if (SessionController.Instance.ContentController.Get(id) == null)
                                 {
                                     SessionController.Instance.ContentController.Add(element);

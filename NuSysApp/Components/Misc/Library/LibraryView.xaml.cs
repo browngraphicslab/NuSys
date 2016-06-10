@@ -246,6 +246,9 @@ namespace NuSysApp
             {
                 if (storageFile == null) return;
 
+                var contentId = SessionController.Instance.GenerateId();
+                string serverURL = null;
+
                 var fileType = storageFile.FileType.ToLower();
                 title = storageFile.DisplayName;
 
@@ -255,6 +258,7 @@ namespace NuSysApp
                 {
                     elementType = ElementType.Image;
                     data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
+                    serverURL = contentId + fileType;
                 }
                 else if (Constants.WordFileTypes.Contains(fileType))
                 {
@@ -324,15 +328,20 @@ namespace NuSysApp
                 }
                 if (validFileType)
                 {
-                    var contentId = SessionController.Instance.GenerateId();
+                    var m = new Message();
+                    m["id"] = contentId;
+                    m["data"] = data;
+                    m["type"] = elementType.ToString();
+                    if (title != null)
+                    {
+                        m["title"] = title;
+                    }
+                    if (serverURL != null)
+                    {
+                        m["server_url"] = serverURL;
+                    }
 
-                    await
-                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
-                            new CreateNewLibraryElementRequest(contentId, data, elementType, title));
-                    //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, data == null ? "" : data.ToString()), NetworkClient.PacketType.TCP, null, true);
-
-                    // TOOD: refresh library
-
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(m));
                     vm.ClearSelection();
                     //   vm.ClearMultiSelection();
                 }

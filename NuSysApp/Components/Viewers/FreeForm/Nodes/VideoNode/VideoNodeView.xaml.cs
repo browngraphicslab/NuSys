@@ -127,7 +127,7 @@ namespace NuSysApp
         }
 
         private void LoadVideo()
-        {
+        {/*
             var content = (DataContext as VideoNodeViewModel).Controller.LibraryElementModel;
             if (content != null)
             {
@@ -153,7 +153,20 @@ namespace NuSysApp
                 ((VideoNodeViewModel) DataContext).Controller.LibraryElementModel.OnLoaded-= LoadVideo;
             }
             playbackElement.Position = new TimeSpan(0);
-
+            */
+            var content = (DataContext as VideoNodeViewModel).Controller.LibraryElementModel;
+            if (content != null)
+            {
+                //var uri = new Uri(SessionController.Instance.ContentController.Get((((VideoNodeViewModel)DataContext).Model as VideoNodeModel).LibraryId).Data);
+                //playbackElement.Source = uri;
+                //playbackElement.Source = new Uri("C:/Users/graphics_lab/Documents/NuRepo_Test/28a372d517e046a58cc5f2fbf6f71bd6.mp4");
+                var url = (((VideoNodeViewModel)DataContext).Model as VideoNodeModel).LibraryId + ".mp4";
+                if (content.ServerUrl != null)
+                {
+                    url = content.ServerUrl;
+                }
+                playbackElement.Source = new Uri("http://"+WaitingRoomView.ServerName+"/"+ url);
+            }
         }
 
         private void LinkedTimeBlocks_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

@@ -83,11 +83,15 @@ namespace NuSysApp
         }
         public string Creator { set; get; }
         public string Timestamp { get; set; }//TODO maybe put in a timestamp, maybe remove the field from the library
+
+        public string ServerUrl { get; set; }
+
         private string _title;
 
         public Dictionary<string,object> ViewUtilBucket = new Dictionary<string, object>();
         private string _data;
         private bool _loading = false;
+        
         public LibraryElementModel(string id, ElementType elementType, string contentName = null, bool favorited = false)
         {
             Data = null;
