@@ -77,30 +77,13 @@ namespace NuSysApp
 
         private async Task DisplayPdf()
         {
-            if (Controller.LibraryElementModel == null || Controller.LibraryElementModel.Data == null)
+            if (Controller.LibraryElementModel == null || Controller.LibraryElementModel.Data == null) {
                 return;
-            
-            var url = Model.LibraryId + ".pdf";
-            if (Controller.LibraryElementModel.ServerUrl != null)
-            {
-                url = Controller.LibraryElementModel.ServerUrl;
             }
-            url = "http://" + WaitingRoomView.ServerName + "/" + url;
-
-            byte[] dataBytes = new byte[0];
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
-            Stream resStream = response.GetResponseStream();
-
-            dataBytes = new byte[(int)response.ContentLength];
-            await resStream.ReadAsync(dataBytes, 0, (int)response.ContentLength);
-
-            resStream.Dispose();
-            response.Dispose();
-            
-            //var data = Controller.LibraryElementModel.Data;
-            //var dataBytes = Convert.FromBase64String(data);
+            var data = Controller.LibraryElementModel.Data;
+            var dataBytes = Convert.FromBase64String(data);
             var ms = new MemoryStream(dataBytes);
+
             using (IInputStream inputStreamAt = ms.AsInputStream())
             using (var dataReader = new DataReader(inputStreamAt))
             {

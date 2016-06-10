@@ -1,9 +1,3 @@
-/// <reference path="../typings/chrome/chrome.d.ts"/>
-/// <reference path="../typings/jquery/jquery.d.ts"/>
-/// <reference path="ink/InkCanvas.ts"/>
-/// <reference path="ink/StrokeType.ts" />
-/// <reference path="selection/LineSelection.ts"/>
-/// <reference path="selection/UnknownSelection.ts"/>
 var Main = (function () {
     function Main() {
         var _this = this;
@@ -368,7 +362,6 @@ var Main = (function () {
         });
     };
     Main.relativeToAbsolute = function (content) {
-        //////change relative href of hyperlink and src of image in html string to absolute
         var res = content.split('href="');
         var newval = res[0];
         for (var i = 1; i < res.length; i++) {

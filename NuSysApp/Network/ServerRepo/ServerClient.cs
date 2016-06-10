@@ -38,7 +38,7 @@ namespace NuSysApp
         public delegate void ClientJoinedEventHandler(NetworkUser user);
         public event ClientJoinedEventHandler OnClientJoined;
 
-        public static HashSet<string> NeededLibraryDataIDs = new HashSet<string>(); 
+        public static HashSet<string> NeededLibraryDataIDs = new HashSet<string>();
         public string ServerBaseURI { get; private set; }
 
         public ServerClient()//Server name: http://nurepo6916.azurewebsites.net/api/values/1
@@ -52,9 +52,9 @@ namespace NuSysApp
 
         public async Task Init()
         {
-            ServerBaseURI = "://"+WaitingRoomView.ServerName+"/api/";
+            ServerBaseURI = "://" + WaitingRoomView.ServerName + "/api/";
             var credentials = GetUserCredentials();
-            var uri = GetUri("values/"+credentials, true);
+            var uri = GetUri("values/" + credentials, true);
             await _socket.ConnectAsync(uri);
         }
 
@@ -91,9 +91,9 @@ namespace NuSysApp
                     string id = null;
                     if (dict.ContainsKey("server_indication_from_server"))
                     {
-                        if (dict.ContainsKey("notification_type") )
+                        if (dict.ContainsKey("notification_type"))
                         {
-                            Debug.WriteLine("got notification "+ (string)dict["notification_type"]);
+                            Debug.WriteLine("got notification " + (string)dict["notification_type"]);
                             switch ((string)dict["notification_type"])
                             {
                                 case "content_available":
@@ -214,7 +214,7 @@ namespace NuSysApp
 
                     var contentIdStrings = JsonConvert.SerializeObject(contentIds, settings);
 
-                    var client = new HttpClient( new HttpClientHandler{ClientCertificateOptions = ClientCertificateOption.Automatic});
+                    var client = new HttpClient(new HttpClientHandler { ClientCertificateOptions = ClientCertificateOption.Automatic });
                     var response = await client.PostAsync(GetUri("getcontent/"), new StringContent(contentIdStrings, Encoding.UTF8, "application/xml"));
 
                     string data;
@@ -226,7 +226,7 @@ namespace NuSysApp
                     {
                         XmlDocument doc = new XmlDocument();
                         doc.LoadXml(data);
-                        var list =  JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(doc.ChildNodes[0].InnerText, settings);
+                        var list = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(doc.ChildNodes[0].InnerText, settings);
                         return list;
                     }
                     catch (Exception boolParsException)
@@ -251,7 +251,7 @@ namespace NuSysApp
                 {
                     return;
                 }
-                if(tries > 30)
+                if (tries > 30)
                 {
                     return;
                 }
@@ -261,23 +261,23 @@ namespace NuSysApp
                     SessionController.Instance.ContentController.Get(libraryId).SetLoading(true);
                     HttpClient client = new HttpClient();
                     var response = await client.GetAsync(GetUri("getcontent/" + libraryId));
-                
+
                     string data;
                     using (var responseContent = response.Content)
                     {
                         data = await responseContent.ReadAsStringAsync();
                     }
 
-                    if(SessionController.Instance.ContentController.Get(libraryId) != null && SessionController.Instance.ContentController.Get(libraryId).Type == ElementType.Video)
+                    if (SessionController.Instance.ContentController.Get(libraryId) != null && SessionController.Instance.ContentController.Get(libraryId).Type == ElementType.Video)
                     {
-                        if(data == "{}")
+                        if (data == "{}")
                         {
                             libraryIdsUsed.Remove(libraryId);
                             await FetchLibraryElementData(libraryId, tries++);
                             return;
                         }
                     }
-                    
+
                     JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                     var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(data, settings);
 
@@ -289,12 +289,15 @@ namespace NuSysApp
 
                     var contentData = (string)dict["data"] ?? "";
 
-                    var id = (string) dict["id"];
-                    var type = (ElementType) Enum.Parse(typeof (ElementType), (string) dict["type"], true);
+                    var id = (string)dict["id"];
+                    var type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
                     var title = dict.ContainsKey("title") ? (string)dict["title"] : null;
                     var timestamp = dict.ContainsKey("library_element_creation_timestamp")
-                        ? (string) dict["library_element_creation_timestamp"].ToString()
+                        ? (string)dict["library_element_creation_timestamp"].ToString()
                         : null;
+                    
+
+                    var metadata = dict.ContainsKey("metadata") ? JsonConvert.DeserializeObject<Dictionary<string, Tuple<string, Boolean>>>(dict["metadata"].ToString()) : null;
 
                     if (NeededLibraryDataIDs.Contains(id))
                     {
@@ -316,7 +319,7 @@ namespace NuSysApp
                             //var inkcolor = inkdict["color"];
                             //var builder = new InkStrokeBuilder();
                             //var inkstroke = builder.CreateStrokeFromInkPoints(inkpoints, Matrix3x2.Identity);
-                            
+
 
                             /*
                             var newWrapper = new InkWrapper(inkstroke, inktype);
@@ -328,7 +331,8 @@ namespace NuSysApp
                             var model =
                                 SessionController.Instance.ContentController.Get(libraryId) as
                                     CollectionLibraryElementModel;
-                            if (!model.InkLines.Contains(inkid)) { 
+                            if (!model.InkLines.Contains(inkid))
+                            {
                                 model.InkLines.Add(inkid);
                                 SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new AddInkRequest(m));
                             }
@@ -340,11 +344,11 @@ namespace NuSysApp
                     {
                         if (type == ElementType.Collection)
                         {
-                            content = new CollectionLibraryElementModel(id,title);
+                            content = new CollectionLibraryElementModel(id, metadata, title);
                         }
                         else
                         {
-                            content = new LibraryElementModel(id,type,title);
+                            content = new LibraryElementModel(id, type, metadata, title);
                         }
                         SessionController.Instance.ContentController.Add(content);
                     }
@@ -363,14 +367,15 @@ namespace NuSysApp
         public async Task SendDictionaryToServer(Dictionary<string, string> dict)
         {
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-            var serialized = JsonConvert.SerializeObject(dict,settings);
+            var serialized = JsonConvert.SerializeObject(dict, settings);
             await SendToServer(serialized);
         }
         public async Task<HashSet<string>> SearchOverLibraryElements(string searchText)
         {
             return await Task.Run(async delegate
             {
-                try {
+                try
+                {
                     HttpClient client = new HttpClient();
                     var response = await client.GetAsync(GetUri("search/" + searchText));
 
@@ -383,7 +388,7 @@ namespace NuSysApp
                     var list = JsonConvert.DeserializeObject<HashSet<string>>(data, settings);
                     return list;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Debug.WriteLine("Error searching on server");
                     return null;
@@ -406,7 +411,7 @@ namespace NuSysApp
                 throw new Exception("Exception caught during writing to server data writer");
             }
         }
-        public async Task<Dictionary<string,Dictionary<string,object>>> GetRepo()
+        public async Task<Dictionary<string, Dictionary<string, object>>> GetRepo()
         {
             HttpClient client = new HttpClient();
             var response = await client.GetAsync(GetUri("getcontent"));
@@ -418,7 +423,7 @@ namespace NuSysApp
             }
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             var deserialized = JsonConvert.DeserializeObject<Dictionary<string, object>>(data, settings);
-            var final = new Dictionary<string,Dictionary<string,object>>();
+            var final = new Dictionary<string, Dictionary<string, object>>();
             foreach (var kvp in deserialized)
             {
                 final[kvp.Key] = JsonConvert.DeserializeObject<Dictionary<string, object>>(kvp.Value.ToString(), settings);
@@ -497,7 +502,7 @@ namespace NuSysApp
 
         public class IncomingDataReaderException : Exception
         {
-            public IncomingDataReaderException(string s = "") : base("Error with incoming data reader message.  " + s){}
+            public IncomingDataReaderException(string s = "") : base("Error with incoming data reader message.  " + s) { }
         }
     }
 }

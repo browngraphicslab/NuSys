@@ -21,7 +21,7 @@ namespace NuSysApp
 
         public delegate void ChildRemovedEventHandler(string id);
         public event ChildRemovedEventHandler OnChildRemoved;
-        public CollectionLibraryElementModel(string id, string contentName = null, bool favorited = false) : base(id, ElementType.Collection, contentName)
+        public CollectionLibraryElementModel(string id, Dictionary<String, Tuple<string, Boolean>> metadata = null, string contentName = null, bool favorited = false) : base(id, ElementType.Collection, metadata, contentName)
         {
             _children = new HashSet<string>();
 
@@ -44,7 +44,7 @@ namespace NuSysApp
 
         public bool AddChild(string id)
         {
-            if (! _children.Contains(id))
+            if (!_children.Contains(id))
             {
                 var elementController = SessionController.Instance.IdToControllers[id];
                 elementController.Deleted += ElementControllerOnDeleted;
@@ -58,7 +58,7 @@ namespace NuSysApp
 
         private void ElementControllerOnDeleted(object source)
         {
-            var elementController = (ElementController) source;
+            var elementController = (ElementController)source;
             Children.Remove(elementController.Model.Id);
         }
 

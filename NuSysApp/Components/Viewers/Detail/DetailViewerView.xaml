@@ -5,20 +5,14 @@
     xmlns:local="using:NuSysApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="using:NuSysApp"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400"
     BorderBrush="DarkSlateGray"
-    BorderThickness="2">
-
-    <local:AnimatableUserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </local:AnimatableUserControl.Resources>
-
+    BorderThickness="2"
+    
+    >
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid x:Name="resizer" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="{StaticResource color9}" Width="30"
                     ManipulationDelta="Resizer_OnManipulationDelta" ManipulationMode="All">
@@ -32,16 +26,17 @@
                 <RowDefinition Height="40"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="auto"></RowDefinition>
-                <RowDefinition Height="100"></RowDefinition>
+
             </Grid.RowDefinitions>
 
-            
+            <!-- NOT USED!!!!! -->
             <TextBlock Visibility="Collapsed" Grid.Row="0" x:Name="metadataButton" HorizontalAlignment="Right" Text="MetaData" Foreground="{StaticResource darkforeground}" FontSize="24" Margin="0,0,25,0" Tapped="metaData_OnTapped"/>
-            
+
+            <!-- NOT USED!!!!! -->
             <Border Grid.Row="0" Visibility="Collapsed" x:Name="exitButton" HorizontalAlignment="Right" VerticalAlignment="Top" Tapped="closeDV_OnTapped" Padding="5,5,5,5">
                 <TextBlock Text="x" Foreground="White" FontSize="24"/>
             </Border>
+
             <Border Grid.Row="0" x:Name="exitButton2" HorizontalAlignment="Left" VerticalAlignment="Top" Tapped="closeDV_OnTapped"  Padding="5,0,5,0">
                 <TextBlock Text="X" Foreground="White" FontSize="32"/>
             </Border>
@@ -53,40 +48,63 @@
                 <Rectangle HorizontalAlignment="Stretch" Fill="{StaticResource darkforeground}" Height="2"/>
             </StackPanel>
 
-            <ContentPresenter Grid.Row="2" x:Name ="nodeContent" Content="{Binding View}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></ContentPresenter>
-            <Grid Grid.Row="3" x:Name="TagContainer"  HorizontalAlignment="Stretch" >
-                <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
-                <Rectangle Grid.Row="0" HorizontalAlignment="Stretch" Fill="{StaticResource darkforeground}" Height="2" Margin="0,20,0,20"/>
-                <Grid Grid.Row="1" HorizontalAlignment="Stretch">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                        <ColumnDefinition Width="30"></ColumnDefinition>
-                        <ColumnDefinition Width="100"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    
+            <Pivot x:Name="xRootPivot" Grid.Row="2">
+                <PivotItem Header="Home">
+                    <!--Pivot content goes here-->
+                    <ContentPresenter Grid.Row="2" x:Name ="nodeContent" Content="{Binding View}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></ContentPresenter>
+                </PivotItem>
+                <PivotItem Header="Metadata Editor">
+                    <!--Pivot content goes here-->
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="6*"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Column="0" Text="TAGS" Foreground="{StaticResource darkforeground}" FontSize="30" CharacterSpacing="45" VerticalAlignment="Center"></TextBlock>
-                    <local:TextInputBlock Grid.Column="1" x:Name ="NewTagBox" BubbleTop ="True" LeftJustified="False" SetHeight="30"  KeyUp="NewTagBox_OnKeyUp" HorizontalAlignment="Stretch">
+                        <local:MetadataEditorView x:Name="xMetadataEditorView"  Grid.Row="0"></local:MetadataEditorView>
 
-                        </local:TextInputBlock>
-                        <Button Grid.Column="2" x:Name="AddTagButton"  Height="30" Width="30" Content="+" Foreground="{StaticResource darkforeground}" Click="AddTagButton_OnClick"  Background="{StaticResource color6}" VerticalAlignment="Center"></Button>
-                    <Button Grid.Column="3" x:Name="SuggestButton"  Height="40" Width="100" Content="Suggest" Foreground="{StaticResource darkforeground}" Click="AddTagButton_OnClick"  Background="{StaticResource color6}" VerticalAlignment="Center" Margin="10,0,0,0"></Button>
-                </Grid>
-            </Grid>
+                        <Grid Grid.Row="1" x:Name="TagContainer"  HorizontalAlignment="Stretch" >
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Rectangle Grid.Row="0" HorizontalAlignment="Stretch" Fill="{StaticResource darkforeground}" Height="2" Margin="0,20,0,20"/>
+                            <Grid Grid.Row="1" HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="30"></ColumnDefinition>
+                                    <ColumnDefinition Width="100"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
 
-            <Grid Grid.Row="4" HorizontalAlignment="Stretch">
-                 <ItemsControl x:Name="Tags" ItemsSource="{Binding Tags}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <local:WrapPanel/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
-            </Grid>
+
+                                <TextBlock Grid.Column="0" Text="TAGS" Foreground="{StaticResource darkforeground}" FontSize="30" CharacterSpacing="45" VerticalAlignment="Center"></TextBlock>
+                                <local:TextInputBlock Grid.Column="1" x:Name ="NewTagBox" BubbleTop ="True" LeftJustified="False" SetHeight="30"  KeyUp="NewTagBox_OnKeyUp" HorizontalAlignment="Stretch">
+    
+                                </local:TextInputBlock>
+                                <Button Grid.Column="2" x:Name="AddTagButton"  Height="30" Width="30" Content="+" Foreground="{StaticResource darkforeground}" Click="AddTagButton_OnClick"  Background="{StaticResource color6}" VerticalAlignment="Center"></Button>
+                                <Button Grid.Column="3" x:Name="SuggestButton"  Height="40" Width="100" Content="Suggest" Foreground="{StaticResource darkforeground}" Click="AddTagButton_OnClick"  Background="{StaticResource color6}" VerticalAlignment="Center" Margin="10,0,0,0"></Button>
+                            </Grid>
+                        </Grid>
+
+                        <Grid Grid.Row="2" HorizontalAlignment="Stretch">
+                            <ItemsControl x:Name="Tags" ItemsSource="{Binding Tags}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <local:WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </Grid>
+                    </Grid>
+
+
+                </PivotItem>
+
+            </Pivot>
+
+
 
         </Grid>
     </Grid>
