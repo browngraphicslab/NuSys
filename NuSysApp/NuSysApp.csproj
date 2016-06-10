@@ -490,6 +490,10 @@
     <Compile Include="Util\Point2d.cs" />
     <Compile Include="Util\PresentationMode.cs" />
     <Compile Include="Util\RectanglePoints.cs" />
+    <Compile Include="Util\Regions\CompoundRegion.cs" />
+    <Compile Include="Util\Regions\RectangleRegion.cs" />
+    <Compile Include="Util\Regions\Region.cs" />
+    <Compile Include="Util\Regions\TimeRegion.cs" />
     <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\Statistics.cs" />
     <Compile Include="Util\Telemetry.cs" />
