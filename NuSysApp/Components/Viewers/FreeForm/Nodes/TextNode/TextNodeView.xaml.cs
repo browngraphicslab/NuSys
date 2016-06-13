@@ -263,7 +263,7 @@ namespace NuSysApp
         {
             var vm = DataContext as ElementViewModel;
             var controller = (TextNodeController)vm.Controller;
-            controller.LibraryElementModel?.SetContentData(vm, s);
+            controller.LibraryElementController?.SetContentData(s);
             _text = s;
         }
 

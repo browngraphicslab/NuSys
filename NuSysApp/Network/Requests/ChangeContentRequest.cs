@@ -31,18 +31,19 @@ namespace NuSysApp
 
         public override async Task ExecuteRequestFunction()
         {
-            LibraryElementModel content = SessionController.Instance.ContentController.Get(_message.GetString("contentId"));
+            LibraryElementModel content = SessionController.Instance.ContentController.GetContent(_message.GetString("contentId"));
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId);
             if (_message.ContainsKey("title"))
             {
-                content.SetTitle(_message.GetString("title"), false);
+                controller.SetTitle(_message.GetString("title"));
             }
             if (_message.ContainsKey("data"))
             {
-                content.Data = _message.GetString("data");
+                controller.SetContentData(_message.GetString("data"));
             }
             if (_message.ContainsKey("favorited"))
             {
-                content.Favorited = bool.Parse(_message["favorited"].ToString()); ;
+                controller.SetFavorited(bool.Parse(_message["favorited"].ToString()));
             }
             if (_message.ContainsKey("inklines"))
             {

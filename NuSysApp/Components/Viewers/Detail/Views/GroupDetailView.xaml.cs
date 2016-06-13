@@ -75,7 +75,7 @@ namespace NuSysApp
 
         private void UpdateModelText(String s)
         {
-             ((ElementCollectionViewModel)DataContext).Controller.LibraryElementModel.SetContentData((ElementCollectionViewModel)DataContext, s);
+             ((ElementCollectionViewModel)DataContext).Controller.LibraryElementController.SetContentData(s);
         }
 
         void wvBrowser_ScriptNotify(object sender, NotifyEventArgs e)
@@ -129,7 +129,7 @@ namespace NuSysApp
             // TODO: Refactor
             /*
             var vm = (ElementCollectionViewModel) DataContext;
-            var allNodes = SessionController.Instance.IdToSendables.Values;
+            var allNodes = SessionController.Instance.IdToSendables.ContentValues;
             var modelList = new ObservableCollection<ElementModel>();
             foreach (var sendable in allNodes)
             {

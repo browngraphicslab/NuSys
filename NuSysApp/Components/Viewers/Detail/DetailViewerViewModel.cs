@@ -62,7 +62,7 @@ namespace NuSysApp
             this.ChangeTitle(this, controller.LibraryElementModel.Title);
 
             controller.MetadataChange += ControllerOnMetadataChange;
-            controller.LibraryElementModel.OnTitleChanged += ChangeTitle;
+            controller.LibraryElementController.TitleChanged += ChangeTitle;
             
             var tempvm = (ElementViewModel) View.DataContext;
             tempvm.PropertyChanged += NodeVMPropertChanged;

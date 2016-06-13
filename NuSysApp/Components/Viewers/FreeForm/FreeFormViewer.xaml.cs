@@ -57,7 +57,7 @@ namespace NuSysApp
                 _inqCanvas.AdornmentAdded += AdormnentAdded;
                 _inqCanvas.AdornmentRemoved += AdornmentRemoved;
 
-                var collectionModel = (CollectionLibraryElementModel)SessionController.Instance.ContentController.Get(vm.Controller.LibraryElementModel.Id);
+                var collectionModel = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(vm.Controller.LibraryElementModel.LibraryElementId);
 
               
 
@@ -116,7 +116,7 @@ namespace NuSysApp
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request.Item1);
 
             var m = new Message();
-            m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.Id;
+            m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
             var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
             model.InkLines.Remove(request.Item2);
             m["inklines"] = new HashSet<string>(model.InkLines);
@@ -133,7 +133,7 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
 
             var m = new Message();
-            m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.Id;
+            m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
             var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
             model.InkLines.Add(id);
             m["inklines"] = new HashSet<string>(model.InkLines);
@@ -149,7 +149,7 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
 
             var m = new Message();
-            m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.Id;
+            m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
             var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
             model.InkLines.Add(id);
             m["inklines"] = new HashSet<string>(model.InkLines);
@@ -164,7 +164,7 @@ namespace NuSysApp
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request.Item1);
 
             var m = new Message();
-            m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.Id;
+            m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
             var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
             model.InkLines.Remove(request.Item2);
             m["inklines"] = new HashSet<string>(model.InkLines);

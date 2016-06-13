@@ -16,6 +16,7 @@ namespace NuSysApp
     {
 
         private ConcurrentDictionary<string, LibraryElementModel> _contents = new ConcurrentDictionary<string, LibraryElementModel>();
+        private ConcurrentDictionary<string, LibraryElementController> _contentControllers = new ConcurrentDictionary<string, LibraryElementController>();
         //private Dictionary<string, ManualResetEvent> _waitingNodeCreations = new Dictionary<string, ManualResetEvent>(); 
 
         public delegate void NewContentEventHandler(LibraryElementModel element);
@@ -28,102 +29,59 @@ namespace NuSysApp
             get { return _contents.Count; }
         }
     
-        public LibraryElementModel Get(string id)
+        public LibraryElementModel GetContent(string id)
         {
             return _contents.ContainsKey(id) ? _contents[id] : null;
         }
-
-        public ICollection<LibraryElementModel> Values
+        public LibraryElementController GetLibraryElementController(string id)
+        {
+            return _contentControllers.ContainsKey(id) ? _contentControllers[id] : null;
+        }
+        public ICollection<LibraryElementModel> ContentValues
         {
             get { return new List<LibraryElementModel>(_contents.Values); }
         } 
         public bool ContainsAndLoaded(string id)
         {
-            return _contents.ContainsKey(id) ? _contents[id].Loaded : false;
+            return _contentControllers.ContainsKey(id) ? _contentControllers[id].IsLoaded : false;
         }
         public string Add(LibraryElementModel model)
         {
-            if (!String.IsNullOrEmpty(model.Id) && !_contents.ContainsKey(model.Id))
+            if (!String.IsNullOrEmpty(model.LibraryElementId) && !_contents.ContainsKey(model.LibraryElementId))
             {
-                _contents.TryAdd(model.Id, model);
-                Debug.WriteLine("content directly added with ID: " + model.Id);
+                _contents.TryAdd(model.LibraryElementId, model);
+                var controller = new LibraryElementController(model);
+                _contentControllers.TryAdd(model.LibraryElementId, controller);
+                Debug.WriteLine("content directly added with ID: " + model.LibraryElementId);
                 OnNewContent?.Invoke(model);
-                return model.Id;
+                return model.LibraryElementId;
             }
             Debug.WriteLine("content failed to add directly due to invalid id");
             return null;
         }
-        public string Add( string contentData, ElementType elementType, string presetID = null)
-        {
-            var id = presetID ?? SessionController.Instance.GenerateId();
-            var n = new LibraryElementModel(id, elementType);
-            _contents.TryAdd(id, n );
-            OnNewContent?.Invoke(n);
-            /*
-            if (presetID != null)
-            {
-                foreach (var kvp in _waitingNodeCreations)
-                {
-                    if (kvp.Key == id)
-                    {
-                        kvp.Value.Set();
-                        _waitingNodeCreations.Remove(kvp.Key);
-                        break;
-                    }
-                }
-            }*/
-            Debug.WriteLine("content added with ID: "+id);
-            return id;
-        }
-        /*
-        public void AddWaitingNodeCreation(string id, ManualResetEvent mre)
-        {
-            _waitingNodeCreations.Add(id, mre);
-        }*/
 
         public bool Remove(LibraryElementModel model)
         {
-            if (!_contents.ContainsKey(model.Id))
+            if (!_contents.ContainsKey(model.LibraryElementId))
             {
                 return false;
             }
             LibraryElementModel removedElement;
-            _contents.TryRemove(model.Id, out removedElement);
+            LibraryElementController removedController;
+            _contentControllers.TryRemove(model.LibraryElementId, out removedController);
+            _contents.TryRemove(model.LibraryElementId, out removedElement);
             OnElementDelete?.Invoke(model);
             return true;
         }
         public string OverWrite(LibraryElementModel model)
         {
-            if (!String.IsNullOrEmpty(model.Id))
+            if (!String.IsNullOrEmpty(model.LibraryElementId))
             {
-                _contents[model.Id] = model;
-                return model.Id;
+                _contents[model.LibraryElementId] = model;
+                _contentControllers[model.LibraryElementId] = new LibraryElementController(model);
+                return model.LibraryElementId;
             }
             return null;
-        }
-        public async Task Load()
-        {
-            _contents.Clear();
-            
-            var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "_contents.nusys");
-            var lines = await FileIO.ReadLinesAsync(file);
-
-            foreach (var line in lines)
-            {
-                var o = JsonConvert.DeserializeObject<LibraryElementModel>(line);
-
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(o.Id, o.Data,o.Type));
-                /*
-                var request = new NewContentSystemRequest(o.Id,o.Data);//TODO not ideal
-                await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequestLocally(request);*/
-            }
-        }
-
-        public async Task Save()
-        {
-            var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "_contents.nusys");
-            var lines = _contents.Values.Select(s => JsonConvert.SerializeObject(s) );
-            await FileIO.WriteLinesAsync(file, lines);
         }
     }
 }

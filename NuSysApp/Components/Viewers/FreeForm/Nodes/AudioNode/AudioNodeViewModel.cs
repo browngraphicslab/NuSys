@@ -43,7 +43,7 @@ namespace NuSysApp
 
         private void ControllerOnDisposed(object source)
         {
-            Controller.LibraryElementModel.OnLoaded -= InitWhenReady;
+            Controller.LibraryElementController.Loaded -= InitWhenReady;
             Controller.Disposed -= ControllerOnDisposed;
         }
 
@@ -93,15 +93,15 @@ namespace NuSysApp
         {
             if (SessionController.Instance.ContentController.ContainsAndLoaded(ContentId))
             {
-                InitWhenReady();
+                InitWhenReady(this);
             }
             else
             {
-                Controller.LibraryElementModel.OnLoaded += InitWhenReady;
+                Controller.LibraryElementController.Loaded += InitWhenReady;
             }
         }
 
-        private async void InitWhenReady()
+        private async void InitWhenReady(object sender)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(AudioSource);
             HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();

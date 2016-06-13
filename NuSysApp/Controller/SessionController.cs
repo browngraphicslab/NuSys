@@ -129,7 +129,7 @@ namespace NuSysApp
             await _contentController.Save();
 
             var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.SaveFolder, "workspace.nusys");
-            var lineTasks = IdToSendables.Values.Select(async s => await s.Stringify());
+            var lineTasks = IdToSendables.ContentValues.Select(async s => await s.Stringify());
             var lines = await Task.WhenAll(lineTasks);
             await FileIO.WriteLinesAsync(file, lines);
             */

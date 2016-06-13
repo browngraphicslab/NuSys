@@ -37,13 +37,9 @@ namespace NuSysApp
             var url = vm.Controller.LibraryElementModel.Data;
             OnUrlChanged(url);
 
-            vm.Controller.LibraryElementModel.OnContentChanged += delegate (ElementViewModel originalSenderViewModel)
+            vm.Controller.LibraryElementController.ContentChanged += delegate (object sender, string text)
             {
-                if (originalSenderViewModel != vm)
-                {
-                    url = vm.Controller.LibraryElementModel.Data;
-                    OnUrlChanged(url);
-                }
+                OnUrlChanged(text);
             };
         }
     
@@ -77,7 +73,7 @@ namespace NuSysApp
                 //(vm.Model as WebNodeModel).Url = xUrlBox.Text;
                 var url = this.checkIfUrlRight(xUrlBox.Text);
                 xWebView.Navigate(new Uri(url));
-                vm.Controller.LibraryElementModel?.SetContentData(vm, url);
+                vm.Controller.LibraryElementController?.SetContentData(url);
             }
         }
         
@@ -146,7 +142,7 @@ namespace NuSysApp
             if (_viewMod.Controller.LibraryElementModel.Data != url)
             {
                 Back.IsEnabled = true;
-                _viewMod.Controller.LibraryElementModel?.SetContentData(_viewMod, url);
+                _viewMod.Controller.LibraryElementController?.SetContentData(url);
 
                 //var message = new Message();
                 //message["url"] = url;

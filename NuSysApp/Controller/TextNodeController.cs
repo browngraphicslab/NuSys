@@ -8,31 +8,29 @@ namespace NuSysApp
 {
     public class TextNodeController : ElementController
     {
-        public delegate void TextChangedHandler(object source, string text, ElementViewModel originalSenderViewModel = null);
+        public delegate void TextChangedHandler(object source, string text);
         public event TextChangedHandler TextChanged;
         
         public TextNodeController(TextElementModel model) : base(model)
         {
-            if (SessionController.Instance.ContentController.Get(Model.LibraryId) != null)
+            if (SessionController.Instance.ContentController.GetContent(Model.LibraryId) != null)
             {
-                var content = SessionController.Instance.ContentController.Get(Model.LibraryId);
-                content.OnContentChanged += ContentChanged;
+                LibraryElementController.ContentChanged += ContentChanged;
             }
         }
 
-        private void ContentChanged(ElementViewModel originalSenderViewModel = null)
+        private void ContentChanged(object originalSenderViewModel, string newData)
         {
-            var content = SessionController.Instance.ContentController.Get(Model.LibraryId);
-            TextChanged?.Invoke(this, content.Data, originalSenderViewModel);
+            var content = SessionController.Instance.ContentController.GetContent(Model.LibraryId);
+            TextChanged?.Invoke(this, content.Data);
         }
 
         public override void Dispose()
         {
            
-            if (SessionController.Instance.ContentController.Get(Model.LibraryId) != null)
+            if (SessionController.Instance.ContentController.GetContent(Model.LibraryId) != null)
             {
-                var content = SessionController.Instance.ContentController.Get(Model.LibraryId);
-                content.OnContentChanged -= ContentChanged;
+                LibraryElementController.ContentChanged -= ContentChanged;
             }
             base.Dispose();
 

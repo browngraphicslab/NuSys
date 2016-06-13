@@ -70,7 +70,7 @@ namespace NuSysApp
                 var linkController = new LinkElementController(link);
                 SessionController.Instance.IdToControllers[id] = linkController;
 
-                var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.Get(creator);
+                var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(creator);
                 parentCollectionLibraryElement.AddChild(id);
             }
         }

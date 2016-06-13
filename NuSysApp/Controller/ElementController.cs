@@ -36,8 +36,6 @@ namespace NuSysApp
 
         public delegate void SizeUpdateEventHandler(object source, double width, double height);
 
-        public delegate void ContentLoadedHandler(object source, LibraryElementModel data);
-
         public delegate void RegionTestChangedEventHandler(object source, RectangleViewModel region);
 
         public delegate void LinkAddedEventHandler(object source, LinkElementController linkController);
@@ -68,9 +66,9 @@ namespace NuSysApp
             {
                 _debouncingDictionary = new DebouncingDictionary(model.Id);
             }
-            if (LibraryElementModel != null)
+            if (LibraryElementController != null)
             {
-                LibraryElementModel.OnDelete += Delete;
+                LibraryElementController.Deleted += Delete;
                 var title = LibraryElementModel.Title;
                 Model.Title = title;
             }
@@ -79,8 +77,8 @@ namespace NuSysApp
 
         public virtual void Dispose()
         {
-            if (LibraryElementModel != null)
-                LibraryElementModel.OnDelete -= Delete;
+            if (LibraryElementController != null)
+                LibraryElementController.Deleted -= Delete;
             Disposed?.Invoke(this);
         }
 
@@ -195,7 +193,7 @@ namespace NuSysApp
             //_debouncingDictionary.Add("pageRegionDict", (Model as PdfNodeModel).PageRegionDict);
         }
 
-        public void Delete()
+        public void Delete(object sender)
         {
             Deleted?.Invoke(this);
             SessionController.Instance.ActiveFreeFormViewer.DeselectAll();
@@ -301,15 +299,18 @@ namespace NuSysApp
         {
             get { return _model; }
         }
+        public LibraryElementController LibraryElementController
+        {
+            get
+            {
+                return SessionController.Instance.ContentController.GetLibraryElementController(Model.LibraryId);
+            }
+        }
         public LibraryElementModel LibraryElementModel
         {
             get
             {
-                if (Model.LibraryId != null && SessionController.Instance.ContentController.Get(Model.LibraryId) != null)
-                {
-                    return SessionController.Instance.ContentController.Get(Model.LibraryId);
-                }
-                return null;
+                return LibraryElementController.LibraryElementModel;
             }
         }
 
@@ -317,7 +318,7 @@ namespace NuSysApp
         {
             if (props.ContainsKey("data"))
             {
-                var content = SessionController.Instance.ContentController.Get(props.GetString("contentId", ""));
+                var content = SessionController.Instance.ContentController.GetContent(props.GetString("contentId", ""));
                 if (content != null)
                 {
                     content.Data = props.GetString("data", "");

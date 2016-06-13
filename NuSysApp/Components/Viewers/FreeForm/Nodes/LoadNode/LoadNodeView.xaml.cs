@@ -29,10 +29,10 @@ namespace NuSysApp
 
             //nodeTpl.Background = new SolidColorBrush(Color.FromArgb(50, 173, 216, 230));
 
-            vm.Controller.LibraryElementModel.OnLoaded += ControllerOnInitialized;
+            vm.Controller.LibraryElementController.Loaded += ControllerOnInitialized;
         }
 
-        private void ControllerOnInitialized()
+        private void ControllerOnInitialized(object sender)
         {
            // SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Remove(this);
         }

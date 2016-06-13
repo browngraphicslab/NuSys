@@ -60,7 +60,7 @@ namespace NuSysApp
             var m = new Message(request.GetFinalMessage().GetSerialized());
             await ProcessIncomingRequest(m);
         }
-        public async Task ExecuteRequest(Request request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP)
+        public async Task ExecuteRequest(Request request)
         {
             await Task.Run(async delegate {
 
@@ -115,10 +115,10 @@ namespace NuSysApp
                 }
 
                 UITask.Run(async delegate {
-                    if (SessionController.Instance.ContentController.Get(id) != null)
+                    if (SessionController.Instance.ContentController.GetContent(id) != null)
                     {
-                        var element = SessionController.Instance.ContentController.Get(id);
-                        element.SetTitle(title);//TODO make sure no other variables, like timestamp, need to be set here
+                        var controller = SessionController.Instance.ContentController.GetLibraryElementController(id);
+                        controller.SetTitle(title);//TODO make sure no other variables, like timestamp, need to be set here
                     }
                     else
                     {
@@ -145,7 +145,7 @@ namespace NuSysApp
                     if (dict.ContainsKey("favorited"))
                     {
                         bool favorited = bool.Parse(dict["favorited"].ToString());
-                        var model = SessionController.Instance.ContentController.Get(id);
+                        var model = SessionController.Instance.ContentController.GetContent(id);
                         if (model != null)
                         {
                             model.Favorited = favorited;

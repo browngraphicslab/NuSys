@@ -21,19 +21,19 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            Controller.LibraryElementModel.OnLoaded -= LibraryElementModelOnOnLoaded;
+            Controller.LibraryElementController.Loaded -= LibraryElementModelOnOnLoaded;
             base.Dispose();
         }
 
         public override async Task Init()
         {
-            if (Controller.LibraryElementModel.Loaded)
+            if (Controller.LibraryElementController.IsLoaded)
             {
                 Controller.SetSize(Model.Width, Model.Height);
             }
             else
             {
-                Controller.LibraryElementModel.OnLoaded += LibraryElementModelOnOnLoaded;
+                Controller.LibraryElementController.Loaded += LibraryElementModelOnOnLoaded;
             }
         }
         public Uri GetSource()
@@ -47,7 +47,7 @@ namespace NuSysApp
             return new Uri("http://" + WaitingRoomView.ServerName + "/" + url);
         }
 
-        private void LibraryElementModelOnOnLoaded()
+        private void LibraryElementModelOnOnLoaded(object sender)
         {
             Controller.SetSize(Model.Width, Model.Height);
         }

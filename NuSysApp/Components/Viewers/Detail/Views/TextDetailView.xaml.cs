@@ -224,7 +224,7 @@ namespace NuSysApp
         */
         private void UpdateModelText(String s)
         {
-            ((TextNodeViewModel)DataContext).Controller.LibraryElementModel.SetContentData((TextNodeViewModel)DataContext, s);
+            ((TextNodeViewModel)DataContext).Controller.LibraryElementController.SetContentData(s);
         }
 
         public void Dispose()
@@ -250,7 +250,7 @@ namespace NuSysApp
                 await session.TranscribeVoice();
                 //     this.RecordVoice.Background = oldColor;
                 var vm = (TextNodeViewModel)DataContext;
-                vm.Controller.LibraryElementModel.SetContentData(vm,session.SpeechString);
+                vm.Controller.LibraryElementController.SetContentData(session.SpeechString);
             }
             else
             {

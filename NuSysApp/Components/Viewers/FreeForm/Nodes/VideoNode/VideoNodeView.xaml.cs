@@ -48,11 +48,11 @@ namespace NuSysApp
             //playbackElement.AutoPlay = false;
             if (SessionController.Instance.ContentController.ContainsAndLoaded(vm.Model.LibraryId))
             {
-                LoadVideo();
+                LoadVideo(this);
             }
             else
             {
-                vm.Controller.LibraryElementModel.OnLoaded += LoadVideo;
+                vm.Controller.LibraryElementController.Loaded += LoadVideo;
             }
             
 
@@ -118,7 +118,7 @@ namespace NuSysApp
         {
             playbackElement.Stop();
             var vm = (VideoNodeViewModel) DataContext;
-            vm.Controller.LibraryElementModel.OnLoaded -= LoadVideo;
+            vm.Controller.LibraryElementController.Loaded -= LoadVideo;
             vm.PropertyChanged -= Node_SelectionChanged;
             vm.LinkedTimeModels.CollectionChanged -= LinkedTimeBlocks_CollectionChanged;
             vm.Controller.Disposed -= ControllerOnDisposed;
@@ -126,7 +126,7 @@ namespace NuSysApp
             DataContext = null;
         }
 
-        private void LoadVideo()
+        private void LoadVideo(object sender)
         {
             var vm = DataContext as VideoNodeViewModel;
             playbackElement.Source = vm.GetSource();

@@ -186,7 +186,7 @@ namespace NuSysApp
         private void TitleChanged(object sender, KeyRoutedEventArgs e)
         {
             var vm = (DetailViewerViewModel)DataContext;
-            vm.CurrentElementController.LibraryElementModel.SetTitle(TitleBox.Text);
+            vm.CurrentElementController.LibraryElementController.SetTitle(TitleBox.Text);
             //vm.LibraryElementModelOnOnTitleChanged(this, TitleBox.Text);
             
 

@@ -423,6 +423,8 @@
     <Compile Include="Controller\ContentController.cs" />
     <Compile Include="Controller\ElementCollectionController.cs" />
     <Compile Include="Controller\ElementController.cs" />
+    <Compile Include="Controller\LibraryElementController\LibraryElementController.cs" />
+    <Compile Include="Controller\LibraryElementController\LoadContentEventArgs.cs" />
     <Compile Include="Controller\LinkElementController.cs" />
     <Compile Include="Controller\LockDictionary.cs" />
     <Compile Include="Controller\MediaController.cs" />
