@@ -26,6 +26,7 @@ namespace NuSysApp
         public override void Dispose()
         {
             Controller.LibraryElementModel.OnLoaded -= LibraryElementModelOnOnLoaded;
+            Image.ImageOpened -= UpdateSizeFromModel;
         }
 
         public BitmapImage Image { get; set; }
@@ -50,20 +51,6 @@ namespace NuSysApp
 
         private async Task DisplayImage()
         {
-            /*
-            var image = Controller.LibraryElementModel.ViewUtilBucket.ContainsKey("image")
-                       ? (BitmapImage)Controller.LibraryElementModel.ViewUtilBucket["image"]
-                       : null;
-            if (image != null)
-            {
-                Image = image;
-            }
-            else
-            {
-                Image = await MediaUtil.ByteArrayToBitmapImage(Convert.FromBase64String(Controller.LibraryElementModel.Data));
-                Controller.LibraryElementModel.ViewUtilBucket["image"] = Image;
-            }
-            */
             var url = Model.LibraryId + ".jpg";
             if (Controller.LibraryElementModel.ServerUrl != null)
             {
@@ -71,9 +58,13 @@ namespace NuSysApp
             }
             Image = new BitmapImage();
             Image.UriSource = new Uri("http://" + WaitingRoomView.ServerName + "/" + url);
+            Image.ImageOpened += UpdateSizeFromModel;
+            RaisePropertyChanged("Image");
+        }
+        private void UpdateSizeFromModel(object sender, object args)
+        {
             var ratio = (double)Image.PixelHeight / (double)Image.PixelWidth;
             Controller.SetSize(Controller.Model.Width, Controller.Model.Width * ratio);
-            RaisePropertyChanged("Image");
         }
         /*
         public override void SetSize(double width, double height)

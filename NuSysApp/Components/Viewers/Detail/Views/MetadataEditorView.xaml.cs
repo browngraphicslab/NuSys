@@ -62,7 +62,7 @@ namespace NuSysApp
 
             // Extract dictionary from libraryelementmodel.
             var vm = (DetailViewerViewModel)DetailViewerView.DataContext;
-            var dict = vm.CurrentElementController.LibraryElementModel.Metadata;
+            var dict = vm.CurrentElementController.LibraryElementModel.Metadata ?? new Dictionary<string, Tuple<string, bool>>();
 
             // Convert dictionary entries to MetadataEntries, and add to MetadataCollection
             foreach (var key in dict.Keys)

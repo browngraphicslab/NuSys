@@ -36,6 +36,16 @@ namespace NuSysApp
                 Controller.LibraryElementModel.OnLoaded += LibraryElementModelOnOnLoaded;
             }
         }
+        public Uri GetSource()
+        {
+            var content = Controller.LibraryElementModel;
+            var url = Model.LibraryId + ".mp4";
+            if (content != null && content.ServerUrl != null)
+            {
+                url = content.ServerUrl;
+            }
+            return new Uri("http://" + WaitingRoomView.ServerName + "/" + url);
+        }
 
         private void LibraryElementModelOnOnLoaded()
         {

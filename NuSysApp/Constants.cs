@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Windows.UI;
 
@@ -127,6 +128,10 @@ namespace NuSysApp
                 return false;
             }
             return true;
+        }
+        public static Uri GetServerURI(string url)
+        {
+            return new Uri("http://" + WaitingRoomView.ServerName + "/" + url);
         }
         #endregion StaticMethods
     }

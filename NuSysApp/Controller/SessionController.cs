@@ -154,6 +154,10 @@ namespace NuSysApp
 
             await Task.Run(async () =>
             {
+                if (WaitingRoomView.IS_HUB)
+                {
+                    return;
+                }
                 Recognizer = new SpeechRecognizer();
                 // Compile the dictation grammar that is loaded by default. = ""; 
                 await Recognizer.CompileConstraintsAsync();

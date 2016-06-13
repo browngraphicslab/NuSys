@@ -52,7 +52,7 @@ namespace NuSysApp
 
 
         //speech to text variables
-        private static SpeechRecognizer _speechRecognizer = new SpeechRecognizer();
+        private static SpeechRecognizer _speechRecognizer;
         private CoreDispatcher _dispatcher;
         private StringBuilder _dictatedTextBuilder;
         private StringBuilder _hypothesisBuilder;
@@ -61,6 +61,10 @@ namespace NuSysApp
 
         public TextNodeView(TextNodeViewModel vm)
         {
+            if(_speechRecognizer == null && !WaitingRoomView.IS_HUB)
+            {
+                _speechRecognizer = new SpeechRecognizer();
+            }
             _count++;
             Debug.WriteLine(_count);
             InitializeComponent();
@@ -306,6 +310,10 @@ namespace NuSysApp
 
         private async Task InitSpeechRecognition()
         {
+            if (WaitingRoomView.IS_HUB)
+            {
+                return;
+            }
             this._dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
             this._dictatedTextBuilder = new StringBuilder();
             this._hypothesisBuilder = new StringBuilder();

@@ -275,7 +275,7 @@ namespace NuSysApp
        
             if ((this.Width > 250 || e.Delta.Translation.X < 0) && (Canvas.GetLeft(this) > 0 || e.Delta.Translation.X > 0) && (Canvas.GetLeft(this) > 30 || e.Delta.Translation.X > 0))
             {
-                this.Width -= e.Delta.Translation.X;
+                this.Width -= Math.Min(e.Delta.Translation.X,this.Width);
                // xContainer.Width = this.Width - 30;
 
                // exitButtonContainer.Width = xContainer.Width;

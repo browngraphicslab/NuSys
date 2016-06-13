@@ -76,7 +76,7 @@ namespace NuSysApp
             base.SetSize(width, height);
         }
 
-        public string AudioSource
+        public Uri AudioSource
         {
             get
             {
@@ -85,8 +85,8 @@ namespace NuSysApp
                 {
                     url = Controller.LibraryElementModel.ServerUrl;
                 }
-                url = "http://" + WaitingRoomView.ServerName + "/" + url;
-                return url;
+                var uri = Constants.GetServerURI(url);
+                return uri;
             }
         }
         public override async Task Init()
