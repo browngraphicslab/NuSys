@@ -97,6 +97,13 @@ namespace NuSysApp
                             switch ((string)dict["notification_type"])
                             {
                                 case "content_available":
+                                    if (WaitingRoomView.UserName.ToLower() != "rosemary" && WaitingRoomView.UserName.ToLower() != "gfxadmin" && WaitingRoomView.UserName.ToLower() != "rms")
+                                    {
+                                        if (dict.ContainsKey("creator_user_id") && (dict["creator_user_id"].ToString().ToLower() == "rosemary" || dict["creator_user_id"].ToString().ToLower() == "rms"))
+                                        {
+                                            break;
+                                        }
+                                    }
                                     OnContentAvailable?.Invoke(dict);
                                     break;
                                 case "add_user":
@@ -428,7 +435,15 @@ namespace NuSysApp
             var final = new Dictionary<string, Dictionary<string, object>>();
             foreach (var kvp in deserialized)
             {
-                final[kvp.Key] = JsonConvert.DeserializeObject<Dictionary<string, object>>(kvp.Value.ToString(), settings);
+                var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(kvp.Value.ToString(), settings);
+                if (WaitingRoomView.UserName.ToLower() != "rosemary" && WaitingRoomView.UserName.ToLower() != "gfxadmin" && WaitingRoomView.UserName.ToLower() != "rms")
+                {
+                    if (dict.ContainsKey("creator_user_id") && (dict["creator_user_id"].ToString().ToLower() == "rosemary" || dict["creator_user_id"].ToString().ToLower() == "rms"))
+                    {
+                        continue;
+                    }
+                }
+                final[kvp.Key] = dict;
             }
             return final;
         }

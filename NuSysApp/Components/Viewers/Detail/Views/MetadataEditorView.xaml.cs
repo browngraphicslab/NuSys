@@ -121,7 +121,7 @@ namespace NuSysApp
             var entry = new MetadataEntry(xField.Text, xValue.Text, true);
 
             // Adds metadata entry to the library element and updates the listview
-            vm.CurrentElementController.LibraryElementModel.AddMetadata(entry);
+            vm.CurrentElementController.LibraryElementController.AddMetadata(entry);
             this.Update();
             xField.Text = "";
             xValue.Text = "";
@@ -140,7 +140,7 @@ namespace NuSysApp
             var grid = button.GetVisualParent() as Grid;
             var entry = grid.DataContext as MetadataEntry;
             var vm = (DetailViewerViewModel)DetailViewerView.DataContext;
-            vm.CurrentElementController.LibraryElementModel.RemoveMetadata(entry.Key);
+            vm.CurrentElementController.LibraryElementController.RemoveMetadata(entry.Key);
 
             // Finally, updates the ListView to reflect the changes
             this.Update();

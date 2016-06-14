@@ -57,7 +57,7 @@ namespace NuSysApp
             SessionController.Instance.ContentController.Add(libraryElement);
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElement.LibraryElementId);
             libraryElement.Timestamp = time;
-            var loadEventArgs = new LoadContentEventArgs(_message["data"].ToString());
+            var loadEventArgs = new LoadContentEventArgs(_message["data"]?.ToString());
             if (_message.ContainsKey("data") && _message["data"] != null)
             {
                 controller.Load(loadEventArgs);
