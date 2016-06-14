@@ -18,7 +18,7 @@ namespace NuSysApp
     public class DetailViewerViewModel : BaseINPC
     {
         private ElementModel _nodeModel;
-        private DetailNodeViewFactory _viewFactory = new DetailNodeViewFactory();
+        private DetailViewHomeTabViewFactory _viewHomeTabViewFactory = new DetailViewHomeTabViewFactory();
         private String _tagToDelete;
         public Boolean DeleteOnFocus;
         public string Title { get; set; }
@@ -31,7 +31,7 @@ namespace NuSysApp
         public ObservableCollection<StackPanel> Metadata { get; set; }
 
         private ElementViewModel _currentElementViewModel;
-        public ElementController CurrentElementController { get; set; }
+        public LibraryElementController CurrentElementController { get; set; }
 
         public delegate void TitleChangedHandler(object source, string newTitle);
         public event TitleChangedHandler TitleChanged;
@@ -45,27 +45,37 @@ namespace NuSysApp
 
         public void Dispose()
         {
-            var tempvm = (ElementViewModel)View.DataContext;
-            tempvm.PropertyChanged -= NodeVMPropertChanged;
+            var tempvm = (DetailHomeTabViewModel)View.DataContext;
+            tempvm.TitleChanged -= NodeVMTitleChanged;
             _nodeModel = null;
 
         }
 
         public async Task<bool> ShowElement(ElementController controller)
         {
+            if (!await ShowElement(controller.LibraryElementController))
+            {
+                return false;
+            }
+            //Create non-libraryelementcontroller tabs
+            return true;
+        }
+        public async Task<bool> ShowElement(LibraryElementController controller)
+        {
             CurrentElementController = controller;
-            View = await _viewFactory.CreateFromSendable(controller);
+            View = await _viewHomeTabViewFactory.CreateFromSendable(controller);
             if (View == null)
                 return false;
-            _nodeModel = controller.Model;
+            //_nodeModel = vm.Model;
             Title = controller.LibraryElementModel.Title;
             this.ChangeTitle(this, controller.LibraryElementModel.Title);
-
-            controller.MetadataChange += ControllerOnMetadataChange;
-            controller.LibraryElementController.TitleChanged += ChangeTitle;
             
-            var tempvm = (ElementViewModel) View.DataContext;
-            tempvm.PropertyChanged += NodeVMPropertChanged;
+            //vm.Controller.MetadataChange += ControllerOnMetadataChange;
+            //vm.Controller.LibraryElementModel.OnTitleChanged += ChangeTitle;
+
+            
+            var tempvm = (DetailHomeTabViewModel)View.DataContext;
+            tempvm.TitleChanged += NodeVMTitleChanged;
             MakeTagList();
             RaisePropertyChanged("Title");
             RaisePropertyChanged("View");
@@ -92,21 +102,10 @@ namespace NuSysApp
             }
         }
 
-        private void NodeVMPropertChanged(object sender, PropertyChangedEventArgs e)
+        private void NodeVMTitleChanged(object sender, string title)
         {
-            if (!(View.DataContext is ElementViewModel))
-                return;
-
-            var tempvm = (ElementViewModel)View.DataContext;
-            switch (e.PropertyName.ToLower())
-            {
-                case "title":
-                    Title = tempvm.Title;
-                    RaisePropertyChanged("Title");
-                    break;
-                default:
-                    break;
-            }
+            Title = title;
+            RaisePropertyChanged("Title");
         }
 
         public void MakeMetadataList()

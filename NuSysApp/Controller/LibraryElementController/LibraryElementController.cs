@@ -181,6 +181,31 @@ namespace NuSysApp
             IsLoaded = true;
             _onLoaded?.Invoke(this);
         }
+        public Uri GetSource()
+        {
+            string extension = "";
+            switch (_libraryElementModel.Type)
+            {
+                case ElementType.PDF:
+                    extension = ".pdf";
+                    break;
+                case ElementType.Video:
+                    extension = ".mp4";
+                    break;
+                case ElementType.Audio:
+                    extension = ".mp3";
+                    break;
+                case ElementType.Image:
+                    extension = ".jpg";
+                    break;
+            }
+            var url = _libraryElementModel.LibraryElementId + extension;
+            if (_libraryElementModel.ServerUrl != null)
+            {
+                url = _libraryElementModel.ServerUrl;
+            }
+            return new Uri("http://" + WaitingRoomView.ServerName + "/" + url);
+        }
         public LibraryElementModel LibraryElementModel
         {
             get

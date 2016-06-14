@@ -549,7 +549,7 @@ namespace NuSysApp
         }
 
 
-        public void ShowDetailView(ElementController controller)
+        public void ShowDetailView(LibraryElementController controller)
         {
             xDetailViewer.ShowElement(controller);
         }

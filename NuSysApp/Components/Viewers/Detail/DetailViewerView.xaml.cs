@@ -140,14 +140,14 @@ namespace NuSysApp
             });
         }
 
-        public async void ShowElement(ElementController controller)
+        public async Task ShowElement(LibraryElementController controller)
         {
             var vm = (DetailViewerViewModel)DataContext;
             if (await vm.ShowElement(controller))
                 Visibility = Visibility.Visible;
 
             //if (controller.Model is TextElementModel || controller.Model is PdfNodeModel)
-            if (controller.Model is PdfNodeModel)
+            if (controller.LibraryElementModel.Type == ElementType.PDF)
             {
                 SuggestButton.Visibility = Visibility.Visible;
             }
@@ -186,10 +186,9 @@ namespace NuSysApp
         private void TitleChanged(object sender, KeyRoutedEventArgs e)
         {
             var vm = (DetailViewerViewModel)DataContext;
-            vm.CurrentElementController.LibraryElementController.SetTitle(TitleBox.Text);
+            vm.CurrentElementController.SetTitle(TitleBox.Text);
             //vm.LibraryElementModelOnOnTitleChanged(this, TitleBox.Text);
             
-
         }
 
         private async void AddTagButton_OnClick(object sender, RoutedEventArgs e)
@@ -246,9 +245,9 @@ namespace NuSysApp
         {
             Visibility = Visibility.Collapsed;
             var vm = (DetailViewerViewModel)DataContext;
-            var textview = (vm.View as TextDetailView);
+            var textview = (vm.View as TextDetailHomeTabView);
             textview?.Dispose();
-            var videoView = vm.View as VideoDetailView;
+            var videoView = vm.View as VideoDetailHomeTabView;
             videoView?.Dispose();
         }
 
@@ -280,12 +279,12 @@ namespace NuSysApp
 
                // exitButtonContainer.Width = xContainer.Width;
 
-                if (nodeContent.Content is ImageFullScreenView)
+                if (nodeContent.Content is ImageDetailHomeTabView)
                 {
-                   // ((ImageFullScreenView) nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
-                } else if (nodeContent.Content is TextDetailView)
+                   // ((ImageDetailHomeTabView) nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
+                } else if (nodeContent.Content is TextDetailHomeTabView)
                 {
-                 //   ((TextDetailView)nodeContent.Content).SetDimension(xContainer.Width);
+                 //   ((TextDetailHomeTabView)nodeContent.Content).SetDimension(xContainer.Width);
                 } else if (nodeContent.Content is WebDetailView)
                 {
                     ((WebDetailView)nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
@@ -301,6 +300,19 @@ namespace NuSysApp
             {
                 Canvas.SetLeft(this,30);
             }
+        }
+
+        private void ClearPivot()
+        {
+            xRootPivot.Items.Clear();
+        }
+
+        private void AddToPivot()
+        {
+            var item = new PivotItem();
+            item.Header = ElementType.Text;
+            xRootPivot.ItemsSource = item;
+            xRootPivot.Items.Add(item);
         }
         
     }

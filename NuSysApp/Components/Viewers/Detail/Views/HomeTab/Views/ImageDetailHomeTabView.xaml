@@ -1,5 +1,5 @@
 ﻿<UserControl
-    x:Class="NuSysApp.ImageFullScreenView"
+    x:Class="NuSysApp.ImageDetailHomeTabView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:NuSysApp"
@@ -24,7 +24,11 @@
             <Button Click="ButtonBase_OnClick" Foreground="{StaticResource foreground6}" Background="Transparent">INK</Button>
             <Button Name="SourceBttn" Foreground="{StaticResource foreground6}" Click="OnGoToSource" Background="Transparent">GO TO SOURCE</Button>
         </StackPanel>
-            <Image x:Name="xImg" Source="{Binding Image}" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="3,3,3,3"/>
-    </Grid>
+            <Image x:Name="xImg" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="3,3,3,3">
+                <Image.Source>
+                    <BitmapImage UriSource="{Binding Path=Image}"></BitmapImage>
+                </Image.Source>
+            </Image>
+        </Grid>
         </Border>
 </UserControl>
