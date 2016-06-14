@@ -51,18 +51,18 @@ namespace NuSysApp
 
         }
 
-        public async Task<bool> ShowElement(ElementController controller)
+        public async Task<bool> ShowElement(LibraryElementModel model)
         {
-            CurrentElementController = controller;
-            View = await _viewFactory.CreateFromSendable(controller);
+            //CurrentElementController = vm.Controller;
+            View = await _viewFactory.CreateFromSendable(model);
             if (View == null)
                 return false;
-            _nodeModel = controller.Model;
-            Title = controller.LibraryElementModel.Title;
-            this.ChangeTitle(this, controller.LibraryElementModel.Title);
+            //_nodeModel = vm.Model;
+            Title = model.Title;
+            this.ChangeTitle(this, model.Title);
 
-            controller.MetadataChange += ControllerOnMetadataChange;
-            controller.LibraryElementModel.OnTitleChanged += ChangeTitle;
+            //vm.Controller.MetadataChange += ControllerOnMetadataChange;
+            //vm.Controller.LibraryElementModel.OnTitleChanged += ChangeTitle;
             
             var tempvm = (ElementViewModel) View.DataContext;
             tempvm.PropertyChanged += NodeVMPropertChanged;

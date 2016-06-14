@@ -140,14 +140,14 @@ namespace NuSysApp
             });
         }
 
-        public async void ShowElement(ElementController controller)
+        public async Task ShowElement(LibraryElementModel model)
         {
             var vm = (DetailViewerViewModel)DataContext;
-            if (await vm.ShowElement(controller))
+            if (await vm.ShowElement(model))
                 Visibility = Visibility.Visible;
 
             //if (controller.Model is TextElementModel || controller.Model is PdfNodeModel)
-            if (controller.Model is PdfNodeModel)
+            if (model.Type == ElementType.PDF)
             {
                 SuggestButton.Visibility = Visibility.Visible;
             }
@@ -301,6 +301,19 @@ namespace NuSysApp
             {
                 Canvas.SetLeft(this,30);
             }
+        }
+
+        private void ClearPivot()
+        {
+            xRootPivot.Items.Clear();
+        }
+
+        private void AddToPivot()
+        {
+            var item = new PivotItem();
+            item.Header = ElementType.Text;
+            xRootPivot.ItemsSource = item;
+            xRootPivot.Items.Add(item);
         }
         
     }

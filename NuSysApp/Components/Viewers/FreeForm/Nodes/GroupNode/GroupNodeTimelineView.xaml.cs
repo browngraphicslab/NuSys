@@ -301,7 +301,7 @@ namespace NuSysApp
                 }
                 else if (type != ElementType.Link)
                 {
-                    SessionController.Instance.SessionView.ShowDetailView(_elementControllerDict[image]);
+                    SessionController.Instance.SessionView.ShowDetailView((dc.DataContext as ElementViewModel).Controller.LibraryElementModel);
                 }
 
                 e.Handled = true;

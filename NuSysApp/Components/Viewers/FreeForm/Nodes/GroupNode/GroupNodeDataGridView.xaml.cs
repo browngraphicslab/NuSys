@@ -141,7 +141,7 @@ namespace NuSysApp
                     }
                     else if (type != ElementType.Link)
                     {
-                        SessionController.Instance.SessionView.ShowDetailView(controller);
+                        SessionController.Instance.SessionView.ShowDetailView((dc as ElementViewModel).Controller.LibraryElementModel);
                     }
 
                 
