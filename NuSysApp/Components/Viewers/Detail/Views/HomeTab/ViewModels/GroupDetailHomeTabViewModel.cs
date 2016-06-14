@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class PdfDetailHomeTabViewModel : DetailHomeTabViewModel
+    public class GroupDetailHomeTabViewModel : DetailHomeTabViewModel
     {
         public LibraryElementController Controller { get; }
+
         public LibraryElementModel Model { get; }
-        public PdfDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
+        public GroupDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
             Controller = controller;
             Model = controller.LibraryElementModel;

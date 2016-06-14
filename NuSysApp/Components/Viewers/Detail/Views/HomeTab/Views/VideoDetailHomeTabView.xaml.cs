@@ -24,7 +24,7 @@ using NuSysApp.Nodes.AudioNode;
 
 namespace NuSysApp
 {
-    public sealed partial class VideoDetailView : UserControl
+    public sealed partial class VideoDetailHomeTabView : UserControl
     {
         private MediaCapture _mediaCapture;
         private bool _isRecording;
@@ -35,15 +35,15 @@ namespace NuSysApp
 
 
 
-        public VideoDetailView(VideoNodeViewModel vm)
+        public VideoDetailHomeTabView(VideoDetailHomeTabViewModel vm)
         {
             this.InitializeComponent();
             DataContext = vm;
 
-            playbackElement.Source = vm.GetSource();
+            playbackElement.Source = vm.Controller.GetSource();
 
             _isRecording = false;
-            vm.LinkedTimeModels.CollectionChanged += LinkedTimeBlocks_CollectionChanged;
+            //vm.LinkedTimeModels.CollectionChanged += LinkedTimeBlocks_CollectionChanged;
             _timeBlocks = new List<LinkedTimeBlockViewModel>();
             scrubBar.SetValue(Canvas.ZIndexProperty, 1);
             

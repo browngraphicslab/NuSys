@@ -4,18 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NuSysApp.Components.Viewers.Detail.Views.HomeTab.ViewModels
+namespace NuSysApp
 {
-    public class TextDetailHomeTabViewModel
+    public class TextDetailHomeTabViewModel : DetailHomeTabViewModel
     {
-        internal Action<object, string> TextBindingChanged;
+        public delegate void TextChangedHandler(object source, string text);
+        public event TextChangedHandler TextChanged;
 
         public LibraryElementController Controller { get; }
-        public LibraryElementModel Model { get; }
-        public TextDetailHomeTabViewModel(LibraryElementController controller)
+        public TextDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
             Controller = controller;
-            Model = controller.LibraryElementModel;
+            controller.ContentChanged += ContentChanged;
+        }
+
+        private void ContentChanged(object source, string data)
+        {
+            TextChanged?.Invoke(source,data);
         }
 
     }

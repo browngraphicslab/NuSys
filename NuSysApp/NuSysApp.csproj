@@ -254,8 +254,15 @@
     <Compile Include="Components\Misc\TextInputBlock.xaml.cs">
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\AudioDetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\DetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\GroupDetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\ImageDetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\PdfDetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\TextDetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\VideoDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\MetadataEntry.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\ElementCollectionDetailHomeTabView.xaml.cs">
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\ElementCollectionDetailHomeTabView.xaml.cs">
       <DependentUpon>ElementCollectionDetailHomeTabView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\Detail\Views\MetadataEditorView.xaml.cs">
@@ -272,39 +279,39 @@
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\RectangleViewModel.cs" />
     <Compile Include="Components\WaitingRoom\SelectionHull.cs" />
-    <Compile Include="Components\Viewers\Detail\DetailNodeViewFactory.cs" />
+    <Compile Include="Components\Viewers\Detail\DetailViewHomeTabViewFactory.cs" />
     <Compile Include="Components\Viewers\Detail\DetailViewerView.xaml.cs">
       <DependentUpon>DetailViewerView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\Detail\DetailViewerViewModel.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\AudioDetailHomeTabView.xaml.cs">
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\AudioDetailHomeTabView.xaml.cs">
       <DependentUpon>AudioDetailHomeTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\GroupDetailHomeTabView.xaml.cs">
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\GroupDetailHomeTabView.xaml.cs">
       <DependentUpon>GroupDetailHomeTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\LinkDetailHomeTabView.xaml.cs">
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\LinkDetailHomeTabView.xaml.cs">
       <DependentUpon>LinkDetailHomeTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\PowerpointDetailHomeTabView.xaml.cs">
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\PowerpointDetailHomeTabView.xaml.cs">
       <DependentUpon>PowerpointDetailHomeTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\VideoDetailHomeTabView.xaml.cs">
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\VideoDetailHomeTabView.xaml.cs">
       <DependentUpon>VideoDetailHomeTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\WebDetailHomeTabView.xaml.cs">
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\WebDetailHomeTabView.xaml.cs">
       <DependentUpon>WebDetailHomeTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\PdfDetailHomeTabView.xaml.cs">
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\PdfDetailHomeTabView.xaml.cs">
       <DependentUpon>PdfDetailHomeTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\ImageFullScreenView.xaml.cs">
-      <DependentUpon>ImageFullScreenView.xaml</DependentUpon>
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\ImageDetailHomeTabView.xaml.cs">
+      <DependentUpon>ImageDetailHomeTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\TextDetailHomeTabView.xaml.cs">
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\TextDetailHomeTabView.xaml.cs">
       <DependentUpon>TextDetailHomeTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\WordDetailHomeTabView.xaml.cs">
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml.cs">
       <DependentUpon>WordDetailHomeTabView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\GroupChat\ChatPopupView.xaml.cs">
@@ -710,19 +717,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\AudioDetailHomeTabView.xaml">
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\AudioDetailHomeTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\ElementCollectionDetailHomeTabView.xaml">
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\ElementCollectionDetailHomeTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\GroupDetailHomeTabView.xaml">
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\GroupDetailHomeTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\LinkDetailHomeTabView.xaml">
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\LinkDetailHomeTabView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -730,31 +737,31 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\PowerpointDetailHomeTabView.xaml">
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\PowerpointDetailHomeTabView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\VideoDetailHomeTabView.xaml">
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\VideoDetailHomeTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\WebDetailHomeTabView.xaml">
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\WebDetailHomeTabView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\PdfDetailHomeTabView.xaml">
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\PdfDetailHomeTabView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\ImageFullScreenView.xaml">
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\ImageDetailHomeTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\TextDetailHomeTabView.xaml">
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\TextDetailHomeTabView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\WordDetailHomeTabView.xaml">
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -25,7 +25,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
-using NuSysApp.Components.Viewers.Detail.Views.HomeTab.ViewModels;
+
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -47,9 +47,6 @@ namespace NuSysApp
             DataContext = vm;
           // SetDimension(SessionController.Instance.SessionView.ActualWidth / 2 - 30);
 
-            var model = vm.Model;
-
-
             List<Uri> AllowedUris = new List<Uri>();
             AllowedUris.Add(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
            
@@ -58,11 +55,8 @@ namespace NuSysApp
             {
                 await SessionController.Instance.InitializeRecog();
                 SetHeight(SessionController.Instance.SessionView.ActualHeight/2);
-
-
             };
-
-
+            
 
             SizeChanged += delegate(object sender, SizeChangedEventArgs args)
             {
@@ -72,7 +66,7 @@ namespace NuSysApp
 
             MyWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
             MyWebView.NavigationCompleted += MyWebViewOnNavigationCompleted;
-            vm.TextBindingChanged += VmOnTextBindingChanged;
+            vm.TextChanged += VmOnTextBindingChanged;
             MyWebView.ScriptNotify += wvBrowser_ScriptNotify;
 
             vm.Controller.Disposed += ControllerOnDisposed;
@@ -86,9 +80,9 @@ namespace NuSysApp
 
         private void ControllerOnDisposed(object source)
         {
-            var vm = (TextNodeViewModel)DataContext;
+            var vm = (TextDetailHomeTabViewModel)DataContext;
             MyWebView.NavigationCompleted -= MyWebViewOnNavigationCompleted;
-            vm.TextBindingChanged -= VmOnTextBindingChanged;
+            vm.TextChanged -= VmOnTextBindingChanged;
             MyWebView.ScriptNotify -= wvBrowser_ScriptNotify;
             vm.Controller.Disposed -= ControllerOnDisposed;
             DataContext = null;
@@ -96,11 +90,11 @@ namespace NuSysApp
 
         private void MyWebViewOnNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
         {
-            if (((TextNodeViewModel)DataContext).Text != "")
+            if (((TextDetailHomeTabViewModel)DataContext).Controller.LibraryElementModel.Data != "")
             {
-                UpdateText(((TextNodeViewModel)DataContext).Text);
+                UpdateText(((TextDetailHomeTabViewModel)DataContext).Controller.LibraryElementModel.Data);
             }
-            OpenTextBox(((TextNodeViewModel)DataContext).Text);
+            OpenTextBox(((TextDetailHomeTabViewModel)DataContext).Controller.LibraryElementModel.Data);
         }
 
         private void VmOnTextBindingChanged(object source, string text)
@@ -221,7 +215,14 @@ namespace NuSysApp
         */
         private void UpdateModelText(String s)
         {
-            ((TextNodeViewModel)DataContext).Controller.LibraryElementController.SetContentData(s);
+            var vm = DataContext as TextDetailHomeTabViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+            vm.TextChanged -= VmOnTextBindingChanged;
+            vm.Controller.SetContentData(s);
+            vm.TextChanged += VmOnTextBindingChanged;
         }
 
         public void Dispose()
@@ -246,12 +247,12 @@ namespace NuSysApp
                 //await TranscribeVoice();
                 await session.TranscribeVoice();
                 //     this.RecordVoice.Background = oldColor;
-                var vm = (TextNodeViewModel)DataContext;
-                vm.Controller.LibraryElementController.SetContentData(session.SpeechString);
+                var vm = (TextDetailHomeTabViewModel)DataContext;
+                vm.Controller.SetContentData(session.SpeechString);
             }
             else
             {
-                var vm = this.DataContext as TextNodeViewModel;
+                var vm = this.DataContext as TextDetailHomeTabViewModel;
                 //   this.RecordVoice.Background = vm.Color;
             }
         }
@@ -312,6 +313,7 @@ namespace NuSysApp
         //}
         private async void OnGoToSource(object sender, RoutedEventArgs e)
         {
+            /*
             var model = (TextElementModel)((TextNodeViewModel)DataContext).Model;
             string token = model.GetMetaData("Token")?.ToString();
 
@@ -345,8 +347,9 @@ namespace NuSysApp
                     writer.WriteLineAsync(token);
                 }
             }
-
+            
             await AccessList.OpenFile(token);
+            */
         }
     }
 }

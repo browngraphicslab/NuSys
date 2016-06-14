@@ -549,9 +549,9 @@ namespace NuSysApp
         }
 
 
-        public void ShowDetailView(LibraryElementModel model)
+        public void ShowDetailView(LibraryElementController controller)
         {
-            xDetailViewer.ShowElement(model);
+            xDetailViewer.ShowElement(controller);
         }
 
         public async void OpenFile(ElementViewModel vm)

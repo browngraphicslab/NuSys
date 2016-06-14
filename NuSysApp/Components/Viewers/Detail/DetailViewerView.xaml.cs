@@ -140,14 +140,14 @@ namespace NuSysApp
             });
         }
 
-        public async Task ShowElement(LibraryElementModel model)
+        public async Task ShowElement(LibraryElementController controller)
         {
             var vm = (DetailViewerViewModel)DataContext;
-            if (await vm.ShowElement(model))
+            if (await vm.ShowElement(controller))
                 Visibility = Visibility.Visible;
 
             //if (controller.Model is TextElementModel || controller.Model is PdfNodeModel)
-            if (model.Type == ElementType.PDF)
+            if (controller.LibraryElementModel.Type == ElementType.PDF)
             {
                 SuggestButton.Visibility = Visibility.Visible;
             }
@@ -186,7 +186,7 @@ namespace NuSysApp
         private void TitleChanged(object sender, KeyRoutedEventArgs e)
         {
             var vm = (DetailViewerViewModel)DataContext;
-            vm.CurrentElementController.LibraryElementController.SetTitle(TitleBox.Text);
+            vm.CurrentElementController.SetTitle(TitleBox.Text);
             //vm.LibraryElementModelOnOnTitleChanged(this, TitleBox.Text);
             
         }
@@ -247,7 +247,7 @@ namespace NuSysApp
             var vm = (DetailViewerViewModel)DataContext;
             var textview = (vm.View as TextDetailHomeTabView);
             textview?.Dispose();
-            var videoView = vm.View as VideoDetailView;
+            var videoView = vm.View as VideoDetailHomeTabView;
             videoView?.Dispose();
         }
 

@@ -51,13 +51,9 @@ namespace NuSysApp
 
         private async Task DisplayImage()
         {
-            var url = Model.LibraryId + ".jpg";
-            if (Controller.LibraryElementModel.ServerUrl != null)
-            {
-                url = Controller.LibraryElementModel.ServerUrl;
-            }
+            var url = Controller.LibraryElementController.GetSource();
             Image = new BitmapImage();
-            Image.UriSource = new Uri("http://" + WaitingRoomView.ServerName + "/" + url);
+            Image.UriSource = url;
             Image.ImageOpened += UpdateSizeFromModel;
             RaisePropertyChanged("Image");
         }

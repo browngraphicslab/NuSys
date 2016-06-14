@@ -129,7 +129,7 @@ namespace NuSysApp
         private void LoadVideo(object sender)
         {
             var vm = DataContext as VideoNodeViewModel;
-            playbackElement.Source = vm.GetSource();
+            playbackElement.Source = vm.Controller.LibraryElementController.GetSource();
         }
 
         private void LinkedTimeBlocks_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

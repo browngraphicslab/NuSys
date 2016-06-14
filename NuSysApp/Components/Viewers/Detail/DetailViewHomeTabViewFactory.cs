@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using NuSysApp.Components.Viewers.Detail.Views;
-using NuSysApp.Components.Viewers.Detail.Views.HomeTab.ViewModels;
+
 
 namespace NuSysApp
 {
@@ -39,20 +38,19 @@ namespace NuSysApp
                     //view = new WebDetailView(new WebNodeViewModel(controller));
                     break;
                 case ElementType.Video:
-                    view = new VideoDetailView(new VideoNodeViewModel(new ElementController(new VideoNodeModel(model.LibraryElementId))));
+                    view = new VideoDetailHomeTabView(new VideoDetailHomeTabViewModel(controller));
                     break;
                 case ElementType.Audio:
-                    view = new AudioDetailView(new AudioNodeViewModel(new ElementController(new AudioNodeModel(model.LibraryElementId))));
+                    view = new AudioDetailHomeTabView(new AudioDetailHomeTabViewModel(controller));
                     break;
                 case ElementType.Collection:
-                    view = new GroupDetailView(new ElementCollectionViewModel(new ElementCollectionController(new CollectionElementModel(model.LibraryElementId))));
+                    view = new GroupDetailHomeTabView(new GroupDetailHomeTabViewModel(controller));
                     break;
             }
 
             if (view == null)
                 return null;
-
-            await ((ElementViewModel)view.DataContext).Init();
+            
             return view;
         }
         //public async Task<UserControl> CreateFromSendable(ElementController controller)
@@ -82,14 +80,14 @@ namespace NuSysApp
         //            view = new WebDetailView(new WebNodeViewModel(controller));
         //            break;
         //        case ElementType.Video:
-        //            view = new VideoDetailView(new VideoNodeViewModel(controller));
+        //            view = new VideoDetailHomeTabView(new VideoNodeViewModel(controller));
         //            break;
         //        case ElementType.Audio:
         //            AudioNodeViewModel audioVM = new AudioNodeViewModel(controller);
-        //            view = new AudioDetailView(audioVM);
+        //            view = new AudioDetailHomeTabView(audioVM);
         //            break;
         //        case ElementType.Collection:
-        //            view = new GroupDetailView(new ElementCollectionViewModel((ElementCollectionController)controller));
+        //            view = new GroupDetailHomeTabView(new ElementCollectionViewModel((ElementCollectionController)controller));
         //            break;
         //    }
 

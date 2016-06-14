@@ -24,7 +24,7 @@ using Path = System.IO.Path;
 
 namespace NuSysApp
 {
-    public sealed partial class AudioDetailView : UserControl
+    public sealed partial class AudioDetailHomeTabView : UserControl
     {
         private bool _stopped;
         private bool _loaded;
@@ -32,7 +32,7 @@ namespace NuSysApp
         private Line _temporaryLinkVisual;
         private List<LinkedTimeBlockViewModel> _timeBlocks;
 
-        public AudioDetailView(AudioNodeViewModel vm)
+        public AudioDetailHomeTabView(AudioDetailHomeTabViewModel vm)
         {
             this.DataContext = vm;
             this.InitializeComponent();
@@ -41,13 +41,14 @@ namespace NuSysApp
             (DataContext as AudioNodeViewModel).addTimeBlockChange(LinkedTimeBlocks_CollectionChanged);
             _timeBlocks = new List<LinkedTimeBlockViewModel>();
             scrubBar.SetValue(Canvas.ZIndexProperty, 1);
-            ((AudioNodeModel)(vm.Model)).Controller.OnScrub += ControllerOnScrub;
-            ((AudioNodeModel)(vm.Model)).Controller.OnPlay += Controller_OnPlay1;
-            ((AudioNodeModel)(vm.Model)).Controller.OnPause += Controller_OnPause1;
-            ((AudioNodeModel)(vm.Model)).Controller.OnStop += Controller_OnStop1;
-            scrubBar.Maximum = ((AudioNodeModel)(vm.Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds;
-            scrubBar.Loaded += ScrubBarOnLoaded;
-            ((AudioNodeModel)(vm.Model)).Controller.Scrub();
+
+            //((AudioNodeModel)(vm.Model)).Controller.OnScrub += ControllerOnScrub;
+            //((AudioNodeModel)(vm.Model)).Controller.OnPlay += Controller_OnPlay1;
+            //((AudioNodeModel)(vm.Model)).Controller.OnPause += Controller_OnPause1;
+            //((AudioNodeModel)(vm.Model)).Controller.OnStop += Controller_OnStop1;
+            //scrubBar.Maximum = ((AudioNodeModel)(vm.Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+            //scrubBar.Loaded += ScrubBarOnLoaded;
+            //((AudioNodeModel)(vm.Model)).Controller.Scrub();
 
             (DataContext as AudioNodeViewModel).OnVisualizationLoaded += LoadPlaybackElement;
 

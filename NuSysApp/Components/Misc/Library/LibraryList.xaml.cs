@@ -114,9 +114,9 @@ namespace NuSysApp
 
             LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
 
-            _propertiesWindow.SetElement(element);
-            SessionController.Instance.SessionView.ShowDetailView(element);
-            _propertiesWindow.Visibility = Visibility.Visible;
+            //_propertiesWindow.SetElement(element);
+            SessionController.Instance.SessionView.ShowDetailView(SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId));
+            //_propertiesWindow.Visibility = Visibility.Visible;
         }
         private async void Sort_Button_Click(object sender, RoutedEventArgs e)
         {
