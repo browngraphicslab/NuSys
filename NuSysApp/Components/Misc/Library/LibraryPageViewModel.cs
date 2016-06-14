@@ -101,7 +101,7 @@ namespace NuSysApp
             var hash = new HashSet<LibraryElementModel>(PageElements);
             foreach (var item in _orgList)
             {
-                if (valids.Contains(item.Id) && !hash.Contains(item))
+                if (valids.Contains(item.LibraryElementId) && !hash.Contains(item))
                 {
                     PageElements.Add(item);
                 }

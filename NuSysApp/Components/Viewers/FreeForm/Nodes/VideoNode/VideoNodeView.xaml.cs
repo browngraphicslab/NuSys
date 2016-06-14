@@ -48,11 +48,11 @@ namespace NuSysApp
             //playbackElement.AutoPlay = false;
             if (SessionController.Instance.ContentController.ContainsAndLoaded(vm.Model.LibraryId))
             {
-                LoadVideo();
+                LoadVideo(this);
             }
             else
             {
-                vm.Controller.LibraryElementModel.OnLoaded += LoadVideo;
+                vm.Controller.LibraryElementController.Loaded += LoadVideo;
             }
             
 
@@ -118,7 +118,7 @@ namespace NuSysApp
         {
             playbackElement.Stop();
             var vm = (VideoNodeViewModel) DataContext;
-            vm.Controller.LibraryElementModel.OnLoaded -= LoadVideo;
+            vm.Controller.LibraryElementController.Loaded -= LoadVideo;
             vm.PropertyChanged -= Node_SelectionChanged;
             vm.LinkedTimeModels.CollectionChanged -= LinkedTimeBlocks_CollectionChanged;
             vm.Controller.Disposed -= ControllerOnDisposed;
@@ -126,47 +126,10 @@ namespace NuSysApp
             DataContext = null;
         }
 
-        private void LoadVideo()
-        {/*
-            var content = (DataContext as VideoNodeViewModel).Controller.LibraryElementModel;
-            if (content != null)
-            {
-                InMemoryRandomAccessStream memoryStream;
-                var stream = content.ViewUtilBucket.ContainsKey("videoStream")
-                    ? (InMemoryRandomAccessStream) content.ViewUtilBucket["videoStream"]
-                    : null;
-
-                if (stream == null)
-                {
-                    memoryStream = new InMemoryRandomAccessStream();
-                    var nodeModel = (((VideoNodeViewModel) DataContext).Model as VideoNodeModel);
-                    var byteArray = Convert.FromBase64String(SessionController.Instance.ContentController.Get(nodeModel.LibraryId).Data);
-                    memoryStream.AsStreamForWrite().Write(byteArray, 0, byteArray.Length);
-                    memoryStream.Seek(0);
-                    content.ViewUtilBucket["videoStream"] = stream;
-                }
-                else
-                {
-                    memoryStream = stream;
-                }
-                playbackElement.SetSource(memoryStream, "video/mp4");
-                ((VideoNodeViewModel) DataContext).Controller.LibraryElementModel.OnLoaded-= LoadVideo;
-            }
-            playbackElement.Position = new TimeSpan(0);
-            */
-            var content = (DataContext as VideoNodeViewModel).Controller.LibraryElementModel;
-            if (content != null)
-            {
-                //var uri = new Uri(SessionController.Instance.ContentController.Get((((VideoNodeViewModel)DataContext).Model as VideoNodeModel).LibraryId).Data);
-                //playbackElement.Source = uri;
-                //playbackElement.Source = new Uri("C:/Users/graphics_lab/Documents/NuRepo_Test/28a372d517e046a58cc5f2fbf6f71bd6.mp4");
-                var url = (((VideoNodeViewModel)DataContext).Model as VideoNodeModel).LibraryId + ".mp4";
-                if (content.ServerUrl != null)
-                {
-                    url = content.ServerUrl;
-                }
-                playbackElement.Source = new Uri("http://"+WaitingRoomView.ServerName+"/"+ url);
-            }
+        private void LoadVideo(object sender)
+        {
+            var vm = DataContext as VideoNodeViewModel;
+            playbackElement.Source = vm.Controller.LibraryElementController.GetSource();
         }
 
         private void LinkedTimeBlocks_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

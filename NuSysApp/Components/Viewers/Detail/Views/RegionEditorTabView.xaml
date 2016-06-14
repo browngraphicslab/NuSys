@@ -33,7 +33,7 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <ContentPresenter Grid.Column="0" DataContext="DetailViewerViewModel" x:Name ="xContentPresenter" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" >
+            <ContentPresenter Grid.Column="0" Content="{Binding RegionView}" x:Name ="xContentPresenter" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" >
 
                 <!--<local:RegionImageDisplayView x:Name="xRegionDisplay"> </local:RegionImageDisplayView>-->
 

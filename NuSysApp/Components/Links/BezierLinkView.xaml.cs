@@ -120,7 +120,7 @@ namespace NuSysApp
             var vm = (ElementViewModel)DataContext;
             vm.PropertyChanged -= OnPropertyChanged;
             vm.Controller.Disposed -= OnDisposed;
-            vm.Controller.LibraryElementModel.OnTitleChanged -= ControllerOnTitleChanged;
+            vm.Controller.LibraryElementController.TitleChanged -= ControllerOnTitleChanged;
             //var linkController = (LinkElementController)vm.Controller;
            // linkController.AnnotationChanged -= LinkControllerOnAnnotationChanged;
             DataContext = null;

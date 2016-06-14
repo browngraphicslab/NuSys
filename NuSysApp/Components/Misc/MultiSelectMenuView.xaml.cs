@@ -106,10 +106,10 @@ namespace NuSysApp
                 dict["nodeType"] = libraryElementModel.Type.ToString();
                 dict["x"] = vm.Transform.TranslateX - bb.X + Constants.MaxCanvasSize/2.0;
                 dict["y"] = vm.Transform.TranslateY - bb.Y + Constants.MaxCanvasSize / 2.0;
-                dict["contentId"] = libraryElementModel.Id;
+                dict["contentId"] = libraryElementModel.LibraryElementId;
                 dict["metadata"] = metadata;
                 dict["autoCreate"] = true;
-                dict["creator"] = controller.LibraryElementModel.Id;
+                dict["creator"] = controller.LibraryElementModel.LibraryElementId;
 
                 if (vm is PdfNodeViewModel)
                 {
@@ -168,7 +168,7 @@ namespace NuSysApp
             //SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request.Item1);
 
             var deleteMsg = new Message();
-            deleteMsg["contentId"] = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.Id;
+            deleteMsg["contentId"] = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.LibraryElementId;
             var model = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel as CollectionLibraryElementModel;
             model.InkLines.Remove(request.Item2);
             deleteMsg["inklines"] = new HashSet<string>(model.InkLines);

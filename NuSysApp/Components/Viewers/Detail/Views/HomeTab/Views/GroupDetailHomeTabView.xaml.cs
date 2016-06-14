@@ -17,11 +17,12 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
+
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace NuSysApp
 {
-    public sealed partial class GroupDetailView : UserControl
+    public sealed partial class GroupDetailHomeTabView : UserControl
     {
 
         private ObservableCollection<FrameworkElement> _views;
@@ -29,12 +30,12 @@ namespace NuSysApp
         
         private int _count = 0;
 
-        public GroupDetailView(ElementCollectionViewModel vm)
+        public GroupDetailHomeTabView(GroupDetailHomeTabViewModel vm)
         {
             this.InitializeComponent();
             DataContext = vm;
 
-            var model = (CollectionElementModel)vm.Model;
+            var model = vm.Model;
 
 
             List<Uri> AllowedUris = new List<Uri>();
@@ -75,7 +76,7 @@ namespace NuSysApp
 
         private void UpdateModelText(String s)
         {
-             ((ElementCollectionViewModel)DataContext).Controller.LibraryElementModel.SetContentData((ElementCollectionViewModel)DataContext, s);
+             ((GroupDetailHomeTabViewModel)DataContext).Controller.SetContentData(s);
         }
 
         void wvBrowser_ScriptNotify(object sender, NotifyEventArgs e)
@@ -93,9 +94,9 @@ namespace NuSysApp
 
         private void MyWebViewOnNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
         {
-            if (((ElementCollectionViewModel)DataContext).Text != "")
+            if (((GroupDetailHomeTabViewModel)DataContext).Controller.LibraryElementModel.Data != "")
             {
-                UpdateText(((ElementCollectionViewModel)DataContext).Text);
+                UpdateText(((GroupDetailHomeTabViewModel)DataContext).Controller.LibraryElementModel.Data);
             }
         }
 
@@ -117,7 +118,7 @@ namespace NuSysApp
 
         private void ControllerOnDisposed(object source)
         {
-            var vm = (ElementCollectionViewModel)DataContext;
+            var vm = (GroupDetailHomeTabViewModel)DataContext;
             MyWebView.NavigationCompleted -= MyWebViewOnNavigationCompleted;
             MyWebView.ScriptNotify -= wvBrowser_ScriptNotify;
             vm.Controller.Disposed -= ControllerOnDisposed;
@@ -129,7 +130,7 @@ namespace NuSysApp
             // TODO: Refactor
             /*
             var vm = (ElementCollectionViewModel) DataContext;
-            var allNodes = SessionController.Instance.IdToSendables.Values;
+            var allNodes = SessionController.Instance.IdToSendables.ContentValues;
             var modelList = new ObservableCollection<ElementModel>();
             foreach (var sendable in allNodes)
             {

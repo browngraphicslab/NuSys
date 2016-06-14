@@ -52,7 +52,7 @@ namespace NuSysApp
 
             //TODO: refactor
             /*
-            foreach (var child in SessionController.Instance.IdToSendables.Values.Where(s => (s as ElementModel).Creator.Contains(id)))
+            foreach (var child in SessionController.Instance.IdToSendables.ContentValues.Where(s => (s as ElementModel).Creator.Contains(id)))
             {
                 ((NodeContainerModel)duplicateModel).AddChild(child);
             }

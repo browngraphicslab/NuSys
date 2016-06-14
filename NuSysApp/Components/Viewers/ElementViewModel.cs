@@ -46,7 +46,9 @@ namespace NuSysApp
             controller.AlphaChanged += OnAlphaChanged;
             controller.MetadataChange += OnMetadataChange;
             if (controller.LibraryElementModel != null)
-                controller.LibraryElementModel.OnTitleChanged += OnTitleChanged;
+            {
+                controller.LibraryElementController.TitleChanged += OnTitleChanged;
+            }
             controller.LinkedAdded += OnLinkedAdded;
             controller.Disposed += OnDisposed;
             controller.Deleted += ControllerOnDeleted;
@@ -207,7 +209,9 @@ namespace NuSysApp
             _controller.AlphaChanged -= OnAlphaChanged;
             _controller.MetadataChange -= OnMetadataChange;
             if (_controller.LibraryElementModel != null)
-                _controller.LibraryElementModel.OnTitleChanged -= OnTitleChanged;
+            {
+                _controller.LibraryElementController.TitleChanged -= OnTitleChanged;
+            }
             _controller.LinkedAdded -= OnLinkedAdded;
             _controller.Disposed -= OnDisposed;
             

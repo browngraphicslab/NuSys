@@ -55,10 +55,12 @@ namespace NuSysApp
                 libraryElement = new LibraryElementModel((string) _message["id"], type);
             }
             SessionController.Instance.ContentController.Add(libraryElement);
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElement.LibraryElementId);
             libraryElement.Timestamp = time;
+            var loadEventArgs = new LoadContentEventArgs(_message["data"].ToString());
             if (_message.ContainsKey("data") && _message["data"] != null)
             {
-                libraryElement.Load(_message.GetString("data"));
+                controller.Load(loadEventArgs);
             }
             libraryElement.ServerUrl = url;
         }

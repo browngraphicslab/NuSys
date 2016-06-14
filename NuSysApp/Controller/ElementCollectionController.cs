@@ -18,7 +18,7 @@ namespace NuSysApp
 
         public ElementCollectionController(ElementModel model) : base(model)
         {
-            var contentModel = SessionController.Instance.ContentController.Get(model.LibraryId);
+            var contentModel = SessionController.Instance.ContentController.GetContent(model.LibraryId);
             if (contentModel != null)
             {
                 ((CollectionLibraryElementModel) contentModel).OnChildAdded += AddChildById;
@@ -30,7 +30,7 @@ namespace NuSysApp
 
         private void OnDisposed(object source)
         {
-            var contentModel = SessionController.Instance.ContentController.Get(Model.LibraryId);
+            var contentModel = SessionController.Instance.ContentController.GetContent(Model.LibraryId);
             if (contentModel != null)
             {
                 ((CollectionLibraryElementModel)contentModel).OnChildAdded -= AddChildById;

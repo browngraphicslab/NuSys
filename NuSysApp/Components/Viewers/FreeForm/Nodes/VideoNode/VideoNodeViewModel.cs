@@ -21,23 +21,23 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            Controller.LibraryElementModel.OnLoaded -= LibraryElementModelOnOnLoaded;
+            Controller.LibraryElementController.Loaded -= LibraryElementModelOnOnLoaded;
             base.Dispose();
         }
 
         public override async Task Init()
         {
-            if (Controller.LibraryElementModel.Loaded)
+            if (Controller.LibraryElementController.IsLoaded)
             {
                 Controller.SetSize(Model.Width, Model.Height);
             }
             else
             {
-                Controller.LibraryElementModel.OnLoaded += LibraryElementModelOnOnLoaded;
+                Controller.LibraryElementController.Loaded += LibraryElementModelOnOnLoaded;
             }
         }
 
-        private void LibraryElementModelOnOnLoaded()
+        private void LibraryElementModelOnOnLoaded(object sender)
         {
             Controller.SetSize(Model.Width, Model.Height);
         }

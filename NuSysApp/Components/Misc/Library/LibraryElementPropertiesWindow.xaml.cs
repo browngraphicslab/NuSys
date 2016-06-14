@@ -115,7 +115,7 @@ namespace NuSysApp
 
             Title.Text = element.Title ?? "";
             Type.Text = element.Type.ToString() ?? "";
-            ID.Text = element.Id ?? "";
+            ID.Text = element.LibraryElementId ?? "";
             Creator.Text = element.Creator ?? "";
 
             this.UpdateFavoriteButton();
@@ -172,22 +172,22 @@ namespace NuSysApp
 
         private void OnTitleTextChanged(object sender, TextChangedEventArgs e)
         {
-            _currentElementModel?.SetTitle(Title.Text);
+            SessionController.Instance.ContentController.GetLibraryElementController(_currentElementModel.LibraryElementId)?.SetTitle(Title.Text);
         }
 
         private void Delete_OnClick(object sender, RoutedEventArgs e)
         {
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteLibraryElementRequest(_currentElementModel.Id));
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteLibraryElementRequest(_currentElementModel.LibraryElementId));
         }
 
         private async void EnterCollection_OnClick(object sender, RoutedEventArgs e)
         {
-            var id = _currentElementModel.Id;
+            var id = _currentElementModel.LibraryElementId;
             if (id != SessionController.Instance.ActiveFreeFormViewer.ContentId)
             {
                 UITask.Run(async delegate
                 {
-                    var content = SessionController.Instance.ContentController.Get(id);
+                    var content = SessionController.Instance.ContentController.GetContent(id);
                     if (content != null && content.Type == ElementType.Collection)
                     {
                         List<Message> messages = new List<Message>();

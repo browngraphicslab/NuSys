@@ -27,13 +27,13 @@ namespace NuSysApp
 
         public LibraryFavoritesViewModel(ObservableCollection<LibraryElementModel> elements)
         {
-            SessionController.Instance.ContentController.Values.Where(item => item.Favorited == true);
+            SessionController.Instance.ContentController.ContentValues.Where(item => item.Favorited == true);
             PageElements = new ObservableCollection<LibraryElementModel>();
             //PageElements = elements.Where(item => item.Favorited == true);
             _orgList = new List<LibraryElementModel>(elements);
             foreach(var element in _orgList)
             {
-                element.OnFavorited += LibraryElementModel_OnFavorited;
+                SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId).Favorited += LibraryElementModel_OnFavorited;
                 if (element.Favorited == true)
                     PageElements.Add(element);
             };
@@ -47,9 +47,9 @@ namespace NuSysApp
             // SessionController.Instance.ContentController.OnNewFavorite += NewFavorite;
         }
 
-        private void LibraryElementModel_OnFavorited(LibraryElementModel element, bool favorited)
+        private void LibraryElementModel_OnFavorited(object sender, bool favorited)
         {
-
+            var element = (sender as LibraryElementController).LibraryElementModel;
 
             if (!PageElements.Contains(element))
             {
@@ -70,7 +70,7 @@ namespace NuSysApp
             UITask.Run(() =>
             {
                 //if (content.Favorited == true)
-                content.OnFavorited += LibraryElementModel_OnFavorited;
+                SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId).Favorited += LibraryElementModel_OnFavorited;
                 if (content.Favorited)
                 {
                     LibraryElementModel_OnFavorited(content, true);

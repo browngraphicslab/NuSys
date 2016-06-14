@@ -45,13 +45,10 @@ namespace NuSysApp
             Controller.Disposed -= ControllerOnDisposed;
         }
 
-        private void TextChanged (object sender, string text, ElementViewModel originalSenderViewModel)
+        private void TextChanged (object sender, string text)
         {
-            if (originalSenderViewModel != this)
-            {
-                TextBindingChanged?.Invoke(this, text);
-                Text = text;
-            }
+            TextBindingChanged?.Invoke(this, text);
+            Text = text;
         }
         #region Public Properties     
 

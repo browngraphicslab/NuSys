@@ -17,15 +17,16 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
+
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace NuSysApp
 {
-    public sealed partial class PdfDetailView : UserControl
+    public sealed partial class PdfDetailHomeTabView : UserControl
     {
         private InqCanvasView _inqCanvasView;
 
-        public PdfDetailView(PdfNodeViewModel vm)
+        public PdfDetailHomeTabView(PdfDetailHomeTabViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;
@@ -35,7 +36,8 @@ namespace NuSysApp
             
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
-                _inqCanvasView = new InqCanvasView(new InqCanvasViewModel(vm.Model.InqCanvas, new Size(xImg.Width, xImg.Height)));
+                //_inqCanvasView = new InqCanvasView(new InqCanvasViewModel(vm.Model.InqCanvas, new Size(xImg.Width, xImg.Height)));
+                
                 xWrapper.Children.Insert(1, _inqCanvasView);
                 _inqCanvasView.IsEnabled = true;
                 _inqCanvasView.HorizontalAlignment = HorizontalAlignment.Left;
@@ -56,7 +58,7 @@ namespace NuSysApp
 
             };
 
-            vm.MakeTagList();
+            //vm.MakeTagList();
 
             vm.Controller.Disposed += ControllerOnDisposed;
         }

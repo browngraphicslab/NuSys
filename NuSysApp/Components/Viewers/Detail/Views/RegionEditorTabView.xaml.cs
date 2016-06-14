@@ -54,7 +54,7 @@ namespace NuSysApp
             xContentPresenter.Content = (((DetailViewerViewModel)DetailViewerView.DataContext).RegionView);
 
             var test = new RectangleRegion(new Point(100, 100), new Point(200, 200));
-            ((ImageFullScreenView)(((DetailViewerViewModel)DetailViewerView.DataContext).RegionView)).DisplayRegion(test);
+            ((ImageDetailHomeTabView)(((DetailViewerViewModel)DetailViewerView.DataContext).RegionView)).DisplayRegion(test);
 
             test.Name = "Untitled Region";
             RegionCollection.Add(test);

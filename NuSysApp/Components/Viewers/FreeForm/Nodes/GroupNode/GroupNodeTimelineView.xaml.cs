@@ -235,7 +235,7 @@ namespace NuSysApp
                 ElementController controller = atomvm.Controller;
 
                 // TODO refactor
-                if (controller.LibraryElementModel.Loaded)
+                if (controller.LibraryElementController.IsLoaded)
                 {
                     String title = controller.Model.Title;
                     Image image = await _factory.CreateFromSendable(controller);
@@ -255,12 +255,12 @@ namespace NuSysApp
                 }
                 else
                 {
-                    controller.LibraryElementModel.OnLoaded += async delegate ()
+                    controller.LibraryElementController.Loaded += async delegate (object sender)
                     {
-                        if (_loadedList.Contains(controller.LibraryElementModel.Id))
+                        if (_loadedList.Contains(controller.LibraryElementModel.LibraryElementId))
                             return;
 
-                        _loadedList.Add(controller.LibraryElementModel.Id);
+                        _loadedList.Add(controller.LibraryElementModel.LibraryElementId);
 
                         String title = controller.Model.Title;
                         Image image = await _factory.CreateFromSendable(controller);
@@ -301,7 +301,7 @@ namespace NuSysApp
                 }
                 else if (type != ElementType.Link)
                 {
-                    SessionController.Instance.SessionView.ShowDetailView(_elementControllerDict[image]);
+                    SessionController.Instance.SessionView.ShowDetailView((dc.DataContext as ElementViewModel).Controller.LibraryElementController);
                 }
 
                 e.Handled = true;
