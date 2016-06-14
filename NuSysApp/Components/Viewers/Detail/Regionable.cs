@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.Foundation;
 
 namespace NuSysApp
 {
-    public abstract class Region
+    public interface Regionable <T>
     {
-        public string Name { get; set; }
-        public Region()
-        {
-        }
+
+        void AddRegion();
+
+        void RemoveRegion(T displayedRegion);
+
+        void DisplayRegion(Region region);
     }
 }

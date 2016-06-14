@@ -21,9 +21,10 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
-    public sealed partial class ImageFullScreenView : UserControl
+    public sealed partial class ImageFullScreenView : UserControl, Regionable<RectangleRegionView>
     {
    
+        public RectangleRegionView SelectedRegion { set; get; }
         public ImageFullScreenView(ImageElementViewModel vm)
         {
             InitializeComponent();
@@ -40,6 +41,51 @@ namespace NuSysApp
                 SourceBttn.Visibility = Visibility.Collapsed;
             }
             vm.Controller.Disposed += ControllerOnDisposed;
+        }
+
+
+        public void AddRegion()
+        {
+
+            var displayedRegion = new Windows.UI.Xaml.Shapes.Rectangle();
+            Canvas.SetLeft(displayedRegion, 0);
+            Canvas.SetTop(displayedRegion, 0);
+            displayedRegion.Width = 100;
+            displayedRegion.Height = 100;
+
+            displayedRegion.Stroke = new SolidColorBrush(Windows.UI.Colors.Blue);
+            displayedRegion.StrokeThickness = 3;
+            displayedRegion.HorizontalAlignment = HorizontalAlignment.Stretch;
+            displayedRegion.VerticalAlignment = VerticalAlignment.Stretch;
+
+            totalStackPanel.Children.Add(displayedRegion);
+        }
+
+        
+        public void RemoveRegion(RectangleRegionView region)
+        {
+            totalStackPanel.Children.Remove(region);
+        }
+
+        public void DisplayRegion(Region region)
+        {
+            var rectangleRegion = (RectangleRegion)region;
+
+            //var displayedRegion = new Windows.UI.Xaml.Shapes.Rectangle();
+
+            var displayedRegion = new RectangleRegionView(rectangleRegion);
+            displayedRegion.OnSelected += DisplayedRegion_OnSelected;
+            DisplayedRegion_OnSelected(displayedRegion, true);
+            totalStackPanel.Children.Add(displayedRegion);
+
+        }
+
+        private void DisplayedRegion_OnSelected(object sender, bool selected)
+        {
+            SelectedRegion?.Deselected();
+            SelectedRegion = (RectangleRegionView)sender;
+            SelectedRegion.Selected();
+           
         }
 
         private void ControllerOnDisposed(object source)
@@ -93,6 +139,11 @@ namespace NuSysApp
             }
 
             await AccessList.OpenFile(token);
+        }
+
+        private void xImg_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            SelectedRegion?.Deselected();
         }
     }
 }

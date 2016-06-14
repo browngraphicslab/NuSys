@@ -25,10 +25,14 @@ namespace NuSysApp
         public string Date { get; set; }
 
         public UserControl View { get; set; }
+
+        public UserControl RegionView { get; set; }
             
         public ObservableCollection<FrameworkElement> Tags { get; set; }
 
         public ObservableCollection<StackPanel> Metadata { get; set; }
+
+        //public ObservableCollection<Region> Regions { get; set; }
 
         private ElementViewModel _currentElementViewModel;
         public ElementController CurrentElementController { get; set; }
@@ -41,6 +45,7 @@ namespace NuSysApp
         {
             Tags = new ObservableCollection<FrameworkElement>();
             Metadata = new ObservableCollection<StackPanel>();
+
         }
 
         public void Dispose()
@@ -57,6 +62,13 @@ namespace NuSysApp
             View = await _viewFactory.CreateFromSendable(controller);
             if (View == null)
                 return false;
+
+            RegionView = await _viewFactory.CreateFromSendable(controller);
+            if (RegionView == null)
+                return false;
+
+
+
             _nodeModel = controller.Model;
             Title = controller.LibraryElementModel.Title;
             this.ChangeTitle(this, controller.LibraryElementModel.Title);

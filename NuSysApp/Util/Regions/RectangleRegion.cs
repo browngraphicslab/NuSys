@@ -7,7 +7,7 @@ using Windows.Foundation;
 
 namespace NuSysApp
 {
-    class RectangleRegion : Region
+    public class RectangleRegion : Region
     {
         public RectangleRegion(Point p1, Point p2)
         {
