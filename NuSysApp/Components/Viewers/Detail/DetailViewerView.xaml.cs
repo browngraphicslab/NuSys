@@ -186,10 +186,9 @@ namespace NuSysApp
         private void TitleChanged(object sender, KeyRoutedEventArgs e)
         {
             var vm = (DetailViewerViewModel)DataContext;
-            vm.CurrentElementController.LibraryElementModel.SetTitle(TitleBox.Text);
+            vm.CurrentElementController.LibraryElementController.SetTitle(TitleBox.Text);
             //vm.LibraryElementModelOnOnTitleChanged(this, TitleBox.Text);
             
-
         }
 
         private async void AddTagButton_OnClick(object sender, RoutedEventArgs e)
@@ -246,7 +245,7 @@ namespace NuSysApp
         {
             Visibility = Visibility.Collapsed;
             var vm = (DetailViewerViewModel)DataContext;
-            var textview = (vm.View as TextDetailView);
+            var textview = (vm.View as TextDetailHomeTabView);
             textview?.Dispose();
             var videoView = vm.View as VideoDetailView;
             videoView?.Dispose();
@@ -275,17 +274,17 @@ namespace NuSysApp
        
             if ((this.Width > 250 || e.Delta.Translation.X < 0) && (Canvas.GetLeft(this) > 0 || e.Delta.Translation.X > 0) && (Canvas.GetLeft(this) > 30 || e.Delta.Translation.X > 0))
             {
-                this.Width -= e.Delta.Translation.X;
+                this.Width -= Math.Min(e.Delta.Translation.X,this.Width);
                // xContainer.Width = this.Width - 30;
 
                // exitButtonContainer.Width = xContainer.Width;
 
-                if (nodeContent.Content is ImageFullScreenView)
+                if (nodeContent.Content is ImageDetailHomeTabView)
                 {
-                   // ((ImageFullScreenView) nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
-                } else if (nodeContent.Content is TextDetailView)
+                   // ((ImageDetailHomeTabView) nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
+                } else if (nodeContent.Content is TextDetailHomeTabView)
                 {
-                 //   ((TextDetailView)nodeContent.Content).SetDimension(xContainer.Width);
+                 //   ((TextDetailHomeTabView)nodeContent.Content).SetDimension(xContainer.Width);
                 } else if (nodeContent.Content is WebDetailView)
                 {
                     ((WebDetailView)nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);

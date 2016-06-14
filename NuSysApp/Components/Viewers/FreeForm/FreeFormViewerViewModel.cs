@@ -191,8 +191,6 @@ namespace NuSysApp
                 return;
 
             var libElemModel = ((ElementViewModel)selectedElements.First().DataContext).Controller.LibraryElementModel;
-            if (libElemModel != null)
-                libElemModel.FireLightupContent(true);
 
             if (libElemModel?.Type != ElementType.Link)
                 Canvas.SetZIndex(selectedElements.First(), NodeManipulationMode._zIndexCounter++);
@@ -216,7 +214,6 @@ namespace NuSysApp
             foreach (var selectable in _selections)
             {
                 selectable.IsSelected = false;
-                LibraryElementModel.LitElement?.FireLightupContent(false);
             }
             _selections.Clear();
             SelectionChanged?.Invoke(this);

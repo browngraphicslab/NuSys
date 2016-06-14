@@ -46,20 +46,7 @@ namespace NuSysApp
                     break;
                 case ElementType.Image:
                     view = new Image();
-                    BitmapImage imageImage;
-
-                    var image = controller.LibraryElementModel.ViewUtilBucket.ContainsKey("thumbnail")
-                       ? (BitmapImage)controller.LibraryElementModel.ViewUtilBucket["thumbnail"]
-                       : null;
-                    if (image != null)
-                    {
-                        imageImage = image;
-                    }
-                    else
-                    {
-                        imageImage = await MediaUtil.ByteArrayToBitmapImage(Convert.FromBase64String(controller.LibraryElementModel.Data));
-                        controller.LibraryElementModel.ViewUtilBucket["thumbnail"] = imageImage;
-                    }
+                    BitmapImage imageImage = await MediaUtil.ByteArrayToBitmapImage(Convert.FromBase64String(controller.LibraryElementModel.Data));
                     view.Source = imageImage;
                     break;
                 case ElementType.Word:

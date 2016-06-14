@@ -74,9 +74,7 @@ namespace NuSysApp
             var vm = (ElementViewModel)this.DataContext;
             vm.PropertyChanged -= OnPropertyChanged;
             vm.Controller.UserChanged -= ControllerOnUserChanged;
-            vm.Controller.LibraryElementModel.OnLightupContent -= LibraryElementModelOnOnLightupContent;
-            vm.Controller.LibraryElementModel.OnSearched -= LibraryElementModelOnSearched;
-            vm.Controller.LibraryElementModel.OnTitleChanged -= LibraryElementModelOnOnTitleChanged;
+            vm.Controller.LibraryElementController.TitleChanged -= LibraryElementModelOnOnTitleChanged;
 
             if (title != null)
                 title.TextChanged -= TitleOnTextChanged;
@@ -153,7 +151,7 @@ namespace NuSysApp
             title.KeyUp += TitleOnTextChanged;
 
             if (vm.Controller.LibraryElementModel != null)
-                vm.Controller.LibraryElementModel.OnTitleChanged += LibraryElementModelOnOnTitleChanged;
+                vm.Controller.LibraryElementController.TitleChanged += LibraryElementModelOnOnTitleChanged;
             titleContainer = (Grid)GetTemplateChild("xTitleContainer");
 
             title.Loaded += delegate (object sender, RoutedEventArgs args)
@@ -166,15 +164,6 @@ namespace NuSysApp
 
             vm.Controller.UserChanged += ControllerOnUserChanged;
 
-
-
-            if (vm.Controller.LibraryElementModel != null)
-            {
-
-                vm.Controller.LibraryElementModel.OnLightupContent += LibraryElementModelOnOnLightupContent;
-                vm.Controller.LibraryElementModel.OnSearched += LibraryElementModelOnSearched;
-
-            }
             vm.PropertyChanged += OnPropertyChanged;
             base.OnApplyTemplate();
             OnTemplateReady?.Invoke();
@@ -187,7 +176,7 @@ namespace NuSysApp
             highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
             highlight.Height = vm.Height + title.ActualHeight - 5;
             //vm.Controller.SetTitle(title.Text);
-            vm.Controller.LibraryElementModel.SetTitle(title.Text);
+            vm.Controller.LibraryElementController.SetTitle(title.Text);
         }
 
         private void LibraryElementModelOnOnTitleChanged(object sender, string newTitle)
@@ -218,13 +207,6 @@ namespace NuSysApp
             highlight.BorderBrush = new SolidColorBrush(user.Color);
             userName.Foreground = new SolidColorBrush(user.Color);
             userName.Text = user?.Name ?? "";
-        }
-
-        private void LibraryElementModelOnOnLightupContent(LibraryElementModel model, bool lightup)
-        {
-          //  highlight.Visibility = lightup ? Visibility.Visible : Visibility.Collapsed;
-            highlight.Background = new SolidColorBrush(Color.FromArgb(100, 156, 197, 194));
-            highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(100, 156, 197, 194));
         }
 
         private void LibraryElementModelOnSearched(LibraryElementModel model, bool searched)

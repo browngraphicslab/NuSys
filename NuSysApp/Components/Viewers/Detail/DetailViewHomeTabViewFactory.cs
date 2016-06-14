@@ -7,26 +7,24 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using NuSysApp.Components.Viewers.Detail.Views;
+using NuSysApp.Components.Viewers.Detail.Views.HomeTab.ViewModels;
 
 namespace NuSysApp
 {
-    public class DetailNodeViewFactory
+    public class DetailViewHomeTabViewFactory
     {
-        public async Task<UserControl> CreateFromSendable(LibraryElementModel model)
+        public async Task<UserControl> CreateFromSendable(LibraryElementController controller)
         {
             UserControl view = null;
 
-            switch (model.Type)
+            switch (controller.LibraryElementModel.Type)
             {
                 case ElementType.Text:
-                    var nodeModel = new TextElementModel(model.Id);
-                    nodeModel.LibraryId = model.Id;
-                    view = new TextDetailView(new TextNodeViewModel(new TextNodeController(nodeModel)));
+                    view = new TextDetailHomeTabView(new TextDetailHomeTabViewModel(controller));
                     break;
                 case ElementType.Image:
-                    var imageModel = new ImageElementModel(model.Id);
-                    imageModel.LibraryId = model.Id;
-                    view = new ImageFullScreenView(new ImageElementViewModel(new ImageElementIntanceController(imageModel)));
+                    view = new ImageDetailHomeTabView(new ImageDetailHomeTabViewModel(controller));
                     break;
                 case ElementType.Word:
                     //view = new WordDetailView(new WordNodeViewModel(controller));
@@ -35,19 +33,19 @@ namespace NuSysApp
                     //view = new PowerpointDetailView(new PowerpointNodeViewModel(controller));
                     break;
                 case ElementType.PDF:
-                    view = new PdfDetailView(new PdfNodeViewModel(new ElementController(new PdfNodeModel(model.Id))));
+                    view = new PdfDetailHomeTabView(new PdfDetailHomeTabViewModel(controller));
                     break;
                 case ElementType.Web:
                     //view = new WebDetailView(new WebNodeViewModel(controller));
                     break;
                 case ElementType.Video:
-                    view = new VideoDetailView(new VideoNodeViewModel(new ElementController(new VideoNodeModel(model.Id))));
+                    view = new VideoDetailView(new VideoNodeViewModel(new ElementController(new VideoNodeModel(model.LibraryElementId))));
                     break;
                 case ElementType.Audio:
-                    view = new AudioDetailView(new AudioNodeViewModel(new ElementController(new AudioNodeModel(model.Id))));
+                    view = new AudioDetailView(new AudioNodeViewModel(new ElementController(new AudioNodeModel(model.LibraryElementId))));
                     break;
                 case ElementType.Collection:
-                    view = new GroupDetailView(new ElementCollectionViewModel(new ElementCollectionController(new CollectionElementModel(model.Id))));
+                    view = new GroupDetailView(new ElementCollectionViewModel(new ElementCollectionController(new CollectionElementModel(model.LibraryElementId))));
                     break;
             }
 
@@ -65,11 +63,11 @@ namespace NuSysApp
         //    {
         //        case ElementType.Text:
         //            var tvm = new TextNodeViewModel(controller);
-        //            view = new TextDetailView(tvm);
+        //            view = new TextDetailHomeTabView(tvm);
         //            break;
         //        case ElementType.Image:
         //            var ivm = new ImageElementViewModel(controller);
-        //            view = new ImageFullScreenView(ivm);
+        //            view = new ImageDetailHomeTabView(ivm);
         //            break;
         //        case ElementType.Word:
         //            view = new WordDetailView(new WordNodeViewModel(controller));
@@ -78,7 +76,7 @@ namespace NuSysApp
         //            view = new PowerpointDetailView(new PowerpointNodeViewModel(controller));
         //            break;
         //        case ElementType.PDF:
-        //            view = new PdfDetailView(new PdfNodeViewModel(controller));
+        //            view = new PdfDetailHomeTabView(new PdfNodeViewModel(controller));
         //            break;
         //        case ElementType.Web:
         //            view = new WebDetailView(new WebNodeViewModel(controller));

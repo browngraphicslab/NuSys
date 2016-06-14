@@ -97,7 +97,6 @@ namespace NuSysApp
             var viwerVm =_view.DataContext as FreeFormViewerViewModel;
             var isCtrlDown =  (CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Control) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
 
-            LibraryElementModel.LitElement?.FireLightupContent(false);
             if (!isCtrlDown) {
 
 

@@ -47,7 +47,7 @@ namespace NuSysApp
         {
             this.DataContext = vm;
             this.InitializeComponent();
-            var data = SessionController.Instance.ContentController.Values.Where(item => item.Type != ElementType.Link);
+            var data = SessionController.Instance.ContentController.ContentValues.Where(item => item.Type != ElementType.Link);
             _pageViewModel = new LibraryPageViewModel(new ObservableCollection<LibraryElementModel>(data));
             _favoritesViewModel = new LibraryFavoritesViewModel(new ObservableCollection<LibraryElementModel>(data));
             this.MakeViews(_pageViewModel, properties);
@@ -76,7 +76,6 @@ namespace NuSysApp
             if (Visibility == Visibility.Collapsed)
             {
                 _propertiesWindow.Visibility = Visibility.Collapsed;
-                LibraryElementModel.LitElement?.FireLightupContent(false);
             }
         }
         //public async Task InitializeLibrary()
@@ -94,7 +93,7 @@ namespace NuSysApp
         //            }
         //        }
         //        UITask.Run(delegate {
-        //            OnNewContents?.Invoke(_elements.Values);
+        //            OnNewContents?.Invoke(_elements.ContentValues);
         //        });
         //    });
         //}
@@ -203,33 +202,18 @@ namespace NuSysApp
 
         private void AddToFavorites(object sender, LibraryElementModel element)
         {
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId);
             if (!element.Favorited)
             {
-                element?.SetFavorited(true);
+                controller?.SetFavorited(true);
             }
 
             else
             {
-                element?.SetFavorited(false);
+                controller?.SetFavorited(false);
                 if (ListContainer.Children[0] == _libraryFavorites)
                     _propertiesWindow.Visibility = Visibility.Collapsed;
-
             }
-
-            /*
-
-            if (!_favoritesViewModel.PageElements.Contains(element))
-            {
-                _favoritesViewModel.PageElements.Add(element);
-            }
-            else
-            {
-                _favoritesViewModel.PageElements.Remove(element);
-                if(WorkspacePivot.Content == _libraryFavorites)
-                    _propertiesWindow.Visibility = Visibility.Collapsed;
-            }
-            */
-
         }
 
         //Trent, this needs to be filled in in order for the importing to the library to work.
@@ -357,7 +341,7 @@ namespace NuSysApp
             {
                 if (elementType != ElementType.Collection)
                 {
-                    var element = SessionController.Instance.ContentController.Get(libraryId);
+                    var element = SessionController.Instance.ContentController.GetContent(libraryId);
                     var dict = new Message();
                     Dictionary<string, object> metadata;
 
@@ -532,10 +516,10 @@ namespace NuSysApp
                     dict["nodeType"] = libraryElementModel.Type.ToString();
                     dict["x"] = "50000";
                     dict["y"] = "50000";
-                    dict["contentId"] = libraryElementModel.Id;
+                    dict["contentId"] = libraryElementModel.LibraryElementId;
                     dict["metadata"] = metadata;
                     dict["autoCreate"] = true;
-                    dict["creator"] = controller.LibraryElementModel.Id;
+                    dict["creator"] = controller.LibraryElementModel.LibraryElementId;
                     var request = new NewElementRequest(dict);
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
                 }
@@ -551,10 +535,10 @@ namespace NuSysApp
                     dict["nodeType"] = libraryElementModel.Type.ToString();
                     dict["x"] = "50000";
                     dict["y"] = "50000";
-                    dict["contentId"] = libraryElementModel.Id;
+                    dict["contentId"] = libraryElementModel.LibraryElementId;
                     dict["metadata"] = metadata;
                     dict["autoCreate"] = true;
-                    dict["creator"] = controller.LibraryElementModel.Id;
+                    dict["creator"] = controller.LibraryElementModel.LibraryElementId;
                     var request = new NewElementRequest(dict);
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
                 }

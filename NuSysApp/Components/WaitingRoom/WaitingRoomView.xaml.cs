@@ -42,6 +42,7 @@ namespace NuSysApp
         public static string ServerSessionID { get; private set; }
 
         public static bool TEST_LOCAL_BOOLEAN = false;
+        public static bool IS_HUB = false;
 
         private static IEnumerable<Message> _firstLoadList;
         private bool _loggedIn = false;
@@ -350,7 +351,7 @@ namespace NuSysApp
                                 element.Creator = creator;
                                 element.Timestamp = timestamp;
                                 element.ServerUrl = serverUrl;
-                                if (SessionController.Instance.ContentController.Get(id) == null)
+                                if (SessionController.Instance.ContentController.GetContent(id) == null)
                                 {
                                     SessionController.Instance.ContentController.Add(element);
                                 }
@@ -391,16 +392,16 @@ namespace NuSysApp
 
         private void ContentControllerOnOnNewContent(LibraryElementModel element)
         {
-            if (element.Type == ElementType.Collection && !_preloadedIDs.Contains(element.Id))
+            if (element.Type == ElementType.Collection && !_preloadedIDs.Contains(element.LibraryElementId))
             {
                 UITask.Run(delegate
                 {
                     var box = new CollectionTextBox();
-                    box.ID = element.Id;
+                    box.ID = element.LibraryElementId;
                     box.Text = element.Title ?? "";
                     List.Items.Add(box);
                 });
-                _preloadedIDs.Add(element.Id);
+                _preloadedIDs.Add(element.LibraryElementId);
             }
         }
 

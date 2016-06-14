@@ -25,30 +25,29 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
+using NuSysApp.Components.Viewers.Detail.Views.HomeTab.ViewModels;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace NuSysApp
 {
 
-    public sealed partial class TextDetailView : UserControl
+    public sealed partial class TextDetailHomeTabView : UserControl
     {
         //private SpeechRecognizer _recognizer;
         //private bool _isRecording;
         private ObservableCollection<String> sizes = new ObservableCollection<String>();
         private ObservableCollection<FontFamily> fonts = new ObservableCollection<FontFamily>();
-        private string _modelContentId;
-        private string _modelId;
         private string _modelText="";
 
-        public TextDetailView(TextNodeViewModel vm)
+        public TextDetailHomeTabView(TextDetailHomeTabViewModel vm)
         {
             InitializeComponent();
 
             DataContext = vm;
           // SetDimension(SessionController.Instance.SessionView.ActualWidth / 2 - 30);
 
-            var model = (TextElementModel)vm.Model;
+            var model = vm.Model;
 
 
             List<Uri> AllowedUris = new List<Uri>();
@@ -75,8 +74,6 @@ namespace NuSysApp
             MyWebView.NavigationCompleted += MyWebViewOnNavigationCompleted;
             vm.TextBindingChanged += VmOnTextBindingChanged;
             MyWebView.ScriptNotify += wvBrowser_ScriptNotify;
-            _modelContentId = model.LibraryId;
-            _modelId = model.Id;
 
             vm.Controller.Disposed += ControllerOnDisposed;
 
@@ -224,7 +221,7 @@ namespace NuSysApp
         */
         private void UpdateModelText(String s)
         {
-            ((TextNodeViewModel)DataContext).Controller.LibraryElementModel.SetContentData((TextNodeViewModel)DataContext, s);
+            ((TextNodeViewModel)DataContext).Controller.LibraryElementController.SetContentData(s);
         }
 
         public void Dispose()
@@ -250,7 +247,7 @@ namespace NuSysApp
                 await session.TranscribeVoice();
                 //     this.RecordVoice.Background = oldColor;
                 var vm = (TextNodeViewModel)DataContext;
-                vm.Controller.LibraryElementModel.SetContentData(vm,session.SpeechString);
+                vm.Controller.LibraryElementController.SetContentData(session.SpeechString);
             }
             else
             {

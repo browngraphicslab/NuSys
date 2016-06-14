@@ -36,7 +36,7 @@ namespace NuSysApp
             ElementModel elementModel = null;
             ElementController controller = null;
 
-            var libraryElement = SessionController.Instance.ContentController.Get(libraryId);
+            var libraryElement = SessionController.Instance.ContentController.GetContent(libraryId);
             if (libraryElement == null)
             {
                 var type = (ElementType) Enum.Parse(typeof (ElementType), (string) _message["nodeType"], true);
@@ -50,7 +50,7 @@ namespace NuSysApp
                 }
                 SessionController.Instance.ContentController.Add(libraryElement);
             }
-            if (!libraryElement.LoadingOrLoaded())
+            if (!SessionController.Instance.ContentController.GetLibraryElementController(libraryElement.LibraryElementId).LoadingOrLoaded)
             {
                 SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(libraryId);
             }
@@ -134,10 +134,10 @@ namespace NuSysApp
 
             SessionController.Instance.IdToControllers[id] = controller;
 
-            var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.Get(creator);
+            var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(creator);
             parentCollectionLibraryElement.AddChild(id);
 
-            if (parentCollectionLibraryElement.Id == SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.Id)
+            if (parentCollectionLibraryElement.LibraryElementId == SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.LibraryElementId)
             {
                 Task.Run(async delegate
                 {

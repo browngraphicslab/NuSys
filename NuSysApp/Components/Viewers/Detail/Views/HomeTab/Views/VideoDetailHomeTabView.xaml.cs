@@ -40,14 +40,8 @@ namespace NuSysApp
             this.InitializeComponent();
             DataContext = vm;
 
-            InMemoryRandomAccessStream memoryStream = new InMemoryRandomAccessStream();
-            var data = SessionController.Instance.ContentController.Get((vm.Model as VideoNodeModel).LibraryId).Data;
-            if (data == null)
-                return;
-            var byteArray = Convert.FromBase64String(data);
-            memoryStream.AsStreamForWrite().Write(byteArray, 0, byteArray.Length);
-            memoryStream.Seek(0);
-            playbackElement.SetSource(memoryStream, "video/mp4");
+            playbackElement.Source = vm.GetSource();
+
             _isRecording = false;
             vm.LinkedTimeModels.CollectionChanged += LinkedTimeBlocks_CollectionChanged;
             _timeBlocks = new List<LinkedTimeBlockViewModel>();
@@ -63,8 +57,6 @@ namespace NuSysApp
             //    var ratio = playbackElement.ActualWidth > playbackElement.ActualHeight ? playbackElement.ActualWidth / sw : playbackElement.ActualHeight / sh;
             //    playbackElement.Width = playbackElement.ActualWidth / ratio;
             //    playbackElement.Height = playbackElement.ActualHeight / ratio;
-
-
             //};
         }
         public void Dispose()
@@ -135,7 +127,7 @@ namespace NuSysApp
             if (playbackElement.Source == null && _loaded == false)
             {
                 InMemoryRandomAccessStream memoryStream = new InMemoryRandomAccessStream();
-                var byteArray = Convert.FromBase64String(SessionController.Instance.ContentController.Get((((VideoNodeViewModel)DataContext).Model as VideoNodeModel).LibraryId).Data);
+                var byteArray = Convert.FromBase64String(SessionController.Instance.ContentController.GetContent((((VideoNodeViewModel)DataContext).Model as VideoNodeModel).LibraryId).Data);
                 memoryStream.AsStreamForWrite().Write(byteArray, 0, byteArray.Length);
                 memoryStream.Seek(0);
                 playbackElement.SetSource(memoryStream, "video/mp4");

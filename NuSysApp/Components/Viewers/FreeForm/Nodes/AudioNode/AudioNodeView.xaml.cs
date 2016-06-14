@@ -173,7 +173,7 @@ namespace NuSysApp
 
             if (playbackElement.Source == null && _loaded == false)
             {
-                playbackElement.Source = new Uri((DataContext as AudioNodeViewModel).AudioSource);
+                playbackElement.Source = (DataContext as AudioNodeViewModel).AudioSource;
 
                 _loaded = true;
             }
@@ -324,7 +324,7 @@ namespace NuSysApp
             await RenderImageSource((DataContext as AudioNodeViewModel).VisualGrid);
             if (playbackElement.Source == null && _loaded == false)
             {
-                playbackElement.Source = new Uri((DataContext as AudioNodeViewModel).AudioSource);
+                playbackElement.Source = (DataContext as AudioNodeViewModel).AudioSource;
                 _loaded = true;
             }
             playbackElement.MediaEnded += PlaybackElementOnMediaEnded;

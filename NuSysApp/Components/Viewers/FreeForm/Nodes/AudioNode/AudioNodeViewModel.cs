@@ -43,7 +43,7 @@ namespace NuSysApp
 
         private void ControllerOnDisposed(object source)
         {
-            Controller.LibraryElementModel.OnLoaded -= InitWhenReady;
+            Controller.LibraryElementController.Loaded -= InitWhenReady;
             Controller.Disposed -= ControllerOnDisposed;
         }
 
@@ -76,7 +76,7 @@ namespace NuSysApp
             base.SetSize(width, height);
         }
 
-        public string AudioSource
+        public Uri AudioSource
         {
             get
             {
@@ -85,23 +85,23 @@ namespace NuSysApp
                 {
                     url = Controller.LibraryElementModel.ServerUrl;
                 }
-                url = "http://" + WaitingRoomView.ServerName + "/" + url;
-                return url;
+                var uri = Constants.GetServerURI(url);
+                return uri;
             }
         }
         public override async Task Init()
         {
             if (SessionController.Instance.ContentController.ContainsAndLoaded(ContentId))
             {
-                InitWhenReady();
+                InitWhenReady(this);
             }
             else
             {
-                Controller.LibraryElementModel.OnLoaded += InitWhenReady;
+                Controller.LibraryElementController.Loaded += InitWhenReady;
             }
         }
 
-        private async void InitWhenReady()
+        private async void InitWhenReady(object sender)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(AudioSource);
             HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();

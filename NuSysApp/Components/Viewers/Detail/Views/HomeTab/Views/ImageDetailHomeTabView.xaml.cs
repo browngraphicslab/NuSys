@@ -16,29 +16,29 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using NuSysApp.Components.Viewers.Detail.Views;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace NuSysApp
 {
-    public sealed partial class ImageFullScreenView : UserControl
+    public sealed partial class ImageDetailHomeTabView : UserControl
     {
    
-        public ImageFullScreenView(ImageElementViewModel vm)
+        public ImageDetailHomeTabView(ImageDetailHomeTabViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;
-
-            var model = (ImageElementModel)vm.Model;
-            var token = model.GetMetaData("Token");
-            if (token == null || String.IsNullOrEmpty(token?.ToString()))
-            {
-                SourceBttn.Visibility = Visibility.Collapsed;
-            }
-            else if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
-            {
-                SourceBttn.Visibility = Visibility.Collapsed;
-            }
+            
+            //var token = model.GetMetaData("Token");
+            //if (token == null || String.IsNullOrEmpty(token?.ToString()))
+            //{
+            //    SourceBttn.Visibility = Visibility.Collapsed;
+            //}
+            //else if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
+            //{
+            //    SourceBttn.Visibility = Visibility.Collapsed;
+            //}
             vm.Controller.Disposed += ControllerOnDisposed;
         }
 

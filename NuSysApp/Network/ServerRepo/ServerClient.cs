@@ -258,7 +258,7 @@ namespace NuSysApp
                 libraryIdsUsed.Add(libraryId);
                 await Task.Run(async delegate
                 {
-                    SessionController.Instance.ContentController.Get(libraryId).SetLoading(true);
+                    SessionController.Instance.ContentController.GetLibraryElementController(libraryId).SetLoading(true);
                     HttpClient client = new HttpClient();
                     var response = await client.GetAsync(GetUri("getcontent/" + libraryId));
 
@@ -268,7 +268,7 @@ namespace NuSysApp
                         data = await responseContent.ReadAsStringAsync();
                     }
 
-                    if (SessionController.Instance.ContentController.Get(libraryId) != null && SessionController.Instance.ContentController.Get(libraryId).Type == ElementType.Video)
+                    if (SessionController.Instance.ContentController.GetContent(libraryId) != null && SessionController.Instance.ContentController.GetContent(libraryId).Type == ElementType.Video)
                     {
                         if (data == "{}")
                         {
@@ -295,7 +295,8 @@ namespace NuSysApp
                     var timestamp = dict.ContainsKey("library_element_creation_timestamp")
                         ? (string)dict["library_element_creation_timestamp"].ToString()
                         : null;
-                    
+                    var regions = dict.ContainsKey("regions") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["regions"].ToString()) : null;
+                    var inks = dict.ContainsKey("inks") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["inks"].ToString()) : null;
 
                     var metadata = dict.ContainsKey("metadata") ? JsonConvert.DeserializeObject<Dictionary<string, Tuple<string, Boolean>>>(dict["metadata"].ToString()) : null;
 
@@ -329,7 +330,7 @@ namespace NuSysApp
                             m["data"] = inkline;
                             m["id"] = inkid;
                             var model =
-                                SessionController.Instance.ContentController.Get(libraryId) as
+                                SessionController.Instance.ContentController.GetContent(libraryId) as
                                     CollectionLibraryElementModel;
                             if (!model.InkLines.Contains(inkid))
                             {
@@ -339,7 +340,7 @@ namespace NuSysApp
                         }
                     }
 
-                    LibraryElementModel content = SessionController.Instance.ContentController.Get(libraryId);
+                    LibraryElementModel content = SessionController.Instance.ContentController.GetContent(libraryId);
                     if (content == null)
                     {
                         if (type == ElementType.Collection)
@@ -355,7 +356,8 @@ namespace NuSysApp
                     content.Timestamp = timestamp;
                     await UITask.Run(async delegate
                     {
-                        content.Load(contentData);
+                        var args = new LoadContentEventArgs(contentData,regions,inks);
+                        SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId).Load(args);
                     });
                 });
             }

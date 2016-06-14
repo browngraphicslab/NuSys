@@ -53,10 +53,6 @@ namespace NuSysApp
             _library = library;
             //vm.OnItemsChanged += Update;
             //Canvas.SetZIndex(Header, Canvas.GetZIndex(ListView)+1)
-            foreach (var element in vm.PageElements.ToArray())
-            {
-                element.OnLightupContent += Select;
-            }
         }
 
         private void Select(LibraryElementModel model, bool lightup = true)
@@ -112,18 +108,15 @@ namespace NuSysApp
             var view = SessionController.Instance.SessionView;
             _x = e.GetCurrentPoint(view).Position.X-25;
             _y = e.GetCurrentPoint(view).Position.Y-25;
-
-            LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
-            element.FireLightupContent(true);
         }
         private void ListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
 
             LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
-            // _propertiesWindow.SetElement(element);
-            // _propertiesWindow.Visibility = Visibility.Visible;
+
+            _propertiesWindow.SetElement(element);
             SessionController.Instance.SessionView.ShowDetailView(element);
-            element.FireLightupContent(true);
+            _propertiesWindow.Visibility = Visibility.Visible;
         }
         private async void Sort_Button_Click(object sender, RoutedEventArgs e)
         {
@@ -137,7 +130,7 @@ namespace NuSysApp
         private void LibraryListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
-            if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element.Id) || (element.Type == ElementType.Link))
+            if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element.LibraryElementId) || (element.Type == ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -155,11 +148,11 @@ namespace NuSysApp
             t.TranslateX += _x;
             t.TranslateY += _y;
 
-            if (!SessionController.Instance.ContentController.ContainsAndLoaded(element.Id))
+            if (!SessionController.Instance.ContentController.ContainsAndLoaded(element.LibraryElementId))
             {
                 Task.Run(async delegate
                 {
-                    SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(element.Id);
+                    SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(element.LibraryElementId);
                 });
             }
         }
@@ -169,7 +162,7 @@ namespace NuSysApp
         {
 
             LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
-            if ((WaitingRoomView.InitialWorkspaceId == element.Id) || (element.Type == ElementType.Link))
+            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -206,7 +199,7 @@ namespace NuSysApp
         private async void LibraryListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
-            if ((WaitingRoomView.InitialWorkspaceId == element.Id) || (element.Type == ElementType.Link))
+            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -220,7 +213,7 @@ namespace NuSysApp
 
             rect.Hide();
             var r = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(_x, _y));
-            await _library.AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type,element.Id);
+            await _library.AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type,element.LibraryElementId);
         }
 
         private void ListView_OnItemClick(object sender, ItemClickEventArgs e)

@@ -18,7 +18,7 @@ namespace NuSysApp
     public class DetailViewerViewModel : BaseINPC
     {
         private ElementModel _nodeModel;
-        private DetailNodeViewFactory _viewFactory = new DetailNodeViewFactory();
+        private DetailViewHomeTabViewFactory _viewHomeTabViewFactory = new DetailViewHomeTabViewFactory();
         private String _tagToDelete;
         public Boolean DeleteOnFocus;
         public string Title { get; set; }
@@ -51,18 +51,19 @@ namespace NuSysApp
 
         }
 
-        public async Task<bool> ShowElement(LibraryElementModel model)
+        public async Task<bool> ShowElement(LibraryElementController controller)
         {
             //CurrentElementController = vm.Controller;
-            View = await _viewFactory.CreateFromSendable(model);
+            View = await _viewHomeTabViewFactory.CreateFromSendable(controller);
             if (View == null)
                 return false;
             //_nodeModel = vm.Model;
-            Title = model.Title;
-            this.ChangeTitle(this, model.Title);
-
+            Title = controller.LibraryElementModel.Title;
+            this.ChangeTitle(this, controller.LibraryElementModel.Title);
+            
             //vm.Controller.MetadataChange += ControllerOnMetadataChange;
             //vm.Controller.LibraryElementModel.OnTitleChanged += ChangeTitle;
+
             
             var tempvm = (ElementViewModel) View.DataContext;
             tempvm.PropertyChanged += NodeVMPropertChanged;
