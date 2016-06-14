@@ -25,7 +25,9 @@ namespace NuSysApp
         public string Date { get; set; }
 
         public UserControl View { get; set; }
-            
+
+        public double Width;
+        public double Height;
         public ObservableCollection<FrameworkElement> Tags { get; set; }
 
         public ObservableCollection<StackPanel> Metadata { get; set; }
@@ -35,6 +37,9 @@ namespace NuSysApp
 
         public delegate void TitleChangedHandler(object source, string newTitle);
         public event TitleChangedHandler TitleChanged;
+
+        public delegate void SizeChangedEventHandler(object source, double left, double width);
+        public event SizeChangedEventHandler SizeChanged;
 
         public DetailViewerViewModel()
 
@@ -92,7 +97,10 @@ namespace NuSysApp
             Title = title;
         }
 
-
+        public void ChangeSize(object sender, double left, double width)
+        {
+            SizeChanged?.Invoke(sender, left, width);
+        }
 
         private void ControllerOnMetadataChange(object source, string key)
         {

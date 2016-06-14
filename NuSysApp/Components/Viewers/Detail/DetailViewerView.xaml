@@ -13,7 +13,7 @@
     BorderThickness="2"
     
     >
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="{Binding Width}">
         <Grid x:Name="resizer" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="{StaticResource color9}" Width="30"
                     ManipulationDelta="Resizer_OnManipulationDelta" ManipulationMode="All">
             <Grid.RenderTransform>
