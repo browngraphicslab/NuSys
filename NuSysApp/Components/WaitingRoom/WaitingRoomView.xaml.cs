@@ -120,7 +120,7 @@ namespace NuSysApp
                     if (dict.ContainsKey("creator_user_id"))
                     {
                         var creator = dict["creator_user_id"].ToString().ToLower();
-                        if(creator != "rms" && creator != "rosemary" && creator != "gfxadmin")
+                        if(creator == "rms" || creator == "rosemary" || creator == "gfxadmin")
                         {
                             box.MadeByRosemary = true;
                         }
@@ -296,7 +296,7 @@ namespace NuSysApp
                             {
                                 if((box as CollectionTextBox).MadeByRosemary)
                                 {
-                                    List.Remove(box);
+                                    List.Items.Remove(box);
                                 }
                             }
                         }
