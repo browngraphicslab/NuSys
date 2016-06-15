@@ -60,7 +60,7 @@ namespace NuSysApp
             region.Name = "Untitled Region";
             //RegionCollection.Add(region);
 
-            //((DetailViewerViewModel)DetailViewerView.DataContext).CurrentElementController.AddRegion(region);
+            ((DetailViewerViewModel)DetailViewerView.DataContext).CurrentElementController.AddRegion(region);
 
 
         }
