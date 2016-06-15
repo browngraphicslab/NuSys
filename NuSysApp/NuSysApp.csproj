@@ -251,6 +251,10 @@
       <DependentUpon>LibraryFavorites.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\Library\LibraryFavoritesViewModel.cs" />
+    <Compile Include="Components\Misc\SpeechToTextUI\SpeechToTextBoxView.xaml.cs">
+      <DependentUpon>SpeechToTextBoxView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\SpeechToTextUI\SpeechToTextBoxViewModel.cs" />
     <Compile Include="Components\Misc\TextInputBlock.xaml.cs">
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
@@ -475,6 +479,7 @@
     <Compile Include="Network\Requests\UnsubscribeFromCollectionRequest.cs" />
     <Compile Include="Network\ServerRepo\ServerClient.cs" />
     <Compile Include="Network\StaticServerCalls.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="TransformHelper.cs" />
     <Compile Include="Util\AccessList.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
@@ -699,6 +704,10 @@
     <Page Include="Components\Misc\Library\LibraryFavorites.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Misc\SpeechToTextUI\SpeechToTextBoxView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Misc\TextInputBlock.xaml">
       <SubType>Designer</SubType>
