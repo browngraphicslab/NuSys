@@ -12,9 +12,9 @@ namespace NuSysApp
 
         public string Name { get; set; }
 
-        public Region()
+        public Region(string name)
         {
-            //Name = name;
+            Name = name;
         }
 
     }
