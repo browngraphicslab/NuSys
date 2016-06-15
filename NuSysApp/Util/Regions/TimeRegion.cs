@@ -8,7 +8,6 @@ namespace NuSysApp
 {
     class TimeRegion : Region
     {
-
         public TimeRegion(double time1, double time2)
         {
             Time1 = time1;

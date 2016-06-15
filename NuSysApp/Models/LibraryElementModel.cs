@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -46,7 +45,7 @@ namespace NuSysApp
             Regions = new HashSet<Region>();
             SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
         }
-
+        
         protected virtual void OnSessionControllerEnterNewCollection()
         {
             Data = null;

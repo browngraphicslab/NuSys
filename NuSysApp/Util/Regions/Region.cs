@@ -9,9 +9,13 @@ namespace NuSysApp
 {
     public abstract class Region
     {
+
         public string Name { get; set; }
+
         public Region()
         {
+            //Name = name;
         }
+
     }
 }
