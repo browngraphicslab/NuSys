@@ -61,6 +61,7 @@ namespace NuSysApp
             {
                 return false;
             }
+            
             //Create non-libraryelementcontroller tabs
             return true;
         }

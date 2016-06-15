@@ -677,5 +677,10 @@ namespace NuSysApp
         {
             await StaticServerCalls.CreateSnapshot();
         }
+
+        private void CurrentCollectionDV_OnClick(object sender, RoutedEventArgs e)
+        {
+            xDetailViewer.ShowElement(SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController);
+        }
     }
 }
