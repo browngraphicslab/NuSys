@@ -6,6 +6,7 @@
     xmlns:local="using:NuSysApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:speech="using:NuSysApp.Components.Misc.SpeechToTextUI"
     mc:Ignorable="d"  
     Background="Transparent"
     >
@@ -42,8 +43,7 @@
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="xOuterMost" >
         <Canvas x:Name="mainCanvas" Background="Transparent" AllowDrop="True" DragLeave="OnDrop" IsHitTestVisible="True">
-       
-        <Button Visibility="Collapsed" x:Name="ChatButton" Style="{StaticResource CircleButton}" Click="ChatButton_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="5,10,5,10">
+            <Button Visibility="Collapsed" x:Name="ChatButton" Style="{StaticResource CircleButton}" Click="ChatButton_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="5,10,5,10">
             <Image Source="/Assets/icon_chat.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Button>
         <Button x:Name="ChatNotifs"  Style="{StaticResource CircleButton}" Background="Red" Width="30" Height="30" Opacity="0" VerticalAlignment="Bottom" Visibility="Collapsed">
@@ -56,6 +56,7 @@
         </Button>
         <local:LibraryDragElement x:Name="LibraryDraggingNode" Visibility="Collapsed"></local:LibraryDragElement>
         <Image Name="DraggingGraphImage" Source="ms-appx:///Assets/icon_new_workspace.png" Width="0" Height="0"></Image>
+        <speech:SpeechToTextBoxView></speech:SpeechToTextBoxView>
         <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5,0,0,50"></local:ChatPopupView >
 
 
