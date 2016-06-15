@@ -18,8 +18,8 @@ namespace NuSysApp
         private bool _loading = false;
         #region Events
         public delegate void ContentChangedEventHandler(object source, string contentData);
-        public delegate void RegionAddedEventHandler(object source, string regionString);
-        public delegate void RegionRemovedEventHandler(object source, string regionString);
+        public delegate void RegionAddedEventHandler(object source, Region region);
+        public delegate void RegionRemovedEventHandler(object source, Region region);
         public delegate void MetadataChangedEvenetHandler(object source);
         public delegate void DisposeEventHandler(object source);
         public delegate void TitleChangedEventHandler(object sender, string title);
@@ -80,11 +80,11 @@ namespace NuSysApp
         /// This will ADD a region to the library element model and will update the server accordingly
         /// It will then fire an even notfying all listeners of the new region added
         /// </summary>
-        public void AddRegion(string regionString)
+        public void AddRegion(Region region)
         {
-            _libraryElementModel.Regions.Add(regionString);
-            RegionAdded?.Invoke(this, regionString);
-            SessionController.Instance.NuSysNetworkSession.AddRegionToContent(LibraryElementModel.LibraryElementId, regionString);
+            _libraryElementModel.Regions.Add(region);
+            RegionAdded?.Invoke(this, region);
+            SessionController.Instance.NuSysNetworkSession.AddRegionToContent(LibraryElementModel.LibraryElementId, region);
         }
 
         /// <summary>
@@ -92,11 +92,11 @@ namespace NuSysApp
         /// It will then fire an even notfying all listeners of the old region that was deleted
         /// The entire list of regions can be refetched from the library element model directly if needed
         /// </summary>
-        public void RemoveRegion(string regionString)
+        public void RemoveRegion(Region region)
         {
-            _libraryElementModel.Regions.Remove(regionString);
-            RegionRemoved?.Invoke(this, regionString);
-            SessionController.Instance.NuSysNetworkSession.RemoveRegionFromContent(LibraryElementModel.LibraryElementId, regionString);
+            _libraryElementModel.Regions.Remove(region);
+            RegionRemoved?.Invoke(this, region);
+            SessionController.Instance.NuSysNetworkSession.RemoveRegionFromContent(LibraryElementModel.LibraryElementId, region);
         }
 
         /// <summary>

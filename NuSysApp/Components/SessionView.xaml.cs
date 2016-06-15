@@ -111,6 +111,10 @@ namespace NuSysApp
             
             xDetailViewer.DataContext = new DetailViewerViewModel();
 
+            var xRegionEditorView = (RegionEditorTabView)xDetailViewer.FindName("xRegionEditorView");
+            xRegionEditorView.DataContext = xDetailViewer.DataContext;
+
+
             await SessionController.Instance.InitializeRecog();
 
             foreach(var user in SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values)

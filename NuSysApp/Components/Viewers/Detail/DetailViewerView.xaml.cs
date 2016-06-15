@@ -32,10 +32,24 @@ namespace NuSysApp
 
 
             this.InitializeComponent();
-            //NICOLAS:
-            //xMetadataEditorView = (MetadataEditorView)GetTemplateChild("xMetadataEditorView");
+
             xMetadataEditorView = (MetadataEditorView) FindName("xMetadataEditorView");
             xMetadataEditorView.DetailViewerView = this;
+
+            xRegionEditorView = (RegionEditorTabView)FindName("xRegionEditorView");
+            xRegionEditorView.DetailViewerView = this;
+            //xRegionEditorView.DataContext = this.DataContext;
+            //xRegionEditorView.DataContext = (DetailViewerViewModel)this.DataContext;
+
+
+
+
+
+
+            //xRegionEditorView = (RegionEditorView)FindName("xRegionEditorView");
+            //xRegionEditorView.DetailViewerView = this;
+
+
 
             Visibility = Visibility.Collapsed;
             
@@ -55,6 +69,17 @@ namespace NuSysApp
                   vm.TitleChanged += LibraryElementModelTitleChanged;
                   Tags.ItemsSource = vm.Tags;
                   vm.MakeTagList();
+
+
+                  //xRegionEditorView = (RegionEditorTabView)FindName("xRegionEditorView");
+                  //xRegionEditorView.DetailViewerView = this;
+                  //xRegionEditorView.DataContext = this.DataContext;
+                  //xRegionEditorView.DataContext = (DetailViewerViewModel)this.DataContext;
+                  
+                  //xRegionEditorView = (RegionEditorView)FindName("xRegionEditorView");
+                  //xRegionEditorView.DataContext = this.DataContext;
+                  //xRegionEditorView.DetailViewerViewModel = (DetailViewerViewModel)this.DataContext;
+                  //xRegionEditorView.DetailViewerView = this;
 
                   this.Width = SessionController.Instance.SessionView.ActualWidth / 2;
                   this.Height = SessionController.Instance.SessionView.ActualHeight;
@@ -161,7 +186,8 @@ namespace NuSysApp
 
 
             xMetadataEditorView.Update();
-            
+            xRegionEditorView.Update();
+
 
 
         }

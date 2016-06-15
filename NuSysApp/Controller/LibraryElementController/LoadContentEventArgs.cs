@@ -9,9 +9,9 @@ namespace NuSysApp
     public class LoadContentEventArgs
     {
         public string Data;
-        public HashSet<string> RegionStrings;
+        public HashSet<Region> RegionStrings;
         public HashSet<string> InkStrings;
-        public LoadContentEventArgs(string data = null, HashSet<string> regionStrings = null, HashSet<string> inkStrings = null)
+        public LoadContentEventArgs(string data = null, HashSet<Region> regionStrings = null, HashSet<string> inkStrings = null)
         {
             Data = data;
             RegionStrings = regionStrings;

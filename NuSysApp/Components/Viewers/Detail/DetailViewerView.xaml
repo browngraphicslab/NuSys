@@ -102,6 +102,13 @@
 
                 </PivotItem>
 
+
+                <PivotItem Header="Region Editor">
+                    <local:RegionEditorTabView x:Name="xRegionEditorView"  Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></local:RegionEditorTabView>
+
+                </PivotItem>
+                   
+
             </Pivot>
 
 

@@ -146,7 +146,7 @@ namespace NuSysApp
                 return data;
             });
         }
-        public async Task<bool> AddRegionToContent(string contentId, string regionString)
+        public async Task<bool> AddRegionToContent(string contentId, Region regionString)
         {
             return await Task.Run(async delegate
             {
@@ -167,7 +167,7 @@ namespace NuSysApp
                 return false;
             });
         }
-        public async Task<bool> RemoveRegionFromContent(string contentId, string regionString)
+        public async Task<bool> RemoveRegionFromContent(string contentId, Region regionString)
         {
             return await Task.Run(async delegate
             {
@@ -302,7 +302,7 @@ namespace NuSysApp
                     var timestamp = dict.ContainsKey("library_element_creation_timestamp")
                         ? (string)dict["library_element_creation_timestamp"].ToString()
                         : null;
-                    var regions = dict.ContainsKey("regions") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["regions"].ToString()) : null;
+                    var regions = dict.ContainsKey("regions") ? JsonConvert.DeserializeObject<HashSet<Region>>(dict["regions"].ToString()) : null;
                     var inks = dict.ContainsKey("inks") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["inks"].ToString()) : null;
 
                     var metadata = dict.ContainsKey("metadata") ? JsonConvert.DeserializeObject<Dictionary<string, Tuple<string, Boolean>>>(dict["metadata"].ToString()) : null;

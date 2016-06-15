@@ -1,6 +1,6 @@
-
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using SQLite.Net.Attributes;
 using Windows.UI.Xaml.Media;
@@ -14,12 +14,9 @@ namespace NuSysApp
 {
     public class LibraryElementModel : BaseINPC
     {
+        public HashSet<string> Keywords {get; set; }
+        public HashSet<Region> Regions { get; set; }
 
-        public HashSet<string> Keywords {
-            get;
-            set;
-        }
-        public HashSet<string> Regions { get; set; }
         public ElementType Type { get; set; }
 
         public string Data{ get;set; }
@@ -45,6 +42,7 @@ namespace NuSysApp
             Favorited = favorited;
             Keywords = new HashSet<string>();
             Metadata = metadata;
+            Regions = new HashSet<Region>();
             SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
         }
         public void UnPack(Message message)

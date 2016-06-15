@@ -15,24 +15,24 @@ namespace NuSysApp
     {
         public LibraryElementController Controller { get; }
         public LibraryElementModel Model { get; }
-        public ObservableCollection<Rectangle> Regions;
+        public ObservableCollection<Region> Regions;
         public Uri Image { get; }
         public ImageDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
             Controller = controller;
             Model = controller.LibraryElementModel;
-            Regions = new ObservableCollection<Rectangle>();
+            Regions = new ObservableCollection<Region>();
             controller.RegionAdded += RegionAdded;
             controller.RegionRemoved += RegionRemoved;
             Image = controller.GetSource();
         }
 
-        private void RegionAdded(object sender, string newRegion)
+        private void RegionAdded(object sender, Region newRegion)
         {
-            var rectangle = JsonConvert.DeserializeObject<Rectangle>(newRegion);
+            var rectangle = JsonConvert.DeserializeObject<Region>(newRegion.ToString());
             Regions.Add(rectangle);
         }
-        private void RegionRemoved(object sender, string oldRegion)
+        private void RegionRemoved(object sender, Region oldRegion)
         {
             //figure out which rectangle to remeove
             //remove it
