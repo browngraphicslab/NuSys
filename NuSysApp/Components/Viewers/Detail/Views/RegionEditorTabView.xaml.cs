@@ -54,13 +54,13 @@ namespace NuSysApp
             xContentPresenter.Content = (((DetailViewerViewModel)DetailViewerView.DataContext).RegionView);
 
             
-            var region = new RectangleRegion(new Point(100, 100), new Point(200, 200));
+            var region = new RectangleRegion("new rectangle",new Point(100, 100), new Point(200, 200));
             ((ImageDetailHomeTabView)(((DetailViewerViewModel)DetailViewerView.DataContext).RegionView)).DisplayRegion(region);
 
             region.Name = "Untitled Region";
             //RegionCollection.Add(region);
 
-            //((DetailViewerViewModel)DetailViewerView.DataContext).CurrentElementController.AddRegion(region);
+            ((DetailViewerViewModel)DetailViewerView.DataContext).CurrentElementController.AddRegion(region);
 
 
         }

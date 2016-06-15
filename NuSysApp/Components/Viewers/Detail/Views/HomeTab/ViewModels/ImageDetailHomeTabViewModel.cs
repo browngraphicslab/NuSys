@@ -29,8 +29,8 @@ namespace NuSysApp
 
         private void RegionAdded(object sender, Region newRegion)
         {
-            var rectangle = JsonConvert.DeserializeObject<Region>(newRegion.ToString());
-            Regions.Add(rectangle);
+            //var rectangle = JsonConvert.DeserializeObject<Region>(newRegion.ToString());
+            Regions.Add(newRegion);
         }
         private void RegionRemoved(object sender, Region oldRegion)
         {

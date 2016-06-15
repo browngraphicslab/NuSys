@@ -9,7 +9,7 @@ namespace NuSysApp
 {
     public class RectangleRegion : Region
     {
-        public RectangleRegion(Point p1, Point p2)
+        public RectangleRegion(string name, Point p1, Point p2) : base(name)
         {
             Point1 = p1;
             Point2 = p2;
