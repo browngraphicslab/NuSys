@@ -129,11 +129,6 @@ namespace NuSysApp
             }
             return true;
         }
-        public static Uri GetServerURI(string url)
-        {
-            return new Uri("http://" + WaitingRoomView.ServerName + "/" + url);
-        }
-
         public static long GetTimestampTicksOfLibraryElementModel(LibraryElementModel model)
         {
             if (!String.IsNullOrEmpty(model.Timestamp))

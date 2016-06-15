@@ -556,7 +556,7 @@ namespace NuSysApp
 
         public async void OpenFile(ElementViewModel vm)
         {
-            String token = vm.Model.GetMetaData("Token")?.ToString();
+            String token = vm.Controller.LibraryElementController.GetMetadata("Token")?.ToString();
 
             if (String.IsNullOrEmpty(token) ||
                 (!String.IsNullOrEmpty(token) &&
@@ -565,7 +565,7 @@ namespace NuSysApp
                 return;
             }
 
-            string ext = System.IO.Path.GetExtension(vm.Model.GetMetaData("FilePath").ToString());
+            string ext = System.IO.Path.GetExtension(vm.Controller.LibraryElementController.GetMetadata("FilePath")?.ToString());
             StorageFolder toWriteFolder = NuSysStorages.OpenDocParamsFolder;
 
             if (Constants.WordFileTypes.Contains(ext))

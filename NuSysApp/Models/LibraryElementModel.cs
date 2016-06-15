@@ -15,7 +15,10 @@ namespace NuSysApp
     public class LibraryElementModel : BaseINPC
     {
 
-        public HashSet<string> Keywords { get; set; }
+        public HashSet<string> Keywords {
+            get;
+            set;
+        }
         public HashSet<string> Regions { get; set; }
         public ElementType Type { get; set; }
 
@@ -44,7 +47,13 @@ namespace NuSysApp
             Metadata = metadata;
             SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
         }
-
+        public void UnPack(Message message)
+        {
+            if (message.ContainsKey("keywords"))
+            {
+                Keywords = new HashSet<string>(message.GetList<string>("keywords"));
+            }
+        }
         protected virtual void OnSessionControllerEnterNewCollection()
         {
             Data = null;

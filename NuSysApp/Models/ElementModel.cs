@@ -25,14 +25,10 @@ namespace NuSysApp
         private double _y;
 
         public List<RectangleViewModel> RegionsModel { get; set; }
-        
-        public Dictionary<string, object> Metadata = new Dictionary<string, object>();
 
         public ElementModel(string id) : base(id)
         {
             ElementType = ElementType.None;
-            SetMetaData("tags", new List<string>());
-            SetMetaData("groups", new List<string>());
             InqCanvas = new InqCanvasModel(id);
             RegionsModel = new List<RectangleViewModel>();
         }
@@ -126,28 +122,6 @@ namespace NuSysApp
                 _title = value;
             }
         }
-
-
-
-        public object GetMetaData(string key)
-        {
-            if (Metadata.ContainsKey(key))
-            {
-                return Metadata[key];
-            }
-            return null;
-        }
-
-        public void SetMetaData(string key, object value)
-        {
-            Metadata[key] = value;
-        }
-
-        public string[] GetMetaDataKeys()
-        {
-            return Metadata.Keys.ToArray();
-        }
-
         public string CreatorId { get; set; }
 
         public virtual void Delete()
@@ -157,7 +131,6 @@ namespace NuSysApp
         public override async Task<Dictionary<string, object>> Pack()
         {
             var dict = await base.Pack();
-            dict.Add("metadata", Metadata);
             dict.Add("x", X);
             dict.Add("y", Y);
             dict.Add("width", Width);
@@ -184,24 +157,6 @@ namespace NuSysApp
 
         public override async Task UnPack(Message props)
         {
-            var md = props.GetDict<string, object>("metadata");
-            if (md.ContainsKey("tags")) { 
-                md["tags"] = JsonConvert.DeserializeObject<List<string>>(md["tags"].ToString());
-
-            }
-            else
-                md["tags"] = new List<string>();
-
-            if (md.ContainsKey("groups"))
-                md["groups"] = JsonConvert.DeserializeObject<List<string>>(md["groups"].ToString());
-            else
-                md["groups"] = new List<string>();
-
-            foreach (var data in md)
-            {
-                Metadata[data.Key] = data.Value;
-            }
-
             X = props.GetDouble("x", X);
             Y = props.GetDouble("y", Y);
             Width = props.GetDouble("width", Width);

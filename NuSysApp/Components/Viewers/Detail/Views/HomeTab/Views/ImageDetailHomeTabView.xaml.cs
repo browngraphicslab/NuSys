@@ -59,19 +59,20 @@ namespace NuSysApp
         {
             var model = (ImageElementModel)((ImageElementViewModel)DataContext).Model;
 
-            string token = model.GetMetaData("Token")?.ToString();
+            var libraryElementController = (DataContext as ImageDetailHomeTabViewModel)?.Controller;
+            string token = libraryElementController?.GetMetadata("Token")?.ToString();
 
             if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
             {
                 return;
             }
 
-            string ext = Path.GetExtension(model.GetMetaData("FilePath").ToString());
+            string ext = Path.GetExtension(libraryElementController.GetMetadata("FilePath").ToString());
             StorageFolder toWriteFolder = NuSysStorages.OpenDocParamsFolder;
 
             if (Constants.WordFileTypes.Contains(ext))
             {
-                string bookmarkId = model.GetMetaData("BookmarkId").ToString();
+                string bookmarkId = libraryElementController.GetMetadata("BookmarkId").ToString();
                 StorageFile writeBookmarkFile = await StorageUtil.CreateFileIfNotExists(NuSysStorages.OpenDocParamsFolder, token);
 
                 using (StreamWriter writer = new StreamWriter(await writeBookmarkFile.OpenStreamForWriteAsync()))

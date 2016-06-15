@@ -34,7 +34,7 @@ namespace NuSysApp
         {
             List<string> tags = _message.GetList<string>("tags");
             // TODO: refactor
-            SessionController.Instance.IdToControllers[_message.GetString("id")].SetMetadata("tags", tags);
+            SessionController.Instance.IdToControllers[_message.GetString("id")].LibraryElementController.SetKeywords(new HashSet<string>(tags));
         }
     }
 }

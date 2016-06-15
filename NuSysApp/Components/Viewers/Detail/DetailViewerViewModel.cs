@@ -26,8 +26,6 @@ namespace NuSysApp
 
         public UserControl View { get; set; }
 
-        public double Width;
-        public double Height;
         public ObservableCollection<FrameworkElement> Tags { get; set; }
 
         public ObservableCollection<StackPanel> Metadata { get; set; }
@@ -52,6 +50,7 @@ namespace NuSysApp
         {
             var tempvm = (DetailHomeTabViewModel)View.DataContext;
             tempvm.TitleChanged -= NodeVMTitleChanged;
+
             _nodeModel = null;
 
         }
@@ -67,7 +66,12 @@ namespace NuSysApp
         }
         public async Task<bool> ShowElement(LibraryElementController controller)
         {
+            if (CurrentElementController != null)
+            {
+                CurrentElementController.KeywordsChanged -= KeywordsChanged;
+            }
             CurrentElementController = controller;
+            CurrentElementController.KeywordsChanged += KeywordsChanged;
             View = await _viewHomeTabViewFactory.CreateFromSendable(controller);
             if (View == null)
                 return false;
@@ -86,8 +90,12 @@ namespace NuSysApp
             RaisePropertyChanged("View");
             RaisePropertyChanged("Tags");
             RaisePropertyChanged("Metadata");
-            this.MakeMetadataList();
             return true;
+        }
+
+        private void KeywordsChanged(object sender, HashSet<string> keywords)
+        {
+            MakeTagList();
         }
 
 
@@ -116,53 +124,13 @@ namespace NuSysApp
             RaisePropertyChanged("Title");
         }
 
-        public void MakeMetadataList()
-        {
-            Metadata.Clear();
-            if (_nodeModel != null)
-            {
-                string[] keys = _nodeModel.GetMetaDataKeys();
-                foreach (string key in keys)
-                {
-                    bool editable = true;
-                    if (key == "tags" || key == "node_type" || key == "node_creation_date")
-                    {
-                        editable = false;
-                    }
-
-                    var val = _nodeModel.GetMetaData(key);
-                    string valString;
-                    if (val is System.Collections.Generic.List<string>)
-                    {
-                        valString = string.Join(", ", (List<string>)val);
-                    }
-                    else
-                    {
-                        valString = val.ToString();
-                    }
-                    StackPanel metadata = this.MakeMetaDataBlock(key, valString, editable);
-                    Metadata.Add(metadata);
-                }
-            }
-        }
-
-        public async void AddMetadata(string key, string val, bool update)
-        {
-            _nodeModel.SetMetaData(key, val);
-            if (!update)
-            {
-                StackPanel mdBlock = MakeMetaDataBlock(key, val, true);
-                Metadata.Add(mdBlock);
-            }
-            RaisePropertyChanged("Metadata");
-        }
-
+        
         public void MakeTagList()
         {
             Tags.Clear();
-            if (_nodeModel != null)
+            if (CurrentElementController != null)
             {
-                List<string> tags = (List<string>) _nodeModel.GetMetaData("tags");
+                var tags = CurrentElementController?.LibraryElementModel.Keywords;
                 foreach (string tag in tags)
                 {
                     var tagBlock = this.MakeTagBlock(tag);
@@ -170,27 +138,6 @@ namespace NuSysApp
                 }
             }
             RaisePropertyChanged("Tags");
-        }
-
-        public async void AddTag(string tag)
-        {
-            List<string> tags = (List<string>) _nodeModel.GetMetaData("tags");
-            tags.Add(tag);
-
-            var contentVm = (ElementViewModel) View.DataContext;
-            contentVm.Controller.LibraryElementModel.Keywords.Add(tag);
-
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SetTagsRequest(_nodeModel.Id, tags));
-            /*
-            //this should be refactored later
-            var tagBlock = this.MakeTagBlock(tag);
-            Tags.Add(tagBlock);
-
-            RaisePropertyChanged("Tags");
-
-            //makes the entire metadata list again to update new tags
-            MakeMetadataList();
-            */
         }
 
         //this is an ugly method, refactor later so not making a UI element in viewmodel
@@ -237,24 +184,20 @@ namespace NuSysApp
 
         private async void DeleteGridOnTapped(object sender, TappedRoutedEventArgs tappedRoutedEventArgs)
         {
-            List<string> tags = (List<string>)_nodeModel.GetMetaData("tags");
             var t = ((FrameworkElement) sender).Tag as string;
             if (t == null)
                 return;
-            tags.Remove(t);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SetTagsRequest(_nodeModel.Id, tags));
-            MakeTagList();
-            RaisePropertyChanged("Tags");
+            CurrentElementController?.RemoveKeyword(t);
         }
-
+        /*
         private async void MetaDataBox_OnKeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
             if (e.OriginalKey == Windows.System.VirtualKey.Enter)
             {
                 await UpdateMetadataVal(e);
             }
-        }
-
+        }*/
+        /*
         private async Task UpdateMetadataVal(Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
             TextBox valBox = ((TextBox) e.OriginalSource);
@@ -266,8 +209,8 @@ namespace NuSysApp
             }
 
             RaisePropertyChanged("Metadata");
-        }
-
+        }*/
+        /*
         public StackPanel MakeMetaDataBlock(string key, string val, bool editable)
         {
             var keyBox = new TextBlock {Text = key};
@@ -304,7 +247,7 @@ namespace NuSysApp
 
             return stackPanel;
         }
-
+        */
         private async void TagBlock_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
       

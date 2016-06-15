@@ -41,7 +41,7 @@ namespace NuSysApp
         //public static string Password { get; private set; }
         public static string ServerSessionID { get; private set; }
 
-        public static bool TEST_LOCAL_BOOLEAN = false;
+        public static bool TEST_LOCAL_BOOLEAN = true;
         public static bool IS_HUB = false;
 
         private static IEnumerable<Message> _firstLoadList;
@@ -312,6 +312,7 @@ namespace NuSysApp
                                 bool favorited = false;
                                 Dictionary<String, Tuple<string, Boolean>> metadata = new Dictionary<string, Tuple<string, Boolean>>();
                                 var dict = kvp.Value;
+                                var message = new Message(dict);
                                 string title = null;
                                 ElementType type = ElementType.Text;
                                 string timestamp = "";
@@ -368,6 +369,7 @@ namespace NuSysApp
                                 {
                                     element = new LibraryElementModel(id, type, metadata, title, favorited);
                                 }
+                                element.UnPack(message);
                                 element.Creator = creator;
                                 element.Timestamp = timestamp;
                                 element.ServerUrl = serverUrl;

@@ -126,7 +126,7 @@ namespace NuSysApp
                     throw new InvalidOperationException("This node type is not yet supported");
             }
 
-            foreach (var tag in elementModel.GetMetaData("tags") as List<string>)
+            foreach (var tag in controller.LibraryElementModel.Keywords)
             {
                 controller.LibraryElementModel.Keywords.Add(tag);
             }

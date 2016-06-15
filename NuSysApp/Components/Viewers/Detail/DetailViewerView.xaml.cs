@@ -133,10 +133,12 @@ namespace NuSysApp
                // List<string> topics = await TagExtractor.launch(test, new List<string>() { text });
                 await UITask.Run(() =>
                 {
-                    var tags = (List<string>)cvm.Controller.Model.GetMetaData("tags");
+                    var tags = cvm.Controller.LibraryElementModel.Keywords;
                     if (topics.Count > 0)
-                        tags.AddRange(topics);
-                    cvm.Controller.SetMetadata("tags", tags);
+                    {
+                        tags = new HashSet<string>(tags.Concat(topics));
+                    }
+                    cvm.Controller.LibraryElementController.SetKeywords(tags);
                 });
             });
         }
@@ -208,7 +210,7 @@ namespace NuSysApp
             {
                 if (tag != "")
                 {
-                    vm.AddTag(tag);
+                    vm.CurrentElementController?.AddKeyword(tag);
                    // Tags.ItemsSource = vm.Tags;
                 }
             }
@@ -223,7 +225,7 @@ namespace NuSysApp
             string newKey = ((TextBox)e.OriginalSource).Text.Trim();
             if (newKey != "")
             {
-              vm.AddMetadata(newKey, "", false);
+                vm.CurrentElementController.AddMetadata(new MetadataEntry(newKey, "", false));
             }
           //  NewMetadataBox.Text = "";
         }

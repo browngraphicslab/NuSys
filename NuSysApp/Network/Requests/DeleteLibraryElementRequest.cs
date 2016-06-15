@@ -37,7 +37,7 @@ namespace NuSysApp
             var libraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(_message.GetString("id"));
             if (libraryElementController == null)
                 return;
-            libraryElementController.Delete(this);
+            libraryElementController.Delete();
         }
     }
 }

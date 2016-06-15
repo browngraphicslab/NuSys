@@ -20,6 +20,7 @@ using Windows.UI.Text;
 using Windows.UI.Xaml;
 using NuSysApp.Components.Viewers.FreeForm;
 using System.Net;
+using Newtonsoft.Json;
 
 namespace NuSysApp
 {
@@ -216,7 +217,7 @@ namespace NuSysApp
                 List<string> topics = await TagExtractor.launch(test, new List<string>() {data});
                 await UITask.Run(() =>
                 {
-                    this.Model.SetMetaData("tags", topics);
+                    Controller.LibraryElementController.SetKeywords(new HashSet<string>(topics));
                     RaisePropertyChanged("Tags");
                 });
             });

@@ -45,9 +45,10 @@ namespace NuSysApp
             controller.ScaleChanged += OnScaleChanged;
             controller.AlphaChanged += OnAlphaChanged;
             controller.MetadataChange += OnMetadataChange;
-            if (controller.LibraryElementModel != null)
+            if (controller.LibraryElementController != null)
             {
                 controller.LibraryElementController.TitleChanged += OnTitleChanged;
+                controller.LibraryElementController.KeywordsChanged += KeywordsChanged;
             }
             controller.LinkedAdded += OnLinkedAdded;
             controller.Disposed += OnDisposed;
@@ -67,7 +68,10 @@ namespace NuSysApp
                 }
             }   
         }
-
+        private void KeywordsChanged(object sender, HashSet<string> keywords)
+        {
+            CreateTags();
+        }
         private void ControllerOnDeleted(object source)
         {
             foreach (var link in LinkList)
@@ -138,7 +142,7 @@ namespace NuSysApp
         {
             Tags.Clear();
 
-            List<string> tagList = (List<string>)Model.GetMetaData("tags");
+            var tagList = Controller.LibraryElementController.LibraryElementModel.Keywords;
 
             foreach (string tag in tagList)
             {
@@ -208,9 +212,10 @@ namespace NuSysApp
             _controller.ScaleChanged -= OnScaleChanged;
             _controller.AlphaChanged -= OnAlphaChanged;
             _controller.MetadataChange -= OnMetadataChange;
-            if (_controller.LibraryElementModel != null)
+            if (_controller.LibraryElementController != null)
             {
                 _controller.LibraryElementController.TitleChanged -= OnTitleChanged;
+                _controller.LibraryElementController.KeywordsChanged -= KeywordsChanged;
             }
             _controller.LinkedAdded -= OnLinkedAdded;
             _controller.Disposed -= OnDisposed;

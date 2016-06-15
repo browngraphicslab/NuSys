@@ -26,6 +26,7 @@ namespace NuSysApp
         public delegate void FavoritedEventHandler(object sender, bool favorited);
         public delegate void LoadedEventHandler(object sender);
         public delegate void DeletedEventHandler(object sender);
+        public delegate void KeywordsChangedEventHandler(object sender, HashSet<string> tags);
         public event ContentChangedEventHandler ContentChanged;
         public event RegionAddedEventHandler RegionAdded;
         public event RegionRemovedEventHandler RegionRemoved;
@@ -34,6 +35,7 @@ namespace NuSysApp
         public event TitleChangedEventHandler TitleChanged;
         public event FavoritedEventHandler Favorited;
         public event DeletedEventHandler Deleted;
+        public event KeywordsChangedEventHandler KeywordsChanged;
         public event LoadedEventHandler Loaded
         {
             add
@@ -137,8 +139,16 @@ namespace NuSysApp
         public void AddMetadata(MetadataEntry entry)
         {
             //Keys should be unique; values obviously don't have to be.
-            if (_libraryElementModel.Metadata.ContainsKey(entry.Key) || string.IsNullOrEmpty(entry.Value) || string.IsNullOrEmpty(entry.Value) || string.IsNullOrWhiteSpace(entry.Key) || string.IsNullOrWhiteSpace(entry.Value))
+            if (string.IsNullOrEmpty(entry.Value) || string.IsNullOrEmpty(entry.Key) || string.IsNullOrWhiteSpace(entry.Key) || string.IsNullOrWhiteSpace(entry.Value))
                 return;
+            if (_libraryElementModel.Metadata.ContainsKey(entry.Key))
+            {
+                if (_libraryElementModel.Metadata[entry.Key].Item2 == false)//weird syntax in case we want to change mutability to an enum eventually
+                {
+                    return;
+                }
+                _libraryElementModel.Metadata.Remove(entry.Key);
+            }
             _libraryElementModel.Metadata.Add(entry.Key, new Tuple<string, bool>(entry.Value, entry.Mutability));
             ChangeMetadata(_libraryElementModel.Metadata);
         }
@@ -147,25 +157,71 @@ namespace NuSysApp
         /// Checks if the key string is valid, then updates the metadata dictionary and sends a message to the server with the new dictionary.
         /// </summary>
         /// <param name="k"></param>
-        public void RemoveMetadata(String k)
+        public void RemoveMetadata(string key)
         {
-            if (string.IsNullOrEmpty(k) || !_libraryElementModel.Metadata.ContainsKey(k) || string.IsNullOrWhiteSpace(k))
+            if (string.IsNullOrEmpty(key) || !_libraryElementModel.Metadata.ContainsKey(key) || string.IsNullOrWhiteSpace(key))
                 return;
 
-            _libraryElementModel.Metadata.Remove(k);
+            _libraryElementModel.Metadata.Remove(key);
             ChangeMetadata(_libraryElementModel.Metadata);
+        }
+
+        /// <summary>
+        /// Returns the value of the metadata at the specified key
+        /// null if not exist
+        /// </summary>
+        public string GetMetadata(string key)
+        {
+            if (string.IsNullOrEmpty(key) || !_libraryElementModel.Metadata.ContainsKey(key) || string.IsNullOrWhiteSpace(key))
+            {
+                return null;
+            }
+            return _libraryElementModel.Metadata[key].Item1;
         }
 
         /// <summary>
         /// This will change make the content controller remove the library element model and this controller
         /// then it will fire the deleted event and dispose of this controller
         /// </summary>
-        public void Delete(object sender)
+        public void Delete()
         {
             SessionController.Instance.ActiveFreeFormViewer.DeselectAll();
             SessionController.Instance.ContentController.Remove(this.LibraryElementModel);
             Deleted?.Invoke(this);
             Dispose();
+        }
+
+        /// <summary>
+        /// This will change the library element model's Tags  and update the server.  
+        /// Then it will fire an event notifying all listeners of the new list of tags
+        /// </summary>
+        public void SetKeywords(HashSet<string> keywords)
+        {
+            _libraryElementModel.Keywords = keywords;
+            KeywordsChanged?.Invoke(this, keywords);
+            _debouncingDictionary.Add("keywords", keywords);
+        }
+
+        /// <summary>
+        /// This will add a single keyword to the model's list of keywords and update the server
+        /// it will fire the generic 'KeywordsChanged' event
+        /// </summary>
+        public void AddKeyword(string keyword)
+        {
+            _libraryElementModel.Keywords.Add(keyword);
+            KeywordsChanged?.Invoke(this, _libraryElementModel.Keywords);
+            _debouncingDictionary.Add("keywords", _libraryElementModel.Keywords);
+        }
+
+        /// <summary>
+        /// This will remove a single keyword to the model's list of keywords and update the server
+        /// it will fire the generic 'KeywordsChanged' event
+        /// </summary>
+        public void RemoveKeyword(string keyword)
+        {
+            _libraryElementModel.Keywords.Remove(keyword);
+            KeywordsChanged?.Invoke(this, _libraryElementModel.Keywords);
+            _debouncingDictionary.Add("keywords", _libraryElementModel.Keywords);
         }
 
         /// <summary>

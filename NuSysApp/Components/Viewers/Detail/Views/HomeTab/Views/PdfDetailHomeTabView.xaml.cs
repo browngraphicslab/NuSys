@@ -103,7 +103,8 @@ namespace NuSysApp
         private async void OnGoToSource(object sender, RoutedEventArgs e)
         {
             var model = (PdfNodeModel)((PdfNodeViewModel)DataContext).Model;
-            string token = model.GetMetaData("Token")?.ToString();
+            var libraryElementController = (DataContext as ImageDetailHomeTabViewModel)?.Controller;
+            string token = libraryElementController.GetMetadata("Token")?.ToString();
             await AccessList.OpenFile(token);
         }
 

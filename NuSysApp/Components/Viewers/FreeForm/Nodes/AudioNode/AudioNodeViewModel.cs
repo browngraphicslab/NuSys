@@ -80,13 +80,7 @@ namespace NuSysApp
         {
             get
             {
-                var url = Model.LibraryId + ".mp3";
-                if (Controller.LibraryElementModel.ServerUrl != null)
-                {
-                    url = Controller.LibraryElementModel.ServerUrl;
-                }
-                var uri = Constants.GetServerURI(url);
-                return uri;
+                return Controller.LibraryElementController.GetSource();
             }
         }
         public override async Task Init()

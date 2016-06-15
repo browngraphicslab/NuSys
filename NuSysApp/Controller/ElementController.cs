@@ -160,13 +160,6 @@ namespace NuSysApp
             _debouncingDictionary.Add("alpha", alpha);
         }
 
-        public void SetMetadata(string key, object val)
-        {
-            Model.SetMetaData(key, val);
-            MetadataChange?.Invoke(this, key);
-            _debouncingDictionary.Add("metadata", Model.Metadata);
-        }
-
         public void SetRegionModel(RectangleViewModel region)
         {
             Model.RegionsModel.Add(region);

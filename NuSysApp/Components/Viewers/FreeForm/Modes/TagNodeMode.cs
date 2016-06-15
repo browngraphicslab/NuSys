@@ -128,14 +128,14 @@ namespace NuSysApp
             }
 
             var inkCaption = groupTagNode.Title;
-            var tags = (List<string>) nodeToTag.Model.GetMetaData("tags");
+            var tags = nodeToTag.Controller.LibraryElementController.LibraryElementModel.Keywords;
 
             if (tags.Contains(inkCaption))
                 return;
 
             tags.Add(inkCaption);
 
-            nodeToTag.Controller.SetMetadata("tags", tags);
+            nodeToTag.Controller.LibraryElementController.SetKeywords(tags);
             
             // tag all visual copies
 
@@ -143,11 +143,11 @@ namespace NuSysApp
             {
                 var vm = (ElementViewModel) userControl.DataContext;
                 var model = vm.Model;
-                if (model.GetMetaData("visualCopyOf") == nodeToTag.Id)
+                if (vm.Controller.LibraryElementController.GetMetadata("visualCopyOf") == nodeToTag.Id)
                 {
-                    var t = (List<string>)nodeToTag.Model.GetMetaData("tags");
+                    var t = nodeToTag.Controller.LibraryElementController.LibraryElementModel.Keywords;
                     t.Add(inkCaption);
-                    model.SetMetaData("tags", tags);
+                    vm.Controller.LibraryElementController.SetKeywords(new HashSet<string>(t));
                 }
             }
 
@@ -160,8 +160,8 @@ namespace NuSysApp
                 {
                     UITask.Run(() =>
                     {
-                        var newNodeModel = SessionController.Instance.IdToControllers[s].Model;
-                        newNodeModel.SetMetaData("visualCopyOf", nodeToTag.Id);
+                        var newNodeController = SessionController.Instance.IdToControllers[s];
+                        newNodeController.LibraryElementController.AddMetadata(new MetadataEntry("visualCopyOf", nodeToTag.Id, true));
                         //newNodeModel.MoveToGroup((NodeContainerModel)groupTagNode.Model, true);
                     });
                 });
