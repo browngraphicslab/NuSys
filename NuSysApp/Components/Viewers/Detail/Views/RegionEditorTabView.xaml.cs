@@ -53,23 +53,14 @@ namespace NuSysApp
         {
             xContentPresenter.Content = (((DetailViewerViewModel)DetailViewerView.DataContext).RegionView);
 
-            var test = new RectangleRegion(new Point(100, 100), new Point(200, 200));
-            ((ImageDetailHomeTabView)(((DetailViewerViewModel)DetailViewerView.DataContext).RegionView)).DisplayRegion(test);
-
-            test.Name = "Untitled Region";
-            RegionCollection.Add(test);
-
             
-            //xContentPresenter.Content = new RegionImageDisplayView();
-            // Finds the MetadataEntry, then uses that to delete the metadata from the lib element
-            //var button = sender as Button;
-            //var grid = button.GetVisualParent() as Grid;
-            //var entry = grid.DataContext as MetadataEntry;
-            //var vm = (DetailViewerViewModel)DetailViewerView.DataContext;
-            //vm.CurrentElementController.LibraryElementModel.RemoveMetadata(entry.Key);
+            var region = new RectangleRegion(new Point(100, 100), new Point(200, 200));
+            ((ImageDetailHomeTabView)(((DetailViewerViewModel)DetailViewerView.DataContext).RegionView)).DisplayRegion(region);
 
-            // Finally, updates the ListView to reflect the changes
-            //this.Update();
+            region.Name = "Untitled Region";
+            //RegionCollection.Add(region);
+
+            //((DetailViewerViewModel)DetailViewerView.DataContext).CurrentElementController.AddRegion(region);
 
 
         }
@@ -79,6 +70,7 @@ namespace NuSysApp
             var button = sender as Button;
             button.Visibility = Visibility.Collapsed;
             _edgeCaseButtonExited = true;
+
         }
 
         public void Update()
@@ -86,8 +78,14 @@ namespace NuSysApp
             var vm = (DetailViewerViewModel)DetailViewerView.DataContext;
 
             //xLeftRegionPanel.Content = vm.View;
+            xContentPresenter.Content = vm.RegionView;
 
-            return;
+            RegionCollection.Clear();
+
+            foreach (var region in vm.CurrentElementController.LibraryElementModel.Regions)
+            {
+                RegionCollection.Add(region);
+            }
         }
 
         private void test_Click(object sender, RoutedEventArgs e)

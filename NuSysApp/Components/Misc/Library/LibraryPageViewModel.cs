@@ -67,7 +67,7 @@ namespace NuSysApp
                     ordered = new List<LibraryElementModel>(PageElements.OrderBy(l => ((LibraryElementModel)l).Type.ToString()));
                     break;
                 case "Date/Time":
-                    ordered = new List<LibraryElementModel>(PageElements.OrderByDescending(l => ((LibraryElementModel)l).GetTimestampTicks()));
+                    ordered = new List<LibraryElementModel>(PageElements.OrderByDescending(l => Constants.GetTimestampTicksOfLibraryElementModel((LibraryElementModel)l)));
                     break;
                 default:
                     break;

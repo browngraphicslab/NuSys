@@ -38,8 +38,9 @@ namespace NuSysApp
 
             xRegionEditorView = (RegionEditorTabView)FindName("xRegionEditorView");
             xRegionEditorView.DetailViewerView = this;
-            xRegionEditorView.DataContext = this.DataContext;
-            xRegionEditorView.DataContext = (DetailViewerViewModel)this.DataContext;
+            //xRegionEditorView.DataContext = this.DataContext;
+            //xRegionEditorView.DataContext = (DetailViewerViewModel)this.DataContext;
+
 
 
 
@@ -51,7 +52,7 @@ namespace NuSysApp
 
 
             Visibility = Visibility.Collapsed;
-
+            
             //NewTagBox.Activate();
 
 
@@ -59,7 +60,8 @@ namespace NuSysApp
               {
                   if (!(DataContext is DetailViewerViewModel))
                       return;
-              
+
+                  (DataContext as DetailViewerViewModel).SizeChanged += Resize;
 
                   var vm = (DetailViewerViewModel)DataContext;
 
@@ -69,11 +71,11 @@ namespace NuSysApp
                   vm.MakeTagList();
 
 
-                  xRegionEditorView = (RegionEditorTabView)FindName("xRegionEditorView");
-                  xRegionEditorView.DetailViewerView = this;
-                  xRegionEditorView.DataContext = this.DataContext;
-                  xRegionEditorView.DataContext = (DetailViewerViewModel)this.DataContext;
-
+                  //xRegionEditorView = (RegionEditorTabView)FindName("xRegionEditorView");
+                  //xRegionEditorView.DetailViewerView = this;
+                  //xRegionEditorView.DataContext = this.DataContext;
+                  //xRegionEditorView.DataContext = (DetailViewerViewModel)this.DataContext;
+                  
                   //xRegionEditorView = (RegionEditorView)FindName("xRegionEditorView");
                   //xRegionEditorView.DataContext = this.DataContext;
                   //xRegionEditorView.DetailViewerViewModel = (DetailViewerViewModel)this.DataContext;
@@ -182,6 +184,7 @@ namespace NuSysApp
 
 
             xMetadataEditorView.Update();
+            xRegionEditorView.Update();
 
 
 
@@ -288,7 +291,15 @@ namespace NuSysApp
         {
       //      ((ElementViewModel) ((DetailViewerViewModel) DataContext).View.DataContext).Model.Title = TitleEnter.Text;
         }
-
+        private void Resize(object sender, double left, double width)
+        {
+            Canvas.SetLeft(this, left);
+            Width = width;
+            if (Canvas.GetLeft(this) <= 30)
+            {
+                Canvas.SetLeft(this, 30);
+            }
+        }
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
       //      if (!_allowResize)
@@ -298,7 +309,8 @@ namespace NuSysApp
        
             if ((this.Width > 250 || e.Delta.Translation.X < 0) && (Canvas.GetLeft(this) > 0 || e.Delta.Translation.X > 0) && (Canvas.GetLeft(this) > 30 || e.Delta.Translation.X > 0))
             {
-                this.Width -= Math.Min(e.Delta.Translation.X,this.Width);
+                //this.Width -= Math.Min(e.Delta.Translation.X,this.Width);
+                /*
                // xContainer.Width = this.Width - 30;
 
                // exitButtonContainer.Width = xContainer.Width;
@@ -314,9 +326,10 @@ namespace NuSysApp
                     ((WebDetailView)nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
                     Canvas.SetTop(nodeContent, (SessionController.Instance.SessionView.ActualHeight - nodeContent.Height) / 2);
                 }
-
-                Canvas.SetLeft(this, rightCoord - this.Width);
-
+                */
+                var newWidth = Width - Math.Min(e.Delta.Translation.X, this.Width);
+                //Canvas.SetLeft(this, rightCoord - this.Width);
+                (DataContext as DetailViewerViewModel).ChangeSize(this, rightCoord - newWidth, newWidth);
                 e.Handled = true;
             }
 
