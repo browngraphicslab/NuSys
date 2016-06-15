@@ -46,7 +46,7 @@ namespace NuSysApp
                     break;
                 case ElementType.Image:
                     view = new Image();
-                    BitmapImage imageImage = await MediaUtil.ByteArrayToBitmapImage(Convert.FromBase64String(controller.LibraryElementModel.Data));
+                    BitmapImage imageImage = new BitmapImage(controller.LibraryElementController.GetSource());
                     view.Source = imageImage;
                     break;
                 case ElementType.Word:
