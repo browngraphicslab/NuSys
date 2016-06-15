@@ -8,7 +8,7 @@ namespace NuSysApp
 {
     class CompoundRegion : Region
     {
-        public CompoundRegion(params Region[] regions)
+        public CompoundRegion(string name, params Region[] regions) : base(name)
         {
             Regions = regions;
         }
