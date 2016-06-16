@@ -257,6 +257,7 @@
     <Compile Include="Components\Regions\ImageRegionView.xaml.cs">
       <DependentUpon>ImageRegionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Regions\ImageRegionViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Regionable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\AudioDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\DetailHomeTabViewModel.cs" />

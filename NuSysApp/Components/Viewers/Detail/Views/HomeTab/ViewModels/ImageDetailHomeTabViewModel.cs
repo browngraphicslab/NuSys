@@ -16,26 +16,29 @@ namespace NuSysApp
         public LibraryElementController Controller { get; }
         public LibraryElementModel Model { get; }
         public ObservableCollection<Region> Regions;
+        public ObservableCollection<ImageRegionView> RegionViews { set; get; }
         public Uri Image { get; }
         public ImageDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
             Controller = controller;
             Model = controller.LibraryElementModel;
             Regions = new ObservableCollection<Region>();
-            controller.RegionAdded += RegionAdded;
-            controller.RegionRemoved += RegionRemoved;
+           // controller.RegionAdded += RegionAdded;
+           // controller.RegionRemoved += RegionRemoved;
             Image = controller.GetSource();
+            RegionViews = new ObservableCollection<ImageRegionView>();
         }
 
-        private void RegionAdded(object sender, Region newRegion)
+        public void RegionAdded(Region newRegion, ImageDetailHomeTabView contentview)
         {
             //var rectangle = JsonConvert.DeserializeObject<Region>(newRegion.ToString());
             Regions.Add(newRegion);
+            RegionViews.Add(new ImageRegionView(newRegion as RectangleRegion, contentview));
         }
-        private void RegionRemoved(object sender, Region oldRegion)
+        public void RegionRemoved(Region oldRegion, ImageDetailHomeTabView contentview)
         {
-            //figure out which rectangle to remeove
-            //remove it
+            Regions.Remove(oldRegion);
+            RegionViews.Remove(new ImageRegionView(oldRegion as RectangleRegion, contentview)); 
         }
     }
 }

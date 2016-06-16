@@ -63,7 +63,7 @@ namespace NuSysApp
         
         public void RemoveRegion(ImageRegionView region)
         {
-            totalStackPanel.Children.Remove(region);
+            
         }
 
         public void DisplayRegion(Region region)
@@ -73,8 +73,8 @@ namespace NuSysApp
             var displayedRegion = new ImageRegionView(rectangleRegion, this);
             displayedRegion.OnSelected += DisplayedRegion_OnSelected;
             DisplayedRegion_OnSelected(displayedRegion, true);
+            (this.DataContext as ImageDetailHomeTabViewModel).RegionAdded(rectangleRegion,this);
             totalStackPanel.Children.Add(displayedRegion);
-
         }
 
         private void DisplayedRegion_OnSelected(object sender, bool selected)

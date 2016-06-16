@@ -42,7 +42,6 @@ namespace NuSysApp
             RectangleRegion = region;
             RegionView = contentView;
 
-
             xMainRectangle.Width = (RectangleRegion.Point2.X - RectangleRegion.Point1.X) * RegionView.ActualWidth;
             xMainRectangle.Height = (RectangleRegion.Point2.Y - RectangleRegion.Point1.Y) * RegionView.ActualHeight;
             TempWidth = Width;
@@ -53,25 +52,8 @@ namespace NuSysApp
             
 
             this.Selected();
-            //TODO: put this all in XAML
-            //xMainRectangle.HorizontalAlignment = HorizontalAlignment.Stretch;
-            //xMainRectangle.VerticalAlignment = VerticalAlignment.Stretch;
-            xMainRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.Transparent);
-
             this.RenderTransform = new CompositeTransform();
-            ///TODO: put this all in XAML
-            xMainRectangle.ManipulationMode = ManipulationModes.TranslateX | ManipulationModes.TranslateY;
-            xMainRectangle.ManipulationStarted += RectangleRegionView_ManipulationStarted;
-            xMainRectangle.ManipulationDelta += RectangleRegionView_ManipulationDelta;
-
             xResizingRectangle.RenderTransform = new CompositeTransform();
-            //TODO: put this all in XAML
-            xResizingRectangle.ManipulationMode = ManipulationModes.TranslateX | ManipulationModes.TranslateY;
-            xResizingRectangle.ManipulationStarted += XResizingRectangle_ManipulationStarted;
-            xResizingRectangle.ManipulationDelta += XResizingRectangle_ManipulationDelta;
-            xResizingRectangle.ManipulationCompleted += XResizingRectangle_ManipulationCompleted;
-
-
             OnSelected?.Invoke(this, true);
 
         }
@@ -105,6 +87,7 @@ namespace NuSysApp
 
             }
 
+            RectangleRegion.Point2 = _bottomRight;
 
 
 
@@ -134,6 +117,9 @@ namespace NuSysApp
                 _topLeft.Y += e.Delta.Translation.Y / RegionView.ActualHeight;
 
             }
+            RectangleRegion.Point1 = _topLeft;
+            RectangleRegion.Point2 = _bottomRight;
+            
             e.Handled = true;
         }
 

@@ -29,6 +29,7 @@
                     <BitmapImage UriSource="{Binding Path=Image}"></BitmapImage>
                 </Image.Source>
             </Image>
+            <ItemsControl ItemsSource="{Binding RegionsViews}"></ItemsControl>
         </Grid>
     </Border>
 </UserControl>
