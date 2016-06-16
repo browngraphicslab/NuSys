@@ -52,20 +52,28 @@ namespace NuSysApp
         private void XDeleteButton_OnClick(object sender, RoutedEventArgs e)
         {
             xContentPresenter.Content = (((DetailViewerViewModel)DetailViewerView.DataContext).RegionView);
-
-            
+            Region region = new RectangleRegion("new rectangle", new Point(100, 100), new Point(200, 200));
+            if ((((DetailViewerView.DataContext as DetailViewerViewModel)?.RegionView as ImageDetailHomeTabView)) != null)
+            {
+                region = new RectangleRegion("new rectangle", new Point(0, 0), new Point(1, 1));
+                ((ImageDetailHomeTabView) (((DetailViewerViewModel) DetailViewerView.DataContext).RegionView))
+                    .DisplayRegion(region);
+            }
+            if ((((DetailViewerView.DataContext as DetailViewerViewModel)?.RegionView as AudioDetailHomeTabView)) != null)
+            {
+                region = new TimeRegionModel("new rectangle",0,1);
+//                ((AudioDetailHomeTabView) (((DetailViewerViewModel) DetailViewerView.DataContext).RegionView))
+            }
 
             var width = ((DetailViewerViewModel)DetailViewerView.DataContext).RegionView.ActualWidth;
             var height = ((DetailViewerViewModel)DetailViewerView.DataContext).RegionView.ActualHeight;
             //TODO: make this rectangle's size dependent on the size of the region view
-            var region = new RectangleRegion("new rectangle", new Point(00, 00), new Point(200/width, 200/height));
 
-            ((ImageDetailHomeTabView)(((DetailViewerViewModel)DetailViewerView.DataContext).RegionView)).DisplayRegion(region);
             region.Name = "Untitled Region";
 
 
             ((DetailViewerViewModel)DetailViewerView.DataContext).CurrentElementController.AddRegion(region);
-
+            Update();
 
         }
 
