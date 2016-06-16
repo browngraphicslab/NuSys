@@ -30,7 +30,7 @@ namespace NuSysApp
         {
             DataContext = vm;
             InitializeComponent();
-            
+
             //var token = model.GetMetaData("Token");
             //if (token == null || String.IsNullOrEmpty(token?.ToString()))
             //{
@@ -40,6 +40,11 @@ namespace NuSysApp
             //{
             //    SourceBttn.Visibility = Visibility.Collapsed;
             //}
+                foreach (var v in vm.Controller.LibraryElementModel.Regions)
+                {
+                    vm.RegionAdded(v,this);
+                }
+
             vm.Controller.Disposed += ControllerOnDisposed;
                 vm.PropertyChanged += PropertyChanged;
             
@@ -56,25 +61,11 @@ namespace NuSysApp
 
         public void AddRegion()
         {
-
-            var displayedRegion = new Windows.UI.Xaml.Shapes.Rectangle();
-           // Canvas.SetLeft(displayedRegion, 0);
-           // Canvas.SetTop(displayedRegion, 0);
-           // displayedRegion.Width = 100;
-           // displayedRegion.Height = 100;
-
-           // displayedRegion.Stroke = new SolidColorBrush(Windows.UI.Colors.Blue);
-           // displayedRegion.StrokeThickness = 3;
-           // displayedRegion.HorizontalAlignment = HorizontalAlignment.Stretch;
-           // displayedRegion.VerticalAlignment = VerticalAlignment.Stretch;
-
-           // totalStackPanel.Children.Add(displayedRegion);
         }
 
         
         public void RemoveRegion(ImageRegionView region)
         {
-            
         }
 
         public void DisplayRegion(Region region)
@@ -85,7 +76,9 @@ namespace NuSysApp
             displayedRegion.OnSelected += DisplayedRegion_OnSelected;
             DisplayedRegion_OnSelected(displayedRegion, true);
             (this.DataContext as ImageDetailHomeTabViewModel).RegionAdded(rectangleRegion,this);
+            (this.DataContext as ImageDetailHomeTabViewModel).Controller.AddRegion(rectangleRegion);
         }
+
 
         private void DisplayedRegion_OnSelected(object sender, bool selected)
         {

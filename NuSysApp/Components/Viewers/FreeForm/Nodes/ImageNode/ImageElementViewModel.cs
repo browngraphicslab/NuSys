@@ -20,6 +20,12 @@ namespace NuSysApp
         public ImageElementViewModel(ElementController controller) : base(controller)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));       
+            Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
+        }
+
+        private void LibraryElementControllerOnRegionAdded(object source, Region region)
+        {
+            RaisePropertyChanged("Regions");
         }
 
         public override void Dispose()
@@ -29,6 +35,7 @@ namespace NuSysApp
         }
 
         public BitmapImage Image { get; set; }
+        public ObservableCollection<Rectangle> Regions { get; set; } 
 
         public override async Task Init()
         {
@@ -79,6 +86,7 @@ namespace NuSysApp
         protected override void OnSizeChanged(object source, double width, double height)
         {
             SetSize(width,height);
+
         }
     }
 }
