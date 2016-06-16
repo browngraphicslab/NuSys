@@ -151,6 +151,8 @@ namespace NuSysApp
                             model.Favorited = favorited;
                         }
                     }
+                    var message = new Message(dict);
+                    await SessionController.Instance.ContentController.GetContent(id).UnPack(message);
                 });
             }
         }

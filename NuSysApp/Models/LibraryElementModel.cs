@@ -45,11 +45,15 @@ namespace NuSysApp
             Regions = new HashSet<Region>();
             SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
         }
-        public void UnPack(Message message)
+        public async Task UnPack(Message message)
         {
             if (message.ContainsKey("keywords"))
             {
                 Keywords = new HashSet<Keyword>(message.GetList<Keyword>("keywords"));
+            }
+            if (message.ContainsKey("regions"))
+            {
+                Regions = new HashSet<Region>(message.GetList<Region>("regions"));
             }
         }
         protected virtual void OnSessionControllerEnterNewCollection()
