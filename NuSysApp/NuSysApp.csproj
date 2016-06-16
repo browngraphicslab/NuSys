@@ -241,6 +241,7 @@
     <Compile Include="Components\InqCanvas\NuSysInqCanvas.cs" />
     <Compile Include="Components\InqCanvas\WetDryInkCanvas.cs" />
     <Compile Include="Components\ISelectable.cs" />
+    <Compile Include="Components\Keywords\Keyword.cs" />
     <Compile Include="Components\Links\PresentationLinkView.xaml.cs">
       <DependentUpon>PresentationLinkView.xaml</DependentUpon>
     </Compile>

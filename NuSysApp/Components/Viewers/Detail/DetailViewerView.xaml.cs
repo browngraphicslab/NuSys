@@ -161,7 +161,12 @@ namespace NuSysApp
                     var tags = cvm.Controller.LibraryElementModel.Keywords;
                     if (topics.Count > 0)
                     {
-                        tags = new HashSet<string>(tags.Concat(topics));
+                        var topicKeywords = new List<Keyword>();
+                        foreach(var topic in topics)
+                        {
+                            topicKeywords.Add(new Keyword(topic));
+                        }
+                        tags = new HashSet<Keyword>(tags.Concat(topicKeywords));
                     }
                     cvm.Controller.LibraryElementController.SetKeywords(tags);
                 });
@@ -236,7 +241,7 @@ namespace NuSysApp
             {
                 if (tag != "")
                 {
-                    vm.CurrentElementController?.AddKeyword(tag);
+                    vm.CurrentElementController?.AddKeyword(new Keyword(tag));
                    // Tags.ItemsSource = vm.Tags;
                 }
             }

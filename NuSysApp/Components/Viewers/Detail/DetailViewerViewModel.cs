@@ -103,7 +103,7 @@ namespace NuSysApp
             return true;
         }
 
-        private void KeywordsChanged(object sender, HashSet<string> keywords)
+        private void KeywordsChanged(object sender, HashSet<Keyword> keywords)
         {
             MakeTagList();
         }
@@ -141,9 +141,9 @@ namespace NuSysApp
             if (CurrentElementController != null)
             {
                 var tags = CurrentElementController?.LibraryElementModel.Keywords;
-                foreach (string tag in tags)
+                foreach (var tag in tags)
                 {
-                    var tagBlock = this.MakeTagBlock(tag);
+                    var tagBlock = this.MakeTagBlock(tag.Text);
                     Tags.Add(tagBlock);
                 }
             }
@@ -197,7 +197,7 @@ namespace NuSysApp
             var t = ((FrameworkElement) sender).Tag as string;
             if (t == null)
                 return;
-            CurrentElementController?.RemoveKeyword(t);
+            CurrentElementController?.RemoveKeyword(new Keyword(t));
         }
         /*
         private async void MetaDataBox_OnKeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)

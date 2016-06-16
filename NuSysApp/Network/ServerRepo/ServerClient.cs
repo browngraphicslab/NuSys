@@ -146,13 +146,12 @@ namespace NuSysApp
                 return data;
             });
         }
-        public async Task<bool> AddRegionToContent(string contentId, Region regionString)
+        public async Task<bool> AddRegionToContent(string contentId, Region region)
         {
             return await Task.Run(async delegate
             {
-                JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                 var dict = new Dictionary<string, object>();
-                dict["data"] = regionString;
+                dict["data"] = region;
                 dict["contentId"] = contentId;
                 var data = await SendDictionaryToServer("addregion", dict);
                 try
@@ -167,13 +166,12 @@ namespace NuSysApp
                 return false;
             });
         }
-        public async Task<bool> RemoveRegionFromContent(string contentId, Region regionString)
+        public async Task<bool> RemoveRegionFromContent(string contentId, Region region)
         {
             return await Task.Run(async delegate
             {
-                JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                 var dict = new Dictionary<string, object>();
-                dict["data"] = regionString;
+                dict["data"] = region;
                 dict["contentId"] = contentId;
                 var data = await SendDictionaryToServer("removeregion", dict);
                 try

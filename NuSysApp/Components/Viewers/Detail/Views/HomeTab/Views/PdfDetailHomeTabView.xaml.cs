@@ -24,7 +24,7 @@ namespace NuSysApp
 {
     public sealed partial class PdfDetailHomeTabView : UserControl
     {
-        private InqCanvasView _inqCanvasView;
+        //private InqCanvasView _inqCanvasView;
 
         public PdfDetailHomeTabView(PdfDetailHomeTabViewModel vm)
         {
@@ -37,7 +37,7 @@ namespace NuSysApp
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
                 //_inqCanvasView = new InqCanvasView(new InqCanvasViewModel(vm.Model.InqCanvas, new Size(xImg.Width, xImg.Height)));
-                
+                /*
                 xWrapper.Children.Insert(1, _inqCanvasView);
                 _inqCanvasView.IsEnabled = true;
                 _inqCanvasView.HorizontalAlignment = HorizontalAlignment.Left;
@@ -52,8 +52,8 @@ namespace NuSysApp
                 {
                     Rect = new Rect { X = 0, Y = 0, Width = _inqCanvasView.Width, Height = _inqCanvasView.Height }
                 };
-
-                xBorder.SizeChanged += XBorderOnSizeChanged;
+                */
+                //xBorder.SizeChanged += XBorderOnSizeChanged;
 
 
             };
@@ -65,12 +65,12 @@ namespace NuSysApp
 
         private void XBorderOnSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            xBorder.Clip = new RectangleGeometry {Rect= new Rect(0,0,e.NewSize.Width, e.NewSize.Height)};
+            //xBorder.Clip = new RectangleGeometry {Rect= new Rect(0,0,e.NewSize.Width, e.NewSize.Height)};
         }
 
         private void ControllerOnDisposed(object source)
         {
-            var vm = (PdfNodeViewModel)DataContext;
+            var vm = (PdfDetailHomeTabViewModel)DataContext;
             vm.Controller.Disposed += ControllerOnDisposed;
             DataContext = null;
         }
@@ -78,11 +78,11 @@ namespace NuSysApp
 
         private async void OnPageLeftClick(object sender, RoutedEventArgs e)
         {
-            var vm = (PdfNodeViewModel)this.DataContext;
+            var vm = (PdfDetailHomeTabViewModel)this.DataContext;
             if (vm == null)
                 return;
             await vm.FlipLeft();
-            (_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
+            //(_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
             //  nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
             //  nodeTpl.inkCanvas.ReRenderLines();
 
@@ -90,11 +90,11 @@ namespace NuSysApp
 
         private async void OnPageRightClick(object sender, RoutedEventArgs e)
         {
-            var vm = (PdfNodeViewModel)this.DataContext;
+            var vm = (PdfDetailHomeTabViewModel)this.DataContext;
             if (vm == null)
                 return;
             await vm.FlipRight();
-            (_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
+            //(_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
             // (_inqCanvasView.DataContext as InqCanvasViewModel).Lines.Clear();
             //   nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
             //   nodeTpl.inkCanvas.ReRenderLines();
@@ -112,7 +112,7 @@ namespace NuSysApp
         {
             if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen)
                 return;
-
+            /*
             var compositeTransform = (CompositeTransform)xImg.RenderTransform;
 
             var tmpTranslate = new TranslateTransform
@@ -160,7 +160,7 @@ namespace NuSysApp
             compositeTransform.TranslateY = Math.Max(compositeTransform.TranslateY, minY);
 
             e.Handled = true;
-
+            */
         }
     }
 }

@@ -26,7 +26,7 @@ namespace NuSysApp
         public delegate void FavoritedEventHandler(object sender, bool favorited);
         public delegate void LoadedEventHandler(object sender);
         public delegate void DeletedEventHandler(object sender);
-        public delegate void KeywordsChangedEventHandler(object sender, HashSet<string> tags);
+        public delegate void KeywordsChangedEventHandler(object sender, HashSet<Keyword> keywords);
         public event ContentChangedEventHandler ContentChanged;
         public event RegionAddedEventHandler RegionAdded;
         public event RegionRemovedEventHandler RegionRemoved;
@@ -195,7 +195,7 @@ namespace NuSysApp
         /// This will change the library element model's Tags  and update the server.  
         /// Then it will fire an event notifying all listeners of the new list of tags
         /// </summary>
-        public void SetKeywords(HashSet<string> keywords)
+        public void SetKeywords(HashSet<Keyword> keywords)
         {
             _libraryElementModel.Keywords = keywords;
             KeywordsChanged?.Invoke(this, keywords);
@@ -206,7 +206,7 @@ namespace NuSysApp
         /// This will add a single keyword to the model's list of keywords and update the server
         /// it will fire the generic 'KeywordsChanged' event
         /// </summary>
-        public void AddKeyword(string keyword)
+        public void AddKeyword(Keyword keyword)
         {
             _libraryElementModel.Keywords.Add(keyword);
             KeywordsChanged?.Invoke(this, _libraryElementModel.Keywords);
@@ -217,9 +217,17 @@ namespace NuSysApp
         /// This will remove a single keyword to the model's list of keywords and update the server
         /// it will fire the generic 'KeywordsChanged' event
         /// </summary>
-        public void RemoveKeyword(string keyword)
+        public void RemoveKeyword(Keyword keyword)
         {
-            _libraryElementModel.Keywords.Remove(keyword);
+            foreach (var kw in _libraryElementModel.Keywords)
+            {
+                if (kw.Equals(keyword))
+                {
+                    _libraryElementModel.Keywords.Remove(kw);
+                    break;
+                }
+            }
+            //_libraryElementModel.Keywords.Remove(keyword);
             KeywordsChanged?.Invoke(this, _libraryElementModel.Keywords);
             _debouncingDictionary.Add("keywords", _libraryElementModel.Keywords);
         }

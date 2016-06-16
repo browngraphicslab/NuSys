@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class DetailHomeTabViewModel
+    public abstract class DetailHomeTabViewModel :  BaseINPC
     {
         private LibraryElementController _libraryElementController;
 
@@ -22,5 +22,6 @@ namespace NuSysApp
         {
             TitleChanged?.Invoke(source,title);
         }
+        public virtual async Task Init() { }
     }
 }
