@@ -22,9 +22,9 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {  
-    public sealed partial class ImageDetailHomeTabView : UserControl, Regionable<RectangleRegionView>
+    public sealed partial class ImageDetailHomeTabView : UserControl, Regionable<ImageRegionView>
         {
-            public RectangleRegionView SelectedRegion { set; get; }
+            public ImageRegionView SelectedRegion { set; get; }
             public ImageDetailHomeTabView(ImageDetailHomeTabViewModel vm)
         {
             InitializeComponent();
@@ -47,21 +47,21 @@ namespace NuSysApp
         {
 
             var displayedRegion = new Windows.UI.Xaml.Shapes.Rectangle();
-            Canvas.SetLeft(displayedRegion, 0);
-            Canvas.SetTop(displayedRegion, 0);
-            displayedRegion.Width = 100;
-            displayedRegion.Height = 100;
+           // Canvas.SetLeft(displayedRegion, 0);
+           // Canvas.SetTop(displayedRegion, 0);
+           // displayedRegion.Width = 100;
+           // displayedRegion.Height = 100;
 
-            displayedRegion.Stroke = new SolidColorBrush(Windows.UI.Colors.Blue);
-            displayedRegion.StrokeThickness = 3;
-            displayedRegion.HorizontalAlignment = HorizontalAlignment.Stretch;
-            displayedRegion.VerticalAlignment = VerticalAlignment.Stretch;
+           // displayedRegion.Stroke = new SolidColorBrush(Windows.UI.Colors.Blue);
+           // displayedRegion.StrokeThickness = 3;
+           // displayedRegion.HorizontalAlignment = HorizontalAlignment.Stretch;
+           // displayedRegion.VerticalAlignment = VerticalAlignment.Stretch;
 
-            totalStackPanel.Children.Add(displayedRegion);
+           // totalStackPanel.Children.Add(displayedRegion);
         }
 
         
-        public void RemoveRegion(RectangleRegionView region)
+        public void RemoveRegion(ImageRegionView region)
         {
             totalStackPanel.Children.Remove(region);
         }
@@ -70,9 +70,7 @@ namespace NuSysApp
         {
             var rectangleRegion = (RectangleRegion)region;
 
-            //var displayedRegion = new Windows.UI.Xaml.Shapes.Rectangle();
-
-            var displayedRegion = new RectangleRegionView(rectangleRegion);
+            var displayedRegion = new ImageRegionView(rectangleRegion, this);
             displayedRegion.OnSelected += DisplayedRegion_OnSelected;
             DisplayedRegion_OnSelected(displayedRegion, true);
             totalStackPanel.Children.Add(displayedRegion);
@@ -82,7 +80,7 @@ namespace NuSysApp
         private void DisplayedRegion_OnSelected(object sender, bool selected)
         {
             SelectedRegion?.Deselected();
-            SelectedRegion = (RectangleRegionView)sender;
+            SelectedRegion = (ImageRegionView)sender;
             SelectedRegion.Selected();
            
         }

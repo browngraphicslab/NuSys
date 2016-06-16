@@ -54,11 +54,15 @@ namespace NuSysApp
             xContentPresenter.Content = (((DetailViewerViewModel)DetailViewerView.DataContext).RegionView);
 
             
-            var region = new RectangleRegion("new rectangle",new Point(100, 100), new Point(200, 200));
-            ((ImageDetailHomeTabView)(((DetailViewerViewModel)DetailViewerView.DataContext).RegionView)).DisplayRegion(region);
 
+            var width = ((DetailViewerViewModel)DetailViewerView.DataContext).RegionView.ActualWidth;
+            var height = ((DetailViewerViewModel)DetailViewerView.DataContext).RegionView.ActualHeight;
+            //TODO: make this rectangle's size dependent on the size of the region view
+            var region = new RectangleRegion("new rectangle", new Point(00, 00), new Point(200/width, 200/height));
+
+            ((ImageDetailHomeTabView)(((DetailViewerViewModel)DetailViewerView.DataContext).RegionView)).DisplayRegion(region);
             region.Name = "Untitled Region";
-            //RegionCollection.Add(region);
+
 
             ((DetailViewerViewModel)DetailViewerView.DataContext).CurrentElementController.AddRegion(region);
 

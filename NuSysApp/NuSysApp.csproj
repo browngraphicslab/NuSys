@@ -254,8 +254,8 @@
     <Compile Include="Components\Misc\TextInputBlock.xaml.cs">
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Regions\RectangleRegionView.xaml.cs">
-      <DependentUpon>RectangleRegionView.xaml</DependentUpon>
+    <Compile Include="Components\Regions\ImageRegionView.xaml.cs">
+      <DependentUpon>ImageRegionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\Detail\Regionable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\AudioDetailHomeTabViewModel.cs" />
@@ -754,7 +754,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Regions\RectangleRegionView.xaml">
+    <Page Include="Components\Regions\ImageRegionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

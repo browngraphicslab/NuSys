@@ -17,104 +17,97 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
-    public sealed partial class RectangleRegionView : UserControl
+    public sealed partial class ImageRegionView : UserControl
     {
 
         public double TempWidth { set; get; }
         public double TempHeight { set; get; }
+        public ImageDetailHomeTabView RegionView { set; get; }
+
+        public Point _topLeft;
+        public Point _bottomRight;
+
+
 
         public delegate void RegionSelectedEventHandler(object sender, bool selected);
         public event RegionSelectedEventHandler OnSelected;
 
         public RectangleRegion RectangleRegion { set; get; }
-        public RectangleRegionView(RectangleRegion region)
+        public ImageRegionView(RectangleRegion region, ImageDetailHomeTabView contentView)
 
         {
 
             this.InitializeComponent();
 
             RectangleRegion = region;
-            Canvas.SetLeft(this, region.Point1.X);
-            Canvas.SetTop(this, region.Point1.Y);
+            RegionView = contentView;
 
-            this.Width = region.Point2.X - region.Point1.X;
-            this.Height = region.Point2.Y - region.Point1.Y;
+
+            xMainRectangle.Width = (RectangleRegion.Point2.X - RectangleRegion.Point1.X) * RegionView.ActualWidth;
+            xMainRectangle.Height = (RectangleRegion.Point2.Y - RectangleRegion.Point1.Y) * RegionView.ActualHeight;
             TempWidth = Width;
             TempHeight = Height;
 
+            _topLeft = RectangleRegion.Point1;
+            _bottomRight = RectangleRegion.Point2;
+            
+
             this.Selected();
-            xMainRectangle.HorizontalAlignment = HorizontalAlignment.Stretch;
-            xMainRectangle.VerticalAlignment = VerticalAlignment.Stretch;
+            //TODO: put this all in XAML
+            //xMainRectangle.HorizontalAlignment = HorizontalAlignment.Stretch;
+            //xMainRectangle.VerticalAlignment = VerticalAlignment.Stretch;
             xMainRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.Transparent);
 
             this.RenderTransform = new CompositeTransform();
+            ///TODO: put this all in XAML
             xMainRectangle.ManipulationMode = ManipulationModes.TranslateX | ManipulationModes.TranslateY;
             xMainRectangle.ManipulationStarted += RectangleRegionView_ManipulationStarted;
             xMainRectangle.ManipulationDelta += RectangleRegionView_ManipulationDelta;
 
             xResizingRectangle.RenderTransform = new CompositeTransform();
+            //TODO: put this all in XAML
             xResizingRectangle.ManipulationMode = ManipulationModes.TranslateX | ManipulationModes.TranslateY;
             xResizingRectangle.ManipulationStarted += XResizingRectangle_ManipulationStarted;
             xResizingRectangle.ManipulationDelta += XResizingRectangle_ManipulationDelta;
+            xResizingRectangle.ManipulationCompleted += XResizingRectangle_ManipulationCompleted;
 
 
             OnSelected?.Invoke(this, true);
-            //var t = (CompositeTransform)rect.RenderTransform;
 
+        }
 
-            //t.TranslateX += e.Delta.Translation.X;
-            //t.TranslateY += e.Delta.Translation.Y;
-
-            //_x += e.Delta.Translation.X;
-            //_y += e.Delta.Translation.Y;
-
-            //_propertiesWindow.Visibility = Visibility.Collapsed;
-
-            //this.RenderTransfor
-
+        private void XResizingRectangle_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            
         }
 
         private void XResizingRectangle_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
 
-            //var originalX = Canvas.GetLeft(this);
-            //var originalY = Canvas.GetTop(this);
-            if(this.Width + e.Delta.Translation.X > 50)
-                this.Width += e.Delta.Translation.X;
-            if (this.Height + e.Delta.Translation.Y > 50)
-                this.Height += e.Delta.Translation.Y;
+            //  if (xMainRectangle.Width + e.Delta.Translation.X > 50 && (xMainRectangle.Width + e.Delta.Translation.X <= RegionView.ActualWidth))
+            if (xMainRectangle.Width + e.Delta.Translation.X > 50 && (_bottomRight.X + e.Delta.Translation.X / RegionView.ActualWidth)<=1)
+            {
+                xMainRectangle.Width += e.Delta.Translation.X;
+                _bottomRight.X += e.Delta.Translation.X / RegionView.ActualWidth;
 
-            ((CompositeTransform)this.RenderTransform).TranslateX += e.Delta.Translation.X /2;
-            ((CompositeTransform)this.RenderTransform).TranslateY += e.Delta.Translation.Y / 2;
-
-            //Canvas.SetLeft(this, originalX + e.Delta.Translation.X);
-            //Canvas.SetTop(this, originalY + e.Delta.Translation.Y);
+                //((CompositeTransform)this.RenderTransform).TranslateX += e.Delta.Translation.X / 2;
 
 
-            /*
-                        this.Width += e.Delta.Translation.X;
-            this.Height += e.Delta.Translation.Y;
+            }
+
+            //if (xMainRectangle.Height + e.Delta.Translation.Y > 50 && (xMainRectangle.Height + e.Delta.Translation.Y <= RegionView.ActualHeight))
+            if (xMainRectangle.Height + e.Delta.Translation.Y > 50 && (_bottomRight.Y + e.Delta.Translation.Y / RegionView.ActualHeight) <= 1)
+            {
+                xMainRectangle.Height += e.Delta.Translation.Y;
+                _bottomRight.Y += e.Delta.Translation.Y / RegionView.ActualHeight;
+
+                //((CompositeTransform)this.RenderTransform).TranslateY += e.Delta.Translation.Y / 2;
+
+            }
 
 
-                var leftRatio = Canvas.GetLeft(TempRegion)/width;
-                var topRatio = Canvas.GetTop(TempRegion)/height;
-                var widthRatio = TempRegion.Width/width;
-                var heightRatio = TempRegion.Height/height;
 
 
-            _vm.NodeHeight = nodeHeight;
-            _vm.NodeWidth = nodeWidth;
-
-            _vm.Left = _vm.NodeWidth*_vm.LeftRatio;
-            _vm.Top = _vm.NodeHeight*_vm.TopRatio;
-            _vm.RectWidth = _vm.RectWidthRatio*_vm.NodeWidth;
-            _vm.RectHeight = _vm.RectHeightRatio*_vm.NodeHeight;
-
-            Canvas.SetLeft(this, _vm.Left);
-            Canvas.SetTop(this, _vm.Top);
-            rectangle.Width = _vm.RectWidth;
-            rectangle.Height = _vm.RectHeight;
-            */
         }
 
         private void XResizingRectangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -127,8 +120,20 @@ namespace NuSysApp
 
         private void RectangleRegionView_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            ((CompositeTransform) this.RenderTransform).TranslateX += e.Delta.Translation.X;
-            ((CompositeTransform)this.RenderTransform).TranslateY += e.Delta.Translation.Y;
+
+            if (_topLeft.X + e.Delta.Translation.X / RegionView.ActualWidth >= 0 && _bottomRight.X + e.Delta.Translation.X / RegionView.ActualWidth <= 1)
+            {
+                ((CompositeTransform)this.RenderTransform).TranslateX += e.Delta.Translation.X;
+                _bottomRight.X += e.Delta.Translation.X / RegionView.ActualWidth;
+                _topLeft.X += e.Delta.Translation.X / RegionView.ActualWidth;
+            }
+            if (_topLeft.Y + e.Delta.Translation.Y / RegionView.ActualHeight >= 0 && _bottomRight.Y + e.Delta.Translation.Y / RegionView.ActualHeight <= 1)
+            {
+                ((CompositeTransform)this.RenderTransform).TranslateY += e.Delta.Translation.Y;
+                _bottomRight.Y += e.Delta.Translation.Y / RegionView.ActualHeight;
+                _topLeft.Y += e.Delta.Translation.Y / RegionView.ActualHeight;
+
+            }
             e.Handled = true;
         }
 
