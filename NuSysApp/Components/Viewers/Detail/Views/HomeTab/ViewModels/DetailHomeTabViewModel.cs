@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class DetailHomeTabViewModel
+    public class DetailHomeTabViewModel : BaseINPC
     {
         private LibraryElementController _libraryElementController;
 

@@ -151,5 +151,13 @@ namespace NuSysApp
            OnSelected?.Invoke(this, true);
 
         }
+
+        public void ApplyNewSize(Size s)
+        {
+            (this.RenderTransform as CompositeTransform).TranslateX = s.Width * _topLeft.X;
+            (this.RenderTransform as CompositeTransform).TranslateY = s.Height * _topLeft.Y;
+            xMainRectangle.Height = s.Height * (_bottomRight.Y - _topLeft.Y);
+            xMainRectangle.Width = s.Width * (_bottomRight.X - _topLeft.X);
+        }
     }
 }

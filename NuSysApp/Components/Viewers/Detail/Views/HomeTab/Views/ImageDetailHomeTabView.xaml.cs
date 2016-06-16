@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using System.ComponentModel;
 
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -27,8 +28,8 @@ namespace NuSysApp
             public ImageRegionView SelectedRegion { set; get; }
             public ImageDetailHomeTabView(ImageDetailHomeTabViewModel vm)
         {
-            InitializeComponent();
             DataContext = vm;
+            InitializeComponent();
             
             //var token = model.GetMetaData("Token");
             //if (token == null || String.IsNullOrEmpty(token?.ToString()))
@@ -40,8 +41,18 @@ namespace NuSysApp
             //    SourceBttn.Visibility = Visibility.Collapsed;
             //}
             vm.Controller.Disposed += ControllerOnDisposed;
+                vm.PropertyChanged += PropertyChanged;
+            
         }
 
+        private void PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "RegionViews":
+                    break;
+            }
+        }
 
         public void AddRegion()
         {
@@ -74,7 +85,6 @@ namespace NuSysApp
             displayedRegion.OnSelected += DisplayedRegion_OnSelected;
             DisplayedRegion_OnSelected(displayedRegion, true);
             (this.DataContext as ImageDetailHomeTabViewModel).RegionAdded(rectangleRegion,this);
-            totalStackPanel.Children.Add(displayedRegion);
         }
 
         private void DisplayedRegion_OnSelected(object sender, bool selected)
@@ -143,5 +153,14 @@ namespace NuSysApp
         {
             SelectedRegion?.Deselected();
         }
-    }
+
+        private void XImg_OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var vm = this.DataContext as ImageDetailHomeTabViewModel;
+            foreach (ImageRegionView irv in vm.RegionViews)
+            {
+               irv.ApplyNewSize(e.NewSize); 
+            }
+        }
+        }
 }
