@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class AudioDetailHomeTabViewModel
+    public class AudioDetailHomeTabViewModel : DetailHomeTabViewModel
     {
         public LibraryElementController Controller { get; }
-        public AudioDetailHomeTabViewModel(LibraryElementController controller)
+        public AudioDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
             Controller = controller;
         }

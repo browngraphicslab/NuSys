@@ -53,7 +53,7 @@ namespace NuSysApp
 
         private void ProgressBar_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-         //   MediaElement.Position = new TimeSpan(Convert.ToInt64(e.NewValue * MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds));
+        //    MediaElement.Position = new TimeSpan(Convert.ToInt64(e.NewValue * MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds));
         }
 
         private void ProgressBar_OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -124,6 +124,11 @@ namespace NuSysApp
         public TimeSpan Position
         {
             get { return MediaElement.Position; }
+        }
+
+        public void StopMusic()
+        {
+            MediaElement.Stop();
         }
 
     }

@@ -52,16 +52,24 @@ namespace NuSysApp
         private void XDeleteButton_OnClick(object sender, RoutedEventArgs e)
         {
             xContentPresenter.Content = (((DetailViewerViewModel)DetailViewerView.DataContext).RegionView);
-
-            
-            var region = new RectangleRegion("new rectangle",new Point(100, 100), new Point(200, 200));
-            ((ImageDetailHomeTabView)(((DetailViewerViewModel)DetailViewerView.DataContext).RegionView)).DisplayRegion(region);
+            Region region = new RectangleRegion("new rectangle", new Point(100, 100), new Point(200, 200));
+            if ((((DetailViewerView.DataContext as DetailViewerViewModel)?.RegionView as ImageDetailHomeTabView)) != null)
+            {
+                region = new RectangleRegion("new rectangle", new Point(100, 100), new Point(200, 200));
+                ((ImageDetailHomeTabView) (((DetailViewerViewModel) DetailViewerView.DataContext).RegionView))
+                    .DisplayRegion(region);
+            }
+            if ((((DetailViewerView.DataContext as DetailViewerViewModel)?.RegionView as AudioDetailHomeTabView)) != null)
+            {
+                region = new TimeRegionModel("new rectangle",0,1);
+//                ((AudioDetailHomeTabView) (((DetailViewerViewModel) DetailViewerView.DataContext).RegionView))
+            }
 
             region.Name = "Untitled Region";
             //RegionCollection.Add(region);
 
             ((DetailViewerViewModel)DetailViewerView.DataContext).CurrentElementController.AddRegion(region);
-
+            Update();
 
         }
 
