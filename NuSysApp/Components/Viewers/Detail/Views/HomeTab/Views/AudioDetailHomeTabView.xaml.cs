@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Components.Nodes;
+using NuSysApp.Components.Regions;
 using NuSysApp.Nodes.AudioNode;
 using Path = System.IO.Path;
 
@@ -30,7 +31,7 @@ namespace NuSysApp
         private bool _loaded;
         private bool _addTimeBlockMode;
         private Line _temporaryLinkVisual;
-        private List<LinkedTimeBlockViewModel> _timeBlocks;
+        private List<AudioRegionViewModel> _timeRegions;
 
         public AudioDetailHomeTabView(AudioDetailHomeTabViewModel vm)
         {
@@ -39,7 +40,7 @@ namespace NuSysApp
             _loaded = false;
             _addTimeBlockMode = false;
             (DataContext as AudioNodeViewModel).addTimeBlockChange(LinkedTimeBlocks_CollectionChanged);
-            _timeBlocks = new List<LinkedTimeBlockViewModel>();
+            _timeRegions = new List<AudioRegionViewModel>();
             scrubBar.SetValue(Canvas.ZIndexProperty, 1);
 
             //((AudioNodeModel)(vm.Model)).Controller.OnScrub += ControllerOnScrub;
@@ -144,7 +145,7 @@ namespace NuSysApp
             double time = value/scrubBar.Maximum*
                           ((AudioNodeModel) ((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement
                               .NaturalDuration.TimeSpan.TotalMilliseconds;
-            foreach (var block in _timeBlocks)
+            foreach (var block in _timeRegions)
             {
                 if ((time >= block.StartTime && time <= block.EndTime) || (time <= block.StartTime && time >= block.EndTime))
                 {
@@ -191,6 +192,13 @@ namespace NuSysApp
             _timeBlocks.Add(timeBlockVM);
             grid.Children.Add(line);
             timeBlockVM.setUpHandlers(line.getLine());
+
+            AudioRegionViewModel vm = new AudioRegionViewModel((TimeRegionModel)(DataContext as AudioNodeViewModel).Controller.LibraryElementModel.Regions.Last(), scrubBar);
+            AudioRegionView region = new AudioRegionView(vm);
+            _timeRegions.Add(vm);
+            grid.Children.Add(region);
+            vm.setUpHandlers(region.getLine());
+
         }
 
         private void AddAllLinksVisually()
@@ -199,7 +207,7 @@ namespace NuSysApp
             {
                 var timeBlockVM = new LinkedTimeBlockViewModel(element, ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan, scrubBar);
                 LinkedTimeBlock line = new LinkedTimeBlock(timeBlockVM);
-                _timeBlocks.Add(timeBlockVM);
+                _timeRegions.Add(timeBlockVM);
                 grid.Children.Add(line);
                 timeBlockVM.setUpHandlers(line.getLine());
             }
@@ -286,7 +294,7 @@ namespace NuSysApp
         private void ScrubBar_OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
 
-            foreach (var element in _timeBlocks)
+            foreach (var element in _timeRegions)
             {
                 element.ResizeLine1();
             }

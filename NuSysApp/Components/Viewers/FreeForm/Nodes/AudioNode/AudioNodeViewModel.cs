@@ -204,5 +204,10 @@ namespace NuSysApp
         {
             (Model as AudioNodeModel).LinkedTimeModels.Add(model);
         }
+
+        public void AddTimeRegion(TimeRegionModel region)
+        {
+            Controller.LibraryElementController.AddRegion(region);   
+        }
     }
 }

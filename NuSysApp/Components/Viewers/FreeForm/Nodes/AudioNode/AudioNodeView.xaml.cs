@@ -21,6 +21,7 @@ using System.Diagnostics;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Components.Nodes;
+using NuSysApp.Components.Regions;
 using NuSysApp.Controller;
 using NuSysApp.Nodes.AudioNode;
 
@@ -48,27 +49,27 @@ namespace NuSysApp
             _loaded = false;
             (DataContext as AudioNodeViewModel).addTimeBlockChange(LinkedTimeBlocks_CollectionChanged);
             _timeBlocks = new List<LinkedTimeBlockViewModel>();
-            scrubBar.SetValue(Canvas.ZIndexProperty, 1);
-            playbackElement.MediaFailed += PlaybackElement_MediaFailed;
-            ((AudioNodeModel)(vm.Model)).Controller = new MediaController(playbackElement);
-            ((AudioNodeModel)(vm.Model)).Controller.OnPlay += Controller_OnPlay;
-            ((AudioNodeModel)(vm.Model)).Controller.OnPause += Controller_OnPause;
-            ((AudioNodeModel)(vm.Model)).Controller.OnStop += Controller_OnStop;
+            //scrubBar.SetValue(Canvas.ZIndexProperty, 1);
+            //playbackElement.MediaFailed += PlaybackElement_MediaFailed;
+            //((AudioNodeModel)(vm.Model)).Controller = new MediaController(playbackElement);
+            //((AudioNodeModel)(vm.Model)).Controller.OnPlay += Controller_OnPlay;
+            //((AudioNodeModel)(vm.Model)).Controller.OnPause += Controller_OnPause;
+            //((AudioNodeModel)(vm.Model)).Controller.OnStop += Controller_OnStop;
 
-            _temporaryLinkVisual = new Line();
-            _temporaryLinkVisual.Stroke = new SolidColorBrush(Colors.Aqua);
-            _temporaryLinkVisual.StrokeThickness = VisualizationImage.ActualHeight;
-            _temporaryLinkVisual.Y1 = Canvas.GetTop(VisualizationImage) + VisualizationImage.ActualHeight / 2 + VisualizationImage.Margin.Top;
-            _temporaryLinkVisual.Y2 = Canvas.GetTop(VisualizationImage) + VisualizationImage.ActualHeight / 2 + VisualizationImage.Margin.Top;
-            _temporaryLinkVisual.PointerMoved += ScrubBar_OnPointerMoved;
-            _temporaryLinkVisual.PointerReleased += ScrubBar_OnPointerReleased;
-            _temporaryLinkVisual.Opacity = 1;
+            //_temporaryLinkVisual = new Line();
+            //_temporaryLinkVisual.Stroke = new SolidColorBrush(Colors.Aqua);
+            //_temporaryLinkVisual.StrokeThickness = VisualizationImage.ActualHeight;
+            //_temporaryLinkVisual.Y1 = Canvas.GetTop(VisualizationImage) + VisualizationImage.ActualHeight / 2 + VisualizationImage.Margin.Top;
+            //_temporaryLinkVisual.Y2 = Canvas.GetTop(VisualizationImage) + VisualizationImage.ActualHeight / 2 + VisualizationImage.Margin.Top;
+            //_temporaryLinkVisual.PointerMoved += ScrubBar_OnPointerMoved;
+            //_temporaryLinkVisual.PointerReleased += ScrubBar_OnPointerReleased;
+            //_temporaryLinkVisual.Opacity = 1;
 
             vm.Controller.Disposed += ControllerOnDisposed;
 
             ((AudioNodeModel)vm.Model).OnJump += AudioNodeView_OnJump;
 
-            playbackElement.MediaEnded += MediaEnded;
+            //playbackElement.MediaEnded += MediaEnded;
         }
 
         private void MediaEnded(object sender, RoutedEventArgs e)
@@ -321,14 +322,13 @@ namespace NuSysApp
         private async void LoadPlaybackElement()
         {
             grid.Children.Add((DataContext as AudioNodeViewModel).VisualGrid);
-            await RenderImageSource((DataContext as AudioNodeViewModel).VisualGrid);
-            if (playbackElement.Source == null && _loaded == false)
+            await MediaPlayer.RenderImageSource((DataContext as AudioNodeViewModel).VisualGrid);
+            if (MediaPlayer.AudioSource == null && _loaded == false)
             {
-                playbackElement.Source = (DataContext as AudioNodeViewModel).AudioSource;
+                MediaPlayer.AudioSource = (DataContext as AudioNodeViewModel).AudioSource;
                 _loaded = true;
             }
-            playbackElement.MediaEnded += PlaybackElementOnMediaEnded;
-            
+                        
         }
 
         private void ScrubBar_OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -348,8 +348,8 @@ namespace NuSysApp
         private void Region_OnClick(object sender, RoutedEventArgs e)
         {
 
-            this.CreateTimeBlock(playbackElement.Position, new TimeSpan(0,0,0,0,(int)playbackElement.Position.TotalMilliseconds + (int)(playbackElement.NaturalDuration.TimeSpan.TotalMilliseconds - playbackElement.Position.TotalMilliseconds)/4));
-
+            this.CreateTimeBlock(MediaPlayer.Position, new TimeSpan(0,0,0,0,(int)MediaPlayer.Position.TotalMilliseconds + (int)(MediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds - MediaPlayer.Position.TotalMilliseconds)/4));
+            
         }
 
         private void ScrubBar_OnPointerReleased(object sender, PointerRoutedEventArgs e)
@@ -390,9 +390,13 @@ namespace NuSysApp
 
         public void CreateTimeBlock(TimeSpan start, TimeSpan end)
         {
-            LinkedTimeBlockModel model = new LinkedTimeBlockModel(start, end);
-            LinkedTimeBlockViewModel link = new LinkedTimeBlockViewModel(model, ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan, scrubBar);
-            (DataContext as AudioNodeViewModel).AddLinkTimeModel(model);
+            //LinkedTimeBlockModel model = new LinkedTimeBlockModel(start, end);
+            //LinkedTimeBlockViewModel link = new LinkedTimeBlockViewModel(model, ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan, scrubBar);
+            //(DataContext as AudioNodeViewModel).AddLinkTimeModel(model);
+
+            TimeRegionModel regionModel = new TimeRegionModel("newRegion", start.TotalMilliseconds, end.TotalMilliseconds);
+            AudioRegionViewModel regionVM = new AudioRegionViewModel(regionModel, scrubBar);
+            (DataContext as AudioNodeViewModel).AddTimeRegion(regionModel);
 
         }
 

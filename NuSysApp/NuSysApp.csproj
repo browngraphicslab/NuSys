@@ -254,9 +254,20 @@
     <Compile Include="Components\Misc\TextInputBlock.xaml.cs">
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Regions\AudioRegionBound.xaml.cs">
+      <DependentUpon>AudioRegionBound.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Regions\AudioRegionView.xaml.cs">
+      <DependentUpon>AudioRegionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Regions\AudioRegionViewModel.cs" />
     <Compile Include="Components\Regions\RectangleRegionView.xaml.cs">
       <DependentUpon>RectangleRegionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">
+      <DependentUpon>AudioMediaPlayer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Regions\TimeRegionModel.cs" />
     <Compile Include="Components\Viewers\Detail\Regionable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\AudioDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\DetailHomeTabViewModel.cs" />
@@ -485,7 +496,6 @@
     <Compile Include="Models\Regions\CompoundRegion.cs" />
     <Compile Include="Models\Regions\RectangleRegion.cs" />
     <Compile Include="Models\Regions\Region.cs" />
-    <Compile Include="Models\Regions\TimeRegion.cs" />
     <Compile Include="Models\TagNodeModel.cs" />
     <Compile Include="Models\WebNodeModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
@@ -754,6 +764,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\Regions\AudioRegionBound.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Regions\AudioRegionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Regions\RectangleRegionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -907,6 +925,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\FreeForm\LibraryDragElement.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
