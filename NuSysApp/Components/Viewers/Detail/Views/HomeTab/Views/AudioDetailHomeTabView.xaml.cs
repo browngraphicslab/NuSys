@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Components.Nodes;
+using NuSysApp.Components.Regions;
 using NuSysApp.Nodes.AudioNode;
 using Path = System.IO.Path;
 
@@ -30,7 +31,7 @@ namespace NuSysApp
         private bool _loaded;
         private bool _addTimeBlockMode;
         private Line _temporaryLinkVisual;
-        private List<LinkedTimeBlockViewModel> _timeBlocks;
+        private List<AudioRegionViewModel> _timeRegions;
 
         public AudioDetailHomeTabView(AudioDetailHomeTabViewModel vm)
         {
@@ -38,8 +39,8 @@ namespace NuSysApp
             this.InitializeComponent();
             _loaded = false;
             _addTimeBlockMode = false;
-            (DataContext as AudioNodeViewModel).addTimeBlockChange(LinkedTimeBlocks_CollectionChanged);
-            _timeBlocks = new List<LinkedTimeBlockViewModel>();
+            //(DataContext as AudioNodeViewModel).addTimeBlockChange(LinkedTimeBlocks_CollectionChanged);
+            _timeRegions = new List<AudioRegionViewModel>();
             scrubBar.SetValue(Canvas.ZIndexProperty, 1);
 
             //((AudioNodeModel)(vm.Model)).Controller.OnScrub += ControllerOnScrub;
@@ -73,21 +74,21 @@ namespace NuSysApp
             _temporaryLinkVisual.PointerReleased -= ScrubBar_OnPointerReleased;
 
             var vm = (AudioNodeViewModel) DataContext;
-            scrubBar.SizeChanged -= ScrubBar_OnSizeChanged;
+            //scrubBar.SizeChanged -= ScrubBar_OnSizeChanged;
             vm.Controller.Disposed -= ControllerOnDisposed;
 
-            if (((AudioNodeModel)(vm.Model)).Controller != null) { 
+            /*if (((AudioNodeModel)(vm.Model)).Controller != null) { 
                 ((AudioNodeModel)(vm.Model)).Controller.OnScrub -= ControllerOnScrub;
                 ((AudioNodeModel)(vm.Model)).Controller.OnPlay -= Controller_OnPlay1;
                 ((AudioNodeModel)(vm.Model)).Controller.OnPause -= Controller_OnPause1;
                 ((AudioNodeModel)(vm.Model)).Controller.OnStop -= Controller_OnStop1;
                 scrubBar.Loaded -= ScrubBarOnLoaded;
                 ((AudioNodeModel)(vm.Model)).Controller.Scrub();
-            }
+            }*/
             
 
-            (DataContext as AudioNodeViewModel).OnVisualizationLoaded -= LoadPlaybackElement;
-            (DataContext as AudioNodeViewModel).removeTimeBlockChange(LinkedTimeBlocks_CollectionChanged);
+            //(DataContext as AudioNodeViewModel).OnVisualizationLoaded -= LoadPlaybackElement;
+            //(DataContext as AudioNodeViewModel).removeTimeBlockChange(LinkedTimeBlocks_CollectionChanged);
      
         }
 
@@ -97,11 +98,11 @@ namespace NuSysApp
             RenderImageSource((DataContext as AudioNodeViewModel).VisualGrid);
         }
 
-        private void ScrubBarOnLoaded(object sender, RoutedEventArgs routedEventArgs)
+        /*private void ScrubBarOnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
             this.AddAllLinksVisually();
             this.CheckBlocksForHit(scrubBar.Value);
-        }
+        }*/
 
         private void Controller_OnStop1(MediaElement playbackElement)
         {
@@ -138,13 +139,13 @@ namespace NuSysApp
             }
             
         }
-
+/*
         public async void CheckBlocksForHit(double value)
         {
             double time = value/scrubBar.Maximum*
                           ((AudioNodeModel) ((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement
                               .NaturalDuration.TimeSpan.TotalMilliseconds;
-            foreach (var block in _timeBlocks)
+            foreach (var block in _timeRegions)
             {
                 if ((time >= block.StartTime && time <= block.EndTime) || (time <= block.StartTime && time >= block.EndTime))
                 {
@@ -183,14 +184,21 @@ namespace NuSysApp
                 }
             }
         }
-
-        private void LinkedTimeBlocks_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+*/
+/*        private void LinkedTimeBlocks_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             var timeBlockVM = new LinkedTimeBlockViewModel((DataContext as AudioNodeViewModel).LinkedTimeModels.Last(), ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan, scrubBar);
             LinkedTimeBlock line = new LinkedTimeBlock(timeBlockVM);
             _timeBlocks.Add(timeBlockVM);
             grid.Children.Add(line);
             timeBlockVM.setUpHandlers(line.getLine());
+
+            AudioRegionViewModel vm = new AudioRegionViewModel((TimeRegionModel)(DataContext as AudioNodeViewModel).Controller.LibraryElementModel.Regions.Last(), scrubBar);
+            AudioRegionView region = new AudioRegionView(vm);
+            _timeRegions.Add(vm);
+            grid.Children.Add(region);
+            vm.setUpHandlers(region.getLine());
+
         }
 
         private void AddAllLinksVisually()
@@ -199,14 +207,14 @@ namespace NuSysApp
             {
                 var timeBlockVM = new LinkedTimeBlockViewModel(element, ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan, scrubBar);
                 LinkedTimeBlock line = new LinkedTimeBlock(timeBlockVM);
-                _timeBlocks.Add(timeBlockVM);
+                _timeRegions.Add(timeBlockVM);
                 grid.Children.Add(line);
                 timeBlockVM.setUpHandlers(line.getLine());
             }
             scrubBar.SizeChanged += ScrubBar_OnSizeChanged;
 
         }
-
+*/
         private async void RenderImageSource(Grid RenderedGrid)
         {
 
@@ -279,19 +287,19 @@ namespace NuSysApp
 
         private void ScrubBar_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            CheckBlocksForHit(scrubBar.Value);
+          //   CheckBlocksForHit(scrubBar.Value);
 
         }
 
-        private void ScrubBar_OnSizeChanged(object sender, SizeChangedEventArgs e)
+    /*    private void ScrubBar_OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
 
-            foreach (var element in _timeBlocks)
+            foreach (var element in _timeRegions)
             {
                 element.ResizeLine1();
             }
         }
-
+*/
         private void Play_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             Play.Opacity = .3;

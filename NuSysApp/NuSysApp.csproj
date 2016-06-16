@@ -255,10 +255,21 @@
     <Compile Include="Components\Misc\TextInputBlock.xaml.cs">
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Regionable.cs" />
-    <Compile Include="Components\Viewers\Detail\RegionImageDisplayView.xaml.cs">
-      <DependentUpon>RegionImageDisplayView.xaml</DependentUpon>
+    <Compile Include="Components\Regions\AudioRegionBound.xaml.cs">
+      <DependentUpon>AudioRegionBound.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Regions\AudioRegionView.xaml.cs">
+      <DependentUpon>AudioRegionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Regions\AudioRegionViewModel.cs" />
+    <Compile Include="Components\Regions\RectangleRegionView.xaml.cs">
+      <DependentUpon>RectangleRegionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">
+      <DependentUpon>AudioMediaPlayer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Regions\TimeRegionModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Regionable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\AudioDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\DetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\GroupDetailHomeTabViewModel.cs" />
@@ -483,6 +494,9 @@
     <Compile Include="Models\CollectionLibraryElementModel.cs" />
     <Compile Include="Models\CollectionElementModel.cs" />
     <Compile Include="Models\PowerpointNodeModel.cs" />
+    <Compile Include="Models\Regions\CompoundRegion.cs" />
+    <Compile Include="Models\Regions\RectangleRegion.cs" />
+    <Compile Include="Models\Regions\Region.cs" />
     <Compile Include="Models\TagNodeModel.cs" />
     <Compile Include="Models\WebNodeModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
@@ -537,13 +551,6 @@
     <Compile Include="Util\Point2d.cs" />
     <Compile Include="Util\PresentationMode.cs" />
     <Compile Include="Util\RectanglePoints.cs" />
-    <Compile Include="Util\Regions\CompoundRegion.cs" />
-    <Compile Include="Util\Regions\RectangleRegion.cs" />
-    <Compile Include="Util\Regions\RectangleRegionView.xaml.cs">
-      <DependentUpon>RectangleRegionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Util\Regions\Region.cs" />
-    <Compile Include="Util\Regions\TimeRegion.cs" />
     <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\Statistics.cs" />
     <Compile Include="Util\Telemetry.cs" />
@@ -758,11 +765,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\Detail\DetailViewerView.xaml">
+    <Page Include="Components\Regions\AudioRegionBound.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\Detail\RegionImageDisplayView.xaml">
+    <Page Include="Components\Regions\AudioRegionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Regions\RectangleRegionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\Detail\DetailViewerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -914,6 +929,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlock.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -1043,10 +1062,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Util\Regions\RectangleRegionView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <SDKReference Include="Microsoft.VCLibs, Version=14.0">
@@ -1103,6 +1118,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Icons\" />
+    <Folder Include="Util\Regions\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
