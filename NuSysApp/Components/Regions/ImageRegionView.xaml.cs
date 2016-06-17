@@ -29,7 +29,7 @@ namespace NuSysApp
 
 
 
-        public delegate void RegionSelectedEventHandler(object sender, bool selected);
+        public delegate void RegionSelectedEventHandler(ImageRegionView sender, bool selected);
         public event RegionSelectedEventHandler OnSelected;
 
         public RectangleRegion RectangleRegion { set; get; }
@@ -42,6 +42,7 @@ namespace NuSysApp
             RectangleRegion = region;
             RegionView = contentView;
 
+            
             xMainRectangle.Width = (RectangleRegion.Point2.X - RectangleRegion.Point1.X) * RegionView.ActualWidth;
             xMainRectangle.Height = (RectangleRegion.Point2.Y - RectangleRegion.Point1.Y) * RegionView.ActualHeight;
             TempWidth = Width;
@@ -49,21 +50,19 @@ namespace NuSysApp
 
             _topLeft = RectangleRegion.Point1;
             _bottomRight = RectangleRegion.Point2;
-            
 
-            this.Selected();
+            //this.Selected();
             this.RenderTransform = new CompositeTransform();
-            xResizingRectangle.RenderTransform = new CompositeTransform();
-            OnSelected?.Invoke(this, true);
+
 
         }
 
-        private void XResizingRectangle_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        private void XResizingTriangle_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             
         }
 
-        private void XResizingRectangle_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        private void XResizingTriangle_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
 
             //  if (xMainRectangle.Width + e.Delta.Translation.X > 50 && (xMainRectangle.Width + e.Delta.Translation.X <= RegionView.ActualWidth))
@@ -83,7 +82,6 @@ namespace NuSysApp
                 xMainRectangle.Height += e.Delta.Translation.Y;
                 _bottomRight.Y += e.Delta.Translation.Y / RegionView.ActualHeight;
 
-                //((CompositeTransform)this.RenderTransform).TranslateY += e.Delta.Translation.Y / 2;
 
             }
 
@@ -93,11 +91,11 @@ namespace NuSysApp
 
         }
 
-        private void XResizingRectangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        private void XResizingTriangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
 
-            OnSelected?.Invoke(this, true);
-
+            //this.Select();
+            //OnSelected?.Invoke(this, true);
             e.Handled = true;
         }
 
@@ -125,30 +123,34 @@ namespace NuSysApp
 
         private void RectangleRegionView_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            OnSelected?.Invoke(this, true);
+            //OnSelected?.Invoke(this, true);
 
+            //this.Select();
             e.Handled = true;
 
         }
 
-        public void Deselected()
+        public void Deselect()
         {
             xMainRectangle.StrokeThickness = 3;
+            xMainRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.Red);
             xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Blue);
-            xResizingRectangle.Visibility = Visibility.Collapsed;
+            xResizingTriangle.Visibility = Visibility.Collapsed;
 
         }
-
-        public void Selected()
+        
+        public void Select()
         {
             xMainRectangle.StrokeThickness = 6;
             xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
-            xResizingRectangle.Visibility = Visibility.Visible;
+            xResizingTriangle.Visibility = Visibility.Visible;
 
         }
         private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-           OnSelected?.Invoke(this, true);
+            //OnSelected?.Invoke(this, true);
+            //xMainRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.Red);
+            //this.Select();
 
         }
 

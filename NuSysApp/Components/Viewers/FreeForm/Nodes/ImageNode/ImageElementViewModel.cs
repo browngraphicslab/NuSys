@@ -35,7 +35,18 @@ namespace NuSysApp
         }
 
         public BitmapImage Image { get; set; }
-        public ObservableCollection<Rectangle> Regions { get; set; } 
+
+        public HashSet<Region> Regions
+        {
+            get
+            {
+
+                return Controller.LibraryElementModel.Regions;
+  
+
+            } 
+
+        }
 
         public override async Task Init()
         {

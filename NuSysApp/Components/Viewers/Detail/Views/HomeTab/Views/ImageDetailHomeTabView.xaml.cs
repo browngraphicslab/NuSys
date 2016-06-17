@@ -73,19 +73,27 @@ namespace NuSysApp
             var rectangleRegion = (RectangleRegion)region;
 
             var displayedRegion = new ImageRegionView(rectangleRegion, this);
-            displayedRegion.OnSelected += DisplayedRegion_OnSelected;
-            DisplayedRegion_OnSelected(displayedRegion, true);
+
             (this.DataContext as ImageDetailHomeTabViewModel).RegionAdded(rectangleRegion,this);
             (this.DataContext as ImageDetailHomeTabViewModel).Controller.AddRegion(rectangleRegion);
+
+            displayedRegion.OnSelected += DisplayedRegion_OnSelected;
+            //displayedRegion.Select();
+            //this.SelectRegion(displayedRegion);
+
         }
 
 
-        private void DisplayedRegion_OnSelected(object sender, bool selected)
+        private void SelectRegion(ImageRegionView region)
         {
-            SelectedRegion?.Deselected();
-            SelectedRegion = (ImageRegionView)sender;
-            SelectedRegion.Selected();
-           
+            SelectedRegion?.Deselect();
+            SelectedRegion = region;
+            SelectedRegion.Select();
+        }
+
+        private void DisplayedRegion_OnSelected(ImageRegionView sender, bool selected)
+        {
+            sender.Select();
         }
 
         private void ControllerOnDisposed(object source)
@@ -144,7 +152,8 @@ namespace NuSysApp
 
         private void xImg_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            SelectedRegion?.Deselected();
+            //SelectedRegion?.Deselected();
+            //SelectedRegion = null;
         }
 
         private void XImg_OnSizeChanged(object sender, SizeChangedEventArgs e)
