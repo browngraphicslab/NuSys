@@ -36,11 +36,12 @@ namespace NuSysApp
             if (SessionController.Instance.IdToControllers.ContainsKey(id))
             {
                 var Controller = SessionController.Instance.IdToControllers[id];
+                
                 await Controller.UnPack(_message);
                 if(_message.ContainsKey("sender_user_id") && SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey((string)_message["sender_user_id"]))
                 {
                     var user = SessionController.Instance.NuSysNetworkSession.NetworkMembers[(string)_message["sender_user_id"]];
-                    user.SetUserController(Controller);
+                    user?.SetUserController(Controller.LibraryElementController);
                 }
             }
         }

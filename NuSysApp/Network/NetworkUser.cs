@@ -26,7 +26,7 @@ namespace NuSysApp
         #region Private Variables
         private Color _color;
         private bool _colorSet = false;
-        private ElementController _controller = null;
+        private LibraryElementController _controller = null;
         #endregion Private Variables
         public NetworkUser(string id, Dictionary<string,object> dict = null)
         {
@@ -72,9 +72,9 @@ namespace NuSysApp
         {
             OnUserRemoved?.Invoke();
         }
-        public void SetUserController(ElementController controller)
+        public void SetUserController(LibraryElementController controller)
         {
-            controller.SetNetworkUser(null);
+            //controller.SetNetworkUser(null);
 
             if (controller != _controller)
             {
@@ -82,12 +82,26 @@ namespace NuSysApp
                 {
                     _controller.SetNetworkUser(null);
                 }
-                if(controller != null)
+                if (controller != null)
                 {
                     controller.SetNetworkUser(this);
                 }
                 _controller = controller;
             }
+            //controller.SetNetworkUser(null);
+
+            //if (controller != _controller)
+            //{
+            //    if (_controller != null)
+            //    {
+            //        _controller.SetNetworkUser(null);
+            //    }
+            //    if(controller != null)
+            //    {
+            //        controller.SetNetworkUser(this);
+            //    }
+            //    _controller = controller;
+            //}
         }
     }
 }
