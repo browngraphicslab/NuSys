@@ -17,7 +17,6 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Components.Nodes;
-using NuSysApp.Components.Regions;
 using NuSysApp.Nodes.AudioNode;
 using Path = System.IO.Path;
 
@@ -74,6 +73,23 @@ namespace NuSysApp
             MediaPlayer.StopMusic();
         }
 
+        public void DisplayRegion(Region region)
+        {
+            var rectangleRegion = (TimeRegionModel)region;
+
+            var displayedRegion = new AudioRegionView(new AudioRegionViewModel(rectangleRegion,this));
+            displayedRegion.OnSelected += DisplayedRegion_OnSelected;
+            DisplayedRegion_OnSelected(displayedRegion, true);
+            (this.DataContext as AudioDetailHomeTabViewModel).RegionAdded(rectangleRegion,this);
+            (this.DataContext as AudioDetailHomeTabViewModel).Controller.AddRegion(rectangleRegion);
+        }
+        private void DisplayedRegion_OnSelected(object sender, bool selected)
+        {
+//            SelectedRegion?.Deselected();
+ //           SelectedRegion = (ImageRegionView)sender;
+   //         SelectedRegion.Selected();
+           
+        }
         private void ControllerOnDisposed(object source)
         {
 

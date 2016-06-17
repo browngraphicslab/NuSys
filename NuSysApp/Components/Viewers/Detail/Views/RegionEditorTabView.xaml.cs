@@ -62,7 +62,7 @@ namespace NuSysApp
             if ((((DetailViewerView.DataContext as DetailViewerViewModel)?.RegionView as AudioDetailHomeTabView)) != null)
             {
                 region = new TimeRegionModel("new rectangle",0,1);
-//                ((AudioDetailHomeTabView) (((DetailViewerViewModel) DetailViewerView.DataContext).RegionView))
+                ((AudioDetailHomeTabView) (((DetailViewerViewModel) DetailViewerView.DataContext).RegionView)).DisplayRegion(region);
             }
 
             var width = ((DetailViewerViewModel)DetailViewerView.DataContext).RegionView.ActualWidth;

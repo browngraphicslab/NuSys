@@ -21,7 +21,6 @@ using System.Diagnostics;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Components.Nodes;
-using NuSysApp.Components.Regions;
 using NuSysApp.Controller;
 using NuSysApp.Nodes.AudioNode;
 
