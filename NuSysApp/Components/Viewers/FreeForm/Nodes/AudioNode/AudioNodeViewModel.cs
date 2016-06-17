@@ -104,7 +104,7 @@ namespace NuSysApp
             byte[] dataBytes = new byte[(int)response.ContentLength];
             resStream.Read(dataBytes, 0, (int)response.ContentLength);
             resStream.Dispose();
-            Visualize(dataBytes);
+            //Visualize(dataBytes);
         }
 
         private async void Visualize(byte[] bytes)

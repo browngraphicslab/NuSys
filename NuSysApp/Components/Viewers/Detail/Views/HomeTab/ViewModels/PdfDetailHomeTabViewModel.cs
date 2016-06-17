@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -27,12 +28,27 @@ namespace NuSysApp
     public class PdfDetailHomeTabViewModel : DetailHomeTabViewModel
     {
         public LibraryElementController Controller { get; }
+        public ObservableCollection<PDFRegionView> RegionViews { set; get; }
         public WriteableBitmap ImageSource { get; set; }
         private int _pageNumber = 0;
         private MuPDFWinRT.Document _document;
         public PdfDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
             Controller = controller;
+            RegionViews = new ObservableCollection<PDFRegionView>();
+
+            if (Controller.LibraryElementModel.Regions.Count > 0)
+            {
+                foreach (var region in Controller.LibraryElementModel.Regions)
+                {
+                    RegionViews.Add(new PDFRegionView(new PdfRegionViewModel(region as PdfRegion, Controller)));
+                }
+            }
+        }
+
+        public void UpdateRegions(PdfRegion region)
+        {
+            RegionViews.Add(new PDFRegionView(new PdfRegionViewModel(region as PdfRegion, Controller)));
         }
         public override async Task Init()
         {

@@ -16,6 +16,7 @@ namespace NuSysApp
         protected DebouncingDictionary _debouncingDictionary;
         private LibraryElementModel _libraryElementModel;
         private bool _loading = false;
+        
         #region Events
         public delegate void ContentChangedEventHandler(object source, string contentData);
         public delegate void RegionAddedEventHandler(object source, Region region);
@@ -26,6 +27,7 @@ namespace NuSysApp
         public delegate void FavoritedEventHandler(object sender, bool favorited);
         public delegate void LoadedEventHandler(object sender);
         public delegate void DeletedEventHandler(object sender);
+        public delegate void NetworkUserChangedEventHandler(object source, NetworkUser user);
         public delegate void KeywordsChangedEventHandler(object sender, HashSet<Keyword> keywords);
         public event ContentChangedEventHandler ContentChanged;
         public event RegionAddedEventHandler RegionAdded;
@@ -36,6 +38,7 @@ namespace NuSysApp
         public event FavoritedEventHandler Favorited;
         public event DeletedEventHandler Deleted;
         public event KeywordsChangedEventHandler KeywordsChanged;
+        public event NetworkUserChangedEventHandler UserChanged;
         public event LoadedEventHandler Loaded
         {
             add
@@ -288,6 +291,11 @@ namespace NuSysApp
         public bool LoadingOrLoaded
         {
             get { return _loading || IsLoaded; }
+        }
+
+        public void SetNetworkUser(NetworkUser user)
+        {
+            UserChanged?.Invoke(this, user);
         }
     }
 }

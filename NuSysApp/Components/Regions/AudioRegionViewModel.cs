@@ -20,6 +20,8 @@ namespace NuSysApp
     public class AudioRegionViewModel : BaseINPC
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        public AudioDetailHomeTabView RegionView { get; set; }
+        public TimeRegionModel Model { get; set; }
 
         public double LeftHandleX { get; set; }
         public double LefthandleY1 { get; set; }
@@ -30,16 +32,46 @@ namespace NuSysApp
         public double RegionHeight { get; set; }
         public double RegionWidth { get; set; }
 
-        public AudioRegionViewModel(TimeRegionModel model, double height, double width, double topOfScrubBar)
+        public AudioRegionViewModel(TimeRegionModel model, AudioDetailHomeTabView contentView)
         {
-            LeftHandleX = model.Start*width;
-            RightHandleX = model.End*width;
-            LefthandleY1 = topOfScrubBar;
-            LefthandleY2 = topOfScrubBar + height;
-            RightHandleY1 = topOfScrubBar;
-            RightHandleY2 = topOfScrubBar + height;
-            RegionHeight = height;
-            RegionWidth = width;
+            LeftHandleX = model.Start*contentView.ActualWidth;
+            RightHandleX = model.End*contentView.ActualWidth;
+            LefthandleY1 = 10;
+            LefthandleY2 = 110; //+ contentView.ActualHeight;
+            RightHandleY1 = 10;
+            RightHandleY2 = 110; //+ contentView.ActualHeight;
+            RegionHeight = 100;//contentView.ActualHeight;
+            RegionWidth = contentView.ActualWidth;
+            RegionView = contentView;
+            Model = model;
+            RaisePropertyChanged("LeftHandleX");
+            RaisePropertyChanged("RightHandleX");
+            RaisePropertyChanged("LefthandleY1");
+            RaisePropertyChanged("LefthandleY2");
+            RaisePropertyChanged("RightHandleY1");
+            RaisePropertyChanged("RightHandleY2");
+            RaisePropertyChanged("RegionHeight");
+            RaisePropertyChanged("RegionWidth");
+        }
+        public void UpdateVals()
+        {
+            LeftHandleX = Model.Start*RegionView.ActualWidth;
+            RightHandleX = Model.End*RegionView.ActualWidth;
+            LefthandleY1 = 10;
+            LefthandleY2 = 110; //+ contentView.ActualHeight;
+            RightHandleY1 = 10;
+            RightHandleY2 = 110; //+ contentView.ActualHeight;
+            RegionHeight = 100;//contentView.ActualHeight;
+            RegionWidth = RegionView.ActualWidth;
+            RaisePropertyChanged("LeftHandleX");
+            RaisePropertyChanged("RightHandleX");
+            RaisePropertyChanged("LefthandleY1");
+            RaisePropertyChanged("LefthandleY2");
+            RaisePropertyChanged("RightHandleY1");
+            RaisePropertyChanged("RightHandleY2");
+            RaisePropertyChanged("RegionHeight");
+            RaisePropertyChanged("RegionWidth");
+
         }
 
         //private int _startTime;

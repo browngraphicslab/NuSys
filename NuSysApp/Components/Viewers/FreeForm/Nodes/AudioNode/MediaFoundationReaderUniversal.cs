@@ -34,25 +34,25 @@
                 this.settings = settings;
             }
 
-            protected override IMFSourceReader CreateReader(MediaFoundationReaderSettings settings)
-            {
-                var fileStream = ((MediaFoundationReaderUniversalSettings)settings).Stream;
-                var byteStream = MediaFoundationApi.CreateByteStream(fileStream);
-                var reader = MediaFoundationApi.CreateSourceReaderFromByteStream(byteStream);
-                reader.SetStreamSelection(MediaFoundationInterop.MF_SOURCE_READER_ALL_STREAMS, false);
-                reader.SetStreamSelection(MediaFoundationInterop.MF_SOURCE_READER_FIRST_AUDIO_STREAM, true);
+            //protected override IMFSourceReader CreateReader(MediaFoundationReaderSettings settings)
+            //{
+            //    var fileStream = ((MediaFoundationReaderUniversalSettings)settings).Stream;
+            //    var byteStream = MediaFoundationApi.CreateByteStream(fileStream);
+            //    var reader = MediaFoundationApi.CreateSourceReaderFromByteStream(byteStream);
+            //    reader.SetStreamSelection(MediaFoundationInterop.MF_SOURCE_READER_ALL_STREAMS, false);
+            //    reader.SetStreamSelection(MediaFoundationInterop.MF_SOURCE_READER_FIRST_AUDIO_STREAM, true);
 
-                // Create a partial media type indicating that we want uncompressed PCM audio
+            //    // Create a partial media type indicating that we want uncompressed PCM audio
 
-                var partialMediaType = new MediaType();
-                partialMediaType.MajorType = MediaTypes.MFMediaType_Audio;
-                partialMediaType.SubType = settings.RequestFloatOutput ? AudioSubtypes.MFAudioFormat_Float : AudioSubtypes.MFAudioFormat_PCM;
+            //    var partialMediaType = new MediaType();
+            //    partialMediaType.MajorType = MediaTypes.MFMediaType_Audio;
+            //    partialMediaType.SubType = settings.RequestFloatOutput ? AudioSubtypes.MFAudioFormat_Float : AudioSubtypes.MFAudioFormat_PCM;
 
-                // set the media type
-                // can return MF_E_INVALIDMEDIATYPE if not supported
-                reader.SetCurrentMediaType(MediaFoundationInterop.MF_SOURCE_READER_FIRST_AUDIO_STREAM, IntPtr.Zero, partialMediaType.MediaFoundationObject);
-                return reader;
-            }
+            //    // set the media type
+            //    // can return MF_E_INVALIDMEDIATYPE if not supported
+            //    reader.SetCurrentMediaType(MediaFoundationInterop.MF_SOURCE_READER_FIRST_AUDIO_STREAM, IntPtr.Zero, partialMediaType.MediaFoundationObject);
+            //    return reader;
+            //}
 
             protected override void Dispose(bool disposing)
             {

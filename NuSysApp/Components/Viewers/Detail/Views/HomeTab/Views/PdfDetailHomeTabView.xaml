@@ -37,6 +37,13 @@
                         <Image Opacity=".8" Stretch="Uniform" Source="ms-appx:///Assets/icon_pdf_right.png" />
                     </Button.Content>
                 </Button>
+                <ItemsControl x:Name="ItemsControl"  ItemsSource="{Binding RegionViews}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Grid/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
             </Grid>
         </Border>
         <StackPanel Visibility="Collapsed">

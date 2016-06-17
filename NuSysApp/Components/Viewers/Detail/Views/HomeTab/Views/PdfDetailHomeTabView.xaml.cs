@@ -30,6 +30,7 @@ namespace NuSysApp
         {
             InitializeComponent();
             DataContext = vm;
+            Canvas.SetZIndex(ItemsControl, 0);
             
           //  xImg.ManipulationMode = ManipulationModes.All;
           //  xImg.ManipulationDelta += OnManipulationDelta;
@@ -73,6 +74,11 @@ namespace NuSysApp
             var vm = (PdfDetailHomeTabViewModel)DataContext;
             vm.Controller.Disposed += ControllerOnDisposed;
             DataContext = null;
+        }
+
+        public void AddRegion(PdfRegion region)
+        {
+            (DataContext as PdfDetailHomeTabViewModel).UpdateRegions(region);
         }
 
 

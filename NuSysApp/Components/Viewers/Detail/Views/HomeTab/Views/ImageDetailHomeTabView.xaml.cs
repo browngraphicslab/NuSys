@@ -16,20 +16,21 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using System.ComponentModel;
 
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace NuSysApp
 {  
-    public sealed partial class ImageDetailHomeTabView : UserControl, Regionable<RectangleRegionView>
+    public sealed partial class ImageDetailHomeTabView : UserControl, Regionable<ImageRegionView>
         {
-            public RectangleRegionView SelectedRegion { set; get; }
+            public ImageRegionView SelectedRegion { set; get; }
             public ImageDetailHomeTabView(ImageDetailHomeTabViewModel vm)
         {
-            InitializeComponent();
             DataContext = vm;
-            
+            InitializeComponent();
+
             //var token = model.GetMetaData("Token");
             //if (token == null || String.IsNullOrEmpty(token?.ToString()))
             //{
@@ -39,50 +40,50 @@ namespace NuSysApp
             //{
             //    SourceBttn.Visibility = Visibility.Collapsed;
             //}
+                foreach (var v in vm.Controller.LibraryElementModel.Regions)
+                {
+                    vm.RegionAdded(v,this);
+                }
+
             vm.Controller.Disposed += ControllerOnDisposed;
+                vm.PropertyChanged += PropertyChanged;
+            
         }
 
+        private void PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "RegionViews":
+                    break;
+            }
+        }
 
         public void AddRegion()
         {
-
-            var displayedRegion = new Windows.UI.Xaml.Shapes.Rectangle();
-            Canvas.SetLeft(displayedRegion, 0);
-            Canvas.SetTop(displayedRegion, 0);
-            displayedRegion.Width = 100;
-            displayedRegion.Height = 100;
-
-            displayedRegion.Stroke = new SolidColorBrush(Windows.UI.Colors.Blue);
-            displayedRegion.StrokeThickness = 3;
-            displayedRegion.HorizontalAlignment = HorizontalAlignment.Stretch;
-            displayedRegion.VerticalAlignment = VerticalAlignment.Stretch;
-
-            totalStackPanel.Children.Add(displayedRegion);
         }
 
         
-        public void RemoveRegion(RectangleRegionView region)
+        public void RemoveRegion(ImageRegionView region)
         {
-            totalStackPanel.Children.Remove(region);
         }
 
         public void DisplayRegion(Region region)
         {
             var rectangleRegion = (RectangleRegion)region;
 
-            //var displayedRegion = new Windows.UI.Xaml.Shapes.Rectangle();
-
-            var displayedRegion = new RectangleRegionView(rectangleRegion);
+            var displayedRegion = new ImageRegionView(rectangleRegion, this);
             displayedRegion.OnSelected += DisplayedRegion_OnSelected;
             DisplayedRegion_OnSelected(displayedRegion, true);
-            totalStackPanel.Children.Add(displayedRegion);
-
+            (this.DataContext as ImageDetailHomeTabViewModel).RegionAdded(rectangleRegion,this);
+            (this.DataContext as ImageDetailHomeTabViewModel).Controller.AddRegion(rectangleRegion);
         }
+
 
         private void DisplayedRegion_OnSelected(object sender, bool selected)
         {
             SelectedRegion?.Deselected();
-            SelectedRegion = (RectangleRegionView)sender;
+            SelectedRegion = (ImageRegionView)sender;
             SelectedRegion.Selected();
            
         }
@@ -145,5 +146,14 @@ namespace NuSysApp
         {
             SelectedRegion?.Deselected();
         }
-    }
+
+        private void XImg_OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var vm = this.DataContext as ImageDetailHomeTabViewModel;
+            foreach (ImageRegionView irv in vm.RegionViews)
+            {
+               irv.ApplyNewSize(e.NewSize); 
+            }
+        }
+        }
 }
