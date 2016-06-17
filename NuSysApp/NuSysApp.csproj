@@ -265,9 +265,14 @@
       <DependentUpon>AudioRegionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Regions\AudioRegionViewModel.cs" />
+    <Compile Include="Components\Regions\PDFRegionView.xaml.cs">
+      <DependentUpon>PDFRegionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Regions\PDFRegionViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">
       <DependentUpon>AudioMediaPlayer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\Regions\PDFRegion.cs" />
     <Compile Include="Models\Regions\TimeRegionModel.cs" />
     <Compile Include="Components\Viewers\Detail\Regionable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\AudioDetailHomeTabViewModel.cs" />
@@ -774,6 +779,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Regions\AudioRegionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Regions\PDFRegionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
