@@ -93,7 +93,10 @@ namespace NuSysApp
             xContentPresenter.Content = vm.RegionView;
 
             RegionCollection.Clear();
-
+            if (vm?.CurrentElementController?.LibraryElementModel?.Regions == null)
+            {
+                return;
+            }
             foreach (var region in vm.CurrentElementController.LibraryElementModel.Regions)
             {
                 RegionCollection.Add(region);

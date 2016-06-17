@@ -294,7 +294,7 @@ namespace NuSysApp
         {
             get
             {
-                return LibraryElementController.LibraryElementModel;
+                return LibraryElementController?.LibraryElementModel;
             }
         }
 

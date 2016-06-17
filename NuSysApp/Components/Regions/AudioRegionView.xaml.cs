@@ -65,6 +65,5 @@ namespace NuSysApp
         {
             _toggleManipulation = false;
         }
-
     }
 }

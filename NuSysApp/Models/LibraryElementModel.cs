@@ -14,7 +14,7 @@ namespace NuSysApp
 {
     public class LibraryElementModel : BaseINPC
     {
-        public HashSet<string> Keywords {get; set; }
+        public HashSet<Keyword> Keywords {get; set; }
         public HashSet<Region> Regions { get; set; }
 
         public ElementType Type { get; set; }
@@ -40,16 +40,20 @@ namespace NuSysApp
             Title = contentName;
             Type = elementType;
             Favorited = favorited;
-            Keywords = new HashSet<string>();
+            Keywords = new HashSet<Keyword>();
             Metadata = metadata;
             Regions = new HashSet<Region>();
             SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
         }
-        public void UnPack(Message message)
+        public async Task UnPack(Message message)
         {
             if (message.ContainsKey("keywords"))
             {
-                Keywords = new HashSet<string>(message.GetList<string>("keywords"));
+                Keywords = new HashSet<Keyword>(message.GetList<Keyword>("keywords"));
+            }
+            if (message.ContainsKey("regions"))
+            {
+                Regions = new HashSet<Region>(message.GetList<Region>("regions"));
             }
         }
         protected virtual void OnSessionControllerEnterNewCollection()

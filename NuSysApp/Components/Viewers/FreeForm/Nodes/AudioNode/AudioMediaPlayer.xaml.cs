@@ -125,7 +125,6 @@ namespace NuSysApp
         {
             get { return MediaElement.Position; }
         }
-
         public void StopMusic()
         {
             MediaElement.Stop();

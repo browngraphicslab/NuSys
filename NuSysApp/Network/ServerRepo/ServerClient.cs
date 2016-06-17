@@ -146,13 +146,12 @@ namespace NuSysApp
                 return data;
             });
         }
-        public async Task<bool> AddRegionToContent(string contentId, Region regionString)
+        public async Task<bool> AddRegionToContent(string contentId, Region region)
         {
             return await Task.Run(async delegate
             {
-                JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                 var dict = new Dictionary<string, object>();
-                dict["data"] = regionString;
+                dict["data"] = region;
                 dict["contentId"] = contentId;
                 var data = await SendDictionaryToServer("addregion", dict);
                 try
@@ -167,13 +166,12 @@ namespace NuSysApp
                 return false;
             });
         }
-        public async Task<bool> RemoveRegionFromContent(string contentId, Region regionString)
+        public async Task<bool> RemoveRegionFromContent(string contentId, Region region)
         {
             return await Task.Run(async delegate
             {
-                JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                 var dict = new Dictionary<string, object>();
-                dict["data"] = regionString;
+                dict["data"] = region;
                 dict["contentId"] = contentId;
                 var data = await SendDictionaryToServer("removeregion", dict);
                 try
@@ -302,7 +300,22 @@ namespace NuSysApp
                     var timestamp = dict.ContainsKey("library_element_creation_timestamp")
                         ? (string)dict["library_element_creation_timestamp"].ToString()
                         : null;
-                    var regions = dict.ContainsKey("regions") ? JsonConvert.DeserializeObject<HashSet<Region>>(dict["regions"].ToString()) : null;
+                    var regionStrings = dict.ContainsKey("regions") ? JsonConvert.DeserializeObject<List<string>>(dict["regions"].ToString(),settings) : null;
+                    var regions = new HashSet<Region>();
+                    foreach (var rs in regionStrings) {
+                        var region = JsonConvert.DeserializeObject<RegionIntermediate>(rs);
+                        switch (region.Type) {
+                            case Region.RegionType.Rectangle:
+                                regions.Add(JsonConvert.DeserializeObject<RectangleRegion>(rs, settings));
+                                break;
+                            case Region.RegionType.Compound:
+                                regions.Add(JsonConvert.DeserializeObject<CompoundRegion>(rs, settings));
+                                break;
+                            case Region.RegionType.Time:
+                                regions.Add(JsonConvert.DeserializeObject<TimeRegionModel>(rs, settings));
+                                break;
+                        }
+                    }
                     var inks = dict.ContainsKey("inks") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["inks"].ToString()) : null;
 
                     var metadata = dict.ContainsKey("metadata") ? JsonConvert.DeserializeObject<Dictionary<string, Tuple<string, Boolean>>>(dict["metadata"].ToString()) : null;
@@ -516,7 +529,10 @@ namespace NuSysApp
 
         }
         */
-
+        private class RegionIntermediate
+        {
+            public Region.RegionType Type;
+        }
         public class IncomingDataReaderException : Exception
         {
             public IncomingDataReaderException(string s = "") : base("Error with incoming data reader message.  " + s) { }

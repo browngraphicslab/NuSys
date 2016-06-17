@@ -27,6 +27,7 @@ namespace NuSysApp
             Start = start;
             End = end;
            
+            Type = RegionType.Time;
         }
 
         public void Select()

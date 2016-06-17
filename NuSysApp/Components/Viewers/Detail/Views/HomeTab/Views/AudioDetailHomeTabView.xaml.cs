@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Components.Nodes;
+using NuSysApp.Components.Regions;
 using NuSysApp.Nodes.AudioNode;
 using Path = System.IO.Path;
 
@@ -235,7 +236,6 @@ namespace NuSysApp
             scrubBar.SizeChanged += ScrubBar_OnSizeChanged;
 
         }
-
         private async void RenderImageSource(Grid RenderedGrid)
         {
 
@@ -320,7 +320,6 @@ namespace NuSysApp
                 element.ResizeLine1();
             }
         }
-
         private void Play_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             Play.Opacity = .3;
@@ -395,6 +394,6 @@ namespace NuSysApp
                 }
             }
         }
-*/        
+        */
     }
 }

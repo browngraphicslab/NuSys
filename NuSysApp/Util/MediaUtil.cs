@@ -62,6 +62,24 @@ namespace NuSysApp
             }
             return fileBytes;
         }
+
+        public static async Task<MuPDFWinRT.Document> DataToPDF(string base64StringData)
+        {
+            var dataBytes = Convert.FromBase64String(base64StringData);
+            var ms = new MemoryStream(dataBytes);
+            MuPDFWinRT.Document document;
+            using (IInputStream inputStreamAt = ms.AsInputStream())
+            {
+                using (var dataReader = new DataReader(inputStreamAt))
+                {
+                    uint u = await dataReader.LoadAsync((uint)dataBytes.Length);
+                    IBuffer readBuffer = dataReader.ReadBuffer(u);
+                    document = MuPDFWinRT.Document.Create(readBuffer, MuPDFWinRT.DocumentType.PDF, 120);
+                }
+            }
+
+            return document;
+        }
         /*
         public static async Task<StorageFile> ConvertByteToAudio(byte[] byteArray)
         {

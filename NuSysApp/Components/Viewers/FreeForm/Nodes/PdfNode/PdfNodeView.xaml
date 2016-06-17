@@ -37,7 +37,6 @@
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
             <Grid>
-
                 <Grid PointerPressed="XImage_OnPointerPressed" PointerExited="XImage_PointerExited" PointerReleased="XImage_OnPointerReleased" PointerMoved="XImage_OnPointerMoved">
                     <Image x:Name="xRenderedPdf"  Margin="3,3,3,3" Source="{Binding ImageSource}" Stretch="Uniform"/>
                     <Canvas x:Name="Canvas" VerticalAlignment ="Top" HorizontalAlignment="Left">
