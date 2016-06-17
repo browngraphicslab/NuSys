@@ -68,7 +68,7 @@ namespace NuSysApp
                 }
             }   
         }
-        private void KeywordsChanged(object sender, HashSet<string> keywords)
+        private void KeywordsChanged(object sender, HashSet<Keyword> keywords)
         {
             CreateTags();
         }
@@ -142,14 +142,17 @@ namespace NuSysApp
         {
             Tags.Clear();
 
-            var tagList = Controller.LibraryElementController.LibraryElementModel.Keywords;
-
-            foreach (string tag in tagList)
+            var tagList = Controller?.LibraryElementController?.LibraryElementModel?.Keywords;
+            if(tagList == null)
+            {
+                return;
+            }
+            foreach (var tag in tagList)
             {
                 //sorry about this - should also be in frontend and not in viewmodel
                 Button tagBlock = new Button();
                 tagBlock.Background = new SolidColorBrush(Constants.color4);
-                tagBlock.Content = tag;
+                tagBlock.Content = tag.Text;
                 tagBlock.Height = 30;
                 tagBlock.Padding = new Thickness(5);
                 tagBlock.BorderThickness = new Thickness(0);

@@ -35,6 +35,10 @@ namespace NuSysApp
         }
         public LibraryElementController GetLibraryElementController(string id)
         {
+            if (id == null)
+            {
+                return null;
+            }
             return _contentControllers.ContainsKey(id) ? _contentControllers[id] : null;
         }
         public ICollection<LibraryElementModel> ContentValues

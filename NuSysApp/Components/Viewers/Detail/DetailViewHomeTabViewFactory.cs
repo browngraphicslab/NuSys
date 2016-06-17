@@ -50,7 +50,7 @@ namespace NuSysApp
 
             if (view == null)
                 return null;
-            
+            await ((DetailHomeTabViewModel)view.DataContext).Init();
             return view;
         }
         //public async Task<UserControl> CreateFromSendable(ElementController controller)

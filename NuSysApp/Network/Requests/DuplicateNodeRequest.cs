@@ -26,7 +26,9 @@ namespace NuSysApp
                 foreach (var childId in childList)
                 {
                     var childModel = SessionController.Instance.IdToControllers[childId].Model;
-                    var groups = new List<string>(SessionController.Instance.ContentController.GetContent(model.LibraryId)?.Keywords);
+                    var group = (SessionController.Instance.IdToControllers[childId].LibraryElementController.GetMetadata("groups"));
+                    var groups = new List<string>();
+                    groups.Add(group);
 
                     //TODO: refactor
                    // childModel.Creator = id;

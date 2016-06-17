@@ -96,6 +96,7 @@ namespace NuSysApp
 
         private async void Init()
         {
+            Keyword k = new Keyword("test");
             List?.Items?.Clear();
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             try

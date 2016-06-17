@@ -81,19 +81,7 @@ namespace NuSysApp
             if (Controller.LibraryElementModel == null || Controller.LibraryElementModel.Data == null) {
                 return;
             }
-            var data = Controller.LibraryElementModel.Data;
-            var dataBytes = Convert.FromBase64String(data);
-            var ms = new MemoryStream(dataBytes);
-
-            using (IInputStream inputStreamAt = ms.AsInputStream())
-            using (var dataReader = new DataReader(inputStreamAt))
-            {
-                uint u = await dataReader.LoadAsync((uint)dataBytes.Length);
-                IBuffer readBuffer = dataReader.ReadBuffer(u);
-                _document = MuPDFWinRT.Document.Create(readBuffer, DocumentType.PDF, 120);
-             //   Document = _document;
-            }
-
+            _document = await MediaUtil.DataToPDF(Controller.LibraryElementModel.Data);
             await Goto(CurrentPageNumber);
             SetSize(Width, Height);
             //LaunchLDA((PdfNodeModel)this.Model);
@@ -139,7 +127,7 @@ namespace NuSysApp
             buf.Length = image.PixelBuffer.Length;
             
             _document.DrawPage(pageNumber, buf, 0, 0, width, height, false);
-            
+
             var s = buf.AsStream();
             await s.CopyToAsync(image.PixelBuffer.AsStream());
             image.Invalidate();
@@ -217,7 +205,12 @@ namespace NuSysApp
                 List<string> topics = await TagExtractor.launch(test, new List<string>() {data});
                 await UITask.Run(() =>
                 {
-                    Controller.LibraryElementController.SetKeywords(new HashSet<string>(topics));
+                    var topicKeywords = new HashSet<Keyword>();
+                    foreach(var topic in topics)
+                    {
+                        topicKeywords.Add(new Keyword(topic, Keyword.KeywordSource.TopicModeling));
+                    }
+                    Controller.LibraryElementController.SetKeywords((topicKeywords));
                     RaisePropertyChanged("Tags");
                 });
             });

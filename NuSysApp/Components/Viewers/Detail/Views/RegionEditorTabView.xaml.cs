@@ -52,7 +52,7 @@ namespace NuSysApp
         private void XDeleteButton_OnClick(object sender, RoutedEventArgs e)
         {
             xContentPresenter.Content = (((DetailViewerViewModel)DetailViewerView.DataContext).RegionView);
-            Region region = new RectangleRegion("new rectangle", new Point(100, 100), new Point(200, 200));
+            Region region = null;
             if ((((DetailViewerView.DataContext as DetailViewerViewModel)?.RegionView as ImageDetailHomeTabView)) != null)
             {
                 region = new RectangleRegion("new rectangle", new Point(0, 0), new Point(1, 1));
@@ -64,7 +64,11 @@ namespace NuSysApp
                 region = new TimeRegionModel("new rectangle",0,1);
                 ((AudioDetailHomeTabView) (((DetailViewerViewModel) DetailViewerView.DataContext).RegionView)).DisplayRegion(region);
             }
-
+            if ((((DetailViewerView.DataContext as DetailViewerViewModel)?.RegionView as PdfDetailHomeTabView)) != null)
+            {
+                region = new PdfRegion("new rectangle", new Point(0, 0), new Point(1, 1), 1);
+                (((DetailViewerView.DataContext as DetailViewerViewModel)?.RegionView as PdfDetailHomeTabView)).AddRegion(region as PdfRegion);
+            }
             var width = ((DetailViewerViewModel)DetailViewerView.DataContext).RegionView.ActualWidth;
             var height = ((DetailViewerViewModel)DetailViewerView.DataContext).RegionView.ActualHeight;
             //TODO: make this rectangle's size dependent on the size of the region view
@@ -93,7 +97,10 @@ namespace NuSysApp
             xContentPresenter.Content = vm.RegionView;
 
             RegionCollection.Clear();
-
+            if (vm?.CurrentElementController?.LibraryElementModel?.Regions == null)
+            {
+                return;
+            }
             foreach (var region in vm.CurrentElementController.LibraryElementModel.Regions)
             {
                 RegionCollection.Add(region);

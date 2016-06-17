@@ -130,10 +130,10 @@ namespace NuSysApp
             var inkCaption = groupTagNode.Title;
             var tags = nodeToTag.Controller.LibraryElementController.LibraryElementModel.Keywords;
 
-            if (tags.Contains(inkCaption))
+            if (tags.Contains(new Keyword(inkCaption)))
                 return;
 
-            tags.Add(inkCaption);
+            tags.Add(new Keyword(inkCaption));
 
             nodeToTag.Controller.LibraryElementController.SetKeywords(tags);
             
@@ -146,8 +146,8 @@ namespace NuSysApp
                 if (vm.Controller.LibraryElementController.GetMetadata("visualCopyOf") == nodeToTag.Id)
                 {
                     var t = nodeToTag.Controller.LibraryElementController.LibraryElementModel.Keywords;
-                    t.Add(inkCaption);
-                    vm.Controller.LibraryElementController.SetKeywords(new HashSet<string>(t));
+                    t.Add(new Keyword(inkCaption));
+                    vm.Controller.LibraryElementController.SetKeywords(new HashSet<Keyword>(t));
                 }
             }
 

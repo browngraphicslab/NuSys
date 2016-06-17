@@ -37,7 +37,7 @@
                         <Image Opacity=".8" Stretch="Uniform" Source="ms-appx:///Assets/icon_pdf_right.png" />
                     </Button.Content>
                 </Button>
-                <ItemsControl ItemsSource="{Binding RegionViews}">
+                <ItemsControl x:Name="ItemsControl"  ItemsSource="{Binding RegionViews}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Grid/>
