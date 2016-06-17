@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
+using MyToolkit.Utilities;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -21,33 +22,33 @@ namespace NuSysApp
 {
     public sealed partial class AudioRegionBound : UserControl
     {
-        public static readonly DependencyProperty X1Dp = DependencyProperty.Register
+        public readonly DependencyProperty X1Dp = DependencyProperty.Register
     (
          "X1",
          typeof(double),
          typeof(AudioRegionBound),
-         new PropertyMetadata(0)
+         new PropertyMetadata(0,new PropertyChangedCallback(X1Changed))
     );
-        public static readonly DependencyProperty X2Dp = DependencyProperty.Register
+        public readonly DependencyProperty X2Dp = DependencyProperty.Register
     (
          "X2",
          typeof(double),
          typeof(AudioRegionBound),
-         new PropertyMetadata(0)
+         new PropertyMetadata(0,new PropertyChangedCallback(X2Changed))
     );
-        public static readonly DependencyProperty Y1Dp = DependencyProperty.Register
+        public  readonly DependencyProperty Y1Dp = DependencyProperty.Register
     (
          "Y1",
          typeof(double),
          typeof(AudioRegionBound),
-         new PropertyMetadata(0)
+         new PropertyMetadata(0,new PropertyChangedCallback(Y1Changed))
     );
         public static readonly DependencyProperty Y2Dp = DependencyProperty.Register
     (
          "Y2",
          typeof(double),
          typeof(AudioRegionBound),
-         new PropertyMetadata(0)
+         new PropertyMetadata(0,new PropertyChangedCallback(Y2Changed))
     );
 
         private Line _handle;
@@ -56,11 +57,26 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.RenderTransform = new CompositeTransform();
-            var x = GetValue(X1Dp);
             X1 = System.Convert.ToDouble( GetValue(X1Dp));
             X2 = System.Convert.ToDouble(GetValue(X2Dp));
             Y1 = System.Convert.ToDouble(GetValue(Y1Dp));
             Y2 = System.Convert.ToDouble(GetValue(Y2Dp));
+        }
+        public static void X1Changed(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            (sender as AudioRegionBound).X1 = Convert.ToDouble(e.NewValue);
+        }
+        public static void X2Changed(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            (sender as AudioRegionBound).X2 = Convert.ToDouble(e.NewValue);
+        }
+        public static void Y1Changed(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            (sender as AudioRegionBound).Y1 = Convert.ToDouble(e.NewValue);
+        }
+        public static void Y2Changed(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            (sender as AudioRegionBound).Y2 = Convert.ToDouble(e.NewValue);
         }
         public double X1
         {

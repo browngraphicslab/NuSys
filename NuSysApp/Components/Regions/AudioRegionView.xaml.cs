@@ -28,7 +28,6 @@ namespace NuSysApp
             this.DataContext = vm;
             _toggleManipulation = false;
             Rect.RenderTransform = new CompositeTransform();
-            vm.UpdateVals();
             //TODO Make Legitimate
             Bound1.X1 = vm.LeftHandleX;
             Bound1.X2 = vm.LeftHandleX;
@@ -48,23 +47,28 @@ namespace NuSysApp
 
         private void Bound1_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            (Bound1.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
-            (Rect.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
-            Rect.Width -= e.Delta.Translation.X;
+            if ((Bound1.RenderTransform as CompositeTransform).TranslateX + e.Delta.Translation.X > 0 && (Bound1.RenderTransform as CompositeTransform).TranslateX + e.Delta.Translation.X < (Bound2.RenderTransform as CompositeTransform).TranslateX && Rect.Width + e.Delta.Translation.X > 0)
+            {
+                (Bound1.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
+                (Rect.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
+                Rect.Width -= e.Delta.Translation.X;
+            }
         }
 
         private void Handle_OnManipulationDelta2(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            
-            (Bound2.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
-            Rect.Width += e.Delta.Translation.X;
-            
+
+            if (((Bound2.RenderTransform as CompositeTransform).TranslateX + e.Delta.Translation.X )/Canvas.ActualWidth < 1 && (Bound1.RenderTransform as CompositeTransform).TranslateX + e.Delta.Translation.X < (Bound2.RenderTransform as CompositeTransform).TranslateX && Rect.Width + e.Delta.Translation.X > 0)
+            {
+                (Bound2.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
+                Rect.Width += e.Delta.Translation.X;
+            }
+
         }
 
         private void Handle_OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
             _toggleManipulation = false;
         }
-
     }
 }

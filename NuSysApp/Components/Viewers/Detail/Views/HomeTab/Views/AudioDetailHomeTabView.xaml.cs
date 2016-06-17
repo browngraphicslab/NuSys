@@ -31,6 +31,7 @@ namespace NuSysApp
         private bool _addTimeBlockMode;
         private Line _temporaryLinkVisual;
         private List<AudioRegionViewModel> _timeRegions;
+        public event SizeChangedEventHandler SizeChanged;
 
         public AudioDetailHomeTabView(AudioDetailHomeTabViewModel vm)
         {
@@ -77,11 +78,19 @@ namespace NuSysApp
         {
             var rectangleRegion = (TimeRegionModel)region;
 
-            var displayedRegion = new AudioRegionView(new AudioRegionViewModel(rectangleRegion,this));
+            var regionvm = new AudioRegionViewModel(rectangleRegion);
+            SizeChanged += regionvm.SizeChanged;
+            var displayedRegion = new AudioRegionView(regionvm);
             displayedRegion.OnSelected += DisplayedRegion_OnSelected;
             DisplayedRegion_OnSelected(displayedRegion, true);
+
+
             (this.DataContext as AudioDetailHomeTabViewModel).RegionAdded(rectangleRegion,this);
             (this.DataContext as AudioDetailHomeTabViewModel).Controller.AddRegion(rectangleRegion);
+        }
+        private void MediaPlayer_OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            SizeChanged?.Invoke(this,e);
         }
         private void DisplayedRegion_OnSelected(object sender, bool selected)
         {
@@ -395,6 +404,7 @@ namespace NuSysApp
                 }
             }
         }
-*/        
+*/
+
     }
 }
