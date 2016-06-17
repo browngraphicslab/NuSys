@@ -20,6 +20,7 @@ using Windows.UI.Xaml;
 using NuSysApp.Components.Viewers.FreeForm;
 using System.Net;
 using Newtonsoft.Json;
+using LdaLibrary;
 
 namespace NuSysApp
 {
@@ -28,7 +29,7 @@ namespace NuSysApp
         public LibraryElementController Controller { get; }
         public WriteableBitmap ImageSource { get; set; }
         private int _pageNumber = 0;
-        private Document _document;
+        private MuPDFWinRT.Document _document;
         public PdfDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
             Controller = controller;
@@ -73,6 +74,51 @@ namespace NuSysApp
         public async Task FlipRight()
         {
             await Goto(_pageNumber + 1);
+            await LaunchLDA();
+        }
+        public async Task LaunchLDA()
+        {
+
+            Task.Run(async () =>
+            {
+                var test = new List<string>();
+
+                // parameters for our LDA algorithm
+                string filename = Controller.LibraryElementModel.Title;
+                test.Add(filename);
+                test.Add("niters 8");
+                test.Add("ntopics 5");
+                test.Add("twords 10");
+                test.Add("dir ");
+                test.Add("est true");
+                test.Add("alpha 12.5");
+                test.Add("beta .1");
+                test.Add("model model-final");
+
+                string data = "";
+                int numPages = _document.PageCount;
+                int currPage = 0;
+                while (currPage < numPages)
+                {
+                    data = data + _document.GetAllTexts(currPage);
+                    currPage++;
+                }
+
+
+                DieStopWords ds = new DieStopWords();
+                data = await ds.removeStopWords(data);
+                List<string> topics = await TagExtractor.launch(test, new List<string>() { data });
+                await UITask.Run(() =>
+                {
+                    var topicKeywords = new HashSet<Keyword>();
+                    foreach (var topic in topics)
+                    {
+                        topicKeywords.Add(new Keyword(topic, Keyword.KeywordSource.TopicModeling));
+                    }
+                    Controller.SetKeywords((topicKeywords));
+                    RaisePropertyChanged("Tags");
+                });
+            });
         }
     }
 }
