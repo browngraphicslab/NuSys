@@ -36,7 +36,9 @@
             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
-            <Grid x:Name ="grid" PointerPressed="Grid_OnPointerPressed" Width="{Binding Width}">
+
+            <local:AudioMediaPlayer x:Name="MediaPlayer"/>
+            <!--<Grid x:Name ="grid" PointerPressed="Grid_OnPointerPressed" Width="{Binding Width}">
                 <Grid.Resources>
                     <local:PositionToStringConverter x:Key="PositionToStringConverter"/>
                 </Grid.Resources>
@@ -69,7 +71,7 @@
                 </StackPanel>
 
 
-            </Grid>
+            </Grid>-->
 
         </local:NodeTemplate.Inner>
 

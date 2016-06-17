@@ -21,7 +21,6 @@ namespace NuSysApp.Components.Nodes
         public delegate void TimeChangeHandler();
         public event TimeChangeHandler OnTimeChange;
         public static TextBox _box1;
-        //private TextBox _box2;
         private bool hasMoved = false;
 
         public LinkedTimeBlock(LinkedTimeBlockViewModel vm)

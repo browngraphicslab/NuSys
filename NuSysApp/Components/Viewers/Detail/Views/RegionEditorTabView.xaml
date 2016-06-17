@@ -32,12 +32,13 @@
                 <ColumnDefinition Width="2*"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
+            <Grid>
+                <ContentPresenter Grid.Column="0" Content="{Binding RegionView}" x:Name ="xContentPresenter" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ></ContentPresenter>
+                <ItemsControl>
+                    
+                </ItemsControl>
+            </Grid>
 
-            <ContentPresenter Grid.Column="0" Content="{Binding RegionView}" x:Name ="xContentPresenter" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" >
-
-                <!--<local:RegionImageDisplayView x:Name="xRegionDisplay"> </local:RegionImageDisplayView>-->
-
-            </ContentPresenter>
 
             <StackPanel Orientation="Vertical" Grid.Column="1">
                 <ListView HorizontalAlignment="Right"  ItemsSource="{x:Bind RegionCollection}"  VerticalContentAlignment="Top">

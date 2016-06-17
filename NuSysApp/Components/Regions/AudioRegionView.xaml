@@ -1,0 +1,20 @@
+﻿<UserControl
+    x:Class="NuSysApp.AudioRegionView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Canvas x:Name="Canvas">
+        <local:AudioRegionBound X1="{Binding Path=LeftHandleX}" X2="{Binding Path=LeftHandleX}" Y1="{Binding Path=LefthandleY1}" Y2="{Binding Path=LefthandleY2}" 
+                                PointerPressed="Handle_OnPointerPressed" ManipulationDelta="Handle_OnManipulationDelta" PointerReleased="Handle_OnPointerReleased"></local:AudioRegionBound>
+        <Rectangle Width="{Binding Path=RegionWidth}" Fill="YellowGreen"  Opacity=".2"></Rectangle>
+        <local:AudioRegionBound X1="{Binding Path=RightHandleX}" X2="{Binding Path=RightHandleX}" Y1="{Binding Path=RightHandleY1}" Y2="{Binding Path=RightHandleY2}" 
+                                PointerPressed="Handle_OnPointerPressed" ManipulationDelta="Handle_OnManipulationDelta" PointerReleased="Handle_OnPointerReleased"></local:AudioRegionBound>
+                                
+    </Canvas>
+</UserControl>

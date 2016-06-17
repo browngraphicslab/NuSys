@@ -40,7 +40,6 @@
             <Grid PointerPressed="XImage_OnPointerPressed" PointerExited="XImage_PointerExited" PointerReleased="XImage_OnPointerReleased" PointerMoved="XImage_OnPointerMoved">
                 
                 <Image x:Name="xImage" Source="{Binding Image}" Stretch="Uniform" />
-                
                 <Canvas x:Name="Canvas" VerticalAlignment ="Top" HorizontalAlignment="Left">
                     <ItemsControl x:Name="IC"  ItemsSource="{Binding RegionsListTest}">
                         <ItemsControl.ItemsPanel>
