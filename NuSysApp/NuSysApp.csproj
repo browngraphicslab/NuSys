@@ -266,12 +266,6 @@
       <DependentUpon>AudioRegionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Regions\AudioRegionViewModel.cs" />
-    <Compile Include="Components\Regions\AudioRegionBound.xaml.cs">
-      <DependentUpon>AudioRegionBound.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Regions\RectangleRegionView.xaml.cs">
-      <DependentUpon>RectangleRegionView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">
       <DependentUpon>AudioMediaPlayer.xaml</DependentUpon>
     </Compile>
@@ -782,9 +776,6 @@
     </Page>
     <Page Include="Components\Regions\AudioRegionView.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Regions\RectangleRegionView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\Detail\DetailViewerView.xaml">

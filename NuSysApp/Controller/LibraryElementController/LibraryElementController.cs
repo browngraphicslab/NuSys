@@ -27,12 +27,8 @@ namespace NuSysApp
         public delegate void FavoritedEventHandler(object sender, bool favorited);
         public delegate void LoadedEventHandler(object sender);
         public delegate void DeletedEventHandler(object sender);
-<<<<<<< HEAD
-        public delegate void KeywordsChangedEventHandler(object sender, HashSet<string> tags);
         public delegate void NetworkUserChangedEventHandler(object source, NetworkUser user);
-=======
         public delegate void KeywordsChangedEventHandler(object sender, HashSet<Keyword> keywords);
->>>>>>> a5912e6687224b2883f501aeeabc6265bbeb1853
         public event ContentChangedEventHandler ContentChanged;
         public event RegionAddedEventHandler RegionAdded;
         public event RegionRemovedEventHandler RegionRemoved;
