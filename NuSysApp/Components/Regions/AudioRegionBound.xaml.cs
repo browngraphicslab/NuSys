@@ -55,6 +55,8 @@ namespace NuSysApp
         public AudioRegionBound()
         {
             this.InitializeComponent();
+            this.RenderTransform = new CompositeTransform();
+            var x = GetValue(X1Dp);
             X1 = System.Convert.ToDouble( GetValue(X1Dp));
             X2 = System.Convert.ToDouble(GetValue(X2Dp));
             Y1 = System.Convert.ToDouble(GetValue(Y1Dp));
@@ -62,28 +64,38 @@ namespace NuSysApp
         }
         public double X1
         {
-            get { return Handle.X1; }
-            set { Handle.X1 = value; }
+            get { return System.Convert.ToDouble( GetValue(X1Dp)); }
+            set
+            {
+                SetValue(X1Dp, value);
+                (this.RenderTransform as CompositeTransform).TranslateX = value;
+            }
         }
-
         public double X2
         {
-            get { return Handle.X2; }
-            set { Handle.X2 = value; }
+            get { return System.Convert.ToDouble( GetValue(X2Dp)); }
+            set
+            {
+                SetValue(X2Dp, value);
+            }
         }
         public double Y1
         {
-            get { return Handle.Y1; }
-            set { Handle.Y1 = value; }
+            get { return System.Convert.ToDouble( GetValue(Y1Dp)); }
+            set
+            {
+                SetValue(Y1Dp, value);
+                Handle.Y1 = value;
+            }
         }
         public double Y2
         {
-            get { return Handle.Y2; }
-            set { Handle.Y2 = value; }
+            get { return System.Convert.ToDouble( GetValue(Y2Dp)); }
+            set
+            {
+                SetValue(Y2Dp, value);
+                Handle.Y2 = value;
+            }
         }
-
-        
-
-
     }
 }
