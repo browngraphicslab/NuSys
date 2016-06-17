@@ -78,7 +78,6 @@ namespace NuSysApp
         }
         public async Task LaunchLDA()
         {
-
             Task.Run(async () =>
             {
                 var test = new List<string>();
