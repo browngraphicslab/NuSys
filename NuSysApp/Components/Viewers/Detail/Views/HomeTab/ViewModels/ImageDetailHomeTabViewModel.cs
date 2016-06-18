@@ -50,6 +50,8 @@ namespace NuSysApp
 
         public override void SizeChanged(object sender, double width, double height)
         {
+            width = View.ActualWidth;
+            height = View.ActualHeight;
             foreach (var rv in RegionViews)
             {
                 var regionViewViewModel = rv.DataContext as RegionViewModel;

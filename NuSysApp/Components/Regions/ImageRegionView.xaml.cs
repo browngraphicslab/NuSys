@@ -25,7 +25,7 @@ namespace NuSysApp
         public ImageRegionView(ImageRegionViewModel viewModel)
         {
             this.InitializeComponent();
-
+            this.DataContext = viewModel;
             this.Selected();
             this.RenderTransform = new CompositeTransform();
             xResizingRectangle.RenderTransform = new CompositeTransform();
@@ -71,7 +71,6 @@ namespace NuSysApp
             xMainRectangle.StrokeThickness = 3;
             xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Blue);
             xResizingRectangle.Visibility = Visibility.Collapsed;
-
         }
 
         public void Selected()
@@ -84,7 +83,6 @@ namespace NuSysApp
         private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
            OnSelected?.Invoke(this, true);
-
         }
     }
 }
