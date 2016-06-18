@@ -93,7 +93,7 @@ namespace NuSysApp
 
             var vm = (AudioNodeViewModel) DataContext;
             MediaPlayer.StopMusic();
-            //scrubBar.SizeChanged -= ScrubBar_OnSizeChanged;
+            //scrubBar.ContainerSizeChanged -= ScrubBar_OnSizeChanged;
             vm.Controller.Disposed -= ControllerOnDisposed;
 
             /*if (((AudioNodeModel)(vm.Model)).Controller != null) { 
@@ -230,7 +230,7 @@ namespace NuSysApp
                 grid.Children.Add(line);
                 timeBlockVM.setUpHandlers(line.getLine());
             }
-            scrubBar.SizeChanged += ScrubBar_OnSizeChanged;
+            scrubBar.ContainerSizeChanged += ScrubBar_OnSizeChanged;
 
         }
         private async void RenderImageSource(Grid RenderedGrid)

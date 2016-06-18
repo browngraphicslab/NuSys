@@ -42,7 +42,7 @@ namespace NuSysApp
             // TODO: refactor
 
             //    Url = controller.Model.Url;
-            //    Controller.SizeChanged += delegate (object source, double width, double height)
+            //    Controller.ContainerSizeChanged += delegate (object source, double width, double height)
             //    {
             //        Zoom = (Width / 1024.0);
             //        ClipRect = new Rect(0, 0, width, height);

@@ -19,18 +19,27 @@ namespace NuSysApp
     {
         private ElementModel _nodeModel;
         private DetailViewHomeTabViewFactory _viewHomeTabViewFactory = new DetailViewHomeTabViewFactory();
-        private String _tagToDelete;
-        public Boolean DeleteOnFocus;
+        private string _tagToDelete;
+        public bool DeleteOnFocus;
         public string Title { get; set; }
         public string Date { get; set; }
 
         public UserControl View { get; set; }
-        public UserControl RegionView { get; set; }
+
+        public UserControl RegionView
+        {
+            get
+            {
+                return _regionableViewModel?.View;
+            }
+        }
+
         public ObservableCollection<FrameworkElement> Tags { get; set; }
 
         public ObservableCollection<StackPanel> Metadata { get; set; }
 
         //public ObservableCollection<Region> Regions { get; set; }
+        private Regionable<Region> _regionableViewModel;
 
         private ElementViewModel _currentElementViewModel;
         public LibraryElementController CurrentElementController { get; set; }
@@ -38,9 +47,10 @@ namespace NuSysApp
         public delegate void TitleChangedHandler(object source, string newTitle);
         public event TitleChangedHandler TitleChanged;
 
-        public delegate void SizeChangedEventHandler(object source, double left, double width);
+        public delegate void SizeChangedEventHandler(object source, double left, double width, double height);
         public event SizeChangedEventHandler SizeChanged;
 
+        public ObservableCollection<Region> RegionCollection;
         public DetailViewerViewModel()
 
         {
@@ -78,13 +88,20 @@ namespace NuSysApp
             CurrentElementController.KeywordsChanged += KeywordsChanged;
             View = await _viewHomeTabViewFactory.CreateFromSendable(controller);
             if (View == null)
+            {
                 return false;
+            }
 
-            RegionView = await _viewHomeTabViewFactory.CreateFromSendable(controller);
-            if (RegionView == null)
+            var regionView  = await _viewHomeTabViewFactory.CreateFromSendable(controller);
+            if (regionView == null)
+            {
                 return false;
-
+            }
+            _regionableViewModel = regionView.DataContext as Regionable<Region>;
+            SizeChanged += (sender, left, width, height) => _regionableViewModel.SizeChanged(sender, width, height);
             //_nodeModel = controller.LibraryElementModel;
+
+            RegionCollection = new ObservableCollection<Region>(controller.LibraryElementModel.Regions);
 
             Title = controller.LibraryElementModel.Title;
             this.ChangeTitle(this, controller.LibraryElementModel.Title);
@@ -100,6 +117,8 @@ namespace NuSysApp
             RaisePropertyChanged("View");
             RaisePropertyChanged("Tags");
             RaisePropertyChanged("Metadata");
+            RaisePropertyChanged("RegionCollection");
+            RaisePropertyChanged("RegionView");
             return true;
         }
 
@@ -115,9 +134,9 @@ namespace NuSysApp
             Title = title;
         }
 
-        public void ChangeSize(object sender, double left, double width)
+        public void ChangeSize(object sender, double left, double width, double height)
         {
-            SizeChanged?.Invoke(sender, left, width);
+            SizeChanged?.Invoke(sender, left, width, height);
         }
 
         private void ControllerOnMetadataChange(object source, string key)

@@ -54,7 +54,7 @@ namespace NuSysApp
                     Rect = new Rect { X = 0, Y = 0, Width = _inqCanvasView.Width, Height = _inqCanvasView.Height }
                 };
                 */
-                //xBorder.SizeChanged += XBorderOnSizeChanged;
+                //xBorder.ContainerSizeChanged += XBorderOnSizeChanged;
 
 
             };

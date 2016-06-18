@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml.Controls;
 
 namespace NuSysApp
 {
-    public interface Regionable <T>
+    public abstract class Regionable <T> :BaseINPC
     {
+        public UserControl View;
 
-        void AddRegion();
+        public abstract void AddRegion(object sender, T region);
 
-        void RemoveRegion(T displayedRegion);
-
-        void DisplayRegion(Region region);
+        public abstract void RemoveRegion(object sender, T displayedRegion);
+        public abstract void SizeChanged(object sender, double width, double height);
     }
 }

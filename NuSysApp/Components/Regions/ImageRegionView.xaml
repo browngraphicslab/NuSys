@@ -10,7 +10,7 @@
     d:DesignWidth="400">
 
     <Canvas>
-        <Rectangle x:Name="xMainRectangle"  PointerPressed="xMainRectangle_PointerPressed" Fill="Transparent" ManipulationMode="All" ManipulationStarted="RectangleRegionView_ManipulationStarted" ManipulationDelta="RectangleRegionView_ManipulationDelta"></Rectangle>
+        <Rectangle x:Name="xMainRectangle"  Height="{Binding Height}" Width="{Binding Width}" PointerPressed="xMainRectangle_PointerPressed" Fill="Transparent" ManipulationMode="All" ManipulationStarted="RectangleRegionView_ManipulationStarted" ManipulationDelta="RectangleRegionView_ManipulationDelta"></Rectangle>
         <!--<Rectangle  Width="10" Height="10" Fill="CadetBlue" HorizontalAlignment="Right" VerticalAlignment="Bottom"></Rectangle>-->
         <Path x:Name="xResizingRectangle" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
                       Height="25" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="25"

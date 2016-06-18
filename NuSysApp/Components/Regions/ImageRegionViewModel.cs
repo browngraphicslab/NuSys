@@ -4,19 +4,29 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 
 namespace NuSysApp
 {
-
-
-    class ImageRegionViewModel
+    public class ImageRegionViewModel : RegionViewModel
     {
-        public ObservableCollection<ImageRegionView> Regions;
-
-        public ImageRegionViewModel()
+        public double Height;
+        public double Width;
+        public ImageRegionViewModel(RectangleRegion model, LibraryElementController controller) : base(model,controller)
         {
-            Regions = new ObservableCollection<ImageRegionView>();
+            ContainerSizeChanged += BaseSizeChanged;
         }
-
+        private void BaseSizeChanged(object sender, double width, double height)
+        {
+            var model = Model as RectangleRegion;
+            if (model == null)
+            {
+                return;
+            }
+            Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y)*height;
+            Width = (model.BottomRightPoint.X - model.BottomRightPoint.X)*width;
+            RaisePropertyChanged("Height");
+            RaisePropertyChanged("Width");
+        }
     }
 }

@@ -23,32 +23,29 @@ using System.ComponentModel;
 
 namespace NuSysApp
 {  
-    public sealed partial class ImageDetailHomeTabView : UserControl, Regionable<ImageRegionView>
+    public sealed partial class ImageDetailHomeTabView : UserControl
         {
             public ImageRegionView SelectedRegion { set; get; }
             public ImageDetailHomeTabView(ImageDetailHomeTabViewModel vm)
-        {
-            DataContext = vm;
-            InitializeComponent();
+            {
+                DataContext = vm;
+                InitializeComponent();
 
-            //var token = model.GetMetaData("Token");
-            //if (token == null || String.IsNullOrEmpty(token?.ToString()))
-            //{
-            //    SourceBttn.Visibility = Visibility.Collapsed;
-            //}
-            //else if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
-            //{
-            //    SourceBttn.Visibility = Visibility.Collapsed;
-            //}
-                foreach (var v in vm.Controller.LibraryElementModel.Regions)
-                {
-                    vm.RegionAdded(v,this);
-                }
+                //var token = model.GetMetaData("Token");
+                //if (token == null || String.IsNullOrEmpty(token?.ToString()))
+                //{
+                //    SourceBttn.Visibility = Visibility.Collapsed;
+                //}
+                //else if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
+                //{
+                //    SourceBttn.Visibility = Visibility.Collapsed;
+                //}
 
-            vm.Controller.Disposed += ControllerOnDisposed;
+                vm.Controller.Disposed += ControllerOnDisposed;
                 vm.PropertyChanged += PropertyChanged;
-            
-        }
+                vm.View = this;
+
+            }
 
         private void PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -58,28 +55,6 @@ namespace NuSysApp
                     break;
             }
         }
-
-        public void AddRegion()
-        {
-        }
-
-        
-        public void RemoveRegion(ImageRegionView region)
-        {
-        }
-
-        public void DisplayRegion(Region region)
-        {
-            var rectangleRegion = (RectangleRegion)region;
-
-            var displayedRegion = new ImageRegionView(rectangleRegion, this);
-            displayedRegion.OnSelected += DisplayedRegion_OnSelected;
-            DisplayedRegion_OnSelected(displayedRegion, true);
-            (this.DataContext as ImageDetailHomeTabViewModel).RegionAdded(rectangleRegion,this);
-            (this.DataContext as ImageDetailHomeTabViewModel).Controller.AddRegion(rectangleRegion);
-        }
-
-
         private void DisplayedRegion_OnSelected(object sender, bool selected)
         {
             SelectedRegion?.Deselected();
@@ -146,14 +121,5 @@ namespace NuSysApp
         {
             SelectedRegion?.Deselected();
         }
-
-        private void XImg_OnSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            var vm = this.DataContext as ImageDetailHomeTabViewModel;
-            foreach (ImageRegionView irv in vm.RegionViews)
-            {
-               irv.ApplyNewSize(e.NewSize); 
-            }
-        }
-        }
+    }
 }

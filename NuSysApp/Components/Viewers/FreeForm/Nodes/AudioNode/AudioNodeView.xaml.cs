@@ -94,7 +94,7 @@ namespace NuSysApp
                         grid.Children.Add(line);
                         timeBlockVM.setUpHandlers(line.getLine());
                     }
-                    scrubBar.SizeChanged += ScrubBar_OnSizeChanged;
+                    scrubBar.ContainerSizeChanged += ScrubBar_OnSizeChanged;
 
 
                 }
