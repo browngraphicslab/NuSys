@@ -40,14 +40,13 @@ namespace NuSysApp
 
         private void XResizingRectangle_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            var vm = DataContext as PdfRegionViewModel;
-            vm?.ResizeRegion(new Point(Canvas.GetLeft(xMainRectangle), Canvas.GetTop(xMainRectangle)), new Point(Canvas.GetLeft(xMainRectangle) + xMainRectangle.ActualWidth, Canvas.GetTop(xMainRectangle) + xMainRectangle.ActualHeight));
+            //TODO
         }
 
         private void XResizingRectangle_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            xMainRectangle.Width += e.Delta.Translation.X;
-            xMainRectangle.Height += e.Delta.Translation.Y;    
+                xMainRectangle.Width += e.Delta.Translation.X;
+                xMainRectangle.Height += e.Delta.Translation.Y;
         }
 
         private void XResizingRectangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -59,8 +58,8 @@ namespace NuSysApp
         private void RectangleRegionView_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
 
-           ((CompositeTransform)this.RenderTransform).TranslateX += e.Delta.Translation.X;
-           ((CompositeTransform)this.RenderTransform).TranslateY += e.Delta.Translation.Y;
+           ((CompositeTransform)RenderTransform).TranslateX += e.Delta.Translation.X;
+           ((CompositeTransform)RenderTransform).TranslateY += e.Delta.Translation.Y;
            e.Handled = true;
         }
 

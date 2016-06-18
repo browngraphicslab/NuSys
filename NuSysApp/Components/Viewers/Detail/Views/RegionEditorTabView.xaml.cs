@@ -71,7 +71,7 @@ namespace NuSysApp
 
                     break;
                 case ElementType.PDF:
-
+                    region = new PdfRegion(new Point(.25, .25), new Point(.75, .75), 1);
                     break;
                 default:
                     region = null;

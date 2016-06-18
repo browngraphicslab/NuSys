@@ -9,15 +9,16 @@ namespace NuSysApp
 {
     public class PdfRegion : Region
     {
-        public PdfRegion(string name, Point p1, Point p2, int pageLocation) : base(name)
+        public Point TopLeftPoint { set; get; }
+        public Point BottomRightPoint { set; get; }
+        public int PageLocation { get; set; }
+        public PdfRegion(Point p1, Point p2, int pageLocation, string name = "Untitled Rectangle") : base(name)
         {
-            Point1 = p1;
-            Point2 = p2;
+            TopLeftPoint = p1;
+            BottomRightPoint = p2;
             PageLocation = pageLocation;
         }
 
-        public Point Point1 { set; get; }
-        public Point Point2 { set; get; }
-        public int PageLocation { get; set; }
+        
     }
 }

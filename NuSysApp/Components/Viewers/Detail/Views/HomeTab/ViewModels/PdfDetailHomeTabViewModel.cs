@@ -25,11 +25,15 @@ using LdaLibrary;
 
 namespace NuSysApp
 {
-    public class PdfDetailHomeTabViewModel : DetailHomeTabViewModel
+    public class PdfDetailHomeTabViewModel : DetailHomeTabViewModel, Sizeable
     {
         public LibraryElementController Controller { get; }
         public ObservableCollection<PDFRegionView> RegionViews { set; get; }
         public WriteableBitmap ImageSource { get; set; }
+
+        public delegate void OnPdfLoadedEventHandler(object sender, double height, double width);
+        public event OnPdfLoadedEventHandler PdfLoaded;
+
         private int _pageNumber = 0;
         private MuPDFWinRT.Document _document;
         public PdfDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
@@ -37,18 +41,13 @@ namespace NuSysApp
             Controller = controller;
             RegionViews = new ObservableCollection<PDFRegionView>();
 
-            if (Controller.LibraryElementModel.Regions.Count > 0)
-            {
-                foreach (var region in Controller.LibraryElementModel.Regions)
-                {
-                    RegionViews.Add(new PDFRegionView(new PdfRegionViewModel(region as PdfRegion, Controller)));
-                }
-            }
-        }
-
-        public void UpdateRegions(PdfRegion region)
-        {
-            RegionViews.Add(new PDFRegionView(new PdfRegionViewModel(region as PdfRegion, Controller)));
+            //if (Controller.LibraryElementModel.Regions.Count > 0)
+            //{
+            //    foreach (var region in Controller.LibraryElementModel.Regions)
+            //    {
+            //        RegionViews.Add(new PDFRegionView(new PdfRegionViewModel(region as PdfRegion, Controller)));
+            //    }
+            //}
         }
         public override async Task Init()
         {
@@ -138,17 +137,43 @@ namespace NuSysApp
 
         public override void AddRegion(object sender, Region region)
         {
-            throw new NotImplementedException();
+            var pdfRegion = region as PdfRegion;
+            if (pdfRegion == null)
+            {
+                return;
+            }
+            pdfRegion.PageLocation = _pageNumber;
+            var vm = new PdfRegionViewModel(pdfRegion, Controller, this);
+            var view = new PDFRegionView(vm);
+            RegionViews.Add(view);
+            RaisePropertyChanged("RegionViews");
         }
 
         public override void RemoveRegion(object sender, Region displayedRegion)
         {
-            throw new NotImplementedException();
+            Controller.RemoveRegion(displayedRegion);
         }
 
         public override void SizeChanged(object sender, double width, double height)
         {
-            throw new NotImplementedException();
+            foreach (var rv in RegionViews)
+            {
+                var regionViewViewModel = rv.DataContext as RegionViewModel;
+                regionViewViewModel?.ChangeSize(sender, width, height);
+            }
+        }
+
+        public void PdfLoadCompleted(double height, double width)
+        {
+            PdfLoaded?.Invoke(this, height, width);
+        }
+        public double GetHeight()
+        {
+            return View.ActualHeight;
+        }
+        public double GetWidth()
+        {
+            return View.ActualWidth;
         }
     }
 }
