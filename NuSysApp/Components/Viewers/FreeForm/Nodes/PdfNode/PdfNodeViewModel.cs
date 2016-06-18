@@ -24,13 +24,14 @@ using Newtonsoft.Json;
 
 namespace NuSysApp
 {
-    public class PdfNodeViewModel : ElementViewModel
+    public class PdfNodeViewModel : ElementViewModel, Sizeable
     {
         private CompositeTransform _inkScale;
         public int CurrentPageNumber { get;  private set; }
         public MuPDFWinRT.Document _document;
         public ObservableCollection<Button> SuggestedTags { get; set; }
         private List<string> _suggestedTags = new List<string>();
+        public ObservableCollection<PDFRegionView> RegionViews { set; get; }
 
         public PdfNodeViewModel(ElementController controller) : base(controller)
         {
@@ -46,7 +47,17 @@ namespace NuSysApp
                     RectangleView rv = new RectangleView(element);
                     RegionsListTest.Add(rv);
                 }
-            }  
+            }
+
+            RegionViews = new ObservableCollection<PDFRegionView>();
+
+            if (controller.LibraryElementModel.Regions.Count > 0)
+            {
+                foreach (var region in controller.LibraryElementModel.Regions)
+                {
+                    RegionViews.Add(new PDFRegionView(new PdfRegionViewModel(region as PdfRegion, controller.LibraryElementController, this)));
+                }
+            }
         }
 
         public override void Dispose()
@@ -270,6 +281,44 @@ namespace NuSysApp
             tagBlock.Background = new SolidColorBrush(Colors.Transparent);
 
             return tagBlock;
+        }
+
+        public double GetWidth()
+        {
+            return Width;
+        }
+
+        public double GetHeight()
+        {
+            return Height;
+        }
+
+        public void AddRegion(object sender, Region region)
+        {
+            var pdfRegion = region as PdfRegion;
+            if (pdfRegion == null)
+            {
+                return;
+            }
+            pdfRegion.PageLocation = CurrentPageNumber;
+            var vm = new PdfRegionViewModel(pdfRegion, Controller.LibraryElementController, this);
+            var view = new PDFRegionView(vm);
+            RegionViews.Add(view);
+            RaisePropertyChanged("RegionViews");
+        }
+
+        public void RemoveRegion(object sender, Region displayedRegion)
+        {
+            Controller.LibraryElementController.RemoveRegion(displayedRegion);
+        }
+
+        public void SizeChanged(object sender, double width, double height)
+        {
+            foreach (var rv in RegionViews)
+            {
+                var regionViewViewModel = rv.DataContext as RegionViewModel;
+                regionViewViewModel?.ChangeSize(sender, width, height);
+            }
         }
     }
 }

@@ -30,10 +30,7 @@ namespace NuSysApp
         public LibraryElementController Controller { get; }
         public ObservableCollection<PDFRegionView> RegionViews { set; get; }
         public WriteableBitmap ImageSource { get; set; }
-
-        public delegate void OnPdfLoadedEventHandler(object sender, double height, double width);
-        public event OnPdfLoadedEventHandler PdfLoaded;
-
+        
         private int _pageNumber = 0;
         private MuPDFWinRT.Document _document;
         public PdfDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
@@ -163,10 +160,6 @@ namespace NuSysApp
             }
         }
 
-        public void PdfLoadCompleted(double height, double width)
-        {
-            PdfLoaded?.Invoke(this, height, width);
-        }
         public double GetHeight()
         {
             return View.ActualHeight;

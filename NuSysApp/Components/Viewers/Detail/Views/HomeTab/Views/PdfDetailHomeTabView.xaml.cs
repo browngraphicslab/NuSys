@@ -30,7 +30,6 @@ namespace NuSysApp
         {
             InitializeComponent();
             DataContext = vm;
-            (DataContext as PdfDetailHomeTabViewModel)?.PdfLoadCompleted(xImg.ActualHeight, xImg.ActualWidth);
             Canvas.SetZIndex(ItemsControl, 0);
             vm.Controller.Disposed += ControllerOnDisposed;
             vm.PropertyChanged += PropertyChanged;

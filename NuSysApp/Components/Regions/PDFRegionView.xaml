@@ -9,14 +9,21 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid>
+    <Grid x:Name ="xGrid" Width="{Binding Width}" Height="{Binding Height}">
+        <Grid.RenderTransform>
+            <CompositeTransform x:Name="GridTranform"></CompositeTransform>
+        </Grid.RenderTransform>
         <Rectangle x:Name="xMainRectangle"  PointerPressed="xMainRectangle_PointerPressed" Fill="Transparent" ManipulationMode="All" ManipulationStarted="RectangleRegionView_ManipulationStarted" 
-                   Width="{Binding Width}" Height="{Binding Height}" ManipulationDelta="RectangleRegionView_ManipulationDelta"></Rectangle>
-        <Path x:Name="xResizingRectangle" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
-                      Height="25" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="25" Margin="-28,-28,0,0"
+                   Width="{Binding Width, Mode=TwoWay}" Height="{Binding Height, Mode=TwoWay}" ManipulationDelta="RectangleRegionView_ManipulationDelta">
+            <Rectangle.RenderTransform>
+                <CompositeTransform x:Name="RectangleTranform"></CompositeTransform>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Path x:Name="xResizingRectangle" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" 
+                      Height="25" Stretch="Fill" HorizontalAlignment="Left" VerticalAlignment="Top" UseLayoutRounding="False" Width="25" Margin="-28,-28,0,0"
                       Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" ManipulationStarted="XResizingRectangle_ManipulationStarted" ManipulationDelta="XResizingRectangle_ManipulationDelta" ManipulationCompleted="XResizingRectangle_ManipulationCompleted">
             <Path.RenderTransform>
-                <CompositeTransform TranslateX="{Binding Width}" TranslateY="{Binding Height}">
+                <CompositeTransform x:Name="ResizerTransform" TranslateX="{Binding Width}" TranslateY="{Binding Height}">
                 </CompositeTransform>
             </Path.RenderTransform>
         </Path>
