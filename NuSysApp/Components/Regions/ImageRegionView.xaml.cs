@@ -29,7 +29,6 @@ namespace NuSysApp
             this.InitializeComponent();
             this.Selected();
             this.RenderTransform = new CompositeTransform();
-            //xResizingTriangle.RenderTransform = new CompositeTransform();
             OnSelected?.Invoke(this, true);
             viewModel.PropertyChanged += PropertyChanged;
             xMainRectangle.Width = 50;
