@@ -11,11 +11,10 @@ using Newtonsoft.Json;
 
 namespace NuSysApp
 {
-    public class ImageDetailHomeTabViewModel : DetailHomeTabViewModel
+    public class ImageDetailHomeTabViewModel : DetailHomeTabViewModel, Sizeable
     {
         public LibraryElementController Controller { get; }
         public LibraryElementModel Model { get; }
-        public ObservableCollection<Region> Regions;
         public ObservableCollection<ImageRegionView> RegionViews { set; get; }
         public Uri Image { get; }
         public Boolean Editable { get; set; }
@@ -23,9 +22,8 @@ namespace NuSysApp
         {
             Controller = controller;
             Model = controller.LibraryElementModel;
-            Regions = new ObservableCollection<Region>();
-           // controller.RegionAdded += RegionAdded;
-           // controller.RegionRemoved += RegionRemoved;
+            // controller.RegionAdded += RegionAdded;
+            // controller.RegionRemoved += RegionRemoved;
             Image = controller.GetSource();
             RegionViews = new ObservableCollection<ImageRegionView>();
         }
@@ -37,7 +35,7 @@ namespace NuSysApp
             {
                 return;
             }
-            var vm = new ImageRegionViewModel(imageRegion, Controller);
+            var vm = new ImageRegionViewModel(imageRegion, Controller, this);
             var view = new ImageRegionView(vm);
             RegionViews.Add(view);
             RaisePropertyChanged("RegionViews");
@@ -57,6 +55,15 @@ namespace NuSysApp
                 var regionViewViewModel = rv.DataContext as RegionViewModel;
                 regionViewViewModel?.ChangeSize(sender,width,height);
             }
+        }
+
+        public double GetHeight()
+        {
+            return View.ActualHeight;
+        }
+        public double GetWidth()
+        {
+            return View.ActualWidth;
         }
     }
 }

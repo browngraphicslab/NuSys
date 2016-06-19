@@ -12,9 +12,11 @@ namespace NuSysApp
     {
         public double Height { get; set; }
         public double Width{ get; set; }
-        public ImageRegionViewModel(RectangleRegion model, LibraryElementController controller) : base(model,controller)
+        public ImageRegionViewModel(RectangleRegion model, LibraryElementController controller, Sizeable sizeable) : base(model,controller,sizeable)
         {
             ContainerSizeChanged += BaseSizeChanged;
+            Height = sizeable.GetHeight();
+            Width = sizeable.GetWidth();
         }
         private void BaseSizeChanged(object sender, double width, double height)
         {
