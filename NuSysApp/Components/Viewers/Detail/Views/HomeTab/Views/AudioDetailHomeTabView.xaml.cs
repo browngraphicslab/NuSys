@@ -41,6 +41,7 @@ namespace NuSysApp
             //scrubBar.SetValue(Canvas.ZIndexProperty, 1);
 
             MediaPlayer.AudioSource = vm.Controller.GetSource();
+
                 //((AudioNodeModel)(vm.Model)).Controller.OnScrub += ControllerOnScrub;
             //((AudioNodeModel)(vm.Model)).Controller.OnPlay += Controller_OnPlay1;
             //((AudioNodeModel)(vm.Model)).Controller.OnPause += Controller_OnPause1;
@@ -63,6 +64,7 @@ namespace NuSysApp
             _temporaryLinkVisual.Opacity = 1;
 */
             vm.Controller.Disposed += ControllerOnDisposed;
+            vm.View = this;
             
 
         }
@@ -73,13 +75,13 @@ namespace NuSysApp
 
         public void DisplayRegion(Region region)
         {
-            var rectangleRegion = (TimeRegionModel)region;
-
-            var displayedRegion = new AudioRegionView(new AudioRegionViewModel(rectangleRegion,this));
-            displayedRegion.OnSelected += DisplayedRegion_OnSelected;
-            DisplayedRegion_OnSelected(displayedRegion, true);
-            (this.DataContext as AudioDetailHomeTabViewModel).RegionAdded(rectangleRegion,this);
-            (this.DataContext as AudioDetailHomeTabViewModel).Controller.AddRegion(rectangleRegion);
+//            var rectangleRegion = (TimeRegionModel)region;
+//
+//            var displayedRegion = new AudioRegionView(new AudioRegionViewModel(rectangleRegion,this));
+//            displayedRegion.OnSelected += DisplayedRegion_OnSelected;
+//            DisplayedRegion_OnSelected(displayedRegion, true);
+//            (this.DataContext as AudioDetailHomeTabViewModel).RegionAdded(rectangleRegion,this);
+//            (this.DataContext as AudioDetailHomeTabViewModel).Controller.AddRegion(rectangleRegion);
         }
         private void DisplayedRegion_OnSelected(object sender, bool selected)
         {

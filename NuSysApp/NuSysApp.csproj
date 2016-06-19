@@ -271,10 +271,11 @@
     </Compile>
     <Compile Include="Components\Regions\PDFRegionViewModel.cs" />
     <Compile Include="Components\Regions\RegionViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Sizeable.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">
       <DependentUpon>AudioMediaPlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Converters\RegionModelToViewConverter.cs" />
+    <Compile Include="Converters\BoolToManipulationModeConverter.cs" />
     <Compile Include="Models\Regions\PDFRegion.cs" />
     <Compile Include="Models\Regions\TimeRegionModel.cs" />
     <Compile Include="Components\Viewers\Detail\Regionable.cs" />

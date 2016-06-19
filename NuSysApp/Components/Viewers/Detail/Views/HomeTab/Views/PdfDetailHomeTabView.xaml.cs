@@ -31,9 +31,10 @@ namespace NuSysApp
             InitializeComponent();
             DataContext = vm;
             Canvas.SetZIndex(ItemsControl, 0);
-            
-          //  xImg.ManipulationMode = ManipulationModes.All;
-          //  xImg.ManipulationDelta += OnManipulationDelta;
+            vm.Controller.Disposed += ControllerOnDisposed;
+            vm.PropertyChanged += PropertyChanged;
+            vm.View = this;
+
             
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
@@ -63,6 +64,14 @@ namespace NuSysApp
 
             vm.Controller.Disposed += ControllerOnDisposed;
         }
+        private void PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "RegionViews":
+                    break;
+            }
+        }
 
         private void XBorderOnSizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -75,13 +84,7 @@ namespace NuSysApp
             vm.Controller.Disposed += ControllerOnDisposed;
             DataContext = null;
         }
-
-        public void AddRegion(PdfRegion region)
-        {
-            (DataContext as PdfDetailHomeTabViewModel).UpdateRegions(region);
-        }
-
-
+        
         private async void OnPageLeftClick(object sender, RoutedEventArgs e)
         {
             var vm = (PdfDetailHomeTabViewModel)this.DataContext;

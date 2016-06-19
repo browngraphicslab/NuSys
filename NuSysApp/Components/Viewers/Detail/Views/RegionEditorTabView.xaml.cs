@@ -59,7 +59,7 @@ namespace NuSysApp
                     region = new RectangleRegion(new Point(.25,.25), new Point(.75,.75));
                     break;
                 case ElementType.Audio:
-
+                    region = new TimeRegionModel("name",0,1);
                     break;
                 case ElementType.Video:
 
@@ -71,7 +71,7 @@ namespace NuSysApp
 
                     break;
                 case ElementType.PDF:
-
+                    region = new PdfRegion(new Point(.25, .25), new Point(.75, .75), 1);
                     break;
                 default:
                     region = null;

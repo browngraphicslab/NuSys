@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -25,13 +26,30 @@ namespace NuSysApp
         public ImageRegionView(ImageRegionViewModel viewModel)
         {
             this.DataContext = viewModel;
-
             this.InitializeComponent();
-
             this.Selected();
             this.RenderTransform = new CompositeTransform();
-            xResizingTriangle.RenderTransform = new CompositeTransform();
+            //xResizingTriangle.RenderTransform = new CompositeTransform();
             OnSelected?.Invoke(this, true);
+            viewModel.PropertyChanged += PropertyChanged;
+            xMainRectangle.Width = 50;
+            xMainRectangle.Height = 50;
+        }
+
+        private void PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "Width": case "Height":
+                    var vm = DataContext as ImageRegionViewModel;
+                    if (vm == null)
+                    {
+                        break;
+                    }
+                    xMainRectangle.Width = vm.Width;
+                    xMainRectangle.Height = vm.Height;
+                    break;
+            }
         }
 
         private void xResizingTriangle_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
@@ -41,8 +59,21 @@ namespace NuSysApp
 
         private void xResizingTriangle_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            xMainRectangle.Width += e.Delta.Translation.X;
-            xMainRectangle.Height += e.Delta.Translation.Y;
+            var vm = DataContext as ImageRegionViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+
+
+
+
+            xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 0);
+            xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 0);
+            ResizerTransform.TranslateX += e.Delta.Translation.X/2;
+            ResizerTransform.TranslateY += e.Delta.Translation.Y/2;
+            UpdateViewModel();
+
         }
 
         private void xResizingTriangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -54,10 +85,31 @@ namespace NuSysApp
 
         private void RectangleRegionView_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            ((CompositeTransform)this.RenderTransform).TranslateX += e.Delta.Translation.X;
-            ((CompositeTransform)this.RenderTransform).TranslateY += e.Delta.Translation.Y;
 
+            var composite = RenderTransform as CompositeTransform;
+            var vm = DataContext as ImageRegionViewModel;
+            if (vm == null || composite == null)
+            {
+                return;
+            }
+            composite.TranslateX += e.Delta.Translation.X;
+            composite.TranslateY += e.Delta.Translation.Y;
+
+            UpdateViewModel();
             e.Handled = true;
+        }
+
+        private void UpdateViewModel()
+        {
+            var composite = RenderTransform as CompositeTransform;
+            var vm = DataContext as ImageRegionViewModel;
+            if (vm == null || composite == null)
+            {
+                return;
+            }
+            var topLeft = new Point(composite.TranslateX, composite.TranslateY);
+            var bottomRight = new Point(topLeft.X + xMainRectangle.Width, topLeft.Y + xMainRectangle.Height);
+            vm.SetNewPoints(topLeft, bottomRight);
         }
 
         private void RectangleRegionView_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -74,13 +126,14 @@ namespace NuSysApp
             xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Blue);
             xResizingTriangle.Visibility = Visibility.Collapsed;
 
+
         }
 
         public void Selected()
         {
             xMainRectangle.StrokeThickness = 6;
             xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
-            xResizingTriangle.Visibility = Visibility.Visible;
+            //xResizingTriangle.Visibility = Visibility.Visible;
 
         }
         private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)

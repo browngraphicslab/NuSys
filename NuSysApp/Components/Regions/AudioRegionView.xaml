@@ -12,9 +12,8 @@
     <Grid x:Name="Canvas">
         <Rectangle x:Name="Rect" Width="{Binding Path=RegionWidth}" Fill="YellowGreen" Height="100"  Opacity=".2" HorizontalAlignment="Left" VerticalAlignment="Top" ></Rectangle>
         <local:AudioRegionBound x:Name="Bound1"  X1="{Binding Path=LeftHandleX}" X2="{Binding Path=LeftHandleX}" Y1="{Binding Path=LefthandleY1}" Y2="{Binding Path=LefthandleY2}"  ManipulationMode="All"
-                                PointerPressed="Handle_OnPointerPressed" ManipulationDelta="Bound1_OnManipulationDelta" PointerReleased="Handle_OnPointerReleased"></local:AudioRegionBound>
+                                PointerPressed="Handle_OnPointerPressed" ManipulationDelta="Bound1_OnManipulationDelta" PointerReleased="Handle_OnPointerReleased" ManipulationCompleted="OnManipulationCompleted"></local:AudioRegionBound>
         <local:AudioRegionBound x:Name="Bound2" X1="{Binding Path=RightHandleX}" X2="{Binding Path=RightHandleX}" Y1="{Binding Path=RightHandleY1}" Y2="{Binding Path=RightHandleY2}" ManipulationMode="All"
-                                PointerPressed="Handle_OnPointerPressed" ManipulationDelta="Handle_OnManipulationDelta2" PointerReleased="Handle_OnPointerReleased"></local:AudioRegionBound>
-                                
+                                PointerPressed="Handle_OnPointerPressed" ManipulationDelta="Handle_OnManipulationDelta2" PointerReleased="Handle_OnPointerReleased" HorizontalAlignment="Right" ManipulationCompleted="OnManipulationCompleted" ></local:AudioRegionBound>
     </Grid>
 </UserControl>

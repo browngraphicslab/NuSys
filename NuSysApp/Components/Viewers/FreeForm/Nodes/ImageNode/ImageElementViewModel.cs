@@ -15,7 +15,7 @@ using NuSysApp.Util;
 
 namespace NuSysApp
 {
-    public class ImageElementViewModel : ElementViewModel
+    public class ImageElementViewModel : ElementViewModel, Sizeable
     {
         public ObservableCollection<ImageRegionView> Regions { get
             {
@@ -28,7 +28,7 @@ namespace NuSysApp
                 
                 foreach (var model in regionHashSet)
                 {
-                    var viewmodel = new ImageRegionViewModel(model as RectangleRegion, elementController);
+                    var viewmodel = new ImageRegionViewModel(model as RectangleRegion, elementController, this);
                     viewmodel.Editable = false;
                     var view = new ImageRegionView(viewmodel);
                     collection.Add(view);
@@ -110,6 +110,16 @@ namespace NuSysApp
         {
             SetSize(width,height);
 
+        }
+
+        public double GetWidth()
+        {
+            return Width;
+        }
+
+        public double GetHeight()
+        {
+            return Height;
         }
     }
 }
