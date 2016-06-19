@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -164,7 +165,11 @@ namespace NuSysApp
 
         private void Region_OnClick(object sender, RoutedEventArgs e)
         {
-            _drawingRegion = true;
+            //_drawingRegion = true;
+            var vm = DataContext as PdfNodeViewModel;
+            var region = new PdfRegion(new Point(.25, .25), new Point(.75, .75), 1);
+            vm?.AddRegion(this, region);
+            vm?.Controller.LibraryElementController.AddRegion(region);
         }
 
         private void XImage_OnPointerPressed(object sender, PointerRoutedEventArgs e)

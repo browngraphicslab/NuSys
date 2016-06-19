@@ -49,8 +49,7 @@ namespace NuSysApp
 
         public delegate void SizeChangedEventHandler(object source, double left, double width, double height);
         public event SizeChangedEventHandler SizeChanged;
-
-        public ObservableCollection<Region> RegionCollection;
+        
         public DetailViewerViewModel()
 
         {
@@ -100,8 +99,6 @@ namespace NuSysApp
             _regionableViewModel = regionView.DataContext as Regionable<Region>;
             SizeChanged += (sender, left, width, height) => _regionableViewModel.SizeChanged(sender, width, height);
             //_nodeModel = controller.LibraryElementModel;
-
-            RegionCollection = new ObservableCollection<Region>(controller.LibraryElementModel.Regions);
 
             Title = controller.LibraryElementModel.Title;
             this.ChangeTitle(this, controller.LibraryElementModel.Title);

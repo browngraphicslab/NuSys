@@ -26,7 +26,7 @@ namespace NuSysApp
         public ImageRegionView(ImageRegionViewModel viewModel)
         {
             this.InitializeComponent();
-
+            this.DataContext = viewModel;
             this.Selected();
             this.RenderTransform = new CompositeTransform();
             xResizingRectangle.RenderTransform = new CompositeTransform();
@@ -65,13 +65,9 @@ namespace NuSysApp
             {
                 return;
             }
-            var oldHeight = xMainRectangle.Height;
-            var oldWidth = xMainRectangle.Width;
-              
-            xMainRectangle.Width += e.Delta.Translation.X;
-            xMainRectangle.Height += e.Delta.Translation.Y;
-            
-            vm.Resize(xMainRectangle.Width/oldWidth, xMainRectangle.Height/oldHeight);
+            xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 0);
+            xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y,0);
+            UpdateViewModel();
         }
 
         private void XResizingRectangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -89,15 +85,26 @@ namespace NuSysApp
             {
                 return;
             }
-            var oldX = composite.TranslateX;
-            var oldY = composite.TranslateX;
             composite.TranslateX += e.Delta.Translation.X;
             composite.TranslateY += e.Delta.Translation.Y;
-            
-            vm.Translate(composite.TranslateX/oldX,composite.TranslateY/oldY);
 
+            UpdateViewModel();
             e.Handled = true;
         }
+
+        private void UpdateViewModel()
+        {
+            var composite = RenderTransform as CompositeTransform;
+            var vm = DataContext as ImageRegionViewModel;
+            if (vm == null || composite == null)
+            {
+                return;
+            }
+            var topLeft = new Point(composite.TranslateX, composite.TranslateY);
+            var bottomRight = new Point(topLeft.X + xMainRectangle.Width, topLeft.Y + xMainRectangle.Height);
+            vm.SetNewPoints(topLeft, bottomRight);
+        }
+
         private void RectangleRegionView_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             OnSelected?.Invoke(this, true);
@@ -111,7 +118,6 @@ namespace NuSysApp
             xMainRectangle.StrokeThickness = 3;
             xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Blue);
             xResizingRectangle.Visibility = Visibility.Collapsed;
-
         }
 
         public void Selected()
@@ -124,7 +130,6 @@ namespace NuSysApp
         private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
            OnSelected?.Invoke(this, true);
-
         }
     }
 }

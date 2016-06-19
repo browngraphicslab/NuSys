@@ -17,11 +17,9 @@ using NuSysApp.Nodes.AudioNode;
 
 namespace NuSysApp
 {
-    public class AudioRegionViewModel : BaseINPC
+    public class AudioRegionViewModel : RegionViewModel 
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public AudioDetailHomeTabView RegionView { get; set; }
-        public TimeRegionModel Model { get; set; }
 
         public double LeftHandleX { get; set; }
         public double LefthandleY1 { get; set; }
@@ -32,37 +30,30 @@ namespace NuSysApp
         public double RegionHeight { get; set; }
         public double RegionWidth { get; set; }
 
-        public AudioRegionViewModel(TimeRegionModel model, AudioDetailHomeTabView contentView)
+        public AudioRegionViewModel(TimeRegionModel model, LibraryElementController controller, Sizeable sizeable) : base(model,controller, sizeable)
         {
-            LeftHandleX = model.Start*contentView.ActualWidth;
-            RightHandleX = model.End*contentView.ActualWidth;
-            LefthandleY1 = 10;
-            LefthandleY2 = 110; //+ contentView.ActualHeight;
-            RightHandleY1 = 10;
-            RightHandleY2 = 110; //+ contentView.ActualHeight;
-            RegionHeight = 100;//contentView.ActualHeight;
-            RegionWidth = contentView.ActualWidth;
-            RegionView = contentView;
-            Model = model;
-            RaisePropertyChanged("LeftHandleX");
-            RaisePropertyChanged("RightHandleX");
-            RaisePropertyChanged("LefthandleY1");
-            RaisePropertyChanged("LefthandleY2");
-            RaisePropertyChanged("RightHandleY1");
-            RaisePropertyChanged("RightHandleY2");
-            RaisePropertyChanged("RegionHeight");
+            ContainerSizeChanged += BaseSizeChanged;
+        }
+        private void BaseSizeChanged(object sender, double width, double height)
+        {
+            var model = Model as TimeRegionModel;
+            if (model == null)
+            {
+                return;
+            }
+//            Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y)*height;
+            RegionWidth = (model.End - model.Start)*width;
             RaisePropertyChanged("RegionWidth");
         }
         public void UpdateVals()
         {
-            LeftHandleX = Model.Start*RegionView.ActualWidth;
-            RightHandleX = Model.End*RegionView.ActualWidth;
+    //        LeftHandleX = Model.Start*RegionView.ActualWidth;
+  //          RightHandleX = Model.End*RegionView.ActualWidth;
             LefthandleY1 = 10;
             LefthandleY2 = 110; //+ contentView.ActualHeight;
             RightHandleY1 = 10;
             RightHandleY2 = 110; //+ contentView.ActualHeight;
             RegionHeight = 100;//contentView.ActualHeight;
-            RegionWidth = RegionView.ActualWidth;
             RaisePropertyChanged("LeftHandleX");
             RaisePropertyChanged("RightHandleX");
             RaisePropertyChanged("LefthandleY1");

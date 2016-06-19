@@ -33,21 +33,28 @@ namespace NuSysApp
 
             this.Selected();
             this.RenderTransform = new CompositeTransform();
-            xResizingRectangle.RenderTransform = new CompositeTransform();
             OnSelected?.Invoke(this, true);
 
         }
 
         private void XResizingRectangle_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            var vm = DataContext as PdfRegionViewModel;
-            vm?.ResizeRegion(new Point(Canvas.GetLeft(xMainRectangle), Canvas.GetTop(xMainRectangle)), new Point(Canvas.GetLeft(xMainRectangle) + xMainRectangle.ActualWidth, Canvas.GetTop(xMainRectangle) + xMainRectangle.ActualHeight));
+            //TODO
         }
 
         private void XResizingRectangle_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+            
             xMainRectangle.Width += e.Delta.Translation.X;
-            xMainRectangle.Height += e.Delta.Translation.Y;    
+            xMainRectangle.Height += e.Delta.Translation.Y;
+            RectangleTranform.CenterX += e.Delta.Translation.X;
+            RectangleTranform.CenterY += e.Delta.Translation.Y;
+            xGrid.Width += e.Delta.Translation.X;
+            xGrid.Height += e.Delta.Translation.Y;
+            GridTranform.CenterX += e.Delta.Translation.X;
+            GridTranform.CenterY += e.Delta.Translation.Y;
+            ResizerTransform.TranslateX += e.Delta.Translation.X;
+            ResizerTransform.TranslateY += e.Delta.Translation.Y;
         }
 
         private void XResizingRectangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)

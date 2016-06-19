@@ -11,10 +11,12 @@ namespace NuSysApp
     public class ImageRegionViewModel : RegionViewModel
     {
         public double Height { get; set; }
-        public double Width { get; set; }
-        public ImageRegionViewModel(RectangleRegion model, LibraryElementController controller) : base(model,controller)
+        public double Width{ get; set; }
+        public ImageRegionViewModel(RectangleRegion model, LibraryElementController controller, Sizeable sizeable) : base(model,controller,sizeable)
         {
             ContainerSizeChanged += BaseSizeChanged;
+            Height = sizeable.GetHeight();
+            Width = sizeable.GetWidth();
         }
         private void BaseSizeChanged(object sender, double width, double height)
         {
@@ -28,7 +30,7 @@ namespace NuSysApp
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
         }
-
+        /*
         public void Translate(double xPercent, double yPercent)
         {
             var model = Model as RectangleRegion;
@@ -55,7 +57,24 @@ namespace NuSysApp
             var newBottomRightY = model.BottomRightPoint.Y * heightPercent;
 
 
-            model.BottomRightPoint = new Point(newBottomRightX, newBottomRightY);
+            model.BottomRightPoint = new Point(newBottomRightX, newBottomRightY);*/
+
+        public void SetNewPoints(Point topLeft, Point bottomRight)
+        {
+            var model = Model as RectangleRegion;
+            if (model == null)
+            {
+                return;
+            }
+            var normalTopLeftX = topLeft.X / ContainerViewModel.GetWidth();
+            var normalTopLeftY = topLeft.Y / ContainerViewModel.GetHeight();
+            var normalBottomRightX = bottomRight.X / ContainerViewModel.GetWidth();
+            var normalBottomRightY = bottomRight.Y / ContainerViewModel.GetHeight();
+
+            model.TopLeftPoint = new Point(normalTopLeftX, normalTopLeftY);
+            model.BottomRightPoint = new Point(normalBottomRightX, normalBottomRightY);
+            Controller.UpdateRegion(Model);
         }
+        
     }
 }

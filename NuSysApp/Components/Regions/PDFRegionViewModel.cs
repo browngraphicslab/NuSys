@@ -8,7 +8,7 @@ using Windows.Foundation;
 
 namespace NuSysApp
 {
-    public class PdfRegionViewModel : BaseINPC
+    public class PdfRegionViewModel : RegionViewModel
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public PdfRegion Model { get; set; }
@@ -16,16 +16,27 @@ namespace NuSysApp
         public double Width { get; set; }
         private LibraryElementController _elementController;
 
-        public PdfRegionViewModel(PdfRegion model, LibraryElementController elementController)
+        public PdfRegionViewModel(PdfRegion model, LibraryElementController elementController, Sizeable sizeable) : base(model, elementController, sizeable)
         {
             Model = model;
             _elementController = elementController;
+            ContainerSizeChanged += BaseSizeChanged;
+            Height = (model.BottomRightPoint.Y*sizeable.GetHeight()) - (model.TopLeftPoint.Y*sizeable.GetHeight());
+            Width = (model.BottomRightPoint.X * sizeable.GetWidth()) - (model.TopLeftPoint.X * sizeable.GetWidth());
+
         }
 
-        public void ResizeRegion(Point p1, Point p2)
+        private void BaseSizeChanged(object sender, double width, double height)
         {
-            _elementController.AddRegion(new PdfRegion("unNamedRegion", p1, p2, Model.PageLocation));
-            _elementController.RemoveRegion(Model);
+            var model = Model as PdfRegion;
+            if (model == null)
+            {
+                return;
+            }
+            Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y) * height;
+            Width = (model.BottomRightPoint.X - model.BottomRightPoint.X) * width;
+            RaisePropertyChanged("Height");
+            RaisePropertyChanged("Width");
         }
 
     }
