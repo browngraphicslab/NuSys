@@ -17,7 +17,6 @@ using Windows.UI;
 using NuSysApp.Network.Requests;
 using NuSysApp.Network.Requests.SystemRequests;
 using Buffer = System.Buffer;
-
 namespace NuSysApp
 {
     public class NuSysNetworkSession
@@ -40,6 +39,7 @@ namespace NuSysApp
         //private NetworkSession _networkSession;
         private string _hostIP;
         private ServerClient _serverClient;
+        private HashSet<string> _regionUpdateDebounceList = new HashSet<string>();
         #endregion Private Members
 
         public async Task Init()
@@ -347,9 +347,21 @@ namespace NuSysApp
         {
             return await _serverClient.AddRegionToContent(contentId, region);
         }
-        public async Task<bool> RemoveRegionFromContent(string contentId, Region region)
+        public async Task<bool> RemoveRegionFromContent(Region region)
         {
-            return await _serverClient.RemoveRegionFromContent(contentId, region);
+            return await _serverClient.RemoveRegionFromContent(region);
+        }
+
+        public async Task UpdateRegion(Region region)
+        {
+            if (_regionUpdateDebounceList.Contains(region.Id))
+            {
+                return;
+            }
+            _regionUpdateDebounceList.Add(region.Id);
+            await Task.Delay(1000);
+            _regionUpdateDebounceList.Remove(region.Id);
+            await _serverClient.UpdateRegion(region);
         }
     }
     public class NoRequestTypeException : Exception

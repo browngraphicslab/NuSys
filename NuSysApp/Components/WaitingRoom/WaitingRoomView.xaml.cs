@@ -41,7 +41,8 @@ namespace NuSysApp
         //public static string Password { get; private set; }
         public static string ServerSessionID { get; private set; }
 
-        public static bool TEST_LOCAL_BOOLEAN = false   ;
+        public static bool TEST_LOCAL_BOOLEAN = false;
+
         public static bool IS_HUB = false;
 
         private static IEnumerable<Message> _firstLoadList;

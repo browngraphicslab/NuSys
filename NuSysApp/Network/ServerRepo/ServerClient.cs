@@ -152,6 +152,7 @@ namespace NuSysApp
             {
                 var dict = new Dictionary<string, object>();
                 dict["data"] = region;
+                dict["id"] = region.Id;
                 dict["contentId"] = contentId;
                 var data = await SendDictionaryToServer("addregion", dict);
                 try
@@ -161,18 +162,18 @@ namespace NuSysApp
                 }
                 catch (Exception boolParsException)
                 {
-                    Debug.WriteLine("error parsing bool returned from server");
+                    Debug.WriteLine("error parsing bool returned from server for region adding");
                 }
                 return false;
             });
         }
-        public async Task<bool> RemoveRegionFromContent(string contentId, Region region)
+        public async Task<bool> RemoveRegionFromContent(Region region)
         {
             return await Task.Run(async delegate
             {
                 var dict = new Dictionary<string, object>();
                 dict["data"] = region;
-                dict["contentId"] = contentId;
+                dict["id"] = region.Id;
                 var data = await SendDictionaryToServer("removeregion", dict);
                 try
                 {
@@ -181,7 +182,27 @@ namespace NuSysApp
                 }
                 catch (Exception boolParsException)
                 {
-                    Debug.WriteLine("error parsing bool returned from server");
+                    Debug.WriteLine("error parsing bool returned from server for region removal");
+                }
+                return false;
+            });
+        }
+        public async Task<bool> UpdateRegion(Region region)
+        {
+            return await Task.Run(async delegate
+            {
+                var dict = new Dictionary<string, object>();
+                dict["data"] = region;
+                dict["id"] = region.Id;
+                var data = await SendDictionaryToServer("updateregion", dict);
+                try
+                {
+                    var success = bool.Parse(data);
+                    return success;
+                }
+                catch (Exception boolParsException)
+                {
+                    Debug.WriteLine("error parsing bool returned from server for region updating");
                 }
                 return false;
             });
