@@ -97,6 +97,14 @@ namespace NuSysApp
                 return false;
             }
             _regionableViewModel = regionView.DataContext as Regionable<Region>;
+            RaisePropertyChanged("RegionView");
+            regionView.Loaded += delegate
+            {
+                foreach (var region in controller.LibraryElementModel.Regions)
+                {
+                    _regionableViewModel?.AddRegion(this, region);
+                }
+            };
             SizeChanged += (sender, left, width, height) => _regionableViewModel.SizeChanged(sender, width, height);
             //_nodeModel = controller.LibraryElementModel;
 
@@ -115,7 +123,7 @@ namespace NuSysApp
             RaisePropertyChanged("Tags");
             RaisePropertyChanged("Metadata");
             RaisePropertyChanged("RegionCollection");
-            RaisePropertyChanged("RegionView");
+
             return true;
         }
 
