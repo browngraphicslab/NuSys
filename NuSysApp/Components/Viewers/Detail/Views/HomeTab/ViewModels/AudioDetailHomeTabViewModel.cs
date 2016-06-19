@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class AudioDetailHomeTabViewModel : DetailHomeTabViewModel
+    public class AudioDetailHomeTabViewModel : DetailHomeTabViewModel, Sizeable
     {
         public LibraryElementController Controller { get; }
         public ObservableCollection<Region> Regions;
@@ -33,7 +33,7 @@ namespace NuSysApp
             {
                 return;
             }
-            var vm = new AudioRegionViewModel(AudioRegion, Controller);
+            var vm = new AudioRegionViewModel(AudioRegion, Controller, this);
             var view = new AudioRegionView(vm);
             RegionViews.Add(view);
             RaisePropertyChanged("RegionViews");
@@ -53,6 +53,16 @@ namespace NuSysApp
                 var regionViewViewModel = rv.DataContext as RegionViewModel;
                 regionViewViewModel?.ChangeSize(sender,width,height);
             }
+        }
+
+        public double GetWidth()
+        {
+            return View.ActualWidth;
+        }
+
+        public double GetHeight()
+        {
+            return View.ActualHeight;
         }
     }
 }
