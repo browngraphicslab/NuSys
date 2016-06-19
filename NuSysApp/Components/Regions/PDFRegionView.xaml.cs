@@ -33,13 +33,39 @@ namespace NuSysApp
 
             this.Selected();
             this.RenderTransform = new CompositeTransform();
+            regionVM.PropertyChanged += RegionVM_PropertyChanged;
             OnSelected?.Invoke(this, true);
 
         }
 
-        private void XResizingRectangle_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        private void RegionVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            //TODO
+            switch (e.PropertyName)
+            {
+                case "Width":
+                case "Height":
+                    var vm = DataContext as ImageRegionViewModel;
+                    if (vm == null)
+                    {
+                        break;
+                    }
+                    xMainRectangle.Width = vm.Width;
+                    xMainRectangle.Height = vm.Height;
+                    break;
+            }
+        }
+
+        private void UpdateViewModel()
+        {
+            var composite = RenderTransform as CompositeTransform;
+            var vm = DataContext as ImageRegionViewModel;
+            if (vm == null || composite == null)
+            {
+                return;
+            }
+            var topLeft = new Point(composite.TranslateX, composite.TranslateY);
+            var bottomRight = new Point(topLeft.X + xMainRectangle.Width, topLeft.Y + xMainRectangle.Height);
+            vm.SetNewPoints(topLeft, bottomRight);
         }
 
         private void XResizingRectangle_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -55,6 +81,8 @@ namespace NuSysApp
             GridTranform.CenterY += e.Delta.Translation.Y;
             ResizerTransform.TranslateX += e.Delta.Translation.X;
             ResizerTransform.TranslateY += e.Delta.Translation.Y;
+
+            UpdateViewModel();
         }
 
         private void XResizingRectangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -95,6 +123,7 @@ namespace NuSysApp
         {
             OnSelected?.Invoke(this, true);
         }
+        
 
-}
+    }
 }

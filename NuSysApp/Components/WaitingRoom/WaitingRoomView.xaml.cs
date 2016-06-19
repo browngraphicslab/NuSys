@@ -34,7 +34,7 @@ namespace NuSysApp
     public sealed partial class WaitingRoomView : Page
     {
         public FreeFormViewer _freeFormViewer;
-
+        
         public static string InitialWorkspaceId { get; set; }
         public static string ServerName { get; private set; }
         public static string UserName { get; private set; }

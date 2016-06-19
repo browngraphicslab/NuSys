@@ -37,14 +37,7 @@ namespace NuSysApp
         {
             Controller = controller;
             RegionViews = new ObservableCollection<PDFRegionView>();
-
-            //if (Controller.LibraryElementModel.Regions.Count > 0)
-            //{
-            //    foreach (var region in Controller.LibraryElementModel.Regions)
-            //    {
-            //        RegionViews.Add(new PDFRegionView(new PdfRegionViewModel(region as PdfRegion, Controller)));
-            //    }
-            //}
+            
         }
         public override async Task Init()
         {
@@ -167,6 +160,17 @@ namespace NuSysApp
         public double GetWidth()
         {
             return View.ActualWidth;
+        }
+
+        public void CreateRegionViews()
+        {
+            if (Controller.LibraryElementModel.Regions.Count > 0)
+            {
+                foreach (var region in Controller.LibraryElementModel.Regions)
+                {
+                    RegionViews.Add(new PDFRegionView(new PdfRegionViewModel(region as PdfRegion, Controller, this)));
+                }
+            }
         }
     }
 }

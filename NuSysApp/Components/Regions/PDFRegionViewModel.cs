@@ -18,6 +18,10 @@ namespace NuSysApp
 
         public PdfRegionViewModel(PdfRegion model, LibraryElementController elementController, Sizeable sizeable) : base(model, elementController, sizeable)
         {
+            if (model == null)
+            {
+                return;
+            }
             Model = model;
             _elementController = elementController;
             ContainerSizeChanged += BaseSizeChanged;
@@ -37,6 +41,23 @@ namespace NuSysApp
             Width = (model.BottomRightPoint.X - model.BottomRightPoint.X) * width;
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
+        }
+
+        public void SetNewPoints(Point topLeft, Point bottomRight)
+        {
+            var model = Model as PdfRegion;
+            if (model == null)
+            {
+                return;
+            }
+            var normalTopLeftX = topLeft.X / ContainerViewModel.GetWidth();
+            var normalTopLeftY = topLeft.Y / ContainerViewModel.GetHeight();
+            var normalBottomRightX = bottomRight.X / ContainerViewModel.GetWidth();
+            var normalBottomRightY = bottomRight.Y / ContainerViewModel.GetHeight();
+
+            model.TopLeftPoint = new Point(normalTopLeftX, normalTopLeftY);
+            model.BottomRightPoint = new Point(normalBottomRightX, normalBottomRightY);
+            Controller.UpdateRegion(Model);
         }
 
     }
