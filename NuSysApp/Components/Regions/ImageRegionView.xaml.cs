@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -30,6 +31,26 @@ namespace NuSysApp
             this.RenderTransform = new CompositeTransform();
             xResizingRectangle.RenderTransform = new CompositeTransform();
             OnSelected?.Invoke(this, true);
+            DataContext = viewModel;
+            viewModel.PropertyChanged += PropertyChanged;
+            xMainRectangle.Width = 50;
+            xMainRectangle.Height = 50;
+        }
+
+        private void PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "Width": case "Height":
+                    var vm = DataContext as ImageRegionViewModel;
+                    if (vm == null)
+                    {
+                        break;
+                    }
+                    xMainRectangle.Width = vm.Width;
+                    xMainRectangle.Height = vm.Height;
+                    break;
+            }
         }
 
         private void XResizingRectangle_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
@@ -39,8 +60,18 @@ namespace NuSysApp
 
         private void XResizingRectangle_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+            var vm = DataContext as ImageRegionViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+            var oldHeight = xMainRectangle.Height;
+            var oldWidth = xMainRectangle.Width;
+              
             xMainRectangle.Width += e.Delta.Translation.X;
             xMainRectangle.Height += e.Delta.Translation.Y;
+            
+            vm.Resize(xMainRectangle.Width/oldWidth, xMainRectangle.Height/oldHeight);
         }
 
         private void XResizingRectangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -52,12 +83,21 @@ namespace NuSysApp
 
         private void RectangleRegionView_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            ((CompositeTransform)this.RenderTransform).TranslateX += e.Delta.Translation.X;
-            ((CompositeTransform) this.RenderTransform).TranslateY += e.Delta.Translation.Y;
+            var composite = RenderTransform as CompositeTransform;
+            var vm = DataContext as ImageRegionViewModel;
+            if (vm == null || composite == null)
+            {
+                return;
+            }
+            var oldX = composite.TranslateX;
+            var oldY = composite.TranslateX;
+            composite.TranslateX += e.Delta.Translation.X;
+            composite.TranslateY += e.Delta.Translation.Y;
             
+            vm.Translate(composite.TranslateX/oldX,composite.TranslateY/oldY);
+
             e.Handled = true;
         }
-
         private void RectangleRegionView_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             OnSelected?.Invoke(this, true);

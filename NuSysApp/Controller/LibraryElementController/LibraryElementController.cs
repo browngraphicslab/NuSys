@@ -21,6 +21,7 @@ namespace NuSysApp
         public delegate void ContentChangedEventHandler(object source, string contentData);
         public delegate void RegionAddedEventHandler(object source, Region region);
         public delegate void RegionRemovedEventHandler(object source, Region region);
+        public delegate void RegionUpdatedEventHandler(object source, Region region);
         public delegate void MetadataChangedEvenetHandler(object source);
         public delegate void DisposeEventHandler(object source);
         public delegate void TitleChangedEventHandler(object sender, string title);
@@ -32,6 +33,7 @@ namespace NuSysApp
         public event ContentChangedEventHandler ContentChanged;
         public event RegionAddedEventHandler RegionAdded;
         public event RegionRemovedEventHandler RegionRemoved;
+        public event RegionUpdatedEventHandler RegionUpdated;
         public event MetadataChangedEvenetHandler MetadataChanged;
         public event DisposeEventHandler Disposed;
         public event TitleChangedEventHandler TitleChanged;
@@ -99,7 +101,18 @@ namespace NuSysApp
         {
             _libraryElementModel.Regions.Remove(region);
             RegionRemoved?.Invoke(this, region);
-            SessionController.Instance.NuSysNetworkSession.RemoveRegionFromContent(LibraryElementModel.LibraryElementId, region);
+            SessionController.Instance.NuSysNetworkSession.RemoveRegionFromContent(region);
+        }
+
+        /// <summary>
+        /// This method simply fires the update region event and updates the server (using debouncing)
+        /// Because of the lack of a region controller to update individual region properties,
+        /// THIS METHOD ASSUMES THAT YOU'VE ALREADY CHANGED THE REGION'S MODEL PROPERTIES
+        /// </summary>
+        public void UpdateRegion(Region region)
+        {
+            RegionUpdated?.Invoke(this, region);
+            SessionController.Instance.NuSysNetworkSession.UpdateRegion(region);
         }
 
         /// <summary>

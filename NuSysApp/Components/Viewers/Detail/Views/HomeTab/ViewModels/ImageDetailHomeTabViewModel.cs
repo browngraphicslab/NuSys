@@ -24,8 +24,7 @@ namespace NuSysApp
             Controller = controller;
             Model = controller.LibraryElementModel;
             Regions = new ObservableCollection<Region>();
-           // controller.RegionAdded += RegionAdded;
-           // controller.RegionRemoved += RegionRemoved;
+
             Image = controller.GetSource();
             RegionViews = new ObservableCollection<ImageRegionView>();
         }
@@ -50,10 +49,12 @@ namespace NuSysApp
 
         public override void SizeChanged(object sender, double width, double height)
         {
+            var newHeight = View.ActualHeight;
+            var newWidth = View.ActualWidth;
             foreach (var rv in RegionViews)
             {
                 var regionViewViewModel = rv.DataContext as RegionViewModel;
-                regionViewViewModel?.ChangeSize(sender,width,height);
+                regionViewViewModel?.ChangeSize(sender, newWidth, newHeight);
             }
         }
     }
