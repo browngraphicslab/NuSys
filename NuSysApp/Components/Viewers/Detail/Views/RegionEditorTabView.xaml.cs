@@ -26,9 +26,6 @@ namespace NuSysApp
     {
         public DetailViewerView DetailViewerView { set; get; }
 
-        public ObservableCollection<Region> RegionCollection { set; get; }
-
-
         //public DetailViewerViewModel DetailViewerViewModel { set; get { return ((DetailViewerViewModel)DetailViewerView.DataContext).View} }
         private bool _edgeCaseButtonExited;
         public  RegionEditorTabView()
@@ -36,7 +33,6 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             _edgeCaseButtonExited = true;
-            RegionCollection = new ObservableCollection<Region>();
         }
 
         private void XListViewItemGrid_OnPointerEnterExit(object sender, PointerRoutedEventArgs e)
@@ -49,32 +45,40 @@ namespace NuSysApp
 
         }
 
-        private void XDeleteButton_OnClick(object sender, RoutedEventArgs e)
+        private void AddRegion_Clicked(object sender, RoutedEventArgs e)
         {
-            xContentPresenter.Content = (((DetailViewerViewModel)DetailViewerView.DataContext).RegionView);
-            Region region = new RectangleRegion("new rectangle", new Point(100, 100), new Point(200, 200));
-            if ((((DetailViewerView.DataContext as DetailViewerViewModel)?.RegionView as ImageDetailHomeTabView)) != null)
+            var vm = DetailViewerView.DataContext as DetailViewerViewModel;
+            if (vm == null)
             {
-                region = new RectangleRegion("new rectangle", new Point(0, 0), new Point(1, 1));
-                ((ImageDetailHomeTabView) (((DetailViewerViewModel) DetailViewerView.DataContext).RegionView))
-                    .DisplayRegion(region);
+                return;
             }
-            if ((((DetailViewerView.DataContext as DetailViewerViewModel)?.RegionView as AudioDetailHomeTabView)) != null)
+            Region region = null;
+            switch (vm.CurrentElementController.LibraryElementModel.Type)
             {
-                region = new TimeRegionModel("new rectangle",0,1);
-                ((AudioDetailHomeTabView) (((DetailViewerViewModel) DetailViewerView.DataContext).RegionView)).DisplayRegion(region);
+                case ElementType.Image:
+                    region = new RectangleRegion(new Point(.25,.25), new Point(.75,.75));
+                    break;
+                case ElementType.Audio:
+
+                    break;
+                case ElementType.Video:
+
+                    break;
+                case ElementType.Collection:
+
+                    break;
+                case ElementType.Text:
+
+                    break;
+                case ElementType.PDF:
+
+                    break;
+                default:
+                    region = null;
+                    break;
             }
-
-            var width = ((DetailViewerViewModel)DetailViewerView.DataContext).RegionView.ActualWidth;
-            var height = ((DetailViewerViewModel)DetailViewerView.DataContext).RegionView.ActualHeight;
-            //TODO: make this rectangle's size dependent on the size of the region view
-
-            region.Name = "Untitled Region";
-
-
-            ((DetailViewerViewModel)DetailViewerView.DataContext).CurrentElementController.AddRegion(region);
-            Update();
-
+            
+            vm.CurrentElementController.AddRegion(region);
         }
 
         private void DeleteButton_OnPointerExited(object sender, PointerRoutedEventArgs e)
@@ -84,22 +88,6 @@ namespace NuSysApp
             _edgeCaseButtonExited = true;
 
         }
-
-        public void Update()
-        {
-            var vm = (DetailViewerViewModel)DetailViewerView.DataContext;
-
-            //xLeftRegionPanel.Content = vm.View;
-            xContentPresenter.Content = vm.RegionView;
-
-            RegionCollection.Clear();
-
-            foreach (var region in vm.CurrentElementController.LibraryElementModel.Regions)
-            {
-                RegionCollection.Add(region);
-            }
-        }
-
         private void test_Click(object sender, RoutedEventArgs e)
         {
 

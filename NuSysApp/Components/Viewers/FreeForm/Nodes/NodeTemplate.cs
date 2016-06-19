@@ -73,7 +73,7 @@ namespace NuSysApp
         {
             var vm = (ElementViewModel)this.DataContext;
             vm.PropertyChanged -= OnPropertyChanged;
-            vm.Controller.UserChanged -= ControllerOnUserChanged;
+            vm.Controller.LibraryElementController.UserChanged -= ControllerOnUserChanged;
             vm.Controller.LibraryElementController.TitleChanged -= LibraryElementModelOnOnTitleChanged;
 
             if (title != null)
@@ -162,7 +162,7 @@ namespace NuSysApp
             };
 
 
-            vm.Controller.UserChanged += ControllerOnUserChanged;
+            vm.Controller.LibraryElementController.UserChanged += ControllerOnUserChanged;
 
             vm.PropertyChanged += OnPropertyChanged;
             base.OnApplyTemplate();
@@ -198,15 +198,16 @@ namespace NuSysApp
             {
                 userName.Foreground = new SolidColorBrush(Colors.Transparent);
                 highlight.Visibility = Visibility.Collapsed;
-                return;
             }
             else
             {
-             //   highlight.Visibility = Visibility.Visible;
+                highlight.Visibility = Visibility.Visible;
+                highlight.BorderBrush = new SolidColorBrush(user.Color);
+                userName.Foreground = new SolidColorBrush(user.Color);
+                userName.Text = user?.Name ?? "";
             }
-            highlight.BorderBrush = new SolidColorBrush(user.Color);
-            userName.Foreground = new SolidColorBrush(user.Color);
-            userName.Text = user?.Name ?? "";
+            
+            
         }
 
         private void LibraryElementModelOnSearched(LibraryElementModel model, bool searched)

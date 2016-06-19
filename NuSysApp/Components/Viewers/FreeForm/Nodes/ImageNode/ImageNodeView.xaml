@@ -47,6 +47,19 @@
                 <Image x:Name="xImage" Source="{Binding Image}" Stretch="Uniform" />
                 <Canvas x:Name="Canvas" VerticalAlignment ="Top" HorizontalAlignment="Left">
 
+                    <ItemsControl x:Name="RegionItemsControl"  ItemsSource="{Binding Regions}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ContentPresenter/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
 
                     <ItemsControl x:Name="IC"  ItemsSource="{Binding RegionsListTest}">
                         <ItemsControl.ItemsPanel>

@@ -21,6 +21,7 @@ namespace NuSysApp
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public AudioDetailHomeTabView RegionView { get; set; }
+        public TimeRegionModel Model { get; set; }
 
         public double LeftHandleX { get; set; }
         public double LefthandleY1 { get; set; }
@@ -36,12 +37,13 @@ namespace NuSysApp
             LeftHandleX = model.Start*contentView.ActualWidth;
             RightHandleX = model.End*contentView.ActualWidth;
             LefthandleY1 = 10;
-            LefthandleY2 = 10 + contentView.ActualHeight;
+            LefthandleY2 = 110; //+ contentView.ActualHeight;
             RightHandleY1 = 10;
-            RightHandleY2 = 10 + contentView.ActualHeight;
-            RegionHeight = contentView.ActualHeight;
+            RightHandleY2 = 110; //+ contentView.ActualHeight;
+            RegionHeight = 100;//contentView.ActualHeight;
             RegionWidth = contentView.ActualWidth;
             RegionView = contentView;
+            Model = model;
             RaisePropertyChanged("LeftHandleX");
             RaisePropertyChanged("RightHandleX");
             RaisePropertyChanged("LefthandleY1");
@@ -50,6 +52,26 @@ namespace NuSysApp
             RaisePropertyChanged("RightHandleY2");
             RaisePropertyChanged("RegionHeight");
             RaisePropertyChanged("RegionWidth");
+        }
+        public void UpdateVals()
+        {
+            LeftHandleX = Model.Start*RegionView.ActualWidth;
+            RightHandleX = Model.End*RegionView.ActualWidth;
+            LefthandleY1 = 10;
+            LefthandleY2 = 110; //+ contentView.ActualHeight;
+            RightHandleY1 = 10;
+            RightHandleY2 = 110; //+ contentView.ActualHeight;
+            RegionHeight = 100;//contentView.ActualHeight;
+            RegionWidth = RegionView.ActualWidth;
+            RaisePropertyChanged("LeftHandleX");
+            RaisePropertyChanged("RightHandleX");
+            RaisePropertyChanged("LefthandleY1");
+            RaisePropertyChanged("LefthandleY2");
+            RaisePropertyChanged("RightHandleY1");
+            RaisePropertyChanged("RightHandleY2");
+            RaisePropertyChanged("RegionHeight");
+            RaisePropertyChanged("RegionWidth");
+
         }
 
         //private int _startTime;

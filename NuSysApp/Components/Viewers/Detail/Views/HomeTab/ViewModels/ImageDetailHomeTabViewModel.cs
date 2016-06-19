@@ -30,19 +30,31 @@ namespace NuSysApp
             RegionViews = new ObservableCollection<ImageRegionView>();
         }
 
-        public void RegionAdded(Region newRegion, ImageDetailHomeTabView contentview)
+        public override void AddRegion(object sender, Region region)
         {
-            //var rectangle = JsonConvert.DeserializeObject<Region>(newRegion.ToString());
-            Regions.Add(newRegion);
-            RegionViews.Add(new ImageRegionView(newRegion as RectangleRegion, contentview));
+            var imageRegion = region as RectangleRegion;
+            if (imageRegion == null)
+            {
+                return;
+            }
+            var vm = new ImageRegionViewModel(imageRegion, Controller);
+            var view = new ImageRegionView(vm);
+            RegionViews.Add(view);
             RaisePropertyChanged("RegionViews");
-            
         }
-        public void RegionRemoved(Region oldRegion, ImageDetailHomeTabView contentview)
+
+        public override void RemoveRegion(object sender, Region displayedRegion)
         {
-            Regions.Remove(oldRegion);
-            RegionViews.Remove(new ImageRegionView(oldRegion as RectangleRegion, contentview)); 
-            RaisePropertyChanged("RegionViews");
+            throw new NotImplementedException();
+        }
+
+        public override void SizeChanged(object sender, double width, double height)
+        {
+            foreach (var rv in RegionViews)
+            {
+                var regionViewViewModel = rv.DataContext as RegionViewModel;
+                regionViewViewModel?.ChangeSize(sender,width,height);
+            }
         }
     }
 }

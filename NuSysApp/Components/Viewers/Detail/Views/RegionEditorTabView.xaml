@@ -41,7 +41,7 @@
 
 
             <StackPanel Orientation="Vertical" Grid.Column="1">
-                <ListView HorizontalAlignment="Right"  ItemsSource="{x:Bind RegionCollection}"  VerticalContentAlignment="Top">
+                <ListView HorizontalAlignment="Right"  ItemsSource="{Binding RegionCollection}"  VerticalContentAlignment="Top">
 
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
@@ -72,12 +72,12 @@
                                 <ColumnDefinition Width="50"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <TextBox Grid.Column="0" Text="{x:Bind Name}" PlaceholderText="Enter a name" Width="250" HorizontalAlignment="Center" HorizontalContentAlignment="Center" BorderThickness="0"  VerticalAlignment="Center" VerticalContentAlignment="Center"></TextBox>
-                            <Button Grid.Column="1" Content="X" Click="XDeleteButton_OnClick"  Visibility="Visible" PointerExited="DeleteButton_OnPointerExited"></Button>
+                            <Button Grid.Column="1" Content="X" Click="AddRegion_Clicked"  Visibility="Visible" PointerExited="DeleteButton_OnPointerExited"></Button>
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-             <Button Grid.Row="1" Grid.Column="1" x:Name="xCreateReagionButton" Click="XDeleteButton_OnClick" HorizontalAlignment="Right"  Height="40" Width="50" Margin="0,10,0,0"/>
+             <Button Grid.Row="1" Grid.Column="1" x:Name="xCreateReagionButton" Click="AddRegion_Clicked" HorizontalAlignment="Right"  Height="40" Width="50" Margin="0,10,0,0"/>
 
             </StackPanel>
 

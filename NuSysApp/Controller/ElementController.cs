@@ -16,7 +16,6 @@ namespace NuSysApp
 {
     public class ElementController
     {
-        private NetworkUser _lastNetworkUser;
         private ElementModel _model;
         protected DebouncingDictionary _debouncingDictionary;
 
@@ -29,8 +28,6 @@ namespace NuSysApp
         public delegate void LocationUpdateEventHandler(object source, double x, double y, double dx = 0, double dy = 0);
 
         public delegate void MetadataChangeEventHandler(object source, string key);
-
-        public delegate void NetworkUserChangedEventHandler(object source, NetworkUser user);
 
         public delegate void ScaleChangedEventHandler(object source, double sx, double sy);
 
@@ -50,7 +47,6 @@ namespace NuSysApp
         public event SizeUpdateEventHandler SizeChanged;
         public event ScaleChangedEventHandler ScaleChanged;
         public event AlphaChangedEventHandler AlphaChanged;
-        public event NetworkUserChangedEventHandler UserChanged;
         public event RegionTestChangedEventHandler RegionTestChanged;
         public event SelectionChangedHandler SelectionChanged;
 
@@ -198,11 +194,6 @@ namespace NuSysApp
         {
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(Model.Id));
         }
-
-        public void SetNetworkUser(NetworkUser user)
-        {
-            UserChanged?.Invoke(this, user);
-        }
         public async virtual Task RequestDuplicate(double x, double y, Message m = null)
         {
            if (m == null)
@@ -303,7 +294,7 @@ namespace NuSysApp
         {
             get
             {
-                return LibraryElementController.LibraryElementModel;
+                return LibraryElementController?.LibraryElementModel;
             }
         }
 

@@ -23,5 +23,19 @@ namespace NuSysApp
             TextChanged?.Invoke(source,data);
         }
 
+        public override void AddRegion(object sender, Region region)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void RemoveRegion(object sender, Region displayedRegion)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SizeChanged(object sender, double width, double height)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

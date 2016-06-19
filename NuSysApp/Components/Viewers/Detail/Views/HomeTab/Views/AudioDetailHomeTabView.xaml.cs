@@ -16,8 +16,6 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
-using NuSysApp.Components.Nodes;
-using NuSysApp.Nodes.AudioNode;
 using Path = System.IO.Path;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -95,7 +93,7 @@ namespace NuSysApp
 
             var vm = (AudioNodeViewModel) DataContext;
             MediaPlayer.StopMusic();
-            //scrubBar.SizeChanged -= ScrubBar_OnSizeChanged;
+            //scrubBar.ContainerSizeChanged -= ScrubBar_OnSizeChanged;
             vm.Controller.Disposed -= ControllerOnDisposed;
 
             /*if (((AudioNodeModel)(vm.Model)).Controller != null) { 
@@ -232,10 +230,9 @@ namespace NuSysApp
                 grid.Children.Add(line);
                 timeBlockVM.setUpHandlers(line.getLine());
             }
-            scrubBar.SizeChanged += ScrubBar_OnSizeChanged;
+            scrubBar.ContainerSizeChanged += ScrubBar_OnSizeChanged;
 
         }
-
         private async void RenderImageSource(Grid RenderedGrid)
         {
 
@@ -320,7 +317,6 @@ namespace NuSysApp
                 element.ResizeLine1();
             }
         }
-
         private void Play_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             Play.Opacity = .3;
@@ -395,6 +391,6 @@ namespace NuSysApp
                 }
             }
         }
-*/        
+        */
     }
 }

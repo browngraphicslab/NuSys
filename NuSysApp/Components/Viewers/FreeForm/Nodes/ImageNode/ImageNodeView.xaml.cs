@@ -31,6 +31,8 @@ namespace NuSysApp
         private Boolean _drawingRegion;
         private Rectangle TempRegion;
         private ImageElementViewModel _vm;
+
+
         public ImageNodeView(ImageElementViewModel vm)
         {
             _vm = vm;
@@ -41,11 +43,11 @@ namespace NuSysApp
             TempRegion.Fill = new SolidColorBrush(Colors.Transparent);
             TempRegion.StrokeThickness = 2;
             TempRegion.Stroke = new SolidColorBrush(Colors.Red);
-
-            var regions = vm.Controller.LibraryElementModel.Regions;
+            
 
             // vm.Controller.SizeChanged += Controller_SizeChanged;
-
+           // vm.Controller.ContainerSizeChanged += Controller_SizeChanged;
+    
             vm.PropertyChanged +=VmOnPropertyChanged; 
 
             Loaded += delegate(object sender, RoutedEventArgs args)

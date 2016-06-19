@@ -17,16 +17,20 @@ namespace NuSysApp
         /// <returns></returns>
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            switch (parameter as string)
+
+            var region = value as Region;
+
+            switch (region.Type)
             {
-                // case enum.Image:
-                //return new ImageRegionView(value as ImageRegionViewModel);
-                // case enum.Audio:
-                //return new AudioRegionView(value as AudioRegionViewModel);
-                // case enum.PDF:
-                //return new PDFRegionView(value as PDFRegionViewModel);
-                //default:
-                //return null;
+                case Region.RegionType.Rectangle:
+                    var rectregion = (RectangleRegion)value;
+                    return new ImageRegionView(new ImageRegionViewModel(rectregion, parameter as LibraryElementController));
+                    break;
+                default:
+                    return null;
+                    break;
+
+                
             }
             //if value as ImageRegionViewModel 
             //  

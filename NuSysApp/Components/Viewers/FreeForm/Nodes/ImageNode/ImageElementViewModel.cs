@@ -16,11 +16,34 @@ using NuSysApp.Util;
 namespace NuSysApp
 {
     public class ImageElementViewModel : ElementViewModel
-    {    
+    {
+        public ObservableCollection<ImageRegionView> Regions { get
+            {
+                var collection = new ObservableCollection<ImageRegionView>();
+                var elementController = Controller.LibraryElementController;
+                var regionHashSet = elementController.LibraryElementModel.Regions;
+
+                if (regionHashSet == null)
+                    return collection;
+                
+                foreach (var model in regionHashSet)
+                {
+                    var viewmodel = new ImageRegionViewModel(model as RectangleRegion, elementController);
+                    viewmodel.Editable = false;
+                    var view = new ImageRegionView(viewmodel);
+                    collection.Add(view);
+                }
+                return collection;
+            }
+        }
+
+        public LibraryElementController LibraryElementController{get { return Controller.LibraryElementController; }}
         public ImageElementViewModel(ElementController controller) : base(controller)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));       
             Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
+            
+            
         }
 
         private void LibraryElementControllerOnRegionAdded(object source, Region region)
@@ -36,17 +59,6 @@ namespace NuSysApp
 
         public BitmapImage Image { get; set; }
 
-        public HashSet<Region> Regions
-        {
-            get
-            {
-
-                return Controller.LibraryElementModel.Regions;
-  
-
-            } 
-
-        }
 
         public override async Task Init()
         {

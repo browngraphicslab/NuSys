@@ -18,7 +18,13 @@
     <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch" >
         <Grid>
         <local:AudioMediaPlayer x:Name="MediaPlayer"></local:AudioMediaPlayer>
-        <ItemsControl ItemsSource="{Binding RegionViews}"></ItemsControl>
+        <ItemsControl ItemsSource="{Binding RegionViews}">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <Grid/>
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        </ItemsControl>
         </Grid>
     </Border>
 </UserControl>

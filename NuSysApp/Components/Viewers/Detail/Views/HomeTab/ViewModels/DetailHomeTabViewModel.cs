@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class DetailHomeTabViewModel : BaseINPC
+    public abstract class DetailHomeTabViewModel : Regionable<Region>
     {
         private LibraryElementController _libraryElementController;
 
@@ -16,11 +16,14 @@ namespace NuSysApp
         {
             _libraryElementController = controller;
             controller.TitleChanged += OnTitleChanged;
+            controller.RegionAdded += AddRegion;
+            controller.RegionRemoved += RemoveRegion;
         }
 
         private void OnTitleChanged(object source, string title)
         {
             TitleChanged?.Invoke(source,title);
         }
+        public virtual async Task Init() { }
     }
 }

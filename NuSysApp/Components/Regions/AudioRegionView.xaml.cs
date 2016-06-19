@@ -24,9 +24,21 @@ namespace NuSysApp
         public event RegionSelectedEventHandler OnSelected;
         public AudioRegionView(AudioRegionViewModel vm)
         {
-            this.DataContext = vm;
             this.InitializeComponent();
+            this.DataContext = vm;
             _toggleManipulation = false;
+            Rect.RenderTransform = new CompositeTransform();
+            vm.UpdateVals();
+            //TODO Make Legitimate
+            Bound1.X1 = vm.LeftHandleX;
+            Bound1.X2 = vm.LeftHandleX;
+            Bound1.Y1 = vm.LefthandleY1;
+            Bound1.Y2 = vm.LefthandleY2;
+
+            Bound2.X1 = vm.RightHandleX - 20;
+            Bound2.X2 = vm.RightHandleX - 20;
+            Bound2.Y1 = vm.RightHandleY1;
+            Bound2.Y2 = vm.RightHandleY2;
         }
 
         private void Handle_OnPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -34,9 +46,18 @@ namespace NuSysApp
             _toggleManipulation = true;
         }
 
-
-        private void Handle_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        private void Bound1_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+            (Bound1.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
+            (Rect.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
+            Rect.Width -= e.Delta.Translation.X;
+        }
+
+        private void Handle_OnManipulationDelta2(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            
+            (Bound2.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
+            Rect.Width += e.Delta.Translation.X;
             
         }
 

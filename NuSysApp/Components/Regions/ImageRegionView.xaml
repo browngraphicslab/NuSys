@@ -9,18 +9,18 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    
-    <Canvas x:Name="xMainCanvas">
-        <Rectangle x:Name="xMainRectangle" Stroke="Blue" Fill="Transparent" StrokeThickness="3" PointerPressed="xMainRectangle_PointerPressed" ManipulationMode="All" ManipulationStarted="RectangleRegionView_ManipulationStarted" ManipulationDelta="RectangleRegionView_ManipulationDelta"></Rectangle>
 
-        <Path x:Name="xResizingTriangle" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" 
-                      Height="25" Stretch="Fill" Margin="-28,-28,0,0" UseLayoutRounding="False" Width="25" Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" ManipulationStarted="XResizingTriangle_ManipulationStarted" ManipulationDelta="XResizingTriangle_ManipulationDelta" ManipulationCompleted="XResizingTriangle_ManipulationCompleted">
-
-            
+    <Canvas>
+        <Rectangle x:Name="xMainRectangle"  Height="{Binding Height}" Width="{Binding Width}" PointerPressed="xMainRectangle_PointerPressed" Fill="Transparent" ManipulationMode="All" ManipulationStarted="RectangleRegionView_ManipulationStarted" ManipulationDelta="RectangleRegionView_ManipulationDelta"></Rectangle>
+        <!--<Rectangle  Width="10" Height="10" Fill="CadetBlue" HorizontalAlignment="Right" VerticalAlignment="Bottom"></Rectangle>-->
+        <Path x:Name="xResizingTriangle" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
+                      Height="25" Stretch="Fill" Margin="-28,-28,0,0" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="25"
+                      Opacity=".35"  Canvas.ZIndex="20" Visibility="{Binding Editable,Converter={StaticResource vConverter}}"  ManipulationMode="All" ManipulationStarted="xResizingTriangle_ManipulationStarted" ManipulationDelta="xResizingTriangle_ManipulationDelta" ManipulationCompleted="xResizingTriangle_ManipulationCompleted">
             <Path.RenderTransform>
-                
-                <CompositeTransform TranslateX="{Binding ElementName=xMainRectangle, Path=Width}" TranslateY="{Binding ElementName=xMainRectangle, Path=Height}"/>
+                <CompositeTransform TranslateX="{Binding Width}" TranslateY="{Binding Height}">
+                </CompositeTransform>
             </Path.RenderTransform>
         </Path>
+
     </Canvas>
 </UserControl>

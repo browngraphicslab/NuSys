@@ -162,7 +162,12 @@ namespace NuSysApp
                     var tags = cvm.Controller.LibraryElementModel.Keywords;
                     if (topics.Count > 0)
                     {
-                        tags = new HashSet<string>(tags.Concat(topics));
+                        var topicKeywords = new List<Keyword>();
+                        foreach(var topic in topics)
+                        {
+                            topicKeywords.Add(new Keyword(topic));
+                        }
+                        tags = new HashSet<Keyword>(tags.Concat(topicKeywords));
                     }
                     cvm.Controller.LibraryElementController.SetKeywords(tags);
                 });
@@ -187,10 +192,6 @@ namespace NuSysApp
 
 
             xMetadataEditorView.Update();
-            xRegionEditorView.Update();
-
-
-
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
@@ -237,7 +238,7 @@ namespace NuSysApp
             {
                 if (tag != "")
                 {
-                    vm.CurrentElementController?.AddKeyword(tag);
+                    vm.CurrentElementController?.AddKeyword(new Keyword(tag));
                    // Tags.ItemsSource = vm.Tags;
                 }
             }
@@ -296,7 +297,7 @@ namespace NuSysApp
         {
       //      ((ElementViewModel) ((DetailViewerViewModel) DataContext).View.DataContext).Model.Title = TitleEnter.Text;
         }
-        private void Resize(object sender, double left, double width)
+        private void Resize(object sender, double left, double width, double height)
         {
             Canvas.SetLeft(this, left);
             Width = width;
@@ -334,7 +335,7 @@ namespace NuSysApp
                 */
                 var newWidth = Width - Math.Min(e.Delta.Translation.X, this.Width);
                 //Canvas.SetLeft(this, rightCoord - this.Width);
-                (DataContext as DetailViewerViewModel).ChangeSize(this, rightCoord - newWidth, newWidth);
+                (DataContext as DetailViewerViewModel)?.ChangeSize(this, rightCoord - newWidth, newWidth, Height);
                 e.Handled = true;
             }
 
