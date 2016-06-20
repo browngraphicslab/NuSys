@@ -114,7 +114,6 @@ namespace NuSysApp
             RaisePropertyChanged("View");
             RaisePropertyChanged("Tags");
             RaisePropertyChanged("Metadata");
-            RaisePropertyChanged("RegionCollection");
             RaisePropertyChanged("RegionView");
             return true;
         }

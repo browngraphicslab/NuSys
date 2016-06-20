@@ -25,13 +25,12 @@ namespace NuSysApp
 
         public ImageRegionView(ImageRegionViewModel viewModel)
         {
-            this.InitializeComponent();
             this.DataContext = viewModel;
+            this.InitializeComponent();
             this.Selected();
             this.RenderTransform = new CompositeTransform();
-            xResizingRectangle.RenderTransform = new CompositeTransform();
+            //xResizingTriangle.RenderTransform = new CompositeTransform();
             OnSelected?.Invoke(this, true);
-            DataContext = viewModel;
             viewModel.PropertyChanged += PropertyChanged;
             xMainRectangle.Width = 50;
             xMainRectangle.Height = 50;
@@ -53,24 +52,31 @@ namespace NuSysApp
             }
         }
 
-        private void XResizingRectangle_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        private void xResizingTriangle_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            
+
         }
 
-        private void XResizingRectangle_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        private void xResizingTriangle_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = DataContext as ImageRegionViewModel;
             if (vm == null)
             {
                 return;
             }
+
+
+
+
             xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 0);
-            xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y,0);
+            xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 0);
+            ResizerTransform.TranslateX += e.Delta.Translation.X/2;
+            ResizerTransform.TranslateY += e.Delta.Translation.Y/2;
             UpdateViewModel();
+
         }
 
-        private void XResizingRectangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        private void xResizingTriangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
 
             OnSelected?.Invoke(this, true);
@@ -79,6 +85,7 @@ namespace NuSysApp
 
         private void RectangleRegionView_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+
             var composite = RenderTransform as CompositeTransform;
             var vm = DataContext as ImageRegionViewModel;
             if (vm == null || composite == null)
@@ -117,19 +124,22 @@ namespace NuSysApp
         {
             xMainRectangle.StrokeThickness = 3;
             xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Blue);
-            xResizingRectangle.Visibility = Visibility.Collapsed;
+            xResizingTriangle.Visibility = Visibility.Collapsed;
+
+
         }
 
         public void Selected()
         {
             xMainRectangle.StrokeThickness = 6;
             xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
-            xResizingRectangle.Visibility = Visibility.Visible;
+            //xResizingTriangle.Visibility = Visibility.Visible;
 
         }
         private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-           OnSelected?.Invoke(this, true);
+            OnSelected?.Invoke(this, true);
+
         }
     }
 }

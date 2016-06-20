@@ -18,7 +18,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
     
-    <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <Border x:Name="xBorder" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid x:Name="totalStackPanel">
             <StackPanel x:Name="buttons" Orientation="Horizontal" Background="#565F6D" VerticalAlignment="Top" HorizontalAlignment="Stretch"  Height="30" Visibility="Collapsed">
                 <Button Click="ButtonBase_OnClick" Foreground="{StaticResource foreground6}" Background="Transparent">INK</Button>
