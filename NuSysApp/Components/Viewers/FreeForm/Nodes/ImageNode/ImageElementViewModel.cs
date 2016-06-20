@@ -42,8 +42,13 @@ namespace NuSysApp
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));       
             Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
+            Controller.LibraryElementController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
             
-            
+        }
+
+        private void LibraryElementControllerOnRegionUpdated(object source, Region region)
+        {
+            RaisePropertyChanged("Regions");
         }
 
         private void LibraryElementControllerOnRegionAdded(object source, Region region)

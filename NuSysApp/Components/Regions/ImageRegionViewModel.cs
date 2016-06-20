@@ -29,6 +29,10 @@ namespace NuSysApp
 
         public double Height { get; set; }
         public double Width{ get; set; }
+
+        public delegate void SizeChangedEventHandler(object sender, Point topLeft, Point bottomRight);
+        public event SizeChangedEventHandler SizeChanged;
+
         public ImageRegionViewModel(RectangleRegion model, LibraryElementController controller, Sizeable sizeable) : base(model,controller,sizeable)
         {
             ContainerSizeChanged += BaseSizeChanged;
@@ -46,6 +50,11 @@ namespace NuSysApp
             }
             Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y)*height;
             Width = (model.BottomRightPoint.X - model.TopLeftPoint.X)*width;
+
+            var topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y*height);
+            var bottomRight = new Point(model.BottomRightPoint.X * width, model.BottomRightPoint.Y * height);
+            SizeChanged?.Invoke(this,topLeft,bottomRight);
+
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
         }

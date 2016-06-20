@@ -23,18 +23,40 @@ namespace NuSysApp
         public delegate void RegionSelectedEventHandler(object sender, bool selected);
         public event RegionSelectedEventHandler OnSelected;
 
-        public ImageRegionView(ImageRegionViewModel viewModel)
+        public ImageRegionView(ImageRegionViewModel vm)
         {
-            this.DataContext = viewModel;
             this.InitializeComponent();
+            this.DataContext = vm;
             this.Selected();
-            this.RenderTransform = new CompositeTransform();
+            CompositeTransform composite = new CompositeTransform();
+            this.RenderTransform = composite;
             OnSelected?.Invoke(this, true);
-            viewModel.PropertyChanged += PropertyChanged;
-            xMainRectangle.Width = 50;
-            xMainRectangle.Height = 50;
+            DataContext = vm;
+            vm.PropertyChanged += PropertyChanged;
+            vm.SizeChanged += ChangeSize;
+            var model = vm.Model as RectangleRegion;
+            if (model == null)
+            {
+                return;
+            }
+            var parentWidth = vm.ContainerViewModel.GetWidth();
+            var parentHeight = vm.ContainerViewModel.GetHeight();
+            composite.TranslateX = model.TopLeftPoint.X * parentWidth;
+            composite.TranslateY = model.TopLeftPoint.Y * parentHeight;
+            xMainRectangle.Width = (model.BottomRightPoint.X - model.TopLeftPoint.X)* parentWidth;
+            xMainRectangle.Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y) *parentHeight;
         }
 
+        private void ChangeSize(object sender, Point topLeft, Point bottomRight)
+        {
+            var composite = RenderTransform as CompositeTransform;
+            if (composite == null)
+            {
+                return;
+            }
+            composite.TranslateX = topLeft.X;
+            composite.TranslateY = topLeft.Y;
+        }
         private void PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
