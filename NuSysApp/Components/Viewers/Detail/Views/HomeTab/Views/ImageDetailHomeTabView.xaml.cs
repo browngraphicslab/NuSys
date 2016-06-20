@@ -55,13 +55,16 @@ namespace NuSysApp
                     break;
             }
         }
-        private void DisplayedRegion_OnSelected(object sender, bool selected)
+
+
+
+        private void SelectRegion(ImageRegionView region)
         {
-            SelectedRegion?.Deselected();
-            SelectedRegion = (ImageRegionView)sender;
-            SelectedRegion.Selected();
-           
+            //SelectedRegion?.Deselect();
+            SelectedRegion = region;
+            //SelectedRegion.Select();
         }
+
 
         private void ControllerOnDisposed(object source)
         {
@@ -119,7 +122,8 @@ namespace NuSysApp
 
         private void xImg_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            SelectedRegion?.Deselected();
+            //SelectedRegion?.Deselected();
+            //SelectedRegion = null;
         }
     }
 }

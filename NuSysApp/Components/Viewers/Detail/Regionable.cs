@@ -15,5 +15,7 @@ namespace NuSysApp
 
         public abstract void RemoveRegion(object sender, T displayedRegion);
         public abstract void SizeChanged(object sender, double width, double height);
+
+        public abstract void SetExistingRegions(HashSet<Region> regions);
     }
 }

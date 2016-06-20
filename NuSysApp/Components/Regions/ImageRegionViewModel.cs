@@ -10,6 +10,23 @@ namespace NuSysApp
 {
     public class ImageRegionViewModel : RegionViewModel
     {
+
+        public bool Editable {
+            set { 
+
+                _editable = value;
+                        
+                RaisePropertyChanged("Editable");
+            }
+        get
+            {
+                return _editable;
+            }
+        }
+
+        private bool _editable;
+
+
         public double Height { get; set; }
         public double Width{ get; set; }
 
@@ -21,9 +38,11 @@ namespace NuSysApp
             ContainerSizeChanged += BaseSizeChanged;
             Height = sizeable.GetHeight();
             Width = sizeable.GetWidth();
+            Editable = true;
         }
         private void BaseSizeChanged(object sender, double width, double height)
         {
+
             var model = Model as RectangleRegion;
             if (model == null)
             {
@@ -39,35 +58,6 @@ namespace NuSysApp
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
         }
-        /*
-        public void Translate(double xPercent, double yPercent)
-        {
-            var model = Model as RectangleRegion;
-            if (model == null)
-            {
-                return;
-            }
-            var newTopLeftX = model.TopLeftPoint.X * xPercent;
-            var newTopLeftY = model.TopLeftPoint.Y * yPercent;
-            var newBottomRightX = model.BottomRightPoint.X * xPercent;
-            var newBottomRightY = model.BottomRightPoint.Y * yPercent;
-            
-            model.TopLeftPoint = new Point(newTopLeftX,newTopLeftY);
-            model.BottomRightPoint = new Point(newBottomRightX, newBottomRightY);
-        }
-        public void Resize(double widthPercent, double heightPercent)
-        {
-            var model = Model as RectangleRegion;
-            if (model == null)
-            {
-                return;
-            }
-            var newBottomRightX = model.BottomRightPoint.X * widthPercent;
-            var newBottomRightY = model.BottomRightPoint.Y * heightPercent;
-
-
-            model.BottomRightPoint = new Point(newBottomRightX, newBottomRightY);*/
-
         public void SetNewPoints(Point topLeft, Point bottomRight)
         {
             var model = Model as RectangleRegion;
@@ -84,6 +74,7 @@ namespace NuSysApp
             model.BottomRightPoint = new Point(normalBottomRightX, normalBottomRightY);
             Controller.UpdateRegion(Model);
         }
-        
+
+
     }
 }

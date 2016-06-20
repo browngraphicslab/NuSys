@@ -37,5 +37,10 @@ namespace NuSysApp
         {
             throw new NotImplementedException();
         }
+
+        public override void SetExistingRegions(HashSet<Region> regions)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -35,7 +35,7 @@ namespace NuSysApp
             vm.PropertyChanged += PropertyChanged;
             vm.View = this;
 
-            vm.CreateRegionViews();
+            //vm.CreateRegionViews();
             DataContext = vm;
 
             Loaded += async delegate (object sender, RoutedEventArgs args)

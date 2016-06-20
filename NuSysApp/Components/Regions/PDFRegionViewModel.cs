@@ -11,10 +11,12 @@ namespace NuSysApp
     public class PdfRegionViewModel : RegionViewModel
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public PdfRegion Model { get; set; }
         public double Height { get; set; }
         public double Width { get; set; }
         private LibraryElementController _elementController;
+
+        public delegate void SizeChangedEventHandler(object sender, Point topLeft, Point bottomRight);
+        public event SizeChangedEventHandler SizeChanged;
 
         public PdfRegionViewModel(PdfRegion model, LibraryElementController elementController, Sizeable sizeable) : base(model, elementController, sizeable)
         {
@@ -22,7 +24,6 @@ namespace NuSysApp
             {
                 return;
             }
-            Model = model;
             _elementController = elementController;
             ContainerSizeChanged += BaseSizeChanged;
             Height = (model.BottomRightPoint.Y*sizeable.GetHeight()) - (model.TopLeftPoint.Y*sizeable.GetHeight());
@@ -38,7 +39,12 @@ namespace NuSysApp
                 return;
             }
             Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y) * height;
-            Width = (model.BottomRightPoint.X - model.BottomRightPoint.X) * width;
+            Width = (model.BottomRightPoint.X - model.TopLeftPoint.X) * width;
+
+            var topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
+            var bottomRight = new Point(model.BottomRightPoint.X * width, model.BottomRightPoint.Y * height);
+            SizeChanged?.Invoke(this, topLeft, bottomRight);
+
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
         }
