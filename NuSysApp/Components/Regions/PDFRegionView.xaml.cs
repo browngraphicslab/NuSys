@@ -135,9 +135,10 @@ namespace NuSysApp
         private void RectangleRegionView_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
 
-           ((CompositeTransform)this.RenderTransform).TranslateX += e.Delta.Translation.X;
-           ((CompositeTransform)this.RenderTransform).TranslateY += e.Delta.Translation.Y;
-           e.Handled = true;
+            ((CompositeTransform)this.RenderTransform).TranslateX += e.Delta.Translation.X;
+            ((CompositeTransform)this.RenderTransform).TranslateY += e.Delta.Translation.Y;
+            UpdateViewModel();
+            e.Handled = true;
         }
 
         private void RectangleRegionView_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
