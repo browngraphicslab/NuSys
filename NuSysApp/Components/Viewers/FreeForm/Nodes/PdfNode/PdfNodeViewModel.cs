@@ -40,10 +40,18 @@ namespace NuSysApp
             model.PageChange += OnPageChange;
             CurrentPageNumber = model.CurrentPageNumber;
 
+            RegionViews = new ObservableCollection<PDFRegionView>();
             RegionViews = this.CreatePdfRegionViews();
             
             Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
+            Controller.LibraryElementController.RegionRemoved += LibraryElementController_RegionRemoved;
 
+        }
+
+        private void LibraryElementController_RegionRemoved(object source, Region region)
+        {
+            RegionViews = this.CreatePdfRegionViews();
+            RaisePropertyChanged("RegionViews");
         }
 
         private void LibraryElementControllerOnRegionAdded(object source, Region region)
@@ -57,7 +65,7 @@ namespace NuSysApp
             var vm = new PdfRegionViewModel(pdfRegion, Controller.LibraryElementController, this);
             var view = new PDFRegionView(vm);
 
-            if (pdfRegion.PageLocation != CurrentPageNumber)
+            if (pdfRegion.PageLocation != CurrentPageNumber+1)
             {
                 view.Visibility = Visibility.Collapsed;
             }
@@ -82,7 +90,7 @@ namespace NuSysApp
                 {
                     view.Visibility = Visibility.Collapsed;
                 }
-                RegionViews.Add(view);
+                regionViewCollection.Add(view);
 
             }
             return regionViewCollection;
@@ -338,31 +346,12 @@ namespace NuSysApp
 
         public double GetWidth()
         {
-            return Width;
+            return Controller.Model.Width;
         }
 
         public double GetHeight()
         {
-            return Height;
-        }
-
-        public void AddRegion(object sender, Region region)
-        {
-            var pdfRegion = region as PdfRegion;
-            if (pdfRegion == null)
-            {
-                return;
-            }
-            pdfRegion.PageLocation = CurrentPageNumber;
-            var vm = new PdfRegionViewModel(pdfRegion, Controller.LibraryElementController, this);
-            var view = new PDFRegionView(vm);
-            RegionViews.Add(view);
-            RaisePropertyChanged("RegionViews");
-        }
-
-        public void RemoveRegion(object sender, Region displayedRegion)
-        {
-            Controller.LibraryElementController.RemoveRegion(displayedRegion);
+            return Controller.Model.Height;
         }
 
         public void SizeChanged(object sender, double width, double height)
@@ -373,16 +362,6 @@ namespace NuSysApp
                 regionViewViewModel?.ChangeSize(sender, width, height);
             }
         }
-
-        public void CreateRegionViews()
-        {
-            if (Controller.LibraryElementModel.Regions.Count > 0)
-            {
-                foreach (var region in Controller.LibraryElementModel.Regions)
-                {
-                    RegionViews.Add(new PDFRegionView(new PdfRegionViewModel(region as PdfRegion, Controller.LibraryElementController, this)));
-                }
-            }
-        }
+        
     }
 }
