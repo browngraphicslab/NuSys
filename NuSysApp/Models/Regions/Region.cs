@@ -13,7 +13,9 @@ namespace NuSysApp
         {
             Rectangle,
             Time,
-            Compound
+            Compound,
+            Video,
+            Pdf
         }
         public RegionType Type { get; set; }
         public string Name { get; set; }

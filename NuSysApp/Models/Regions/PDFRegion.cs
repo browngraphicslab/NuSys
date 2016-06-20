@@ -17,6 +17,7 @@ namespace NuSysApp
             TopLeftPoint = p1;
             BottomRightPoint = p2;
             PageLocation = pageLocation;
+            Type = RegionType.Pdf;
         }
 
         

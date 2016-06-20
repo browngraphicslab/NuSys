@@ -64,5 +64,22 @@ namespace NuSysApp
         {
             return View.ActualHeight;
         }
+
+        public override void SetExistingRegions(HashSet<Region> regions)
+        {
+            foreach (var regionModel in regions)
+            {
+                var AudioRegion = regionModel as TimeRegionModel;
+                if (AudioRegion == null)
+                {
+                    return;
+                }
+                var vm = new AudioRegionViewModel(AudioRegion, Controller, this);
+                var view = new AudioRegionView(vm);
+                RegionViews.Add(view);
+
+            }
+            RaisePropertyChanged("RegionViews");
+        }
     }
 }

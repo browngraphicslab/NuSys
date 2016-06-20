@@ -38,7 +38,6 @@ namespace NuSysApp
 
         public ObservableCollection<StackPanel> Metadata { get; set; }
 
-        //public ObservableCollection<Region> Regions { get; set; }
         private Regionable<Region> _regionableViewModel;
 
         private ElementViewModel _currentElementViewModel;
@@ -100,6 +99,7 @@ namespace NuSysApp
             RaisePropertyChanged("RegionView");
             regionView.Loaded += delegate
             {
+                /*
                 var regions = controller.LibraryElementModel.Regions;
 
                 if (regions != null)
@@ -110,6 +110,11 @@ namespace NuSysApp
                         _regionableViewModel?.AddRegion(this, region);
                     }
                 }
+                */
+
+                _regionableViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
+                
+
             };
             SizeChanged += (sender, left, width, height) => _regionableViewModel.SizeChanged(sender, width, height);
             //_nodeModel = controller.LibraryElementModel;

@@ -25,9 +25,11 @@ namespace NuSysApp
 
         public ImageRegionView(ImageRegionViewModel vm)
         {
+
             this.InitializeComponent();
             this.DataContext = vm;
             this.Selected();
+            
             CompositeTransform composite = new CompositeTransform();
             this.RenderTransform = composite;
             OnSelected?.Invoke(this, true);
@@ -45,6 +47,7 @@ namespace NuSysApp
             composite.TranslateY = model.TopLeftPoint.Y * parentHeight;
             xMainRectangle.Width = (model.BottomRightPoint.X - model.TopLeftPoint.X)* parentWidth;
             xMainRectangle.Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y) *parentHeight;
+
         }
 
         private void ChangeSize(object sender, Point topLeft, Point bottomRight)
@@ -86,13 +89,11 @@ namespace NuSysApp
                 return;
             }
 
+           
+            xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
+            xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
+            
 
-
-
-            xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 0);
-            xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 0);
-            ResizerTransform.TranslateX += e.Delta.Translation.X/2;
-            ResizerTransform.TranslateY += e.Delta.Translation.Y/2;
             UpdateViewModel();
 
         }

@@ -31,7 +31,7 @@ namespace NuSysApp
         public MuPDFWinRT.Document _document;
         public ObservableCollection<Button> SuggestedTags { get; set; }
         private List<string> _suggestedTags = new List<string>();
-        public ObservableCollection<PDFRegionView> RegionViews { set; get; }
+        public ObservableCollection<PDFRegionView> RegionViews { private set; get; }
 
         public PdfNodeViewModel(ElementController controller) : base(controller)
         {
@@ -50,14 +50,7 @@ namespace NuSysApp
             }
 
             RegionViews = new ObservableCollection<PDFRegionView>();
-
-            if (controller.LibraryElementModel.Regions.Count > 0)
-            {
-                foreach (var region in controller.LibraryElementModel.Regions)
-                {
-                    RegionViews.Add(new PDFRegionView(new PdfRegionViewModel(region as PdfRegion, controller.LibraryElementController, this)));
-                }
-            }
+            
         }
 
         public override void Dispose()
@@ -318,6 +311,17 @@ namespace NuSysApp
             {
                 var regionViewViewModel = rv.DataContext as RegionViewModel;
                 regionViewViewModel?.ChangeSize(sender, width, height);
+            }
+        }
+
+        public void CreateRegionViews()
+        {
+            if (Controller.LibraryElementModel.Regions.Count > 0)
+            {
+                foreach (var region in Controller.LibraryElementModel.Regions)
+                {
+                    RegionViews.Add(new PDFRegionView(new PdfRegionViewModel(region as PdfRegion, Controller.LibraryElementController, this)));
+                }
             }
         }
     }

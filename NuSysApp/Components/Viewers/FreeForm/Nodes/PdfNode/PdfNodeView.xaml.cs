@@ -166,10 +166,10 @@ namespace NuSysApp
         private void Region_OnClick(object sender, RoutedEventArgs e)
         {
             //_drawingRegion = true;
-            var vm = DataContext as PdfNodeViewModel;
-            var region = new PdfRegion(new Point(.25, .25), new Point(.75, .75), 1);
-            vm?.AddRegion(this, region);
-            vm?.Controller.LibraryElementController.AddRegion(region);
+            //var vm = DataContext as PdfNodeViewModel;
+            //var region = new PdfRegion(new Point(.25, .25), new Point(.75, .75), 1);
+            //vm?.AddRegion(this, region);
+            //vm?.Controller.LibraryElementController.AddRegion(region);
         }
 
         private void XImage_OnPointerPressed(object sender, PointerRoutedEventArgs e)

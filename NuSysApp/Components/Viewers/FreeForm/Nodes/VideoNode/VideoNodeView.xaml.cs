@@ -59,16 +59,16 @@ namespace NuSysApp
             _isRecording = false;
             vm.LinkedTimeModels.CollectionChanged += LinkedTimeBlocks_CollectionChanged;
             _timeBlocks = new List<LinkedTimeBlockViewModel>();
-            scrubBar.SetValue(Canvas.ZIndexProperty, 1);
+            //scrubBar.SetValue(Canvas.ZIndexProperty, 1);
             //  playbackElement.Play();
-            playbackElement.Position = new TimeSpan(0);
+            //playbackElement.Position = new TimeSpan(0);
             //playbackElement.Stop();
 
             vm.Controller.Disposed += ControllerOnDisposed;
 
             ((VideoNodeModel)vm.Model).OnJump += VideoNodeView_OnJump;
 
-            playbackElement.MediaEnded += MediaEnded;
+           // playbackElement.MediaEnded += MediaEnded;
         }
 
         private void MediaEnded(object sender, RoutedEventArgs e)
@@ -103,20 +103,10 @@ namespace NuSysApp
 
         public void VideoNodeView_OnJump(TimeSpan time)
         {
-            playbackElement.Position = time;
-            if (playbackElement.CurrentState != MediaElementState.Playing)
-            {
-                Binding b = new Binding();
-                b.ElementName = "playbackElement";
-                b.Path = new PropertyPath("Position.TotalMilliseconds");
-                scrubBar.SetBinding(ProgressBar.ValueProperty, b);
-
-            }
         }
 
         private void ControllerOnDisposed(object source)
         {
-            playbackElement.Stop();
             var vm = (VideoNodeViewModel) DataContext;
             vm.Controller.LibraryElementController.Loaded -= LoadVideo;
             vm.PropertyChanged -= Node_SelectionChanged;
@@ -129,24 +119,15 @@ namespace NuSysApp
         private void LoadVideo(object sender)
         {
             var vm = DataContext as VideoNodeViewModel;
-            playbackElement.Source = vm.Controller.LibraryElementController.GetSource();
+            VideoMediaPlayer.Source = vm.Controller.LibraryElementController.GetSource();
         }
 
         private void LinkedTimeBlocks_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            var timeBlockVM = new LinkedTimeBlockViewModel((DataContext as VideoNodeViewModel).LinkedTimeModels.Last(), playbackElement.NaturalDuration.TimeSpan, scrubBar);
-            LinkedTimeBlock line = new LinkedTimeBlock(timeBlockVM);
-            line.OnTimeChange += ReSaveLinkModels;
-            line.SetValue(Canvas.ZIndexProperty, 1);
-
-            Grid.SetRow(line, 1);
-            _timeBlocks.Add(timeBlockVM);
-            grid.Children.Add(line);
-            (DataContext as ElementViewModel).Controller.SaveTimeBlock();
         }
         private void SrubBar_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            double ratio = e.GetPosition((UIElement)sender).X / scrubBar.ActualWidth;
+            /*double ratio = e.GetPosition((UIElement)sender).X / scrubBar.ActualWidth;
             double millliseconds = playbackElement.NaturalDuration.TimeSpan.TotalMilliseconds * ratio;
 
             TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)millliseconds);
@@ -161,57 +142,22 @@ namespace NuSysApp
 
                 //playbackElement.Play();
             }
-
+*/
         }
 
         private void ScrubBar_OnPointerMoved(object sender, PointerRoutedEventArgs e)
         {
 
-            if (e.GetCurrentPoint((UIElement)sender).Properties.IsLeftButtonPressed)
-            {
-                if (_addTimeBlockMode == false)
-                {
-                    double ratio = e.GetCurrentPoint((UIElement)sender).Position.X / scrubBar.ActualWidth;
-                    double seconds = playbackElement.NaturalDuration.TimeSpan.TotalSeconds * ratio;
+                    //double ratio = e.GetCurrentPoint((UIElement)sender).Position.X / scrubBar.ActualWidth;
+                  //  double seconds = playbackElement.NaturalDuration.TimeSpan.TotalSeconds * ratio;
 
-                    TimeSpan time = new TimeSpan(0, 0, (int)seconds);
-                    playbackElement.Position = time;
-                    if (playbackElement.CurrentState != MediaElementState.Playing)
-                    {
+                    //TimeSpan time = new TimeSpan(0, 0, (int)seconds);
                         Binding b = new Binding();
                         b.ElementName = "playbackElement";
                         b.Path = new PropertyPath("Position.TotalMilliseconds");
-                        scrubBar.SetBinding(ProgressBar.ValueProperty, b);
+                        //scrubBar.SetBinding(ProgressBar.ValueProperty, b);
 
                         //playbackElement.Play();
-                    }
-                    else
-                    {
-                        ((UIElement)sender).CapturePointer(e.Pointer);
-                        playbackElement.Pause();
-                        _shouldBePlay = true;
-                    }
-
-                }
-                else if (_addTimeBlockMode == true)
-                {
-                    ((UIElement)sender).CapturePointer(e.Pointer);
-
-                    if (grid.Children.Contains(_temporaryLinkVisual))
-                    {
-                        _temporaryLinkVisual.X2 = e.GetCurrentPoint(grid).Position.X;
-                    }
-                    else
-                    {
-                        _temporaryLinkVisual.X1 = e.GetCurrentPoint(grid).Position.X;
-                        _temporaryLinkVisual.X2 = e.GetCurrentPoint(grid).Position.X;
-                        grid.Children.Add(_temporaryLinkVisual);
-                    }
-
-
-                }
-
-            }
             e.Handled = true;
         }
 
@@ -220,82 +166,16 @@ namespace NuSysApp
 
         private void ScrubBar_OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            foreach (var element in _timeBlocks)
-            {
-                element.ResizeLine1();
-            }
+            //foreach (var element in _timeBlocks)
+           // {
+           //     element.ResizeLine1();
+           // }
         }
 
 
        
 
 
-        private void OnStop_Click(object sender, TappedRoutedEventArgs e)
-        {
-            /*     if (_recording)
-                 {
-                     ToggleRecording(CurrentAudioFile.Name);
-                 }*/
-            playbackElement.Stop();
-            //scrubBar.Value = 0;
-            //playbackElement.Position = new TimeSpan(0,0,0,0,1);
-            scrubBar.Value = 0;
-
-            //playbackElement.Stop();
-
-
-            //playbackElement.Position = new TimeSpan(0,0,0,0,0);
-
-            //       _stopped = true;
-            e.Handled = true;
-        }
-
-
-        private async void OnPlay_Click(object sender, RoutedEventArgs e)
-        {
-            /*   if (_recording)
-               {
-                  ToggleRecording(CurrentAudioFile.Name);
-               }
-               else
-               {
-                  // pause.Opacity = 1;
-                   play.Opacity = .3;
-                   if (_stopped)
-                   {
-                       _stopped = false;
-                       if (CurrentAudioFile == null) return;
-                       var stream = await CurrentAudioFile.OpenAsync(FileAccessMode.Read);
-                       playbackElement.SetSource(stream, CurrentAudioFile.FileType);
-                   }MediaType.Video
-                   playbackElement.MediaEnded += delegate(object o, RoutedEventArgs e2)
-                   {
-                       play.Opacity = 1;
-                   };*/
-            if (playbackElement.CurrentState != MediaElementState.Playing)
-            {
-                Binding b = new Binding();
-                b.ElementName = "playbackElement";
-                b.Path = new PropertyPath("Position.TotalMilliseconds");
-                scrubBar.SetBinding(ProgressBar.ValueProperty, b);
-
-                playbackElement.Play();
-            }
-        }
-
-        private void OnPause_Click(object sender, RoutedEventArgs e)
-        {
-
-            playbackElement.Pause();
-            //playbackElement.Position = new TimeSpan(0);
-            //    pause.Opacity = .3;
-        }
-        /*private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            var vm = (ElementViewModel)this.DataContext;
-            vm.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
-            e.Handled = true;
-        }*/
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
             var vm = (ElementViewModel)DataContext;
@@ -312,31 +192,6 @@ namespace NuSysApp
 
 
 
-        private void PlaybackElement_MediaOpened(object sender, RoutedEventArgs e)
-        {
-            var vm = (VideoNodeViewModel)this.DataContext;
-            var model = (VideoNodeModel)vm.Model;
-            model.ResolutionX = playbackElement.AspectRatioWidth;
-            model.ResolutionY = playbackElement.AspectRatioHeight;
-
-            double width = this.Width;
-            double height = this.Height;
-            vm.Controller.SetSize(width, height);
-            playbackElement.Position = new TimeSpan(0);
-            this.AddAllLinksVisually();
-            _temporaryLinkVisual = new Line();
-            _temporaryLinkVisual.Stroke = new SolidColorBrush(Colors.Aqua);
-            Grid.SetRow(_temporaryLinkVisual, 1);
-            _temporaryLinkVisual.StrokeThickness = scrubBar.ActualHeight;
-            _temporaryLinkVisual.Y1 = scrubBar.ActualHeight / 2 + scrubBar.Margin.Top;
-            _temporaryLinkVisual.Y2 = scrubBar.ActualHeight / 2 + scrubBar.Margin.Top;
-            _temporaryLinkVisual.PointerMoved += ScrubBar_OnPointerMoved;
-            _temporaryLinkVisual.PointerReleased += ScrubBar_OnPointerReleased;
-            _temporaryLinkVisual.Opacity = 1;
-
-        }
-        public int AspectHeight { get { return playbackElement.AspectRatioHeight; } }
-        public int AspectWidth { get { return playbackElement.AspectRatioWidth; } }
 
         private void Region_OnClick(object sender, RoutedEventArgs e)
         {
@@ -348,7 +203,6 @@ namespace NuSysApp
             //{
             //    _addTimeBlockMode = false;
             //}
-            this.CreateTimeBlock(playbackElement.Position, new TimeSpan(0, 0, 0, 0, (int)playbackElement.Position.TotalMilliseconds + (int)(playbackElement.NaturalDuration.TimeSpan.TotalMilliseconds - playbackElement.Position.TotalMilliseconds) / 4));
 
 
 
@@ -356,85 +210,17 @@ namespace NuSysApp
 
         private void ScrubBar_OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            if (_shouldBePlay)
-            {
-                playbackElement.Play();
                 _shouldBePlay = false;
                 ((UIElement)sender).ReleasePointerCapture(e.Pointer);
 
-
-            }
-            if (_addTimeBlockMode == true)
-            {
-                if (grid.Children.Contains(_temporaryLinkVisual))
-                {
-                    int xwithinscrub =
-                        (int)(_temporaryLinkVisual.X1 - (Canvas.GetLeft(scrubBar) + scrubBar.Margin.Left));
-                    if (xwithinscrub < 0)
-                    {
-                        xwithinscrub = 0;
-                    }
-                    else if (xwithinscrub > Canvas.GetLeft(scrubBar) + scrubBar.ActualWidth)
-                    {
-                        xwithinscrub = (int)(Canvas.GetLeft(scrubBar) + scrubBar.ActualWidth);
-                    }
-                    int start = (int)((xwithinscrub / (scrubBar.ActualWidth)) * playbackElement.NaturalDuration.TimeSpan.TotalMilliseconds);
-                    int x2withinscrub = (int)(_temporaryLinkVisual.X2 - (Canvas.GetLeft(scrubBar) + scrubBar.Margin.Left));
-                    if (x2withinscrub < 0)
-                    {
-                        x2withinscrub = 0;
-                    }
-                    else if (x2withinscrub > Canvas.GetLeft(scrubBar) + scrubBar.ActualWidth)
-                    {
-                        x2withinscrub = (int)(Canvas.GetLeft(scrubBar) + scrubBar.ActualWidth);
-                    }
-                    int end = (int)((x2withinscrub / (scrubBar.ActualWidth)) * playbackElement.NaturalDuration.TimeSpan.TotalMilliseconds);
-                    CreateTimeBlock(new TimeSpan(0, 0, 0, 0, start), new TimeSpan(0, 0, 0, 0, end));
-                    grid.Children.Remove(_temporaryLinkVisual);
-                    ((UIElement)sender).ReleasePointerCapture(e.Pointer);
-
-
-                }
-            }
         }
 
-        private void AddAllLinksVisually()
-        {
-            foreach (var element in (DataContext as VideoNodeViewModel).LinkedTimeModels)
-            {
-                var timeBlockVM = new LinkedTimeBlockViewModel(element, playbackElement.NaturalDuration.TimeSpan, scrubBar);
-                LinkedTimeBlock line = new LinkedTimeBlock(timeBlockVM);
-                line.OnTimeChange += ReSaveLinkModels;
-                line.SetValue(Canvas.ZIndexProperty, 1);
-
-
-                Grid.SetRow(line, 1);
-                _timeBlocks.Add(timeBlockVM);
-                grid.Children.Add(line);
-                timeBlockVM.setUpHandlers(line.getLine());
-
-            }
-            scrubBar.SizeChanged += ScrubBar_OnSizeChanged;
-
-        }
 
         public void ReSaveLinkModels()
         {
             (DataContext as ElementViewModel).Controller.SaveTimeBlock();
 
         }
-
-        public void CreateTimeBlock(TimeSpan start, TimeSpan end)
-        {
-            LinkedTimeBlockModel model = new LinkedTimeBlockModel(start, end);
-            LinkedTimeBlockViewModel link = new LinkedTimeBlockViewModel(model, playbackElement.NaturalDuration.TimeSpan, scrubBar);
-
-            (DataContext as VideoNodeViewModel).AddLinkTimeModel(model);
-
-        }
-
-
-
     }
 }
 

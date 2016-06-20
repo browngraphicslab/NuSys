@@ -17,6 +17,7 @@ namespace NuSysApp
 {
     public class ImageElementViewModel : ElementViewModel, Sizeable
     {
+        /*
         public ObservableCollection<ImageRegionView> Regions { get
             {
                 var collection = new ObservableCollection<ImageRegionView>();
@@ -37,13 +38,17 @@ namespace NuSysApp
             }
         }
 
+            */
+        public ObservableCollection<ImageRegionView> Regions { private set; get; }
+
         public LibraryElementController LibraryElementController{get { return Controller.LibraryElementController; }}
         public ImageElementViewModel(ElementController controller) : base(controller)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));       
             Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
             Controller.LibraryElementController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
-            
+
+            Regions = new ObservableCollection<ImageRegionView>();
         }
 
         private void LibraryElementControllerOnRegionUpdated(object source, Region region)
@@ -53,6 +58,14 @@ namespace NuSysApp
 
         private void LibraryElementControllerOnRegionAdded(object source, Region region)
         {
+            var imageRegion = region as RectangleRegion;
+            if (imageRegion == null)
+            {
+                return;
+            }
+            var vm = new ImageRegionViewModel(imageRegion, Controller.LibraryElementController, this);
+            var view = new ImageRegionView(vm);
+            Regions.Add(view);
             RaisePropertyChanged("Regions");
         }
 
