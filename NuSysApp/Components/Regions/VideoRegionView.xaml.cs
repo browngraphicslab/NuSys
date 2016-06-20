@@ -17,17 +17,16 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
-    public sealed partial class AudioRegionView : UserControl
+    public sealed partial class VideoRegionView : UserControl
     {
         private bool _toggleManipulation;
         public delegate void RegionSelectedEventHandler(object sender, bool selected);
         public event RegionSelectedEventHandler OnSelected;
-        public AudioRegionView(AudioRegionViewModel vm)
+        public VideoRegionView(VideoRegionViewModel vm)
         {
             this.InitializeComponent();
             this.DataContext = vm;
             _toggleManipulation = false;
-            Rect.RenderTransform = new CompositeTransform();
         }
 
         private void Handle_OnPointerPressed(object sender, PointerRoutedEventArgs e)

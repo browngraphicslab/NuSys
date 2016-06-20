@@ -10,6 +10,23 @@ namespace NuSysApp
 {
     public class ImageRegionViewModel : RegionViewModel
     {
+
+        public bool Editable {
+            set { 
+
+                _editable = value;
+                        
+                RaisePropertyChanged("Editable");
+            }
+        get
+            {
+                return _editable;
+            }
+        }
+
+        private bool _editable;
+
+
         public double Height { get; set; }
         public double Width{ get; set; }
 
@@ -21,9 +38,11 @@ namespace NuSysApp
             ContainerSizeChanged += BaseSizeChanged;
             Height = sizeable.GetHeight();
             Width = sizeable.GetWidth();
+            Editable = true;
         }
         private void BaseSizeChanged(object sender, double width, double height)
         {
+
             var model = Model as RectangleRegion;
             if (model == null)
             {
@@ -84,6 +103,7 @@ namespace NuSysApp
             model.BottomRightPoint = new Point(normalBottomRightX, normalBottomRightY);
             Controller.UpdateRegion(Model);
         }
-        
+
+
     }
 }

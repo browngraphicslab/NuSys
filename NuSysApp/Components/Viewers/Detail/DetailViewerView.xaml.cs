@@ -35,7 +35,7 @@ namespace NuSysApp
             this.InitializeComponent();
 
             xMetadataEditorView = (MetadataEditorView) FindName("xMetadataEditorView");
-            xMetadataEditorView.DetailViewerView = this;
+            
 
             xRegionEditorView = (RegionEditorTabView)FindName("xRegionEditorView");
             xRegionEditorView.DetailViewerView = this;
@@ -58,25 +58,28 @@ namespace NuSysApp
 
 
             DataContextChanged += delegate(FrameworkElement sender, DataContextChangedEventArgs args)
-              {
-                  if (!(DataContext is DetailViewerViewModel))
+            {
+                var dataContext = DataContext as DetailViewerViewModel;
+                  if (dataContext == null) { 
                       return;
+                   }
 
-                  (DataContext as DetailViewerViewModel).SizeChanged += Resize;
+                  dataContext.SizeChanged += Resize;
 
-                  var vm = (DetailViewerViewModel)DataContext;
+                  var vm = dataContext;
 
                   vm.PropertyChanged += OnPropertyChanged;
                   vm.TitleChanged += LibraryElementModelTitleChanged;
                   Tags.ItemsSource = vm.Tags;
                   vm.MakeTagList();
 
+                  xMetadataEditorView.Metadatable = vm.CurrentElementController;
 
                   //xRegionEditorView = (RegionEditorTabView)FindName("xRegionEditorView");
                   //xRegionEditorView.DetailViewerView = this;
                   //xRegionEditorView.DataContext = this.DataContext;
                   //xRegionEditorView.DataContext = (DetailViewerViewModel)this.DataContext;
-                  
+
                   //xRegionEditorView = (RegionEditorView)FindName("xRegionEditorView");
                   //xRegionEditorView.DataContext = this.DataContext;
                   //xRegionEditorView.DetailViewerViewModel = (DetailViewerViewModel)this.DataContext;
@@ -190,7 +193,7 @@ namespace NuSysApp
                 SuggestButton.Visibility = Visibility.Collapsed;
             }
 
-
+            xMetadataEditorView.Metadatable = vm.CurrentElementController;
             xMetadataEditorView.Update();
         }
 
