@@ -30,7 +30,7 @@ namespace NuSysApp
         public double RegionHeight { get; set; }
         public double RegionWidth { get; set; }
 
-        public AudioRegionViewModel(TimeRegionModel model, LibraryElementController controller, Sizeable sizeable) : base(model,controller, sizeable)
+        public AudioRegionViewModel(TimeRegionModel model, LibraryElementController libraryElementController, RegionController regionController,  Sizeable sizeable) : base(model,libraryElementController, regionController, sizeable)
         {
             ContainerSizeChanged += BaseSizeChanged;
             RegionWidth = sizeable.GetWidth();

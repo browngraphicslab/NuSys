@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,9 +14,34 @@ namespace NuSysApp
         public event PropertyChangedEventHandler PropertyChanged;
         public double ContainerHeight { get; set; }
         public double ContainerWidth { get; set; }
-        public double Height { get; set; }
-        public double Width { get; set; }
+        private double _height;
+        private double _width;
+
+        public double Height
+        {
+            get { return _height; }
+            set
+            {
+                _height = value;
+                RaisePropertyChanged("Height");
+            }
+        }
+
+        public double Width
+        {
+            get { return _width; }
+            set
+            {
+                _width = value;
+                RaisePropertyChanged("Width");
+            }
+        }
+
+        //public double Width { get; set; }
         public bool Editable { get; set; }
+
+        public double OriginalHeight { get; set; }
+        public double OriginalWidth { get; set; }
 
         public delegate void SizeChangedEventHandler(object sender, Point topLeft, Point bottomRight);
         public event SizeChangedEventHandler SizeChanged;
@@ -24,7 +50,7 @@ namespace NuSysApp
 
         public event RegionUpdatedEventHandler RegionChanged;
 
-        public PdfRegionViewModel(PdfRegion model, LibraryElementController elementController, Sizeable sizeable) : base(model, elementController, sizeable)
+        public PdfRegionViewModel(PdfRegion model, LibraryElementController elementController, RegionController regionController, Sizeable sizeable) : base(model, elementController, regionController, sizeable)
         {
             if (model == null)
             {
@@ -38,6 +64,7 @@ namespace NuSysApp
             ContainerWidth = sizeable.GetWidth();
             elementController.RegionUpdated += RegionUpdated;
             Editable = true;
+
         }
 
         private void RegionUpdated(object source, Region region)
@@ -51,8 +78,9 @@ namespace NuSysApp
             {
                 return;
             }
+            //Debug.WriteLine("sdfsdfsdf");
             Height = model.BottomRightPoint.Y * ContainerViewModel.GetHeight() - model.TopLeftPoint.Y * ContainerViewModel.GetHeight();
-            Width = model.BottomRightPoint.X * ContainerViewModel.GetWidth() - model.TopLeftPoint.X * ContainerViewModel.GetWidth();
+           // Width = model.BottomRightPoint.X * ContainerViewModel.GetWidth() - model.TopLeftPoint.X * ContainerViewModel.GetWidth();
             RegionChanged?.Invoke(this, Height, Width);
             var topLeft = new Point(model.TopLeftPoint.X * ContainerViewModel.GetWidth(), model.TopLeftPoint.Y * ContainerViewModel.GetHeight());
             var bottomRight = new Point(model.BottomRightPoint.X * ContainerViewModel.GetWidth(), model.BottomRightPoint.Y * ContainerViewModel.GetHeight());
@@ -100,7 +128,7 @@ namespace NuSysApp
 
             model.TopLeftPoint = new Point(normalTopLeftX, normalTopLeftY);
             model.BottomRightPoint = new Point(normalBottomRightX, normalBottomRightY);
-            Controller.UpdateRegion(Model);
+            LibraryElementController.UpdateRegion(Model);
         }
 
     }

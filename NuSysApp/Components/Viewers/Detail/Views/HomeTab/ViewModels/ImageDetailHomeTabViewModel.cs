@@ -13,14 +13,14 @@ namespace NuSysApp
 {
     public class ImageDetailHomeTabViewModel : DetailHomeTabViewModel, Sizeable
     {
-        public LibraryElementController Controller { get; }
+        public LibraryElementController LibraryElementController { get; }
         public LibraryElementModel Model { get; }
         public ObservableCollection<ImageRegionView> RegionViews { set; get; }
         public Uri Image { get; }
         //public Boolean Editable { get; set; }
         public ImageDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
-            Controller = controller;
+            LibraryElementController = controller;
             Model = controller.LibraryElementModel;
             // controller.RegionAdded += RegionAdded;
             // controller.RegionRemoved += RegionRemoved;
@@ -37,7 +37,8 @@ namespace NuSysApp
             {
                 return;
             }
-            var vm = new ImageRegionViewModel(imageRegion, Controller, this);
+            var regionController = new RegionController(imageRegion);
+            var vm = new ImageRegionViewModel(imageRegion, LibraryElementController, regionController, this);
             if (!Editable)
                 vm.Editable = false;
             var view = new ImageRegionView(vm);
@@ -95,7 +96,8 @@ namespace NuSysApp
                 {
                     return;
                 }
-                var vm = new ImageRegionViewModel(imageRegion, Controller, this);
+                var regionController = new RegionController(imageRegion);
+                var vm = new ImageRegionViewModel(imageRegion, LibraryElementController, regionController, this);
                 if (!Editable)
                     vm.Editable = false;
                 var view = new ImageRegionView(vm);

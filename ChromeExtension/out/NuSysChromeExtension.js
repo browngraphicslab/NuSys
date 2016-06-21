@@ -6,12 +6,7 @@
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-<<<<<<< HEAD
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-=======
-    __.prototype = b.prototype;
-    d.prototype = new __();
->>>>>>> d653df1ecdeb646a5743ab24f6d2b75395acd484
 };
 /**
  * @namespace Top level namespace for collections, a TypeScript data structure library.
@@ -2845,7 +2840,6 @@ var Rectangle = (function () {
             r2.x + r2.w < this.x ||
             r2.y > this.y + this.h ||
             r2.y + r2.h < this.y);
-<<<<<<< HEAD
     };
     return Rectangle;
 })();
@@ -2923,85 +2917,6 @@ var Stroke = (function () {
         error /= this.points.length;
         return { length: this.points.length, error: m };
     };
-=======
-    };
-    return Rectangle;
-})();
-/// <reference path="../util/Rectangle.ts"/>
-var Stroke = (function () {
-    function Stroke() {
-        this.documentOffsetX = 0;
-        this.documentOffsetY = 0;
-        this.points = new Array();
-    }
-    Stroke.fromPoints = function (points) {
-        var stroke = new Stroke();
-        stroke.points = points.slice(0);
-        return stroke;
-    };
-    Stroke.prototype.getBoundingRect = function () {
-        var minX = 1000000;
-        var maxX = -1000000;
-        var minY = 1000000;
-        var maxY = -1000000;
-        for (var i = 0; i < this.points.length; i++) {
-            var p = this.points[i];
-            maxY = p.y > maxY ? p.y : maxY;
-            maxX = p.x > maxX ? p.x : maxX;
-            minX = p.x < minX ? p.x : minX;
-            minY = p.y < minY ? p.y : minY;
-        }
-        return new Rectangle(minX, minY, maxX - minX, maxY - minY);
-    };
-    Stroke.prototype.breakUp = function () {
-        var segments = new Array();
-        for (var i = 1; i < this.points.length; i++) {
-            var p0 = this.points[i - 1];
-            var p1 = this.points[i];
-            segments.push(Line.fromPoint(p0, p1));
-        }
-        return segments;
-    };
-    Stroke.prototype.getResampled = function (samples) {
-        var c = this.getCopy();
-        c.resample(samples);
-        return c;
-    };
-    Stroke.prototype.getEntropy = function () {
-        var angles = [];
-        for (var i = 1; i < this.points.length; i++) {
-            var v0 = new Vector2(this.points[i - 1].x, this.points[i - 1].y);
-            var v1 = new Vector2(this.points[i].x, this.points[i].y);
-            angles.push(v0.angleTo(v1));
-        }
-    };
-    Stroke.prototype.getStrokeMetrics = function () {
-        var startPoint = Vector2.fromPoint(this.points[0]);
-        var endPoint = Vector2.fromPoint(this.points[this.points.length - 1]);
-        var l = endPoint.subtract(startPoint);
-        var ln = l.getNormalized();
-        var error = 0;
-        var errors = [];
-        for (var i = 0; i < this.points.length; i++) {
-            var a = Vector2.fromPoint(this.points[i]).subtract(startPoint);
-            var b = ln.multiply(a.dot(ln));
-            var c = a.subtract(b);
-            error += Math.abs(c.length());
-            errors.push(Math.abs(c.length()));
-        }
-        function median(values) {
-            values.sort(function (a, b) { return a - b; });
-            var half = Math.floor(values.length / 2);
-            if (values.length % 2)
-                return values[half];
-            else
-                return (values[half - 1] + values[half]) / 2.0;
-        }
-        var m = median(errors);
-        error /= this.points.length;
-        return { length: this.points.length, error: m };
-    };
->>>>>>> d653df1ecdeb646a5743ab24f6d2b75395acd484
     Stroke.prototype.resample = function (numSamples) {
         var oldSamples = this.points;
         var scale = numSamples / oldSamples.length;

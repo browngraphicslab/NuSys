@@ -36,8 +36,6 @@ namespace NuSysApp
             {
                 return;
             }
-            var vm = new ImageRegionViewModel(imageRegion, Controller.LibraryElementController, this);
-            var view = new ImageRegionView(vm);
 
             foreach (var regionView in Regions.ToList<ImageRegionView>())
             {
@@ -60,7 +58,8 @@ namespace NuSysApp
             Regions.Clear();
             foreach (var model in regionHashSet)
             {
-                var viewmodel = new ImageRegionViewModel(model as RectangleRegion, elementController, this);
+                var regionController = new RegionController(model as RectangleRegion);
+                var viewmodel = new ImageRegionViewModel(model as RectangleRegion, elementController, regionController, this);
                 viewmodel.Editable = false;
                 var view = new ImageRegionView(viewmodel);
                 Regions.Add(view);
@@ -86,7 +85,8 @@ namespace NuSysApp
             {
                 return;
             }
-            var vm = new ImageRegionViewModel(imageRegion, Controller.LibraryElementController, this);
+            var regionController = new RegionController(imageRegion);
+            var vm = new ImageRegionViewModel(imageRegion, Controller.LibraryElementController, regionController, this);
             var view = new ImageRegionView(vm);
             vm.Editable = false;
             Regions.Add(view);

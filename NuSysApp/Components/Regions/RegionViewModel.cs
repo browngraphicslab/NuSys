@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 
 namespace NuSysApp
 {
@@ -16,14 +17,29 @@ namespace NuSysApp
         public delegate void SizeChangedEventHandler(object sender, double width, double height);
         public event SizeChangedEventHandler ContainerSizeChanged;
         #endregion Public variables
-        protected LibraryElementController Controller;
+        protected LibraryElementController LibraryElementController;
+        protected RegionController RegionController;
 
-        public RegionViewModel(Region model, LibraryElementController controller, Sizeable sizeable)
+        public RegionViewModel(Region model, LibraryElementController controller, RegionController regionController, Sizeable sizeable)
         {
             Model = model;
-            Controller = controller;
+            LibraryElementController = controller;
             ContainerViewModel = sizeable;
+            RegionController = regionController;
+            regionController.SizeChanged += OnSizeChanged;
+            regionController.RegionChanged += OnRegionChanged;
         }
+
+        private void OnRegionChanged(object sender, double height, double width)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnSizeChanged(object sender, Point topLeft, Point bottomRight)
+        {
+            throw new NotImplementedException();
+        }
+
         public void ChangeSize(object sender, double width, double height)
         {
             ContainerSizeChanged?.Invoke(sender,width,height);

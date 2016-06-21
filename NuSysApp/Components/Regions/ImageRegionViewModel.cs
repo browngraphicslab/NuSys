@@ -36,13 +36,13 @@ namespace NuSysApp
 
         public event RegionUpdatedEventHandler RegionChanged;
 
-        public ImageRegionViewModel(RectangleRegion model, LibraryElementController controller, Sizeable sizeable) : base(model,controller,sizeable)
+        public ImageRegionViewModel(RectangleRegion model, LibraryElementController libraryElementController, RegionController regionController, Sizeable sizeable) : base(model,libraryElementController, regionController,sizeable)
         {
             ContainerSizeChanged += BaseSizeChanged;
             Height = (model.BottomRightPoint.Y * sizeable.GetHeight()) - (model.TopLeftPoint.Y * sizeable.GetHeight());
             Width = (model.BottomRightPoint.X * sizeable.GetWidth()) - (model.TopLeftPoint.X * sizeable.GetWidth());
             Editable = true;
-            controller.RegionUpdated += Controller_RegionUpdated;
+            libraryElementController.RegionUpdated += Controller_RegionUpdated;
 
         }
 
@@ -105,7 +105,7 @@ namespace NuSysApp
 
             model.TopLeftPoint = new Point(normalTopLeftX, normalTopLeftY);
             model.BottomRightPoint = new Point(normalBottomRightX, normalBottomRightY);
-            Controller.UpdateRegion(Model);
+            LibraryElementController.UpdateRegion(Model);
         }
 
 
