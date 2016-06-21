@@ -50,7 +50,7 @@ namespace NuSysApp
 
         public event RegionUpdatedEventHandler RegionChanged;
 
-        public PdfRegionViewModel(PdfRegion model, LibraryElementController elementController, Sizeable sizeable) : base(model, elementController, sizeable)
+        public PdfRegionViewModel(PdfRegion model, LibraryElementController elementController, RegionController regionController, Sizeable sizeable) : base(model, elementController, regionController, sizeable)
         {
             if (model == null)
             {
@@ -128,7 +128,7 @@ namespace NuSysApp
 
             model.TopLeftPoint = new Point(normalTopLeftX, normalTopLeftY);
             model.BottomRightPoint = new Point(normalBottomRightX, normalBottomRightY);
-            Controller.UpdateRegion(Model);
+            LibraryElementController.UpdateRegion(Model);
         }
 
     }

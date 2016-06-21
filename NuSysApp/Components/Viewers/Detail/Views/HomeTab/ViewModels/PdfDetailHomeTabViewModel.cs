@@ -157,7 +157,8 @@ namespace NuSysApp
                 return;
             }
             pdfRegion.PageLocation = _pageNumber;
-            var vm = new PdfRegionViewModel(pdfRegion, Controller, this);
+            var regionController = new RegionController(pdfRegion);
+            var vm = new PdfRegionViewModel(pdfRegion, Controller, regionController, this);
             var view = new PDFRegionView(vm);
             
             RegionViews.Add(view);
@@ -209,8 +210,9 @@ namespace NuSysApp
                 {
                     return;
                 }
-                
-                var vm = new PdfRegionViewModel(pdfRegion, Controller, this);
+
+                var regionController = new RegionController(pdfRegion);
+                var vm = new PdfRegionViewModel(pdfRegion, Controller, regionController, this);
                 var view = new PDFRegionView(vm);
                 if (pdfRegion.PageLocation != _pageNumber)
                 {

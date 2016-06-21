@@ -63,8 +63,9 @@ namespace NuSysApp
             {
                 return;
             }
-            
-            var vm = new PdfRegionViewModel(pdfRegion, Controller.LibraryElementController, this);
+
+            var regionController = new RegionController(pdfRegion);
+            var vm = new PdfRegionViewModel(pdfRegion, Controller.LibraryElementController, regionController, this);
             vm.Editable = false;
             var view = new PDFRegionView(vm);
 
@@ -87,7 +88,8 @@ namespace NuSysApp
                     return null;
                 }
 
-                var vm = new PdfRegionViewModel(pdfRegion, Controller.LibraryElementController, this);
+                var regionController = new RegionController(pdfRegion);
+                var vm = new PdfRegionViewModel(pdfRegion, Controller.LibraryElementController, regionController, this);
                 vm.Editable = false;
                 var view = new PDFRegionView(vm);
                 if (pdfRegion.PageLocation != CurrentPageNumber)
