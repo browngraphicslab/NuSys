@@ -17,7 +17,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <MediaElement x:Name="playbackElement" AreTransportControlsEnabled="False"  Loaded="PlaybackElement_Onloaded" AutoPlay="False"/>
+        <MediaElement x:Name="playbackElement" AreTransportControlsEnabled="False"  Loaded="PlaybackElement_Onloaded" AutoPlay="False" MediaOpened="PlaybackElement_MediaOpened"/>
         <ProgressBar x:Name ="scrubBar" Height ="25" PointerReleased="ScrubBar_OnPointerReleased"  Grid.Row="1" Margin="10,10,10,10" Value = "0" Maximum="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan.TotalMilliseconds}" Tapped="SrubBar_OnTapped" PointerMoved="ScrubBar_OnPointerMoved"  Opacity="0.3" />
 
         <Grid Grid.Row="2" HorizontalAlignment="Left">

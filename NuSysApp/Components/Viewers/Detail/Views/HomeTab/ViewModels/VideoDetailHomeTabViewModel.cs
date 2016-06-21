@@ -14,6 +14,7 @@ namespace NuSysApp
         public VideoDetailHomeTabViewModel(LibraryElementController controller) :  base(controller)
         {
             Controller = controller;
+            RegionViews = new ObservableCollection<VideoRegionView>();
         }
 
         public override void AddRegion(object sender, Region region)
@@ -50,7 +51,19 @@ namespace NuSysApp
 
         public override void SetExistingRegions(HashSet<Region> regions)
         {
-            throw new NotImplementedException();
+            foreach (var regionModel in regions)
+            {
+                var VideoRegion = regionModel as VideoRegionModel;
+                if (VideoRegion == null)
+                {
+                    return;
+                }
+                var vm = new VideoRegionViewModel(VideoRegion, Controller, this);
+                var view = new VideoRegionView(vm);
+                RegionViews.Add(view);
+
+            }
+            RaisePropertyChanged("RegionViews");
         }
     }
 }

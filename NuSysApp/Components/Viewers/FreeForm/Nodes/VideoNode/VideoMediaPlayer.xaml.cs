@@ -38,18 +38,21 @@ namespace NuSysApp
 
         private void PlaybackElement_Onloaded(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void PlaybackElement_MediaOpened(object sender, RoutedEventArgs e)
         {
-            var vm = (VideoNodeViewModel)this.DataContext;
-            var model = (VideoNodeModel)vm.Model;
+            var vm = this.DataContext as VideoNodeViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+            var model = vm.Model as VideoNodeModel;
             model.ResolutionX = playbackElement.AspectRatioWidth;
             model.ResolutionY = playbackElement.AspectRatioHeight;
 
-            double width = this.Width;
-            double height = this.Height;
+            double width = this.ActualWidth;
+            double height = this.ActualHeight;
             vm.Controller.SetSize(width, height);
             playbackElement.Position = new TimeSpan(0);
 
