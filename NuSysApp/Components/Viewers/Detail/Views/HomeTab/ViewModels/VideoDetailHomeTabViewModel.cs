@@ -24,7 +24,8 @@ namespace NuSysApp
             {
                 return;
             }
-            var vm = new VideoRegionViewModel(videoRegion, Controller, this);
+            var regionController = new RegionController(region);
+            var vm = new VideoRegionViewModel(videoRegion, Controller, regionController, this);
             var view = new VideoRegionView(vm);
             RegionViews.Add(view);
             RaisePropertyChanged("RegionViews");
@@ -58,7 +59,8 @@ namespace NuSysApp
                 {
                     return;
                 }
-                var vm = new VideoRegionViewModel(VideoRegion, Controller, this);
+                var regionController = new RegionController(regionModel);
+                var vm = new VideoRegionViewModel(VideoRegion, Controller, regionController, this);
                 var view = new VideoRegionView(vm);
                 RegionViews.Add(view);
 

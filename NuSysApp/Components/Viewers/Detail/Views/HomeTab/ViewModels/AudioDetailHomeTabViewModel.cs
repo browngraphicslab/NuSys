@@ -33,7 +33,8 @@ namespace NuSysApp
             {
                 return;
             }
-            var vm = new AudioRegionViewModel(AudioRegion, Controller, this);
+            var regionController = new RegionController(region);
+            var vm = new AudioRegionViewModel(AudioRegion, Controller, regionController, this);
             var view = new AudioRegionView(vm);
             RegionViews.Add(view);
             RaisePropertyChanged("RegionViews");
@@ -74,7 +75,8 @@ namespace NuSysApp
                 {
                     return;
                 }
-                var vm = new AudioRegionViewModel(AudioRegion, Controller, this);
+            var regionController = new RegionController(regionModel);
+                var vm = new AudioRegionViewModel(AudioRegion, Controller, regionController, this);
                 var view = new AudioRegionView(vm);
                 RegionViews.Add(view);
 
