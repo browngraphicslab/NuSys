@@ -17,10 +17,10 @@ namespace NuSysApp
             End = end;
              
         }
-        Point TopLeft { get; set; }
-        Point BottonRight { get; set; }
-        double Start { get; set; }
-        double End { get; set; }
+        public Point TopLeft { get; set; }
+        public Point BottonRight { get; set; }
+        public double Start { get; set; }
+        public double End { get; set; }
 
     }
 }
