@@ -61,7 +61,7 @@ namespace NuSysApp
                     region = new TimeRegionModel("name",0,1);
                     break;
                 case ElementType.Video:
-
+                    region = new VideoRegionModel(new Point(0.25,0.25),new Point(0.75,0.75),.25,.75  );
                     break;
                 case ElementType.Collection:
 
