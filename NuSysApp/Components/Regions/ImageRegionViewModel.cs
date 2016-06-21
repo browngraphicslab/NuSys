@@ -39,6 +39,7 @@ namespace NuSysApp
             Height = sizeable.GetHeight();
             Width = sizeable.GetWidth();
             Editable = true;
+            
         }
         private void BaseSizeChanged(object sender, double width, double height)
         {
@@ -58,6 +59,7 @@ namespace NuSysApp
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
         }
+        
         public void SetNewPoints(Point topLeft, Point bottomRight)
         {
             var model = Model as RectangleRegion;

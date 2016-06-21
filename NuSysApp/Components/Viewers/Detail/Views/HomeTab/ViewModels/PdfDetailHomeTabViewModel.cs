@@ -171,20 +171,33 @@ namespace NuSysApp
 
         public override void SizeChanged(object sender, double width, double height)
         {
+            var newHeight = View.ActualHeight;
+            var newWidth = View.ActualWidth;
+
             foreach (var rv in RegionViews)
             {
                 var regionViewViewModel = rv.DataContext as RegionViewModel;
-                regionViewViewModel?.ChangeSize(sender, width, height);
+                regionViewViewModel?.ChangeSize(sender, newWidth, newHeight);
             }
         }
 
         public double GetHeight()
         {
-            return View.ActualHeight;
+            var view = (View as PdfDetailHomeTabView);
+            if (view == null)
+            {
+                return 0;
+            }
+            return view.GetPdfHeight();
         }
         public double GetWidth()
         {
-            return View.ActualWidth;
+            var view = (View as PdfDetailHomeTabView);
+            if (view == null)
+            {
+                return 0;
+            }
+            return view.GetPdfWidth();
         }
 
         public override void SetExistingRegions(HashSet<Region> regions)
