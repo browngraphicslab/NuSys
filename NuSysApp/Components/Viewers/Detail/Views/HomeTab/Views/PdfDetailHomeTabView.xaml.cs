@@ -29,13 +29,15 @@ namespace NuSysApp
         public PdfDetailHomeTabView(PdfDetailHomeTabViewModel vm)
         {
             InitializeComponent();
-            DataContext = vm;
+            
             Canvas.SetZIndex(ItemsControl, 0);
             vm.Controller.Disposed += ControllerOnDisposed;
             vm.PropertyChanged += PropertyChanged;
             vm.View = this;
 
-            
+            //vm.CreateRegionViews();
+            DataContext = vm;
+
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
                 //_inqCanvasView = new InqCanvasView(new InqCanvasViewModel(vm.Model.InqCanvas, new Size(xImg.Width, xImg.Height)));

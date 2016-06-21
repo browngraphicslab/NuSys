@@ -100,10 +100,8 @@ namespace NuSysApp
             RaisePropertyChanged("RegionView");
             regionView.Loaded += delegate
             {
-                foreach (var region in controller.LibraryElementModel.Regions)
-                {
-                    _regionableViewModel?.AddRegion(this, region);
-                }
+                _regionableViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
+                
             };
             SizeChanged += (sender, left, width, height) => _regionableViewModel.SizeChanged(sender, width, height);
             //_nodeModel = controller.LibraryElementModel;

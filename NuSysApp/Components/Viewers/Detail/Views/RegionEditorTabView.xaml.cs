@@ -25,8 +25,7 @@ namespace NuSysApp
     public sealed partial class RegionEditorTabView : UserControl
     {
         public DetailViewerView DetailViewerView { set; get; }
-
-        //public DetailViewerViewModel DetailViewerViewModel { set; get { return ((DetailViewerViewModel)DetailViewerView.DataContext).View} }
+        
         private bool _edgeCaseButtonExited;
         public  RegionEditorTabView()
 
@@ -62,7 +61,7 @@ namespace NuSysApp
                     region = new TimeRegionModel("name",0,1);
                     break;
                 case ElementType.Video:
-
+                    region = new VideoRegionModel(new Point(0.25,0.25),new Point(0.75,0.75),.25,.75  );
                     break;
                 case ElementType.Collection:
 
@@ -88,16 +87,7 @@ namespace NuSysApp
             _edgeCaseButtonExited = true;
 
         }
-        private void test_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void xCreateReagionButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
+        
         private void RegionListViewItem_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             //((ImageFullScreenView)(((DetailViewerViewModel)DetailViewerView.DataContext).RegionView)).SelectedRegion(test);

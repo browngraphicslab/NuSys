@@ -28,8 +28,11 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = vm;
             this.Selected();
+            
             CompositeTransform composite = new CompositeTransform();
             this.RenderTransform = composite;
+            xResizingTriangle.RenderTransform = new CompositeTransform();
+
             OnSelected?.Invoke(this, true);
             DataContext = vm;
             vm.PropertyChanged += PropertyChanged;

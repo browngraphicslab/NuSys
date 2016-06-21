@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.Foundation;
+using System.ComponentModel;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -28,23 +29,83 @@ namespace NuSysApp
 
         public PDFRegionView(PdfRegionViewModel regionVM)
         {
-            this.DataContext = regionVM;
+            
             this.InitializeComponent();
-
+            this.DataContext = regionVM;
             this.Selected();
-            this.RenderTransform = new CompositeTransform();
+          
+            regionVM.PropertyChanged += RegionVM_PropertyChanged;
             OnSelected?.Invoke(this, true);
+            
+            CompositeTransform composite = new CompositeTransform();
+            this.RenderTransform = composite;
+           
+            OnSelected?.Invoke(this, true);
+            
+            regionVM.SizeChanged += ChangeSize;
+            var model = regionVM.Model as PdfRegion;
+            if (model == null)
+            {
+                return;
+            }
+            var parentWidth = regionVM.ContainerViewModel.GetWidth();
+            var parentHeight = regionVM.ContainerViewModel.GetHeight();
+            composite.TranslateX = model.TopLeftPoint.X * parentWidth;
+            composite.TranslateY = model.TopLeftPoint.Y * parentHeight;
+            xMainRectangle.Width = (model.BottomRightPoint.X - model.TopLeftPoint.X) * parentWidth;
+            xMainRectangle.Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y) * parentHeight;
 
         }
 
-        private void XResizingRectangle_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        private void RegionVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            //TODO
+            var vm = DataContext as PdfRegionViewModel;
+            switch (e.PropertyName)
+            {
+                case "Width":
+                    if (vm == null)
+                    {
+                        break;
+                    }
+                    xMainRectangle.Width = vm.Width;
+                    break;
+
+                case "Height":
+                    if (vm == null)
+                    {
+                        break;
+                    }
+                    xMainRectangle.Height = vm.Height;
+                    break;
+            }
+        }
+
+        private void ChangeSize(object sender, Point topLeft, Point bottomRight)
+        {
+            var composite = RenderTransform as CompositeTransform;
+            if (composite == null)
+            {
+                return;
+            }
+            composite.TranslateX = topLeft.X;
+            composite.TranslateY = topLeft.Y;
+        }
+        private void UpdateViewModel()
+        {
+            var composite = RenderTransform as CompositeTransform;
+            var vm = DataContext as PdfRegionViewModel;
+            if (vm == null || composite == null)
+            {
+                return;
+            }
+            var topLeft = new Point(composite.TranslateX, composite.TranslateY);
+            var bottomRight = new Point(topLeft.X + xMainRectangle.Width, topLeft.Y + xMainRectangle.Height);
+            vm.SetNewPoints(topLeft, bottomRight);
         }
 
         private void XResizingRectangle_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            
+
             xMainRectangle.Width += e.Delta.Translation.X;
             xMainRectangle.Height += e.Delta.Translation.Y;
             RectangleTranform.CenterX += e.Delta.Translation.X;
@@ -55,6 +116,20 @@ namespace NuSysApp
             GridTranform.CenterY += e.Delta.Translation.Y;
             ResizerTransform.TranslateX += e.Delta.Translation.X;
             ResizerTransform.TranslateY += e.Delta.Translation.Y;
+
+            UpdateViewModel();
+
+            //var vm = DataContext as ImageRegionViewModel;
+            //if (vm == null)
+            //{
+            //    return;
+            //}
+
+            //xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 0);
+            //xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 0);
+            //ResizerTransform.TranslateX += e.Delta.Translation.X / 2;
+            //ResizerTransform.TranslateY += e.Delta.Translation.Y / 2;
+            //UpdateViewModel();
         }
 
         private void XResizingRectangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -66,9 +141,10 @@ namespace NuSysApp
         private void RectangleRegionView_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
 
-           ((CompositeTransform)this.RenderTransform).TranslateX += e.Delta.Translation.X;
-           ((CompositeTransform)this.RenderTransform).TranslateY += e.Delta.Translation.Y;
-           e.Handled = true;
+            ((CompositeTransform)this.RenderTransform).TranslateX += e.Delta.Translation.X;
+            ((CompositeTransform)this.RenderTransform).TranslateY += e.Delta.Translation.Y;
+            UpdateViewModel();
+            e.Handled = true;
         }
 
         private void RectangleRegionView_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -80,15 +156,15 @@ namespace NuSysApp
         public void Deselected()
         {
             xMainRectangle.StrokeThickness = 3;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Blue);
-            xResizingRectangle.Visibility = Visibility.Collapsed;
+            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Aquamarine);
+            xResizingTriangle.Visibility = Visibility.Collapsed;
         }
 
         public void Selected()
         {
             xMainRectangle.StrokeThickness = 6;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
-            xResizingRectangle.Visibility = Visibility.Visible;
+            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
+            xResizingTriangle.Visibility = Visibility.Visible;
 
         }
         private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
@@ -96,5 +172,15 @@ namespace NuSysApp
             OnSelected?.Invoke(this, true);
         }
 
-}
+
+        private void XMainRectangle_OnGotFocus(object sender, RoutedEventArgs e)
+        {
+            Selected();
+        }
+
+        private void XMainRectangle_OnLostFocus(object sender, RoutedEventArgs e)
+        {
+            Deselected();
+        }
+    }
 }

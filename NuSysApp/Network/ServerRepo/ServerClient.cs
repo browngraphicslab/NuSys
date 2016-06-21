@@ -230,18 +230,15 @@ namespace NuSysApp
             }
             return data;
         }
-        public async Task<List<Dictionary<string,object>>> GetContentWithoutData(List<string> contentIds)
+        public async Task GetContentWithoutData(string contentId)
         {
             try
             {
-                return await Task.Run(async delegate
+                await Task.Run(async delegate
                 {
                     JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-
-                    var contentIdStrings = JsonConvert.SerializeObject(contentIds, settings);
-
                     var client = new HttpClient(new HttpClientHandler { ClientCertificateOptions = ClientCertificateOption.Automatic });
-                    var response = await client.PostAsync(GetUri("getcontent/"), new StringContent(contentIdStrings, Encoding.UTF8, "application/xml"));
+                    var response = await client.PostAsync(GetUri("getcontent/"), new StringContent(contentId, Encoding.UTF8, "application/xml"));
 
                     string data;
                     using (var content = response.Content)
@@ -252,21 +249,21 @@ namespace NuSysApp
                     {
                         XmlDocument doc = new XmlDocument();
                         doc.LoadXml(data);
-                        var list = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(doc.ChildNodes[0].InnerText, settings);
-                        return list;
+                        var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(doc.ChildNodes[0].InnerText, settings);
+                        await ParseFetchedLibraryElement(dict, contentId);
                     }
                     catch (Exception boolParsException)
                     {
                         Debug.WriteLine("error parsing bool and serverSessionId returned from server");
                     }
-                    return new List<Dictionary<string, object>>();
+                    return;
                 });
 
             }
             catch (Exception e)
             {
                 //throw new Exception("couldn't connect to the server and get content info");
-                return new List<Dictionary<string, object>>();
+                return;
             }
         }
         public async Task FetchLibraryElementData(string libraryId, int tries = 0)
@@ -312,100 +309,109 @@ namespace NuSysApp
                         NeededLibraryDataIDs.Add(libraryId);
                         return;
                     }
-
-                    var contentData = (string)dict["data"] ?? "";
-
-                    var id = (string)dict["id"];
-                    var type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
-                    var title = dict.ContainsKey("title") ? (string)dict["title"] : null;
-                    var timestamp = dict.ContainsKey("library_element_creation_timestamp")
-                        ? (string)dict["library_element_creation_timestamp"].ToString()
-                        : null;
-                    var regionStrings = dict.ContainsKey("regions") ? JsonConvert.DeserializeObject<List<string>>(dict["regions"].ToString(),settings) : null;
-                    var regions = new HashSet<Region>();
-                    foreach (var rs in regionStrings) {
-                        var region = JsonConvert.DeserializeObject<RegionIntermediate>(rs);
-                        switch (region.Type) {
-                            case Region.RegionType.Rectangle:
-                                regions.Add(JsonConvert.DeserializeObject<RectangleRegion>(rs, settings));
-                                break;
-                            case Region.RegionType.Compound:
-                                regions.Add(JsonConvert.DeserializeObject<CompoundRegion>(rs, settings));
-                                break;
-                            case Region.RegionType.Time:
-                                regions.Add(JsonConvert.DeserializeObject<TimeRegionModel>(rs, settings));
-                                break;
-                        }
-                    }
-                    var inks = dict.ContainsKey("inks") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["inks"].ToString()) : null;
-
-                    var metadata = dict.ContainsKey("metadata") ? JsonConvert.DeserializeObject<Dictionary<string, Tuple<string, Boolean>>>(dict["metadata"].ToString()) : null;
-
-                    if (NeededLibraryDataIDs.Contains(id))
-                    {
-                        NeededLibraryDataIDs.Remove(id);
-                    }
-
-
-                    if (dict.ContainsKey("inklist"))
-                    {
-                        HashSet<InkStroke> set = new HashSet<InkStroke>();
-                        var inklines = JsonConvert.DeserializeObject<List<string>>(dict["inklist"].ToString(), settings);
-                        var newInkLines = new HashSet<string>();
-                        foreach (var inkline in inklines)
-                        {
-                            var inkdict = JsonConvert.DeserializeObject<Dictionary<string, object>>(inkline, settings);
-                            //var inkpoints = JsonConvert.DeserializeObject<List<InkPoint>>(inkdict["inkpoints"].ToString());
-                            //var inktype = inkdict["type"] as string;
-                            var inkid = inkdict["id"] as string;
-                            //var inkcolor = inkdict["color"];
-                            //var builder = new InkStrokeBuilder();
-                            //var inkstroke = builder.CreateStrokeFromInkPoints(inkpoints, Matrix3x2.Identity);
-
-
-                            /*
-                            var newWrapper = new InkWrapper(inkstroke, inktype);
-                            InkStorage._inkStrokes.Add(inkid, newWrapper);
-                            newInkLines.Add(inkid);    */
-                            var m = new Message();
-                            m["data"] = inkline;
-                            m["id"] = inkid;
-                            var model =
-                                SessionController.Instance.ContentController.GetContent(libraryId) as
-                                    CollectionLibraryElementModel;
-                            if (!model.InkLines.Contains(inkid))
-                            {
-                                model.InkLines.Add(inkid);
-                                SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new AddInkRequest(m));
-                            }
-                        }
-                    }
-
-                    LibraryElementModel content = SessionController.Instance.ContentController.GetContent(libraryId);
-                    if (content == null)
-                    {
-                        if (type == ElementType.Collection)
-                        {
-                            content = new CollectionLibraryElementModel(id, metadata, title);
-                        }
-                        else
-                        {
-                            content = new LibraryElementModel(id, type, metadata, title);
-                        }
-                        SessionController.Instance.ContentController.Add(content);
-                    }
-                    content.Timestamp = timestamp;
-                    await UITask.Run(async delegate
-                    {
-                        var args = new LoadContentEventArgs(contentData,regions,inks);
-                        SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId).Load(args);
-                    });
+                    await ParseFetchedLibraryElement(dict, libraryId);
                 });
             }
             catch (Exception e)
             {
                 //TODO add in error handling
             }
+        }
+
+        private async Task ParseFetchedLibraryElement(Dictionary<string,object> dict, string libraryId)
+        {
+            JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+
+
+            var contentData = (string)dict["data"] ?? "";
+
+            var id = (string)dict["id"];
+            var type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
+            var title = dict.ContainsKey("title") ? (string)dict["title"] : null;
+            var timestamp = dict.ContainsKey("library_element_creation_timestamp")
+                ? (string)dict["library_element_creation_timestamp"].ToString()
+                : null;
+            var regionStrings = dict.ContainsKey("regions") ? JsonConvert.DeserializeObject<List<string>>(dict["regions"].ToString(), settings) : null;
+            var regions = new HashSet<Region>();
+            foreach (var rs in regionStrings)
+            {
+                var region = JsonConvert.DeserializeObject<RegionIntermediate>(rs);
+                switch (region.Type)
+                {
+                    case Region.RegionType.Rectangle:
+                        regions.Add(JsonConvert.DeserializeObject<RectangleRegion>(rs, settings));
+                        break;
+                    case Region.RegionType.Compound:
+                        regions.Add(JsonConvert.DeserializeObject<CompoundRegion>(rs, settings));
+                        break;
+                    case Region.RegionType.Time:
+                        regions.Add(JsonConvert.DeserializeObject<TimeRegionModel>(rs, settings));
+                        break;
+                }
+            }
+            var inks = dict.ContainsKey("inks") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["inks"].ToString()) : null;
+
+            var metadata = dict.ContainsKey("metadata") ? JsonConvert.DeserializeObject<Dictionary<string, Tuple<string, Boolean>>>(dict["metadata"].ToString()) : null;
+
+            if (NeededLibraryDataIDs.Contains(id))
+            {
+                NeededLibraryDataIDs.Remove(id);
+            }
+
+
+            if (dict.ContainsKey("inklist"))
+            {
+                HashSet<InkStroke> set = new HashSet<InkStroke>();
+                var inklines = JsonConvert.DeserializeObject<List<string>>(dict["inklist"].ToString(), settings);
+                var newInkLines = new HashSet<string>();
+                foreach (var inkline in inklines)
+                {
+                    var inkdict = JsonConvert.DeserializeObject<Dictionary<string, object>>(inkline, settings);
+                    //var inkpoints = JsonConvert.DeserializeObject<List<InkPoint>>(inkdict["inkpoints"].ToString());
+                    //var inktype = inkdict["type"] as string;
+                    var inkid = inkdict["id"] as string;
+                    //var inkcolor = inkdict["color"];
+                    //var builder = new InkStrokeBuilder();
+                    //var inkstroke = builder.CreateStrokeFromInkPoints(inkpoints, Matrix3x2.Identity);
+
+
+                    /*
+                    var newWrapper = new InkWrapper(inkstroke, inktype);
+                    InkStorage._inkStrokes.Add(inkid, newWrapper);
+                    newInkLines.Add(inkid);    */
+                    var m = new Message();
+                    m["data"] = inkline;
+                    m["id"] = inkid;
+                    var model =
+                        SessionController.Instance.ContentController.GetContent(libraryId) as
+                            CollectionLibraryElementModel;
+                    if (!model.InkLines.Contains(inkid))
+                    {
+                        model.InkLines.Add(inkid);
+                        SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new AddInkRequest(m));
+                    }
+                }
+            }
+
+            LibraryElementModel content = SessionController.Instance.ContentController.GetContent(libraryId);
+            if (content == null)
+            {
+                if (type == ElementType.Collection)
+                {
+                    content = new CollectionLibraryElementModel(id, metadata, title);
+                }
+                else
+                {
+                    content = new LibraryElementModel(id, type, metadata, title);
+                }
+                SessionController.Instance.ContentController.Add(content);
+            }
+            content.Timestamp = timestamp;
+            await UITask.Run(async delegate
+            {
+                var args = new LoadContentEventArgs(contentData, regions, inks);
+                SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId).Load(args);
+            });
         }
         public async Task SendDictionaryToServer(Dictionary<string, string> dict)
         {

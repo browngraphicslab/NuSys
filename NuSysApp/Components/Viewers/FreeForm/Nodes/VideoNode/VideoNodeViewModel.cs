@@ -52,13 +52,13 @@ namespace NuSysApp
             if (width > height)
             {
                 var r = model.ResolutionY / (double)model.ResolutionX;
-                base.SetSize(width, width * r + 100);
+                base.SetSize(width, width * r + 150);
             }
             else
             {
 
                 var r = model.ResolutionX / (double)model.ResolutionY;
-                base.SetSize(height * r, height + 100);
+                base.SetSize(height * r, height + 150);
             }
         }
 

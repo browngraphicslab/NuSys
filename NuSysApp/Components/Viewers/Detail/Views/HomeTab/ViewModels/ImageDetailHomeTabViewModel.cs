@@ -69,5 +69,22 @@ namespace NuSysApp
         {
             return View.ActualWidth;
         }
+
+        public override void SetExistingRegions(HashSet<Region> regions)
+        {
+            foreach (var regionModel in regions)
+            {
+                var imageRegion = regionModel as RectangleRegion;
+                if (imageRegion == null)
+                {
+                    return;
+                }
+                var vm = new ImageRegionViewModel(imageRegion, Controller, this);
+                var view = new ImageRegionView(vm);
+                RegionViews.Add(view);
+
+            }
+            RaisePropertyChanged("RegionViews");
+        }
     }
 }
