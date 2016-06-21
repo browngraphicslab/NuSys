@@ -46,13 +46,28 @@ namespace NuSysApp
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));       
             Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
-            Controller.LibraryElementController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
 
             Regions = new ObservableCollection<ImageRegionView>();
+            this.CreateRegionViews();
+
         }
 
-        private void LibraryElementControllerOnRegionUpdated(object source, Region region)
+        private void CreateRegionViews()
         {
+            var elementController = Controller.LibraryElementController;
+            var regionHashSet = elementController.LibraryElementModel.Regions;
+
+            if (regionHashSet == null)
+                return ;
+
+            Regions.Clear();
+            foreach (var model in regionHashSet)
+            {
+                var viewmodel = new ImageRegionViewModel(model as RectangleRegion, elementController, this);
+                viewmodel.Editable = false;
+                var view = new ImageRegionView(viewmodel);
+                Regions.Add(view);
+            }
             RaisePropertyChanged("Regions");
         }
 
@@ -89,11 +104,15 @@ namespace NuSysApp
                 Controller.LibraryElementController.Loaded += LibraryElementModelOnOnLoaded;
             }
             RaisePropertyChanged("Image");
+
+
         }
 
         private void LibraryElementModelOnOnLoaded(object sender)
         {
             DisplayImage();
+            this.CreateRegionViews();
+
         }
 
         private async Task DisplayImage()

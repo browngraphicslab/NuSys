@@ -180,5 +180,35 @@ namespace NuSysApp
             }
              */
         }
-    }
-}
+
+        private void EnterCollectionButton_Click(object sender, RoutedEventArgs e)
+        {
+
+            
+            var id = ((GroupDetailHomeTabViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
+            if (id != SessionController.Instance.ActiveFreeFormViewer.ContentId)
+            {
+                UITask.Run(async delegate
+                {
+                    var content = SessionController.Instance.ContentController.GetContent(id);
+                    if (content != null && content.Type == ElementType.Collection)
+                    {
+                        List<Message> messages = new List<Message>();
+                        await Task.Run(async delegate
+                        {
+                            messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(id);
+                        });
+                        Visibility = Visibility.Collapsed;
+                        SessionController.Instance.FireEnterNewCollectionEvent();
+                        await
+                            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                                new UnsubscribeFromCollectionRequest(
+                                    SessionController.Instance.ActiveFreeFormViewer.ContentId));
+                        await SessionController.Instance.SessionView.LoadWorkspaceFromServer(messages, id);
+                    }
+                });
+            }
+        }
+        }
+ }
+

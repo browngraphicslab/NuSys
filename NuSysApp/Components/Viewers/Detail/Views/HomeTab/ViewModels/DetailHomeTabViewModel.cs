@@ -12,12 +12,17 @@ namespace NuSysApp
 
         public delegate void TitleChangedEventHandler(object source, string title);
         public event TitleChangedEventHandler TitleChanged;
+
+
+        public bool Editable { set; get; }
         public DetailHomeTabViewModel(LibraryElementController controller)
         {
+
             _libraryElementController = controller;
             controller.TitleChanged += OnTitleChanged;
             controller.RegionAdded += AddRegion;
             controller.RegionRemoved += RemoveRegion;
+            //Editable = true;
         }
 
         private void OnTitleChanged(object source, string title)

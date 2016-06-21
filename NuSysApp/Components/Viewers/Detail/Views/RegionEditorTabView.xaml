@@ -41,7 +41,7 @@
 
 
             <StackPanel Orientation="Vertical" Grid.Column="1">
-                <ListView HorizontalAlignment="Right"   VerticalContentAlignment="Top">
+                <ListView ItemsSource="{Binding RegionCollection}" HorizontalAlignment="Right"   VerticalContentAlignment="Top">
 
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">

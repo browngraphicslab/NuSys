@@ -11,41 +11,54 @@ namespace NuSysApp
     public class ImageRegionViewModel : RegionViewModel
     {
 
-        public bool Editable {
-            set { 
+        public double Height { get; set; }
+        public double Width{ get; set; }
+        public bool Editable
+        {
+            set
+            {
 
                 _editable = value;
-                        
+
                 RaisePropertyChanged("Editable");
             }
-        get
+            get
             {
                 return _editable;
             }
         }
 
         private bool _editable;
-
-
-        public double Height { get; set; }
-        public double Width{ get; set; }
-
         public delegate void SizeChangedEventHandler(object sender, Point topLeft, Point bottomRight);
         public event SizeChangedEventHandler SizeChanged;
 
         public ImageRegionViewModel(RectangleRegion model, LibraryElementController controller, Sizeable sizeable) : base(model,controller,sizeable)
         {
             ContainerSizeChanged += BaseSizeChanged;
-            Height = sizeable.GetHeight();
-            Width = sizeable.GetWidth();
+            Height = (model.BottomRightPoint.Y * sizeable.GetHeight()) - (model.TopLeftPoint.Y * sizeable.GetHeight());
+            Width = (model.BottomRightPoint.X * sizeable.GetWidth()) - (model.TopLeftPoint.X * sizeable.GetWidth());
             Editable = true;
+
 
             controller.RegionUpdated += Controller_RegionUpdated;
         }
 
         private void Controller_RegionUpdated(object source, Region region)
         {
-            throw new NotImplementedException();
+            if (region.Id != Model.Id)
+            {
+                return;
+            }
+            var model = Model as RectangleRegion;
+            if (model == null)
+            {
+                return;
+            }
+            Height = model.BottomRightPoint.Y * ContainerViewModel.GetHeight() - model.TopLeftPoint.Y * ContainerViewModel.GetHeight();
+            Width = model.BottomRightPoint.X * ContainerViewModel.GetWidth() - model.TopLeftPoint.X * ContainerViewModel.GetWidth();
+            RaisePropertyChanged("Height");
+            RaisePropertyChanged("Width");
+
         }
 
         private void BaseSizeChanged(object sender, double width, double height)

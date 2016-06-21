@@ -12,6 +12,7 @@ namespace NuSysApp
         public Sizeable ContainerViewModel;
         public Region Model { get; private set; }
 
+
         public delegate void SizeChangedEventHandler(object sender, double width, double height);
         public event SizeChangedEventHandler ContainerSizeChanged;
         #endregion Public variables

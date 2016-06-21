@@ -30,7 +30,7 @@ namespace NuSysApp
         {
             get
             {
-                return _regionableViewModel?.View;
+                return _regionableRegionTabViewModel?.View;
             }
         }
 
@@ -38,7 +38,9 @@ namespace NuSysApp
 
         public ObservableCollection<StackPanel> Metadata { get; set; }
 
-        private Regionable<Region> _regionableViewModel;
+        public ObservableCollection<Region> RegionCollection { set; get; }
+        private DetailHomeTabViewModel _regionableRegionTabViewModel;
+        private DetailHomeTabViewModel _regionableHomeTabViewModel;
 
         private ElementViewModel _currentElementViewModel;
         public LibraryElementController CurrentElementController { get; set; }
@@ -54,7 +56,15 @@ namespace NuSysApp
         {
             Tags = new ObservableCollection<FrameworkElement>();
             Metadata = new ObservableCollection<StackPanel>();
+            RegionCollection = new ObservableCollection<Region>();
 
+            
+
+        }
+
+        private void AddRegionToList(object source, Region region)
+        {
+            RegionCollection.Add(region);
         }
 
         public void Dispose()
@@ -78,12 +88,22 @@ namespace NuSysApp
         }
         public async Task<bool> ShowElement(LibraryElementController controller)
         {
+            
             if (CurrentElementController != null)
             {
                 CurrentElementController.KeywordsChanged -= KeywordsChanged;
             }
             CurrentElementController = controller;
             CurrentElementController.KeywordsChanged += KeywordsChanged;
+            CurrentElementController.RegionAdded += AddRegionToList;
+            CurrentElementController.RegionRemoved += RemoveRegionFromList;
+
+            RegionCollection.Clear();
+            foreach (var region in CurrentElementController.LibraryElementModel.Regions)
+            {
+                this.AddRegionToList(this, region);
+            }
+
             View = await _viewHomeTabViewFactory.CreateFromSendable(controller);
             if (View == null)
             {
@@ -95,28 +115,32 @@ namespace NuSysApp
             {
                 return false;
             }
-            _regionableViewModel = regionView.DataContext as Regionable<Region>;
+
+
+            _regionableRegionTabViewModel = regionView.DataContext as DetailHomeTabViewModel;
+            _regionableRegionTabViewModel.Editable = true;
+            _regionableHomeTabViewModel = View.DataContext as DetailHomeTabViewModel;
+            _regionableHomeTabViewModel.Editable = false;
+
+            RaisePropertyChanged("View");
             RaisePropertyChanged("RegionView");
-            regionView.Loaded += delegate
+
+
+
+            View.Loaded += delegate
             {
-                /*
-                var regions = controller.LibraryElementModel.Regions;
-
-                if (regions != null)
-                {
-
-                    foreach (var region in regions)
-                    {
-                        _regionableViewModel?.AddRegion(this, region);
-                    }
-                }
-                */
-
-                _regionableViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
-                
+                _regionableHomeTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
 
             };
-            SizeChanged += (sender, left, width, height) => _regionableViewModel.SizeChanged(sender, width, height);
+            regionView.Loaded += delegate
+            {
+
+                _regionableRegionTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
+                
+            };
+            SizeChanged += (sender, left, width, height) => _regionableRegionTabViewModel.SizeChanged(sender, width, height);
+            SizeChanged += (sender, left, width, height) => _regionableHomeTabViewModel.SizeChanged(sender, width, height);
+
             //_nodeModel = controller.LibraryElementModel;
 
             Title = controller.LibraryElementModel.Title;
@@ -136,6 +160,11 @@ namespace NuSysApp
             RaisePropertyChanged("RegionView");
 
             return true;
+        }
+
+        private void RemoveRegionFromList(object source, Region region)
+        {
+            throw new NotImplementedException();
         }
 
         private void KeywordsChanged(object sender, HashSet<Keyword> keywords)
