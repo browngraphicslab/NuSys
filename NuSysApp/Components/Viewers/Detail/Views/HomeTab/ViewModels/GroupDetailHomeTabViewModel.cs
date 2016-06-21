@@ -29,12 +29,12 @@ namespace NuSysApp
 
         public override void SizeChanged(object sender, double width, double height)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public override void SetExistingRegions(HashSet<Region> regions)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

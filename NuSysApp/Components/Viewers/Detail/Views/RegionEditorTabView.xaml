@@ -11,37 +11,41 @@
 
 
 
-    <Grid>
+    <!--<Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
 
         </Grid.RowDefinitions>
 
-        <!--<Grid Grid.Row="0" Padding ="0,10,0,10" >
-            <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-
-                <TextBox x:Name="xField" PlaceholderText="Field" Margin="0,0,10,0" />
-                <TextBox Grid.Column="1" x:Name="xValue" Margin="0,0,10,0" PlaceholderText="Value"  />
-        </Grid>-->
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Grid>
-                <ContentPresenter Grid.Column="0" Content="{Binding RegionView}" x:Name ="xContentPresenter" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ></ContentPresenter>
+                <ContentPresenter Grid.Column="0" Content="{Binding RegionView}" x:Name ="xContentPresenter" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"  VerticalAlignment="Stretch"></ContentPresenter>
                 <ItemsControl>
                     
                 </ItemsControl>
-            </Grid>
+            </Grid>-->
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
 
+        </Grid.ColumnDefinitions>
+        <ContentPresenter Grid.Column="0" Content="{Binding RegionView}" x:Name ="xContentPresenter" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"  VerticalAlignment="Stretch"></ContentPresenter>
 
-            <StackPanel Orientation="Vertical" Grid.Column="1">
-                <ListView HorizontalAlignment="Right"   VerticalContentAlignment="Top">
+        <Grid  Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+
+            </Grid.RowDefinitions>
+            
+            
+            
+            <ListView Grid.Row="0" ItemsSource="{Binding RegionCollection}"  VerticalContentAlignment="Top" >
 
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
@@ -71,19 +75,18 @@
                                 <ColumnDefinition Width="250" ></ColumnDefinition>
                                 <ColumnDefinition Width="50"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <TextBox Grid.Column="0" Text="{x:Bind Name}" PlaceholderText="Enter a name" Width="250" HorizontalAlignment="Center" HorizontalContentAlignment="Center" BorderThickness="0"  VerticalAlignment="Center" VerticalContentAlignment="Center"></TextBox>
-                            <Button Grid.Column="1" Content="X" Click="AddRegion_Clicked"  Visibility="Visible" PointerExited="DeleteButton_OnPointerExited"></Button>
+                            <TextBox Grid.Column="0" Text="{Binding Name}" PlaceholderText="Enter a name" Width="250" HorizontalAlignment="Center" HorizontalContentAlignment="Center" BorderThickness="0"  VerticalAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+                            <Button Grid.Column="1" Content="X" Click="DeleteRegion_Clicked"  Visibility="Visible" PointerExited="DeleteButton_OnPointerExited"></Button>
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-             <Button Grid.Row="1" Grid.Column="1" x:Name="xCreateReagionButton" Click="AddRegion_Clicked" HorizontalAlignment="Right"  Height="40" Width="50" Margin="0,10,0,0"/>
-
-            </StackPanel>
+            <Button Grid.Row="1" x:Name="xCreateReagionButton" Click="AddRegion_Clicked" HorizontalAlignment="Right"  Height="40" Width="50" Margin="0,10,0,0"/>
 
         </Grid>
 
 
 
     </Grid>
+    <!--</Grid>-->
 </UserControl>

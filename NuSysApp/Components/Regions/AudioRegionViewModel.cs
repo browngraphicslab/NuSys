@@ -50,6 +50,7 @@ namespace NuSysApp
         public double RegionWidth { get; set; }
         public Boolean Editable { get; set; }
 
+
         public AudioRegionViewModel(TimeRegionModel model, LibraryElementController controller, RegionController regionController, Sizeable sizeable) : base(model,controller, regionController, sizeable)
         {
             ContainerSizeChanged += BaseSizeChanged;

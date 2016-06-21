@@ -36,7 +36,7 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = regionVM;
             this.Selected();
-          
+
             regionVM.RegionChanged += RegionVM_RegionChanged;
             OnSelected?.Invoke(this, true);
             

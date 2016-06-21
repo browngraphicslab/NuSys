@@ -14,7 +14,7 @@
         <Grid.RenderTransform>
             <CompositeTransform x:Name="GridTranform"></CompositeTransform>
         </Grid.RenderTransform>
-        <Rectangle  x:Name="xMainRectangle"  Width="{Binding Width, Mode=TwoWay}" Height="{Binding Height, Mode=TwoWay}"  PointerPressed="xMainRectangle_PointerPressed" Fill="Transparent" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" ManipulationStarted="RectangleRegionView_ManipulationStarted" ManipulationDelta="RectangleRegionView_ManipulationDelta">
+        <Rectangle  x:Name="xMainRectangle"  Width="{Binding Width}" Height="{Binding Height}"  PointerPressed="xMainRectangle_PointerPressed" Fill="Transparent" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" ManipulationStarted="RectangleRegionView_ManipulationStarted" ManipulationDelta="RectangleRegionView_ManipulationDelta">
             <Rectangle.RenderTransform>
                 <CompositeTransform x:Name="RectangleTranform"></CompositeTransform>
             </Rectangle.RenderTransform>

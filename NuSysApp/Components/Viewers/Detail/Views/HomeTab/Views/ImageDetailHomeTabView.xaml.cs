@@ -41,7 +41,7 @@ namespace NuSysApp
                 //    SourceBttn.Visibility = Visibility.Collapsed;
                 //}
 
-                vm.Controller.Disposed += ControllerOnDisposed;
+                vm.LibraryElementController.Disposed += ControllerOnDisposed;
                 vm.PropertyChanged += PropertyChanged;
                 vm.View = this;
 
@@ -83,7 +83,7 @@ namespace NuSysApp
         {
             var model = (ImageElementModel)((ImageElementViewModel)DataContext).Model;
 
-            var libraryElementController = (DataContext as ImageDetailHomeTabViewModel)?.Controller;
+            var libraryElementController = (DataContext as ImageDetailHomeTabViewModel)?.LibraryElementController;
             string token = libraryElementController?.GetMetadata("Token")?.ToString();
 
             if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))

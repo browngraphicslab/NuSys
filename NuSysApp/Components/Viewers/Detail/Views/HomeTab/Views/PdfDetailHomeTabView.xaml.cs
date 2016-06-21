@@ -95,7 +95,7 @@ namespace NuSysApp
         private async void OnGoToSource(object sender, RoutedEventArgs e)
         {
             var model = (PdfNodeModel)((PdfNodeViewModel)DataContext).Model;
-            var libraryElementController = (DataContext as ImageDetailHomeTabViewModel)?.Controller;
+            var libraryElementController = (DataContext as PdfDetailHomeTabViewModel)?.Controller;
             string token = libraryElementController.GetMetadata("Token")?.ToString();
             await AccessList.OpenFile(token);
         }
