@@ -37,7 +37,6 @@ namespace NuSysApp
                 return;
             }
             var vm = new ImageRegionViewModel(imageRegion, Controller, this);
-            RaisePropertyChanged("RegionViews");
             var view = new ImageRegionView(vm);
             RegionViews.Add(view);
 
