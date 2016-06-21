@@ -32,15 +32,18 @@ namespace NuSysApp
         public delegate void SizeChangedEventHandler(object sender, Point topLeft, Point bottomRight);
         public event SizeChangedEventHandler SizeChanged;
 
+        public delegate void RegionUpdatedEventHandler(object sender, double height, double width);
+
+        public event RegionUpdatedEventHandler RegionChanged;
+
         public ImageRegionViewModel(RectangleRegion model, LibraryElementController controller, Sizeable sizeable) : base(model,controller,sizeable)
         {
             ContainerSizeChanged += BaseSizeChanged;
             Height = (model.BottomRightPoint.Y * sizeable.GetHeight()) - (model.TopLeftPoint.Y * sizeable.GetHeight());
             Width = (model.BottomRightPoint.X * sizeable.GetWidth()) - (model.TopLeftPoint.X * sizeable.GetWidth());
             Editable = true;
-
-
             controller.RegionUpdated += Controller_RegionUpdated;
+
         }
 
         private void Controller_RegionUpdated(object source, Region region)
@@ -56,6 +59,14 @@ namespace NuSysApp
             }
             Height = model.BottomRightPoint.Y * ContainerViewModel.GetHeight() - model.TopLeftPoint.Y * ContainerViewModel.GetHeight();
             Width = model.BottomRightPoint.X * ContainerViewModel.GetWidth() - model.TopLeftPoint.X * ContainerViewModel.GetWidth();
+
+
+            RegionChanged?.Invoke(this, Height, Width);
+            var topLeft = new Point(model.TopLeftPoint.X * ContainerViewModel.GetWidth(), model.TopLeftPoint.Y * ContainerViewModel.GetHeight());
+            var bottomRight = new Point(model.BottomRightPoint.X * ContainerViewModel.GetWidth(), model.BottomRightPoint.Y * ContainerViewModel.GetHeight());
+            SizeChanged?.Invoke(this, topLeft, bottomRight);
+
+
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
 
@@ -79,6 +90,7 @@ namespace NuSysApp
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
         }
+        
         public void SetNewPoints(Point topLeft, Point bottomRight)
         {
             var model = Model as RectangleRegion;

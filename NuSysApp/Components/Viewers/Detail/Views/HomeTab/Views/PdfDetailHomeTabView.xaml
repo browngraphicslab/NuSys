@@ -40,7 +40,7 @@
                 <ItemsControl x:Name="ItemsControl"  ItemsSource="{Binding RegionViews}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <Grid/>
+                            <Canvas/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>

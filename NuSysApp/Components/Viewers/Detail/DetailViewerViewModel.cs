@@ -158,13 +158,15 @@ namespace NuSysApp
             RaisePropertyChanged("Tags");
             RaisePropertyChanged("Metadata");
             RaisePropertyChanged("RegionView");
+            RaisePropertyChanged("View");
 
             return true;
         }
 
         private void RemoveRegionFromList(object source, Region region)
         {
-            throw new NotImplementedException();
+            if (RegionCollection.Contains(region))
+                RegionCollection.Remove(region);
         }
 
         private void KeywordsChanged(object sender, HashSet<Keyword> keywords)

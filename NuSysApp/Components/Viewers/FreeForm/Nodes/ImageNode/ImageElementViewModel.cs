@@ -1,55 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Runtime.InteropServices.WindowsRuntime;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
-using Windows.Storage;
-using Windows.Storage.Streams;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
-using NuSysApp.Util;
+using Newtonsoft.Json;
+using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
     public class ImageElementViewModel : ElementViewModel, Sizeable
     {
-        /*
-        public ObservableCollection<ImageRegionView> Regions { get
-            {
-                var collection = new ObservableCollection<ImageRegionView>();
-                var elementController = Controller.LibraryElementController;
-                var regionHashSet = elementController.LibraryElementModel.Regions;
-
-                if (regionHashSet == null)
-                    return collection;
-                
-                foreach (var model in regionHashSet)
-                {
-                    var viewmodel = new ImageRegionViewModel(model as RectangleRegion, elementController, this);
-                    viewmodel.Editable = false;
-                    var view = new ImageRegionView(viewmodel);
-                    collection.Add(view);
-                }
-                return collection;
-            }
-        }
-
-            */
+   
         public ObservableCollection<ImageRegionView> Regions { private set; get; }
+        public Sizeable View { get; set; }
 
         public LibraryElementController LibraryElementController{get { return Controller.LibraryElementController; }}
         public ImageElementViewModel(ElementController controller) : base(controller)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));       
             Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
-
+            Controller.LibraryElementController.RegionRemoved += LibraryElementControllerOnRegionRemoved;
             Regions = new ObservableCollection<ImageRegionView>();
             this.CreateRegionViews();
 
+        }
+
+        private void LibraryElementControllerOnRegionRemoved(object source, Region region)
+        {
+            var imageRegion = region as RectangleRegion;
+            if (imageRegion == null)
+            {
+                return;
+            }
+            var vm = new ImageRegionViewModel(imageRegion, Controller.LibraryElementController, this);
+            var view = new ImageRegionView(vm);
+
+            foreach (var regionView in Regions.ToList<ImageRegionView>())
+            {
+                if ((regionView.DataContext as ImageRegionViewModel).Model == imageRegion)
+                    Regions.Remove(regionView);
+            }
+            
+
+            RaisePropertyChanged("Regions");
         }
 
         private void CreateRegionViews()
@@ -70,6 +67,17 @@ namespace NuSysApp
             }
             RaisePropertyChanged("Regions");
         }
+        public void SizeChanged(object sender, double width, double height)
+        {
+            var newHeight = View.GetHeight();
+            var newWidth = View.GetWidth();
+
+            foreach (var rv in Regions)
+            {
+                var regionViewViewModel = rv.DataContext as RegionViewModel;
+                regionViewViewModel?.ChangeSize(sender, newWidth, newHeight);
+            }
+        }
 
         private void LibraryElementControllerOnRegionAdded(object source, Region region)
         {
@@ -80,6 +88,7 @@ namespace NuSysApp
             }
             var vm = new ImageRegionViewModel(imageRegion, Controller.LibraryElementController, this);
             var view = new ImageRegionView(vm);
+            vm.Editable = false;
             Regions.Add(view);
             RaisePropertyChanged("Regions");
         }

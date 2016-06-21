@@ -49,7 +49,19 @@ namespace NuSysApp
 
         public override void RemoveRegion(object sender, Region displayedRegion)
         {
-            throw new NotImplementedException();
+            var imageRegion = displayedRegion as RectangleRegion;
+            if (imageRegion == null)
+            {
+                return;
+            }
+
+            foreach (var regionView in RegionViews.ToList<ImageRegionView>())
+            {
+                if ((regionView.DataContext as ImageRegionViewModel).Model == imageRegion)
+                    RegionViews.Remove(regionView);
+            }
+
+            RaisePropertyChanged("RegionViews");
         }
 
         public override void SizeChanged(object sender, double width, double height)

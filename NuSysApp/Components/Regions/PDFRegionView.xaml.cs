@@ -33,8 +33,9 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = regionVM;
             this.Selected();
-          
+
             regionVM.PropertyChanged += RegionVM_PropertyChanged;
+            regionVM.RegionChanged += RegionVM_RegionChanged;
             OnSelected?.Invoke(this, true);
             
             CompositeTransform composite = new CompositeTransform();
@@ -55,6 +56,12 @@ namespace NuSysApp
             xMainRectangle.Width = (model.BottomRightPoint.X - model.TopLeftPoint.X) * parentWidth;
             xMainRectangle.Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y) * parentHeight;
 
+        }
+
+        private void RegionVM_RegionChanged(object sender, double height, double width)
+        {
+            xMainRectangle.Width = Width;
+            xMainRectangle.Height = Height;
         }
 
         private void RegionVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -99,7 +106,7 @@ namespace NuSysApp
                 return;
             }
             var topLeft = new Point(composite.TranslateX, composite.TranslateY);
-            var bottomRight = new Point(topLeft.X + xMainRectangle.Width, topLeft.Y + xMainRectangle.Height);
+            var bottomRight = new Point(topLeft.X + xMainRectangle.ActualWidth, topLeft.Y + xMainRectangle.ActualHeight);
             vm.SetNewPoints(topLeft, bottomRight);
         }
 
@@ -114,22 +121,12 @@ namespace NuSysApp
             xGrid.Height += e.Delta.Translation.Y;
             GridTranform.CenterX += e.Delta.Translation.X;
             GridTranform.CenterY += e.Delta.Translation.Y;
-            ResizerTransform.TranslateX += e.Delta.Translation.X;
-            ResizerTransform.TranslateY += e.Delta.Translation.Y;
+            //ResizerTransform.TranslateX += e.Delta.Translation.X;
+            //ResizerTransform.TranslateY += e.Delta.Translation.Y;
 
             UpdateViewModel();
 
-            //var vm = DataContext as ImageRegionViewModel;
-            //if (vm == null)
-            //{
-            //    return;
-            //}
-
-            //xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 0);
-            //xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 0);
-            //ResizerTransform.TranslateX += e.Delta.Translation.X / 2;
-            //ResizerTransform.TranslateY += e.Delta.Translation.Y / 2;
-            //UpdateViewModel();
+            
         }
 
         private void XResizingRectangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -140,10 +137,17 @@ namespace NuSysApp
 
         private void RectangleRegionView_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-
-            ((CompositeTransform)this.RenderTransform).TranslateX += e.Delta.Translation.X;
-            ((CompositeTransform)this.RenderTransform).TranslateY += e.Delta.Translation.Y;
-            UpdateViewModel();
+            if (((CompositeTransform) this.RenderTransform).TranslateX < 0)
+            {
+                //this.Width += e.Delta.Translation.X;
+            }
+            else
+            {
+                ((CompositeTransform)this.RenderTransform).TranslateX += e.Delta.Translation.X;
+                ((CompositeTransform)this.RenderTransform).TranslateY += e.Delta.Translation.Y;
+                UpdateViewModel();
+            }
+            
             e.Handled = true;
         }
 

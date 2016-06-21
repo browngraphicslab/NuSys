@@ -21,7 +21,7 @@ using NuSysApp.Viewers;
 
 namespace NuSysApp
 {
-    public sealed partial class PdfNodeView : AnimatableUserControl, IThumbnailable
+    public sealed partial class PdfNodeView : AnimatableUserControl, IThumbnailable, Sizeable
     {
         private Boolean _drawingRegion;
         private Rectangle TempRegion;
@@ -30,6 +30,7 @@ namespace NuSysApp
         public PdfNodeView(PdfNodeViewModel vm)
         {
             _vm = vm;
+            vm.View = this;
             InitializeComponent();
             //  IsDoubleTapEnabled = true;
             DataContext = vm;
@@ -44,6 +45,13 @@ namespace NuSysApp
             vm.PropertyChanged += VmOnPropertyChanged;
 
             vm.Controller.Disposed += ControllerOnDisposed;
+            SizeChanged += PdfNodeView_SizeChanged;
+        }
+
+        private void PdfNodeView_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var vm = DataContext as PdfNodeViewModel;
+            vm.SizeChanged(this, xRenderedPdf.ActualWidth, xRenderedPdf.ActualHeight);
         }
 
         private void VmOnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -243,6 +251,16 @@ namespace NuSysApp
             {
                 XImage_OnPointerReleased(sender, e);
             }
+        }
+
+        public double GetWidth()
+        {
+            return xRenderedPdf.ActualWidth;
+        }
+
+        public double GetHeight()
+        {
+            return xRenderedPdf.ActualHeight;
         }
     }
 }
