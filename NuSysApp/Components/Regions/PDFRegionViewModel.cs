@@ -11,11 +11,18 @@ namespace NuSysApp
     public class PdfRegionViewModel : RegionViewModel
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        public double ContainerHeight { get; set; }
+        public double ContainerWidth { get; set; }
         public double Height { get; set; }
         public double Width { get; set; }
+        public bool Editable { get; set; }
 
         public delegate void SizeChangedEventHandler(object sender, Point topLeft, Point bottomRight);
         public event SizeChangedEventHandler SizeChanged;
+
+        public delegate void RegionUpdatedEventHandler(object sender, double height, double width);
+
+        public event RegionUpdatedEventHandler RegionChanged;
 
         public PdfRegionViewModel(PdfRegion model, LibraryElementController elementController, Sizeable sizeable) : base(model, elementController, sizeable)
         {
@@ -27,7 +34,10 @@ namespace NuSysApp
             ContainerSizeChanged += BaseSizeChanged;
             Height = (model.BottomRightPoint.Y*sizeable.GetHeight()) - (model.TopLeftPoint.Y*sizeable.GetHeight());
             Width = (model.BottomRightPoint.X * sizeable.GetWidth()) - (model.TopLeftPoint.X * sizeable.GetWidth());
+            ContainerHeight = sizeable.GetHeight();
+            ContainerWidth = sizeable.GetWidth();
             elementController.RegionUpdated += RegionUpdated;
+            Editable = true;
         }
 
         private void RegionUpdated(object source, Region region)
@@ -43,7 +53,13 @@ namespace NuSysApp
             }
             Height = model.BottomRightPoint.Y * ContainerViewModel.GetHeight() - model.TopLeftPoint.Y * ContainerViewModel.GetHeight();
             Width = model.BottomRightPoint.X * ContainerViewModel.GetWidth() - model.TopLeftPoint.X * ContainerViewModel.GetWidth();
-            RaisePropertyChanged("Height");
+            RegionChanged?.Invoke(this, Height, Width);
+            var topLeft = new Point(model.TopLeftPoint.X * ContainerViewModel.GetWidth(), model.TopLeftPoint.Y * ContainerViewModel.GetHeight());
+            var bottomRight = new Point(model.BottomRightPoint.X * ContainerViewModel.GetWidth(), model.BottomRightPoint.Y * ContainerViewModel.GetHeight());
+            SizeChanged?.Invoke(this, topLeft, bottomRight);
+            //model.TopLeftPoint = new Point();
+
+            RaisePropertyChanged("Height"); 
             RaisePropertyChanged("Width");
         }
 
@@ -56,13 +72,18 @@ namespace NuSysApp
             }
             Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y) * height;
             Width = (model.BottomRightPoint.X - model.TopLeftPoint.X) * width;
+            ContainerHeight = height;
+            ContainerWidth = width;
 
             var topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
             var bottomRight = new Point(model.BottomRightPoint.X * width, model.BottomRightPoint.Y * height);
             SizeChanged?.Invoke(this, topLeft, bottomRight);
 
+            RegionChanged?.Invoke(this, Height, Width);
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
+            RaisePropertyChanged("ContainerHeight");
+            RaisePropertyChanged("ContainerWidth");
         }
 
         public void SetNewPoints(Point topLeft, Point bottomRight)
