@@ -329,9 +329,14 @@ namespace NuSysApp
             return await _serverClient.SearchOverLibraryElements(searchText);
         }
 
-        public async Task<List<Dictionary<string, object>>> GetContentInfo(List<string> contentIds)
+        /// <summary>
+        /// Basically just to Fetch regions so we dont have to get the entire data
+        /// </summary>
+        /// <param name="contentIds"></param>
+        /// <returns></returns>
+        public async Task FetchLibraryElementWithoutData(string contentId)
         {
-            return await _serverClient.GetContentWithoutData(contentIds);
+            await _serverClient.GetContentWithoutData(contentId);
         }
 
         public async Task<string> DuplicateLibraryElement(string libraryElementId)
