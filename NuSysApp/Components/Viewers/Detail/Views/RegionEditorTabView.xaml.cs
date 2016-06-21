@@ -25,8 +25,7 @@ namespace NuSysApp
     public sealed partial class RegionEditorTabView : UserControl
     {
         public DetailViewerView DetailViewerView { set; get; }
-
-        //public DetailViewerViewModel DetailViewerViewModel { set; get { return ((DetailViewerViewModel)DetailViewerView.DataContext).View} }
+        
         private bool _edgeCaseButtonExited;
         public  RegionEditorTabView()
 
@@ -88,16 +87,7 @@ namespace NuSysApp
             _edgeCaseButtonExited = true;
 
         }
-        private void test_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void xCreateReagionButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
+        
         private void RegionListViewItem_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             //((ImageFullScreenView)(((DetailViewerViewModel)DetailViewerView.DataContext).RegionView)).SelectedRegion(test);

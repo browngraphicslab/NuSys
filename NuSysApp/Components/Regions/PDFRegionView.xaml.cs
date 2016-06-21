@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.Foundation;
+using System.ComponentModel;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -56,6 +57,29 @@ namespace NuSysApp
 
         }
 
+        private void RegionVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var vm = DataContext as PdfRegionViewModel;
+            switch (e.PropertyName)
+            {
+                case "Width":
+                    if (vm == null)
+                    {
+                        break;
+                    }
+                    xMainRectangle.Width = vm.Width;
+                    break;
+
+                case "Height":
+                    if (vm == null)
+                    {
+                        break;
+                    }
+                    xMainRectangle.Height = vm.Height;
+                    break;
+            }
+        }
+
         private void ChangeSize(object sender, Point topLeft, Point bottomRight)
         {
             var composite = RenderTransform as CompositeTransform;
@@ -66,28 +90,10 @@ namespace NuSysApp
             composite.TranslateX = topLeft.X;
             composite.TranslateY = topLeft.Y;
         }
-
-        private void RegionVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case "Width":
-                case "Height":
-                    var vm = DataContext as ImageRegionViewModel;
-                    if (vm == null)
-                    {
-                        break;
-                    }
-                    xMainRectangle.Width = vm.Width;
-                    xMainRectangle.Height = vm.Height;
-                    break;
-            }
-        }
-
         private void UpdateViewModel()
         {
             var composite = RenderTransform as CompositeTransform;
-            var vm = DataContext as ImageRegionViewModel;
+            var vm = DataContext as PdfRegionViewModel;
             if (vm == null || composite == null)
             {
                 return;
@@ -135,9 +141,10 @@ namespace NuSysApp
         private void RectangleRegionView_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
 
-           ((CompositeTransform)this.RenderTransform).TranslateX += e.Delta.Translation.X;
-           ((CompositeTransform)this.RenderTransform).TranslateY += e.Delta.Translation.Y;
-           e.Handled = true;
+            ((CompositeTransform)this.RenderTransform).TranslateX += e.Delta.Translation.X;
+            ((CompositeTransform)this.RenderTransform).TranslateY += e.Delta.Translation.Y;
+            UpdateViewModel();
+            e.Handled = true;
         }
 
         private void RectangleRegionView_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)

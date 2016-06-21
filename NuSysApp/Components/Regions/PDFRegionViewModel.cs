@@ -13,7 +13,6 @@ namespace NuSysApp
         public event PropertyChangedEventHandler PropertyChanged;
         public double Height { get; set; }
         public double Width { get; set; }
-        private LibraryElementController _elementController;
 
         public delegate void SizeChangedEventHandler(object sender, Point topLeft, Point bottomRight);
         public event SizeChangedEventHandler SizeChanged;
@@ -24,11 +23,28 @@ namespace NuSysApp
             {
                 return;
             }
-            _elementController = elementController;
+
             ContainerSizeChanged += BaseSizeChanged;
             Height = (model.BottomRightPoint.Y*sizeable.GetHeight()) - (model.TopLeftPoint.Y*sizeable.GetHeight());
             Width = (model.BottomRightPoint.X * sizeable.GetWidth()) - (model.TopLeftPoint.X * sizeable.GetWidth());
+            elementController.RegionUpdated += RegionUpdated;
+        }
 
+        private void RegionUpdated(object source, Region region)
+        {
+            if (region.Id != Model.Id)
+            {
+                return;
+            }
+            var model = Model as PdfRegion;
+            if (model == null)
+            {
+                return;
+            }
+            Height = model.BottomRightPoint.Y * ContainerViewModel.GetHeight() - model.TopLeftPoint.Y * ContainerViewModel.GetHeight();
+            Width = model.BottomRightPoint.X * ContainerViewModel.GetWidth() - model.TopLeftPoint.X * ContainerViewModel.GetWidth();
+            RaisePropertyChanged("Height");
+            RaisePropertyChanged("Width");
         }
 
         private void BaseSizeChanged(object sender, double width, double height)
