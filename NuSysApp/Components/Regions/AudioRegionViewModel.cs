@@ -85,7 +85,7 @@ namespace NuSysApp
             model.Start += Start / ContainerViewModel.GetWidth();
             model.End += End / ContainerViewModel.GetWidth();
             RegionWidth = (model.End - model.Start)*ContainerViewModel.GetWidth();
-            Controller.UpdateRegion(model);
+            LibraryElementController.UpdateRegion(model);
 
             RaisePropertyChanged("LeftHandleX");
             RaisePropertyChanged("RightHandleX");
