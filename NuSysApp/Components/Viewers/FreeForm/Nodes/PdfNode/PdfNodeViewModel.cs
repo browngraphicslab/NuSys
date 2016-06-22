@@ -83,7 +83,7 @@ namespace NuSysApp
             {
                 var regionVM = regionView.DataContext as RegionViewModel;
                 var regionModel = regionVM?.Model as PdfRegion;
-                if (regionModel?.PageLocation != CurrentPageNumber + 1)
+                if (regionModel?.PageLocation != CurrentPageNumber)
                 {
                     regionView.Visibility = Visibility.Collapsed;
                 }

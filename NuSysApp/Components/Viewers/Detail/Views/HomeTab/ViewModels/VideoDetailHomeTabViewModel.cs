@@ -19,7 +19,7 @@ namespace NuSysApp
 
         public override void AddRegion(object sender, RegionController controller)
         {
-            var videoRegion = controller.Model as VideoRegionModel;
+            var videoRegion = controller?.Model as VideoRegionModel;
             if (videoRegion == null)
             {
                 return;

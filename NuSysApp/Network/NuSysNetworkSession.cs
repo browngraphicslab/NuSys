@@ -346,16 +346,24 @@ namespace NuSysApp
         }
         public async Task<bool> AddRegionToContent(string contentId, Region region)
         {
+            if (contentId == null || region == null)
+            {
+                return false;
+            }
             return await _serverClient.AddRegionToContent(contentId, region);
         }
         public async Task<bool> RemoveRegionFromContent(Region region)
         {
+            if (region == null)
+            {
+                return false;
+            }
             return await _serverClient.RemoveRegionFromContent(region);
         }
 
         public async Task UpdateRegion(Region region)
         {
-            if (_regionUpdateDebounceList.Contains(region.Id))
+            if (region == null ||_regionUpdateDebounceList.Contains(region.Id))
             {
                 return;
             }

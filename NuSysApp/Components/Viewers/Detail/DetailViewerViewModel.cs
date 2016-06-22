@@ -159,7 +159,6 @@ namespace NuSysApp
             RaisePropertyChanged("Metadata");
             RaisePropertyChanged("RegionView");
             RaisePropertyChanged("View");
-
             return true;
         }
 

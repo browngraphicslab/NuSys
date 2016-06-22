@@ -11,7 +11,7 @@ namespace NuSysApp
     /// Takes care of all the modifying and events invoking for the library element model
     /// Should manage keeping the library element model up to date as well as updating the server
     /// </summary>
-    public class LibraryElementController
+    public class LibraryElementController : IMetadatable
     {
         protected DebouncingDictionary _debouncingDictionary;
         private LibraryElementModel _libraryElementModel;
@@ -143,7 +143,7 @@ namespace NuSysApp
         /// This will change the library element model's metadata dictionary and update the server.  
         /// Then it will fire an event notifying all listeners of the new dictionary they can fetch 
         /// </summary>
-        public void ChangeMetadata(Dictionary<string,Tuple<string,bool>> metadata)
+        private void ChangeMetadata(Dictionary<string,Tuple<string,bool>> metadata)
         {
             _libraryElementModel.Metadata = metadata;
             MetadataChanged?.Invoke(this);
@@ -154,35 +154,45 @@ namespace NuSysApp
         /// Checks if entry is valid, then adds its data to the Metadata dictionary and sends the updated dictionary to the server.
         /// </summary>
         /// <param name="entry"></param>
-        public void AddMetadata(MetadataEntry entry)
+        public bool AddMetadata(MetadataEntry entry)
         {
             //Keys should be unique; values obviously don't have to be.
-            if (string.IsNullOrEmpty(entry.Value) || string.IsNullOrEmpty(entry.Key) || string.IsNullOrWhiteSpace(entry.Key) || string.IsNullOrWhiteSpace(entry.Value))
-                return;
-            if (_libraryElementModel.Metadata == null) _libraryElementModel.Metadata = new Dictionary<string, Tuple<string, bool>>();
+            if (string.IsNullOrEmpty(entry.Value) || string.IsNullOrEmpty(entry.Key) ||
+                string.IsNullOrWhiteSpace(entry.Key) || string.IsNullOrWhiteSpace(entry.Value))
+            {
+                return false;
+            }
+            if (_libraryElementModel.Metadata == null)
+            {
+                _libraryElementModel.Metadata = new Dictionary<string, Tuple<string, bool>>();
+                return false;
+            }
+
             if (_libraryElementModel.Metadata.ContainsKey(entry.Key))
             {
                 if (_libraryElementModel.Metadata[entry.Key].Item2 == false)//weird syntax in case we want to change mutability to an enum eventually
                 {
-                    return;
+                    return false;
                 }
                 _libraryElementModel.Metadata.Remove(entry.Key);
             }
             _libraryElementModel.Metadata.Add(entry.Key, new Tuple<string, bool>(entry.Value, entry.Mutability));
             ChangeMetadata(_libraryElementModel.Metadata);
+            return true;
         }
 
         /// <summary>
         /// Checks if the key string is valid, then updates the metadata dictionary and sends a message to the server with the new dictionary.
         /// </summary>
         /// <param name="k"></param>
-        public void RemoveMetadata(string key)
+        public bool RemoveMetadata(string key)
         {
             if (string.IsNullOrEmpty(key) || !_libraryElementModel.Metadata.ContainsKey(key) || string.IsNullOrWhiteSpace(key))
-                return;
+                return false;
 
             _libraryElementModel.Metadata.Remove(key);
             ChangeMetadata(_libraryElementModel.Metadata);
+            return true;
         }
 
         /// <summary>
@@ -263,6 +273,11 @@ namespace NuSysApp
 
             IsLoaded = true;
             _onLoaded?.Invoke(this);
+        }
+
+        public Dictionary<string, Tuple<string, bool>> GetMetadata()
+        {
+            return _libraryElementModel?.Metadata;
         }
         public Uri GetSource()
         {
