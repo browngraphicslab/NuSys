@@ -37,9 +37,7 @@ namespace NuSysApp
             }
         }
 
-        //public double Width { get; set; }
         public bool Editable { get; set; }
-
         public double OriginalHeight { get; set; }
         public double OriginalWidth { get; set; }
 
