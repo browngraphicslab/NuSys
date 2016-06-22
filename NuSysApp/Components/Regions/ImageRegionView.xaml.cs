@@ -18,7 +18,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
-    public sealed partial class ImageRegionView : UserControl
+    public sealed partial class ImageRegionView : UserControl, FineGrainLinkable
     {
         public delegate void RegionSelectedEventHandler(object sender, bool selected);
         public event RegionSelectedEventHandler OnSelected;
@@ -162,6 +162,16 @@ namespace NuSysApp
         {
             OnSelected?.Invoke(this, true);
 
+        }
+
+        public void Select()
+        {
+            xMainRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.BlueViolet);
+        }
+
+        public void Deselect()
+        {
+            xMainRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.Transparent);
         }
     }
 }

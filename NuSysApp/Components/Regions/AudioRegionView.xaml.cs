@@ -17,7 +17,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
-    public sealed partial class AudioRegionView : UserControl
+    public sealed partial class AudioRegionView
     {
         private bool _toggleManipulation;
         public delegate void RegionSelectedEventHandler(object sender, bool selected);

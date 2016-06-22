@@ -11,6 +11,7 @@ using NuSysApp.Controller;
 using NuSysApp.Util;
 using NuSysApp.Nodes.AudioNode;
 using NuSysApp.Viewers;
+using Windows.UI.Xaml.Controls;
 
 namespace NuSysApp
 {
@@ -211,11 +212,11 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
         }
 
-        public virtual async Task RequestLinkTo(string otherId, RectangleView rectangle = null, LinkedTimeBlock block = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
+        public virtual async Task RequestLinkTo(string otherId, RectangleView rectangle = null, UserControl regionView = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
         {
             var contentId = SessionController.Instance.GenerateId();
             var libraryElementRequest = new CreateNewLibraryElementRequest(contentId,null,ElementType.Link, "NEW LINK");
-            var request = new NewLinkRequest(Model.Id, otherId, Model.ParentCollectionId,contentId, block, rectangle, inFGDictionary, outFGDictionary);
+            var request = new NewLinkRequest(Model.Id, otherId, Model.ParentCollectionId,contentId, regionView, rectangle, inFGDictionary, outFGDictionary);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }

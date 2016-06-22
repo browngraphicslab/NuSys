@@ -255,6 +255,7 @@
     <Compile Include="Components\Misc\TextInputBlock.xaml.cs">
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Regions\FineGrainLinkable.cs" />
     <Compile Include="Components\Regions\VideoRegionView.xaml.cs">
       <DependentUpon>VideoRegionView.xaml</DependentUpon>
     </Compile>
