@@ -18,7 +18,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
-    public sealed partial class ImageRegionView : UserControl, FineGrainLinkable
+    public sealed partial class ImageRegionView : UserControl
     {
         public delegate void RegionSelectedEventHandler(object sender, bool selected);
         public event RegionSelectedEventHandler OnSelected;
