@@ -17,7 +17,7 @@ namespace NuSysApp
             Model = controller.LibraryElementModel;
         }
 
-        public override void AddRegion(object sender, Region region)
+        public override void AddRegion(object sender, RegionController controller)
         {
             throw new NotImplementedException();
         }
@@ -35,6 +35,11 @@ namespace NuSysApp
         public override void SetExistingRegions(HashSet<Region> regions)
         {
             //throw new NotImplementedException();
+        }
+
+        public override Region GetNewRegion()
+        {
+            throw new NotImplementedException();
         }
     }
 }

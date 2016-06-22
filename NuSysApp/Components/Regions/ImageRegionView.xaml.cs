@@ -25,7 +25,6 @@ namespace NuSysApp
 
         public ImageRegionView(ImageRegionViewModel vm)
         {
-
             this.InitializeComponent();
             this.DataContext = vm;
             this.Selected();
@@ -47,7 +46,6 @@ namespace NuSysApp
             composite.TranslateY = model.TopLeftPoint.Y * parentHeight;
             xMainRectangle.Width = (model.BottomRightPoint.X - model.TopLeftPoint.X)* parentWidth;
             xMainRectangle.Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y) *parentHeight;
-
         }
 
         private void ChangeSize(object sender, Point topLeft, Point bottomRight)

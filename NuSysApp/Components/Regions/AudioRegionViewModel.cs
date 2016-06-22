@@ -29,8 +29,8 @@ namespace NuSysApp
         {
             get
             {
-                var model = this.Model as TimeRegionModel;
-                return RegionWidth * model.Start;
+                var model = Model as TimeRegionModel;
+                return ContainerViewModel.GetWidth() * model.Start;
             } 
         }
         public double LefthandleY1 { get; set; }
@@ -40,8 +40,8 @@ namespace NuSysApp
         {
             get
             {
-                var model = this.Model as TimeRegionModel;
-                return RegionWidth * model.End;
+                var model = Model as TimeRegionModel;
+                return ContainerViewModel.GetWidth() * model.End;
             } 
         }
         public double RightHandleY1 { get;  }
@@ -54,14 +54,11 @@ namespace NuSysApp
         public AudioRegionViewModel(TimeRegionModel model, LibraryElementController controller, RegionController regionController, Sizeable sizeable) : base(model,controller, regionController, sizeable)
         {
             ContainerSizeChanged += BaseSizeChanged;
-            RegionWidth = sizeable.GetWidth();
+            RegionWidth = (model.End-model.Start)*sizeable.GetWidth();
             LefthandleY1 = 10;
             LefthandleY2 = 110; //+ contentView.ActualHeight;
             RightHandleY1 = 10;
             RightHandleY2 = 110; //+ contentView.ActualHeight;
-            WidthChanged?.Invoke(this,RegionWidth);
-            Bound1Changed?.Invoke(this,LeftHandleX);
-            Bound2Changed?.Invoke(this,RightHandleX);
         }
         private void BaseSizeChanged(object sender, double width, double height)
         {
@@ -73,7 +70,8 @@ namespace NuSysApp
 //            Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y)*height;
             RegionWidth = (model.End - model.Start)*width;
             RaisePropertyChanged("RegionWidth");
-            WidthChanged?.Invoke(this,RegionWidth);
+            RaisePropertyChanged("LeftHandleX");
+            RaisePropertyChanged("RightHandleX");
         }
 
         public void SetNewPoints(double Start, double End)

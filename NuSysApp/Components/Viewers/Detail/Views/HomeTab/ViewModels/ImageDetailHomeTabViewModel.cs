@@ -30,14 +30,13 @@ namespace NuSysApp
             Editable = true;
         }
 
-        public override void AddRegion(object sender, Region region)
+        public override void AddRegion(object sender, RegionController regionController)
         {
-            var imageRegion = region as RectangleRegion;
+            var imageRegion = regionController.Model as RectangleRegion;
             if (imageRegion == null)
             {
                 return;
             }
-            var regionController = new RegionController(imageRegion);
             var vm = new ImageRegionViewModel(imageRegion, LibraryElementController, regionController, this);
             if (!Editable)
                 vm.Editable = false;
@@ -106,6 +105,12 @@ namespace NuSysApp
 
             }
             RaisePropertyChanged("RegionViews");
+        }
+
+        public override Region GetNewRegion()
+        {
+            var region = new RectangleRegion(new Point(.25, .25), new Point(.75, .75));
+            return region;
         }
     }
 }
