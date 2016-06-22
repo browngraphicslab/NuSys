@@ -9,7 +9,7 @@ namespace NuSysApp
 {
     public class RegionController
     {
-        private Region _model;
+        protected Region Model;
 
         public delegate void SizeChangedEventHandler(object sender, Point topLeft, Point bottomRight);
         public delegate void RegionUpdatedEventHandler(object sender, double height, double width);
@@ -18,7 +18,7 @@ namespace NuSysApp
         public event RegionUpdatedEventHandler RegionChanged;
         public RegionController(Region model)
         {
-            _model = model;
+            Model = model;
 
         }
     }

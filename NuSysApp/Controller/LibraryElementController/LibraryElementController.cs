@@ -16,10 +16,11 @@ namespace NuSysApp
         protected DebouncingDictionary _debouncingDictionary;
         private LibraryElementModel _libraryElementModel;
         private bool _loading = false;
-        
+        private RegionControllerFactory _regionControllerFactory = new RegionControllerFactory();
+
         #region Events
         public delegate void ContentChangedEventHandler(object source, string contentData);
-        public delegate void RegionAddedEventHandler(object source, Region region);
+        public delegate void RegionAddedEventHandler(object source, RegionController regionController);
         public delegate void RegionRemovedEventHandler(object source, Region region);
         public delegate void RegionUpdatedEventHandler(object source, Region region);
         public delegate void MetadataChangedEvenetHandler(object source);
@@ -88,7 +89,8 @@ namespace NuSysApp
         public void AddRegion(Region region)
         {
             _libraryElementModel.Regions.Add(region);
-            RegionAdded?.Invoke(this, region);
+            var regionController = _regionControllerFactory.CreateFromSendable(region);
+            RegionAdded?.Invoke(this, regionController);
             SessionController.Instance.NuSysNetworkSession.AddRegionToContent(LibraryElementModel.LibraryElementId, region);
         }
 

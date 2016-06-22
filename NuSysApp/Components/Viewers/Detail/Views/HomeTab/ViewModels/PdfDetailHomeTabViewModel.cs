@@ -149,15 +149,15 @@ namespace NuSysApp
             });
         }
 
-        public override void AddRegion(object sender, Region region)
+        public override void AddRegion(object sender, RegionController regionController)
         {
-            var pdfRegion = region as PdfRegion;
+            var pdfRegion = regionController.Model as PdfRegion;
             if (pdfRegion == null)
             {
                 return;
             }
-            pdfRegion.PageLocation = _pageNumber;
-            var regionController = new RegionController(pdfRegion);
+            var pdfRegionController = regionController as PdfRegionController;
+            pdfRegionController?.SetPageLocation(_pageNumber);
             var vm = new PdfRegionViewModel(pdfRegion, Controller, regionController, this);
             var view = new PDFRegionView(vm);
             
