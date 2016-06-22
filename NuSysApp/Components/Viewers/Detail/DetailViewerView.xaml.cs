@@ -27,6 +27,7 @@ namespace NuSysApp
     {
 
         private ElementViewModel _activeVm;
+        private object _metadataPivotItem;
 
         public DetailViewerView()
         {
@@ -177,24 +178,45 @@ namespace NuSysApp
             });
         }
 
-        public async Task ShowElement(LibraryElementController controller)
+        public async Task ShowElement(IMetadatable metadatable)
         {
             var vm = (DetailViewerViewModel)DataContext;
-            if (await vm.ShowElement(controller))
+            if (await vm.ShowElement(metadatable))
                 Visibility = Visibility.Visible;
 
             //if (controller.Model is TextElementModel || controller.Model is PdfNodeModel)
-            if (controller.LibraryElementModel.Type == ElementType.PDF)
+            if (metadatable.MetadatableType() == MetadatableType.Content)
             {
-                SuggestButton.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                SuggestButton.Visibility = Visibility.Collapsed;
-            }
+                var controller = metadatable as LibraryElementController;
+                if (controller == null)
+                {
+                    return;
+                }
+                if (controller.LibraryElementModel.Type == ElementType.PDF)
+                {
+                    SuggestButton.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    SuggestButton.Visibility = Visibility.Collapsed;
+                }
 
-            xMetadataEditorView.Metadatable = vm.CurrentElementController;
-            xMetadataEditorView.Update();
+                xMetadataEditorView.Metadatable = vm.CurrentElementController;
+                xMetadataEditorView.Update();
+                if (xRootPivot.Items.Count == 2)
+                {
+                    var pivotItem = _metadataPivotItem as PivotItem;
+                    xRootPivot.Items.Add(pivotItem);
+
+                }
+            } else if (metadatable.MetadatableType() == MetadatableType.Region)
+            {
+                _metadataPivotItem = xRootPivot.Items[2];
+                xRootPivot.Items.RemoveAt(2);
+                xMetadataEditorView.Metadatable = metadatable;
+                xMetadataEditorView.Update();
+            }
+            
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)

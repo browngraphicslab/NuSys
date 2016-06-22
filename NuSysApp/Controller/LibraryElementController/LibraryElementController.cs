@@ -328,5 +328,10 @@ namespace NuSysApp
         {
             UserChanged?.Invoke(this, user);
         }
+
+        public MetadatableType MetadatableType()
+        {
+            return NuSysApp.MetadatableType.Content;
+        }
     }
 }

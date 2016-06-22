@@ -551,11 +551,10 @@ namespace NuSysApp
         {
             xSearchWindowView.Visibility = Visibility.Collapsed;
         }
-
-
-        public void ShowDetailView(LibraryElementController controller)
+        
+        public void ShowDetailView(IMetadatable metadatable)
         {
-            xDetailViewer.ShowElement(controller);
+            xDetailViewer.ShowElement(metadatable);
         }
 
         public async void OpenFile(ElementViewModel vm)
