@@ -82,5 +82,11 @@ namespace NuSysApp
             }
             RaisePropertyChanged("RegionViews");
         }
+
+        public override Region GetNewRegion()
+        {
+            var region = new TimeRegionModel("name", 0, 1);
+            return region;
+        }
     }
 }

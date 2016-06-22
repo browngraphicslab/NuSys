@@ -17,5 +17,8 @@ namespace NuSysApp
         public abstract void SizeChanged(object sender, double width, double height);
 
         public abstract void SetExistingRegions(HashSet<Region> regions);
+
+        public abstract Region GetNewRegion();
+
     }
 }

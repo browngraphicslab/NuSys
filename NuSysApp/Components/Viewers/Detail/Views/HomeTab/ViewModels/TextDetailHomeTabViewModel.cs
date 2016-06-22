@@ -42,5 +42,10 @@ namespace NuSysApp
         {
             throw new NotImplementedException();
         }
+
+        public override Region GetNewRegion()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
