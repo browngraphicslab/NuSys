@@ -17,14 +17,14 @@ namespace NuSysApp
             RegionViews = new ObservableCollection<VideoRegionView>();
         }
 
-        public override void AddRegion(object sender, Region region)
+        public override void AddRegion(object sender, RegionController controller)
         {
-            var videoRegion = region as VideoRegionModel;
+            var videoRegion = controller?.Model as VideoRegionModel;
             if (videoRegion == null)
             {
                 return;
             }
-            var regionController = new RegionController(region);
+            var regionController = new RegionController(videoRegion);
             var vm = new VideoRegionViewModel(videoRegion, Controller, regionController, this);
             var view = new VideoRegionView(vm);
             RegionViews.Add(view);

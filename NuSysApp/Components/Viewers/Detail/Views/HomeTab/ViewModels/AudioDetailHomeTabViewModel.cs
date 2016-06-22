@@ -26,14 +26,14 @@ namespace NuSysApp
             //RaisePropertyChanged("RegionViews");
         }
 
-        public override void AddRegion(object sender, Region region)
+        public override void AddRegion(object sender, RegionController controller)
         {
-            var AudioRegion = region as TimeRegionModel;
+            var AudioRegion = controller?.Model as TimeRegionModel;
             if (AudioRegion == null)
             {
                 return;
             }
-            var regionController = new RegionController(region);
+            var regionController = new RegionController(AudioRegion);
             var vm = new AudioRegionViewModel(AudioRegion, Controller, regionController, this);
             var view = new AudioRegionView(vm);
             RegionViews.Add(view);

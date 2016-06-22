@@ -34,7 +34,7 @@ namespace NuSysApp
         private bool _edgeCaseButtonExited;
         private bool _sortedDescending;
 
-        public DetailViewerView DetailViewerView { set; get; }
+        public IMetadatable Metadatable { set; get; }
 
 
         /// <summary>
@@ -61,8 +61,7 @@ namespace NuSysApp
             _orgList.Clear();
 
             // Extract dictionary from libraryelementmodel.
-            var vm = (DetailViewerViewModel)DetailViewerView.DataContext;
-            var dict = vm.CurrentElementController.LibraryElementModel.Metadata ?? new Dictionary<string, Tuple<string, bool>>();
+            var dict = Metadatable.GetMetadata() ?? new Dictionary<string, Tuple<string, bool>>();
 
             // Convert dictionary entries to MetadataEntries, and add to MetadataCollection
             foreach (var key in dict.Keys)
@@ -112,8 +111,8 @@ namespace NuSysApp
             var val = xValue.Text;
 
             // Obtains metadata dictionary, and uses it to handle bad input
-            var vm = (DetailViewerViewModel)DetailViewerView.DataContext;
-            var metadata = vm.CurrentElementController.LibraryElementModel.Metadata;
+
+            var metadata = Metadatable.GetMetadata();
             if (metadata.ContainsKey(key) || string.IsNullOrEmpty(key) || string.IsNullOrEmpty(val) || string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(val))
                 return;
 
@@ -121,7 +120,7 @@ namespace NuSysApp
             var entry = new MetadataEntry(xField.Text, xValue.Text, true);
 
             // Adds metadata entry to the library element and updates the listview
-            vm.CurrentElementController.AddMetadata(entry);
+            Metadatable.AddMetadata(entry);
             this.Update();
             xField.Text = "";
             xValue.Text = "";
@@ -139,8 +138,7 @@ namespace NuSysApp
             var button = sender as Button;
             var grid = button.GetVisualParent() as Grid;
             var entry = grid.DataContext as MetadataEntry;
-            var vm = (DetailViewerViewModel)DetailViewerView.DataContext;
-            vm.CurrentElementController.RemoveMetadata(entry.Key);
+            Metadatable.RemoveMetadata(entry.Key);
 
             // Finally, updates the ListView to reflect the changes
             this.Update();

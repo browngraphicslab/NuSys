@@ -275,6 +275,7 @@
     </Compile>
     <Compile Include="Components\Regions\PDFRegionViewModel.cs" />
     <Compile Include="Components\Regions\RegionViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
     <Compile Include="Components\Viewers\Detail\Sizeable.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">
       <DependentUpon>AudioMediaPlayer.xaml</DependentUpon>
@@ -282,7 +283,9 @@
     <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoMediaPlayer.xaml.cs">
       <DependentUpon>VideoMediaPlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controller\RegionController.cs" />
+    <Compile Include="Controller\RegionControllers\PdfRegionController.cs" />
+    <Compile Include="Controller\RegionControllers\RegionController.cs" />
+    <Compile Include="Controller\RegionControllers\RegionControllerFactory.cs" />
     <Compile Include="Converters\BoolToManipulationModeConverter.cs" />
     <Compile Include="Models\Regions\PDFRegion.cs" />
     <Compile Include="Models\Regions\TimeRegionModel.cs" />

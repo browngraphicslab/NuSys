@@ -17,7 +17,7 @@ namespace NuSysApp
             Model = controller.LibraryElementModel;
         }
 
-        public override void AddRegion(object sender, Region region)
+        public override void AddRegion(object sender, RegionController controller)
         {
             throw new NotImplementedException();
         }

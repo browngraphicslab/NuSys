@@ -40,7 +40,7 @@ namespace NuSysApp
 
             controller.Disposed += ControllerOnDisposed;
             Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
-            Controller.LibraryElementController.RegionUpdated += LibraryElementControllerOnRegionAdded;
+            Controller.LibraryElementController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
         }
 
         private void ControllerOnDisposed(object source)
@@ -129,6 +129,11 @@ namespace NuSysApp
             //Visualize(dataBytes);
         }
         private void LibraryElementControllerOnRegionAdded(object source, RegionController regionController)
+        {
+            RaisePropertyChanged("Regions");
+        }
+
+        private void LibraryElementControllerOnRegionUpdated(object source, Region region)
         {
             RaisePropertyChanged("Regions");
         }
