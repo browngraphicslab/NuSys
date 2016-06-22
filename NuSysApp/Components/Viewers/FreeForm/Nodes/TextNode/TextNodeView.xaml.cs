@@ -26,6 +26,7 @@ using Windows.UI.Xaml.Shapes;
 using MyToolkit.Converters;
 using MyToolkit.Utilities;
 using NuSysApp.Util;
+using NuSysApp.Misc.SpeechToTextUI;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -56,6 +57,8 @@ namespace NuSysApp
         private CoreDispatcher _dispatcher;
         private StringBuilder _dictatedTextBuilder;
         private StringBuilder _hypothesisBuilder;
+
+        private SpeechToTextBoxView _speechToTextBoxView;
 
 
 
@@ -166,8 +169,6 @@ namespace NuSysApp
             }
             _isopen = !_isopen;
         }
-
-
 
         private void SetUpInking()
         {
@@ -401,10 +402,43 @@ namespace NuSysApp
 
         private async void RecordButton_OnClick(object sender, PointerRoutedEventArgs e)
         {
+            // get the SessionController canvas
+            Canvas mainCanvas = SessionController.Instance.SessionView.MainCanvas;
+            
+            // if the canvas doesn't contain a speechToTextBoxView, create one
+            if (mainCanvas.Children.Contains(_speechToTextBoxView) == false)
+            {
+                var width = 400;
+                var height = 200;
+
+                // instantiate a new speechToTextBoxView
+                if (string.IsNullOrWhiteSpace(_text))
+                {   // constructor instantiates empty _speechToTextBoxView
+                    _speechToTextBoxView = new SpeechToTextBoxView(width, height);
+                }
+                else
+                {
+                    // constructor instantiates _speechToTextBoxView with current _text
+                    _speechToTextBoxView = new SpeechToTextBoxView(width, height, _text);
+                }
+
+                // add it to the canvas
+               
+                mainCanvas.Children.Add(_speechToTextBoxView);
+                // center it on the canvas
+                Canvas.SetLeft(_speechToTextBoxView, (mainCanvas.ActualWidth / 2.0) - (width / 2.0));
+                Canvas.SetTop(_speechToTextBoxView, (mainCanvas.ActualHeight / 2.0) - (height / 2.0));
+            }
+
+
+            /*
             _isRecording = true;
             _saved = _text;
             _dictatedTextBuilder = new StringBuilder();
             _hypothesisBuilder = new StringBuilder();
+
+            
+
             if (_isopen)
             {
                 inker.Visibility = Visibility.Collapsed;
@@ -414,6 +448,7 @@ namespace NuSysApp
             {
                 await _speechRecognizer.ContinuousRecognitionSession.StartAsync();
             }
+            */
 
             //if (!session.IsRecording)
             //{
@@ -435,11 +470,14 @@ namespace NuSysApp
             //    UpdateController(_text);
             //}
             //speechString = "";
+
+            /*
             if (_speechRecognizer.State != SpeechRecognizerState.Idle)
             {
                 await _speechRecognizer.ContinuousRecognitionSession.StopAsync();
             }
             _isRecording = false;
+            */
         }
 
         #endregion

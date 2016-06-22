@@ -251,10 +251,14 @@
       <DependentUpon>LibraryFavorites.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\Library\LibraryFavoritesViewModel.cs" />
+    <Compile Include="Components\Misc\SpeechToTextUI\AudioCapturePermissions.cs" />
+    <Compile Include="Components\Misc\SpeechToTextUI\CorrectionSuggester.cs" />
+    <Compile Include="Components\Misc\SpeechToTextUI\HtmlRemoval.cs" />
+    <Compile Include="Components\Misc\SpeechToTextUI\MyLcsAlgo.cs" />
     <Compile Include="Components\Misc\SpeechToTextUI\SpeechToTextBoxView.xaml.cs">
       <DependentUpon>SpeechToTextBoxView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Misc\SpeechToTextUI\SpeechToTextBoxViewModel.cs" />
+    <Compile Include="Components\Misc\SpeechToTextUI\SpeechToTextViewModel.cs" />
     <Compile Include="Components\Misc\TextInputBlock.xaml.cs">
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
@@ -706,8 +710,8 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Misc\SpeechToTextUI\SpeechToTextBoxView.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Misc\TextInputBlock.xaml">
       <SubType>Designer</SubType>

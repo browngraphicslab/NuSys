@@ -153,7 +153,6 @@ namespace NuSysApp
                     {
                         SessionController.Instance.SessionView.ShowDetailView(vm.Controller);
                     }
-
                 }
             }   
         }
