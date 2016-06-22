@@ -12,13 +12,13 @@ namespace NuSysApp
         public VideoRegionModel(Point topleft, Point bottomright, double start, double end, string name="untitled node") : base(name)
         {
             TopLeft = topleft;
-            BottonRight = bottomright;
+            BottomRight = bottomright;
             Start = start;
             End = end;
-             
+            Type = RegionType.Video; 
         }
         public Point TopLeft { get; set; }
-        public Point BottonRight { get; set; }
+        public Point BottomRight { get; set; }
         public double Start { get; set; }
         public double End { get; set; }
 

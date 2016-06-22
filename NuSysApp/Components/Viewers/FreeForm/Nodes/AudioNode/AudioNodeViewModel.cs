@@ -41,6 +41,18 @@ namespace NuSysApp
             controller.Disposed += ControllerOnDisposed;
             Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
             Controller.LibraryElementController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
+            Controller.SizeChanged += Controller_SizeChanged;
+            Controller.LibraryElementController.Loaded += LibraryElementController_Loaded;
+        }
+
+        private void LibraryElementController_Loaded(object sender)
+        {
+            RaisePropertyChanged("Regions");
+        }
+
+        private void Controller_SizeChanged(object source, double width, double height)
+        {
+            RaisePropertyChanged("Regions");
         }
 
         private void ControllerOnDisposed(object source)
@@ -66,7 +78,7 @@ namespace NuSysApp
 
         public override void SetSize(double width, double height)
         {
-            var model = Model as VideoNodeModel;
+            var model = Model as AudioNodeModel;
             if (height < 200)
             {
                 height = 200;
@@ -76,6 +88,7 @@ namespace NuSysApp
                 width = 150;
             }
             base.SetSize(width, height);
+            RaisePropertyChanged("Regions");
         }
 
         public Uri AudioSource

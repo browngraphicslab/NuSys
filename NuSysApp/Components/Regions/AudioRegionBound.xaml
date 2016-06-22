@@ -11,7 +11,7 @@
 
     <Canvas x:Name="xCanvas">
         <StackPanel Orientation="Vertical">
-            <Line x:Name="Handle" Y1="30"  X1="{Binding Detailx1}" X2 ="{Binding Detailx1}" StrokeThickness="10" Stroke="Black" Width="7" Height="30"></Line>
+            <Line x:Name="Handle" Y1="30"  X1="{Binding X1}" X2 ="{Binding X1}" StrokeThickness="10" Stroke="Black" Width="7" Height="30"></Line>
             <Ellipse x:Name="Bulb" Width="30" Height="25" Fill="Black" ></Ellipse>
         </StackPanel>
         

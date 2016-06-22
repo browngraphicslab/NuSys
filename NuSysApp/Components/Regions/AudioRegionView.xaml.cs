@@ -27,21 +27,8 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = vm;
             _toggleManipulation = false;
-            Rect.RenderTransform = new CompositeTransform();
-            vm.WidthChanged += WidthChanged;
-            vm.Bound1Changed += B1Changed;
-            vm.Bound2Changed += B2Changed;
+//            Rect.RenderTransform = new CompositeTransform();
         }
-        private void B1Changed (object sender, double e)
-        {
-        }
-        private void B2Changed (object sender, double e)
-        {
-        }
-        private void WidthChanged (object sender, double e)
-        {
-        }
-
         private void Handle_OnPointerPressed(object sender, PointerRoutedEventArgs e)
        {
             _toggleManipulation = true;
@@ -54,7 +41,7 @@ namespace NuSysApp
       //          (Bound1.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
       //          Bound1.X1 += e.Delta.Translation.X;
       //          Bound1.X2 += e.Delta.Translation.X;
-      //          (Rect.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
+      //           (Rect.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
       //          Rect.Width -= e.Delta.Translation.X;
                 UpdateModel(e.Delta.Translation.X,0);
             }
@@ -64,7 +51,7 @@ namespace NuSysApp
         {
             if (Rect.Width + e.Delta.Translation.X > 0)
             {
-            //    (Bound2.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
+    //            (Bound2.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
        //         Bound2.X2 += e.Delta.Translation.X;
         //        Bound2.X1 += e.Delta.Translation.X;
         //        Rect.Width += e.Delta.Translation.X;

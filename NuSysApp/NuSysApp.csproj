@@ -283,9 +283,9 @@
     <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoMediaPlayer.xaml.cs">
       <DependentUpon>VideoMediaPlayer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controller\RegionControllers\PdfRegionController.cs" />
-    <Compile Include="Controller\RegionControllers\RegionController.cs" />
-    <Compile Include="Controller\RegionControllers\RegionControllerFactory.cs" />
+    <Compile Include="Controller\PdfRegionController.cs" />
+    <Compile Include="Controller\RegionController.cs" />
+    <Compile Include="Controller\RegionControllerFactory.cs" />
     <Compile Include="Converters\BoolToManipulationModeConverter.cs" />
     <Compile Include="Models\Regions\PDFRegion.cs" />
     <Compile Include="Models\Regions\TimeRegionModel.cs" />
