@@ -34,7 +34,7 @@
             <ColumnDefinition Width="*"></ColumnDefinition>
 
         </Grid.ColumnDefinitions>
-        <ContentPresenter Grid.Column="0" Content="{Binding RegionView}" x:Name ="xContentPresenter" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"  VerticalAlignment="Stretch"></ContentPresenter>
+        <ContentPresenter Grid.Column="0" Content="{Binding RegionView}" x:Name ="xContentPresenter" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"  VerticalAlignment="Stretch" Margin="0,0,10,0" ></ContentPresenter>
 
         <Grid  Grid.Column="1">
             <Grid.RowDefinitions>

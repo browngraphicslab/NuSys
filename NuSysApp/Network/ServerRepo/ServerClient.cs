@@ -335,6 +335,9 @@ namespace NuSysApp
                             case Region.RegionType.Time:
                                 regions.Add(JsonConvert.DeserializeObject<TimeRegionModel>(rs, settings));
                                 break;
+                            case Region.RegionType.Video:
+                                regions.Add(JsonConvert.DeserializeObject<VideoRegionModel>(rs, settings));
+                                break;
                         }
                     }
                     var inks = dict.ContainsKey("inks") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["inks"].ToString()) : null;
