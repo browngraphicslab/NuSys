@@ -22,6 +22,7 @@ using NuSysApp.Components.Viewers.FreeForm;
 using System.Net;
 using Newtonsoft.Json;
 using LdaLibrary;
+using Point = Windows.Foundation.Point;
 
 namespace NuSysApp
 {
@@ -222,6 +223,12 @@ namespace NuSysApp
                 
             }
             RaisePropertyChanged("RegionViews");
+        }
+
+        public override Region GetNewRegion()
+        {
+            var region = new PdfRegion(new Point(.25, .25), new Point(.75, .75), _pageNumber);
+            return region;
         }
     }
 }

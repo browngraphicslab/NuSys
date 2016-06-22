@@ -69,7 +69,7 @@ namespace NuSysApp
             var pdfRegionController = regionController as PdfRegionController;
             pdfRegionController.PageLocationChanged += PdfRegionControllerOnPageLocationChanged;
 
-            if (pdfRegion.PageLocation != CurrentPageNumber+1)
+            if (pdfRegion.PageLocation != CurrentPageNumber)
             {
                 view.Visibility = Visibility.Collapsed;
             }
@@ -79,15 +79,15 @@ namespace NuSysApp
 
         private void PdfRegionControllerOnPageLocationChanged(object sender, int pageLocation)
         {
-            foreach (var regionView in RegionViews)
-            {
-                var regionVM = regionView.DataContext as RegionViewModel;
-                var regionModel = regionVM?.Model as PdfRegion;
-                if (regionModel?.PageLocation != CurrentPageNumber)
-                {
-                    regionView.Visibility = Visibility.Collapsed;
-                }
-            }
+            //foreach (var regionView in RegionViews)
+            //{
+            //    var regionVM = regionView.DataContext as RegionViewModel;
+            //    var regionModel = regionVM?.Model as PdfRegion;
+            //    if (regionModel?.PageLocation != CurrentPageNumber)
+            //    {
+            //        regionView.Visibility = Visibility.Collapsed;
+            //    }
+            //}
         }
 
         public ObservableCollection<PDFRegionView> CreatePdfRegionViews()

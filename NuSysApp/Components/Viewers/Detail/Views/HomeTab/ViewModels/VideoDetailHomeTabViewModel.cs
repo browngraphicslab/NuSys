@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 
 namespace NuSysApp
 {
@@ -66,6 +67,12 @@ namespace NuSysApp
 
             }
             RaisePropertyChanged("RegionViews");
+        }
+
+        public override Region GetNewRegion()
+        {
+            var region = new VideoRegionModel(new Point(0.25, 0.25), new Point(0.75, 0.75), .25, .75);
+            return region;
         }
     }
 }
