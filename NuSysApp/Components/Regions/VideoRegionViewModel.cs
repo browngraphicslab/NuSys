@@ -24,7 +24,8 @@ namespace NuSysApp
         public delegate void DoubleChanged(object sender, double e);
         public event DoubleChanged WidthChanged;
         public event DoubleChanged HeightChanged;
-        public double Height { get; set; }
+        public double Height { get;
+            set; }
         public double Width{ get; set; }
         public double AudioRegionWidth{ get; set; }
 
@@ -32,7 +33,7 @@ namespace NuSysApp
         {
             get
             {
-                return Height - 150;
+                return ContainerViewModel.GetHeight() - 100;
             }
         }
 
@@ -76,6 +77,7 @@ namespace NuSysApp
             Height = sizeable.GetHeight();
             Width = sizeable.GetWidth();
             AudioRegionWidth = (model.End - model.Start)*sizeable.GetWidth();
+            
             Editable = true;
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
@@ -94,6 +96,7 @@ namespace NuSysApp
             Height = height;
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
+            RaisePropertyChanged("AudioRegionHeight");
         }
 
         internal void SetNewPoints(double Start, double End, Point TopLeft, Point BottomRight)
