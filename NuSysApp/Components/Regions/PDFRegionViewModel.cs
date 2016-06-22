@@ -37,9 +37,7 @@ namespace NuSysApp
             }
         }
 
-        //public double Width { get; set; }
         public bool Editable { get; set; }
-
         public double OriginalHeight { get; set; }
         public double OriginalWidth { get; set; }
 
@@ -78,9 +76,8 @@ namespace NuSysApp
             {
                 return;
             }
-            //Debug.WriteLine("sdfsdfsdf");
             Height = model.BottomRightPoint.Y * ContainerViewModel.GetHeight() - model.TopLeftPoint.Y * ContainerViewModel.GetHeight();
-           // Width = model.BottomRightPoint.X * ContainerViewModel.GetWidth() - model.TopLeftPoint.X * ContainerViewModel.GetWidth();
+            Width = model.BottomRightPoint.X * ContainerViewModel.GetWidth() - model.TopLeftPoint.X * ContainerViewModel.GetWidth();
             RegionChanged?.Invoke(this, Height, Width);
             var topLeft = new Point(model.TopLeftPoint.X * ContainerViewModel.GetWidth(), model.TopLeftPoint.Y * ContainerViewModel.GetHeight());
             var bottomRight = new Point(model.BottomRightPoint.X * ContainerViewModel.GetWidth(), model.BottomRightPoint.Y * ContainerViewModel.GetHeight());

@@ -141,7 +141,7 @@ namespace NuSysApp
             resStream.Dispose();
             //Visualize(dataBytes);
         }
-        private void LibraryElementControllerOnRegionAdded(object source, Region region)
+        private void LibraryElementControllerOnRegionAdded(object source, RegionController regionController)
         {
             RaisePropertyChanged("Regions");
         }

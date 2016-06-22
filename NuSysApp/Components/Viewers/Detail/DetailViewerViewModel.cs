@@ -62,9 +62,9 @@ namespace NuSysApp
 
         }
 
-        private void AddRegionToList(object source, Region region)
+        private void AddRegionToList(object source, RegionController regionController)
         {
-            RegionCollection.Add(region);
+            RegionCollection.Add(regionController.Model);
         }
 
         public void Dispose()
@@ -101,7 +101,7 @@ namespace NuSysApp
             RegionCollection.Clear();
             foreach (var region in CurrentElementController.LibraryElementModel.Regions)
             {
-                this.AddRegionToList(this, region);
+                RegionCollection.Add(region);
             }
 
             View = await _viewHomeTabViewFactory.CreateFromSendable(controller);

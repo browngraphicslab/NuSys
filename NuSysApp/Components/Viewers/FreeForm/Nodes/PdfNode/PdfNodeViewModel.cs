@@ -46,7 +46,7 @@ namespace NuSysApp
             RegionViews = this.CreatePdfRegionViews();
             
             Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
-            Controller.LibraryElementController.RegionRemoved += LibraryElementController_RegionRemoved;
+            Controller.LibraryElementController.RegionRemoved += LibraryElementController_RegionRemoved; 
             
         }
 
@@ -56,18 +56,18 @@ namespace NuSysApp
             RaisePropertyChanged("RegionViews");
         }
 
-        private void LibraryElementControllerOnRegionAdded(object source, Region region)
+        private void LibraryElementControllerOnRegionAdded(object source, RegionController regionController)
         {
-            var pdfRegion = region as PdfRegion;
+            var pdfRegion = regionController.Model as PdfRegion;
             if (pdfRegion == null)
             {
                 return;
             }
-
-            var regionController = new RegionController(pdfRegion);
             var vm = new PdfRegionViewModel(pdfRegion, Controller.LibraryElementController, regionController, this);
             vm.Editable = false;
             var view = new PDFRegionView(vm);
+            var pdfRegionController = regionController as PdfRegionController;
+            pdfRegionController.PageLocationChanged += PdfRegionControllerOnPageLocationChanged;
 
             if (pdfRegion.PageLocation != CurrentPageNumber+1)
             {
@@ -75,6 +75,19 @@ namespace NuSysApp
             }
             RegionViews.Add(view);
             RaisePropertyChanged("RegionViews");
+        }
+
+        private void PdfRegionControllerOnPageLocationChanged(object sender, int pageLocation)
+        {
+            foreach (var regionView in RegionViews)
+            {
+                var regionVM = regionView.DataContext as RegionViewModel;
+                var regionModel = regionVM?.Model as PdfRegion;
+                if (regionModel?.PageLocation != CurrentPageNumber + 1)
+                {
+                    regionView.Visibility = Visibility.Collapsed;
+                }
+            }
         }
 
         public ObservableCollection<PDFRegionView> CreatePdfRegionViews()
