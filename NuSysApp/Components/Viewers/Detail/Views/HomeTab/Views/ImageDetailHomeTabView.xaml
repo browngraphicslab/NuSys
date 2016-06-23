@@ -26,7 +26,7 @@
             </StackPanel>
             <Image x:Name="xImg" PointerPressed="xImg_PointerPressed" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
                 <Image.Source>
-                    <BitmapImage UriSource="{Binding Path=Image}"></BitmapImage>
+                    <BitmapImage x:Name="BitmapImage"  UriSource="{Binding Path=Image}"></BitmapImage>
                 </Image.Source>
             </Image>
             <ItemsControl ItemsSource="{Binding RegionViews}">
