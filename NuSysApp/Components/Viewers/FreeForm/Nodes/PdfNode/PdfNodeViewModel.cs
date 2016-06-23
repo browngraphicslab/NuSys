@@ -93,6 +93,10 @@ namespace NuSysApp
         public ObservableCollection<PDFRegionView> CreatePdfRegionViews()
         {
             var regionViewCollection = new ObservableCollection<PDFRegionView>();
+            if (Controller.LibraryElementModel.Regions == null)
+            {
+                return regionViewCollection;
+            }
             foreach (var regionModel in Controller.LibraryElementModel.Regions)
             {
                 var pdfRegion = regionModel as PdfRegion;
