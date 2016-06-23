@@ -29,6 +29,10 @@ namespace NuSysApp
 
         public Dictionary<string, Tuple<string, bool>> GetMetadata()
         {
+            if (Metadata == null)
+            {
+                Metadata = new Dictionary<string, Tuple<string, bool>>();
+            }
             return Metadata;
         }
 
