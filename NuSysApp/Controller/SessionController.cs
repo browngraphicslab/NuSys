@@ -72,6 +72,7 @@ namespace NuSysApp
         public delegate void EnterNewCollectionEventHandler();
         public event EnterNewCollectionEventHandler OnEnterNewCollection;
 
+
         public static SessionController Instance
         {
             get

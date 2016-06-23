@@ -18,9 +18,11 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
+    /// <summary>
+    /// View for region on image content.
+    /// </summary>
     public sealed partial class ImageRegionView : UserControl
     {
-
 
         public Point _topLeft;
         public Point _bottomRight;
@@ -42,7 +44,6 @@ namespace NuSysApp
 
             CompositeTransform composite = new CompositeTransform();
             this.RenderTransform = composite;
-            //TODO: DOES INVOKING ONSELECTED DO ANYTHING?
             OnSelected?.Invoke(this, true);
 
             vm.PropertyChanged += PropertyChanged;
@@ -68,8 +69,6 @@ namespace NuSysApp
             var vm = (ImageRegionViewModel)DataContext;
             vm.Width = width;
             vm.Height = height;
-            // TODO Refactor to Controller
-
         }
 
         private void ChangeSize(object sender, Point topLeft, Point bottomRight)
@@ -103,13 +102,18 @@ namespace NuSysApp
 
         }
 
+        /// <summary>
+        /// Updates the width and height of the region relative to the position of the resizing triangle.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void xResizingTriangle_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = DataContext as ImageRegionViewModel;
             if (vm == null)
             {
                 return;
-            }
+            }   
             var rt = ((CompositeTransform)this.RenderTransform);
             if (rt == null)
             {
@@ -124,7 +128,7 @@ namespace NuSysApp
                 xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
                 vm.Height = xMainRectangle.Height;
 
-            }
+            }   
             else if (xMainRectangle.Width < vm.ContainerWidth - rt.TranslateX &&
                      xMainRectangle.Height >= vm.ContainerHeight - rt.TranslateY)
             {
@@ -170,11 +174,6 @@ namespace NuSysApp
 
             if (_tx < 0)
             {
-                //Debug.WriteLine(vm.OriginalWidth);
-                //Debug.WriteLine(_tx);
-                //Debug.WriteLine("-------");
-
-                //vm.Width = vm.OriginalWidth + _tx;
                 rt.TranslateX = 0;
             }
             else if (_tx > vm.ContainerWidth - vm.OriginalWidth)
@@ -254,6 +253,14 @@ namespace NuSysApp
             xMainRectangle.StrokeThickness = 6;
             xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
             //xResizingTriangle.Visibility = Visibility.Visible;
+
+        }
+
+        public void Select()
+        {
+            xMainRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
+            xMainRectangle.Fill.Opacity = 0.3;
+            
 
         }
         private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
