@@ -162,7 +162,7 @@ namespace NuSysApp
             };
 
 
-            vm.Controller.LibraryElementController.UserChanged += ControllerOnUserChanged;
+            //vm.Controller.LibraryElementController.UserChanged += ControllerOnUserChanged;
 
             vm.PropertyChanged += OnPropertyChanged;
             base.OnApplyTemplate();
@@ -257,7 +257,7 @@ namespace NuSysApp
                 hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementViewModel).ToList();
 
                 var hitsStart2 = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
-                hitsStart2 = hitsStart2.Where(uiElem => (uiElem as FrameworkElement).DataContext is LinkedTimeBlockViewModel).ToList();
+                hitsStart2 = hitsStart2.Where(uiElem => (uiElem as FrameworkElement).DataContext is RegionViewModel).ToList();
 
                 var hitRectangleView = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
                 hitRectangleView = hitRectangleView.Where(uiElem => (uiElem as FrameworkElement).DataContext is RectangleViewModel).ToList();
@@ -299,6 +299,36 @@ namespace NuSysApp
                     } else if (hitsStart2.Any()){
                         foreach (var element in hitsStart2)
                         {
+                            if (element is AudioRegionView)
+                            {
+
+                            }
+
+                            if (element is VideoRegionView)
+                            {
+
+                            }
+
+                            if (element is PDFRegionView)
+                            {
+
+                            }
+                            if (element is ImageRegionView)
+                            {
+                                Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100, 100, 200);
+                                Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100, 100, 100);
+                                if (_currenDragMode == DragMode.PresentationLink)
+                                {
+                                   // vm.Controller.RequestPresentationLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
+                                }
+                                else
+                                {
+                                    vm.Controller.RequestLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary,
+                                        outFgDictionary);
+                                }
+                            }
+                            
+                            /*
                             if (element is LinkedTimeBlock)
                             {
                                 Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100,
@@ -307,7 +337,6 @@ namespace NuSysApp
                                 Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100,
                                     100,
                                     100);
-                                Debug.WriteLine("test");
                                 if (_currenDragMode == DragMode.PresentationLink)
                                 {
                                     vm.Controller.RequestPresentationLinkTo(dc.Id, null, (LinkedTimeBlock)element, inFgDictionary,
@@ -321,7 +350,10 @@ namespace NuSysApp
                                 //(element as LinkedTimeBlock).changeColor();
                                 //vm.Controller.RequestLinkTo(dc.Id, (LinkedTimeBlock)element);
 
-                            }
+                                */
+
+
+                            
                         }
                     }
                     else

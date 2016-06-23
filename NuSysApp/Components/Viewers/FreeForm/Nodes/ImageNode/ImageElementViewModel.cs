@@ -78,9 +78,9 @@ namespace NuSysApp
             }
         }
 
-        private void LibraryElementControllerOnRegionAdded(object source, Region region)
+        private void LibraryElementControllerOnRegionAdded(object source, RegionController controller)
         {
-            var imageRegion = region as RectangleRegion;
+            var imageRegion = controller?.Model as RectangleRegion;
             if (imageRegion == null)
             {
                 return;

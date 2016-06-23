@@ -44,7 +44,7 @@ namespace NuSysApp
             this.RenderTransform = composite;
            
             OnSelected?.Invoke(this, true);
-            
+            regionVM.PropertyChanged += PropertyChanged;
             regionVM.SizeChanged += ChangeSize;
             var model = regionVM.Model as PdfRegion;
             if (model == null)
@@ -64,18 +64,17 @@ namespace NuSysApp
 
         private void RegionVM_RegionChanged(object sender, double height, double width)
         {
-            return;
             var vm = (PdfRegionViewModel) DataContext;
-            Debug.WriteLine("oooooooooooooo");
             vm.Width = width;
             vm.Height = height;
+
+            // TODO Refactor to Controller
         }
 
         
 
         private void ChangeSize(object sender, Point topLeft, Point bottomRight)
         {
-            return;
             var composite = RenderTransform as CompositeTransform;
             if (composite == null)
             {
@@ -83,8 +82,9 @@ namespace NuSysApp
             }
             composite.TranslateX = topLeft.X;
             composite.TranslateY = topLeft.Y;
-           // _tx = composite.TranslateX;
-           // _ty = composite.TranslateY;
+
+            //TODO For shrinking behavior, this needs to be changed
+           
         }
         private void UpdateViewModel()
         {
@@ -101,22 +101,74 @@ namespace NuSysApp
 
         private void XResizingRectangle_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-//            xMainRectangle.Width += e.Delta.Translation.X;
- //           xMainRectangle.Height += e.Delta.Translation.Y;
-            RectangleTranform.CenterX += e.Delta.Translation.X;
-            RectangleTranform.CenterY += e.Delta.Translation.Y;
-            xGrid.Width += e.Delta.Translation.X;
-            xGrid.Height += e.Delta.Translation.Y;
-            GridTranform.CenterX += e.Delta.Translation.X;
-            GridTranform.CenterY += e.Delta.Translation.Y;
+            //var vm = DataContext as PdfRegionViewModel;
+            //if (vm == null)
+            //{
+            //    return;
+            //}
+            ////if (e.Position.X < 5 || e.Position.X > vm.ContainerWidth - vm.OriginalWidth)
+            ////{
+                
+            ////}
+            ////xMainRectangle.Width += e.Delta.Translation.X;
+            ////xMainRectangle.Height += e.Delta.Translation.Y;
+            //RectangleTranform.CenterX += e.Delta.Translation.X;
+            //RectangleTranform.CenterY += e.Delta.Translation.Y;
+            //xGrid.Width += e.Delta.Translation.X;
+            //xGrid.Height += e.Delta.Translation.Y;
+            //GridTranform.CenterX += e.Delta.Translation.X;
+            //GridTranform.CenterY += e.Delta.Translation.Y;
             
-            
-            //ResizerTransform.TranslateX += e.Delta.Translation.X;
-            //ResizerTransform.TranslateY += e.Delta.Translation.Y;
+            //UpdateViewModel();
+            var vm = DataContext as PdfRegionViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+            var rt = ((CompositeTransform)this.RenderTransform);
+            if (rt == null)
+            {
+                return;
+            }
+            if (xMainRectangle.Width >= vm.ContainerWidth - rt.TranslateX && xMainRectangle.Height >= vm.ContainerHeight - rt.TranslateY)
+            {
+                return;
+            } else if (xMainRectangle.Width >= vm.ContainerWidth - rt.TranslateX && xMainRectangle.Height < vm.ContainerHeight - rt.TranslateY)
+            {
+                xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
+                vm.Height = xMainRectangle.Height;
 
+            } else if (xMainRectangle.Width < vm.ContainerWidth - rt.TranslateX &&
+                       xMainRectangle.Height >= vm.ContainerHeight - rt.TranslateY)
+            {
+                xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
+                vm.Width = xMainRectangle.Width;
+            }
+            else
+            {
+                xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
+                xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
+                vm.Width = xMainRectangle.Width;
+                vm.Height = xMainRectangle.Height;
+            }
+            
             UpdateViewModel();
+        }
 
-            
+        private void PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "Width": case "Height":
+                    var vm = DataContext as PdfRegionViewModel;
+                    if (vm == null)
+                    {
+                        break;
+                    }
+                    xMainRectangle.Width = vm.Width;
+                    xMainRectangle.Height = vm.Height;
+                    break;
+            }
         }
 
         private void XResizingRectangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -134,30 +186,46 @@ namespace NuSysApp
             }
 
             var rt = ((CompositeTransform)this.RenderTransform);
+            if (rt == null)
+            {
+                return;
+            }
 
             _tx += e.Delta.Translation.X;
             _ty += e.Delta.Translation.Y;
 
             if (_tx < 0)
             {
-                Debug.WriteLine(vm.OriginalWidth);
-                Debug.WriteLine(_tx);
-                Debug.WriteLine("-------");
+                //Debug.WriteLine(vm.OriginalWidth);
+                //Debug.WriteLine(_tx);
+                //Debug.WriteLine("-------");
 
-                vm.Width = vm.OriginalWidth + _tx;
+                //vm.Width = vm.OriginalWidth + _tx;
                 rt.TranslateX = 0;
+            } else if (_tx > vm.ContainerWidth - vm.OriginalWidth)
+            {
+                rt.TranslateX = vm.ContainerWidth - vm.OriginalWidth;
             }
             else
             {
                 rt.TranslateX = _tx;
                 vm.Width = vm.OriginalWidth;
             }
+
+            if (_ty < 0)
+            {
+                rt.TranslateY = 0;
+            }
+            else if (_ty > vm.ContainerHeight - vm.OriginalHeight)
+            {
+                rt.TranslateY = vm.ContainerHeight - vm.OriginalHeight;
+            }
+            else
+            {
+                rt.TranslateY = _ty;
+                vm.Height = vm.OriginalHeight;
+            }
             
-            
-      
-              //  ((CompositeTransform)this.RenderTransform).TranslateY += e.Delta.Translation.Y;
-            
-                
             UpdateViewModel();
             e.Handled = true;
         }
@@ -211,6 +279,13 @@ namespace NuSysApp
         private void XMainRectangle_OnLostFocus(object sender, RoutedEventArgs e)
         {
             Deselected();
+        }
+
+        private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            var vm = DataContext as RegionViewModel;
+            var regionModel = vm?.Model;
+            SessionController.Instance.SessionView.ShowDetailView(regionModel);
         }
     }
 }

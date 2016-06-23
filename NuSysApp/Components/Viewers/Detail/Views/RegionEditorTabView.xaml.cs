@@ -55,9 +55,7 @@ namespace NuSysApp
             var region = button.DataContext as Region;
 
             vm.CurrentElementController.RemoveRegion(region);
-
-
-
+            
         }
         private void AddRegion_Clicked(object sender, RoutedEventArgs e)
         {
@@ -66,17 +64,18 @@ namespace NuSysApp
             {
                 return;
             }
+            var detailHomeTabViewModel = vm.RegionView.DataContext as DetailHomeTabViewModel;
             Region region = null;
             switch (vm.CurrentElementController.LibraryElementModel.Type)
             {
                 case ElementType.Image:
-                    region = new RectangleRegion(new Point(.25,.25), new Point(.75,.75));
+                    region = detailHomeTabViewModel?.GetNewRegion();
                     break;
                 case ElementType.Audio:
-                    region = new TimeRegionModel("name",0,1);
+                    region = detailHomeTabViewModel?.GetNewRegion();
                     break;
                 case ElementType.Video:
-                    region = new VideoRegionModel(new Point(0.25,0.25),new Point(0.75,0.75),.25,.75  );
+                    region = detailHomeTabViewModel?.GetNewRegion();
                     break;
                 case ElementType.Collection:
 
@@ -85,7 +84,7 @@ namespace NuSysApp
 
                     break;
                 case ElementType.PDF:
-                    region = new PdfRegion(new Point(.25, .25), new Point(.75, .75), 1);
+                    region = detailHomeTabViewModel?.GetNewRegion();
                     break;
                 default:
                     region = null;

@@ -8,13 +8,14 @@ using NuSysApp.Components.Viewers.FreeForm;
 using NuSysApp.Controller;
 using NuSysApp.Nodes.AudioNode;
 using NuSysApp.Viewers;
+using Windows.UI.Xaml.Controls;
 
 namespace NuSysApp
 {
     public class NewLinkRequest : Request
     {
         public NewLinkRequest(Message m) : base(RequestType.NewLinkRequest,m){}
-        public NewLinkRequest(string id1, string id2, string creator, string contentId, LinkedTimeBlock block, RectangleView rectangle, Dictionary<string, object> inFineGrainDictionary, Dictionary<string, object> outFineGrainDictionary, string id = null, bool IsPresentationLink = false) : base(RequestType.NewLinkRequest)
+        public NewLinkRequest(string id1, string id2, string creator, string contentId, UserControl regionView, RectangleView rectangle, Dictionary<string, object> inFineGrainDictionary, Dictionary<string, object> outFineGrainDictionary, string id = null, bool IsPresentationLink = false) : base(RequestType.NewLinkRequest)
         {
             _message["id1"] = id1;
             _message["id2"] = id2;
@@ -31,9 +32,10 @@ namespace NuSysApp
             {
                 _message["outFGDictionary"] = outFineGrainDictionary;
             }
-            if (block != null)
+            if (regionView != null)
             {
-                _message["inFineGrain"] = (block.DataContext as LinkedTimeBlockViewModel).Model;
+                _message["inFineGrain"] = (regionView.DataContext as RegionViewModel).Model;
+                //_message["inFineGrain"] = regionView;
             }
             if (rectangle != null)
             {

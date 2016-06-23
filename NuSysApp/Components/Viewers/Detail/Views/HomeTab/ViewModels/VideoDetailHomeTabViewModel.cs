@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.UI.Xaml;
 
 namespace NuSysApp
 {
@@ -15,17 +17,26 @@ namespace NuSysApp
         {
             Controller = controller;
             RegionViews = new ObservableCollection<VideoRegionView>();
+            Controller.Loaded += Controller_Loaded;
         }
 
-        public override void AddRegion(object sender, Region region)
+        private void Controller_Loaded(object sender)
         {
-            var videoRegion = region as VideoRegionModel;
+            RaisePropertyChanged("RegionViews");
+        }
+        public void VideoMediaPlayer_Loaded(object sender, RoutedEventArgs e)
+        {
+            RaisePropertyChanged("RegionViews");
+        }
+
+        public override void AddRegion(object sender, RegionController controller)
+        {
+            var videoRegion = controller?.Model as VideoRegionModel;
             if (videoRegion == null)
             {
                 return;
             }
-            var regionController = new RegionController(region);
-            var vm = new VideoRegionViewModel(videoRegion, Controller, regionController, this);
+            var vm = new VideoRegionViewModel(videoRegion, Controller, controller, this);
             var view = new VideoRegionView(vm);
             RegionViews.Add(view);
             RaisePropertyChanged("RegionViews");
@@ -38,6 +49,13 @@ namespace NuSysApp
 
         public override void SizeChanged(object sender, double width, double height)
         {
+            width = View.ActualWidth;
+            height = View.ActualHeight;
+            foreach (var rv in RegionViews)
+            {
+                var regionViewViewModel = rv.DataContext as RegionViewModel;
+                regionViewViewModel?.ChangeSize(sender,width,height);
+            }
         }
 
         public double GetWidth()
@@ -66,6 +84,12 @@ namespace NuSysApp
 
             }
             RaisePropertyChanged("RegionViews");
+        }
+
+        public override Region GetNewRegion()
+        {
+            var region = new VideoRegionModel(new Point(0.25, 0.25), new Point(0.75, 0.75), .25, .75);
+            return region;
         }
     }
 }

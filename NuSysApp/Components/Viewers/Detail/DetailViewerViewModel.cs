@@ -62,9 +62,9 @@ namespace NuSysApp
 
         }
 
-        private void AddRegionToList(object source, Region region)
+        private void AddRegionToList(object source, RegionController regionController)
         {
-            RegionCollection.Add(region);
+            RegionCollection.Add(regionController.Model);
         }
 
         public void Dispose()
@@ -86,80 +86,209 @@ namespace NuSysApp
             //Create non-libraryelementcontroller tabs
             return true;
         }
-        public async Task<bool> ShowElement(LibraryElementController controller)
+        public async Task<bool> ShowElement(IMetadatable metadatable)
         {
-            
-            if (CurrentElementController != null)
+            if (metadatable.MetadatableType() == MetadatableType.Content)
             {
-                CurrentElementController.KeywordsChanged -= KeywordsChanged;
-            }
-            CurrentElementController = controller;
-            CurrentElementController.KeywordsChanged += KeywordsChanged;
-            CurrentElementController.RegionAdded += AddRegionToList;
-            CurrentElementController.RegionRemoved += RemoveRegionFromList;
+                var controller = metadatable as LibraryElementController;
+                if (controller == null)
+                {
+                    return false;
+                }
+                if (CurrentElementController != null)
+                {
+                    CurrentElementController.KeywordsChanged -= KeywordsChanged;
+                }
+                CurrentElementController = controller;
+                CurrentElementController.KeywordsChanged += KeywordsChanged;
+                CurrentElementController.RegionAdded += AddRegionToList;
+                CurrentElementController.RegionRemoved += RemoveRegionFromList;
 
-            RegionCollection.Clear();
-            foreach (var region in CurrentElementController.LibraryElementModel.Regions)
+                RegionCollection.Clear();
+                foreach (var region in CurrentElementController.LibraryElementModel.Regions)
+                {
+                    RegionCollection.Add(region);
+                }
+
+                View = await _viewHomeTabViewFactory.CreateFromSendable(controller);
+                if (View == null)
+                {
+                    return false;
+                }
+
+                var regionView = await _viewHomeTabViewFactory.CreateFromSendable(controller);
+                if (regionView == null)
+                {
+                    return false;
+                }
+
+
+                _regionableRegionTabViewModel = regionView.DataContext as DetailHomeTabViewModel;
+                _regionableRegionTabViewModel.Editable = true;
+                _regionableHomeTabViewModel = View.DataContext as DetailHomeTabViewModel;
+                _regionableHomeTabViewModel.Editable = false;
+
+                RaisePropertyChanged("View");
+                RaisePropertyChanged("RegionView");
+
+
+
+                View.Loaded += delegate
+                {
+                    _regionableHomeTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
+
+                };
+                regionView.Loaded += delegate
+                {
+
+                    _regionableRegionTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
+
+                };
+                SizeChanged += (sender, left, width, height) => _regionableRegionTabViewModel.SizeChanged(sender, width, height);
+                SizeChanged += (sender, left, width, height) => _regionableHomeTabViewModel.SizeChanged(sender, width, height);
+
+                //_nodeModel = controller.LibraryElementModel;
+
+                Title = controller.LibraryElementModel.Title;
+                this.ChangeTitle(this, controller.LibraryElementModel.Title);
+
+                //vm.Controller.MetadataChange += ControllerOnMetadataChange;
+                //vm.Controller.LibraryElementModel.OnTitleChanged += ChangeTitle;
+
+
+                var tempvm = (DetailHomeTabViewModel)View.DataContext;
+                tempvm.TitleChanged += NodeVMTitleChanged;
+                MakeTagList();
+                RaisePropertyChanged("Title");
+                RaisePropertyChanged("View");
+                RaisePropertyChanged("Tags");
+                RaisePropertyChanged("Metadata");
+                RaisePropertyChanged("RegionView");
+                RaisePropertyChanged("View");
+                return true;
+            } else if (metadatable.MetadatableType() == MetadatableType.Region)
             {
-                this.AddRegionToList(this, region);
-            }
-
-            View = await _viewHomeTabViewFactory.CreateFromSendable(controller);
-            if (View == null)
-            {
-                return false;
-            }
-
-            var regionView  = await _viewHomeTabViewFactory.CreateFromSendable(controller);
-            if (regionView == null)
-            {
-                return false;
-            }
-
-
-            _regionableRegionTabViewModel = regionView.DataContext as DetailHomeTabViewModel;
-            _regionableRegionTabViewModel.Editable = true;
-            _regionableHomeTabViewModel = View.DataContext as DetailHomeTabViewModel;
-            _regionableHomeTabViewModel.Editable = false;
-
-            RaisePropertyChanged("View");
-            RaisePropertyChanged("RegionView");
-
-
-
-            View.Loaded += delegate
-            {
-                _regionableHomeTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
-
-            };
-            regionView.Loaded += delegate
-            {
-
-                _regionableRegionTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
+                var regionModel = metadatable as Region;
+                if (regionModel == null)
+                {
+                    return false;
+                }
                 
-            };
-            SizeChanged += (sender, left, width, height) => _regionableRegionTabViewModel.SizeChanged(sender, width, height);
-            SizeChanged += (sender, left, width, height) => _regionableHomeTabViewModel.SizeChanged(sender, width, height);
+                View = await _viewHomeTabViewFactory.CreateFromSendable(CurrentElementController);
+                if (View == null)
+                {
+                    return false;
+                }
 
-            //_nodeModel = controller.LibraryElementModel;
+                var regionSet = new HashSet<Region>();
+                regionSet.Add(regionModel);
+                View.Loaded += delegate
+                {
+                    _regionableHomeTabViewModel.SetExistingRegions(regionSet);
 
-            Title = controller.LibraryElementModel.Title;
-            this.ChangeTitle(this, controller.LibraryElementModel.Title);
+                };
+
+                _regionableHomeTabViewModel = View.DataContext as DetailHomeTabViewModel;
+                _regionableHomeTabViewModel.Editable = false;
+
+                RaisePropertyChanged("View");
+                
+                //regionView.Loaded += delegate
+                //{
+
+                //    _regionableRegionTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
+
+                //};
+                SizeChanged += (sender, left, width, height) => _regionableHomeTabViewModel.SizeChanged(sender, width, height);
+                
+                Title = regionModel.Name;
+                this.ChangeTitle(this, regionModel.Name);
+                
+                //var tempvm = (DetailHomeTabViewModel)View.DataContext;
+                //tempvm.TitleChanged += NodeVMTitleChanged;
+                
+                RaisePropertyChanged("Title");
+                RaisePropertyChanged("View");
+                RaisePropertyChanged("Tags");
+                RaisePropertyChanged("Metadata");
+                RaisePropertyChanged("RegionView");
+                RaisePropertyChanged("View");
+                return true;
+            } else
+            {
+                return false;
+            }
             
-            //vm.Controller.MetadataChange += ControllerOnMetadataChange;
-            //vm.Controller.LibraryElementModel.OnTitleChanged += ChangeTitle;
-
-            
-            var tempvm = (DetailHomeTabViewModel)View.DataContext;
-            tempvm.TitleChanged += NodeVMTitleChanged;
-            MakeTagList();
-            RaisePropertyChanged("Title");
-            RaisePropertyChanged("Tags");
-            RaisePropertyChanged("Metadata");
-            RaisePropertyChanged("RegionView");
-            RaisePropertyChanged("View");
-            return true;
         }
+
+        //public async Task<bool> ShowElement(LibraryElementController controller)
+        //{
+
+        //    if (CurrentElementController != null)
+        //    {
+        //        CurrentElementController.KeywordsChanged -= KeywordsChanged;
+        //    }
+        //    CurrentElementController = controller;
+        //    CurrentElementController.KeywordsChanged += KeywordsChanged;
+        //    CurrentElementController.RegionAdded += AddRegionToList;
+        //    CurrentElementController.RegionRemoved += RemoveRegionFromList;
+
+        //    RegionCollection.Clear();
+        //    foreach (var region in CurrentElementController.LibraryElementModel.Regions)
+        //    {
+        //        RegionCollection.Add(region);
+        //    }
+
+        //    View = await _viewHomeTabViewFactory.CreateFromSendable(controller);
+        //    if (View == null)
+        //    {
+        //        return false;
+        //    }
+
+        //    var regionView = await _viewHomeTabViewFactory.CreateFromSendable(controller);
+        //    if (regionView == null)
+        //    {
+        //        return false;
+        //    }
+        
+
+
+
+        //    View.Loaded += delegate
+        //    {
+        //        _regionableHomeTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
+
+        //    };
+        //    regionView.Loaded += delegate
+        //    {
+
+        //        _regionableRegionTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
+
+        //    };
+        //    SizeChanged += (sender, left, width, height) => _regionableRegionTabViewModel.SizeChanged(sender, width, height);
+        //    SizeChanged += (sender, left, width, height) => _regionableHomeTabViewModel.SizeChanged(sender, width, height);
+
+        //    //_nodeModel = controller.LibraryElementModel;
+
+        //    Title = controller.LibraryElementModel.Title;
+        //    this.ChangeTitle(this, controller.LibraryElementModel.Title);
+
+        //    //vm.Controller.MetadataChange += ControllerOnMetadataChange;
+        //    //vm.Controller.LibraryElementModel.OnTitleChanged += ChangeTitle;
+
+
+
+        //    var tempvm = (DetailHomeTabViewModel)View.DataContext;
+        //    tempvm.TitleChanged += NodeVMTitleChanged;
+        //    MakeTagList();
+        //    RaisePropertyChanged("Title");
+        //    RaisePropertyChanged("View");
+        //    RaisePropertyChanged("Tags");
+        //    RaisePropertyChanged("Metadata");
+        //    RaisePropertyChanged("RegionView");
+        //    RaisePropertyChanged("View");
+        //    return true;
+        //}
 
         private void RemoveRegionFromList(object source, Region region)
         {

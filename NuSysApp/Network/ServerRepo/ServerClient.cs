@@ -322,8 +322,6 @@ namespace NuSysApp
         private async Task ParseFetchedLibraryElement(Dictionary<string,object> dict, string libraryId)
         {
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-
-
             var contentData = (string)dict["data"] ?? "";
 
             var id = (string)dict["id"];

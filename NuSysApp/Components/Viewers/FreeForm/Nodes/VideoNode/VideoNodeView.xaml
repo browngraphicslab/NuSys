@@ -39,7 +39,6 @@
             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
-
             <Grid x:Name ="grid" Width="{Binding Width}">
                 <Grid.Resources>
                     <local:PositionToStringConverter x:Key="PositionToStringConverter"/>
@@ -50,8 +49,14 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <local:VideoMediaPlayer x:Name="VideoMediaPlayer"></local:VideoMediaPlayer>
+                <ItemsControl ItemsSource="{Binding RegionViews}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
             </Grid>
         </local:NodeTemplate.Inner>
-
     </local:NodeTemplate>
 </local:AnimatableUserControl>

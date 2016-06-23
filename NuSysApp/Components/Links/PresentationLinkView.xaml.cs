@@ -132,7 +132,7 @@ namespace NuSysApp
                     Delete.Visibility = Visibility.Visible;
                     if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
                     {
-                        ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Select();
+                       // ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Select();
                         this.JumpToLinkedTime();
                     }
                     if (((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod != null)
@@ -165,7 +165,7 @@ namespace NuSysApp
                     Delete.Visibility = Visibility.Collapsed;
                     if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
                     {
-                        ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Deselect();
+                        //((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Deselect();
                     }
 
                     if (((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod != null)
@@ -178,7 +178,7 @@ namespace NuSysApp
 
         private void JumpToLinkedTime()
         {
-
+            /*
             if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Start.TotalMilliseconds <
                 ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.End.TotalMilliseconds)
             {
@@ -217,6 +217,7 @@ namespace NuSysApp
 
                 }
             }
+            */
         }
 
 
