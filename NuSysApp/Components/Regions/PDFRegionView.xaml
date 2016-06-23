@@ -9,7 +9,7 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid x:Name ="xGrid" Width="{Binding Width}" Height="{Binding Height}" MaxHeight="{Binding ContainerHeight}" MaxWidth="{Binding ContainerWidth}">
+    <Grid x:Name ="xGrid" Width="{Binding Width}" Height="{Binding Height}" MaxHeight="{Binding ContainerHeight}" MaxWidth="{Binding ContainerWidth}" DoubleTapped="XGrid_OnDoubleTapped">
         <Grid.RenderTransform>
             <CompositeTransform x:Name="GridTranform"></CompositeTransform>
         </Grid.RenderTransform>
