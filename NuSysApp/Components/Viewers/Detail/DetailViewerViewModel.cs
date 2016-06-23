@@ -250,15 +250,7 @@ namespace NuSysApp
         //    {
         //        return false;
         //    }
-
-
-        //    _regionableRegionTabViewModel = regionView.DataContext as DetailHomeTabViewModel;
-        //    _regionableRegionTabViewModel.Editable = true;
-        //    _regionableHomeTabViewModel = View.DataContext as DetailHomeTabViewModel;
-        //    _regionableHomeTabViewModel.Editable = false;
-
-        //    RaisePropertyChanged("View");
-        //    RaisePropertyChanged("RegionView");
+        
 
 
 

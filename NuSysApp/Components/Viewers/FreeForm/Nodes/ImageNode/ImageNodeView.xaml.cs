@@ -72,7 +72,11 @@ namespace NuSysApp
 
         private void ImageNodeView_SizeChanged(object sender, SizeChangedEventArgs e)
         {
+
             var vm = DataContext as ImageElementViewModel;
+
+            if (vm == null)
+                return;
             vm.SizeChanged(this, xImage.ActualWidth, xImage.ActualHeight);
         }
 

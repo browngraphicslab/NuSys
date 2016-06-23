@@ -31,21 +31,34 @@ namespace NuSysApp
                 DataContext = vm;
                 InitializeComponent();
 
-                //var token = model.GetMetaData("Token");
-                //if (token == null || String.IsNullOrEmpty(token?.ToString()))
-                //{
-                //    SourceBttn.Visibility = Visibility.Collapsed;
-                //}
-                //else if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
-                //{
-                //    SourceBttn.Visibility = Visibility.Collapsed;
-                //}
+            //var token = model.GetMetaData("Token");
+            //if (token == null || String.IsNullOrEmpty(token?.ToString()))
+            //{
+            //    SourceBttn.Visibility = Visibility.Collapsed;
+            //}
+            //else if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
+            //{
+            //    SourceBttn.Visibility = Visibility.Collapsed;
+            //}
 
-                vm.LibraryElementController.Disposed += ControllerOnDisposed;
+
+
+            vm.LibraryElementController.Disposed += ControllerOnDisposed;
                 vm.PropertyChanged += PropertyChanged;
                 vm.View = this;
 
             }
+
+
+        public double GetImgHeight()
+        {
+            return xImg.ActualHeight;
+        }
+
+        public double GetImgWidth()
+        {
+            return xImg.ActualHeight;
+        }
 
         private void PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
