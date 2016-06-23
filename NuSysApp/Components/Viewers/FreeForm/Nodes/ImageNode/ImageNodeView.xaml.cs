@@ -80,6 +80,18 @@ namespace NuSysApp
             vm.SizeChanged(this, xImage.ActualWidth, xImage.ActualHeight);
         }
 
+        public async Task onGoTo(Region region)
+        {
+            foreach (var reg in _vm.Regions)
+            {
+                if ((reg.DataContext as ImageRegionViewModel).Model.Id == region.Id)
+                {
+                    reg.Select();
+                }
+            }
+        }
+
+
         private void VmOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "Width" || e.PropertyName == "Height")

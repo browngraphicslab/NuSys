@@ -141,6 +141,8 @@ namespace NuSysApp
                     _regionableHomeTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
 
                 };
+
+
                 regionView.Loaded += delegate
                 {
 

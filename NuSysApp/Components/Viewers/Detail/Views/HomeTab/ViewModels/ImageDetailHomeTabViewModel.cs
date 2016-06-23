@@ -95,7 +95,7 @@ namespace NuSysApp
         }
         public override void SetExistingRegions(HashSet<Region> regions)
         {
-
+            RegionViews.Clear();
             foreach (var regionModel in regions)
             {
                 var imageRegion = regionModel as RectangleRegion;
@@ -106,6 +106,10 @@ namespace NuSysApp
 
                 var regionController = new RegionController(imageRegion);
                 var vm = new ImageRegionViewModel(imageRegion, LibraryElementController, regionController, this);
+                if (!Editable)
+                    vm.Editable = false;
+
+                
                 var view = new ImageRegionView(vm);
                 RegionViews.Add(view);
 

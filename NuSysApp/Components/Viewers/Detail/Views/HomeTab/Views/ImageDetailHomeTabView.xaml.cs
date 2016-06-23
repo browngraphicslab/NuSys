@@ -52,12 +52,12 @@ namespace NuSysApp
 
         public double GetImgHeight()
         {
-            return xImg.ActualHeight;
+            return ActualHeight;
         }
 
         public double GetImgWidth()
         {
-            return xImg.ActualHeight;
+            return ActualWidth;
         }
 
         private void PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -81,8 +81,8 @@ namespace NuSysApp
 
         private void ControllerOnDisposed(object source)
         {
-            var vm = (ImageElementViewModel) DataContext;
-            vm.Controller.Disposed -= ControllerOnDisposed;
+            var vm = (ImageDetailHomeTabViewModel) DataContext;
+            vm.LibraryElementController.Disposed -= ControllerOnDisposed;
             DataContext = null;
         }
 
@@ -137,6 +137,12 @@ namespace NuSysApp
         {
             //SelectedRegion?.Deselected();
             //SelectedRegion = null;
+        }
+
+        private void BitmapImage_ImageOpened(object sender, RoutedEventArgs e)
+        {
+            var vm = (ImageDetailHomeTabViewModel)DataContext;
+            vm.SetExistingRegions(vm.LibraryElementController.LibraryElementModel.Regions);
         }
     }
 }
