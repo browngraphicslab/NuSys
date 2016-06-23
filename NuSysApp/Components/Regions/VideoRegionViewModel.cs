@@ -126,6 +126,8 @@ namespace NuSysApp
             model.BottomRight = new Point(model.BottomRight.X+(BottomRight.X/ContainerViewModel.GetWidth()),model.BottomRight.Y+(BottomRight.Y/ContainerViewModel.GetHeight()));
             model.TopLeft = new Point(model.TopLeft.X+(TopLeft.X / ContainerViewModel.GetWidth()),model.TopLeft.Y+(TopLeft.Y / ContainerViewModel.GetHeight()));
 
+            LibraryElementController.UpdateRegion(model);
+
             RaisePropertyChanged("LeftHandleX");
             RaisePropertyChanged("RightHandleX");
             RaisePropertyChanged("TopLeft");

@@ -42,6 +42,7 @@ namespace NuSysApp
 
             VideoMediaPlayer.Source = vm.Controller.GetSource();
             VideoMediaPlayer.MediaPlayer.MediaOpened += vm.VideoMediaPlayer_Loaded;
+            VideoMediaPlayer.MediaPlayer.Loaded += vm.MediaPlayerOnLoaded;
 
             _isRecording = false;
             //vm.LinkedTimeModels.CollectionChanged += LinkedTimeBlocks_CollectionChanged;
@@ -61,6 +62,7 @@ namespace NuSysApp
         }
 
 
+
         public void Dispose()
         {
         }
@@ -71,6 +73,7 @@ namespace NuSysApp
             vm.Controller.Disposed -= ControllerOnDisposed;
         }
 
-
-   }
+        public double VideoWidth => VideoMediaPlayer.ActualWidth;
+        public double VideoHeight => VideoMediaPlayer.ActualHeight;
+    }
 }

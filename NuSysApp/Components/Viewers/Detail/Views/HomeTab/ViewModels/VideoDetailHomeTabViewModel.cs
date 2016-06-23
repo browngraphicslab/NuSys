@@ -67,6 +67,9 @@ namespace NuSysApp
         {
             return View.ActualHeight;
         }
+        public void MediaPlayerOnLoaded(object sender, RoutedEventArgs routedEventArgs)
+        {
+        }
 
         public override void SetExistingRegions(HashSet<Region> regions)
         {
