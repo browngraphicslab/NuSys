@@ -40,26 +40,7 @@ namespace NuSysApp
 
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
-                //_inqCanvasView = new InqCanvasView(new InqCanvasViewModel(vm.Model.InqCanvas, new Size(xImg.Width, xImg.Height)));
-                /*
-                xWrapper.Children.Insert(1, _inqCanvasView);
-                _inqCanvasView.IsEnabled = true;
-                _inqCanvasView.HorizontalAlignment = HorizontalAlignment.Left;
-                _inqCanvasView.VerticalAlignment = VerticalAlignment.Top;
-                _inqCanvasView.Background = new SolidColorBrush(Colors.Aqua);
-                _inqCanvasView.Width = xImg.Width;
-                _inqCanvasView.Height = xImg.Height;
-
-                (_inqCanvasView.DataContext as InqCanvasViewModel).CanvasSize = new Size(xImg.Width, xImg.Height);
-
-                _inqCanvasView.Clip = new RectangleGeometry
-                {
-                    Rect = new Rect { X = 0, Y = 0, Width = _inqCanvasView.Width, Height = _inqCanvasView.Height }
-                };
-                */
-                //xBorder.ContainerSizeChanged += XBorderOnSizeChanged;
-
-
+                
             };
 
             //vm.MakeTagList();
@@ -114,7 +95,7 @@ namespace NuSysApp
         private async void OnGoToSource(object sender, RoutedEventArgs e)
         {
             var model = (PdfNodeModel)((PdfNodeViewModel)DataContext).Model;
-            var libraryElementController = (DataContext as ImageDetailHomeTabViewModel)?.Controller;
+            var libraryElementController = (DataContext as PdfDetailHomeTabViewModel)?.Controller;
             string token = libraryElementController.GetMetadata("Token")?.ToString();
             await AccessList.OpenFile(token);
         }
@@ -172,6 +153,16 @@ namespace NuSysApp
 
             e.Handled = true;
             */
+        }
+
+        public double GetPdfHeight()
+        {
+            return xImg.ActualHeight;
+        }
+
+        public double GetPdfWidth()
+        {
+            return xImg.ActualWidth;
         }
     }
 }

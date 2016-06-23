@@ -56,7 +56,6 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.RenderTransform = new CompositeTransform();
-            var x = GetValue(X1Dp);
             X1 = System.Convert.ToDouble( GetValue(X1Dp));
             X2 = System.Convert.ToDouble(GetValue(X2Dp));
             Y1 = System.Convert.ToDouble(GetValue(Y1Dp));
@@ -68,7 +67,7 @@ namespace NuSysApp
             set
             {
                 SetValue(X1Dp, value);
-                (this.RenderTransform as CompositeTransform).TranslateX = value;
+       //         (this.RenderTransform as CompositeTransform).TranslateX = value;
             }
         }
         public double X2

@@ -19,7 +19,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace NuSysApp
 {
-    public class AudioNodeViewModel: ElementViewModel
+    public class AudioNodeViewModel: ElementViewModel, Sizeable
     {
         private Grid _visualGrid;
 
@@ -39,6 +39,8 @@ namespace NuSysApp
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
 
             controller.Disposed += ControllerOnDisposed;
+            Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
+            Controller.LibraryElementController.RegionUpdated += LibraryElementControllerOnRegionAdded;
         }
 
         private void ControllerOnDisposed(object source)
@@ -83,6 +85,26 @@ namespace NuSysApp
                 return Controller.LibraryElementController.GetSource();
             }
         }
+        public ObservableCollection<AudioRegionView> Regions { get
+            {
+                var collection = new ObservableCollection<AudioRegionView>();
+                var elementController = Controller.LibraryElementController;
+                var regionHashSet = elementController.LibraryElementModel.Regions;
+
+                if (regionHashSet == null)
+                    return collection;
+                
+                foreach (var model in regionHashSet)
+                {
+                    var regionController = new RegionController(model);
+                    var viewmodel = new AudioRegionViewModel(model as TimeRegionModel, elementController, regionController,this);
+                    viewmodel.Editable = false;
+                    var view = new AudioRegionView(viewmodel);
+                    collection.Add(view);
+                }
+                return collection;
+            }
+        }
         public override async Task Init()
         {
             if (SessionController.Instance.ContentController.ContainsAndLoaded(ContentId))
@@ -105,6 +127,10 @@ namespace NuSysApp
             resStream.Read(dataBytes, 0, (int)response.ContentLength);
             resStream.Dispose();
             //Visualize(dataBytes);
+        }
+        private void LibraryElementControllerOnRegionAdded(object source, Region region)
+        {
+            RaisePropertyChanged("Regions");
         }
 
         private async void Visualize(byte[] bytes)
@@ -208,6 +234,16 @@ namespace NuSysApp
         public void AddTimeRegion(TimeRegionModel region)
         {
             Controller.LibraryElementController.AddRegion(region);   
+        }
+
+        public double GetWidth()
+        {
+            return Width;
+        }
+
+        public double GetHeight()
+        {
+            return Height;
         }
     }
 }

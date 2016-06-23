@@ -28,6 +28,18 @@ namespace NuSysApp
             this.DataContext = vm;
             _toggleManipulation = false;
             Rect.RenderTransform = new CompositeTransform();
+            vm.WidthChanged += WidthChanged;
+            vm.Bound1Changed += B1Changed;
+            vm.Bound2Changed += B2Changed;
+        }
+        private void B1Changed (object sender, double e)
+        {
+        }
+        private void B2Changed (object sender, double e)
+        {
+        }
+        private void WidthChanged (object sender, double e)
+        {
         }
 
         private void Handle_OnPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -39,9 +51,12 @@ namespace NuSysApp
         {
             if (Rect.Width - e.Delta.Translation.X > 0)
             {
-                (Bound1.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
-                (Rect.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
-                Rect.Width -= e.Delta.Translation.X;
+      //          (Bound1.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
+      //          Bound1.X1 += e.Delta.Translation.X;
+      //          Bound1.X2 += e.Delta.Translation.X;
+      //          (Rect.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
+      //          Rect.Width -= e.Delta.Translation.X;
+                UpdateModel(e.Delta.Translation.X,0);
             }
         }
 
@@ -49,8 +64,11 @@ namespace NuSysApp
         {
             if (Rect.Width + e.Delta.Translation.X > 0)
             {
-                (Bound2.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
-                Rect.Width += e.Delta.Translation.X;
+            //    (Bound2.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
+       //         Bound2.X2 += e.Delta.Translation.X;
+        //        Bound2.X1 += e.Delta.Translation.X;
+        //        Rect.Width += e.Delta.Translation.X;
+                UpdateModel(0,e.Delta.Translation.X);
             }
         }
 
@@ -61,11 +79,13 @@ namespace NuSysApp
 
         private void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            var vm = this.DataContext as AudioRegionViewModel;
-            var model = vm.Model as TimeRegionModel;
-            model.Start = Bound1.X1 / vm.RegionWidth;
-            model.End = Bound2.X1 / vm.RegionWidth;
            
+        }
+
+        private void UpdateModel(double d1, double d2)
+        {
+                var vm = this.DataContext as AudioRegionViewModel; 
+                vm.SetNewPoints(d1,d2); 
         }
     }
 }

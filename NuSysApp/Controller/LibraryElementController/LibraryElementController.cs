@@ -157,6 +157,12 @@ namespace NuSysApp
             //Keys should be unique; values obviously don't have to be.
             if (string.IsNullOrEmpty(entry.Value) || string.IsNullOrEmpty(entry.Key) || string.IsNullOrWhiteSpace(entry.Key) || string.IsNullOrWhiteSpace(entry.Value))
                 return false;
+
+            if (_libraryElementModel.Metadata == null)
+            {
+                _libraryElementModel.Metadata = new Dictionary<string, Tuple<string, bool>>();
+            }
+
             if (_libraryElementModel.Metadata.ContainsKey(entry.Key))
             {
                 if (_libraryElementModel.Metadata[entry.Key].Item2 == false)//weird syntax in case we want to change mutability to an enum eventually

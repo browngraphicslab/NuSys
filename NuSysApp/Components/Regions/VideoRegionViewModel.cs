@@ -27,7 +27,7 @@ namespace NuSysApp
         public double Width{ get; set; }
         public Boolean Editable { get; set; }
 
-        public VideoRegionViewModel(VideoRegionModel model, LibraryElementController controller, Sizeable sizeable) : base(model,controller, sizeable)
+        public VideoRegionViewModel(VideoRegionModel model, LibraryElementController controller, RegionController regionController,Sizeable sizeable) : base(model,controller, regionController,sizeable)
         {
             ContainerSizeChanged += BaseSizeChanged;
             Height = sizeable.GetHeight();

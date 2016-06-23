@@ -14,6 +14,7 @@ using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using Windows.System.Threading;
 using Windows.UI;
+using Newtonsoft.Json;
 using NuSysApp.Network.Requests;
 using NuSysApp.Network.Requests.SystemRequests;
 using Buffer = System.Buffer;
@@ -100,7 +101,7 @@ namespace NuSysApp
                 var id = (string)dict["id"];
                 string title = null;
                 ElementType type = ElementType.Text;
-                Dictionary<String, Tuple<string, Boolean>> metadata = new Dictionary<String, Tuple<string, Boolean>>();
+                Dictionary<string, Tuple<string, bool>> metadata = new Dictionary<string, Tuple<string, bool>>();
                 if (dict.ContainsKey("title"))
                 {
                     title = (string)dict["title"];
@@ -111,7 +112,7 @@ namespace NuSysApp
                 }
                 if (dict.ContainsKey("metadata"))
                 {
-                    metadata = (Dictionary<String, Tuple<string, Boolean>>)dict["metadata"];
+                    metadata = JsonConvert.DeserializeObject<Dictionary<string, Tuple<string, bool>>>(dict["metadata"].ToString());
                 }
 
                 UITask.Run(async delegate {

@@ -44,6 +44,21 @@ namespace NuSysApp
 
         }
 
+        private void DeleteRegion_Clicked(object sender, RoutedEventArgs e)
+        {
+            var vm = DetailViewerView.DataContext as DetailViewerViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+            var button = sender as Button;
+            var region = button.DataContext as Region;
+
+            vm.CurrentElementController.RemoveRegion(region);
+
+
+
+        }
         private void AddRegion_Clicked(object sender, RoutedEventArgs e)
         {
             var vm = DetailViewerView.DataContext as DetailViewerViewModel;

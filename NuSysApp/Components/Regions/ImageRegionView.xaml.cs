@@ -31,8 +31,6 @@ namespace NuSysApp
             
             CompositeTransform composite = new CompositeTransform();
             this.RenderTransform = composite;
-            xResizingTriangle.RenderTransform = new CompositeTransform();
-
             OnSelected?.Invoke(this, true);
             DataContext = vm;
             vm.PropertyChanged += PropertyChanged;
@@ -89,13 +87,11 @@ namespace NuSysApp
                 return;
             }
 
+           
+            xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
+            xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
+            
 
-
-
-            xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 0);
-            xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 0);
-            ResizerTransform.TranslateX += e.Delta.Translation.X/2;
-            ResizerTransform.TranslateY += e.Delta.Translation.Y/2;
             UpdateViewModel();
 
         }

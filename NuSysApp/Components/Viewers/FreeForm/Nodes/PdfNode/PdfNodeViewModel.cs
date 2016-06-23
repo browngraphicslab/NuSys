@@ -33,6 +33,8 @@ namespace NuSysApp
         private List<string> _suggestedTags = new List<string>();
         public ObservableCollection<PDFRegionView> RegionViews { private set; get; }
 
+        public Sizeable View { get; set; }
+
         public PdfNodeViewModel(ElementController controller) : base(controller)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
@@ -45,7 +47,7 @@ namespace NuSysApp
             
             Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
             Controller.LibraryElementController.RegionRemoved += LibraryElementController_RegionRemoved;
-
+            
         }
 
         private void LibraryElementController_RegionRemoved(object source, Region region)
@@ -61,8 +63,10 @@ namespace NuSysApp
             {
                 return;
             }
-            
-            var vm = new PdfRegionViewModel(pdfRegion, Controller.LibraryElementController, this);
+
+            var regionController = new RegionController(pdfRegion);
+            var vm = new PdfRegionViewModel(pdfRegion, Controller.LibraryElementController, regionController, this);
+            vm.Editable = false;
             var view = new PDFRegionView(vm);
 
             if (pdfRegion.PageLocation != CurrentPageNumber+1)
@@ -84,7 +88,9 @@ namespace NuSysApp
                     return null;
                 }
 
-                var vm = new PdfRegionViewModel(pdfRegion, Controller.LibraryElementController, this);
+                var regionController = new RegionController(pdfRegion);
+                var vm = new PdfRegionViewModel(pdfRegion, Controller.LibraryElementController, regionController, this);
+                vm.Editable = false;
                 var view = new PDFRegionView(vm);
                 if (pdfRegion.PageLocation != CurrentPageNumber)
                 {
@@ -346,22 +352,25 @@ namespace NuSysApp
 
         public double GetWidth()
         {
-            return Controller.Model.Width;
+            return View.GetWidth();
         }
 
         public double GetHeight()
         {
-            return Controller.Model.Height;
+            return View.GetHeight();
         }
 
-        public void SizeChanged(object sender, double width, double height)
-        {
+       public void SizeChanged(object sender, double width, double height)
+       {
+           var newHeight = View.GetHeight();
+           var newWidth = View.GetWidth();
+
             foreach (var rv in RegionViews)
             {
                 var regionViewViewModel = rv.DataContext as RegionViewModel;
-                regionViewViewModel?.ChangeSize(sender, width, height);
+                regionViewViewModel?.ChangeSize(sender, newWidth, newHeight);
             }
         }
-        
+
     }
 }

@@ -157,7 +157,8 @@ namespace NuSysApp
                 return;
             }
             pdfRegion.PageLocation = _pageNumber;
-            var vm = new PdfRegionViewModel(pdfRegion, Controller, this);
+            var regionController = new RegionController(pdfRegion);
+            var vm = new PdfRegionViewModel(pdfRegion, Controller, regionController, this);
             var view = new PDFRegionView(vm);
             
             RegionViews.Add(view);
@@ -171,20 +172,33 @@ namespace NuSysApp
 
         public override void SizeChanged(object sender, double width, double height)
         {
+            var newHeight = View.ActualHeight;
+            var newWidth = View.ActualWidth;
+
             foreach (var rv in RegionViews)
             {
                 var regionViewViewModel = rv.DataContext as RegionViewModel;
-                regionViewViewModel?.ChangeSize(sender, width, height);
+                regionViewViewModel?.ChangeSize(sender, newWidth, newHeight);
             }
         }
 
         public double GetHeight()
         {
-            return View.ActualHeight;
+            var view = (View as PdfDetailHomeTabView);
+            if (view == null)
+            {
+                return 0;
+            }
+            return view.GetPdfHeight();
         }
         public double GetWidth()
         {
-            return View.ActualWidth;
+            var view = (View as PdfDetailHomeTabView);
+            if (view == null)
+            {
+                return 0;
+            }
+            return view.GetPdfWidth();
         }
 
         public override void SetExistingRegions(HashSet<Region> regions)
@@ -196,8 +210,9 @@ namespace NuSysApp
                 {
                     return;
                 }
-                
-                var vm = new PdfRegionViewModel(pdfRegion, Controller, this);
+
+                var regionController = new RegionController(pdfRegion);
+                var vm = new PdfRegionViewModel(pdfRegion, Controller, regionController, this);
                 var view = new PDFRegionView(vm);
                 if (pdfRegion.PageLocation != _pageNumber)
                 {

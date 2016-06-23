@@ -25,7 +25,7 @@ using NuSysApp.Viewers;
 
 namespace NuSysApp
 {
-    public sealed partial class ImageNodeView : AnimatableUserControl, IThumbnailable
+    public sealed partial class ImageNodeView : AnimatableUserControl, IThumbnailable, Sizeable
     {
 
         private Boolean _drawingRegion;
@@ -36,6 +36,8 @@ namespace NuSysApp
         public ImageNodeView(ImageElementViewModel vm)
         {
             _vm = vm;
+            _vm.View = this;
+           
             InitializeComponent();
             DataContext = vm;
             _drawingRegion = false;
@@ -64,6 +66,14 @@ namespace NuSysApp
             //XamlRenderingBackgroundTask x = new RenderTask(this.xImage);
 
             vm.Controller.Disposed += ControllerOnDisposed;
+            SizeChanged += ImageNodeView_SizeChanged;
+
+        }
+
+        private void ImageNodeView_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var vm = DataContext as ImageElementViewModel;
+            vm.SizeChanged(this, xImage.ActualWidth, xImage.ActualHeight);
         }
 
         private void VmOnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -196,6 +206,16 @@ namespace NuSysApp
             {
                 XImage_OnPointerReleased(sender, e);
             }
+        }
+
+        public double GetWidth()
+        {
+            return xImage.ActualWidth;
+        }
+
+        public double GetHeight()
+        {
+            return xImage.ActualHeight;
         }
     }
 }

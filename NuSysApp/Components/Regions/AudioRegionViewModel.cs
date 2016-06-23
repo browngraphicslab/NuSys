@@ -20,34 +20,48 @@ namespace NuSysApp
     public class AudioRegionViewModel : RegionViewModel 
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        public delegate void DoubleChanged(object sender, double e);
+        public event DoubleChanged WidthChanged;
+        public event DoubleChanged Bound1Changed;
+        public event DoubleChanged Bound2Changed;
 
-        public double LeftHandleX { get; set; }
+        public double LeftHandleX
+        {
+            get
+            {
+                var model = this.Model as TimeRegionModel;
+                return RegionWidth * model.Start;
+            } 
+        }
         public double LefthandleY1 { get; set; }
         public double LefthandleY2 { get; set; }
-        public double RightHandleX { get; set; }
-        public double RightHandleY1 { get; set; }
+
+        public double RightHandleX
+        {
+            get
+            {
+                var model = this.Model as TimeRegionModel;
+                return RegionWidth * model.End;
+            } 
+        }
+        public double RightHandleY1 { get;  }
         public double RightHandleY2 { get; set; }
         public double RegionHeight { get; set; }
         public double RegionWidth { get; set; }
+        public Boolean Editable { get; set; }
 
-        public AudioRegionViewModel(TimeRegionModel model, LibraryElementController controller, Sizeable sizeable) : base(model,controller, sizeable)
+
+        public AudioRegionViewModel(TimeRegionModel model, LibraryElementController controller, RegionController regionController, Sizeable sizeable) : base(model,controller, regionController, sizeable)
         {
             ContainerSizeChanged += BaseSizeChanged;
             RegionWidth = sizeable.GetWidth();
-            LeftHandleX = model.Start * sizeable.GetWidth();
-            RightHandleX = model.End * sizeable.GetWidth();
             LefthandleY1 = 10;
             LefthandleY2 = 110; //+ contentView.ActualHeight;
             RightHandleY1 = 10;
             RightHandleY2 = 110; //+ contentView.ActualHeight;
-            RaisePropertyChanged("LeftHandleX");
-            RaisePropertyChanged("RightHandleX");
-            RaisePropertyChanged("LefthandleY1");
-            RaisePropertyChanged("LefthandleY2");
-            RaisePropertyChanged("RightHandleY1");
-            RaisePropertyChanged("RightHandleY2");
-            RaisePropertyChanged("RegionHeight");
-            RaisePropertyChanged("RegionWidth");
+            WidthChanged?.Invoke(this,RegionWidth);
+            Bound1Changed?.Invoke(this,LeftHandleX);
+            Bound2Changed?.Invoke(this,RightHandleX);
         }
         private void BaseSizeChanged(object sender, double width, double height)
         {
@@ -59,16 +73,23 @@ namespace NuSysApp
 //            Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y)*height;
             RegionWidth = (model.End - model.Start)*width;
             RaisePropertyChanged("RegionWidth");
+            WidthChanged?.Invoke(this,RegionWidth);
         }
-        public void UpdateVals()
+
+        public void SetNewPoints(double Start, double End)
         {
+            var model = Model as TimeRegionModel;
+            if (model == null)
+            {
+                return;
+            }
+            model.Start += Start / ContainerViewModel.GetWidth();
+            model.End += End / ContainerViewModel.GetWidth();
+            RegionWidth = (model.End - model.Start)*ContainerViewModel.GetWidth();
+            LibraryElementController.UpdateRegion(model);
+
             RaisePropertyChanged("LeftHandleX");
             RaisePropertyChanged("RightHandleX");
-            RaisePropertyChanged("LefthandleY1");
-            RaisePropertyChanged("LefthandleY2");
-            RaisePropertyChanged("RightHandleY1");
-            RaisePropertyChanged("RightHandleY2");
-            RaisePropertyChanged("RegionHeight");
             RaisePropertyChanged("RegionWidth");
         }
 
