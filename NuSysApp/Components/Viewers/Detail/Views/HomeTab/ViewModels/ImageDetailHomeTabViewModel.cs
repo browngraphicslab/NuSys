@@ -22,8 +22,6 @@ namespace NuSysApp
         {
             LibraryElementController = controller;
             Model = controller.LibraryElementModel;
-            // controller.RegionAdded += RegionAdded;
-            // controller.RegionRemoved += RegionRemoved;
 
             Image = controller.GetSource();
             RegionViews = new ObservableCollection<ImageRegionView>();
@@ -75,19 +73,29 @@ namespace NuSysApp
                 regionViewViewModel?.ChangeSize(sender, newWidth, newHeight);
             }
         }
-
         public double GetHeight()
         {
-            return View.ActualHeight;
+            var view = (View as ImageDetailHomeTabView);
+            if (view == null)
+            {
+                return 0;
+            }
+            //return view.ActualHeight;
+            return view.GetImgHeight();
         }
         public double GetWidth()
         {
-            return View.ActualWidth;
+            var view = (View as ImageDetailHomeTabView);
+            if (view == null)
+            {
+                return 0;
+            }
+           //return view.ActualWidth;
+            return view.GetImgWidth();
         }
-
         public override void SetExistingRegions(HashSet<Region> regions)
         {
-            RegionViews.Clear();
+
             foreach (var regionModel in regions)
             {
                 var imageRegion = regionModel as RectangleRegion;
@@ -95,12 +103,10 @@ namespace NuSysApp
                 {
                     return;
                 }
+
                 var regionController = new RegionController(imageRegion);
                 var vm = new ImageRegionViewModel(imageRegion, LibraryElementController, regionController, this);
-                if (!Editable)
-                    vm.Editable = false;
                 var view = new ImageRegionView(vm);
-                
                 RegionViews.Add(view);
 
             }

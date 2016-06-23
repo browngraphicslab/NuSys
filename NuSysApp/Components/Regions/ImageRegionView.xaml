@@ -1,4 +1,4 @@
-﻿<UserControl
+﻿<UserControl MaxHeight="{Binding ContainerHeight}" MaxWidth="{Binding ContainerWidth}"
     x:Class="NuSysApp.ImageRegionView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -10,11 +10,11 @@
     d:DesignWidth="400">
 
 
-    <Grid x:Name ="xGrid" >
+    <Grid x:Name ="xGrid" Width="{Binding Width}" Height="{Binding Height}" MaxHeight="{Binding ContainerHeight}" MaxWidth="{Binding ContainerWidth}">
         <Grid.RenderTransform>
             <CompositeTransform x:Name="GridTranform"></CompositeTransform>
         </Grid.RenderTransform>
-        <Rectangle  x:Name="xMainRectangle"  Width="{Binding Width}" Height="{Binding Height}"  PointerPressed="xMainRectangle_PointerPressed" Fill="Transparent" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" ManipulationStarted="RectangleRegionView_ManipulationStarted" ManipulationDelta="RectangleRegionView_ManipulationDelta">
+        <Rectangle  x:Name="xMainRectangle"  Width="{Binding Width}" Height="{Binding Height}"  MaxHeight="{Binding ContainerHeight}" MaxWidth="{Binding ContainerWidth}"  PointerPressed="xMainRectangle_PointerPressed" Fill="Transparent" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" ManipulationStarted="RectangleRegionView_ManipulationStarted" ManipulationDelta="RectangleRegionView_ManipulationDelta">
             <Rectangle.RenderTransform>
                 <CompositeTransform x:Name="RectangleTranform"></CompositeTransform>
             </Rectangle.RenderTransform>

@@ -78,11 +78,11 @@ namespace NuSysApp
             }
             Height = model.BottomRightPoint.Y * ContainerViewModel.GetHeight() - model.TopLeftPoint.Y * ContainerViewModel.GetHeight();
             Width = model.BottomRightPoint.X * ContainerViewModel.GetWidth() - model.TopLeftPoint.X * ContainerViewModel.GetWidth();
+
             RegionChanged?.Invoke(this, Height, Width);
             var topLeft = new Point(model.TopLeftPoint.X * ContainerViewModel.GetWidth(), model.TopLeftPoint.Y * ContainerViewModel.GetHeight());
             var bottomRight = new Point(model.BottomRightPoint.X * ContainerViewModel.GetWidth(), model.BottomRightPoint.Y * ContainerViewModel.GetHeight());
             SizeChanged?.Invoke(this, topLeft, bottomRight);
-            //model.TopLeftPoint = new Point();
 
             RaisePropertyChanged("Height"); 
             RaisePropertyChanged("Width");

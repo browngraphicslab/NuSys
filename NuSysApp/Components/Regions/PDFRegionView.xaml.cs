@@ -159,8 +159,7 @@ namespace NuSysApp
         {
             switch (e.PropertyName)
             {
-                case "Width":
-                case "Height":
+                case "Width": case "Height":
                     var vm = DataContext as PdfRegionViewModel;
                     if (vm == null)
                     {

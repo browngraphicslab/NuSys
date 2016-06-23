@@ -93,7 +93,7 @@ namespace NuSysApp
                         InFineGrain = JsonConvert.DeserializeObject<RectangleRegion>(props.Get("inFineGrain"));
                         break;
                     case ElementType.PDF:
-                        InFineGrain = JsonConvert.DeserializeObject<RectangleRegion>(props.Get("inFineGrain"));
+                        InFineGrain = JsonConvert.DeserializeObject<PdfRegion>(props.Get("inFineGrain"));
                         break;
                     case ElementType.Audio:
                         InFineGrain = JsonConvert.DeserializeObject<TimeRegionModel>(props.Get("inFineGrain"));

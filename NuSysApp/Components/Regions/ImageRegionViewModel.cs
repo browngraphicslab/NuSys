@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,8 +12,33 @@ namespace NuSysApp
     public class ImageRegionViewModel : RegionViewModel
     {
 
-        public double Height { get; set; }
-        public double Width{ get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
+        public double ContainerHeight { get; set; }
+        public double ContainerWidth { get; set; }
+        private double _height;
+        private double _width;
+
+        public double Height
+        {
+            get { return _height; }
+            set
+            {
+                _height = value;
+                RaisePropertyChanged("Height");
+            }
+        }
+
+        public double Width
+        {
+            get { return _width; }
+            set
+            {
+                _width = value;
+                RaisePropertyChanged("Width");
+            }
+        }
+
+
         public bool Editable
         {
             set
@@ -29,6 +55,9 @@ namespace NuSysApp
         }
 
         private bool _editable;
+
+        public double OriginalHeight { get; set; }
+        public double OriginalWidth { get; set; }
         public delegate void SizeChangedEventHandler(object sender, Point topLeft, Point bottomRight);
         public event SizeChangedEventHandler SizeChanged;
 
@@ -38,11 +67,17 @@ namespace NuSysApp
 
         public ImageRegionViewModel(RectangleRegion model, LibraryElementController libraryElementController, RegionController regionController, Sizeable sizeable) : base(model,libraryElementController, regionController,sizeable)
         {
+            if (model == null)
+            {
+                return;
+            }
             ContainerSizeChanged += BaseSizeChanged;
             Height = (model.BottomRightPoint.Y * sizeable.GetHeight()) - (model.TopLeftPoint.Y * sizeable.GetHeight());
             Width = (model.BottomRightPoint.X * sizeable.GetWidth()) - (model.TopLeftPoint.X * sizeable.GetWidth());
-            Editable = true;
+            ContainerHeight = sizeable.GetHeight();
+            ContainerWidth = sizeable.GetWidth();
             libraryElementController.RegionUpdated += Controller_RegionUpdated;
+            Editable = true;
 
         }
 
@@ -80,15 +115,20 @@ namespace NuSysApp
             {
                 return;
             }
-            Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y)*height;
-            Width = (model.BottomRightPoint.X - model.TopLeftPoint.X)*width;
+            Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y) * height;
+            Width = (model.BottomRightPoint.X - model.TopLeftPoint.X) * width;
+            ContainerHeight = height;
+            ContainerWidth = width;
 
-            var topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y*height);
+            var topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
             var bottomRight = new Point(model.BottomRightPoint.X * width, model.BottomRightPoint.Y * height);
-            SizeChanged?.Invoke(this,topLeft,bottomRight);
+            SizeChanged?.Invoke(this, topLeft, bottomRight);
 
+            RegionChanged?.Invoke(this, Height, Width);
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
+            RaisePropertyChanged("ContainerHeight");
+            RaisePropertyChanged("ContainerWidth");
         }
         
         public void SetNewPoints(Point topLeft, Point bottomRight)
