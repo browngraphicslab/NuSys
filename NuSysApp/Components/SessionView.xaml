@@ -77,8 +77,11 @@
         
         <local:SearchWindowView x:Name="xSearchWindowView" Visibility="Collapsed"></local:SearchWindowView>
         </Canvas>
+        <Button x:Name="AdvancedSearchButton" Content="Open Search" Tapped="AdvancedSearchButton_OnTapped"/>
         <local:TextInputBlock x:Name ="xWorkspaceTitle" ButtonBg="#FF113D40" BubbleTop="False"  LeftJustified="False" HorizontalAlignment="Right" VerticalAlignment="Top"  Width="{Binding ElementName=Properties, Path=Width}" Height="45" MinWidth="300"  MaxWidth="300"></local:TextInputBlock>
         <local:DetailViewerView x:Name="xDetailViewer" HorizontalAlignment="Right"></local:DetailViewerView>
+        <local:SearchView x:Name="xSearchViewer" HorizontalAlignment="Left" Visibility="Collapsed"></local:SearchView>
+
         <Grid x:Name="xLoadingGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#55000000" >
             <local:LoadingScreen></local:LoadingScreen>            
         </Grid>

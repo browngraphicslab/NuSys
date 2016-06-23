@@ -395,6 +395,33 @@ namespace NuSysApp
                 }
             });
         }
+
+        public async Task<HashSet<string>> AdvancedSearchOverLibraryElements(Query searchQuery)
+        {
+            return await Task.Run(async delegate
+            {
+                try
+                {
+                    HttpClient client = new HttpClient();
+                    var response = await client.GetAsync(GetUri("search/" + searchQuery.SearchString));
+
+                    string data;
+                    using (var responseContent = response.Content)
+                    {
+                        data = await responseContent.ReadAsStringAsync();
+                    }
+                    JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+                    var list = JsonConvert.DeserializeObject<HashSet<string>>(data, settings);
+                    return list;
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Error searching on server");
+                    return null;
+                }
+            });
+        }
+
         public async Task SendMessageToServer(Message message)
         {
             await SendToServer(message.GetSerialized());

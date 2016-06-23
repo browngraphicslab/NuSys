@@ -110,6 +110,7 @@ namespace NuSysApp
 
             
             xDetailViewer.DataContext = new DetailViewerViewModel();
+            xSearchViewer.DataContext = new SearchViewModel();
 
             await SessionController.Instance.InitializeRecog();
 
@@ -676,6 +677,18 @@ namespace NuSysApp
         private async void SnapshotButton_OnClick(object sender, RoutedEventArgs e)
         {
             await StaticServerCalls.CreateSnapshot();
+        }
+
+        private void AdvancedSearchButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (xSearchViewer.Visibility == Visibility.Collapsed)
+            {
+                xSearchViewer.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                xSearchViewer.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }
