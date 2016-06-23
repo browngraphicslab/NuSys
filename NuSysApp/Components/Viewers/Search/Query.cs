@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
+    //Grant was here
     public class Query
     {
         private List<string> _keywords;
