@@ -7,7 +7,7 @@ using Windows.Foundation;
 
 namespace NuSysApp
 {
-    public abstract class Region : IMetadatable
+    public abstract class Region  
     {
         public enum RegionType
         {
@@ -27,51 +27,5 @@ namespace NuSysApp
             Name = name;
         }
 
-        public Dictionary<string, Tuple<string, bool>> GetMetadata()
-        {
-            if (Metadata == null)
-            {
-                Metadata = new Dictionary<string, Tuple<string, bool>>();
-            }
-            return Metadata;
-        }
-
-        public bool AddMetadata(MetadataEntry entry)
-        {
-            if (string.IsNullOrEmpty(entry.Value) || string.IsNullOrEmpty(entry.Key) || string.IsNullOrWhiteSpace(entry.Key) || string.IsNullOrWhiteSpace(entry.Value))
-                return false;
-            if (Metadata.ContainsKey(entry.Key))
-            {
-                if (Metadata[entry.Key].Item2 == false)//weird syntax in case we want to change mutability to an enum eventually
-                {
-                    return false;
-                }
-                Metadata.Remove(entry.Key);
-            }
-            Metadata.Add(entry.Key, new Tuple<string, bool>(entry.Value, entry.Mutability));
-            return true;
-        }
-
-        public bool RemoveMetadata(string key)
-        {
-            if (string.IsNullOrEmpty(key) || !Metadata.ContainsKey(key) || string.IsNullOrWhiteSpace(key))
-                return false;
-
-            Metadata.Remove(key);
-            return true;
-        }
-        public string GetMetadata(string key)
-        {
-            if (string.IsNullOrEmpty(key) || !Metadata.ContainsKey(key) || string.IsNullOrWhiteSpace(key))
-            {
-                return null;
-            }
-            return Metadata[key].Item1;
-        }
-
-        public MetadatableType MetadatableType()
-        {
-            return NuSysApp.MetadatableType.Region;
-        }
     }
 }
