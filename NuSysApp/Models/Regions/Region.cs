@@ -64,5 +64,10 @@ namespace NuSysApp
             }
             return Metadata[key].Item1;
         }
+
+        public MetadatableType MetadatableType()
+        {
+            return NuSysApp.MetadatableType.Region;
+        }
     }
 }

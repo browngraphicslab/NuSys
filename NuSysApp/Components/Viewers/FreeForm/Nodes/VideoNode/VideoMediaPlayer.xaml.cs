@@ -36,6 +36,14 @@ namespace NuSysApp
             get { return playbackElement.Position; }
         }
 
+        public MediaElement MediaPlayer
+        {
+            get
+            {
+                return this.playbackElement;
+            }
+        }
+
         private void PlaybackElement_Onloaded(object sender, RoutedEventArgs e)
         {
         }

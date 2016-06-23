@@ -338,6 +338,9 @@ namespace NuSysApp
                             case Region.RegionType.Video:
                                 regions.Add(JsonConvert.DeserializeObject<VideoRegionModel>(rs, settings));
                                 break;
+                            case Region.RegionType.Pdf:
+                                regions.Add(JsonConvert.DeserializeObject<PdfRegion>(rs, settings));
+                                break;
                         }
                     }
                     var inks = dict.ContainsKey("inks") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["inks"].ToString()) : null;

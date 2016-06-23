@@ -31,6 +31,7 @@ namespace NuSysApp
             _toggleManipulation = false;
             xMainRectangle.RenderTransform = new CompositeTransform();
             vm.PropertyChanged += PropertyChanged;
+            
         }
 
         private void PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -136,18 +137,15 @@ namespace NuSysApp
 
         private void RectangleRegionView_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            var composite = RenderTransform as CompositeTransform;
             var vm = DataContext as VideoRegionViewModel;
-            if (vm == null || composite == null)
+            if (vm == null)
             {
                 return;
             }
-            composite.TranslateX += e.Delta.Translation.X;
-            composite.TranslateY += e.Delta.Translation.Y;
-
-//            UpdateViewModel();
+            UpdateModel(0,0,e.Delta.Translation,e.Delta.Translation);
             e.Handled = true;
         }
+
 
         private void RectangleRegionView_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {

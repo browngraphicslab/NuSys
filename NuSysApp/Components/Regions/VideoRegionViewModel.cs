@@ -24,15 +24,24 @@ namespace NuSysApp
         public delegate void DoubleChanged(object sender, double e);
         public event DoubleChanged WidthChanged;
         public event DoubleChanged HeightChanged;
-        public double Height { get; set; }
+        public double Height { get;
+            set; }
         public double Width{ get; set; }
-        public double AudioRegionWidth{ get; set; }
+
+        public double AudioRegionWidth
+        {
+            get
+            {
+                var model = RegionController.Model as VideoRegionModel;
+                return (model.End - model.Start) * ContainerViewModel.GetWidth();
+            }
+        }
 
         public double AudioRegionHeight
         {
             get
             {
-                return Height - 150;
+                return ContainerViewModel.GetHeight() - 95 - (Convert.ToDouble(!Editable) * 45);
             }
         }
 
@@ -41,7 +50,7 @@ namespace NuSysApp
         {
             get
             {
-                var model = Model as VideoRegionModel;
+                var model = RegionController.Model as VideoRegionModel;
                 return ContainerViewModel.GetWidth() * model.Start;
             } 
         }
@@ -49,7 +58,7 @@ namespace NuSysApp
         {
             get
             {
-                var model = Model as VideoRegionModel;
+                var model = RegionController.Model as VideoRegionModel;
                 return ContainerViewModel.GetWidth() * model.End;
             } 
         }
@@ -57,7 +66,7 @@ namespace NuSysApp
         {
             get
             {
-                var model = Model as VideoRegionModel;
+                var model = RegionController.Model as VideoRegionModel;
                 return new Point(model.TopLeft.X* ContainerViewModel.GetWidth(), model.TopLeft.Y * ContainerViewModel.GetHeight());
             } 
         }
@@ -65,8 +74,16 @@ namespace NuSysApp
         {
             get
             {
-                var model = Model as VideoRegionModel;
+                var model = RegionController.Model as VideoRegionModel;
                 return new Point(model.BottomRight.X* ContainerViewModel.GetWidth(), model.BottomRight.Y * ContainerViewModel.GetHeight());
+            } 
+        }
+        public Point RectSize 
+        {
+            get
+            {
+                var model = RegionController.Model as VideoRegionModel;
+                return new Point((model.BottomRight.X - model.TopLeft.X)* ContainerViewModel.GetWidth(), (model.BottomRight.Y - model.TopLeft.Y) * ContainerViewModel.GetHeight());
             } 
         }
 
@@ -75,13 +92,9 @@ namespace NuSysApp
             ContainerSizeChanged += BaseSizeChanged;
             Height = sizeable.GetHeight();
             Width = sizeable.GetWidth();
-            AudioRegionWidth = (model.End - model.Start)*sizeable.GetWidth();
             Editable = true;
-            RaisePropertyChanged("Height");
-            RaisePropertyChanged("Width");
-            RaisePropertyChanged("AudioRegionWidth");
-            RaisePropertyChanged("AudioRegionHeight");
         }
+
 
         private void BaseSizeChanged(object sender, double width, double height)
         {
@@ -92,13 +105,18 @@ namespace NuSysApp
             }
             Width = width;
             Height = height;
-            RaisePropertyChanged("Height");
-            RaisePropertyChanged("Width");
+            RaisePropertyChanged("LeftHandleX");
+            RaisePropertyChanged("RightHandleX");
+            RaisePropertyChanged("TopLeft");
+            RaisePropertyChanged("BottomRight");
+            RaisePropertyChanged("AudioRegionWidth");
+            RaisePropertyChanged("AudioRegionHeight");
+            RaisePropertyChanged("RectSize");
         }
 
         internal void SetNewPoints(double Start, double End, Point TopLeft, Point BottomRight)
         {
-            var model = Model as VideoRegionModel;
+            var model = RegionController.Model as VideoRegionModel;
             if (model == null)
             {
                 return;
@@ -107,8 +125,6 @@ namespace NuSysApp
             model.End += End / ContainerViewModel.GetWidth();
             model.BottomRight = new Point(model.BottomRight.X+(BottomRight.X/ContainerViewModel.GetWidth()),model.BottomRight.Y+(BottomRight.Y/ContainerViewModel.GetHeight()));
             model.TopLeft = new Point(model.TopLeft.X+(TopLeft.X / ContainerViewModel.GetWidth()),model.TopLeft.Y+(TopLeft.Y / ContainerViewModel.GetHeight()));
-            AudioRegionWidth = (model.End - model.Start)*ContainerViewModel.GetWidth();
-            LibraryElementController.UpdateRegion(model);
 
             RaisePropertyChanged("LeftHandleX");
             RaisePropertyChanged("RightHandleX");
@@ -116,6 +132,7 @@ namespace NuSysApp
             RaisePropertyChanged("BottomRight");
             RaisePropertyChanged("AudioRegionWidth");
             RaisePropertyChanged("AudioRegionHeight");
+            RaisePropertyChanged("RectSize");
         }
     }
 

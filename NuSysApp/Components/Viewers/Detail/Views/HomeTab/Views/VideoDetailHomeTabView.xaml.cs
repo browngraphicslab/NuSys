@@ -41,6 +41,7 @@ namespace NuSysApp
             DataContext = vm;
 
             VideoMediaPlayer.Source = vm.Controller.GetSource();
+            VideoMediaPlayer.MediaPlayer.MediaOpened += vm.VideoMediaPlayer_Loaded;
 
             _isRecording = false;
             //vm.LinkedTimeModels.CollectionChanged += LinkedTimeBlocks_CollectionChanged;
@@ -58,6 +59,8 @@ namespace NuSysApp
             //    playbackElement.Height = playbackElement.ActualHeight / ratio;
             //};
         }
+
+
         public void Dispose()
         {
         }
