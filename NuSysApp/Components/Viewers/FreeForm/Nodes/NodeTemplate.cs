@@ -162,7 +162,7 @@ namespace NuSysApp
             };
 
 
-            vm.Controller.LibraryElementController.UserChanged += ControllerOnUserChanged;
+            //vm.Controller.LibraryElementController.UserChanged += ControllerOnUserChanged;
 
             vm.PropertyChanged += OnPropertyChanged;
             base.OnApplyTemplate();
