@@ -42,7 +42,6 @@ namespace NuSysApp
 
             VideoMediaPlayer.Source = vm.Controller.GetSource();
             VideoMediaPlayer.MediaPlayer.MediaOpened += vm.VideoMediaPlayer_Loaded;
-            VideoMediaPlayer.MediaPlayer.Loaded += vm.MediaPlayerOnLoaded;
 
             _isRecording = false;
             //vm.LinkedTimeModels.CollectionChanged += LinkedTimeBlocks_CollectionChanged;

@@ -26,7 +26,8 @@ namespace NuSysApp
         }
         public void VideoMediaPlayer_Loaded(object sender, RoutedEventArgs e)
         {
-            RaisePropertyChanged("RegionViews");
+            RegionViews.Clear();
+            SetExistingRegions(Controller.LibraryElementModel.Regions);
         }
 
         public override void AddRegion(object sender, RegionController controller)
@@ -69,6 +70,7 @@ namespace NuSysApp
         }
         public void MediaPlayerOnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
+
         }
 
         public override void SetExistingRegions(HashSet<Region> regions)
