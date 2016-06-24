@@ -21,7 +21,6 @@ namespace NuSysApp
         public HashSet<string> LibraryIds { get; private set; }
         public string Selection { get; private set; }
         public HashSet<string> ParentIds { get; private set; }
-        public string Id { get; private set; }
 
         public ToolModel() : base(SessionController.Instance.GenerateId())
         {
