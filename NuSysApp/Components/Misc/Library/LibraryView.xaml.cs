@@ -95,7 +95,7 @@ namespace NuSysApp
         //        UITask.Run(delegate {
         //            OnNewContents?.Invoke(_elements.ContentValues);
         //        });
-        //    });
+        //    })
         //}
 
         //public void AddNewElement(LibraryElement element)
@@ -372,6 +372,7 @@ namespace NuSysApp
                 }
             });
 
+            // TODO: Remove Tood
             // TOOD: refresh library
         }
 

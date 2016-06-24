@@ -682,8 +682,12 @@ namespace NuSysApp
             await StaticServerCalls.CreateSnapshot();
         }
 
+        private void CurrentCollectionDV_OnClick(object sender, RoutedEventArgs e)
+        {
+            xDetailViewer.ShowElement(SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController);
+        }
 
-        private void AdvancedSearchButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        private void SearchButton_OnClick(object sender, RoutedEventArgs e)
         {
             if (xSearchViewer.Visibility == Visibility.Collapsed)
             {
@@ -693,11 +697,6 @@ namespace NuSysApp
             {
                 xSearchViewer.Visibility = Visibility.Collapsed;
             }
-        }
-
-        private void CurrentCollectionDV_OnClick(object sender, RoutedEventArgs e)
-        {
-            xDetailViewer.ShowElement(SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController);
         }
     }
 }

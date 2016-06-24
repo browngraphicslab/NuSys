@@ -26,18 +26,6 @@ namespace NuSysApp
             LibraryElementController = controller;
             ContainerViewModel = sizeable;
             RegionController = regionController;
-            regionController.SizeChanged += OnSizeChanged;
-            regionController.RegionChanged += OnRegionChanged;
-        }
-
-        private void OnRegionChanged(object sender, double height, double width)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void OnSizeChanged(object sender, Point topLeft, Point bottomRight)
-        {
-            throw new NotImplementedException();
         }
 
         public void ChangeSize(object sender, double width, double height)

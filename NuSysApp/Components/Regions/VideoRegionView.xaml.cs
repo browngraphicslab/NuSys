@@ -87,11 +87,6 @@ namespace NuSysApp
 
         private void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            var vm = this.DataContext as VideoRegionViewModel;
-            var model = vm.Model as VideoRegionModel;
-            model.Start = Bound1.X1 / vm.Width;
-            model.End = Bound2.X1 / vm.Width;
-           
         }
         private void xResizingTriangle_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
@@ -100,6 +95,10 @@ namespace NuSysApp
             {
                 return;
             }
+            if (vm.BottomRight.X-vm.TopLeft.X +e.Delta.Translation.X < 0 || e.Delta.Translation.X + vm.TopLeft.X  + vm.RectSize.X> vm.ContainerViewModel.GetWidth())
+                return;
+            if (vm.BottomRight.Y-vm.TopLeft.Y +e.Delta.Translation.Y < 0 || e.Delta.Translation.Y + vm.TopLeft.Y  + vm.RectSize.Y> vm.ContainerViewModel.GetHeight())
+                return;
             vm.Width = Math.Max(vm.Width + e.Delta.Translation.X, 0);
             vm.Height = Math.Max(vm.Height + e.Delta.Translation.Y, 0);
             if (vm.Width * vm.Height == 0)
@@ -142,6 +141,10 @@ namespace NuSysApp
             {
                 return;
             }
+            if (vm.TopLeft.X +e.Delta.Translation.X < 0 || e.Delta.Translation.X + vm.TopLeft.X  + vm.RectSize.X> vm.ContainerViewModel.GetWidth())
+                return;
+            if (vm.TopLeft.Y +e.Delta.Translation.Y < 0 || e.Delta.Translation.Y + vm.TopLeft.Y  + vm.RectSize.Y> vm.ContainerViewModel.GetHeight())
+                return;
             UpdateModel(0,0,e.Delta.Translation,e.Delta.Translation);
             e.Handled = true;
         }

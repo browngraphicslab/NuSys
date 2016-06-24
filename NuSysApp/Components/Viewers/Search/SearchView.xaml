@@ -48,27 +48,33 @@
                             SuggestionChosen="SearchBox_OnSuggestionChosen"
                             QuerySubmitted="SearchBox_OnQuerySubmitted"/>
                     
-                        <!--
+                        
                         <TextBox
                             x:Name="NoResultsFound" Grid.Row="1"
                             Text="No Results Found"
                             HorizontalAlignment="Stretch"
                             Visibility="{Binding NoResultsFound}"
                             />
-                    -->
+                   
 
                         <!-- The search results -->
-                    <ListView  x:Name="ListView" ItemsSource="{Binding PageElements}" Grid.Row="1" Width="{Binding ResultWidth}" HorizontalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollMode="Enabled" IsDoubleTapEnabled="True" DoubleTapped="ListView_OnDoubleTapped">
+                    <ListView x:Name="ListView" ItemsSource="{Binding PageElements}" Grid.Row="1" Width="{Binding ResultWidth}" HorizontalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollMode="Enabled" IsDoubleTapEnabled="True" DoubleTapped="ListView_OnDoubleTapped">
                             <!-- Search Result Item Template -->
-                            <ListView.ItemTemplate>
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ItemTemplate>
                                 <DataTemplate>
-                                <Grid x:Name="RootGrid" BorderBrush="LightGray" BorderThickness="2" Background="White" HorizontalAlignment="Stretch" Width="{Binding ResultWidth}">
+                                   
+                                <Grid x:Name="RootGrid" BorderBrush="LightGray" Tapped="ResultHeader_OnTapped" BorderThickness="2" Width="{Binding ResultWidth}"  HorizontalAlignment="Stretch" PointerPressed="ListItem_OnPointerPressed" ManipulationStarted="ListItem_ManipulationStarted" ManipulationDelta="ListItem_ManipulationDelta" ManipulationCompleted="ListItem_ManipulationCompleted" ManipulationMode="All">
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
                                                 <RowDefinition Height="Auto"/>
                                             </Grid.RowDefinitions>
                                             <!-- Top Row -->
-                                            <Grid x:Name="ResultHeader" Padding="10" Tapped="ResultHeader_OnTapped" HorizontalAlignment="Stretch" Width="{Binding ResultWidth}">
+                                            <Grid Background="LightGray" x:Name="ResultHeader" Width="{Binding ResultWidth}">
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="Auto"/>
                                                     <RowDefinition Height="Auto"/>
@@ -86,10 +92,10 @@
                                                 <TextBlock x:Name="xTimeStamp" Text="{Binding TimeStamp}" Grid.Column="3" Grid.RowSpan="2" HorizontalAlignment="Right" VerticalAlignment="Center"  Margin="0,0,10,0"/>
                                             </Grid>
                                             <!-- Expandable Information -->
-                                            <Grid x:Name="ResultInfo" Grid.Row="1" Visibility="Collapsed" HorizontalAlignment="Stretch" Width="{Binding ResultWidth}">
+                                            <Grid x:Name="ResultInfo" Grid.Row="1" Visibility="Collapsed"  HorizontalAlignment="Stretch" Width="{Binding ResultWidth}">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="100"/>
-                                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                                    <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="Auto"/>
@@ -108,7 +114,7 @@
 
 
                                         </Grid>
-
+                    
                                 </DataTemplate>
 
                             </ListView.ItemTemplate>

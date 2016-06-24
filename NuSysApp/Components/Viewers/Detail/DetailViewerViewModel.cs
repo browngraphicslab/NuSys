@@ -105,11 +105,14 @@ namespace NuSysApp
                 CurrentElementController.RegionRemoved += RemoveRegionFromList;
 
                 RegionCollection.Clear();
-                foreach (var region in CurrentElementController.LibraryElementModel.Regions)
+                if (CurrentElementController.LibraryElementModel.Regions.Count > 0)
                 {
-                    RegionCollection.Add(region);
+                    foreach (var region in CurrentElementController.LibraryElementModel.Regions)
+                    {
+                        RegionCollection.Add(region);
+                    }
                 }
-
+                
                 View = await _viewHomeTabViewFactory.CreateFromSendable(controller);
                 if (View == null)
                 {
@@ -138,6 +141,8 @@ namespace NuSysApp
                     _regionableHomeTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
 
                 };
+
+
                 regionView.Loaded += delegate
                 {
 

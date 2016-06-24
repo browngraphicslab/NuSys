@@ -6,33 +6,29 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using MyToolkit.UI;
 
 namespace NuSysApp
 {
     public partial class SearchView : AnimatableUserControl
     {
-        private ElementModel _nodeModel;
-        private String _tagToDelete;
-        public Boolean DeleteOnFocus;
         public string Title { get; set; }
         public string Date { get; set; }
 
         public UserControl View { get; set; }
 
-        private ElementViewModel _currentElementViewModel;
-        public ElementController CurrentElementController { get; set; }
-
-        public delegate void TitleChangedHandler(object source, string newTitle);
-        public event TitleChangedHandler TitleChanged;
-
         private SearchViewModel _vm;
+
+        private double _x;
+        private double _y;
 
         public SearchView()
         {
@@ -53,6 +49,8 @@ namespace NuSysApp
             };
 
         }
+
+        #region manipulation code
 
         // when the size of the winow changes reset the view
         private void SessionView_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -84,53 +82,6 @@ namespace NuSysApp
             Canvas.SetLeft(this, 0);
         }
 
-        #region manipulation code
-        public void Dispose()
-        {
-            var tempvm = (ElementViewModel)View.DataContext;
-            tempvm.PropertyChanged -= NodeVMPropertChanged;
-            _nodeModel = null;
-
-        }
-
-        
-
-        /* Remove if not showing detail view
-        public async Task<bool> ShowElement(ElementController controller)
-        {
-            CurrentElementController = controller;
-            View = await _viewFactory.CreateFromSendable(controller);
-            if (View == null)
-                return false;
-            _nodeModel = controller.Model;
-            Title = controller.LibraryElementModel.Title;
-            this.ChangeTitle(this, controller.LibraryElementModel.Title);
-
-            controller.LibraryElementModel.OnTitleChanged += ChangeTitle;
-
-            var tempvm = (ElementViewModel)View.DataContext;
-            tempvm.PropertyChanged += NodeVMPropertChanged;
-            return true;
-        }
-        */
-
-
-        private void NodeVMPropertChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (!(View.DataContext is ElementViewModel))
-                return;
-
-            var tempvm = (ElementViewModel)View.DataContext;
-            switch (e.PropertyName.ToLower())
-            {
-                case "title":
-                    Title = tempvm.Title;
-                    break;
-                default:
-                    break;
-            }
-        }
-
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             // todo errorchecking
@@ -149,6 +100,10 @@ namespace NuSysApp
         // when the user enters text update the suggestion list
         private void SearchBox_OnTextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
+            if (_vm.NoResultsFound == Visibility.Visible)
+            {
+                _vm.NoResultsFound = Visibility.Collapsed;
+            }
 
             // only get results when the user is typing
             // otherwise assume result was filled in by TextMemberPath
@@ -202,21 +157,18 @@ namespace NuSysApp
         // display extra info when the header is tapped
         private void ResultHeader_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            var highlightColor = Colors.LightSkyBlue;
-            var normalColor = Colors.White;
+
             var header = sender as Grid;
-            var info = header.FindName("ResultInfo") as FrameworkElement;
+            var info = header?.FindName("ResultInfo") as FrameworkElement;
             if (info == null) return;
             // if the extra info is open, close it, and return to normal color
             if (info.Visibility == Visibility.Visible)
             {
                 info.Visibility = Visibility.Collapsed;
-                header.Background = new SolidColorBrush(normalColor);
             }
             else
             {
                 info.Visibility = Visibility.Visible;
-                header.Background = new SolidColorBrush(highlightColor);
             }
         }
 
@@ -224,9 +176,149 @@ namespace NuSysApp
         {
             var item = ListView.SelectedItem as SearchResultTemplate;
             var id = item.Id;
-            SessionController.Instance.ContentController.GetLibraryItemController();
+
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(id);
+            
+            SessionController.Instance.SessionView.ShowDetailView(controller);
 
             e.Handled = true;
+        }
+
+        private void ListItem_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var view = SessionController.Instance.SessionView;
+            _x = e.GetCurrentPoint(view).Position.X - 25;
+            _y = e.GetCurrentPoint(view).Position.Y - 25;
+        }
+
+        private void ListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+            SearchResultTemplate result = (sender as Grid)?.DataContext as SearchResultTemplate;
+            LibraryElementModel element = result?.Model;
+            if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element.LibraryElementId) || (element.Type == ElementType.Link))
+            {
+                e.Handled = true;
+                return;
+            }
+
+            var view = SessionController.Instance.SessionView;
+            view.LibraryDraggingRectangle.SwitchType(element.Type);
+            view.LibraryDraggingRectangle.Show();
+            var rect = view.LibraryDraggingRectangle;
+            Canvas.SetZIndex(rect, 3);
+            rect.RenderTransform = new CompositeTransform();
+            var t = (CompositeTransform)rect.RenderTransform;
+
+
+            t.TranslateX += _x;
+            t.TranslateY += _y;
+
+            if (!SessionController.Instance.ContentController.ContainsAndLoaded(element.LibraryElementId))
+            {
+                Task.Run(async delegate
+                {
+                    SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(element.LibraryElementId);
+                });
+            }
+        }
+
+
+        private void ListItem_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+
+            SearchResultTemplate result = (sender as Grid)?.DataContext as SearchResultTemplate;
+            LibraryElementModel element = result?.Model;
+            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
+            {
+                e.Handled = true;
+                return;
+            }
+
+            var el = (FrameworkElement)sender;
+            var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
+
+            var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(sp, null).Where(i => i is LibraryView);
+            if (itemsBelow.Any())
+            {
+                SessionController.Instance.SessionView.LibraryDraggingRectangle.Hide();
+            }
+            else
+            {
+                SessionController.Instance.SessionView.LibraryDraggingRectangle.Show();
+
+            }
+            var view = SessionController.Instance.SessionView;
+            var rect = view.LibraryDraggingRectangle;
+            var t = (CompositeTransform)rect.RenderTransform;
+
+            t.TranslateX += e.Delta.Translation.X;
+            t.TranslateY += e.Delta.Translation.Y;
+
+            _x += e.Delta.Translation.X;
+            _y += e.Delta.Translation.Y;
+
+        }
+
+        private async void ListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            SearchResultTemplate result = (sender as Grid)?.DataContext as SearchResultTemplate;
+            LibraryElementModel element = result?.Model;
+            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
+            {
+                e.Handled = true;
+                return;
+            }
+
+            var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
+
+
+            if (rect.Visibility == Visibility.Collapsed)
+                return;
+
+            rect.Hide();
+            var r = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(_x, _y));
+
+            if (_x < this.Width) return;
+
+            await AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type, element.LibraryElementId);
+        }
+
+        public async Task AddNode(Point pos, Size size, ElementType elementType, string libraryId)
+        {
+            Task.Run(async delegate
+            {
+                if (elementType != ElementType.Collection)
+                {
+                    var element = SessionController.Instance.ContentController.GetContent(libraryId);
+                    var dict = new Message();
+                    Dictionary<string, object> metadata;
+
+                    metadata = new Dictionary<string, object>();
+                    metadata["node_creation_date"] = DateTime.Now;
+                    metadata["node_type"] = elementType + "Node";
+
+                    dict = new Message();
+                    dict["title"] = element?.Title + " element";
+                    dict["width"] = size.Width.ToString();
+                    dict["height"] = size.Height.ToString();
+                    dict["nodeType"] = elementType.ToString();
+                    dict["x"] = pos.X;
+                    dict["y"] = pos.Y;
+                    dict["contentId"] = libraryId;
+                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
+                    dict["metadata"] = metadata;
+                    dict["autoCreate"] = true;
+                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                    var request = new NewElementRequest(dict);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                }
+                else
+                {
+                    await
+                        StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, libraryId, size.Width,
+                            size.Height);
+                }
+            });
         }
     }
 }

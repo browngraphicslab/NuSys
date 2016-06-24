@@ -12,7 +12,7 @@ namespace NuSysApp
         public ElementType Type { get; set; }
         public string TimeStamp { get; set; }
         public string Creator { get; set; }
-        public HashSet<string> Keywords { get; set; }
+        public HashSet<Keyword> Keywords { get; set; }
         public Dictionary<string, Tuple<string, bool>> MetaData { get; set; }
         public string Data { get; set; }
 
@@ -24,7 +24,8 @@ namespace NuSysApp
         public SearchResultTemplate(SearchResult result)
         {
             // return if library element model doesn't exist or if result parameter is null
-            var model = SessionController.Instance.ContentController.Get(result?.ContentID);
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(result?.ContentID);
+            var model = controller.LibraryElementModel;
             if (model == null) return;
 
             this.Title = model.Title;
@@ -35,7 +36,7 @@ namespace NuSysApp
             this.MetaData = model.Metadata;
 
             // unused
-            this.Id = model.Id;
+            this.Id = model.LibraryElementId;
             this.Model = model;
             this.Data = model.Data;
 

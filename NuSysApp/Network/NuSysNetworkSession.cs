@@ -330,21 +330,17 @@ namespace NuSysApp
             return await _serverClient.SearchOverLibraryElements(searchText);
         }
 
-<<<<<<< HEAD
         public async Task<HashSet<string>> AdvancedSearchOverLibraryElements(Query searchQuery)
         {
             return await _serverClient.AdvancedSearchOverLibraryElements(searchQuery);
         }
 
-        public async Task<List<Dictionary<string, object>>> GetContentInfo(List<string> contentIds)
-=======
         /// <summary>
         /// Basically just to Fetch regions so we dont have to get the entire data
         /// </summary>
         /// <param name="contentIds"></param>
         /// <returns></returns>
         public async Task FetchLibraryElementWithoutData(string contentId)
->>>>>>> origin/trent_controller2
         {
             await _serverClient.GetContentWithoutData(contentId);
         }

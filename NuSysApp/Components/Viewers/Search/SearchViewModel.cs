@@ -11,12 +11,32 @@ namespace NuSysApp
 {
     public class SearchViewModel : BaseINPC
     {
-        public Visibility NoResultsFound;
+        private Visibility _noResultsFound;
+
+        public Visibility NoResultsFound
+        {
+            get { return _noResultsFound; }
+            set
+            {
+                _noResultsFound = value;
+                RaisePropertyChanged("NoResultsFound");
+            }
+        }
+
+
         public ObservableCollection<SearchResultTemplate> PageElements { get; set; }
         private string _searchString = string.Empty;
-        public double ResultWidth { get; set; }
-        //private List<LibraryElementModel> _orgList;          
+        private double _resultWidth;
 
+        public double ResultWidth
+        {
+            get { return _resultWidth; }
+            set
+            {
+                _resultWidth = value;
+                RaisePropertyChanged("ResultWidth");
+            }
+        }
         public SearchViewModel()
         {
             PageElements = new ObservableCollection<SearchResultTemplate>();
@@ -28,7 +48,7 @@ namespace NuSysApp
             PageElements.Clear();        
 
             var searchResults = await SessionController.Instance.NuSysNetworkSession.AdvancedSearchOverLibraryElements(searchQuery);
-            if (searchResults == null)
+            if (searchResults == null || searchResults.Count == 0)
             {
                 if (NoResultsFound == Visibility.Collapsed)
                 {
@@ -45,8 +65,8 @@ namespace NuSysApp
                     //if (id != null)
                     if(!string.IsNullOrEmpty(result))
                     {
-                        var model = SessionController.Instance.ContentController.Get(result);
-                        
+                        var controller = SessionController.Instance.ContentController.GetLibraryElementController(result);
+                        var model = controller.LibraryElementModel;
                         var searchResult = new SearchResult(result,model.Type,result);            
                         PageElements.Add(new SearchResultTemplate(searchResult));
                     }

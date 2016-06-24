@@ -13,10 +13,6 @@ namespace NuSysApp
         public ElementType ElementType { get; set; }
         public string ExtraInfo { get; set; }
 
-        // Properties Set By Class
-        public string Title { get; set; }
-        public string TimeStamp { get; set; }
-
         public SearchResult(string contentId, ElementType type)
         {
             ContentID = contentId;

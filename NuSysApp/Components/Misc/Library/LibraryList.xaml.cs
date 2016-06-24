@@ -192,8 +192,6 @@ namespace NuSysApp
             _y += e.Delta.Translation.Y;
 
             _propertiesWindow.Visibility = Visibility.Collapsed;
-
-
         }
 
         private async void LibraryListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
