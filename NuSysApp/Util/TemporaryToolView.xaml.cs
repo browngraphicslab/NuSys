@@ -38,10 +38,9 @@ namespace NuSysApp.Util
             Filters = new ObservableCollection<ToolModel.FilterTitle>()
             { ToolModel.FilterTitle.Type, ToolModel.FilterTitle.Title,  ToolModel.FilterTitle.Creator,  ToolModel.FilterTitle.Date,  ToolModel.FilterTitle.MetadataKeys,  ToolModel.FilterTitle.MetadataValues };
             this.InitializeComponent();
-
+            vm.Controller.SetSize(50, 50);
+            vm.Controller.SetPosition(x,y);
             this.DataContext = vm;
-            Canvas.SetTop(this, y);
-            Canvas.SetLeft(this, x);
             xFilterElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             xFilterElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
         }
@@ -62,7 +61,7 @@ namespace NuSysApp.Util
 
                 var vm = (ToolViewModel)DataContext;
 
-                ToolModel model = new ToolModel("");
+                ToolModel model = new ToolModel();
                 ToolController controller = new ToolController(model);
                 ToolViewModel viewmodel = new ToolViewModel(controller);
                 TemporaryToolView view = new TemporaryToolView(viewmodel, r.X, r.Y);

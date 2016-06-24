@@ -23,10 +23,11 @@ namespace NuSysApp
         public HashSet<string> ParentIds { get; private set; }
         public string Id { get; private set; }
 
-        public ToolModel(string id) : base(id)
+        public ToolModel() : base(SessionController.Instance.GenerateId())
         {
             Id = SessionController.Instance.GenerateId();
             ParentIds = new HashSet<string>();
+            LibraryIds = new HashSet<string>();
         }
         public void SetFilter(FilterTitle filter)
         {

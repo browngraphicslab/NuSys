@@ -10,9 +10,9 @@ namespace NuSysApp
     public class ToolViewModel : ElementViewModel
     {
         private ToolController _controller;
-        public ToolViewModel(ElementController toolController) : base(toolController)
+        public ToolViewModel(ToolController toolController) : base(toolController)
         {
-            _controller = toolController as ToolController;
+            _controller = toolController;
             _controller.LibraryIdsChanged += ControllerOnLibraryIdsChanged;
         }
 
@@ -30,7 +30,7 @@ namespace NuSysApp
 
         public void CreateNewToolWindow(Canvas canvas, double x, double y)
         {
-            ToolModel model = new ToolModel("");
+            ToolModel model = new ToolModel();
             ToolController controller = new ToolController(model);
             controller.AddParent(controller);
             ToolViewModel viewmodel = new ToolViewModel(controller);

@@ -263,7 +263,7 @@ namespace NuSysApp
                 //    Width = 300,
                 //    Height = 300,
                 //})));
-                ToolModel model = new ToolModel("");
+                ToolModel model = new ToolModel();
                 ToolController controller = new ToolController(model);
                 controller.MakeStartOfChain();
                 ToolViewModel viewmodel = new ToolViewModel(controller);
