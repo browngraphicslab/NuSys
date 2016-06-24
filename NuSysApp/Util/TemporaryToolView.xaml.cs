@@ -17,7 +17,7 @@ using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace NuSysApp.Util
+namespace NuSysApp
 {
 
     /// <summary>
@@ -58,5 +58,8 @@ namespace NuSysApp.Util
         {
             SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Remove(this);
         }
+
+
+        
     }
 }

@@ -279,6 +279,7 @@
     <Compile Include="Components\Tools\ToolLinkView.xaml.cs">
       <DependentUpon>ToolLinkView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Tools\ToolLinkViewModel.cs" />
     <Compile Include="Components\Tools\ToolModel.cs" />
     <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
     <Compile Include="Components\Viewers\Detail\Sizeable.cs" />
