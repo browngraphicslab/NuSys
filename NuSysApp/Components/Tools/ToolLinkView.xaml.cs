@@ -19,7 +19,9 @@ namespace NuSysApp
 {
     public sealed partial class ToolLinkView : AnimatableUserControl
     {
-        public ToolLinkView()
+
+
+        public ToolLinkView(ToolLinkViewModel vm)
         {
             this.InitializeComponent();
 

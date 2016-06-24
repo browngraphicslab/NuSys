@@ -64,6 +64,8 @@ namespace NuSysApp
                 wvm.AtomViewList.Add(view);
 
 
+                var linkViewModel = new ToolLinkViewModel(this, view);
+                var link = new ToolLinkView(linkViewModel);
 
 
             }
