@@ -273,6 +273,7 @@
     <Compile Include="Components\Viewers\FreeForm\RectangleViewModel.cs" />
     <Compile Include="Components\Viewers\Search\Query.cs" />
     <Compile Include="Components\Viewers\Search\SearchResult.cs" />
+    <Compile Include="Components\Viewers\Search\SearchResultTemplate.cs" />
     <Compile Include="Components\Viewers\Search\SearchView.xaml.cs">
       <DependentUpon>SearchView.xaml</DependentUpon>
     </Compile>

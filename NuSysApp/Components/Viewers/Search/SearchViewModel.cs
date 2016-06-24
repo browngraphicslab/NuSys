@@ -12,13 +12,14 @@ namespace NuSysApp
     public class SearchViewModel : BaseINPC
     {
         public Visibility NoResultsFound;
-        public ObservableCollection<SearchResult> PageElements { get; set; }
+        public ObservableCollection<SearchResultTemplate> PageElements { get; set; }
         private string _searchString = string.Empty;
+        public double ResultWidth { get; set; }
         //private List<LibraryElementModel> _orgList;          
 
         public SearchViewModel()
         {
-            PageElements = new ObservableCollection<SearchResult>();
+            PageElements = new ObservableCollection<SearchResultTemplate>();
             NoResultsFound = Visibility.Collapsed;
         }
 
@@ -37,6 +38,7 @@ namespace NuSysApp
             }
             else
             {
+
                 foreach (var result in searchResults)
                 {
                     //var id = result.ContentID;
@@ -45,10 +47,8 @@ namespace NuSysApp
                     {
                         var model = SessionController.Instance.ContentController.Get(result);
                         
-                        var searchResult = new SearchResult(result,model.Type,"extra info example");
-                        searchResult.Title = model.Title;
-                        searchResult.TimeStamp = model.Timestamp;                  
-                        PageElements.Add(searchResult);
+                        var searchResult = new SearchResult(result,model.Type,result);            
+                        PageElements.Add(new SearchResultTemplate(searchResult));
                     }
 
                 }

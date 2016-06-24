@@ -12,6 +12,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using MyToolkit.UI;
 
 namespace NuSysApp
 {
@@ -45,7 +46,7 @@ namespace NuSysApp
                 _vm = (SearchViewModel)DataContext;
 
                 // set the view equal to the size of the window
-                this.ResizeView();
+                this.ResizeView(true, true);
                 // when the size of the winow changes reset the view
                 SessionController.Instance.SessionView.SizeChanged += SessionView_SizeChanged;
                 // Metadata.ItemsSource = vm.Metadata;
@@ -56,16 +57,29 @@ namespace NuSysApp
         // when the size of the winow changes reset the view
         private void SessionView_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            this.ResizeView();
+            // resize the height only
+            this.ResizeView(false, true);
         }
 
         // sets the view equal to the size of the window
-        private void ResizeView()
+        private void ResizeView(bool width, bool height)
         {
-            this.Width = SessionController.Instance.SessionView.ActualWidth / 4;
-            this.Height = SessionController.Instance.SessionView.ActualHeight;
+            // resize width
+            if (width)
+            {
+                this.Width = SessionController.Instance.SessionView.ActualWidth / 4;
+            }
+            // resize height
+            if (height)
+            {
+                this.Height = SessionController.Instance.SessionView.ActualHeight;
+            }
+
+            // do this every time
             this.MaxHeight = SessionController.Instance.SessionView.ActualHeight;
             this.MaxWidth = SessionController.Instance.SessionView.ActualWidth - resizer.ActualWidth - 30;
+            this.MinWidth = resizer.ActualWidth;
+            _vm.ResultWidth = this.Width - resizer.Width;
             Canvas.SetTop(this, 0);
             Canvas.SetLeft(this, 0);
         }
@@ -121,6 +135,7 @@ namespace NuSysApp
         {
             // todo errorchecking
             this.Width += e.Delta.Translation.X;
+            _vm.ResultWidth = this.Width - resizer.Width;
 
         }
 
@@ -184,39 +199,33 @@ namespace NuSysApp
         #endregion search bar text manipulation
 
 
-        private void ListView_OnItemClick(object sender, ItemClickEventArgs e)
+        // display extra info when the header is tapped
+        private void ResultHeader_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            var highlightColor = Colors.LightSkyBlue;
+            var normalColor = Colors.White;
+            var header = sender as Grid;
+            var info = header.FindName("ResultInfo") as FrameworkElement;
+            if (info == null) return;
+            // if the extra info is open, close it, and return to normal color
+            if (info.Visibility == Visibility.Visible)
+            {
+                info.Visibility = Visibility.Collapsed;
+                header.Background = new SolidColorBrush(normalColor);
+            }
+            else
+            {
+                info.Visibility = Visibility.Visible;
+                header.Background = new SolidColorBrush(highlightColor);
+            }
         }
 
-        private void Sort_Button_Click(object sender, RoutedEventArgs e)
+        private void ListView_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            throw new NotImplementedException();
-        }
+            var item = ListView.SelectedItem as SearchResultTemplate;
+            var id = item.Id;
 
-        private void LibraryListItem_OnPointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void ListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void LibraryListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void LibraryListItem_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void LibraryListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-        {
-            throw new NotImplementedException();
+            e.Handled = true;
         }
     }
 }

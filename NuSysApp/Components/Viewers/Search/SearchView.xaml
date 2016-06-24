@@ -13,62 +13,6 @@
     BorderBrush="DarkSlateGray"
     BorderThickness="2"
     >
-    <local:AnimatableUserControl.Resources>
-        <Style x:Key="SortButton" TargetType="Button">
-            <Setter Property="Background" Value="{ThemeResource SystemControlBackgroundBaseLowBrush}"/>
-            <Setter Property="Foreground" Value="{ThemeResource SystemControlForegroundBaseHighBrush}"/>
-            <Setter Property="BorderBrush" Value="{ThemeResource SystemControlForegroundTransparentBrush}"/>
-            <Setter Property="BorderThickness" Value="{ThemeResource ButtonBorderThemeThickness}"/>
-            <Setter Property="Padding" Value="8,4,8,4"/>
-            <Setter Property="HorizontalAlignment" Value="Left"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>
-            <Setter Property="FontWeight" Value="Normal"/>
-            <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}"/>
-            <Setter Property="UseSystemFocusVisuals" Value="True"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Grid x:Name="RootGrid" Background="{TemplateBinding Background}">
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup x:Name="CommonStates">
-                                    <VisualState x:Name="Normal">
-                                        <Storyboard>
-                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid"/>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="PointerOver">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="ContentPresenter">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="#D6D6D6"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid"/>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="Pressed">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="ContentPresenter">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource color3}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <PointerDownThemeAnimation Storyboard.TargetName="RootGrid"/>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="Disabled">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="ContentPresenter">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="#D6D6D6"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                </VisualStateGroup>
-                            </VisualStateManager.VisualStateGroups>
-                            <ContentPresenter x:Name="ContentPresenter" AutomationProperties.AccessibilityView="Raw" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" ContentTemplate="{TemplateBinding ContentTemplate}" ContentTransitions="{TemplateBinding ContentTransitions}" Content="{TemplateBinding Content}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" Padding="{TemplateBinding Padding}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </local:AnimatableUserControl.Resources>
 
     <Grid VerticalAlignment="Stretch">
         <Grid x:Name="resizer" HorizontalAlignment="Right" VerticalAlignment="Stretch" Background="{StaticResource color9}" Width="30"
@@ -78,7 +22,7 @@
             </Grid.RenderTransform>
             <Image x:Name="resizerImage" Source="/Assets/resizer.png" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Grid>
-        <Grid x:Name="xContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource color2}" Padding="25,10,25,10">
+        <Grid x:Name="xContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource color2}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"></RowDefinition>
                 <RowDefinition Height="Auto"/>
@@ -90,59 +34,89 @@
             </Border>
 
             <Grid Grid.Row="1">
-                <Grid Padding="10">
+                <Grid HorizontalAlignment="Stretch">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Stack panel for searchbar and search results -->
-                    <StackPanel Padding="5">
-                        
-                        <!-- The search bar -->
+                    <!-- The search bar -->
                         <AutoSuggestBox 
                             x:Name="SearchBox"
                             QueryIcon="Find" 
                             TextChanged="SearchBox_OnTextChanged" 
                             SuggestionChosen="SearchBox_OnSuggestionChosen"
                             QuerySubmitted="SearchBox_OnQuerySubmitted"/>
+                    
+                        <!--
                         <TextBox
-                            x:Name="NoResultsFound"
+                            x:Name="NoResultsFound" Grid.Row="1"
                             Text="No Results Found"
                             HorizontalAlignment="Stretch"
                             Visibility="{Binding NoResultsFound}"
                             />
+                    -->
 
                         <!-- The search results -->
-                        <ListView  x:Name="ListView" ItemClick="ListView_OnItemClick" IsItemClickEnabled="True" ItemsSource="{Binding PageElements}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollMode="Enabled" ScrollViewer.IsVerticalRailEnabled="True">
+                    <ListView  x:Name="ListView" ItemsSource="{Binding PageElements}" Grid.Row="1" Width="{Binding ResultWidth}" HorizontalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollMode="Enabled" IsDoubleTapEnabled="True" DoubleTapped="ListView_OnDoubleTapped">
                             <!-- Search Result Item Template -->
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid x:Name="LibraryListItem"  Height="20" VerticalAlignment="Center" Padding="0" Margin="0" Background="#ECECEA" ManipulationMode="TranslateX, TranslateY" PointerPressed="LibraryListItem_OnPointerPressed" DoubleTapped="ListItem_OnDoubleTapped" IsDoubleTapEnabled="True" ManipulationStarted="LibraryListItem_ManipulationStarted"  ManipulationDelta="LibraryListItem_ManipulationDelta" ManipulationCompleted="LibraryListItem_ManipulationCompleted">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="175" />
-                                            <ColumnDefinition Width="10" />
-                                            <ColumnDefinition Width="90" />
-                                            <ColumnDefinition Width="125" />
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock  Grid.Column="0"  Text="{Binding Title}" FontSize="12" />
-                                        <TextBlock  Grid.Column="2"  Text="{Binding ElementType}" FontSize="12"/>
-                                        <TextBlock Grid.Column="3" Text="{Binding Timestamp}" FontSize="12"/>
-                                        <TextBlock Grid.ColumnSpan="4" Grid.Row="1" Visibility="Collapsed" Text="{Binding ExtraInfo}" FontSize="12"/>
-                                    </Grid>
+                                <Grid x:Name="RootGrid" BorderBrush="LightGray" BorderThickness="2" Background="White" HorizontalAlignment="Stretch" Width="{Binding ResultWidth}">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <!-- Top Row -->
+                                            <Grid x:Name="ResultHeader" Padding="10" Tapped="ResultHeader_OnTapped" HorizontalAlignment="Stretch" Width="{Binding ResultWidth}">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Image x:Name="xThumbnail" Source="../../../Assets/logos/icon_upload.png" Height="20" HorizontalAlignment="Center" Grid.RowSpan="2"/>
+                                                <TextBlock x:Name="xTitle" Text="{Binding Title}" Grid.ColumnSpan="2" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,10,0" MinWidth="100"/>
+                                                <TextBlock x:Name="xCreator" Text="{Binding Creator}" Grid.Column ="1" Grid.Row="1"/>
+                                                <TextBlock x:Name="xElementType" Text="{Binding Type}" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Center" Margin="0,0,10,0"/>
+                                                <TextBlock x:Name="xTimeStamp" Text="{Binding TimeStamp}" Grid.Column="3" Grid.RowSpan="2" HorizontalAlignment="Right" VerticalAlignment="Center"  Margin="0,0,10,0"/>
+                                            </Grid>
+                                            <!-- Expandable Information -->
+                                            <Grid x:Name="ResultInfo" Grid.Row="1" Visibility="Collapsed" HorizontalAlignment="Stretch" Width="{Binding ResultWidth}">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="100"/>
+                                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+                                                <!-- Left Column -->
+                                                <TextBlock Text="Creator"/>
+                                                <TextBlock Grid.Row="1" Text="Keywords"/>
+                                                <TextBlock Grid.Row="2" Text="MetaData"/>
+                                                <!-- Right Column -->
+                                                <TextBlock x:Name="xKeywords" Text="{Binding Keywords}" Grid.Row="1"  Grid.Column ="1"/>
+                                                <TextBlock x:Name="xMetaData" Text="{Binding MetaData}" Grid.Row="2" Grid.Column ="1"/>
+                                            </Grid>
+
+
+
+                                        </Grid>
+
                                 </DataTemplate>
 
                             </ListView.ItemTemplate>
 
                         </ListView>
 
-                    </StackPanel>
+                    </Grid>
 
-                </Grid>
             </Grid>
 
 
