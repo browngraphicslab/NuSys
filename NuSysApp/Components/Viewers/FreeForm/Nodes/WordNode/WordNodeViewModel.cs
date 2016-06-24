@@ -19,8 +19,7 @@ namespace NuSysApp
 
         public WordNodeViewModel(ElementController controller) : base(controller)
         {
-            var model = controller.Model;
-            String path = model.GetMetaData("FilePath")?.ToString();
+            String path = Controller.LibraryElementController.GetMetadata("FilePath");
 
             if (!String.IsNullOrEmpty(path))
             {
@@ -32,7 +31,7 @@ namespace NuSysApp
 
         private async void WatchForPdf()
         {
-            string token = this.Model.GetMetaData("Token")?.ToString();
+            string token = Controller.LibraryElementController.GetMetadata("Token");
 
             if (!String.IsNullOrEmpty(token) && Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token))
             {
@@ -92,11 +91,11 @@ namespace NuSysApp
             m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
             var metadata = new Dictionary<string, object>();
-            metadata["BookmarkId"] = wordModel.GetMetaData("BookmarkId");
-            metadata["IsExported"] = wordModel.GetMetaData("IsExported");
-            metadata["FilePath"] = wordModel.GetMetaData("FilePath");
-            metadata["DateTimeExported"] = wordModel.GetMetaData("DateTimeExported");
-            metadata["Token"] = wordModel.GetMetaData("Token");
+            metadata["BookmarkId"] = Controller.LibraryElementController.GetMetadata("BookmarkId");
+            metadata["IsExported"] = Controller.LibraryElementController.GetMetadata("IsExported");
+            metadata["FilePath"] = Controller.LibraryElementController.GetMetadata("FilePath");
+            metadata["DateTimeExported"] = Controller.LibraryElementController.GetMetadata("DateTimeExported");
+            metadata["Token"] = Controller.LibraryElementController.GetMetadata("Token");
             m["metadata"] = metadata;
 
             byte[] fileBytes = null;

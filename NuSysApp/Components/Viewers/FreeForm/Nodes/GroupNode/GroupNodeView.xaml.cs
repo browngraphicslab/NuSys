@@ -210,8 +210,8 @@ namespace NuSysApp
             }
             else if (tb.Name == "EnterButton")
             {
-                var id = vm.Controller.LibraryElementModel.Id;
-                var content = SessionController.Instance.ContentController.Get(id);
+                var id = vm.Controller.LibraryElementModel.LibraryElementId;
+                var content = SessionController.Instance.ContentController.GetContent(id);
                 if (content != null && content.Type == ElementType.Collection)
                 {
                     List<Message> messages = new List<Message>();

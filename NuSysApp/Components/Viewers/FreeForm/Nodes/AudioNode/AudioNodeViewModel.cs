@@ -19,7 +19,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace NuSysApp
 {
-    public class AudioNodeViewModel: ElementViewModel
+    public class AudioNodeViewModel: ElementViewModel, Sizeable
     {
         private Grid _visualGrid;
 
@@ -39,11 +39,25 @@ namespace NuSysApp
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
 
             controller.Disposed += ControllerOnDisposed;
+            Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
+            Controller.LibraryElementController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
+            Controller.SizeChanged += Controller_SizeChanged;
+            Controller.LibraryElementController.Loaded += LibraryElementController_Loaded;
+        }
+
+        private void LibraryElementController_Loaded(object sender)
+        {
+            RaisePropertyChanged("Regions");
+        }
+
+        private void Controller_SizeChanged(object source, double width, double height)
+        {
+            RaisePropertyChanged("Regions");
         }
 
         private void ControllerOnDisposed(object source)
         {
-            Controller.LibraryElementModel.OnLoaded -= InitWhenReady;
+            Controller.LibraryElementController.Loaded -= InitWhenReady;
             Controller.Disposed -= ControllerOnDisposed;
         }
 
@@ -64,7 +78,7 @@ namespace NuSysApp
 
         public override void SetSize(double width, double height)
         {
-            var model = Model as VideoNodeModel;
+            var model = Model as AudioNodeModel;
             if (height < 200)
             {
                 height = 200;
@@ -74,34 +88,49 @@ namespace NuSysApp
                 width = 150;
             }
             base.SetSize(width, height);
+            RaisePropertyChanged("Regions");
         }
 
         public Uri AudioSource
         {
             get
             {
-                var url = Model.LibraryId + ".mp3";
-                if (Controller.LibraryElementModel.ServerUrl != null)
+                return Controller.LibraryElementController.GetSource();
+            }
+        }
+        public ObservableCollection<AudioRegionView> Regions { get
+            {
+                var collection = new ObservableCollection<AudioRegionView>();
+                var elementController = Controller.LibraryElementController;
+                var regionHashSet = elementController.LibraryElementModel.Regions;
+
+                if (regionHashSet == null)
+                    return collection;
+                
+                foreach (var model in regionHashSet)
                 {
-                    url = Controller.LibraryElementModel.ServerUrl;
+                    var regionController = new RegionController(model);
+                    var viewmodel = new AudioRegionViewModel(model as TimeRegionModel, elementController, regionController,this);
+                    viewmodel.Editable = false;
+                    var view = new AudioRegionView(viewmodel);
+                    collection.Add(view);
                 }
-                var uri = Constants.GetServerURI(url);
-                return uri;
+                return collection;
             }
         }
         public override async Task Init()
         {
             if (SessionController.Instance.ContentController.ContainsAndLoaded(ContentId))
             {
-                InitWhenReady();
+                InitWhenReady(this);
             }
             else
             {
-                Controller.LibraryElementModel.OnLoaded += InitWhenReady;
+                Controller.LibraryElementController.Loaded += InitWhenReady;
             }
         }
 
-        private async void InitWhenReady()
+        private async void InitWhenReady(object sender)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(AudioSource);
             HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
@@ -110,7 +139,16 @@ namespace NuSysApp
             byte[] dataBytes = new byte[(int)response.ContentLength];
             resStream.Read(dataBytes, 0, (int)response.ContentLength);
             resStream.Dispose();
-            Visualize(dataBytes);
+            //Visualize(dataBytes);
+        }
+        private void LibraryElementControllerOnRegionAdded(object source, RegionController regionController)
+        {
+            RaisePropertyChanged("Regions");
+        }
+
+        private void LibraryElementControllerOnRegionUpdated(object source, Region region)
+        {
+            RaisePropertyChanged("Regions");
         }
 
         private async void Visualize(byte[] bytes)
@@ -209,6 +247,21 @@ namespace NuSysApp
         public void AddLinkTimeModel(LinkedTimeBlockModel model)
         {
             (Model as AudioNodeModel).LinkedTimeModels.Add(model);
+        }
+
+        public void AddTimeRegion(TimeRegionModel region)
+        {
+            Controller.LibraryElementController.AddRegion(region);   
+        }
+
+        public double GetWidth()
+        {
+            return Width;
+        }
+
+        public double GetHeight()
+        {
+            return Height;
         }
     }
 }

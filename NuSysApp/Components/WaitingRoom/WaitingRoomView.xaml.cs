@@ -34,14 +34,15 @@ namespace NuSysApp
     public sealed partial class WaitingRoomView : Page
     {
         public FreeFormViewer _freeFormViewer;
-
+        
         public static string InitialWorkspaceId { get; set; }
         public static string ServerName { get; private set; }
         public static string UserName { get; private set; }
         //public static string Password { get; private set; }
         public static string ServerSessionID { get; private set; }
 
-        public static bool TEST_LOCAL_BOOLEAN = false;
+        public static bool TEST_LOCAL_BOOLEAN = true;
+
         public static bool IS_HUB = false;
 
         private static IEnumerable<Message> _firstLoadList;
@@ -96,6 +97,7 @@ namespace NuSysApp
 
         private async void Init()
         {
+            Keyword k = new Keyword("test");
             List?.Items?.Clear();
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             try
@@ -117,6 +119,14 @@ namespace NuSysApp
                     Dictionary<string, object> dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(s, settings);
                     var box = new CollectionTextBox();
                     box.ID = dict.ContainsKey("id") ? (string)dict["id"] : null;//todo do error handinling since this shouldnt be null
+                    if (dict.ContainsKey("creator_user_id"))
+                    {
+                        var creator = dict["creator_user_id"].ToString().ToLower();
+                        if(creator == "rms" || creator == "rosemary" || creator == "gfxadmin")
+                        {
+                            box.MadeByRosemary = true;
+                        }
+                    }
                     if (dict.ContainsKey("title") && dict["title"] != null && dict["title"] != "")
                         box.Text = (string)dict["title"];
                     else
@@ -281,6 +291,18 @@ namespace NuSysApp
                         SlideOutLogin.Begin();
                         SlideInWorkspace.Begin();
 
+                        UserName = userID;
+                        if (userID.ToLower() != "rosemary" && userID.ToLower()!= "rms" && userID.ToLower() != "gfxadmin")
+                        {
+                            foreach(var box in List.Items)
+                            {
+                                if((box as CollectionTextBox).MadeByRosemary)
+                                {
+                                    List.Items.Remove(box);
+                                }
+                            }
+                        }
+
                         await Task.Run(async delegate
                         {
                             var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
@@ -292,6 +314,7 @@ namespace NuSysApp
                                 bool favorited = false;
                                 Dictionary<String, Tuple<string, Boolean>> metadata = new Dictionary<string, Tuple<string, Boolean>>();
                                 var dict = kvp.Value;
+                                var message = new Message(dict);
                                 string title = null;
                                 ElementType type = ElementType.Text;
                                 string timestamp = "";
@@ -348,10 +371,11 @@ namespace NuSysApp
                                 {
                                     element = new LibraryElementModel(id, type, metadata, title, favorited);
                                 }
+                                element.UnPack(message);
                                 element.Creator = creator;
                                 element.Timestamp = timestamp;
                                 element.ServerUrl = serverUrl;
-                                if (SessionController.Instance.ContentController.Get(id) == null)
+                                if (SessionController.Instance.ContentController.GetContent(id) == null)
                                 {
                                     SessionController.Instance.ContentController.Add(element);
                                 }
@@ -392,16 +416,16 @@ namespace NuSysApp
 
         private void ContentControllerOnOnNewContent(LibraryElementModel element)
         {
-            if (element.Type == ElementType.Collection && !_preloadedIDs.Contains(element.Id))
+            if (element.Type == ElementType.Collection && !_preloadedIDs.Contains(element.LibraryElementId))
             {
                 UITask.Run(delegate
                 {
                     var box = new CollectionTextBox();
-                    box.ID = element.Id;
+                    box.ID = element.LibraryElementId;
                     box.Text = element.Title ?? "";
                     List.Items.Add(box);
                 });
-                _preloadedIDs.Add(element.Id);
+                _preloadedIDs.Add(element.LibraryElementId);
             }
         }
 
@@ -426,6 +450,7 @@ namespace NuSysApp
         private partial class CollectionTextBox : TextBox
         {
             public string ID { set; get; }
+            public bool MadeByRosemary = false;
 
             public CollectionTextBox() : base()
             {

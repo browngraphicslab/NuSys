@@ -14,10 +14,10 @@ using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using Windows.System.Threading;
 using Windows.UI;
+using Newtonsoft.Json;
 using NuSysApp.Network.Requests;
 using NuSysApp.Network.Requests.SystemRequests;
 using Buffer = System.Buffer;
-
 namespace NuSysApp
 {
     public class NuSysNetworkSession
@@ -40,6 +40,7 @@ namespace NuSysApp
         //private NetworkSession _networkSession;
         private string _hostIP;
         private ServerClient _serverClient;
+        private HashSet<string> _regionUpdateDebounceList = new HashSet<string>();
         #endregion Private Members
 
         public async Task Init()
@@ -60,7 +61,7 @@ namespace NuSysApp
             var m = new Message(request.GetFinalMessage().GetSerialized());
             await ProcessIncomingRequest(m);
         }
-        public async Task ExecuteRequest(Request request, NetworkClient.PacketType packetType = NetworkClient.PacketType.TCP)
+        public async Task ExecuteRequest(Request request)
         {
             await Task.Run(async delegate {
 
@@ -100,7 +101,7 @@ namespace NuSysApp
                 var id = (string)dict["id"];
                 string title = null;
                 ElementType type = ElementType.Text;
-                Dictionary<String, Tuple<string, Boolean>> metadata = new Dictionary<String, Tuple<string, Boolean>>();
+                Dictionary<string, Tuple<string, bool>> metadata = new Dictionary<string, Tuple<string, bool>>();
                 if (dict.ContainsKey("title"))
                 {
                     title = (string)dict["title"];
@@ -111,14 +112,14 @@ namespace NuSysApp
                 }
                 if (dict.ContainsKey("metadata"))
                 {
-                    metadata = (Dictionary<String, Tuple<string, Boolean>>)dict["metadata"];
+                    metadata = JsonConvert.DeserializeObject<Dictionary<string, Tuple<string, bool>>>(dict["metadata"].ToString());
                 }
 
                 UITask.Run(async delegate {
-                    if (SessionController.Instance.ContentController.Get(id) != null)
+                    if (SessionController.Instance.ContentController.GetContent(id) != null)
                     {
-                        var element = SessionController.Instance.ContentController.Get(id);
-                        element.SetTitle(title);//TODO make sure no other variables, like timestamp, need to be set here
+                        var controller = SessionController.Instance.ContentController.GetLibraryElementController(id);
+                        controller.SetTitle(title);//TODO make sure no other variables, like timestamp, need to be set here
                     }
                     else
                     {
@@ -145,12 +146,14 @@ namespace NuSysApp
                     if (dict.ContainsKey("favorited"))
                     {
                         bool favorited = bool.Parse(dict["favorited"].ToString());
-                        var model = SessionController.Instance.ContentController.Get(id);
+                        var model = SessionController.Instance.ContentController.GetContent(id);
                         if (model != null)
                         {
                             model.Favorited = favorited;
                         }
                     }
+                    var message = new Message(dict);
+                    await SessionController.Instance.ContentController.GetContent(id).UnPack(message);
                 });
             }
         }
@@ -327,14 +330,23 @@ namespace NuSysApp
             return await _serverClient.SearchOverLibraryElements(searchText);
         }
 
+<<<<<<< HEAD
         public async Task<HashSet<string>> AdvancedSearchOverLibraryElements(Query searchQuery)
         {
             return await _serverClient.AdvancedSearchOverLibraryElements(searchQuery);
         }
 
         public async Task<List<Dictionary<string, object>>> GetContentInfo(List<string> contentIds)
+=======
+        /// <summary>
+        /// Basically just to Fetch regions so we dont have to get the entire data
+        /// </summary>
+        /// <param name="contentIds"></param>
+        /// <returns></returns>
+        public async Task FetchLibraryElementWithoutData(string contentId)
+>>>>>>> origin/trent_controller2
         {
-            return await _serverClient.GetContentWithoutData(contentIds);
+            await _serverClient.GetContentWithoutData(contentId);
         }
 
         public async Task<string> DuplicateLibraryElement(string libraryElementId)
@@ -346,13 +358,33 @@ namespace NuSysApp
         {
             return await _serverClient.GetRepo();
         }
-        public async Task<bool> AddRegionToContent(string contentId, string regionString)
+        public async Task<bool> AddRegionToContent(string contentId, Region region)
         {
-            return await _serverClient.AddRegionToContent(contentId, regionString);
+            if (contentId == null || region == null)
+            {
+                return false;
+            }
+            return await _serverClient.AddRegionToContent(contentId, region);
         }
-        public async Task<bool> RemoveRegionFromContent(string contentId, string regionString)
+        public async Task<bool> RemoveRegionFromContent(Region region)
         {
-            return await _serverClient.RemoveRegionFromContent(contentId, regionString);
+            if (region == null)
+            {
+                return false;
+            }
+            return await _serverClient.RemoveRegionFromContent(region);
+        }
+
+        public async Task UpdateRegion(Region region)
+        {
+            if (region == null ||_regionUpdateDebounceList.Contains(region.Id))
+            {
+                return;
+            }
+            _regionUpdateDebounceList.Add(region.Id);
+            await Task.Delay(1000);
+            _regionUpdateDebounceList.Remove(region.Id);
+            await _serverClient.UpdateRegion(region);
         }
     }
     public class NoRequestTypeException : Exception

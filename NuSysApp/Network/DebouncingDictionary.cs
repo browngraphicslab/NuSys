@@ -15,20 +15,22 @@ namespace NuSysApp
         private Timer _timer;
         private int _milliSecondDebounce = 30;
         private string _id;
+        private bool _updateLibraryElement = false;
 
         private ConcurrentDictionary<string, object> _serverDict;
         private int _milliSecondServerSaveDelay = 800;
         private Timer _serverSaveTimer;
-        public DebouncingDictionary(string id)
+        public DebouncingDictionary(string id, bool updateLibraryElement = false)
         {
             _timer = new Timer(SendMessage, false, Timeout.Infinite, Timeout.Infinite);
             _serverSaveTimer = new Timer(SendMessage, true, Timeout.Infinite, Timeout.Infinite);
             _dict = new ConcurrentDictionary<string, object>();
             _serverDict = new ConcurrentDictionary<string, object>();
             _id = id;
+            _updateLibraryElement = updateLibraryElement;
         }
 
-        public DebouncingDictionary(string id, int milliSecondDebounce)
+        public DebouncingDictionary(string id, int milliSecondDebounce, bool updateLibraryElement = false)
         {
             _timer = new Timer(SendMessage, false, Timeout.Infinite, Timeout.Infinite);
             _serverSaveTimer = new Timer(SendMessage, true, Timeout.Infinite, Timeout.Infinite);
@@ -36,6 +38,7 @@ namespace NuSysApp
             _serverDict = new ConcurrentDictionary<string, object>();
             _milliSecondDebounce = _milliSecondDebounce;
             _id = id;
+            _updateLibraryElement = updateLibraryElement;
         }
 
         public void Add(string id, object value)
@@ -86,17 +89,28 @@ namespace NuSysApp
             {
                 d = _dict.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             }
-            if (d.ContainsKey("id"))
+            if (!_updateLibraryElement && d.ContainsKey("id"))
             {
                 Debug.WriteLine("Debounce dictionary had a previous 'id' value.  It was overritten with the original ID");
             }
-            d["id"] = _id;
+            if(_updateLibraryElement && d.ContainsKey("contentId"))
+            {
+                Debug.WriteLine("Debounce dictionary had a previous 'contentId' value.  It was overritten with the original ID");
+            }
+            d[_updateLibraryElement ? "contentId":"id"] = _id;
             var message = new Message(d);
             if (d.Count > 1)
             {
-                var request = new SendableUpdateRequest(message, saveToServer);
-                //Debug.WriteLine("sending debounce dict for id"+ _id);
-                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request, NetworkClient.PacketType.TCP);
+                Request request;
+                if (_updateLibraryElement)
+                {
+                    request = new ChangeContentRequest(message);
+                }
+                else
+                {
+                    request = new SendableUpdateRequest(message, saveToServer);
+                }
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             }
             _timing = false;
             _dict.Clear();

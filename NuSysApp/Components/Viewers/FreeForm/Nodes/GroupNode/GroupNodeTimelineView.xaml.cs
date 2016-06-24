@@ -184,7 +184,7 @@ namespace NuSysApp
                 var nodeModel = (ElementModel)vm.Model;
 
                 TextBlock tb = (TextBlock)node.FindVisualChild("TextBlock");
-                Object metaData = nodeModel.GetMetaData(_viewBy);
+                Object metaData = vm.Controller.LibraryElementController.GetMetadata(_viewBy);
                 String text = metaData != null ? metaData.ToString() : "None";
 
                 tb.Text = text;
@@ -216,7 +216,7 @@ namespace NuSysApp
                 vm.Width = 130;
                 _nodeModel = (ElementModel)vm.Model; // access model
 
-                Object metaData = _nodeModel.GetMetaData(dataName);
+                Object metaData = vm.Controller.LibraryElementController.GetMetadata(dataName);
 
                 Tuple<FrameworkElement, Object> tuple = new Tuple<FrameworkElement, Object>(atom, metaData);
 
@@ -235,7 +235,7 @@ namespace NuSysApp
                 ElementController controller = atomvm.Controller;
 
                 // TODO refactor
-                if (controller.LibraryElementModel.Loaded)
+                if (controller.LibraryElementController.IsLoaded)
                 {
                     String title = controller.Model.Title;
                     Image image = await _factory.CreateFromSendable(controller);
@@ -255,12 +255,12 @@ namespace NuSysApp
                 }
                 else
                 {
-                    controller.LibraryElementModel.OnLoaded += async delegate ()
+                    controller.LibraryElementController.Loaded += async delegate (object sender)
                     {
-                        if (_loadedList.Contains(controller.LibraryElementModel.Id))
+                        if (_loadedList.Contains(controller.LibraryElementModel.LibraryElementId))
                             return;
 
-                        _loadedList.Add(controller.LibraryElementModel.Id);
+                        _loadedList.Add(controller.LibraryElementModel.LibraryElementId);
 
                         String title = controller.Model.Title;
                         Image image = await _factory.CreateFromSendable(controller);
@@ -301,7 +301,7 @@ namespace NuSysApp
                 }
                 else if (type != ElementType.Link)
                 {
-                    SessionController.Instance.SessionView.ShowDetailView(_elementControllerDict[image]);
+                    SessionController.Instance.SessionView.ShowDetailView((dc.DataContext as ElementViewModel).Controller.LibraryElementController);
                 }
 
                 e.Handled = true;
@@ -344,7 +344,7 @@ namespace NuSysApp
                 var atom = (FrameworkElement)item;
                 var vm = (ElementViewModel)atom.DataContext;
                 var model = (ElementModel)vm.Model;
-                string[] keys = model.GetMetaDataKeys();
+                var keys = vm.Controller.LibraryElementController.LibraryElementModel.Metadata.Keys.ToArray();
 
                 Debug.WriteLine("key length: " + keys.Length);
                 foreach (var metadatatitle in keys)
@@ -354,7 +354,7 @@ namespace NuSysApp
 
                 foreach (var metadatatitle in keys)
                 {
-                    if (IsType(model.GetMetaData(metadatatitle)) && !_metaDataButtons.Contains(metadatatitle))
+                    if (IsType(vm.Controller.LibraryElementController.GetMetadata(metadatatitle)) && !_metaDataButtons.Contains(metadatatitle))
                     {
                         Button bb = new Button()
                         {
@@ -486,7 +486,7 @@ namespace NuSysApp
                     var atom = node.FindVisualChild("TimelineNode").GetVisualChild(0);
                     var vm = (ElementViewModel)atom.DataContext;
                     var nodeModel = (ElementModel)vm.Model;
-                    nodeModel.SetMetaData(custom, index);
+                    vm.Controller.LibraryElementController.AddMetadata(new MetadataEntry(custom, index.ToString() ,true));
                     index++;
                 }
             }

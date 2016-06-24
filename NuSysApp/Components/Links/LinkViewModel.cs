@@ -30,10 +30,12 @@ namespace NuSysApp
 
             Color = new SolidColorBrush(Constants.color2);
 
+            /*
             if (LinkModel.InFineGrain != null)
             {
                 LinkModel.InFineGrain.OnTimeChange += InFineGrain_OnTimeChange;
             }
+            */
 
             InElementController.PositionChanged += InElementControllerOnPositionChanged;
             OutElementController.PositionChanged += InElementControllerOnPositionChanged;

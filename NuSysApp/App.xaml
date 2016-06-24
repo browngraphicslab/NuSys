@@ -63,6 +63,7 @@
 
             <local:SelectionToColorConverter x:Key="sConverter" />
             <local:BoolToVisibilityConverter x:Key="vConverter" />
+            <local:BoolToManipulationModeConverter x:Key="mConverter" />
             <local:SubStractConverter x:Key="subtractConverter" />
 
             <!-- radial menu style -->

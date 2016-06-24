@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -20,7 +21,7 @@ using NuSysApp.Viewers;
 
 namespace NuSysApp
 {
-    public sealed partial class PdfNodeView : AnimatableUserControl, IThumbnailable
+    public sealed partial class PdfNodeView : AnimatableUserControl, IThumbnailable, Sizeable
     {
         private Boolean _drawingRegion;
         private Rectangle TempRegion;
@@ -29,6 +30,7 @@ namespace NuSysApp
         public PdfNodeView(PdfNodeViewModel vm)
         {
             _vm = vm;
+            vm.View = this;
             InitializeComponent();
             //  IsDoubleTapEnabled = true;
             DataContext = vm;
@@ -39,10 +41,17 @@ namespace NuSysApp
             TempRegion.StrokeThickness = 2;
             TempRegion.Stroke = new SolidColorBrush(Colors.Red);
 
-            //vm.Controller.SizeChanged += Controller_SizeChanged;
+            //vm.Controller.ContainerSizeChanged += Controller_SizeChanged;
             vm.PropertyChanged += VmOnPropertyChanged;
 
             vm.Controller.Disposed += ControllerOnDisposed;
+            SizeChanged += PdfNodeView_SizeChanged;
+        }
+
+        private void PdfNodeView_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var vm = DataContext as PdfNodeViewModel;
+            vm.SizeChanged(this, xRenderedPdf.ActualWidth, xRenderedPdf.ActualHeight);
         }
 
         private void VmOnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -164,7 +173,11 @@ namespace NuSysApp
 
         private void Region_OnClick(object sender, RoutedEventArgs e)
         {
-            _drawingRegion = true;
+            //_drawingRegion = true;
+            //var vm = DataContext as PdfNodeViewModel;
+            //var region = new PdfRegion(new Point(.25, .25), new Point(.75, .75), 1);
+            //vm?.AddRegion(this, region);
+            //vm?.Controller.LibraryElementController.AddRegion(region);
         }
 
         private void XImage_OnPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -238,6 +251,16 @@ namespace NuSysApp
             {
                 XImage_OnPointerReleased(sender, e);
             }
+        }
+
+        public double GetWidth()
+        {
+            return xRenderedPdf.ActualWidth;
+        }
+
+        public double GetHeight()
+        {
+            return xRenderedPdf.ActualHeight;
         }
     }
 }

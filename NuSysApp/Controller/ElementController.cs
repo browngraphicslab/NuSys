@@ -11,12 +11,12 @@ using NuSysApp.Controller;
 using NuSysApp.Util;
 using NuSysApp.Nodes.AudioNode;
 using NuSysApp.Viewers;
+using Windows.UI.Xaml.Controls;
 
 namespace NuSysApp
 {
     public class ElementController
     {
-        private NetworkUser _lastNetworkUser;
         private ElementModel _model;
         protected DebouncingDictionary _debouncingDictionary;
 
@@ -30,13 +30,9 @@ namespace NuSysApp
 
         public delegate void MetadataChangeEventHandler(object source, string key);
 
-        public delegate void NetworkUserChangedEventHandler(object source, NetworkUser user);
-
         public delegate void ScaleChangedEventHandler(object source, double sx, double sy);
 
         public delegate void SizeUpdateEventHandler(object source, double width, double height);
-
-        public delegate void ContentLoadedHandler(object source, LibraryElementModel data);
 
         public delegate void RegionTestChangedEventHandler(object source, RectangleViewModel region);
 
@@ -52,7 +48,6 @@ namespace NuSysApp
         public event SizeUpdateEventHandler SizeChanged;
         public event ScaleChangedEventHandler ScaleChanged;
         public event AlphaChangedEventHandler AlphaChanged;
-        public event NetworkUserChangedEventHandler UserChanged;
         public event RegionTestChangedEventHandler RegionTestChanged;
         public event SelectionChangedHandler SelectionChanged;
 
@@ -68,9 +63,9 @@ namespace NuSysApp
             {
                 _debouncingDictionary = new DebouncingDictionary(model.Id);
             }
-            if (LibraryElementModel != null)
+            if (LibraryElementController != null)
             {
-                LibraryElementModel.OnDelete += Delete;
+                LibraryElementController.Deleted += Delete;
                 var title = LibraryElementModel.Title;
                 Model.Title = title;
             }
@@ -79,8 +74,8 @@ namespace NuSysApp
 
         public virtual void Dispose()
         {
-            if (LibraryElementModel != null)
-                LibraryElementModel.OnDelete -= Delete;
+            if (LibraryElementController != null)
+                LibraryElementController.Deleted -= Delete;
             Disposed?.Invoke(this);
         }
 
@@ -162,13 +157,6 @@ namespace NuSysApp
             _debouncingDictionary.Add("alpha", alpha);
         }
 
-        public void SetMetadata(string key, object val)
-        {
-            Model.SetMetaData(key, val);
-            MetadataChange?.Invoke(this, key);
-            _debouncingDictionary.Add("metadata", Model.Metadata);
-        }
-
         public void SetRegionModel(RectangleViewModel region)
         {
             Model.RegionsModel.Add(region);
@@ -195,7 +183,7 @@ namespace NuSysApp
             //_debouncingDictionary.Add("pageRegionDict", (Model as PdfNodeModel).PageRegionDict);
         }
 
-        public void Delete()
+        public void Delete(object sender)
         {
             Deleted?.Invoke(this);
             SessionController.Instance.ActiveFreeFormViewer.DeselectAll();
@@ -206,11 +194,6 @@ namespace NuSysApp
         public async virtual Task RequestDelete()
         {
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(Model.Id));
-        }
-
-        public void SetNetworkUser(NetworkUser user)
-        {
-            UserChanged?.Invoke(this, user);
         }
         public async virtual Task RequestDuplicate(double x, double y, Message m = null)
         {
@@ -229,11 +212,11 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
         }
 
-        public virtual async Task RequestLinkTo(string otherId, RectangleView rectangle = null, LinkedTimeBlock block = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
+        public virtual async Task RequestLinkTo(string otherId, RectangleView rectangle = null, UserControl regionView = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
         {
             var contentId = SessionController.Instance.GenerateId();
             var libraryElementRequest = new CreateNewLibraryElementRequest(contentId,null,ElementType.Link, "NEW LINK");
-            var request = new NewLinkRequest(Model.Id, otherId, Model.ParentCollectionId,contentId, block, rectangle, inFGDictionary, outFGDictionary);
+            var request = new NewLinkRequest(Model.Id, otherId, Model.ParentCollectionId,contentId, regionView, rectangle, inFGDictionary, outFGDictionary);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }
@@ -301,15 +284,18 @@ namespace NuSysApp
         {
             get { return _model; }
         }
+        public LibraryElementController LibraryElementController
+        {
+            get
+            {
+                return SessionController.Instance.ContentController.GetLibraryElementController(Model.LibraryId);
+            }
+        }
         public LibraryElementModel LibraryElementModel
         {
             get
             {
-                if (Model.LibraryId != null && SessionController.Instance.ContentController.Get(Model.LibraryId) != null)
-                {
-                    return SessionController.Instance.ContentController.Get(Model.LibraryId);
-                }
-                return null;
+                return LibraryElementController?.LibraryElementModel;
             }
         }
 
@@ -317,7 +303,7 @@ namespace NuSysApp
         {
             if (props.ContainsKey("data"))
             {
-                var content = SessionController.Instance.ContentController.Get(props.GetString("contentId", ""));
+                var content = SessionController.Instance.ContentController.GetContent(props.GetString("contentId", ""));
                 if (content != null)
                 {
                     content.Data = props.GetString("data", "");

@@ -13,12 +13,17 @@
     IsDoubleTapEnabled="True">
 
     <local:AnimatableUserControl.Resources>
+        
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
+
+
     </local:AnimatableUserControl.Resources>
+  
+
 
     <local:NodeTemplate x:Name="nodeTpl" Background="LightBlue">
         <local:NodeTemplate.SubMenu>
@@ -40,8 +45,22 @@
             <Grid PointerPressed="XImage_OnPointerPressed" PointerExited="XImage_PointerExited" PointerReleased="XImage_OnPointerReleased" PointerMoved="XImage_OnPointerMoved">
                 
                 <Image x:Name="xImage" Source="{Binding Image}" Stretch="Uniform" />
-                
                 <Canvas x:Name="Canvas" VerticalAlignment ="Top" HorizontalAlignment="Left">
+
+                    <ItemsControl x:Name="RegionItemsControl"  ItemsSource="{Binding Regions}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ContentPresenter/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+
                     <ItemsControl x:Name="IC"  ItemsSource="{Binding RegionsListTest}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>

@@ -42,7 +42,7 @@ namespace NuSysApp
             // TODO: refactor
 
             //    Url = controller.Model.Url;
-            //    Controller.SizeChanged += delegate (object source, double width, double height)
+            //    Controller.ContainerSizeChanged += delegate (object source, double width, double height)
             //    {
             //        Zoom = (Width / 1024.0);
             //        ClipRect = new Rect(0, 0, width, height);
@@ -54,13 +54,10 @@ namespace NuSysApp
             //    Url = url;
             //    RaisePropertyChanged("Url");
             //};
-            controller.LibraryElementModel.OnContentChanged += delegate (ElementViewModel originalSenderViewModel)
+            controller.LibraryElementController.ContentChanged += delegate (object sender, string newData)
             {
-                Url = controller.LibraryElementModel.Data;
-                if (originalSenderViewModel != this)
-                {
-                    RaisePropertyChanged("Url");
-                }
+                Url = newData;
+                RaisePropertyChanged("Url");
             };
             //    Zoom = (Width / 1024.0);
 

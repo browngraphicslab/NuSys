@@ -13502,16 +13502,18 @@
     },
     "Microsoft.ApplicationInsights.WindowsApps/1.0.0": {
       "sha512": "NvBQnFeiFd0O1QdBz06UGApD7zn7ztVi7qO18IsM3EjiXRNgfrEBXB+azNm8XqLY8xGFAqh3HAuSd/wHZMe0XA==",
-      "type": "package",
+      "type": "Package",
       "files": [
-        "Microsoft.ApplicationInsights.WindowsApps.1.0.0.nupkg.sha512",
         "Microsoft.ApplicationInsights.WindowsApps.nuspec",
+        "[Content_Types].xml",
+        "_rels/.rels",
         "lib/win81/Microsoft.ApplicationInsights.Extensibility.Windows.XML",
         "lib/win81/Microsoft.ApplicationInsights.Extensibility.Windows.dll",
         "lib/wp8/Microsoft.ApplicationInsights.Extensibility.Windows.XML",
         "lib/wp8/Microsoft.ApplicationInsights.Extensibility.Windows.dll",
         "lib/wpa81/Microsoft.ApplicationInsights.Extensibility.Windows.XML",
-        "lib/wpa81/Microsoft.ApplicationInsights.Extensibility.Windows.dll"
+        "lib/wpa81/Microsoft.ApplicationInsights.Extensibility.Windows.dll",
+        "package/services/metadata/core-properties/4f6f732debe548beaa1183418e8d65cc.psmdcp"
       ]
     },
     "Microsoft.AspNet.SignalR.JS/2.2.0": {

@@ -1,63 +1,134 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Runtime.InteropServices.WindowsRuntime;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
-using Windows.Storage;
-using Windows.Storage.Streams;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
-using NuSysApp.Util;
+using Newtonsoft.Json;
+using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public class ImageElementViewModel : ElementViewModel
-    {    
+    public class ImageElementViewModel : ElementViewModel, Sizeable
+    {
+   
+        public ObservableCollection<ImageRegionView> Regions { private set; get; }
+        public Sizeable View { get; set; }
+
+        public LibraryElementController LibraryElementController{get { return Controller.LibraryElementController; }}
         public ImageElementViewModel(ElementController controller) : base(controller)
         {
-            
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));       
+            Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
+            Controller.LibraryElementController.RegionRemoved += LibraryElementControllerOnRegionRemoved;
+            Regions = new ObservableCollection<ImageRegionView>();
+            this.CreateRegionViews();
+
+        }
+
+        private void LibraryElementControllerOnRegionRemoved(object source, Region region)
+        {
+            var imageRegion = region as RectangleRegion;
+            if (imageRegion == null)
+            {
+                return;
+            }
+
+            foreach (var regionView in Regions.ToList<ImageRegionView>())
+            {
+                if ((regionView.DataContext as ImageRegionViewModel).Model == imageRegion)
+                    Regions.Remove(regionView);
+            }
+            
+
+            RaisePropertyChanged("Regions");
+        }
+
+        private void CreateRegionViews()
+        {
+            var elementController = Controller.LibraryElementController;
+            var regionHashSet = elementController.LibraryElementModel.Regions;
+
+            if (regionHashSet == null)
+                return ;
+
+            Regions.Clear();
+            foreach (var model in regionHashSet)
+            {
+                var regionController = new RegionController(model as RectangleRegion);
+                var viewmodel = new ImageRegionViewModel(model as RectangleRegion, elementController, regionController, this);
+                viewmodel.Editable = false;
+                var view = new ImageRegionView(viewmodel);
+                Regions.Add(view);
+            }
+            RaisePropertyChanged("Regions");
+        }
+        public void SizeChanged(object sender, double width, double height)
+        {
+            var newHeight = View.GetHeight();
+            var newWidth = View.GetWidth();
+
+            foreach (var rv in Regions)
+            {
+                var regionViewViewModel = rv.DataContext as RegionViewModel;
+                regionViewViewModel?.ChangeSize(sender, newWidth, newHeight);
+            }
+        }
+
+        private void LibraryElementControllerOnRegionAdded(object source, RegionController controller)
+        {
+            var imageRegion = controller?.Model as RectangleRegion;
+            if (imageRegion == null)
+            {
+                return;
+            }
+            var regionController = new RegionController(imageRegion);
+            var vm = new ImageRegionViewModel(imageRegion, Controller.LibraryElementController, regionController, this);
+            var view = new ImageRegionView(vm);
+            vm.Editable = false;
+            Regions.Add(view);
+            RaisePropertyChanged("Regions");
         }
 
         public override void Dispose()
         {
-            Controller.LibraryElementModel.OnLoaded -= LibraryElementModelOnOnLoaded;
+            Controller.LibraryElementController.Loaded -= LibraryElementModelOnOnLoaded;
             Image.ImageOpened -= UpdateSizeFromModel;
         }
 
         public BitmapImage Image { get; set; }
 
+
         public override async Task Init()
         {
-            if (Controller.LibraryElementModel.Loaded)
+            if (Controller.LibraryElementController.IsLoaded)
             {
                 await DisplayImage();
             }
             else
             {
-                Controller.LibraryElementModel.OnLoaded += LibraryElementModelOnOnLoaded;
+                Controller.LibraryElementController.Loaded += LibraryElementModelOnOnLoaded;
             }
             RaisePropertyChanged("Image");
+
+
         }
 
-        private void LibraryElementModelOnOnLoaded()
+        private void LibraryElementModelOnOnLoaded(object sender)
         {
             DisplayImage();
+            this.CreateRegionViews();
+
         }
 
         private async Task DisplayImage()
         {
-            var url = Model.LibraryId + ".jpg";
-            if (Controller.LibraryElementModel.ServerUrl != null)
-            {
-                url = Controller.LibraryElementModel.ServerUrl;
-            }
+            var url = Controller.LibraryElementController.GetSource();
             Image = new BitmapImage();
-            Image.UriSource = new Uri("http://" + WaitingRoomView.ServerName + "/" + url);
+            Image.UriSource = url;
             Image.ImageOpened += UpdateSizeFromModel;
             RaisePropertyChanged("Image");
         }
@@ -84,6 +155,17 @@ namespace NuSysApp
         protected override void OnSizeChanged(object source, double width, double height)
         {
             SetSize(width,height);
+
+        }
+
+        public double GetWidth()
+        {
+            return Width;
+        }
+
+        public double GetHeight()
+        {
+            return Height;
         }
     }
 }

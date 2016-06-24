@@ -112,6 +112,10 @@ namespace NuSysApp
             xDetailViewer.DataContext = new DetailViewerViewModel();
             xSearchViewer.DataContext = new SearchViewModel();
 
+            var xRegionEditorView = (RegionEditorTabView)xDetailViewer.FindName("xRegionEditorView");
+            xRegionEditorView.DataContext = xDetailViewer.DataContext;
+
+
             await SessionController.Instance.InitializeRecog();
 
             foreach(var user in SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values)
@@ -321,7 +325,7 @@ namespace NuSysApp
                 var libraryId = msg.GetString("contentId");
                 var id = msg.GetString("id");
 
-                var libraryModel = SessionController.Instance.ContentController.Get(libraryId);
+                var libraryModel = SessionController.Instance.ContentController.GetContent(libraryId);
                 if (libraryModel == null)
                 {
                     if (msg.ContainsKey("id"))
@@ -405,7 +409,7 @@ namespace NuSysApp
             var libraryId = message.GetString("contentId");
             var id = message.GetString("id");
             Debug.WriteLine("making element: " + id);
-            var libraryModel = SessionController.Instance.ContentController.Get(libraryId);
+            var libraryModel = SessionController.Instance.ContentController.GetContent(libraryId);
             var type = libraryModel.Type;
             switch (type)
             {
@@ -501,7 +505,7 @@ namespace NuSysApp
             xWorkspaceTitle.KeyUp += UpdateTitle;
             xWorkspaceTitle.DropCompleted += UpdateTitle;
 
-            freeFormViewerViewModel.Controller.LibraryElementModel.OnTitleChanged += TitleChanged;
+            freeFormViewerViewModel.Controller.LibraryElementController.TitleChanged += TitleChanged;
 
             ChatPopup.Visibility = Visibility.Collapsed;
         }
@@ -525,7 +529,7 @@ namespace NuSysApp
         private void UpdateTitle(object sender, object args)
         {
             var model = ((FreeFormViewerViewModel) _activeFreeFormViewer.DataContext).Model;
-            SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.SetTitle(xWorkspaceTitle.Text);
+            SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController.SetTitle(xWorkspaceTitle.Text);
             model.Title = xWorkspaceTitle.Text;
             xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");
         }
@@ -548,16 +552,15 @@ namespace NuSysApp
         {
             xSearchWindowView.Visibility = Visibility.Collapsed;
         }
-
-
-        public void ShowDetailView(ElementController controller)
+        
+        public void ShowDetailView(IMetadatable metadatable)
         {
-            xDetailViewer.ShowElement(controller);
+            xDetailViewer.ShowElement(metadatable);
         }
 
         public async void OpenFile(ElementViewModel vm)
         {
-            String token = vm.Model.GetMetaData("Token")?.ToString();
+            String token = vm.Controller.LibraryElementController.GetMetadata("Token")?.ToString();
 
             if (String.IsNullOrEmpty(token) ||
                 (!String.IsNullOrEmpty(token) &&
@@ -566,7 +569,7 @@ namespace NuSysApp
                 return;
             }
 
-            string ext = System.IO.Path.GetExtension(vm.Model.GetMetaData("FilePath").ToString());
+            string ext = System.IO.Path.GetExtension(vm.Controller.LibraryElementController.GetMetadata("FilePath")?.ToString());
             StorageFolder toWriteFolder = NuSysStorages.OpenDocParamsFolder;
 
             if (Constants.WordFileTypes.Contains(ext))
@@ -679,6 +682,7 @@ namespace NuSysApp
             await StaticServerCalls.CreateSnapshot();
         }
 
+
         private void AdvancedSearchButton_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             if (xSearchViewer.Visibility == Visibility.Collapsed)
@@ -689,6 +693,11 @@ namespace NuSysApp
             {
                 xSearchViewer.Visibility = Visibility.Collapsed;
             }
+        }
+
+        private void CurrentCollectionDV_OnClick(object sender, RoutedEventArgs e)
+        {
+            xDetailViewer.ShowElement(SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController);
         }
     }
 }

@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using NuSysApp.Components.Nodes;
 using NuSysApp.Nodes.AudioNode;
 using NuSysApp.Viewers;
+using Windows.UI.Xaml.Controls;
 
 namespace NuSysApp
 {
@@ -25,7 +26,11 @@ namespace NuSysApp
         public string OutAtomId { get; set; }
         public string Annotation { get; set; }
 
-        public LinkedTimeBlockModel InFineGrain { get; set; }
+        //public LinkedTimeBlockModel InFineGrain { get; set; }
+
+        //TODO: public RegionView
+        
+        public Region InFineGrain { set; get; }
         public RectangleViewModel RectangleMod { get; set; }
 
         public Dictionary<string, object> InFGDictionary { get; set; }
@@ -81,40 +86,24 @@ namespace NuSysApp
 
             if (props.ContainsKey("inFineGrain"))
             {
-                var v = JsonConvert.DeserializeObject<LinkedTimeBlockModel>(props.Get("inFineGrain"));
-                
-                ObservableCollection<LinkedTimeBlockModel> list;
-                
+
                 switch (SessionController.Instance.IdToControllers[OutAtomId].Model.ElementType)
                 {
+                    case ElementType.Image:
+                        InFineGrain = JsonConvert.DeserializeObject<RectangleRegion>(props.Get("inFineGrain"));
+                        break;
+                    case ElementType.PDF:
+                        InFineGrain = JsonConvert.DeserializeObject<PdfRegion>(props.Get("inFineGrain"));
+                        break;
                     case ElementType.Audio:
-                        list =
-                    ((AudioNodeModel)SessionController.Instance.IdToControllers[OutAtomId].Model)
-                        .LinkedTimeModels;
-                        foreach (var element in list)
-                        {
-                            if (element.Start == v.Start && element.End == v.End)
-                            {
-                                InFineGrain = element;
-                                break;
-                            }
-                        }
+                        InFineGrain = JsonConvert.DeserializeObject<TimeRegionModel>(props.Get("inFineGrain"));
                         break;
                     case ElementType.Video:
-                        list =
-                    ((VideoNodeModel)SessionController.Instance.IdToControllers[OutAtomId].Model)
-                        .LinkedTimeModels;
-                        foreach (var element in list)
-                        {
-                            if (element.Start == v.Start && element.End == v.End)
-                            {
-                                InFineGrain = element;
-                                break;
-                            }
-                        }
+                        InFineGrain = JsonConvert.DeserializeObject<VideoRegionModel>(props.Get("inFineGrain"));
                         break;
+
                 }
-               
+              
 
             }
             base.UnPack(props);

@@ -73,10 +73,8 @@ namespace NuSysApp
         {
             var vm = (ElementViewModel)this.DataContext;
             vm.PropertyChanged -= OnPropertyChanged;
-            vm.Controller.UserChanged -= ControllerOnUserChanged;
-            vm.Controller.LibraryElementModel.OnLightupContent -= LibraryElementModelOnOnLightupContent;
-            vm.Controller.LibraryElementModel.OnSearched -= LibraryElementModelOnSearched;
-            vm.Controller.LibraryElementModel.OnTitleChanged -= LibraryElementModelOnOnTitleChanged;
+            vm.Controller.LibraryElementController.UserChanged -= ControllerOnUserChanged;
+            vm.Controller.LibraryElementController.TitleChanged -= LibraryElementModelOnOnTitleChanged;
 
             if (title != null)
                 title.TextChanged -= TitleOnTextChanged;
@@ -153,7 +151,7 @@ namespace NuSysApp
             title.KeyUp += TitleOnTextChanged;
 
             if (vm.Controller.LibraryElementModel != null)
-                vm.Controller.LibraryElementModel.OnTitleChanged += LibraryElementModelOnOnTitleChanged;
+                vm.Controller.LibraryElementController.TitleChanged += LibraryElementModelOnOnTitleChanged;
             titleContainer = (Grid)GetTemplateChild("xTitleContainer");
 
             title.Loaded += delegate (object sender, RoutedEventArgs args)
@@ -164,17 +162,8 @@ namespace NuSysApp
             };
 
 
-            vm.Controller.UserChanged += ControllerOnUserChanged;
+            //vm.Controller.LibraryElementController.UserChanged += ControllerOnUserChanged;
 
-
-
-            if (vm.Controller.LibraryElementModel != null)
-            {
-
-                vm.Controller.LibraryElementModel.OnLightupContent += LibraryElementModelOnOnLightupContent;
-                vm.Controller.LibraryElementModel.OnSearched += LibraryElementModelOnSearched;
-
-            }
             vm.PropertyChanged += OnPropertyChanged;
             base.OnApplyTemplate();
             OnTemplateReady?.Invoke();
@@ -187,7 +176,7 @@ namespace NuSysApp
             highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
             highlight.Height = vm.Height + title.ActualHeight - 5;
             //vm.Controller.SetTitle(title.Text);
-            vm.Controller.LibraryElementModel.SetTitle(title.Text);
+            vm.Controller.LibraryElementController.SetTitle(title.Text);
         }
 
         private void LibraryElementModelOnOnTitleChanged(object sender, string newTitle)
@@ -209,22 +198,16 @@ namespace NuSysApp
             {
                 userName.Foreground = new SolidColorBrush(Colors.Transparent);
                 highlight.Visibility = Visibility.Collapsed;
-                return;
             }
             else
             {
-             //   highlight.Visibility = Visibility.Visible;
+                highlight.Visibility = Visibility.Visible;
+                highlight.BorderBrush = new SolidColorBrush(user.Color);
+                userName.Foreground = new SolidColorBrush(user.Color);
+                userName.Text = user?.Name ?? "";
             }
-            highlight.BorderBrush = new SolidColorBrush(user.Color);
-            userName.Foreground = new SolidColorBrush(user.Color);
-            userName.Text = user?.Name ?? "";
-        }
-
-        private void LibraryElementModelOnOnLightupContent(LibraryElementModel model, bool lightup)
-        {
-          //  highlight.Visibility = lightup ? Visibility.Visible : Visibility.Collapsed;
-            highlight.Background = new SolidColorBrush(Color.FromArgb(100, 156, 197, 194));
-            highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(100, 156, 197, 194));
+            
+            
         }
 
         private void LibraryElementModelOnSearched(LibraryElementModel model, bool searched)
@@ -274,7 +257,7 @@ namespace NuSysApp
                 hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementViewModel).ToList();
 
                 var hitsStart2 = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
-                hitsStart2 = hitsStart2.Where(uiElem => (uiElem as FrameworkElement).DataContext is LinkedTimeBlockViewModel).ToList();
+                hitsStart2 = hitsStart2.Where(uiElem => (uiElem as FrameworkElement).DataContext is RegionViewModel).ToList();
 
                 var hitRectangleView = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
                 hitRectangleView = hitRectangleView.Where(uiElem => (uiElem as FrameworkElement).DataContext is RectangleViewModel).ToList();
@@ -316,6 +299,36 @@ namespace NuSysApp
                     } else if (hitsStart2.Any()){
                         foreach (var element in hitsStart2)
                         {
+                            if (element is AudioRegionView)
+                            {
+
+                            }
+
+                            if (element is VideoRegionView)
+                            {
+
+                            }
+
+                            if (element is PDFRegionView)
+                            {
+
+                            }
+                            if (element is ImageRegionView)
+                            {
+                                Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100, 100, 200);
+                                Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100, 100, 100);
+                                if (_currenDragMode == DragMode.PresentationLink)
+                                {
+                                   // vm.Controller.RequestPresentationLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
+                                }
+                                else
+                                {
+                                    vm.Controller.RequestLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary,
+                                        outFgDictionary);
+                                }
+                            }
+                            
+                            /*
                             if (element is LinkedTimeBlock)
                             {
                                 Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100,
@@ -324,7 +337,6 @@ namespace NuSysApp
                                 Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100,
                                     100,
                                     100);
-                                Debug.WriteLine("test");
                                 if (_currenDragMode == DragMode.PresentationLink)
                                 {
                                     vm.Controller.RequestPresentationLinkTo(dc.Id, null, (LinkedTimeBlock)element, inFgDictionary,
@@ -338,7 +350,10 @@ namespace NuSysApp
                                 //(element as LinkedTimeBlock).changeColor();
                                 //vm.Controller.RequestLinkTo(dc.Id, (LinkedTimeBlock)element);
 
-                            }
+                                */
+
+
+                            
                         }
                     }
                     else

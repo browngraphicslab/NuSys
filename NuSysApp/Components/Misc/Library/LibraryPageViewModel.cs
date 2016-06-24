@@ -67,7 +67,7 @@ namespace NuSysApp
                     ordered = new List<LibraryElementModel>(PageElements.OrderBy(l => ((LibraryElementModel)l).Type.ToString()));
                     break;
                 case "Date/Time":
-                    ordered = new List<LibraryElementModel>(PageElements.OrderByDescending(l => ((LibraryElementModel)l).GetTimestampTicks()));
+                    ordered = new List<LibraryElementModel>(PageElements.OrderByDescending(l => Constants.GetTimestampTicksOfLibraryElementModel((LibraryElementModel)l)));
                     break;
                 default:
                     break;
@@ -101,7 +101,7 @@ namespace NuSysApp
             var hash = new HashSet<LibraryElementModel>(PageElements);
             foreach (var item in _orgList)
             {
-                if (valids.Contains(item.Id) && !hash.Contains(item))
+                if (valids.Contains(item.LibraryElementId) && !hash.Contains(item))
                 {
                     PageElements.Add(item);
                 }

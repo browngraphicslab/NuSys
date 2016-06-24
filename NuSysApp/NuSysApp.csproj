@@ -241,6 +241,7 @@
     <Compile Include="Components\InqCanvas\NuSysInqCanvas.cs" />
     <Compile Include="Components\InqCanvas\WetDryInkCanvas.cs" />
     <Compile Include="Components\ISelectable.cs" />
+    <Compile Include="Components\Keywords\Keyword.cs" />
     <Compile Include="Components\Links\PresentationLinkView.xaml.cs">
       <DependentUpon>PresentationLinkView.xaml</DependentUpon>
     </Compile>
@@ -254,12 +255,87 @@
     <Compile Include="Components\Misc\TextInputBlock.xaml.cs">
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\MetadataEntry.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\ElementCollectionDetailView.xaml.cs">
-      <DependentUpon>ElementCollectionDetailView.xaml</DependentUpon>
+    <Compile Include="Components\Regions\VideoRegionView.xaml.cs">
+      <DependentUpon>VideoRegionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\MetadataEditorView.xaml.cs">
-      <DependentUpon>MetadataEditorView.xaml</DependentUpon>
+    <Compile Include="Components\Regions\VideoRegionViewModel.cs" />
+    <Compile Include="Components\Regions\ImageRegionView.xaml.cs">
+      <DependentUpon>ImageRegionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Regions\ImageRegionViewModel.cs" />
+    <Compile Include="Components\Regions\AudioRegionBound.xaml.cs">
+      <DependentUpon>AudioRegionBound.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Regions\AudioRegionView.xaml.cs">
+      <DependentUpon>AudioRegionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Regions\AudioRegionViewModel.cs" />
+    <Compile Include="Components\Regions\PDFRegionView.xaml.cs">
+      <DependentUpon>PDFRegionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Regions\PDFRegionViewModel.cs" />
+    <Compile Include="Components\Regions\RegionViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
+    <Compile Include="Components\Viewers\Detail\Sizeable.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">
+      <DependentUpon>AudioMediaPlayer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoMediaPlayer.xaml.cs">
+      <DependentUpon>VideoMediaPlayer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controller\PdfRegionController.cs" />
+    <Compile Include="Controller\RegionController.cs" />
+    <Compile Include="Controller\RegionControllerFactory.cs" />
+    <Compile Include="Converters\BoolToManipulationModeConverter.cs" />
+    <Compile Include="Models\Regions\PDFRegion.cs" />
+    <Compile Include="Models\Regions\TimeRegionModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Regionable.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\AudioDetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\DetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\GroupDetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\ImageDetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\PdfDetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\TextDetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\VideoDetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\MetadataEntry.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\ElementCollectionDetailHomeTabView.xaml.cs">
+      <DependentUpon>ElementCollectionDetailHomeTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\MetadataEditorTabView.xaml.cs">
+      <DependentUpon>MetadataEditorTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\RegionEditorTabView.xaml.cs">
+      <DependentUpon>RegionEditorTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\Region\AudioDetailRegionTabView.xaml.cs">
+      <DependentUpon>AudioDetailRegionTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\Region\ElementCollectionDetailRegionTabView.xaml.cs">
+      <DependentUpon>ElementCollectionDetailRegionTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\Region\GroupDetailRegionTabView.xaml.cs">
+      <DependentUpon>GroupDetailRegionTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\Region\LinkDetailRegionTabView.xaml.cs">
+      <DependentUpon>LinkDetailRegionTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\Region\PDFDetailRegionTabView.xaml.cs">
+      <DependentUpon>PDFDetailRegionTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\Region\PowerPointDetailRegionTabView.xaml.cs">
+      <DependentUpon>PowerPointDetailRegionTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\Region\TextDetailRegionTabView.xaml.cs">
+      <DependentUpon>TextDetailRegionTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\Region\VideoDetailRegionTabView.xaml.cs">
+      <DependentUpon>VideoDetailRegionTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\Region\WebDetailRegionTabView.xaml.cs">
+      <DependentUpon>WebDetailRegionTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\Region\WordDetailRegionTabView.xaml.cs">
+      <DependentUpon>WordDetailRegionTabView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\InkStorage.cs" />
     <Compile Include="Components\Viewers\FreeForm\InkWrapper.cs" />
@@ -279,40 +355,40 @@
     </Compile>
     <Compile Include="Components\Viewers\Search\SearchViewModel.cs" />
     <Compile Include="Components\WaitingRoom\SelectionHull.cs" />
-    <Compile Include="Components\Viewers\Detail\DetailNodeViewFactory.cs" />
+    <Compile Include="Components\Viewers\Detail\DetailViewHomeTabViewFactory.cs" />
     <Compile Include="Components\Viewers\Detail\DetailViewerView.xaml.cs">
       <DependentUpon>DetailViewerView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\Detail\DetailViewerViewModel.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\AudioDetailView.xaml.cs">
-      <DependentUpon>AudioDetailView.xaml</DependentUpon>
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\AudioDetailHomeTabView.xaml.cs">
+      <DependentUpon>AudioDetailHomeTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\GroupDetailView.xaml.cs">
-      <DependentUpon>GroupDetailView.xaml</DependentUpon>
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\GroupDetailHomeTabView.xaml.cs">
+      <DependentUpon>GroupDetailHomeTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\LinkDetailView.xaml.cs">
-      <DependentUpon>LinkDetailView.xaml</DependentUpon>
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\LinkDetailHomeTabView.xaml.cs">
+      <DependentUpon>LinkDetailHomeTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\PowerpointDetailView.xaml.cs">
-      <DependentUpon>PowerpointDetailView.xaml</DependentUpon>
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\PowerpointDetailHomeTabView.xaml.cs">
+      <DependentUpon>PowerpointDetailHomeTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\VideoDetailView.xaml.cs">
-      <DependentUpon>VideoDetailView.xaml</DependentUpon>
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\VideoDetailHomeTabView.xaml.cs">
+      <DependentUpon>VideoDetailHomeTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\WebDetailView.xaml.cs">
-      <DependentUpon>WebDetailView.xaml</DependentUpon>
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\WebDetailHomeTabView.xaml.cs">
+      <DependentUpon>WebDetailHomeTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\PdfDetailView.xaml.cs">
-      <DependentUpon>PdfDetailView.xaml</DependentUpon>
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\PdfDetailHomeTabView.xaml.cs">
+      <DependentUpon>PdfDetailHomeTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\ImageFullScreenView.xaml.cs">
-      <DependentUpon>ImageFullScreenView.xaml</DependentUpon>
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\ImageDetailHomeTabView.xaml.cs">
+      <DependentUpon>ImageDetailHomeTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\TextDetailView.xaml.cs">
-      <DependentUpon>TextDetailView.xaml</DependentUpon>
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\TextDetailHomeTabView.xaml.cs">
+      <DependentUpon>TextDetailHomeTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\WordDetailView.xaml.cs">
-      <DependentUpon>WordDetailView.xaml</DependentUpon>
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml.cs">
+      <DependentUpon>WordDetailHomeTabView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\GroupChat\ChatPopupView.xaml.cs">
       <DependentUpon>ChatPopupView.xaml</DependentUpon>
@@ -430,6 +506,8 @@
     <Compile Include="Controller\ContentController.cs" />
     <Compile Include="Controller\ElementCollectionController.cs" />
     <Compile Include="Controller\ElementController.cs" />
+    <Compile Include="Controller\LibraryElementController\LibraryElementController.cs" />
+    <Compile Include="Controller\LibraryElementController\LoadContentEventArgs.cs" />
     <Compile Include="Controller\LinkElementController.cs" />
     <Compile Include="Controller\LockDictionary.cs" />
     <Compile Include="Controller\MediaController.cs" />
@@ -443,6 +521,10 @@
     <Compile Include="Models\CollectionLibraryElementModel.cs" />
     <Compile Include="Models\CollectionElementModel.cs" />
     <Compile Include="Models\PowerpointNodeModel.cs" />
+    <Compile Include="Models\Regions\CompoundRegion.cs" />
+    <Compile Include="Models\Regions\RectangleRegion.cs" />
+    <Compile Include="Models\Regions\Region.cs" />
+    <Compile Include="Models\Regions\VideoRegionModel.cs" />
     <Compile Include="Models\TagNodeModel.cs" />
     <Compile Include="Models\WebNodeModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
@@ -494,6 +576,7 @@
     <Compile Include="Util\LineSegment.cs" />
     <Compile Include="Util\MathUtil.cs" />
     <Compile Include="Util\MediaUtil.cs" />
+    <Compile Include="Util\MetadatableType.cs" />
     <Compile Include="Util\Point2d.cs" />
     <Compile Include="Util\PresentationMode.cs" />
     <Compile Include="Util\RectanglePoints.cs" />
@@ -711,55 +794,119 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\Regions\VideoRegionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Regions\ImageRegionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Regions\AudioRegionBound.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Regions\AudioRegionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Regions\PDFRegionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Viewers\Detail\DetailViewerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\AudioDetailView.xaml">
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\AudioDetailHomeTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\ElementCollectionDetailView.xaml">
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\ElementCollectionDetailHomeTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\GroupDetailView.xaml">
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\GroupDetailHomeTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\LinkDetailView.xaml">
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\LinkDetailHomeTabView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\MetadataEditorView.xaml">
+    <Page Include="Components\Viewers\Detail\Views\MetadataEditorTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\PowerpointDetailView.xaml">
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\PowerpointDetailHomeTabView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\VideoDetailView.xaml">
+    <Page Include="Components\Viewers\Detail\Views\RegionEditorTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\WebDetailView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\PdfDetailView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\ImageFullScreenView.xaml">
+    <Page Include="Components\Viewers\Detail\Views\Region\AudioDetailRegionTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\TextDetailView.xaml">
+    <Page Include="Components\Viewers\Detail\Views\Region\ElementCollectionDetailRegionTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\Region\GroupDetailRegionTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\Region\LinkDetailRegionTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\Region\PDFDetailRegionTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\Region\PowerPointDetailRegionTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\Region\TextDetailRegionTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\Region\VideoDetailRegionTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\Region\WebDetailRegionTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\Region\WordDetailRegionTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\VideoDetailHomeTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\WebDetailHomeTabView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\WordDetailView.xaml">
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\PdfDetailHomeTabView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\ImageDetailHomeTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\TextDetailHomeTabView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -819,6 +966,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlock.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -862,6 +1013,10 @@
     <Page Include="Components\Viewers\FreeForm\Nodes\RecordingNode\RecordingNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoMediaPlayer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\FreeForm\Nodes\WebNode\WebNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -969,6 +1124,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Vbe.Interop">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio 14.0\Visual Studio Tools for Office\PIA\Office15\Microsoft.Vbe.Interop.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="SharpDX">
       <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.dll</HintPath>
     </Reference>
@@ -1008,6 +1167,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Icons\" />
+    <Folder Include="Util\Regions\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

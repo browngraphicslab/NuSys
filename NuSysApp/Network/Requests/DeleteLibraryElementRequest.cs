@@ -34,10 +34,10 @@ namespace NuSysApp
         }
         public override async Task ExecuteRequestFunction()
         {
-            var libraryElement = SessionController.Instance.ContentController.Get(_message.GetString("id"));
-            if (libraryElement == null)
+            var libraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(_message.GetString("id"));
+            if (libraryElementController == null)
                 return;
-            libraryElement.FireDelete();
+            libraryElementController.Delete();
         }
     }
 }

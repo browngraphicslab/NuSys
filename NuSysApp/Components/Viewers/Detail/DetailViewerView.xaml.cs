@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using LdaLibrary;
+using NuSysApp.Components.Viewers.Detail.Views.Region;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -26,34 +27,64 @@ namespace NuSysApp
     {
 
         private ElementViewModel _activeVm;
+        private object _metadataPivotItem;
 
         public DetailViewerView()
         {
 
 
             this.InitializeComponent();
-            //NICOLAS:
-            //xMetadataEditorView = (MetadataEditorView)GetTemplateChild("xMetadataEditorView");
+
             xMetadataEditorView = (MetadataEditorView) FindName("xMetadataEditorView");
-            xMetadataEditorView.DetailViewerView = this;
+            
+
+            xRegionEditorView = (RegionEditorTabView)FindName("xRegionEditorView");
+            xRegionEditorView.DetailViewerView = this;
+            //xRegionEditorView.DataContext = this.DataContext;
+            //xRegionEditorView.DataContext = (DetailViewerViewModel)this.DataContext;
+
+
+
+
+
+
+            //xRegionEditorView = (RegionEditorView)FindName("xRegionEditorView");
+            //xRegionEditorView.DetailViewerView = this;
+
+
 
             Visibility = Visibility.Collapsed;
-
+            
             //NewTagBox.Activate();
 
 
             DataContextChanged += delegate(FrameworkElement sender, DataContextChangedEventArgs args)
-              {
-                  if (!(DataContext is DetailViewerViewModel))
+            {
+                var dataContext = DataContext as DetailViewerViewModel;
+                  if (dataContext == null) { 
                       return;
-              
+                   }
 
-                  var vm = (DetailViewerViewModel)DataContext;
+                  dataContext.SizeChanged += Resize;
+
+                  var vm = dataContext;
 
                   vm.PropertyChanged += OnPropertyChanged;
                   vm.TitleChanged += LibraryElementModelTitleChanged;
                   Tags.ItemsSource = vm.Tags;
                   vm.MakeTagList();
+
+                  xMetadataEditorView.Metadatable = vm.CurrentElementController;
+
+                  //xRegionEditorView = (RegionEditorTabView)FindName("xRegionEditorView");
+                  //xRegionEditorView.DetailViewerView = this;
+                  //xRegionEditorView.DataContext = this.DataContext;
+                  //xRegionEditorView.DataContext = (DetailViewerViewModel)this.DataContext;
+
+                  //xRegionEditorView = (RegionEditorView)FindName("xRegionEditorView");
+                  //xRegionEditorView.DataContext = this.DataContext;
+                  //xRegionEditorView.DetailViewerViewModel = (DetailViewerViewModel)this.DataContext;
+                  //xRegionEditorView.DetailViewerView = this;
 
                   this.Width = SessionController.Instance.SessionView.ActualWidth / 2;
                   this.Height = SessionController.Instance.SessionView.ActualHeight;
@@ -132,35 +163,60 @@ namespace NuSysApp
                // List<string> topics = await TagExtractor.launch(test, new List<string>() { text });
                 await UITask.Run(() =>
                 {
-                    var tags = (List<string>)cvm.Controller.Model.GetMetaData("tags");
+                    var tags = cvm.Controller.LibraryElementModel.Keywords;
                     if (topics.Count > 0)
-                        tags.AddRange(topics);
-                    cvm.Controller.SetMetadata("tags", tags);
+                    {
+                        var topicKeywords = new List<Keyword>();
+                        foreach(var topic in topics)
+                        {
+                            topicKeywords.Add(new Keyword(topic));
+                        }
+                        tags = new HashSet<Keyword>(tags.Concat(topicKeywords));
+                    }
+                    cvm.Controller.LibraryElementController.SetKeywords(tags);
                 });
             });
         }
 
-        public async void ShowElement(ElementController controller)
+        public async Task ShowElement(IMetadatable metadatable)
         {
             var vm = (DetailViewerViewModel)DataContext;
-            if (await vm.ShowElement(controller))
+            if (await vm.ShowElement(metadatable))
                 Visibility = Visibility.Visible;
 
             //if (controller.Model is TextElementModel || controller.Model is PdfNodeModel)
-            if (controller.Model is PdfNodeModel)
+            if (metadatable.MetadatableType() == MetadatableType.Content)
             {
-                SuggestButton.Visibility = Visibility.Visible;
-            }
-            else
+                var controller = metadatable as LibraryElementController;
+                if (controller == null)
+                {
+                    return;
+                }
+                if (controller.LibraryElementModel.Type == ElementType.PDF)
+                {
+                    SuggestButton.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    SuggestButton.Visibility = Visibility.Collapsed;
+                }
+
+                xMetadataEditorView.Metadatable = vm.CurrentElementController;
+                xMetadataEditorView.Update();
+                if (xRootPivot.Items.Count == 2)
+                {
+                    var pivotItem = _metadataPivotItem as PivotItem;
+                    xRootPivot.Items.Add(pivotItem);
+
+                }
+            } else if (metadatable.MetadatableType() == MetadatableType.Region)
             {
-                SuggestButton.Visibility = Visibility.Collapsed;
+                _metadataPivotItem = xRootPivot.Items[2];
+                xRootPivot.Items.RemoveAt(2);
+                xMetadataEditorView.Metadatable = metadatable;
+                xMetadataEditorView.Update();
             }
-
-
-            xMetadataEditorView.Update();
             
-
-
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
@@ -186,10 +242,9 @@ namespace NuSysApp
         private void TitleChanged(object sender, KeyRoutedEventArgs e)
         {
             var vm = (DetailViewerViewModel)DataContext;
-            vm.CurrentElementController.LibraryElementModel.SetTitle(TitleBox.Text);
+            vm.CurrentElementController.SetTitle(TitleBox.Text);
             //vm.LibraryElementModelOnOnTitleChanged(this, TitleBox.Text);
             
-
         }
 
         private async void AddTagButton_OnClick(object sender, RoutedEventArgs e)
@@ -208,7 +263,7 @@ namespace NuSysApp
             {
                 if (tag != "")
                 {
-                    vm.AddTag(tag);
+                    vm.CurrentElementController?.AddKeyword(new Keyword(tag));
                    // Tags.ItemsSource = vm.Tags;
                 }
             }
@@ -223,7 +278,7 @@ namespace NuSysApp
             string newKey = ((TextBox)e.OriginalSource).Text.Trim();
             if (newKey != "")
             {
-              vm.AddMetadata(newKey, "", false);
+                vm.CurrentElementController.AddMetadata(new MetadataEntry(newKey, "", false));
             }
           //  NewMetadataBox.Text = "";
         }
@@ -246,10 +301,12 @@ namespace NuSysApp
         {
             Visibility = Visibility.Collapsed;
             var vm = (DetailViewerViewModel)DataContext;
-            var textview = (vm.View as TextDetailView);
+            var textview = (vm.View as TextDetailHomeTabView);
             textview?.Dispose();
-            var videoView = vm.View as VideoDetailView;
+            var videoView = vm.View as VideoDetailHomeTabView;
             videoView?.Dispose();
+            var Audioview = vm.View as AudioDetailHomeTabView;
+            Audioview?.StopAudio();
         }
 
         private void metaData_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -265,7 +322,15 @@ namespace NuSysApp
         {
       //      ((ElementViewModel) ((DetailViewerViewModel) DataContext).View.DataContext).Model.Title = TitleEnter.Text;
         }
-
+        private void Resize(object sender, double left, double width, double height)
+        {
+            Canvas.SetLeft(this, left);
+            Width = width;
+            if (Canvas.GetLeft(this) <= 30)
+            {
+                Canvas.SetLeft(this, 30);
+            }
+        }
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
       //      if (!_allowResize)
@@ -275,25 +340,27 @@ namespace NuSysApp
        
             if ((this.Width > 250 || e.Delta.Translation.X < 0) && (Canvas.GetLeft(this) > 0 || e.Delta.Translation.X > 0) && (Canvas.GetLeft(this) > 30 || e.Delta.Translation.X > 0))
             {
-                this.Width -= Math.Min(e.Delta.Translation.X,this.Width);
+                //this.Width -= Math.Min(e.Delta.Translation.X,this.Width);
+                /*
                // xContainer.Width = this.Width - 30;
 
                // exitButtonContainer.Width = xContainer.Width;
 
-                if (nodeContent.Content is ImageFullScreenView)
+                if (nodeContent.Content is ImageDetailHomeTabView)
                 {
-                   // ((ImageFullScreenView) nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
-                } else if (nodeContent.Content is TextDetailView)
+                   // ((ImageDetailHomeTabView) nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
+                } else if (nodeContent.Content is TextDetailHomeTabView)
                 {
-                 //   ((TextDetailView)nodeContent.Content).SetDimension(xContainer.Width);
+                 //   ((TextDetailHomeTabView)nodeContent.Content).SetDimension(xContainer.Width);
                 } else if (nodeContent.Content is WebDetailView)
                 {
                     ((WebDetailView)nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
                     Canvas.SetTop(nodeContent, (SessionController.Instance.SessionView.ActualHeight - nodeContent.Height) / 2);
                 }
-
-                Canvas.SetLeft(this, rightCoord - this.Width);
-
+                */
+                var newWidth = Width - Math.Min(e.Delta.Translation.X, this.Width);
+                //Canvas.SetLeft(this, rightCoord - this.Width);
+                (DataContext as DetailViewerViewModel)?.ChangeSize(this, rightCoord - newWidth, newWidth, Height);
                 e.Handled = true;
             }
 
@@ -301,6 +368,19 @@ namespace NuSysApp
             {
                 Canvas.SetLeft(this,30);
             }
+        }
+
+        private void ClearPivot()
+        {
+            xRootPivot.Items.Clear();
+        }
+
+        private void AddToPivot()
+        {
+            var item = new PivotItem();
+            item.Header = ElementType.Text;
+            xRootPivot.ItemsSource = item;
+            xRootPivot.Items.Add(item);
         }
         
     }

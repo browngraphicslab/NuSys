@@ -18,61 +18,287 @@ namespace NuSysApp
     public class DetailViewerViewModel : BaseINPC
     {
         private ElementModel _nodeModel;
-        private DetailNodeViewFactory _viewFactory = new DetailNodeViewFactory();
-        private String _tagToDelete;
-        public Boolean DeleteOnFocus;
+        private DetailViewHomeTabViewFactory _viewHomeTabViewFactory = new DetailViewHomeTabViewFactory();
+        private string _tagToDelete;
+        public bool DeleteOnFocus;
         public string Title { get; set; }
         public string Date { get; set; }
 
         public UserControl View { get; set; }
-            
+
+        public UserControl RegionView
+        {
+            get
+            {
+                return _regionableRegionTabViewModel?.View;
+            }
+        }
+
         public ObservableCollection<FrameworkElement> Tags { get; set; }
 
         public ObservableCollection<StackPanel> Metadata { get; set; }
 
+        public ObservableCollection<Region> RegionCollection { set; get; }
+        private DetailHomeTabViewModel _regionableRegionTabViewModel;
+        private DetailHomeTabViewModel _regionableHomeTabViewModel;
+
         private ElementViewModel _currentElementViewModel;
-        public ElementController CurrentElementController { get; set; }
+        public LibraryElementController CurrentElementController { get; set; }
 
         public delegate void TitleChangedHandler(object source, string newTitle);
         public event TitleChangedHandler TitleChanged;
 
+        public delegate void SizeChangedEventHandler(object source, double left, double width, double height);
+        public event SizeChangedEventHandler SizeChanged;
+        
         public DetailViewerViewModel()
 
         {
             Tags = new ObservableCollection<FrameworkElement>();
             Metadata = new ObservableCollection<StackPanel>();
+            RegionCollection = new ObservableCollection<Region>();
+
+            
+
+        }
+
+        private void AddRegionToList(object source, RegionController regionController)
+        {
+            RegionCollection.Add(regionController.Model);
         }
 
         public void Dispose()
         {
-            var tempvm = (ElementViewModel)View.DataContext;
-            tempvm.PropertyChanged -= NodeVMPropertChanged;
+            var tempvm = (DetailHomeTabViewModel)View.DataContext;
+            tempvm.TitleChanged -= NodeVMTitleChanged;
+
             _nodeModel = null;
 
         }
 
         public async Task<bool> ShowElement(ElementController controller)
         {
-            CurrentElementController = controller;
-            View = await _viewFactory.CreateFromSendable(controller);
-            if (View == null)
+            if (!await ShowElement(controller.LibraryElementController))
+            {
                 return false;
-            _nodeModel = controller.Model;
-            Title = controller.LibraryElementModel.Title;
-            this.ChangeTitle(this, controller.LibraryElementModel.Title);
-
-            controller.MetadataChange += ControllerOnMetadataChange;
-            controller.LibraryElementModel.OnTitleChanged += ChangeTitle;
+            }
             
-            var tempvm = (ElementViewModel) View.DataContext;
-            tempvm.PropertyChanged += NodeVMPropertChanged;
-            MakeTagList();
-            RaisePropertyChanged("Title");
-            RaisePropertyChanged("View");
-            RaisePropertyChanged("Tags");
-            RaisePropertyChanged("Metadata");
-            this.MakeMetadataList();
+            //Create non-libraryelementcontroller tabs
             return true;
+        }
+        public async Task<bool> ShowElement(IMetadatable metadatable)
+        {
+            if (metadatable.MetadatableType() == MetadatableType.Content)
+            {
+                var controller = metadatable as LibraryElementController;
+                if (controller == null)
+                {
+                    return false;
+                }
+                if (CurrentElementController != null)
+                {
+                    CurrentElementController.KeywordsChanged -= KeywordsChanged;
+                }
+                CurrentElementController = controller;
+                CurrentElementController.KeywordsChanged += KeywordsChanged;
+                CurrentElementController.RegionAdded += AddRegionToList;
+                CurrentElementController.RegionRemoved += RemoveRegionFromList;
+
+                RegionCollection.Clear();
+                foreach (var region in CurrentElementController.LibraryElementModel.Regions)
+                {
+                    RegionCollection.Add(region);
+                }
+
+                View = await _viewHomeTabViewFactory.CreateFromSendable(controller);
+                if (View == null)
+                {
+                    return false;
+                }
+
+                var regionView = await _viewHomeTabViewFactory.CreateFromSendable(controller);
+                if (regionView == null)
+                {
+                    return false;
+                }
+
+
+                _regionableRegionTabViewModel = regionView.DataContext as DetailHomeTabViewModel;
+                _regionableRegionTabViewModel.Editable = true;
+                _regionableHomeTabViewModel = View.DataContext as DetailHomeTabViewModel;
+                _regionableHomeTabViewModel.Editable = false;
+
+                RaisePropertyChanged("View");
+                RaisePropertyChanged("RegionView");
+
+
+
+                View.Loaded += delegate
+                {
+                    _regionableHomeTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
+
+                };
+                regionView.Loaded += delegate
+                {
+
+                    _regionableRegionTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
+
+                };
+                SizeChanged += (sender, left, width, height) => _regionableRegionTabViewModel.SizeChanged(sender, width, height);
+                SizeChanged += (sender, left, width, height) => _regionableHomeTabViewModel.SizeChanged(sender, width, height);
+
+                //_nodeModel = controller.LibraryElementModel;
+
+                Title = controller.LibraryElementModel.Title;
+                this.ChangeTitle(this, controller.LibraryElementModel.Title);
+
+                //vm.Controller.MetadataChange += ControllerOnMetadataChange;
+                //vm.Controller.LibraryElementModel.OnTitleChanged += ChangeTitle;
+
+
+                var tempvm = (DetailHomeTabViewModel)View.DataContext;
+                tempvm.TitleChanged += NodeVMTitleChanged;
+                MakeTagList();
+                RaisePropertyChanged("Title");
+                RaisePropertyChanged("View");
+                RaisePropertyChanged("Tags");
+                RaisePropertyChanged("Metadata");
+                RaisePropertyChanged("RegionView");
+                RaisePropertyChanged("View");
+                return true;
+            } else if (metadatable.MetadatableType() == MetadatableType.Region)
+            {
+                var regionModel = metadatable as Region;
+                if (regionModel == null)
+                {
+                    return false;
+                }
+                
+                View = await _viewHomeTabViewFactory.CreateFromSendable(CurrentElementController);
+                if (View == null)
+                {
+                    return false;
+                }
+
+                var regionSet = new HashSet<Region>();
+                regionSet.Add(regionModel);
+                View.Loaded += delegate
+                {
+                    _regionableHomeTabViewModel.SetExistingRegions(regionSet);
+
+                };
+
+                _regionableHomeTabViewModel = View.DataContext as DetailHomeTabViewModel;
+                _regionableHomeTabViewModel.Editable = false;
+
+                RaisePropertyChanged("View");
+                
+                //regionView.Loaded += delegate
+                //{
+
+                //    _regionableRegionTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
+
+                //};
+                SizeChanged += (sender, left, width, height) => _regionableHomeTabViewModel.SizeChanged(sender, width, height);
+                
+                Title = regionModel.Name;
+                this.ChangeTitle(this, regionModel.Name);
+                
+                //var tempvm = (DetailHomeTabViewModel)View.DataContext;
+                //tempvm.TitleChanged += NodeVMTitleChanged;
+                
+                RaisePropertyChanged("Title");
+                RaisePropertyChanged("View");
+                RaisePropertyChanged("Tags");
+                RaisePropertyChanged("Metadata");
+                RaisePropertyChanged("RegionView");
+                RaisePropertyChanged("View");
+                return true;
+            } else
+            {
+                return false;
+            }
+            
+        }
+
+        //public async Task<bool> ShowElement(LibraryElementController controller)
+        //{
+
+        //    if (CurrentElementController != null)
+        //    {
+        //        CurrentElementController.KeywordsChanged -= KeywordsChanged;
+        //    }
+        //    CurrentElementController = controller;
+        //    CurrentElementController.KeywordsChanged += KeywordsChanged;
+        //    CurrentElementController.RegionAdded += AddRegionToList;
+        //    CurrentElementController.RegionRemoved += RemoveRegionFromList;
+
+        //    RegionCollection.Clear();
+        //    foreach (var region in CurrentElementController.LibraryElementModel.Regions)
+        //    {
+        //        RegionCollection.Add(region);
+        //    }
+
+        //    View = await _viewHomeTabViewFactory.CreateFromSendable(controller);
+        //    if (View == null)
+        //    {
+        //        return false;
+        //    }
+
+        //    var regionView = await _viewHomeTabViewFactory.CreateFromSendable(controller);
+        //    if (regionView == null)
+        //    {
+        //        return false;
+        //    }
+        
+
+
+
+        //    View.Loaded += delegate
+        //    {
+        //        _regionableHomeTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
+
+        //    };
+        //    regionView.Loaded += delegate
+        //    {
+
+        //        _regionableRegionTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
+
+        //    };
+        //    SizeChanged += (sender, left, width, height) => _regionableRegionTabViewModel.SizeChanged(sender, width, height);
+        //    SizeChanged += (sender, left, width, height) => _regionableHomeTabViewModel.SizeChanged(sender, width, height);
+
+        //    //_nodeModel = controller.LibraryElementModel;
+
+        //    Title = controller.LibraryElementModel.Title;
+        //    this.ChangeTitle(this, controller.LibraryElementModel.Title);
+
+        //    //vm.Controller.MetadataChange += ControllerOnMetadataChange;
+        //    //vm.Controller.LibraryElementModel.OnTitleChanged += ChangeTitle;
+
+
+
+        //    var tempvm = (DetailHomeTabViewModel)View.DataContext;
+        //    tempvm.TitleChanged += NodeVMTitleChanged;
+        //    MakeTagList();
+        //    RaisePropertyChanged("Title");
+        //    RaisePropertyChanged("View");
+        //    RaisePropertyChanged("Tags");
+        //    RaisePropertyChanged("Metadata");
+        //    RaisePropertyChanged("RegionView");
+        //    RaisePropertyChanged("View");
+        //    return true;
+        //}
+
+        private void RemoveRegionFromList(object source, Region region)
+        {
+            if (RegionCollection.Contains(region))
+                RegionCollection.Remove(region);
+        }
+
+        private void KeywordsChanged(object sender, HashSet<Keyword> keywords)
+        {
+            MakeTagList();
         }
 
 
@@ -82,7 +308,10 @@ namespace NuSysApp
             Title = title;
         }
 
-
+        public void ChangeSize(object sender, double left, double width, double height)
+        {
+            SizeChanged?.Invoke(sender, left, width, height);
+        }
 
         private void ControllerOnMetadataChange(object source, string key)
         {
@@ -92,98 +321,26 @@ namespace NuSysApp
             }
         }
 
-        private void NodeVMPropertChanged(object sender, PropertyChangedEventArgs e)
+        private void NodeVMTitleChanged(object sender, string title)
         {
-            if (!(View.DataContext is ElementViewModel))
-                return;
-
-            var tempvm = (ElementViewModel)View.DataContext;
-            switch (e.PropertyName.ToLower())
-            {
-                case "title":
-                    Title = tempvm.Title;
-                    RaisePropertyChanged("Title");
-                    break;
-                default:
-                    break;
-            }
+            Title = title;
+            RaisePropertyChanged("Title");
         }
 
-        public void MakeMetadataList()
-        {
-            Metadata.Clear();
-            if (_nodeModel != null)
-            {
-                string[] keys = _nodeModel.GetMetaDataKeys();
-                foreach (string key in keys)
-                {
-                    bool editable = true;
-                    if (key == "tags" || key == "node_type" || key == "node_creation_date")
-                    {
-                        editable = false;
-                    }
-
-                    var val = _nodeModel.GetMetaData(key);
-                    string valString;
-                    if (val is System.Collections.Generic.List<string>)
-                    {
-                        valString = string.Join(", ", (List<string>)val);
-                    }
-                    else
-                    {
-                        valString = val.ToString();
-                    }
-                    StackPanel metadata = this.MakeMetaDataBlock(key, valString, editable);
-                    Metadata.Add(metadata);
-                }
-            }
-        }
-
-        public async void AddMetadata(string key, string val, bool update)
-        {
-            _nodeModel.SetMetaData(key, val);
-            if (!update)
-            {
-                StackPanel mdBlock = MakeMetaDataBlock(key, val, true);
-                Metadata.Add(mdBlock);
-            }
-            RaisePropertyChanged("Metadata");
-        }
-
+        
         public void MakeTagList()
         {
             Tags.Clear();
-            if (_nodeModel != null)
+            if (CurrentElementController != null)
             {
-                List<string> tags = (List<string>) _nodeModel.GetMetaData("tags");
-                foreach (string tag in tags)
+                var tags = CurrentElementController?.LibraryElementModel.Keywords;
+                foreach (var tag in tags)
                 {
-                    var tagBlock = this.MakeTagBlock(tag);
+                    var tagBlock = this.MakeTagBlock(tag.Text);
                     Tags.Add(tagBlock);
                 }
             }
             RaisePropertyChanged("Tags");
-        }
-
-        public async void AddTag(string tag)
-        {
-            List<string> tags = (List<string>) _nodeModel.GetMetaData("tags");
-            tags.Add(tag);
-
-            var contentVm = (ElementViewModel) View.DataContext;
-            contentVm.Controller.LibraryElementModel.Keywords.Add(tag);
-
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SetTagsRequest(_nodeModel.Id, tags));
-            /*
-            //this should be refactored later
-            var tagBlock = this.MakeTagBlock(tag);
-            Tags.Add(tagBlock);
-
-            RaisePropertyChanged("Tags");
-
-            //makes the entire metadata list again to update new tags
-            MakeMetadataList();
-            */
         }
 
         //this is an ugly method, refactor later so not making a UI element in viewmodel
@@ -230,24 +387,20 @@ namespace NuSysApp
 
         private async void DeleteGridOnTapped(object sender, TappedRoutedEventArgs tappedRoutedEventArgs)
         {
-            List<string> tags = (List<string>)_nodeModel.GetMetaData("tags");
             var t = ((FrameworkElement) sender).Tag as string;
             if (t == null)
                 return;
-            tags.Remove(t);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SetTagsRequest(_nodeModel.Id, tags));
-            MakeTagList();
-            RaisePropertyChanged("Tags");
+            CurrentElementController?.RemoveKeyword(new Keyword(t));
         }
-
+        /*
         private async void MetaDataBox_OnKeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
             if (e.OriginalKey == Windows.System.VirtualKey.Enter)
             {
                 await UpdateMetadataVal(e);
             }
-        }
-
+        }*/
+        /*
         private async Task UpdateMetadataVal(Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
         {
             TextBox valBox = ((TextBox) e.OriginalSource);
@@ -259,8 +412,8 @@ namespace NuSysApp
             }
 
             RaisePropertyChanged("Metadata");
-        }
-
+        }*/
+        /*
         public StackPanel MakeMetaDataBlock(string key, string val, bool editable)
         {
             var keyBox = new TextBlock {Text = key};
@@ -297,7 +450,7 @@ namespace NuSysApp
 
             return stackPanel;
         }
-
+        */
         private async void TagBlock_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
       

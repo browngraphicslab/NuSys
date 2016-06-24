@@ -45,8 +45,11 @@ namespace NuSysApp
             controller.ScaleChanged += OnScaleChanged;
             controller.AlphaChanged += OnAlphaChanged;
             controller.MetadataChange += OnMetadataChange;
-            if (controller.LibraryElementModel != null)
-                controller.LibraryElementModel.OnTitleChanged += OnTitleChanged;
+            if (controller.LibraryElementController != null)
+            {
+                controller.LibraryElementController.TitleChanged += OnTitleChanged;
+                controller.LibraryElementController.KeywordsChanged += KeywordsChanged;
+            }
             controller.LinkedAdded += OnLinkedAdded;
             controller.Disposed += OnDisposed;
             controller.Deleted += ControllerOnDeleted;
@@ -65,7 +68,10 @@ namespace NuSysApp
                 }
             }   
         }
-
+        private void KeywordsChanged(object sender, HashSet<Keyword> keywords)
+        {
+            CreateTags();
+        }
         private void ControllerOnDeleted(object source)
         {
             foreach (var link in LinkList)
@@ -136,14 +142,17 @@ namespace NuSysApp
         {
             Tags.Clear();
 
-            List<string> tagList = (List<string>)Model.GetMetaData("tags");
-
-            foreach (string tag in tagList)
+            var tagList = Controller?.LibraryElementController?.LibraryElementModel?.Keywords;
+            if(tagList == null)
+            {
+                return;
+            }
+            foreach (var tag in tagList)
             {
                 //sorry about this - should also be in frontend and not in viewmodel
                 Button tagBlock = new Button();
                 tagBlock.Background = new SolidColorBrush(Constants.color4);
-                tagBlock.Content = tag;
+                tagBlock.Content = tag.Text;
                 tagBlock.Height = 30;
                 tagBlock.Padding = new Thickness(5);
                 tagBlock.BorderThickness = new Thickness(0);
@@ -206,8 +215,11 @@ namespace NuSysApp
             _controller.ScaleChanged -= OnScaleChanged;
             _controller.AlphaChanged -= OnAlphaChanged;
             _controller.MetadataChange -= OnMetadataChange;
-            if (_controller.LibraryElementModel != null)
-                _controller.LibraryElementModel.OnTitleChanged -= OnTitleChanged;
+            if (_controller.LibraryElementController != null)
+            {
+                _controller.LibraryElementController.TitleChanged -= OnTitleChanged;
+                _controller.LibraryElementController.KeywordsChanged -= KeywordsChanged;
+            }
             _controller.LinkedAdded -= OnLinkedAdded;
             _controller.Disposed -= OnDisposed;
             

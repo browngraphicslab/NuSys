@@ -29,7 +29,7 @@
                 <Button Margin="0,2,0,2" x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
                     <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
                 </Button>
-                <Button Margin="0,2,0,2" x:Name="Region" Click="Region_OnClick"  Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
+                <Button Margin="0,2,0,2" x:Name="Region" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
                     <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path5810" Fill="White" Data="M14 0h-12c-1.1 0-2 0.9-2 2v12c0 1.1 0.9 2 2 2h12c1.1 0 2-0.9 2-2v-12c0-1.1-0.9-2-2-2zM14 14h-12v-12h12v12z">
                         <Path.RenderTransform>
                             <CompositeTransform TranslateX="20" TranslateY="20" />
@@ -39,7 +39,6 @@
             </StackPanel>
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
-
             <Grid x:Name ="grid" Width="{Binding Width}">
                 <Grid.Resources>
                     <local:PositionToStringConverter x:Key="PositionToStringConverter"/>
@@ -49,35 +48,15 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <MediaElement Grid.Row="0" Grid.Column="0" AutoPlay ="False" MediaOpened="PlaybackElement_MediaOpened" x:Name="playbackElement" AreTransportControlsEnabled="False"  Stretch="Uniform"/>
-                <TextBlock x:Name="MessageBox" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                <CaptureElement Name="preview"/>
-                <ProgressBar x:Name ="scrubBar" PointerReleased="ScrubBar_OnPointerReleased" SizeChanged ="ScrubBar_OnSizeChanged" Height ="25" Grid.Row="1" Margin="10,10,10,10" Value = "0" Maximum="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan.TotalMilliseconds}" Tapped="SrubBar_OnTapped" PointerMoved="ScrubBar_OnPointerMoved" Opacity="0.3" />
-                <Grid Grid.Row="2" HorizontalAlignment="Left">
-                    <TextBlock  Margin="10,0,0,0" Text ="{Binding ElementName=playbackElement, Path=Position, Converter={StaticResource PositionToStringConverter}}"></TextBlock>
-                </Grid>
-                <Grid Grid.Row="2" HorizontalAlignment="Right">
-                    <TextBlock Margin="0,0,10,0" Text ="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan, Converter={StaticResource PositionToStringConverter}}"></TextBlock>
-                </Grid>
-                <StackPanel Grid.Row ="3" Orientation="Horizontal" HorizontalAlignment="Center"  Margin="0,0,0,0" VerticalAlignment="Top">
-
-                    <Button x:Name="play" Tapped="OnPlay_Click" Style="{StaticResource NodeSubMenuItem}">
-                        <Image Source="ms-appx:///Assets/node icons/icon_play.png" Height="20"></Image>
-                    </Button>
-                    <Button x:Name="pause" Tapped ="OnPause_Click" Style="{StaticResource NodeSubMenuItem}">
-                        <Image Source="ms-appx:///Assets/node icons/icon_pause.png" Height="20"/>
-                    </Button>
-                    <Button x:Name="stop" Tapped="OnStop_Click" Style="{StaticResource NodeSubMenuItem}">
-                        <Image Source="ms-appx:///Assets/node icons/icon_stop.png" Height="20"></Image>
-                    </Button>
-
-                </StackPanel>
+                <local:VideoMediaPlayer x:Name="VideoMediaPlayer"></local:VideoMediaPlayer>
+                <ItemsControl ItemsSource="{Binding RegionViews}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
             </Grid>
-
-
-
-
         </local:NodeTemplate.Inner>
-
     </local:NodeTemplate>
 </local:AnimatableUserControl>

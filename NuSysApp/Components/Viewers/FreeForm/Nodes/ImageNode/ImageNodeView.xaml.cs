@@ -25,15 +25,19 @@ using NuSysApp.Viewers;
 
 namespace NuSysApp
 {
-    public sealed partial class ImageNodeView : AnimatableUserControl, IThumbnailable
+    public sealed partial class ImageNodeView : AnimatableUserControl, IThumbnailable, Sizeable
     {
 
         private Boolean _drawingRegion;
         private Rectangle TempRegion;
         private ImageElementViewModel _vm;
+
+
         public ImageNodeView(ImageElementViewModel vm)
         {
             _vm = vm;
+            _vm.View = this;
+           
             InitializeComponent();
             DataContext = vm;
             _drawingRegion = false;
@@ -41,9 +45,11 @@ namespace NuSysApp
             TempRegion.Fill = new SolidColorBrush(Colors.Transparent);
             TempRegion.StrokeThickness = 2;
             TempRegion.Stroke = new SolidColorBrush(Colors.Red);
+            
 
-           // vm.Controller.SizeChanged += Controller_SizeChanged;
-
+            // vm.Controller.SizeChanged += Controller_SizeChanged;
+           // vm.Controller.ContainerSizeChanged += Controller_SizeChanged;
+    
             vm.PropertyChanged +=VmOnPropertyChanged; 
 
             Loaded += delegate(object sender, RoutedEventArgs args)
@@ -60,6 +66,18 @@ namespace NuSysApp
             //XamlRenderingBackgroundTask x = new RenderTask(this.xImage);
 
             vm.Controller.Disposed += ControllerOnDisposed;
+            SizeChanged += ImageNodeView_SizeChanged;
+
+        }
+
+        private void ImageNodeView_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+
+            var vm = DataContext as ImageElementViewModel;
+
+            if (vm == null)
+                return;
+            vm.SizeChanged(this, xImage.ActualWidth, xImage.ActualHeight);
         }
 
         private void VmOnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -192,6 +210,16 @@ namespace NuSysApp
             {
                 XImage_OnPointerReleased(sender, e);
             }
+        }
+
+        public double GetWidth()
+        {
+            return xImage.ActualWidth;
+        }
+
+        public double GetHeight()
+        {
+            return xImage.ActualHeight;
         }
     }
 }

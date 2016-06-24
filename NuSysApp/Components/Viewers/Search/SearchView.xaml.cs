@@ -224,6 +224,7 @@ namespace NuSysApp
         {
             var item = ListView.SelectedItem as SearchResultTemplate;
             var id = item.Id;
+            SessionController.Instance.ContentController.GetLibraryItemController();
 
             e.Handled = true;
         }
