@@ -331,9 +331,9 @@ namespace NuSysApp
             return await _serverClient.SearchOverLibraryElements(searchText);
         }
 
-        public async Task<List<Dictionary<string, object>>> GetContentInfo(List<string> contentIds)
+        public async Task GetContentInfo(string contentId)
         {
-            return await _serverClient.GetContentWithoutData(contentIds);
+            await _serverClient.GetContentWithoutData(contentId);
         }
 
         public async Task<string> DuplicateLibraryElement(string libraryElementId)
