@@ -21,7 +21,7 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <TextBlock x:Name="xTitle" Text="Filter Type" Height="35" Grid.Row="0"/>
-                <ListBox x:Name="xList" SelectionChanged="XList_OnSelectionChanged"  Height="190" Grid.Row="1" Background="AliceBlue" ItemsSource="{x:Bind Filters}" SelectionMode="Single"/>
+                <ListBox x:Name="xList" SelectionChanged="XList_OnSelectionChanged"  Height="190" Grid.Row="1" Background="AliceBlue"  SelectionMode="Single"/>
                 <StackPanel Name ="bottompanel" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center">
                     <TextBlock Text="Unique" Margin="10,0,0,0"/>
                     <ToggleButton Margin="20,0,0,0"/>

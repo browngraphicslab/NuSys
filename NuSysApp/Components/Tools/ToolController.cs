@@ -8,7 +8,7 @@ using MyToolkit.Utilities;
 
 namespace NuSysApp
 {
-    public class ToolController
+    public class ToolController : ElementController
     {
         public static Dictionary<string, ToolController> ToolControllers = new Dictionary<string, ToolController>();
         public delegate void FilterChangedEventHandler(object sender, ToolModel.FilterTitle filter);
@@ -20,10 +20,10 @@ namespace NuSysApp
         public event LibraryIdsChangedEventHandler LibraryIdsChanged;
 
         public ToolModel Model { get;}
-        public ToolController(ToolModel model)
+        public ToolController(ElementModel model) : base(model)
         {
             Debug.Assert(model != null);
-            Model = model;
+            Model = model as ToolModel;
             ToolControllers.Add(model.Id, this);
         }
 

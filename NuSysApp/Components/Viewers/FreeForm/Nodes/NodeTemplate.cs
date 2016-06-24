@@ -101,8 +101,6 @@ namespace NuSysApp
 
         protected override void OnApplyTemplate()
         {
-            var vm = (ElementViewModel)this.DataContext;
-
             bg = (Grid)GetTemplateChild("bg");
             hitArea = (Rectangle)GetTemplateChild("HitArea");
 
@@ -150,8 +148,11 @@ namespace NuSysApp
             title = (TextBox)GetTemplateChild("xTitle");
             title.KeyUp += TitleOnTextChanged;
 
-            if (vm.Controller.LibraryElementModel != null)
-                vm.Controller.LibraryElementController.TitleChanged += LibraryElementModelOnOnTitleChanged;
+            if ((DataContext as ElementViewModel)?.Controller.LibraryElementModel != null)
+            {
+                (DataContext as ElementViewModel).Controller.LibraryElementController.TitleChanged +=
+                    LibraryElementModelOnOnTitleChanged;
+            }
             titleContainer = (Grid)GetTemplateChild("xTitleContainer");
 
             title.Loaded += delegate (object sender, RoutedEventArgs args)
@@ -164,7 +165,7 @@ namespace NuSysApp
 
             //vm.Controller.LibraryElementController.UserChanged += ControllerOnUserChanged;
 
-            vm.PropertyChanged += OnPropertyChanged;
+            (DataContext as BaseINPC).PropertyChanged += OnPropertyChanged;
             base.OnApplyTemplate();
             OnTemplateReady?.Invoke();
         }

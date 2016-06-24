@@ -281,9 +281,6 @@
     </Compile>
     <Compile Include="Components\Tools\ToolLinkViewModel.cs" />
     <Compile Include="Components\Tools\ToolModel.cs" />
-    <Compile Include="Components\Tools\ToolView.xaml.cs">
-      <DependentUpon>ToolView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\Tools\ToolViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
     <Compile Include="Components\Viewers\Detail\Sizeable.cs" />
@@ -587,6 +584,9 @@
     <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\Statistics.cs" />
     <Compile Include="Util\Telemetry.cs" />
+    <Compile Include="Util\TemporaryToolView.xaml.cs">
+      <DependentUpon>TemporaryToolView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Util\UITask.cs" />
     <Compile Include="Components\InqCanvas\InqCanvasViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoNodeViewModel.cs" />
@@ -822,10 +822,6 @@
     <Page Include="Components\Tools\ToolLinkView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Tools\ToolView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Viewers\Detail\DetailViewerView.xaml">
       <SubType>Designer</SubType>
@@ -1115,6 +1111,10 @@
     <Page Include="Components\WaitingRoom\WaitingRoomView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Util\TemporaryToolView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
