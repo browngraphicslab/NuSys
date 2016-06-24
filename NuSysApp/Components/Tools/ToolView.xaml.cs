@@ -34,6 +34,7 @@ namespace NuSysApp.Components.Viewers.FreeForm
             Filters  = new ObservableCollection<ToolModel.FilterTitle>()
             { ToolModel.FilterTitle.Type, ToolModel.FilterTitle.Title,  ToolModel.FilterTitle.Creator,  ToolModel.FilterTitle.Date,  ToolModel.FilterTitle.MetadataKeys,  ToolModel.FilterTitle.MetadataValues };
             this.InitializeComponent();
+            
             this.DataContext = vm;
             Canvas.SetTop(this, y);
             Canvas.SetLeft(this, x);
@@ -124,8 +125,7 @@ namespace NuSysApp.Components.Viewers.FreeForm
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            MetaDataToDisplay = new ObservableCollection<string>();
-            //populate with new selection choices{ };
+            MetaDataToDisplay = (DataContext as ToolViewModel).PropertiesToDisplay;
             ToolModel.FilterTitle selection = (ToolModel.FilterTitle)(xList.SelectedItems[0]);
             var toolViewModel = DataContext as ToolViewModel;
             if (toolViewModel != null)
