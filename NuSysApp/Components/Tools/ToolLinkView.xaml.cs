@@ -15,16 +15,27 @@ using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace NuSysApp.Components.Viewers.FreeForm
+namespace NuSysApp
 {
-    public sealed partial class ToolView : UserControl
+    public sealed partial class ToolLinkView : AnimatableUserControl
     {
-        public ToolView()
+        public ToolLinkView()
         {
             this.InitializeComponent();
 
-            xFilterElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
-            xFilterElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
+
+
+        }
+
+        private void Delete_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Annotation_Loaded(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
+    

@@ -30,7 +30,6 @@ namespace NuSysApp.Util
         public ObservableCollection<ToolModel.FilterTitle> Filters { get; set; }
         public ObservableCollection<string> MetaDataToDisplay { get; set; }
         private Image _dragItem;
-        public Canvas xCanvas;
         private enum DragMode { Filter };
         private DragMode _currenDragMode = DragMode.Filter;
         public TemporaryToolView(ToolViewModel vm, double x, double y)
@@ -43,7 +42,6 @@ namespace NuSysApp.Util
             this.DataContext = vm;
             Canvas.SetTop(this, y);
             Canvas.SetLeft(this, x);
-            xCanvas = (Canvas)GetTemplateChild("xCanvas");
             xFilterElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             xFilterElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
         }
@@ -58,30 +56,20 @@ namespace NuSysApp.Util
             var p = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
             var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(p.X, p.Y, 300, 300));
             var send = (FrameworkElement)sender;
+
             if (_currenDragMode == DragMode.Filter)
             {
 
-                var vm = (ElementViewModel)DataContext;
+                var vm = (ToolViewModel)DataContext;
 
-
-                var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
-                hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement) is GroupNodeView).ToList();
-
-                if (hitsStart.Any())
-                {
-                    //do some stuff here to create new  tool model controller etc
-                    var first = (FrameworkElement)hitsStart.First();
-                    var vm1 = (GroupNodeViewModel)first.DataContext;
-                    var groupnode = (GroupNodeView)first;
-                    var np = new Point(p.X - vm1.Model.Width / 2, p.Y - vm1.Model.Height / 2);
-                    var canvas = groupnode.FreeFormView.AtomContainer;
-                    var targetPoint = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(canvas).TransformPoint(p);
-                    p = args.GetCurrentPoint(first).Position; ;
-
-                    (DataContext as ToolViewModel).CreateNewToolWindow(xCanvas, targetPoint.X, targetPoint.Y);
-                    //vm.Controller.RequestDuplicate(targetPoint.X, targetPoint.Y, new Message(await vm.Model.Pack()));
-                }
+                ToolModel model = new ToolModel("");
+                ToolController controller = new ToolController(model);
+                ToolViewModel viewmodel = new ToolViewModel(controller);
+                TemporaryToolView view = new TemporaryToolView(viewmodel, r.X, r.Y);
+                wvm.AtomViewList.Add(view);
+                
             }
+
             ReleasePointerCaptures();
             (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta));
         }
@@ -111,16 +99,19 @@ namespace NuSysApp.Util
             xCanvas.Children.Add(_dragItem);
             _dragItem.RenderTransform = new CompositeTransform();
             (sender as FrameworkElement).AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta), true);
+
         }
 
         private void BtnAddOnManipulationDelta(object sender, PointerRoutedEventArgs args)
         {
+
             if (_dragItem == null)
                 return;
             var t = (CompositeTransform)_dragItem.RenderTransform;
             var p = args.GetCurrentPoint(xCanvas).Position;
             t.TranslateX = p.X - _dragItem.ActualWidth / 2;
             t.TranslateY = p.Y - _dragItem.ActualHeight / 2;
+
         }
 
         private void XList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -1,38 +1,39 @@
 ﻿<UserControl
-    x:Class="NuSysApp.Components.Viewers.FreeForm.ToolView"
+    x:Class="NuSysApp.ToolView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:NuSysApp.Components.Viewers.FreeForm"
+    xmlns:local="using:NuSysApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="200">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid Grid.Row ="0" Background="LightCyan">
+    <Canvas x:Name="xCanvas">
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <TextBlock x:Name="xTitle" Text="Filter Type" Height="35" Grid.Row="0"/>
-            <ListBox x:Name="xList" SelectionChanged="XList_OnSelectionChanged"  Height="190" Grid.Row="1" Background="AliceBlue" ItemsSource="{x:Bind Filters}" SelectionMode="Single"/>
-            <StackPanel Name ="bottompanel" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center">
-                <TextBlock Text="Unique" Margin="10,0,0,0"/>
-                <ToggleButton Margin="20,0,0,0"/>
-                <Button Name="xChooseFilter" Click="ButtonBase_OnClick" Margin="30,0,0,0"></Button>
-            </StackPanel>
+            <Grid Grid.Row ="0" Background="LightCyan">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock x:Name="xTitle" Text="Filter Type" Height="35" Grid.Row="0"/>
+                <ListBox x:Name="xList" SelectionChanged="XList_OnSelectionChanged"  Height="190" Grid.Row="1" Background="AliceBlue"  SelectionMode="Single"/>
+                <StackPanel Name ="bottompanel" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center">
+                    <TextBlock Text="Unique" Margin="10,0,0,0"/>
+                    <ToggleButton Margin="20,0,0,0"/>
+                    <Button Name="xChooseFilter" Click="ButtonBase_OnClick" Margin="30,0,0,0"></Button>
+                </StackPanel>
+            </Grid>
+            <Button x:Name="xFilterElement" Grid.Row="2" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" HorizontalAlignment="Center">
+                <StackPanel>
+                    <Image Source="ms-appx:///Assets/icon_duplicate.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                    <TextBlock Text="Filter" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
+                </StackPanel>
+            </Button>
         </Grid>
-        <Button x:Name="xFilterElement" Grid.Row="2" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" HorizontalAlignment="Center">
-            <StackPanel>
-                <Image Source="ms-appx:///Assets/icon_duplicate.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                <TextBlock Text="Filter" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
-            </StackPanel>
-        </Button>
-    </Grid>
-    
+    </Canvas>
 </UserControl>

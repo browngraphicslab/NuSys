@@ -5,7 +5,7 @@ using Windows.UI.Xaml.Controls;
 using NuSysApp.Components.Viewers.FreeForm;
 using NuSysApp.Util;
 
-namespace NuSysApp.Viewers
+namespace NuSysApp
 {
     public class ToolViewModel : ElementViewModel
     {
