@@ -13,7 +13,9 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
+using NuSysApp.Components.Viewers.FreeForm;
 using NuSysApp.Util;
+using NuSysApp.Viewers;
 using SharpDX.Direct2D1;
 using Image = Windows.UI.Xaml.Controls.Image;
 using SolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
@@ -250,19 +252,23 @@ namespace NuSysApp
 
             }
 
+            // Adds a toolview to the atom view list when an tool is droped
             else if (_elementType == ElementType.Tools)
             {
-               
-                var rect = new RecordingNodeView(new ElementViewModel(new ElementController(new ElementModel("")
-                {
-                    X = pos.X,
-                    Y = pos.Y,
-                    Width = 300,
-                    Height = 300
-                })));
-       
+
+                //var tool = new TemporaryToolView(new ElementViewModel(new ElementController(new ElementModel("")
+                //{
+                //    X = pos.X,
+                //    Y = pos.Y,
+                //    Width = 300,
+                //    Height = 300,
+                //})));
+                ToolModel model = new ToolModel();
+                ToolController controller = new ToolController(model);
+                ToolViewModel viewmodel = new ToolViewModel(controller);
+                ToolView view = new ToolView(viewmodel, pos.X, pos.Y);
                 //rect.Background = new SolidColorBrush(Colors.Blue);
-                vm.AtomViewList.Add(rect);
+                vm.AtomViewList.Add(view);
 
             }
 
