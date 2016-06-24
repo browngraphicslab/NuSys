@@ -35,6 +35,29 @@ namespace NuSysApp
         }
 
         public ObservableCollection<FrameworkElement> Tags { get; set; }
+        private ObservableCollection<IMetadatable> _tabs;
+
+        public ObservableCollection<IMetadatable> Tabs
+        {
+            get { return _tabs; }
+            set
+            {
+                _tabs = value;
+                RaisePropertyChanged("Tabs");
+            }
+        }
+
+        private Visibility _tabVisibility;
+
+        public Visibility TabVisibility
+        {
+            get {  return _tabVisibility; }
+            set
+            {
+                _tabVisibility = value; 
+                RaisePropertyChanged("TabVisibility");
+            }
+        }
 
         public ObservableCollection<StackPanel> Metadata { get; set; }
 
@@ -57,9 +80,9 @@ namespace NuSysApp
             Tags = new ObservableCollection<FrameworkElement>();
             Metadata = new ObservableCollection<StackPanel>();
             RegionCollection = new ObservableCollection<Region>();
-
+            Tabs = new ObservableCollection<IMetadatable>();
+            TabVisibility = Visibility.Collapsed;
             
-
         }
 
         private void AddRegionToList(object source, RegionController regionController)
@@ -157,10 +180,6 @@ namespace NuSysApp
                 Title = controller.LibraryElementModel.Title;
                 this.ChangeTitle(this, controller.LibraryElementModel.Title);
 
-                //vm.Controller.MetadataChange += ControllerOnMetadataChange;
-                //vm.Controller.LibraryElementModel.OnTitleChanged += ChangeTitle;
-
-
                 var tempvm = (DetailHomeTabViewModel)View.DataContext;
                 tempvm.TitleChanged += NodeVMTitleChanged;
                 MakeTagList();
@@ -170,6 +189,8 @@ namespace NuSysApp
                 RaisePropertyChanged("Metadata");
                 RaisePropertyChanged("RegionView");
                 RaisePropertyChanged("View");
+
+                AddTab(metadatable);
                 return true;
             } else if (metadatable.MetadatableType() == MetadatableType.Region)
             {
@@ -218,6 +239,8 @@ namespace NuSysApp
                 RaisePropertyChanged("Metadata");
                 RaisePropertyChanged("RegionView");
                 RaisePropertyChanged("View");
+
+                AddTab(metadatable);
                 return true;
             } else
             {
@@ -226,73 +249,33 @@ namespace NuSysApp
             
         }
 
-        //public async Task<bool> ShowElement(LibraryElementController controller)
-        //{
+        public void AddTab(IMetadatable metadatable)
+        {
+            if (_tabs.Contains(metadatable))
+            {
+                return;
+            }
+            if (_tabs.Count < 6)
+            {
+                _tabs.Add(metadatable);
+            }
+            else
+            {
+                _tabs.RemoveAt(0);
+                _tabs.Add(metadatable);
+            }
 
-        //    if (CurrentElementController != null)
-        //    {
-        //        CurrentElementController.KeywordsChanged -= KeywordsChanged;
-        //    }
-        //    CurrentElementController = controller;
-        //    CurrentElementController.KeywordsChanged += KeywordsChanged;
-        //    CurrentElementController.RegionAdded += AddRegionToList;
-        //    CurrentElementController.RegionRemoved += RemoveRegionFromList;
+            if (_tabs.Count > 1)
+            {
+                TabVisibility = Visibility.Visible;
+            }
+            else
+            {
+                TabVisibility = Visibility.Collapsed;
+            }
 
-        //    RegionCollection.Clear();
-        //    foreach (var region in CurrentElementController.LibraryElementModel.Regions)
-        //    {
-        //        RegionCollection.Add(region);
-        //    }
-
-        //    View = await _viewHomeTabViewFactory.CreateFromSendable(controller);
-        //    if (View == null)
-        //    {
-        //        return false;
-        //    }
-
-        //    var regionView = await _viewHomeTabViewFactory.CreateFromSendable(controller);
-        //    if (regionView == null)
-        //    {
-        //        return false;
-        //    }
-        
-
-
-
-        //    View.Loaded += delegate
-        //    {
-        //        _regionableHomeTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
-
-        //    };
-        //    regionView.Loaded += delegate
-        //    {
-
-        //        _regionableRegionTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
-
-        //    };
-        //    SizeChanged += (sender, left, width, height) => _regionableRegionTabViewModel.SizeChanged(sender, width, height);
-        //    SizeChanged += (sender, left, width, height) => _regionableHomeTabViewModel.SizeChanged(sender, width, height);
-
-        //    //_nodeModel = controller.LibraryElementModel;
-
-        //    Title = controller.LibraryElementModel.Title;
-        //    this.ChangeTitle(this, controller.LibraryElementModel.Title);
-
-        //    //vm.Controller.MetadataChange += ControllerOnMetadataChange;
-        //    //vm.Controller.LibraryElementModel.OnTitleChanged += ChangeTitle;
-
-
-        //    var tempvm = (DetailHomeTabViewModel)View.DataContext;
-        //    tempvm.TitleChanged += NodeVMTitleChanged;
-        //    MakeTagList();
-        //    RaisePropertyChanged("Title");
-        //    RaisePropertyChanged("View");
-        //    RaisePropertyChanged("Tags");
-        //    RaisePropertyChanged("Metadata");
-        //    RaisePropertyChanged("RegionView");
-        //    RaisePropertyChanged("View");
-        //    return true;
-        //}
+            Tabs = _tabs;
+        }
 
         private void RemoveRegionFromList(object source, Region region)
         {
@@ -396,65 +379,7 @@ namespace NuSysApp
                 return;
             CurrentElementController?.RemoveKeyword(new Keyword(t));
         }
-        /*
-        private async void MetaDataBox_OnKeyUp(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
-        {
-            if (e.OriginalKey == Windows.System.VirtualKey.Enter)
-            {
-                await UpdateMetadataVal(e);
-            }
-        }*/
-        /*
-        private async Task UpdateMetadataVal(Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
-        {
-            TextBox valBox = ((TextBox) e.OriginalSource);
-            string newVal = valBox.Text.Trim();
-            if (newVal != "")
-            {
-                TextBlock keyBox = (TextBlock) ((StackPanel) valBox.Parent).Children[0];
-                this.AddMetadata(keyBox.Text, newVal, true);
-            }
-
-            RaisePropertyChanged("Metadata");
-        }*/
-        /*
-        public StackPanel MakeMetaDataBlock(string key, string val, bool editable)
-        {
-            var keyBox = new TextBlock {Text = key};
-            keyBox.Foreground = new SolidColorBrush(Constants.foreground6);
-            keyBox.FontSize = 18;
-            keyBox.Height = 30;
-
-            var colon = new TextBlock {Text = ":"};
-            colon.Foreground = new SolidColorBrush(Constants.foreground6);
-            colon.FontSize = 18;
-            colon.Height = 30;
-            colon.Padding = new Thickness(2, 0, 2, 0);
-            
-            TextBox valBox = new TextBox {Text = val};
-            valBox.Foreground = new SolidColorBrush(Constants.foreground6);
-            valBox.FontSize = 18;
-            valBox.MinWidth = 80;
-            valBox.Height = 20;
-            valBox.Margin = new Thickness(5, 0, 0, 0);
-            valBox.BorderThickness = new Thickness(0);
-            valBox.KeyUp += MetaDataBox_OnKeyUp;
-            if (!editable)
-            {
-                valBox.IsReadOnly = true;
-            }
-
-            var stackPanel = new StackPanel();
-            stackPanel.Children.Add(keyBox);
-            stackPanel.Children.Add(colon);
-            stackPanel.Children.Add(valBox);
-            stackPanel.Orientation = Orientation.Horizontal;
-            stackPanel.Height = 40;
-            stackPanel.Margin = new Thickness(2, 2, 2, 2);
-
-            return stackPanel;
-        }
-        */
+        
         private async void TagBlock_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
       
@@ -463,7 +388,4 @@ namespace NuSysApp
 
     }
 
-    internal class T
-    {
-    }
 }

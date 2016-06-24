@@ -382,6 +382,30 @@ namespace NuSysApp
             xRootPivot.ItemsSource = item;
             xRootPivot.Items.Add(item);
         }
-        
+
+        private void TabList_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var metadatable = TabList.SelectedItem as IMetadatable;
+            ShowElement(metadatable);
+        }
+
+        private void ExitTab_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var metadatable = TabList.SelectedItem as IMetadatable;
+            var vm = DataContext as DetailViewerViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+            var tabs = vm?.Tabs;
+            tabs?.Remove(metadatable);
+            if (tabs?.Count < 2)
+            {
+                vm.TabVisibility = Visibility.Collapsed;
+            }
+            vm.Tabs = tabs;
+            e.Handled = true;
+
+        }
     }
 }

@@ -21,6 +21,35 @@
             </Grid.RenderTransform>
             <Image x:Name="resizerImage" Source="/Assets/resizer.png" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Grid>
+        <Grid x:Name="TabPanel" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="{StaticResource color7}" Width="30"
+                    ManipulationDelta="Resizer_OnManipulationDelta" ManipulationMode="All" Visibility="{Binding TabVisibility}">
+            <Grid.RenderTransform>
+                <TranslateTransform X="-60"></TranslateTransform>
+            </Grid.RenderTransform>
+            <ListView x:Name="TabList" VerticalAlignment="Stretch" ItemsSource="{Binding Tabs}" Tapped="TabList_OnTapped">
+                
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel x:Name="TabStack" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <Border x:Name="ExitTab" Tapped="ExitTab_OnTapped">
+                                <TextBlock Text="X" Foreground="White" FontSize="20">
+                                    <TextBlock.RenderTransform>
+                                        <RotateTransform CenterX="0.5" CenterY="0.5" Angle="90"/>
+                                    </TextBlock.RenderTransform>
+                                </TextBlock>
+                            </Border>
+                            <TextBlock x:Name="TabTitle" Text="Tab">
+                                <TextBlock.RenderTransform>
+                                    <RotateTransform CenterX="0.5" CenterY="0.5" Angle="90"/>
+                                </TextBlock.RenderTransform>
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                
+            </ListView>
+            
+        </Grid>
         <Grid x:Name="xContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource color2}" Padding="25,10,25,10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"></RowDefinition>
