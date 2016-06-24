@@ -250,19 +250,20 @@ namespace NuSysApp
 
             }
 
+            // Adds a toolview to the atom view list when an tool is droped
             else if (_elementType == ElementType.Tools)
             {
                
-                var rect = new RecordingNodeView(new ElementViewModel(new ElementController(new ElementModel("")
+                var tool = new TemporaryToolView(new ElementViewModel(new ElementController(new ElementModel("")
                 {
                     X = pos.X,
                     Y = pos.Y,
                     Width = 300,
-                    Height = 300
+                    Height = 300,
                 })));
        
                 //rect.Background = new SolidColorBrush(Colors.Blue);
-                vm.AtomViewList.Add(rect);
+                vm.AtomViewList.Add(tool);
 
             }
 
