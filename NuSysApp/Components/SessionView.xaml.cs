@@ -30,9 +30,11 @@ namespace NuSysApp
         private FreeFormViewer _activeFreeFormViewer;
         private Options _prevOptions = Options.SelectNode;
 
-        private PresentationMode _presentationModeInstance = null;
+        private IModable _modeInstance = null;
+       
 
         private ContentImporter _contentImporter = new ContentImporter();
+
 
         public bool IsPenMode { get; private set; }
 
@@ -160,70 +162,112 @@ namespace NuSysApp
                 FloatingMenu.ActivatePenMode(false);
             }
 
-            if (_presentationModeInstance != null && (args.VirtualKey == VirtualKey.Right || args.VirtualKey == VirtualKey.Up))
+            if (_modeInstance != null && (args.VirtualKey == VirtualKey.Right || args.VirtualKey == VirtualKey.Up))
             {
-                if (_presentationModeInstance.Next())
+                if (_modeInstance.Next())
                 {
-                    _presentationModeInstance.MoveToNext();
-                    SetPresentationButtons();
+                    _modeInstance.MoveToNext();
+                    SetModeButtons();
                 }
             }
 
-            if (_presentationModeInstance != null && (args.VirtualKey == VirtualKey.Left || args.VirtualKey == VirtualKey.Down))
+            if (_modeInstance != null && (args.VirtualKey == VirtualKey.Left || args.VirtualKey == VirtualKey.Down))
             {
-                if (_presentationModeInstance.Previous())
+                if (_modeInstance.Previous())
                 {
-                    _presentationModeInstance.MoveToPrevious();
-                    SetPresentationButtons();
+                    _modeInstance.MoveToPrevious();
+                    SetModeButtons();
                 }
 
             }
 
-            if (_presentationModeInstance != null && args.VirtualKey == VirtualKey.Space)
+            if (_modeInstance != null && args.VirtualKey == VirtualKey.Space)
             {
-                _presentationModeInstance.GoToCurrent();
+                _modeInstance.GoToCurrent();
             }
 
-            if (_presentationModeInstance != null && args.VirtualKey == VirtualKey.Escape)
+            if (_modeInstance != null && args.VirtualKey == VirtualKey.Escape)
             {
-                ExitPresentationMode();
+                ExitMode();
+            }
+        }
+
+        /// <summary>
+        /// Shows the box with elements that have the passed in tag
+        /// </summary>
+        /// <param name="text"></param>
+        public void ShowRelatedElements(string tag)
+        {
+            if ((_modeInstance != null) && (_modeInstance.Mode == ModeType.EXPLORATION))
+            {
+                var exp = _modeInstance as ExplorationMode;
+                exp.ShowRelatedElements(tag);
             }
         }
 
         public void EnterPresentationMode(ElementViewModel em)
         {
-            _presentationModeInstance = new PresentationMode(em);
+            _modeInstance = new PresentationMode(em);
+           
+            NextNode.Visibility = Visibility.Visible;
+            PreviousNode.Visibility = Visibility.Visible;
+            CurrentNode.Visibility = Visibility.Visible;
+
+            xPresentation.Visibility = Visibility.Visible;
+            SetModeButtons();
+        }
+
+        public void EnterExplorationMode(ElementViewModel em)
+        {
+            _modeInstance = new ExplorationMode(em);
 
             NextNode.Visibility = Visibility.Visible;
             PreviousNode.Visibility = Visibility.Visible;
             CurrentNode.Visibility = Visibility.Visible;
 
             xPresentation.Visibility = Visibility.Visible;
-            SetPresentationButtons();
+            SetModeButtons();
+            
         }
 
-        public void ExitPresentationMode()
+        /// <summary>
+        /// Explores (aka zooms in on) the passed in element view model
+        /// </summary>
+        /// <param name="em"></param>
+        public void Explore(ElementViewModel em)
         {
-            _presentationModeInstance.ExitMode();
-            _presentationModeInstance = null;
+            if (_modeInstance != null && _modeInstance.Mode == ModeType.EXPLORATION)
+            {
+                var exp = _modeInstance as ExplorationMode;
+                exp.MoveTo(em);
+            }
+        }
+
+        public void ExitMode()
+        {
+           
+            _modeInstance.ExitMode();
+            _modeInstance = null;
             NextNode.Visibility = Visibility.Collapsed;
             PreviousNode.Visibility = Visibility.Collapsed;
             CurrentNode.Visibility = Visibility.Collapsed;
             xPresentation.Visibility = Visibility.Collapsed;
         }
 
+       
+
         private void Presentation_OnClick(object sender, RoutedEventArgs e)
         {
             if (sender == xPresentation)
             {
-                ExitPresentationMode();
+                ExitMode();
                 return;
             }
 
             if (sender == NextNode)
             {
 
-                _presentationModeInstance.MoveToNext();
+                _modeInstance.MoveToNext();
             }
 
             /*
@@ -238,21 +282,39 @@ namespace NuSysApp
 
             if (sender == PreviousNode)
             {
-                _presentationModeInstance.MoveToPrevious();
+                _modeInstance.MoveToPrevious();
             }
 
             if (sender == CurrentNode)
             {
-                _presentationModeInstance.GoToCurrent();
+                _modeInstance.GoToCurrent();
             }
 
             // only show next and prev buttons if next and prev nodes exist
-            SetPresentationButtons();
+            SetModeButtons();
+            
         }
 
-        private void SetPresentationButtons()
+        /// <summary>
+        /// Will move to the end of the other end of the link if we are in exploration mode
+        /// </summary>
+        /// <param name="vm"></param>
+        public void ExploreLink(LinkViewModel vm)
         {
-            if (_presentationModeInstance.Next())
+            // If we are in exploration mode, NOT presentation mode
+             if ((_modeInstance!=null)&&(_modeInstance.Mode==ModeType.EXPLORATION))
+            {
+                // Call the appropriate exploration method
+                var exp = _modeInstance as ExplorationMode;
+                exp.ExploreLink(vm);
+            }
+        }
+
+       
+        private void SetModeButtons()
+        {
+         
+            if (_modeInstance.Next())
             {
                 NextNode.Opacity = 1;
                 NextNode.Click -= Presentation_OnClick;
@@ -263,7 +325,7 @@ namespace NuSysApp
                 NextNode.Opacity = 0.6;
                 NextNode.Click -= Presentation_OnClick;
             }
-            if (_presentationModeInstance.Previous())
+            if (_modeInstance.Previous())
             {
                 PreviousNode.Opacity = 1;
                 PreviousNode.Click -= Presentation_OnClick;
@@ -275,6 +337,9 @@ namespace NuSysApp
                 PreviousNode.Click -= Presentation_OnClick;
             }
         }
+
+        
+           
 
         public async Task LoadWorkspaceFromServer(IEnumerable<Message> nodeMessages, string collectionId)
         {
@@ -676,6 +741,19 @@ namespace NuSysApp
         private async void SnapshotButton_OnClick(object sender, RoutedEventArgs e)
         {
             await StaticServerCalls.CreateSnapshot();
+        }
+
+        /// <summary>
+        /// Removes the related list box from the sv
+        /// </summary>
+        public void RemoveRelatedListBox()
+        {
+            if (_modeInstance != null && _modeInstance.Mode == ModeType.EXPLORATION)
+            {
+                var exp = _modeInstance as ExplorationMode;
+                exp.HideRelatedListBox();
+            }
+            
         }
     }
 }

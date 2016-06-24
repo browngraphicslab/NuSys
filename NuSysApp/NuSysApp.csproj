@@ -480,9 +480,11 @@
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Util\EventUtil.cs" />
+    <Compile Include="Util\ExplorationMode.cs" />
     <Compile Include="Util\ExtensionMethods.cs" />
     <Compile Include="Util\GestureRecognizer.cs" />
     <Compile Include="Util\GestureType.cs" />
+    <Compile Include="Util\IModable.cs" />
     <Compile Include="Util\LineEquation.cs" />
     <Compile Include="Util\LineSegment.cs" />
     <Compile Include="Util\MathUtil.cs" />
@@ -490,6 +492,9 @@
     <Compile Include="Util\Point2d.cs" />
     <Compile Include="Util\PresentationMode.cs" />
     <Compile Include="Util\RectanglePoints.cs" />
+    <Compile Include="Util\RelatedListBox.xaml.cs">
+      <DependentUpon>RelatedListBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\Statistics.cs" />
     <Compile Include="Util\Telemetry.cs" />
@@ -938,6 +943,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\WaitingRoom\WaitingRoomView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Util\RelatedListBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

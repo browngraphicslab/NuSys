@@ -8,6 +8,7 @@ using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Components.Viewers.FreeForm;
@@ -150,13 +151,29 @@ namespace NuSysApp
                 tagBlock.Foreground = new SolidColorBrush(Constants.foreground6);
                 tagBlock.Margin = new Thickness(2, 2, 2, 2);///
                 tagBlock.FontStyle = FontStyle.Italic;
-                tagBlock.IsHitTestVisible = false;
-
+                tagBlock.IsHitTestVisible = true;     
+                tagBlock.Tapped += OnTagBlockTapped;
                 Tags.Add(tagBlock);
             }
             
             RaisePropertyChanged("Tags");
         }
+
+    
+        /// <summary>
+        /// When a tag block is tapped, it should signal the session view to show a box
+        /// with related elements (elements with the same tag)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnTagBlockTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var text = button.Content.ToString();
+            SessionController.Instance.SessionView.ShowRelatedElements(text); 
+        }
+
+      
 
         #region Atom Manipulations
 
@@ -364,11 +381,12 @@ namespace NuSysApp
             }
         }
 
-        public string Title { get; set; }
+       public string Title { get; set; }
 
         //public string Tags { get; set; }
 
         public ObservableCollection<Button> Tags { get; set; }
+        
 
         public ElementController Controller
         {

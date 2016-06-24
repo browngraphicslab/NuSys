@@ -175,6 +175,8 @@ namespace NuSysApp
                         ((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.Model.Select();
 
                     }
+                    // Handles exploration mode
+                    SessionController.Instance.SessionView.ExploreLink(vm);
                 }
                 else
                 {
