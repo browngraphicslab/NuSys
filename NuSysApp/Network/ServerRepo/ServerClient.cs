@@ -284,7 +284,7 @@ namespace NuSysApp
                 libraryIdsUsed.Add(libraryId);
                 await Task.Run(async delegate
                 {
-                    SessionController.Instance.ContentController.GetLibraryElementController(libraryId).SetLoading(true);
+                    SessionController.Instance.ContentController.GetLibraryElementController(libraryId)?.SetLoading(true);
                     HttpClient client = new HttpClient();
                     var response = await client.GetAsync(GetUri("getcontent/" + libraryId));
 
