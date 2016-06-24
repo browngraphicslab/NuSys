@@ -276,6 +276,9 @@
     <Compile Include="Components\Regions\PDFRegionViewModel.cs" />
     <Compile Include="Components\Regions\RegionViewModel.cs" />
     <Compile Include="Components\Tools\ToolController.cs" />
+    <Compile Include="Components\Tools\ToolLinkView.xaml.cs">
+      <DependentUpon>ToolLinkView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Tools\ToolModel.cs" />
     <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
     <Compile Include="Components\Viewers\Detail\Sizeable.cs" />
@@ -810,6 +813,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Regions\PDFRegionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Tools\ToolLinkView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
