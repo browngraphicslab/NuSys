@@ -12,8 +12,11 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Shapes;
+using NuSysApp.Util;
 using SharpDX.Direct2D1;
 using Image = Windows.UI.Xaml.Controls.Image;
+using SolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -58,6 +61,7 @@ namespace NuSysApp
             AddNodeSubmenuButton(btnText);
             AddNodeSubmenuButton(btnRecording);
             AddNodeSubmenuButton(btnNew);
+            AddNodeSubmenuButton(btnTools);
         }
 
         public void Reset()
@@ -166,12 +170,15 @@ namespace NuSysApp
             if (_dragItem != null && xWrapper.Children.Contains(_dragItem))
                 xWrapper.Children.Remove(_dragItem);
 
+      
             if (sender == btnText)
                 _elementType = ElementType.Text;
             if (sender == btnRecording)
                 _elementType = ElementType.Recording;
             if (sender == btnNew)
                 _elementType = ElementType.Collection;
+            if (sender == btnTools)
+                _elementType = ElementType.Tools;
 
             args.Container = xWrapper;
             var bmp = new RenderTargetBitmap();
@@ -240,6 +247,22 @@ namespace NuSysApp
            
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, data == null ? "" : data.ToString(), elementType, dict.ContainsKey("title") ? dict["title"].ToString() : null));
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(dict));
+
+            }
+
+            else if (_elementType == ElementType.Tools)
+            {
+               
+                var rect = new RecordingNodeView(new ElementViewModel(new ElementController(new ElementModel("")
+                {
+                    X = pos.X,
+                    Y = pos.Y,
+                    Width = 300,
+                    Height = 300
+                })));
+       
+                //rect.Background = new SolidColorBrush(Colors.Blue);
+                vm.AtomViewList.Add(rect);
 
             }
 
