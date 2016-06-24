@@ -281,6 +281,10 @@
     </Compile>
     <Compile Include="Components\Tools\ToolLinkViewModel.cs" />
     <Compile Include="Components\Tools\ToolModel.cs" />
+    <Compile Include="Components\Tools\ToolView.xaml.cs">
+      <DependentUpon>ToolView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Tools\ToolViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
     <Compile Include="Components\Viewers\Detail\Sizeable.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">
@@ -583,9 +587,6 @@
     <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\Statistics.cs" />
     <Compile Include="Util\Telemetry.cs" />
-    <Compile Include="Util\TemporaryToolView.xaml.cs">
-      <DependentUpon>TemporaryToolView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Util\UITask.cs" />
     <Compile Include="Components\InqCanvas\InqCanvasViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoNodeViewModel.cs" />
@@ -763,6 +764,7 @@
     <Content Include="Assets\star-xxl.png" />
     <Content Include="Assets\star_icon.png" />
     <Content Include="Assets\StoreLogo.png" />
+    <Content Include="Assets\tool_icon.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\wordIcon.png" />
     <Content Include="Components\Misc\icon_folder.png" />
@@ -820,6 +822,10 @@
     <Page Include="Components\Tools\ToolLinkView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Tools\ToolView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Viewers\Detail\DetailViewerView.xaml">
       <SubType>Designer</SubType>
@@ -1107,10 +1113,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\WaitingRoom\WaitingRoomView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Util\TemporaryToolView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
