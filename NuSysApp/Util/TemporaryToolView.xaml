@@ -1,5 +1,5 @@
 ﻿<local:AnimatableUserControl
-    x:Class="NuSysApp.Util.TemporaryToolView"
+    x:Class="NuSysApp.TemporaryToolView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:NuSysApp"
@@ -18,7 +18,7 @@
         <local:NodeTemplate x:Name="nodeTpl" Background="{StaticResource color6}" BorderBrush="Transparent">
             <local:NodeTemplate.SubMenu>
                 <StackPanel Orientation="Vertical">
-                    <Button Margin="0,2,0,2" x:Name="Delete" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
+                    <Button Margin="0,2,0,2" x:Name="Delete" Style="{StaticResource NodeSubMenuItem}"  Click="Delete_Click" Background="{StaticResource color2}">
                         <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
                     </Button>
                 </StackPanel>

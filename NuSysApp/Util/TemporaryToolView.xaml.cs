@@ -19,7 +19,7 @@ using NuSysApp.Viewers;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace NuSysApp.Util
+namespace NuSysApp
 {
 
     /// <summary>
@@ -38,7 +38,7 @@ namespace NuSysApp.Util
             Filters = new ObservableCollection<ToolModel.FilterTitle>()
             { ToolModel.FilterTitle.Type, ToolModel.FilterTitle.Title,  ToolModel.FilterTitle.Creator,  ToolModel.FilterTitle.Date,  ToolModel.FilterTitle.MetadataKeys,  ToolModel.FilterTitle.MetadataValues };
             this.InitializeComponent();
-            vm.Controller.SetSize(50, 50);
+            vm.Controller.SetSize(300, 300);
             vm.Controller.SetPosition(x,y);
             this.DataContext = vm;
             xFilterElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
@@ -66,13 +66,22 @@ namespace NuSysApp.Util
                 ToolViewModel viewmodel = new ToolViewModel(controller);
                 vm.AddChildFilter(controller);
                 TemporaryToolView view = new TemporaryToolView(viewmodel, r.X, r.Y);
+
+
+                var linkviewmodel = new ToolLinkViewModel(this, view);
+                var link = new ToolLinkView(linkviewmodel);
+
+                wvm.AtomViewList.Add(link);
                 wvm.AtomViewList.Add(view);
-                
+
+
+
             }
 
             ReleasePointerCaptures();
             (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta));
         }
+
 
         private async void BtnAddOnManipulationStarting(object sender, PointerRoutedEventArgs args)
         {
@@ -134,6 +143,13 @@ namespace NuSysApp.Util
             MetaDataToDisplay = (DataContext as ToolViewModel).PropertiesToDisplay;
             bottompanel.Children.Remove(xChooseFilter);
             xList.ItemsSource = MetaDataToDisplay;
+        }
+
+        private void Delete_Click(object sender, RoutedEventArgs e)
+        {
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            wvm.AtomViewList.Remove(this);
+
         }
     }
 }
