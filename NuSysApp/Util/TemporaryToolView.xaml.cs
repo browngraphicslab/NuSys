@@ -64,6 +64,7 @@ namespace NuSysApp.Util
                 ToolModel model = new ToolModel();
                 ToolController controller = new ToolController(model);
                 ToolViewModel viewmodel = new ToolViewModel(controller);
+                vm.AddChildFilter(controller);
                 TemporaryToolView view = new TemporaryToolView(viewmodel, r.X, r.Y);
                 wvm.AtomViewList.Add(view);
                 
@@ -115,18 +116,22 @@ namespace NuSysApp.Util
 
         private void XList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //let controller fire an event
+            if (xList.ItemsSource != Filters && xList.SelectedItems.Count == 1)
+            {
+                (DataContext as ToolViewModel).SetSelection((string)(xList.SelectedItems[0]));
+            }
         }
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            MetaDataToDisplay = (DataContext as ToolViewModel).PropertiesToDisplay;
             ToolModel.FilterTitle selection = (ToolModel.FilterTitle)(xList.SelectedItems[0]);
             var toolViewModel = DataContext as ToolViewModel;
             if (toolViewModel != null)
             {
                 toolViewModel.Filter = selection;
             }
+            toolViewModel.reloadPropertiesToDisplay();
+            MetaDataToDisplay = (DataContext as ToolViewModel).PropertiesToDisplay;
             bottompanel.Children.Remove(xChooseFilter);
             xList.ItemsSource = MetaDataToDisplay;
         }

@@ -28,21 +28,17 @@ namespace NuSysApp
 
         public ToolModel.FilterTitle Filter { get { return _controller.Model.Filter;}  set { _controller.SetFilter(value);} }
 
-        public void CreateNewToolWindow(Canvas canvas, double x, double y)
+        public void AddChildFilter(ToolController controller)
         {
-            ToolModel model = new ToolModel();
-            ToolController controller = new ToolController(model);
-            controller.AddParent(controller);
-            ToolViewModel viewmodel = new ToolViewModel(controller);
-            TemporaryToolView view = new TemporaryToolView(viewmodel, x, y);
-            canvas.Children.Add(view);
+            controller.AddParent(_controller);
             
         }
 
-        public ObservableCollection<string> PropertiesToDisplay
+        public void reloadPropertiesToDisplay()
         {
-            get { return new ObservableCollection<string>(_controller.GetAllProperties()); }
-            set { PropertiesToDisplay = value; }
+            PropertiesToDisplay = new ObservableCollection<string>(_controller.GetAllProperties());
         }
+
+        public ObservableCollection<string> PropertiesToDisplay { get; set; }
     }
 }
