@@ -68,8 +68,13 @@ namespace NuSysApp
                 {
                     var first = hitsStart.First() as TemporaryToolView;
 
+                    var linkviewmodel = new ToolLinkViewModel(this, first);
+                    var link = new ToolLinkView(linkviewmodel);
+                    Canvas.SetZIndex(link, Canvas.GetZIndex(this) - 1);
 
+                    wvm.AtomViewList.Add(link);
 
+                    //TODO: set parent and stuff
                 }
                 else
                 {
