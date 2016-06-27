@@ -45,16 +45,18 @@ namespace NuSysApp
             xFilterElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             xFilterElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
             vm.PropertiesToDisplayChanged += Vm_PropertiesToDisplayChanged;
+
+            Binding b = new Binding();
+            b.Path = new PropertyPath("PropertiesToDisplay");
+            xPropertiesList.SetBinding(ListBox.ItemsSourceProperty, b);
+
         }
 
         private void Vm_PropertiesToDisplayChanged(string selection)
         {
             if ((DataContext as ToolViewModel).Selection != null && xPropertiesList.SelectedItems.Count == 0)
             {
-                xPropertiesList.SelectedIndex = 1;
-                //xPropertiesList.
-                //xPropertiesList.SelectedItem = (DataContext as ToolViewModel).Selection;
-                //xPropertiesList.SelectedIndex = 1;
+                xPropertiesList.SelectedItem = (DataContext as ToolViewModel).Selection;
             }
             
         }
@@ -180,6 +182,7 @@ namespace NuSysApp
         private void XPropertiesList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             
+
             if (xPropertiesList.SelectedItems.Count == 1)
             {
                 (DataContext as ToolViewModel).Selection  = ((string)(xPropertiesList.SelectedItems[0]));
@@ -189,6 +192,26 @@ namespace NuSysApp
         private void XUniqueButton_OnChecked(object sender, RoutedEventArgs e)
         {
             //PropertiesToDisplay = (DataContext as ToolViewModel).PropertiesToDisplay;
+            Binding b = new Binding();
+            b.Path = new PropertyPath("PropertiesToDisplayUnique");
+            xPropertiesList.SetBinding(ListBox.ItemsSourceProperty, b);
+
+            if ((DataContext as ToolViewModel).Selection != null && xPropertiesList.SelectedItems.Count == 0)
+            {
+                xPropertiesList.SelectedItem = (DataContext as ToolViewModel).Selection;
+            }
+        }
+
+        private void XUniqueButton_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            Binding b = new Binding();
+            b.Path = new PropertyPath("PropertiesToDisplay");
+            xPropertiesList.SetBinding(ListBox.ItemsSourceProperty, b);
+
+            if ((DataContext as ToolViewModel).Selection != null && xPropertiesList.SelectedItems.Count == 0)
+            {
+                xPropertiesList.SelectedItem = (DataContext as ToolViewModel).Selection;
+            }
         }
     }
 }

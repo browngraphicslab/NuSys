@@ -19,6 +19,7 @@ namespace NuSysApp
             _controller = toolController;
             _controller.LibraryIdsChanged += ControllerOnLibraryIdsChanged;
             PropertiesToDisplay = new ObservableCollection<string>();
+            PropertiesToDisplayUnique = new ObservableCollection<string>();
         }
 
         private void ControllerOnLibraryIdsChanged(object sender, HashSet<string> libraryIds)
@@ -48,13 +49,22 @@ namespace NuSysApp
         public void reloadPropertiesToDisplay()
         {
             var temp = new ObservableCollection<string>(_controller.GetAllProperties());
+            HashSet<string> hs = new HashSet<string>();
             PropertiesToDisplay.Clear();
+            PropertiesToDisplayUnique.Clear();
             foreach (var item in temp)
             {
                 PropertiesToDisplay.Add(item);
+                if (!hs.Contains(item))
+                {
+                    hs.Add(item);
+                    PropertiesToDisplayUnique.Add(item);
+                }
             }
         }
 
         public ObservableCollection<string> PropertiesToDisplay { get; set; }
+
+        public ObservableCollection<string> PropertiesToDisplayUnique { get; set; }
     }
 }
