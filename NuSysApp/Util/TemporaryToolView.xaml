@@ -29,19 +29,27 @@
                 <TextBlock x:Name="xTitle" Text="Filter Type" Height="35" Grid.Row="0" ManipulationMode="All" ManipulationStarted="UIElement_OnManipulationStarted" ManipulationDelta="Canvas_OnManipulationDelta"/>
                 <ListBox x:Name="xPropertiesList" SelectionChanged="XPropertiesList_OnSelectionChanged"  Height="200" Grid.Row="1" Width="200" Background="AliceBlue" SelectionMode="Single" PointerPressed="xList_PointerPressed" ManipulationMode="All" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta"/>
 
-                <ListBox x:Name="xFilterList"  Height="200" Grid.Row="1" Width="200" Background="AliceBlue" ItemsSource="{x:Bind Filters}" SelectionMode="Single" PointerPressed="xList_PointerPressed" ManipulationMode="All" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta"/>
+                <ListBox x:Name="xFilterList" SelectionChanged="XFilterList_OnSelectionChanged" Height="200" Grid.Row="1" Width="200" Background="AliceBlue" ItemsSource="{x:Bind Filters}" SelectionMode="Single" PointerPressed="xList_PointerPressed" ManipulationMode="All" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta"/>
                 <StackPanel Name ="bottompanel" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center" ManipulationMode="All" ManipulationStarted="UIElement_OnManipulationStarted" ManipulationDelta="Canvas_OnManipulationDelta">
-                    <TextBlock Text="Unique" Margin="10,0,0,0"/>
-                    <ToggleButton x:Name="xUniqueButton" Checked="XUniqueButton_OnChecked" Unchecked="XUniqueButton_OnUnchecked" Margin="20,0,0,0"/>
-                    <Button Name="xChooseFilter" Click="ButtonBase_OnClick" Margin="30,0,0,0"></Button>
+                    <TextBlock x:Name="xUniqueText" Visibility ="Collapsed" Text="Unique" Margin="10,0,0,0"/>
+                    <ToggleButton Visibility ="Collapsed" x:Name="xUniqueButton" Checked="XUniqueButton_OnChecked" Unchecked="XUniqueButton_OnUnchecked" Margin="20,0,0,0"/>
                 </StackPanel>
             </Grid>
-            <Button x:Name="xFilterElement" Grid.Row="2" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Center" ManipulationDelta="XFilterElement_OnManipulationDelta">
-                <StackPanel>
-                    <Image Source="ms-appx:///Assets/icon_duplicate.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                    <TextBlock Text="Filter" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
-                </StackPanel>
-            </Button>
+            <StackPanel Grid.Row="2" Orientation="Horizontal">
+                <Button x:Name="xFilterElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Center" ManipulationDelta="XFilterElement_OnManipulationDelta">
+                    <StackPanel>
+                        <Image Source="ms-appx:///Assets/icon_duplicate.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                        <TextBlock Text="Filter" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="xCollectionElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Center" ManipulationDelta="XFilterElement_OnManipulationDelta">
+                    <StackPanel>
+                        <Image Source="ms-appx:///Assets/icon_duplicate.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                        <TextBlock Text="Collection" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+            
         </Grid>
 
     </Canvas>

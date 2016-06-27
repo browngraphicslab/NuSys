@@ -31,8 +31,8 @@ namespace NuSysApp
         //public ObservableCollection<string> PropertiesToDisplay { get; set; }
 
         private Image _dragItem;
-        private enum DragMode { Filter };
-        private DragMode _currenDragMode = DragMode.Filter;
+        private enum DragMode { Filter, Collection };
+        private DragMode _currentDragMode = DragMode.Filter;
         public TemporaryToolView(ToolViewModel vm, double x, double y)
         {
             _dragItem = new Image();
@@ -44,6 +44,8 @@ namespace NuSysApp
             this.DataContext = vm;
             xFilterElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             xFilterElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
+            xCollectionElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
+            xCollectionElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
             vm.PropertiesToDisplayChanged += Vm_PropertiesToDisplayChanged;
 
             Binding b = new Binding();
@@ -65,7 +67,6 @@ namespace NuSysApp
         {
             xFilterElement.PointerPressed -= BtnAddOnManipulationStarting;
             xFilterElement.PointerReleased -= BtnAddOnManipulationCompleted;
-            xChooseFilter.Click -= ButtonBase_OnClick;
             xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
             xUniqueButton.Checked -= XUniqueButton_OnChecked;
             (DataContext as ToolViewModel).PropertiesToDisplayChanged -= Vm_PropertiesToDisplayChanged;
@@ -82,23 +83,41 @@ namespace NuSysApp
             var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(p.X, p.Y, 300, 300));
             var send = (FrameworkElement)sender;
 
-            if (_currenDragMode == DragMode.Filter)
+            if (_currentDragMode == DragMode.Filter)
             {
+                var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
+                hitsStart = hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList();
+                if (hitsStart.Any())
+                {
+                    var first = hitsStart.First() as TemporaryToolView;
+                    var linkviewmodel = new ToolLinkViewModel(this, first);
+                    var link = new ToolLinkView(linkviewmodel);
+                    Canvas.SetZIndex(link, Canvas.GetZIndex(this) - 1);
+                    wvm.AtomViewList.Add(link);
+                    (first.DataContext as ToolViewModel).Controller.AddParent((DataContext as ToolViewModel).Controller);
+                }
+                else
+                {
+                    var vm = (ToolViewModel)DataContext;
 
-                var vm = (ToolViewModel)DataContext;
+                    ToolModel model = new ToolModel();
+                    ToolController controller = new ToolController(model);
+                    vm.AddChildFilter(controller);
+                    ToolViewModel viewmodel = new ToolViewModel(controller);
+                    TemporaryToolView view = new TemporaryToolView(viewmodel, r.X, r.Y);
+                    var linkviewmodel = new ToolLinkViewModel(this, view);
+                    var link = new ToolLinkView(linkviewmodel);
+                    Canvas.SetZIndex(link, Canvas.GetZIndex(this) - 1);
 
-                ToolModel model = new ToolModel();
-                ToolController controller = new ToolController(model);
-                vm.AddChildFilter(controller);
-                ToolViewModel viewmodel = new ToolViewModel(controller);
-                TemporaryToolView view = new TemporaryToolView(viewmodel, r.X, r.Y);
-                var linkviewmodel = new ToolLinkViewModel(this, view);
-                var link = new ToolLinkView(linkviewmodel);
-                Canvas.SetZIndex(link, Canvas.GetZIndex(this) - 1);
+                    wvm.AtomViewList.Add(link);
+                    wvm.AtomViewList.Add(view);
+                }
+                
 
-                wvm.AtomViewList.Add(link);
-                wvm.AtomViewList.Add(view);
-
+            }
+            else if (_currentDragMode == DragMode.Collection)
+            {
+                //TODO:Create new collection here
             }
 
             ReleasePointerCaptures();
@@ -120,7 +139,11 @@ namespace NuSysApp
 
             if (sender == xFilterElement)
             {
-                _currenDragMode = DragMode.Filter;
+                _currentDragMode = DragMode.Filter;
+            }
+            else if (sender == xCollectionElement)
+            {
+                _currentDragMode = DragMode.Collection;
             }
 
 
@@ -151,27 +174,7 @@ namespace NuSysApp
         }
 
 
-        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (xFilterList.SelectedItems.Count() < 1)
-            {
-                return;
-            }
-            ToolModel.FilterTitle selection = (ToolModel.FilterTitle)(xFilterList.SelectedItems[0]);
-            var toolViewModel = DataContext as ToolViewModel;
-            if (toolViewModel != null)
-            {
-                toolViewModel.Filter = selection;
-            }
-            toolViewModel.reloadPropertiesToDisplay();
-            //do i need this
-            //PropertiesToDisplay = (DataContext as ToolViewModel).PropertiesToDisplay;
-            xPropertiesList.ItemsSource = (DataContext as ToolViewModel).PropertiesToDisplay;
-            
-            bottompanel.Children.Remove(xChooseFilter);
-            xGrid.Children.Remove(xFilterList);
-            xTitle.Text = selection.ToString();
-        }
+
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
@@ -262,5 +265,29 @@ namespace NuSysApp
                 xPropertiesList.SelectedItem = (DataContext as ToolViewModel).Selection;
             }
         }
+
+        private void XFilterList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (xFilterList.SelectedItems.Count() < 1)
+            {
+                return;
+            }
+            ToolModel.FilterTitle selection = (ToolModel.FilterTitle)(xFilterList.SelectedItems[0]);
+            var toolViewModel = DataContext as ToolViewModel;
+            if (toolViewModel != null)
+            {
+                toolViewModel.Filter = selection;
+            }
+            toolViewModel.reloadPropertiesToDisplay();
+            //do i need this
+            //PropertiesToDisplay = (DataContext as ToolViewModel).PropertiesToDisplay;
+            xPropertiesList.ItemsSource = (DataContext as ToolViewModel).PropertiesToDisplay;
+
+            xGrid.Children.Remove(xFilterList);
+            xTitle.Text = selection.ToString();
+            xUniqueButton.Visibility = Visibility.Visible;
+            xUniqueText.Visibility = Visibility.Visible;
+        }
     }
+    
 }
