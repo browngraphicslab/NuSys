@@ -80,6 +80,9 @@ namespace NuSysApp.Util
             if (xCanvas.Children.Contains(_dragItem))
                 xCanvas.Children.Remove(_dragItem);
 
+            var button = (Button)sender;
+            button.Focus(FocusState.Pointer);
+
             CapturePointer(args.Pointer);
 
             if (sender == xFilterElement)
@@ -134,11 +137,16 @@ namespace NuSysApp.Util
 
         private void UIElement_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
+
+
             e.Handled = true;
+
+          
         }
 
         private void Canvas_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+
             var vm = DataContext as ToolViewModel;
             if (vm != null)
             {

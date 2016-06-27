@@ -14,8 +14,8 @@
     RenderTransform="{Binding Transform}"
     IsDoubleTapEnabled="True">
 
-    <Canvas x:Name="xCanvas" ManipulationStarted="UIElement_OnManipulationStarted" ManipulationDelta="Canvas_OnManipulationDelta">
-        <Grid ManipulationMode="All" ManipulationStarted="UIElement_OnManipulationStarted" ManipulationDelta="Canvas_OnManipulationDelta">
+    <Canvas x:Name="xCanvas">
+        <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -26,15 +26,15 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <TextBlock x:Name="xTitle" Text="Filter Type" Height="35" Grid.Row="0"/>
-            <ListBox x:Name="xList" SelectionChanged="XList_OnSelectionChanged"  Height="200" Grid.Row="1" Width="200" Background="AliceBlue" ItemsSource="{x:Bind Filters}" SelectionMode="Single" ManipulationMode="All" ManipulationDelta="Grid_OnManipulationDelta"/>
-            <StackPanel Name ="bottompanel" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center">
+                <TextBlock x:Name="xTitle" Text="Filter Type" Height="35" Grid.Row="0" ManipulationMode="All" ManipulationStarted="UIElement_OnManipulationStarted" ManipulationDelta="Canvas_OnManipulationDelta"/>
+            <ListBox x:Name="xList" SelectionChanged="XList_OnSelectionChanged"  Height="200" Grid.Row="1" Width="200" Background="AliceBlue" ItemsSource="{x:Bind Filters}" SelectionMode="Single" ManipulationMode="All" ManipulationStarted="UIElement_OnManipulationStarted" ManipulationDelta="Canvas_OnManipulationDelta"/>
+                <StackPanel Name ="bottompanel" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center" ManipulationMode="All" ManipulationStarted="UIElement_OnManipulationStarted" ManipulationDelta="Canvas_OnManipulationDelta">
                 <TextBlock Text="Unique" Margin="10,0,0,0"/>
                 <ToggleButton Margin="20,0,0,0"/>
                 <Button Name="xChooseFilter" Click="ButtonBase_OnClick" Margin="30,0,0,0"></Button>
             </StackPanel>
         </Grid>
-        <Button x:Name="xFilterElement" Grid.Row="2" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" HorizontalAlignment="Center" ManipulationDelta="XFilterElement_OnManipulationDelta">
+            <Button x:Name="xFilterElement" Grid.Row="2" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Center" ManipulationDelta="XFilterElement_OnManipulationDelta">
             <StackPanel>
                 <Image Source="ms-appx:///Assets/icon_duplicate.png" Height="28" Width="28" Stretch="Uniform"></Image>
                 <TextBlock Text="Filter" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
