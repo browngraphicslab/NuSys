@@ -63,13 +63,7 @@ namespace NuSysApp
                 {
                     //var id = result.ContentID;
                     //if (id != null)
-                    if(!string.IsNullOrEmpty(result))
-                    {
-                        var controller = SessionController.Instance.ContentController.GetLibraryElementController(result);
-                        var model = controller.LibraryElementModel;
-                        var searchResult = new SearchResult(result,model.Type,result);            
-                        PageElements.Add(new SearchResultTemplate(searchResult));
-                    }
+                    PageElements.Add(new SearchResultTemplate(result));
 
                 }
             }

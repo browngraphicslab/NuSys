@@ -330,7 +330,7 @@ namespace NuSysApp
             return await _serverClient.SearchOverLibraryElements(searchText);
         }
 
-        public async Task<HashSet<string>> AdvancedSearchOverLibraryElements(Query searchQuery)
+        public async Task<List<SearchResult>> AdvancedSearchOverLibraryElements(Query searchQuery)
         {
             return await _serverClient.AdvancedSearchOverLibraryElements(searchQuery);
         }

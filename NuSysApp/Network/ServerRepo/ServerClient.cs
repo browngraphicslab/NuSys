@@ -450,23 +450,27 @@ namespace NuSysApp
             });
         }
 
-        public async Task<HashSet<string>> AdvancedSearchOverLibraryElements(Query searchQuery)
+        public async Task<List<SearchResult>> AdvancedSearchOverLibraryElements(Query searchQuery)
         {
             return await Task.Run(async delegate
             {
                 try
                 {
-                    HttpClient client = new HttpClient();
-                    var response = await client.GetAsync(GetUri("search/" + searchQuery.SearchString));
-
-                    string data;
-                    using (var responseContent = response.Content)
-                    {
-                        data = await responseContent.ReadAsStringAsync();
-                    }
                     JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                    var list = JsonConvert.DeserializeObject<HashSet<string>>(data, settings);
-                    return list;
+                    var dict = new Dictionary<string, object>();
+                    dict["query"] = JsonConvert.SerializeObject(searchQuery,settings);
+                    var data = await SendDictionaryToServer("advancedsearch", dict);
+                    try
+                    {
+                        var list = JsonConvert.DeserializeObject<List<SearchResult>>(data);
+                        return list;
+                    }
+                    catch (Exception deserializeException)
+                    {
+                        Debug.WriteLine("error parsing list returned from server for advacned search");
+                    }
+                    return null;
+
                 }
                 catch (Exception e)
                 {

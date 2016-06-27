@@ -8,22 +8,36 @@ namespace NuSysApp
 {
     public class SearchResult
     {
+        public enum ResultType
+        {
+            Metadata,
+            Title,
+            Type,
+            Creator,
+            Region,
+            Timestamp,
+            Data
+        }
         // Properties Returned By Server
         public string ContentID { get; set; }
-        public ElementType ElementType { get; set; }
+        public ResultType Result { get; set; }
         public string ExtraInfo { get; set; }
-
-        public SearchResult(string contentId, ElementType type)
+        public SearchResult(string contentId, ResultType type)
         {
             ContentID = contentId;
-            ElementType = type;
+            Result = type;
             ExtraInfo = string.Empty;
         }
 
-        public SearchResult(string contentId, ElementType type, string info) : this(contentId, type)
+        public SearchResult()
+        {
+        }
+
+        public SearchResult(string contentId, ResultType type, string info) : this(contentId, type)
         {
             ExtraInfo = info;
         }
+
 
         //todo add methods for displaying the result based on given info
     }
