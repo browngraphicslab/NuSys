@@ -117,7 +117,49 @@ namespace NuSysApp
             }
             else if (_currentDragMode == DragMode.Collection)
             {
-                //TODO:Create new collection here
+                var vm = DataContext as ToolViewModel;
+                if (vm != null)
+                {
+                    await Task.Run(async delegate
+                    {
+                        var collectionID = SessionController.Instance.GenerateId();
+                        var request = new CreateNewLibraryElementRequest(collectionID, "", ElementType.Collection,
+                            "Tool-Generated Collection");
+                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                        var m = new Message();
+                        m["width"] = "300";
+                        m["height"] = "300";
+                        m["nodeType"] = ElementType.Collection.ToString();
+                        m["x"] = r.X;
+                        m["y"] = r.Y;
+                        m["contentId"] = collectionID;
+                        m["autoCreate"] = true;
+                        m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Model.LibraryId;
+                        var collRequest = new NewElementRequest(m);
+                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(collRequest);
+                        foreach (var id in vm.Controller.Model.LibraryIds)
+                        {
+                            var lem = SessionController.Instance.ContentController.GetContent(id);
+                            if (lem == null)
+                            {
+                                continue;
+                            }
+                            var dict = new Message();
+                            dict["title"] = lem.Title;
+                            dict["width"] = "300";
+                            dict["height"] = "300";
+                            dict["nodeType"] = lem.Type.ToString();
+                            dict["x"] = "50000";
+                            dict["y"] = "50000";
+                            dict["contentId"] = lem.LibraryElementId;
+                            dict["autoCreate"] = true;
+                            dict["creator"] = collectionID;
+                            var elementRequest = new NewElementRequest(dict);
+                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(elementRequest);
+                        }
+
+                    });
+                }
             }
 
             ReleasePointerCaptures();
