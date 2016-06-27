@@ -28,7 +28,8 @@ namespace NuSysApp
     public sealed partial class TemporaryToolView : AnimatableUserControl
     {
         public ObservableCollection<ToolModel.FilterTitle> Filters { get; set; }
-        public ObservableCollection<string> MetaDataToDisplay { get; set; }
+        //public ObservableCollection<string> PropertiesToDisplay { get; set; }
+
         private Image _dragItem;
         private enum DragMode { Filter };
         private DragMode _currenDragMode = DragMode.Filter;
@@ -43,6 +44,29 @@ namespace NuSysApp
             this.DataContext = vm;
             xFilterElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             xFilterElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
+            vm.PropertiesToDisplayChanged += Vm_PropertiesToDisplayChanged;
+        }
+
+        private void Vm_PropertiesToDisplayChanged(string selection)
+        {
+            if ((DataContext as ToolViewModel).Selection != null && xPropertiesList.SelectedItems.Count == 0)
+            {
+                xPropertiesList.SelectedIndex = 1;
+                //xPropertiesList.
+                //xPropertiesList.SelectedItem = (DataContext as ToolViewModel).Selection;
+                //xPropertiesList.SelectedIndex = 1;
+            }
+            
+        }
+
+        public void Dispose()
+        {
+            xFilterElement.PointerPressed -= BtnAddOnManipulationStarting;
+            xFilterElement.PointerReleased -= BtnAddOnManipulationCompleted;
+            xChooseFilter.Click -= ButtonBase_OnClick;
+            xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
+            xUniqueButton.Checked -= XUniqueButton_OnChecked;
+            (DataContext as ToolViewModel).PropertiesToDisplayChanged -= Vm_PropertiesToDisplayChanged;
         }
 
 
@@ -122,31 +146,28 @@ namespace NuSysApp
             t.TranslateY = p.Y - _dragItem.ActualHeight / 2;
 
         }
-
-        private void XList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (xList.ItemsSource != Filters && xList.SelectedItems.Count == 1)
-            {
-                (DataContext as ToolViewModel).SetSelection((string)(xList.SelectedItems[0]));
-            }
-        }
+        
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            if (xList.SelectedItems.Count() < 1)
+            if (xFilterList.SelectedItems.Count() < 1)
             {
                 return;
             }
-            ToolModel.FilterTitle selection = (ToolModel.FilterTitle)(xList.SelectedItems[0]);
+            ToolModel.FilterTitle selection = (ToolModel.FilterTitle)(xFilterList.SelectedItems[0]);
             var toolViewModel = DataContext as ToolViewModel;
             if (toolViewModel != null)
             {
                 toolViewModel.Filter = selection;
             }
             toolViewModel.reloadPropertiesToDisplay();
-            MetaDataToDisplay = (DataContext as ToolViewModel).PropertiesToDisplay;
+            //do i need this
+            //PropertiesToDisplay = (DataContext as ToolViewModel).PropertiesToDisplay;
+            xPropertiesList.ItemsSource = (DataContext as ToolViewModel).PropertiesToDisplay;
+            
             bottompanel.Children.Remove(xChooseFilter);
-            xList.ItemsSource = MetaDataToDisplay;
+            xGrid.Children.Remove(xFilterList);
+            xTitle.Text = selection.ToString();
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)
@@ -154,6 +175,20 @@ namespace NuSysApp
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
             wvm.AtomViewList.Remove(this);
 
+        }
+
+        private void XPropertiesList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            
+            if (xPropertiesList.SelectedItems.Count == 1)
+            {
+                (DataContext as ToolViewModel).Selection  = ((string)(xPropertiesList.SelectedItems[0]));
+            }
+        }
+
+        private void XUniqueButton_OnChecked(object sender, RoutedEventArgs e)
+        {
+            //PropertiesToDisplay = (DataContext as ToolViewModel).PropertiesToDisplay;
         }
     }
 }
