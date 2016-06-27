@@ -50,8 +50,11 @@ namespace NuSysApp
 
             var vm = (ToolLinkViewModel)this.DataContext;
 
-            var anchor1 = new Point(vm.InToolElementController.Model.X + vm.InToolElementController.Model.Width / 2, vm.InToolElementController.Model.Y + vm.InToolElementController.Model.Height / 2);
-            var anchor2 = new Point(vm.OutToolElementController.Model.X + vm.OutToolElementController.Model.Width / 2, vm.OutToolElementController.Model.Y + vm.OutToolElementController.Model.Height / 2);
+            var inToolVM = vm.InTool.DataContext as ToolViewModel;
+            var outToolVM = vm.OutTool.DataContext as ToolViewModel;
+
+            var anchor1 = new Point(inToolVM.X + inToolVM.Width / 2, inToolVM.Y + inToolVM.Height / 2);
+            var anchor2 = new Point(outToolVM.X + outToolVM.Width / 2, outToolVM.Y + outToolVM.Height / 2);
 
             var distanceX = anchor1.X - anchor2.X;
             var distanceY = anchor1.Y - anchor2.Y;
@@ -66,9 +69,13 @@ namespace NuSysApp
 
         private void UpdateEndPoints()
         {
-            var vm = (ToolLinkViewModel) this.DataContext;
-            var anchor1 = new Point(vm.InToolElementController.Model.X + vm.InToolElementController.Model.Width / 2, vm.InToolElementController.Model.Y + vm.InToolElementController.Model.Height / 2);
-            var anchor2 = new Point(vm.OutToolElementController.Model.X + vm.OutToolElementController.Model.Width / 2, vm.OutToolElementController.Model.Y + vm.OutToolElementController.Model.Height / 2);
+            var vm = (ToolLinkViewModel)this.DataContext;
+
+            var inToolVM = vm.InTool.DataContext as ToolViewModel;
+            var outToolVM = vm.OutTool.DataContext as ToolViewModel;
+
+            var anchor1 = new Point(inToolVM.X + inToolVM.Width / 2, inToolVM.Y + inToolVM.Height / 2);
+            var anchor2 = new Point(outToolVM.X + outToolVM.Width / 2, outToolVM.Y + outToolVM.Height / 2);
 
 
             pathfigure.StartPoint = anchor1;
@@ -91,4 +98,3 @@ namespace NuSysApp
         }
     }
 }
-    

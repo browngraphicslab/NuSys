@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class ToolModel : ElementModel
+    public class ToolModel
     {
         public enum FilterTitle
         {
@@ -22,7 +22,9 @@ namespace NuSysApp
         public string Selection { get; private set; }
         public HashSet<string> ParentIds { get; private set; }
 
-        public ToolModel() : base(SessionController.Instance.GenerateId())
+        public string Id { get; set; }
+
+        public ToolModel()
         {
             Id = SessionController.Instance.GenerateId();
             ParentIds = new HashSet<string>();

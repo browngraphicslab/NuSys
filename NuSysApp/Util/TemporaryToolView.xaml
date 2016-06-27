@@ -15,47 +15,36 @@
     IsDoubleTapEnabled="True">
 
     <Canvas x:Name="xCanvas">
-        <local:NodeTemplate x:Name="nodeTpl" Background="{StaticResource color6}" BorderBrush="Transparent">
-            <local:NodeTemplate.SubMenu>
-                <StackPanel Orientation="Vertical">
-                    <Button Margin="0,2,0,2" x:Name="Delete" Style="{StaticResource NodeSubMenuItem}"  Click="Delete_Click" Background="{StaticResource color2}">
-                        <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
-                    </Button>
-                </StackPanel>
-            </local:NodeTemplate.SubMenu>
-            <local:NodeTemplate.Inner>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid x:Name ="xGrid" Grid.Row ="0" Background="LightCyan">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <TextBlock x:Name="xTitle" Text="Filter Type" Height="35" Grid.Row="0"/>
-                        <ListBox x:Name="xPropertiesList" SelectionChanged="XPropertiesList_OnSelectionChanged" Height="190" Grid.Row="1" Background="AliceBlue" ItemsSource="{Binding PropertiesToDisplay}" SelectionMode="Single"/>
-                        <ListBox x:Name="xFilterList"  Height="190" Grid.Row="1" Background="AliceBlue" ItemsSource="{x:Bind Filters}" SelectionMode="Single"/>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid x:Name ="xGrid" Grid.Row ="0" Background="LightCyan">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock x:Name="xTitle" Text="Filter Type" Height="35" Grid.Row="0" ManipulationMode="All" ManipulationStarted="UIElement_OnManipulationStarted" ManipulationDelta="Canvas_OnManipulationDelta"/>
+                <ListBox x:Name="xPropertiesList" SelectionChanged="XPropertiesList_OnSelectionChanged"  Height="200" Grid.Row="1" Width="200" Background="AliceBlue" SelectionMode="Single" PointerPressed="xList_PointerPressed" ManipulationMode="All" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta"/>
 
-                        <StackPanel Name ="bottompanel" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center">
-                            <TextBlock Text="Unique" Margin="10,0,0,0"/>
-                            <ToggleButton x:Name ="xUniqueButton" Unchecked="XUniqueButton_OnUnchecked" Checked="XUniqueButton_OnChecked" Margin="20,0,0,0"/>
-                            <Button Name="xChooseFilter" Click="ButtonBase_OnClick" Margin="30,0,0,0"></Button>
-                        </StackPanel>
-                    </Grid>
-                    <Button x:Name="xFilterElement" Grid.Row="2" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" HorizontalAlignment="Center">
-                        <StackPanel>
-                            <Image Source="ms-appx:///Assets/icon_duplicate.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                            <TextBlock Text="Filter" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
-                        </StackPanel>
-                    </Button>
-                </Grid>
-            </local:NodeTemplate.Inner>
-        </local:NodeTemplate>
+                <ListBox x:Name="xFilterList"  Height="200" Grid.Row="1" Width="200" Background="AliceBlue" ItemsSource="{x:Bind Filters}" SelectionMode="Single" PointerPressed="xList_PointerPressed" ManipulationMode="All" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta"/>
+                <StackPanel Name ="bottompanel" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center" ManipulationMode="All" ManipulationStarted="UIElement_OnManipulationStarted" ManipulationDelta="Canvas_OnManipulationDelta">
+                    <TextBlock Text="Unique" Margin="10,0,0,0"/>
+                    <ToggleButton x:Name="xUniqueButton" Checked="XUniqueButton_OnChecked" Unchecked="XUniqueButton_OnUnchecked" Margin="20,0,0,0"/>
+                    <Button Name="xChooseFilter" Click="ButtonBase_OnClick" Margin="30,0,0,0"></Button>
+                </StackPanel>
+            </Grid>
+            <Button x:Name="xFilterElement" Grid.Row="2" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Center" ManipulationDelta="XFilterElement_OnManipulationDelta">
+                <StackPanel>
+                    <Image Source="ms-appx:///Assets/icon_duplicate.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                    <TextBlock Text="Filter" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
+                </StackPanel>
+            </Button>
+        </Grid>
+
     </Canvas>
 </local:AnimatableUserControl>
-
 
 

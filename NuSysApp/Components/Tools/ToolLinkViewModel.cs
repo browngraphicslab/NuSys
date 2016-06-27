@@ -30,14 +30,24 @@ namespace NuSysApp
             OutTool = outTool;
 
 
-            InToolElementController = ((ToolViewModel)inTool.DataContext).Controller;
-            OutToolElementController = ((ToolViewModel)outTool.DataContext).Controller;
+            InToolController = ((ToolViewModel)inTool.DataContext).Controller;
+            OutToolController = ((ToolViewModel)outTool.DataContext).Controller;
 
-            InToolElementController.PositionChanged += InElementControllerOnPositionChanged;
-            OutToolElementController.PositionChanged += InElementControllerOnPositionChanged;
-            InToolElementController.SizeChanged += OutElementControllerOnSizeChanged;
-            OutToolElementController.SizeChanged += OutElementControllerOnSizeChanged;
+            InToolController.LocationChanged += InToolController_LocationChanged; ;
+            OutToolController.LocationChanged += OutToolController_LocationChanged; ;
+            InToolController.SizeChanged += OutElementControllerOnSizeChanged;
+            OutToolController.SizeChanged += OutElementControllerOnSizeChanged;
 
+        }
+
+        private void OutToolController_LocationChanged(object sender, double x, double y)
+        {
+            RaisePropertyChanged("Anchor");
+        }
+
+        private void InToolController_LocationChanged(object sender, double x, double y)
+        {
+            RaisePropertyChanged("Anchor");
         }
 
         private void OutElementControllerOnSizeChanged(object source, double width, double height)

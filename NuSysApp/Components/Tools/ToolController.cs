@@ -8,22 +8,30 @@ using MyToolkit.Utilities;
 
 namespace NuSysApp
 {
-    public class ToolController : ElementController
+    public class ToolController
     {
         public static Dictionary<string, ToolController> ToolControllers = new Dictionary<string, ToolController>();
         public delegate void FilterChangedEventHandler(object sender, ToolModel.FilterTitle filter);
         public delegate void SelectionChangedEventHandler(object sender, string selection);
         public delegate void LibraryIdsChangedEventHandler(object sender, HashSet<string> libraryIds);
+        public delegate void LocationChangedEventHandler(object sender, double x, double y);
+        public delegate void SizeChangedEventHandler(object sender, double width, double height);
+
+
 
         public event FilterChangedEventHandler FilterChanged;
         public event SelectionChangedEventHandler SelectionChanged;
         public event LibraryIdsChangedEventHandler LibraryIdsChanged;
+        public event LocationChangedEventHandler LocationChanged;
+        public event SizeChangedEventHandler SizeChanged;
+
+
 
         public ToolModel Model { get;}
-        public ToolController(ElementModel model) : base(model)
+        public ToolController(ToolModel model)
         {
             Debug.Assert(model != null);
-            Model = model as ToolModel;
+            Model = model;
             ToolControllers.Add(model.Id, this);
             Model.SetLibraryIds(Filter(GetUpdatedDataList()));
         }
@@ -33,6 +41,12 @@ namespace NuSysApp
             Model.SetFilter(filter);
             FilterChanged?.Invoke(this,filter);
         }
+
+        public void SetSize(double width, double height)
+        {
+            SizeChanged?.Invoke(this, width, height);
+        }
+        
 
         public void UnSelect()
         {
@@ -225,6 +239,11 @@ namespace NuSysApp
             }
             return new HashSet<string>(list);
         }
+        public void SetLocation(double x, double y)
+        {
+            LocationChanged?.Invoke(this, x, y);
+        }
 
     }
+    
 }
