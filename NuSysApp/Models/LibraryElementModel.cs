@@ -45,7 +45,7 @@ namespace NuSysApp
             Regions = new HashSet<Region>();
             SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
         }
-        public async Task UnPack(Message message)
+        public virtual async Task UnPack(Message message)
         {
             if (message.ContainsKey("keywords"))
             {
@@ -60,5 +60,11 @@ namespace NuSysApp
         {
             Data = null;
         }
+        /*
+         * Trent, Help ME.!!!!! He's talking about bio. What did I do to deserve this. 
+         * Help me. He just won't stop. Dear god what have I done. Sahil save me.
+         * This is my life now. I will suffer every day. Is there no way to escape this hell?
+         * 
+         */
     }
 }

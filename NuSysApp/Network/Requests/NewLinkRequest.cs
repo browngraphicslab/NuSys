@@ -65,12 +65,13 @@ namespace NuSysApp
             var id = _message.GetString("id");
             var creator = _message.GetString("creator");
             //var contentId = _message.GetString("contentId");
-            if (SessionController.Instance.IdToControllers.ContainsKey(id1) && (SessionController.Instance.IdToControllers.ContainsKey(id2)))
+            if (SessionController.Instance.ContentController.ContainsAndLoaded(id1) &&
+                SessionController.Instance.ContentController.ContainsAndLoaded(id2))
             {
-                var link = new LinkModel(id);
+                var link = new LinkLibraryElementModel(id1, id2, id);
                 await link.UnPack(_message);
-                var linkController = new LinkElementController(link);
-                SessionController.Instance.IdToControllers[id] = linkController;
+                //var linkController = new LinkElementController(link);
+                //SessionController.Instance.IdToControllers[id] = linkController;
 
                 var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(creator);
                 parentCollectionLibraryElement.AddChild(id);

@@ -242,6 +242,9 @@
     <Compile Include="Components\InqCanvas\WetDryInkCanvas.cs" />
     <Compile Include="Components\ISelectable.cs" />
     <Compile Include="Components\Keywords\Keyword.cs" />
+    <Compile Include="Components\Links\LinkCircle.xaml.cs">
+      <DependentUpon>LinkCircle.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Links\PresentationLinkView.xaml.cs">
       <DependentUpon>PresentationLinkView.xaml</DependentUpon>
     </Compile>
@@ -283,11 +286,13 @@
     <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoMediaPlayer.xaml.cs">
       <DependentUpon>VideoMediaPlayer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controller\LinkController.cs" />
     <Compile Include="Controller\RectangleRegionController.cs" />
     <Compile Include="Controller\PdfRegionController.cs" />
     <Compile Include="Controller\RegionController.cs" />
     <Compile Include="Controller\RegionControllerFactory.cs" />
     <Compile Include="Converters\BoolToManipulationModeConverter.cs" />
+    <Compile Include="Models\LinkLibraryElementModel.cs" />
     <Compile Include="Models\Regions\PDFRegion.cs" />
     <Compile Include="Models\Regions\TimeRegionModel.cs" />
     <Compile Include="Components\Viewers\Detail\Regionable.cs" />
@@ -771,6 +776,10 @@
     <Page Include="Components\InqCanvas2\PhilInqCanvas.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Links\LinkCircle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Links\PresentationLinkView.xaml">
       <Generator>MSBuild:Compile</Generator>
