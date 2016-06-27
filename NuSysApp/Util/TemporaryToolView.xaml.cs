@@ -59,25 +59,39 @@ namespace NuSysApp
             if (_currenDragMode == DragMode.Filter)
             {
 
-                var vm = (ToolViewModel)DataContext;
 
-                ToolModel model = new ToolModel();
-                ToolController controller = new ToolController(model);
-                ToolViewModel viewmodel = new ToolViewModel(controller);
-                TemporaryToolView view = new TemporaryToolView(viewmodel, r.X, r.Y);
+                var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
+                hitsStart = hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList();
 
-                var linkviewmodel = new ToolLinkViewModel(this, view);
-                var link = new ToolLinkView(linkviewmodel);
-                Canvas.SetZIndex(link, Canvas.GetZIndex(this) - 1);
 
-                wvm.AtomViewList.Add(link);
-                wvm.AtomViewList.Add(view);
+                if (hitsStart.Any())
+                {
+                    var first = hitsStart.First() as TemporaryToolView;
 
+
+
+                }
+                else
+                {
+                    var vm = (ToolViewModel)DataContext;
+
+                    ToolModel model = new ToolModel();
+                    ToolController controller = new ToolController(model);
+                    ToolViewModel viewmodel = new ToolViewModel(controller);
+                    TemporaryToolView view = new TemporaryToolView(viewmodel, r.X, r.Y);
+
+                    var linkviewmodel = new ToolLinkViewModel(this, view);
+                    var link = new ToolLinkView(linkviewmodel);
+                    Canvas.SetZIndex(link, Canvas.GetZIndex(this) - 1);
+
+                    wvm.AtomViewList.Add(link);
+                    wvm.AtomViewList.Add(view);
+                }
+
+                ReleasePointerCaptures();
+                (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta));
+                args.Handled = true;
             }
-
-            ReleasePointerCaptures();
-            (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta));
-            args.Handled = true;
         }
 
         private async void BtnAddOnManipulationStarting(object sender, PointerRoutedEventArgs args)
