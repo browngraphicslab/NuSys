@@ -29,6 +29,7 @@ namespace NuSysApp
             Debug.Assert(model != null);
             Model = model;
             ToolControllers.Add(model.Id, this);
+            Model.SetLibraryIds(Filter(GetUpdatedDataList()));
         }
 
         public void SetFilter(ToolModel.FilterTitle filter)
@@ -46,12 +47,6 @@ namespace NuSysApp
         {
             Model.SetSelection(selection);
             SelectionChanged?.Invoke(this,selection);
-        }
-        public void MakeStartOfChain()
-        {
-            Debug.Assert(Model.ParentIds.Count == 0);
-            Model.SetLibraryIds(SessionController.Instance.ContentController.IdList);
-            LibraryIdsChanged?.Invoke(this, Model.LibraryIds);
         }
         public void AddParent(ToolController parentController)
         {
@@ -226,6 +221,10 @@ namespace NuSysApp
         private HashSet<string> GetUpdatedDataList()
         {
             var controllers = new List<ToolController>(Model.ParentIds.Select(item => ToolControllers.ContainsKey(item) ? ToolControllers[item] : null));
+            if (controllers.Count() == 0)
+            {
+                return SessionController.Instance.ContentController.IdList;
+            }
             var list = new List<string>();
             foreach (var enumerable in controllers.Select(controller => controller?.Model.LibraryIds))
             {

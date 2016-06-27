@@ -265,7 +265,6 @@ namespace NuSysApp
                 //})));
                 ToolModel model = new ToolModel();
                 ToolController controller = new ToolController(model);
-                controller.MakeStartOfChain();
                 ToolViewModel viewmodel = new ToolViewModel(controller);
                 TemporaryToolView view = new TemporaryToolView(viewmodel, pos.X, pos.Y);
                 //rect.Background = new SolidColorBrush(Colors.Blue);

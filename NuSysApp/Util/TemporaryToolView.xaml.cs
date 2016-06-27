@@ -150,5 +150,10 @@ namespace NuSysApp.Util
         {
             e.Handled = true;
         }
+
+        private void XFilterElement_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            e.Handled = true;
+        }
     }
 }
