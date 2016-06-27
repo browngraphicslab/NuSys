@@ -1,5 +1,5 @@
 ﻿<local:AnimatableUserControl
-    x:Class="NuSysApp.Util.TemporaryToolView"
+    x:Class="NuSysApp.TemporaryToolView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:NuSysApp"
@@ -27,7 +27,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
                 <TextBlock x:Name="xTitle" Text="Filter Type" Height="35" Grid.Row="0" ManipulationMode="All" ManipulationStarted="UIElement_OnManipulationStarted" ManipulationDelta="Canvas_OnManipulationDelta"/>
-            <ListBox x:Name="xList" SelectionChanged="XList_OnSelectionChanged"  Height="200" Grid.Row="1" Width="200" Background="AliceBlue" ItemsSource="{x:Bind Filters}" SelectionMode="Single" ManipulationMode="All" ManipulationStarted="UIElement_OnManipulationStarted" ManipulationDelta="Canvas_OnManipulationDelta"/>
+            <ListBox x:Name="xList" SelectionChanged="XList_OnSelectionChanged"  Height="200" Grid.Row="1" Width="200" Background="AliceBlue" ItemsSource="{x:Bind Filters}" SelectionMode="Single"/>
                 <StackPanel Name ="bottompanel" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center" ManipulationMode="All" ManipulationStarted="UIElement_OnManipulationStarted" ManipulationDelta="Canvas_OnManipulationDelta">
                 <TextBlock Text="Unique" Margin="10,0,0,0"/>
                 <ToggleButton Margin="20,0,0,0"/>

@@ -19,7 +19,7 @@ using NuSysApp.Viewers;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace NuSysApp.Util
+namespace NuSysApp
 {
 
     /// <summary>
@@ -65,8 +65,14 @@ namespace NuSysApp.Util
                 ToolController controller = new ToolController(model);
                 ToolViewModel viewmodel = new ToolViewModel(controller);
                 TemporaryToolView view = new TemporaryToolView(viewmodel, r.X, r.Y);
+
+                var linkviewmodel = new ToolLinkViewModel(this, view);
+                var link = new ToolLinkView(linkviewmodel);
+                Canvas.SetZIndex(link, Canvas.GetZIndex(this) - 1);
+
+                wvm.AtomViewList.Add(link);
                 wvm.AtomViewList.Add(view);
-                
+
             }
 
             ReleasePointerCaptures();
