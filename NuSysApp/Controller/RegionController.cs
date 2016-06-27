@@ -13,6 +13,7 @@ namespace NuSysApp
 
         public delegate void TitleChangedEventHandler(object source, string title);
         public event TitleChangedEventHandler TitleChanged;
+        public string Title { get; set; }
         public RegionController(Region model)
         {
             Model = model;
@@ -23,6 +24,8 @@ namespace NuSysApp
             Model.Name = title;
             TitleChanged?.Invoke(this, title);
             SessionController.Instance.NuSysNetworkSession.UpdateRegion(Model);
+            Title = title;
+            
         }
         public Dictionary<string, Tuple<string, bool>> GetMetadata()
         {

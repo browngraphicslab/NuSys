@@ -58,6 +58,17 @@ namespace NuSysApp
                 RaisePropertyChanged("TabVisibility");
             }
         }
+        public double TabPaneHeight { get; set; }
+        private double _tabHeight;
+        public double TabHeight
+        {
+            get { return _tabHeight; }
+            set
+            {
+                _tabHeight = value; 
+                RaisePropertyChanged("TabHeight");
+            }
+        }
 
         public ObservableCollection<StackPanel> Metadata { get; set; }
 
@@ -128,7 +139,10 @@ namespace NuSysApp
                 CurrentElementController.RegionRemoved += RemoveRegionFromList;
 
                 RegionCollection.Clear();
-                if (CurrentElementController.LibraryElementModel.Regions.Count > 0)
+
+                var regions = CurrentElementController.LibraryElementModel.Regions;
+
+                if (regions?.Count > 0)
                 {
                     foreach (var region in CurrentElementController.LibraryElementModel.Regions)
                     {
@@ -275,6 +289,7 @@ namespace NuSysApp
             }
 
             Tabs = _tabs;
+            TabHeight = TabPaneHeight/Tabs.Count;
         }
 
         private void RemoveRegionFromList(object source, Region region)
@@ -367,8 +382,7 @@ namespace NuSysApp
             tagBlock.Foreground = new SolidColorBrush(Constants.foreground6);
             tagBlock.Margin = new Thickness(5, 2, 2, 5);///
             tagBlock.FontStyle = FontStyle.Italic;
-           // tagBlock.IsHitTestVisible = false;
-
+           
             return tagBlock;
         }
 

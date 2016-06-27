@@ -17,6 +17,8 @@ namespace NuSysApp
         private LibraryElementModel _libraryElementModel;
         private bool _loading = false;
         private RegionControllerFactory _regionControllerFactory = new RegionControllerFactory();
+        public string Title { get; set; }
+        
 
         #region Events
         public delegate void ContentChangedEventHandler(object source, string contentData);
@@ -126,6 +128,7 @@ namespace NuSysApp
             _libraryElementModel.Title = title;
             TitleChanged?.Invoke(this, title);
             _debouncingDictionary.Add("title", title);
+            Title = title;
         }
 
         /// <summary>
@@ -333,5 +336,6 @@ namespace NuSysApp
         {
             return NuSysApp.MetadatableType.Content;
         }
+        
     }
 }

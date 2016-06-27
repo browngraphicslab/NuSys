@@ -26,11 +26,11 @@
             <Grid.RenderTransform>
                 <TranslateTransform X="-60"></TranslateTransform>
             </Grid.RenderTransform>
-            <ListView x:Name="TabList" VerticalAlignment="Stretch" ItemsSource="{Binding Tabs}" Tapped="TabList_OnTapped">
+            <ListView x:Name="TabList" VerticalAlignment="Stretch" ItemsSource="{Binding Tabs}" Tapped="TabList_OnTapped" Padding="0">
                 
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel x:Name="TabStack" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <StackPanel x:Name="TabStack" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Height="192">
                             <Border x:Name="ExitTab" Tapped="ExitTab_OnTapped">
                                 <TextBlock Text="X" Foreground="White" FontSize="20">
                                     <TextBlock.RenderTransform>
@@ -38,7 +38,7 @@
                                     </TextBlock.RenderTransform>
                                 </TextBlock>
                             </Border>
-                            <TextBlock x:Name="TabTitle" Text="Tab">
+                            <TextBlock x:Name="TabTitle" Text="{Binding Title}">
                                 <TextBlock.RenderTransform>
                                     <RotateTransform CenterX="0.5" CenterY="0.5" Angle="90"/>
                                 </TextBlock.RenderTransform>

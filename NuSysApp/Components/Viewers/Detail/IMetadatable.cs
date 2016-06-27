@@ -13,5 +13,6 @@ namespace NuSysApp
         bool RemoveMetadata(string key);
         string GetMetadata(string key);
         MetadatableType MetadatableType();
+        string Title { get; set; }
     }
 }

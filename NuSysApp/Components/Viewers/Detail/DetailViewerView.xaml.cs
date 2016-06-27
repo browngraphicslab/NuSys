@@ -28,7 +28,7 @@ namespace NuSysApp
 
         private ElementViewModel _activeVm;
         private object _metadataPivotItem;
-
+        
         public DetailViewerView()
         {
 
@@ -61,38 +61,39 @@ namespace NuSysApp
             DataContextChanged += delegate(FrameworkElement sender, DataContextChangedEventArgs args)
             {
                 var dataContext = DataContext as DetailViewerViewModel;
-                  if (dataContext == null) { 
-                      return;
-                   }
+                if (dataContext == null) { 
+                    return;
+                }
 
-                  dataContext.SizeChanged += Resize;
+                dataContext.SizeChanged += Resize;
 
-                  var vm = dataContext;
+                var vm = dataContext;
 
-                  vm.PropertyChanged += OnPropertyChanged;
-                  vm.TitleChanged += LibraryElementModelTitleChanged;
-                  Tags.ItemsSource = vm.Tags;
-                  vm.MakeTagList();
+                vm.PropertyChanged += OnPropertyChanged;
+                vm.TitleChanged += LibraryElementModelTitleChanged;
+                Tags.ItemsSource = vm.Tags;
+                vm.MakeTagList();
 
-                  xMetadataEditorView.Metadatable = vm.CurrentElementController;
+                xMetadataEditorView.Metadatable = vm.CurrentElementController;
+                
+                //xRegionEditorView = (RegionEditorTabView)FindName("xRegionEditorView");
+                //xRegionEditorView.DetailViewerView = this;
+                //xRegionEditorView.DataContext = this.DataContext;
+                //xRegionEditorView.DataContext = (DetailViewerViewModel)this.DataContext;
 
-                  //xRegionEditorView = (RegionEditorTabView)FindName("xRegionEditorView");
-                  //xRegionEditorView.DetailViewerView = this;
-                  //xRegionEditorView.DataContext = this.DataContext;
-                  //xRegionEditorView.DataContext = (DetailViewerViewModel)this.DataContext;
+                //xRegionEditorView = (RegionEditorView)FindName("xRegionEditorView");
+                //xRegionEditorView.DataContext = this.DataContext;
+                //xRegionEditorView.DetailViewerViewModel = (DetailViewerViewModel)this.DataContext;
+                //xRegionEditorView.DetailViewerView = this;
 
-                  //xRegionEditorView = (RegionEditorView)FindName("xRegionEditorView");
-                  //xRegionEditorView.DataContext = this.DataContext;
-                  //xRegionEditorView.DetailViewerViewModel = (DetailViewerViewModel)this.DataContext;
-                  //xRegionEditorView.DetailViewerView = this;
-
-                  this.Width = SessionController.Instance.SessionView.ActualWidth / 2;
-                  this.Height = SessionController.Instance.SessionView.ActualHeight;
-                  this.MaxHeight = SessionController.Instance.SessionView.ActualHeight;
-                  this.MaxWidth = SessionController.Instance.SessionView.ActualWidth - resizer.ActualWidth-30;
-                  Canvas.SetTop(this, 0);
-                  Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);
-                  // Metadata.ItemsSource = vm.Metadata;
+                this.Width = SessionController.Instance.SessionView.ActualWidth / 2;
+                this.Height = SessionController.Instance.SessionView.ActualHeight;
+                vm.TabPaneHeight = this.Height;
+                this.MaxHeight = SessionController.Instance.SessionView.ActualHeight;
+                this.MaxWidth = SessionController.Instance.SessionView.ActualWidth - resizer.ActualWidth-30;
+                Canvas.SetTop(this, 0);
+                Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);
+                // Metadata.ItemsSource = vm.Metadata;
               };
 
             SuggestButton.Click += delegate(object sender, RoutedEventArgs args)
@@ -181,8 +182,12 @@ namespace NuSysApp
         public async Task ShowElement(IMetadatable metadatable)
         {
             var vm = (DetailViewerViewModel)DataContext;
+            
             if (await vm.ShowElement(metadatable))
+            {
                 Visibility = Visibility.Visible;
+            }
+                
 
             //if (controller.Model is TextElementModel || controller.Model is PdfNodeModel)
             if (metadatable.MetadatableType() == MetadatableType.Content)
@@ -404,6 +409,11 @@ namespace NuSysApp
                 vm.TabVisibility = Visibility.Collapsed;
             }
             vm.Tabs = tabs;
+            if (tabs?.Count > 0)
+            {
+                this.ShowElement(vm.Tabs?[tabs.Count - 1]);
+            }
+            vm.TabHeight = vm.TabPaneHeight/vm.Tabs.Count;
             e.Handled = true;
 
         }

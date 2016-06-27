@@ -309,7 +309,6 @@ namespace NuSysApp
 
             elementCollectionInstance.LibraryId = collectionId;
 
-            //((CollectionLibraryElementModel)SessionController.Instance.ContentController.Get(collectionId)).SetTotalChildrenCount(nodeMessages.Count());
             var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
             SessionController.Instance.IdToControllers[elementCollectionInstance.Id] = elementCollectionInstanceController;
 

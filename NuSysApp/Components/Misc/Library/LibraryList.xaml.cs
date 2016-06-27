@@ -29,8 +29,7 @@ namespace NuSysApp
 {
     public sealed partial class LibraryList : UserControl, LibraryViewable
     {
-        //public delegate void LibraryElementDragEventHandler(object sender, DragItemsStartingEventArgs e);
-        //public event LibraryElementDragEventHandler OnLibraryElementDrag;
+        
         private LibraryElementPropertiesWindow _propertiesWindow;
 
         private double _x;
@@ -51,8 +50,7 @@ namespace NuSysApp
             ((LibraryBucketViewModel)library.DataContext).OnHighlightElement += Select;
             _propertiesWindow = propertiesWindow;
             _library = library;
-            //vm.OnItemsChanged += Update;
-            //Canvas.SetZIndex(Header, Canvas.GetZIndex(ListView)+1)
+            
         }
 
         private void Select(LibraryElementModel model, bool lightup = true)
