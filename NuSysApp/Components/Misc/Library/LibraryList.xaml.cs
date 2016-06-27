@@ -105,7 +105,7 @@ namespace NuSysApp
 
         private void LibraryListItem_OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            var view = SessionController.Instance.SessionView;
+             var view = SessionController.Instance.SessionView;
             _x = e.GetCurrentPoint(view).Position.X-25;
             _y = e.GetCurrentPoint(view).Position.Y-25;
         }

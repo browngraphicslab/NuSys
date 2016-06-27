@@ -41,7 +41,8 @@ namespace NuSysApp
         private LibraryElementPropertiesWindow _propertiesWindow;
         private LibraryPageViewModel _pageViewModel;
         private LibraryFavoritesViewModel _favoritesViewModel;
-
+        private Point2d _searchExportPos; 
+        
         //private Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
         public LibraryView(LibraryBucketViewModel vm, LibraryElementPropertiesWindow properties, FloatingMenuView menu)
         {
@@ -68,6 +69,7 @@ namespace NuSysApp
             {
                 Visibility = Visibility.Collapsed;
             };
+            _searchExportPos = new Point2d(0,0);
         }
 
         public async void ToggleVisiblity()
@@ -469,13 +471,17 @@ namespace NuSysApp
 
 
             // graph is added by passing in the bounding rectangle
-            await AddGraph(r);
+            await ExportSearchResultsToCollection(r);
 
         }
 
-        // adds the graph/chart based on the location that the graph button was dragged to
-
-        private async Task AddGraph(Point r)
+        /// <summary>
+        /// Exports the search results to a collection, and places the new collection at the passed in point
+        /// @tdgreen, plz comment this, thx. -zkirsche 
+        /// </summary>
+        /// <param name="r"></param>
+        /// <returns></returns>
+        private async Task ExportSearchResultsToCollection(Point r)
         {
 
             var metadata = new Dictionary<string, object>();
@@ -496,7 +502,7 @@ namespace NuSysApp
             elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             elementMsg["id"] = newCollectionId;
             if (ListContainer.Children[0] == _libraryList)
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Search Results"));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Search Results for '"+Searchfield.Text+"'"));
             else if (ListContainer.Children[0] == _libraryFavorites)
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Favorites"));
 
@@ -545,6 +551,84 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Adds a library dragging rectangle to represent where the exported collection will be
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XSearchExportButton_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+          
+            // Since we are adding a collection, we should make the dragging rectangle reflect this
+            var view = SessionController.Instance.SessionView;
+            view.LibraryDraggingRectangle.SwitchType(ElementType.Collection);
+            view.LibraryDraggingRectangle.Show();
+            var rect = view.LibraryDraggingRectangle;
+            Canvas.SetZIndex(rect, 3);
+
+            // Make the rectangle movable and set its position
+            rect.RenderTransform = new CompositeTransform();
+            var t = (CompositeTransform)rect.RenderTransform;
+            t.TranslateX += _searchExportPos.X;
+            t.TranslateY += _searchExportPos.Y;
+            e.Handled = true;
+        }
+
+        /// <summary>
+        /// Moves the library dragging rectangle
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XSearchExportButton_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            // Obtain the library dragging rectangle  
+            var view = SessionController.Instance.SessionView;
+            var rect = view.LibraryDraggingRectangle;
+
+            // Update its transform
+            var t = (CompositeTransform)rect.RenderTransform;
+            t.TranslateX += e.Delta.Translation.X;
+            t.TranslateY += e.Delta.Translation.Y;
+
+            // Update the position instance variable
+            _searchExportPos.X += e.Delta.Translation.X;
+            _searchExportPos.Y += e.Delta.Translation.Y;
+
+            // Handled!
+            e.Handled = true;
+        }
+
+        /// <summary>
+        /// Creates a collection based on the search results, and places it where the cursor was left off 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void XSearchExportButton_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            // Hide the library dragging rect
+            var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
+            rect.Hide();
+
+            // Add a collection to the dropped location
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            var dropPoint = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(_searchExportPos);
+            await ExportSearchResultsToCollection(dropPoint);
+            e.Handled = true;
+           
+        }
+
+        /// <summary>
+        /// When the search export button is clicked, first find the position
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XSearchExportButton_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var view = SessionController.Instance.SessionView;
+            _searchExportPos.X = e.GetCurrentPoint(view).Position.X - 25;
+            _searchExportPos.Y = e.GetCurrentPoint(view).Position.Y - 25;
+            e.Handled = true;
+        }
     }
 
 }
