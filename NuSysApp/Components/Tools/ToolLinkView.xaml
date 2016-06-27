@@ -21,7 +21,7 @@
             <converters:BoolToVisibilityConverter x:Key="bConverter"/>
         </ResourceDictionary>
     </converters:AnimatableUserControl.Resources>
-    <Canvas Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}">
+    <Canvas>
         <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
         <Path x:Name="ToolLink" Stroke="White" StrokeThickness="30">
             <Path.Data>

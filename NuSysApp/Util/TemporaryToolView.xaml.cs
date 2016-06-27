@@ -164,10 +164,27 @@ namespace NuSysApp
         {
             e.Handled = true;
         }
-
+        
         private void XFilterElement_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             e.Handled = true;
+        }
+        
+        private void xList_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            e.Handled = true;
+            CapturePointer(e.Pointer);
+        }
+
+        private void xList_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void xList_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            e.Handled = true;
+
         }
     }
 }
