@@ -2,31 +2,103 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using NuSysApp.Components.Viewers.FreeForm;
 using NuSysApp.Util;
 
 namespace NuSysApp
 {
-    public class ToolViewModel : ElementViewModel
+    public class ToolViewModel : BaseINPC
     {
-        private ToolController _controller;
-        public ToolViewModel(ToolController toolController) : base(toolController)
+        public ToolController Controller;
+        private double _width;
+        private double _height;
+        private double _x;
+        private double _y;
+        private CompositeTransform _transform = new CompositeTransform();
+        public double Width
         {
-            _controller = toolController;
-            _controller.LibraryIdsChanged += ControllerOnLibraryIdsChanged;
+            set
+            {
+                _width = value;
+                RaisePropertyChanged("Width");
+            }
+            get
+            {
+                return _width;
+            }
+        }
+
+        public double Height
+        {
+            set
+            {
+                _height = value;
+                RaisePropertyChanged("Height");
+            }
+            get
+            {
+                return _height;
+            }
+        }
+
+        public double X
+        {
+            set
+            {
+                _x = value;
+                RaisePropertyChanged("X");
+            }
+            get
+            {
+                return _x;
+            }
+        }
+        public double Y
+        {
+            set
+            {
+                _y= value;
+                RaisePropertyChanged("Y");
+            }
+            get
+            {
+                return _y;
+            }
+        }
+        public CompositeTransform Transform
+        {
+            get { return _transform; }
+            set
+            {
+                if (_transform == value)
+                {
+                    return;
+                }
+                _transform = value;
+                RaisePropertyChanged("Transform");
+            }
+        }
+
+        public ToolViewModel(ToolController toolController) 
+        {
+            Controller = toolController;
+            Controller.LibraryIdsChanged += ControllerOnLibraryIdsChanged;
+            Controller.SizeChanged += OnSizeChanged;
+            Controller.LocationChanged += OnLocationChanged;
         }
 
         private void ControllerOnLibraryIdsChanged(object sender, HashSet<string> libraryIds)
         {
-            PropertiesToDisplay = new ObservableCollection<string>(_controller.GetAllProperties());
+            PropertiesToDisplay = new ObservableCollection<string>(Controller.GetAllProperties());
         }
 
         public void SetSelection(string selection)
         {
-            _controller.SetSelection(selection);
+            Controller.SetSelection(selection);
         }
 
-        public ToolModel.FilterTitle Filter { get { return _controller.Model.Filter;}  set { _controller.SetFilter(value);} }
+        public ToolModel.FilterTitle Filter { get { return Controller.Model.Filter;}  set { Controller.SetFilter(value);} }
 
         public void CreateNewToolWindow(Canvas canvas, double x, double y)
         {
@@ -41,8 +113,23 @@ namespace NuSysApp
 
         public ObservableCollection<string> PropertiesToDisplay
         {
-            get { return new ObservableCollection<string>(_controller.GetAllProperties()); }
+            get { return new ObservableCollection<string>(Controller.GetAllProperties()); }
             set { PropertiesToDisplay = value; }
+        }
+
+        public void OnSizeChanged(object sender, double width, double height)
+        {
+            Width = width;
+            Height = height;
+        }
+
+        public void OnLocationChanged(object sender, double x, double y)
+        {
+            X = x;
+            Y = y;
+            Transform.TranslateX = x;
+            Transform.TranslateY = y;
+            RaisePropertyChanged("Transform");
         }
     }
 }

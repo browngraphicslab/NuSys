@@ -38,9 +38,9 @@ namespace NuSysApp.Util
             Filters = new ObservableCollection<ToolModel.FilterTitle>()
             { ToolModel.FilterTitle.Type, ToolModel.FilterTitle.Title,  ToolModel.FilterTitle.Creator,  ToolModel.FilterTitle.Date,  ToolModel.FilterTitle.MetadataKeys,  ToolModel.FilterTitle.MetadataValues };
             this.InitializeComponent();
-            vm.Controller.SetSize(50, 50);
-            vm.Controller.SetPosition(x,y);
             this.DataContext = vm;
+            vm.Controller.SetLocation(x,y);
+            vm.Controller.SetSize(100,100);
             xFilterElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             xFilterElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
         }
@@ -71,6 +71,7 @@ namespace NuSysApp.Util
 
             ReleasePointerCaptures();
             (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta));
+            args.Handled = true;
         }
 
         private async void BtnAddOnManipulationStarting(object sender, PointerRoutedEventArgs args)
@@ -98,7 +99,7 @@ namespace NuSysApp.Util
             xCanvas.Children.Add(_dragItem);
             _dragItem.RenderTransform = new CompositeTransform();
             (sender as FrameworkElement).AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta), true);
-
+            args.Handled = true;
         }
 
         private void BtnAddOnManipulationDelta(object sender, PointerRoutedEventArgs args)
@@ -110,7 +111,7 @@ namespace NuSysApp.Util
             var p = args.GetCurrentPoint(xCanvas).Position;
             t.TranslateX = p.X - _dragItem.ActualWidth / 2;
             t.TranslateY = p.Y - _dragItem.ActualHeight / 2;
-
+            args.Handled = true;
         }
 
         private void XList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -129,6 +130,25 @@ namespace NuSysApp.Util
             }
             bottompanel.Children.Remove(xChooseFilter);
             xList.ItemsSource = MetaDataToDisplay;
+        }
+
+        private void UIElement_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void Canvas_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            var vm = DataContext as ToolViewModel;
+            if (vm != null)
+            {
+                vm.Controller.SetLocation(vm.X + e.Delta.Translation.X, vm.Y + e.Delta.Translation.Y);
+            }
+            e.Handled = true;
+        }
+        private void Grid_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            e.Handled = true;
         }
     }
 }

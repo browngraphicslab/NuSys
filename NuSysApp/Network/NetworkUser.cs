@@ -90,17 +90,17 @@ namespace NuSysApp
             }
             //controller.SetNetworkUser(null);
 
-            //if (controller != _controller)
+            //if (controller != Controller)
             //{
-            //    if (_controller != null)
+            //    if (Controller != null)
             //    {
-            //        _controller.SetNetworkUser(null);
+            //        Controller.SetNetworkUser(null);
             //    }
             //    if(controller != null)
             //    {
             //        controller.SetNetworkUser(this);
             //    }
-            //    _controller = controller;
+            //    Controller = controller;
             //}
         }
     }
