@@ -31,8 +31,8 @@ namespace NuSysApp
         //public ObservableCollection<string> PropertiesToDisplay { get; set; }
 
         private Image _dragItem;
-        private enum DragMode { Filter };
-        private DragMode _currenDragMode = DragMode.Filter;
+        private enum DragMode { Filter, Collection };
+        private DragMode _currentDragMode = DragMode.Filter;
         public TemporaryToolView(ToolViewModel vm, double x, double y)
         {
             _dragItem = new Image();
@@ -44,6 +44,8 @@ namespace NuSysApp
             this.DataContext = vm;
             xFilterElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             xFilterElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
+            xCollectionElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
+            xCollectionElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
             vm.PropertiesToDisplayChanged += Vm_PropertiesToDisplayChanged;
 
             Binding b = new Binding();
@@ -81,7 +83,7 @@ namespace NuSysApp
             var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(p.X, p.Y, 300, 300));
             var send = (FrameworkElement)sender;
 
-            if (_currenDragMode == DragMode.Filter)
+            if (_currentDragMode == DragMode.Filter)
             {
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
                 hitsStart = hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList();
@@ -93,7 +95,6 @@ namespace NuSysApp
                     Canvas.SetZIndex(link, Canvas.GetZIndex(this) - 1);
                     wvm.AtomViewList.Add(link);
                     (first.DataContext as ToolViewModel).Controller.AddParent((DataContext as ToolViewModel).Controller);
-                    //TODO: set parent and stuff
                 }
                 else
                 {
@@ -113,6 +114,10 @@ namespace NuSysApp
                 }
                 
 
+            }
+            else if (_currentDragMode == DragMode.Collection)
+            {
+                //TODO:Create new collection here
             }
 
             ReleasePointerCaptures();
@@ -134,7 +139,11 @@ namespace NuSysApp
 
             if (sender == xFilterElement)
             {
-                _currenDragMode = DragMode.Filter;
+                _currentDragMode = DragMode.Filter;
+            }
+            else if (sender == xCollectionElement)
+            {
+                _currentDragMode = DragMode.Collection;
             }
 
 
