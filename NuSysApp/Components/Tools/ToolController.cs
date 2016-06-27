@@ -25,6 +25,7 @@ namespace NuSysApp
             Debug.Assert(model != null);
             Model = model as ToolModel;
             ToolControllers.Add(model.Id, this);
+            Model.SetLibraryIds(Filter(GetUpdatedDataList()));
         }
 
         public void SetFilter(ToolModel.FilterTitle filter)
@@ -36,18 +37,14 @@ namespace NuSysApp
         public void UnSelect()
         {
             Model.SetSelection(null);
+            Model.SetLibraryIds(Filter(GetUpdatedDataList()));
             SelectionChanged?.Invoke(this, null);
         }
         public void SetSelection(string selection)
         {
             Model.SetSelection(selection);
+            Model.SetLibraryIds(Filter(GetUpdatedDataList()));
             SelectionChanged?.Invoke(this,selection);
-        }
-        public void MakeStartOfChain()
-        {
-            Debug.Assert(Model.ParentIds.Count == 0);
-            Model.SetLibraryIds(SessionController.Instance.ContentController.IdList);
-            LibraryIdsChanged?.Invoke(this, Model.LibraryIds);
         }
         public void AddParent(ToolController parentController)
         {
@@ -217,6 +214,10 @@ namespace NuSysApp
             foreach (var enumerable in controllers.Select(controller => controller?.Model.LibraryIds))
             {
                 list.AddRange(enumerable ?? new HashSet<string>());
+            }
+            if (controllers.Count() == 0)
+            {
+                return SessionController.Instance.ContentController.IdList;
             }
             return new HashSet<string>(list);
         }

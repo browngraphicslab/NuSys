@@ -133,6 +133,10 @@ namespace NuSysApp
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
+            if (xList.SelectedItems.Count() < 1)
+            {
+                return;
+            }
             ToolModel.FilterTitle selection = (ToolModel.FilterTitle)(xList.SelectedItems[0]);
             var toolViewModel = DataContext as ToolViewModel;
             if (toolViewModel != null)

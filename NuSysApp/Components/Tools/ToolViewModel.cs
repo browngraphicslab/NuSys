@@ -19,6 +19,7 @@ namespace NuSysApp
         private void ControllerOnLibraryIdsChanged(object sender, HashSet<string> libraryIds)
         {
             PropertiesToDisplay = new ObservableCollection<string>(_controller.GetAllProperties());
+            //RaisePropertyChanged("PropertiesToDisplay");
         }
 
         public void SetSelection(string selection)
