@@ -40,6 +40,7 @@
                 </PathGeometry>
             </Path.Data>
         </Path>
+
         <Path x:Name="ToolLinkInner" Stroke="Gray" StrokeThickness="25" CompositeMode="MinBlend" Opacity="0.28">
             <Path.Data>
                 <PathGeometry>
@@ -57,5 +58,7 @@
                 </PathGeometry>
             </Path.Data>
         </Path>
+        <Polygon x:Name="arrow" Fill="{StaticResource color4}" Points="0,0 40,20, 0,40"/>
+
     </Canvas>
 </converters:AnimatableUserControl>
