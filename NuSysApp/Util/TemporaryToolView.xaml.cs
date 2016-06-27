@@ -188,7 +188,7 @@ namespace NuSysApp
 
         private void XUniqueButton_OnChecked(object sender, RoutedEventArgs e)
         {
-            //PropertiesToDisplay = (DataContext as ToolViewModel).PropertiesToDisplay;
+            (DataContext as ToolViewModel).reloadPropertiesToDisplay();
         }
     }
 }

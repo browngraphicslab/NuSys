@@ -76,7 +76,7 @@ namespace NuSysApp
 
         public List<string> GetAllProperties()
         {
-            var libraryElementControllers = Model.LibraryIds.Select( id => SessionController.Instance.ContentController.GetLibraryElementController(id));
+            var libraryElementControllers = GetUpdatedDataList().Select( id => SessionController.Instance.ContentController.GetLibraryElementController(id));
             var allMetadata = new Dictionary<string, List<string>>();
             foreach (var controller in libraryElementControllers)
             {
@@ -176,6 +176,10 @@ namespace NuSysApp
 
         private string GetDate(LibraryElementModel libraryElementModel)
         {
+            if (libraryElementModel.Timestamp == null)
+            {
+                return DateTime.UtcNow.ToStartOfDay().ToString();
+            }
             return DateTime.Parse(libraryElementModel.Timestamp).ToStartOfDay().ToString();
         }
         private Dictionary<string, string> GetMetadata(string libraryId)
