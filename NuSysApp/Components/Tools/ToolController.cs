@@ -201,7 +201,7 @@ namespace NuSysApp
             var element = SessionController.Instance.ContentController.GetContent(libraryId);
             if (element != null)
             {
-                var metadata = (element?.Metadata.ToDictionary(k=>k.Key,v=>v.Value.Item1)) ?? new Dictionary<string, string>();
+                var metadata = (element?.Metadata?.ToDictionary(k=>k.Key,v=>v.Value?.Item1)) ?? new Dictionary<string, string>();
 
                 metadata["Title"] = element.Title;
                 metadata["Type"] = element.Type.ToString();

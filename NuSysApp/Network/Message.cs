@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,18 +11,18 @@ namespace NuSysApp
 {
     public class Message
     {
-        private Dictionary<string, object> _dict;
+        private ConcurrentDictionary<string, object> _dict;
 
         public Message()
         {
-            _dict = new Dictionary<string, object>();
+            _dict = new ConcurrentDictionary<string, object>();
         }
         public Message(string m)
         {
             try
             {
                 var settings = new JsonSerializerSettings {StringEscapeHandling = StringEscapeHandling.EscapeNonAscii};
-                _dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(m, settings);
+                _dict = JsonConvert.DeserializeObject<ConcurrentDictionary<string, object>>(m, settings);
 
             }
             catch (Exception e)
@@ -31,7 +32,7 @@ namespace NuSysApp
                 try
                 {
                     var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                    _dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(miniStrings[0], settings);
+                    _dict = JsonConvert.DeserializeObject<ConcurrentDictionary<string, object>>(miniStrings[0], settings);
                 }
                 catch (Exception f)
                 {
@@ -42,15 +43,15 @@ namespace NuSysApp
 
         public Message(Dictionary<string, string> dict)
         {
-            _dict = new Dictionary<string, object>();
+            _dict = new ConcurrentDictionary<string, object>();
             foreach (var kvp in dict)
             {
-                _dict.Add(kvp.Key, kvp.Value);
+                _dict.TryAdd(kvp.Key, kvp.Value);
             }
         }
         public Message(Dictionary<string, object> dict)
         {
-            _dict = dict;
+            _dict = new ConcurrentDictionary<string,object>(dict);
         }
         public void Add(string key, object value)//TODO get rid of this
         {
@@ -58,13 +59,14 @@ namespace NuSysApp
             {
                 throw new InvalidOperationException("Key "+key+" already exists");
             }
-            _dict.Add(key, value);
+            _dict.TryAdd(key, value);
         }
         public void Remove(string key)//TODO get rid of this too, only use is hacky fix
         {
             if (_dict.ContainsKey(key))
             {
-                _dict.Remove(key);
+                object outVar;
+                _dict.TryRemove(key, out outVar);
                 return;
             }
             throw new KeyNotFoundException("Key "+key+" not found when attemped to remove it.");
