@@ -94,7 +94,7 @@ namespace NuSysApp
         public async Task Search(string s)
         {
             await ((LibraryPageViewModel)this.DataContext).Search(s);
-            //this.SetItems(((LibraryPageViewModel)this.DataContext).PageElements);
+            this.SetItems(((LibraryPageViewModel)this.DataContext).PageElements);
         }
 
         public async void Update()

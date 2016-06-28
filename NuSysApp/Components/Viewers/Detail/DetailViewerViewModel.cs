@@ -92,7 +92,7 @@ namespace NuSysApp
             Metadata = new ObservableCollection<StackPanel>();
             RegionCollection = new ObservableCollection<Region>();
             Tabs = new ObservableCollection<IMetadatable>();
-            TabVisibility = Visibility.Collapsed;
+          //  TabVisibility = Visibility.Collapsed;
             
         }
 
@@ -278,17 +278,18 @@ namespace NuSysApp
                 _tabs.RemoveAt(0);
                 _tabs.Add(metadatable);
             }
+            TabVisibility = Visibility.Visible;
 
             if (_tabs.Count > 1)
             {
-                TabVisibility = Visibility.Visible;
+              //  TabVisibility = Visibility.Visible;
             }
             else
             {
-                TabVisibility = Visibility.Collapsed;
+              //  TabVisibility = Visibility.Collapsed;
             }
 
-            Tabs = _tabs;
+           // Tabs = _tabs;
             TabHeight = TabPaneHeight/Tabs.Count;
         }
 

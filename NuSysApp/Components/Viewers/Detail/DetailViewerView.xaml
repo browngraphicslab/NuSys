@@ -27,13 +27,55 @@
                 <TranslateTransform X="-60"></TranslateTransform>
             </Grid.RenderTransform>
 
-            <ItemsControl x:Name="IC"  ItemsSource="{Binding Tabs}" >
+            <ItemsControl x:Name="IC"  ItemsSource="{Binding Tabs}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel x:Name="TabList" VerticalAlignment="Stretch" HorizontalAlignment="Left" Tapped="TabList_OnTapped" Padding="0" Width="30" />
+                        <StackPanel x:Name="TabList" VerticalAlignment="Top" Tapped="TabList_OnTapped" Width="30" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Canvas x:Name="TabStack" Height="{Binding ElementName=TabList, Path=DataContext.TabHeight}" Width="30">
+                            <Border x:Name="ExitTab" Tapped="ExitTab_OnTapped" >
+                                <Border.RenderTransform>
+                                    <TranslateTransform Y="-20"></TranslateTransform>
+                                </Border.RenderTransform>
+                                <TextBlock Text="X" Foreground="White" FontSize="20" VerticalAlignment="Top" RenderTransformOrigin="0,1">
+                                    <TextBlock.RenderTransform>
+                                        <RotateTransform Angle="90"></RotateTransform>
+                                        
+                                    </TextBlock.RenderTransform>
+                                </TextBlock>
+                            </Border>
+                            <Border x:Name="Tab" Tapped="TabList_OnTapped">
+                                <Border.RenderTransform>
+                                    <TranslateTransform Y="15"></TranslateTransform>
+                                </Border.RenderTransform>
+                                <TextBlock x:Name="TabTitle" Text="ABCHSGEHKEJB" VerticalAlignment="Top" RenderTransformOrigin="0,1">
+                                    <TextBlock.RenderTransform>
+                                        <RotateTransform Angle="90"></RotateTransform>
+                                    </TextBlock.RenderTransform>
+                                </TextBlock>
+                            </Border>
+                        </Canvas>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!--<ListView x:Name="ListView"  ItemsSource="{Binding Tabs}" >
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel x:Name="TabList" VerticalAlignment="Stretch" HorizontalAlignment="Left" Tapped="TabList_OnTapped" Padding="0" Width="30" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property= "VerticalContentAlignment" Value="Stretch" />
+                        <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Padding" Value="0,0,0,0"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
                     <DataTemplate>
                         <Canvas x:Name="TabStack" VerticalAlignment="Stretch" HorizontalAlignment="Right" Height="{Binding ElementName=TabList, Path=DataContext.TabHeight}" Width="30">
                             <Border x:Name="ExitTab" Tapped="ExitTab_OnTapped" >
@@ -55,9 +97,8 @@
                             </Border>
                         </Canvas>
                     </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-
+                </ListView.ItemTemplate>
+            </ListView>-->
         </Grid>
         <Grid x:Name="xContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource color2}" Padding="25,10,25,10">
             <Grid.RowDefinitions>

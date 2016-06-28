@@ -302,6 +302,7 @@ namespace NuSysApp
         {
             Visibility = Visibility.Collapsed;
             var vm = (DetailViewerViewModel)DataContext;
+            vm.Tabs.Clear();
             var textview = (vm.View as TextDetailHomeTabView);
             textview?.Dispose();
             var videoView = vm.View as VideoDetailHomeTabView;
@@ -388,6 +389,7 @@ namespace NuSysApp
         {
             var metadatable = (IMetadatable)(sender as FrameworkElement).DataContext;
             ShowElement(metadatable);
+            e.Handled = true;
         }
 
         private void ExitTab_OnTapped(object sender, TappedRoutedEventArgs e)
