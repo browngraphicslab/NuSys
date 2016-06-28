@@ -91,6 +91,8 @@ namespace NuSysApp
             Controller.LocationChanged += OnLocationChanged;
             PropertiesToDisplay = new ObservableCollection<string>();
             PropertiesToDisplayUnique = new ObservableCollection<string>();
+            Height = 400;
+            Width = 200;
         }
 
         public void OnSizeChanged(object sender, double width, double height)

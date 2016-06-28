@@ -33,6 +33,10 @@ namespace NuSysApp
         private Image _dragItem;
         private enum DragMode { Filter, Collection };
         private DragMode _currentDragMode = DragMode.Filter;
+
+        private const int MinWidth = 150;
+        private const int MinHeight = 300;
+        private const int  ListBoxHeightOffset = 175;
         public TemporaryToolView(ToolViewModel vm, double x, double y)
         {
             _dragItem = new Image();
@@ -40,13 +44,15 @@ namespace NuSysApp
             { ToolModel.FilterTitle.Type, ToolModel.FilterTitle.Title,  ToolModel.FilterTitle.Creator,  ToolModel.FilterTitle.Date,  ToolModel.FilterTitle.MetadataKeys,  ToolModel.FilterTitle.MetadataValues };
             this.InitializeComponent();
             vm.Controller.SetLocation(x, y);
-            vm.Controller.SetSize(100, 100);
             this.DataContext = vm;
             xFilterElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             xFilterElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
             xCollectionElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             xCollectionElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
             vm.PropertiesToDisplayChanged += Vm_PropertiesToDisplayChanged;
+
+            xPropertiesList.Height = vm.Height - 175;
+            xFilterList.Height = vm.Height - 175;
 
             Binding b = new Binding();
             b.Path = new PropertyPath("PropertiesToDisplay");
@@ -70,6 +76,7 @@ namespace NuSysApp
             xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
             xUniqueButton.Checked -= XUniqueButton_OnChecked;
             (DataContext as ToolViewModel).PropertiesToDisplayChanged -= Vm_PropertiesToDisplayChanged;
+            xResizer.ManipulationDelta -= Resizer_OnManipulationDelta;
         }
 
 
@@ -329,6 +336,36 @@ namespace NuSysApp
             xTitle.Text = selection.ToString();
             xUniqueButton.Visibility = Visibility.Visible;
             xUniqueText.Visibility = Visibility.Visible;
+        }
+
+        private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            if (SessionController.Instance.SessionView.IsPenMode)
+                return;
+
+            var vm = (ToolViewModel)this.DataContext;
+
+            var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
+            var resizeX = vm.Width + e.Delta.Translation.X / zoom;
+            var resizeY = vm.Height + e.Delta.Translation.Y / zoom;
+            
+            if (resizeX > MinWidth && resizeY > MinHeight)
+            {
+                vm.Controller.SetSize(resizeX, resizeY);
+                xPropertiesList.Height = resizeY - ListBoxHeightOffset;
+                xFilterList.Height = resizeY - ListBoxHeightOffset;
+            }
+            else if (resizeX > MinWidth)
+            {
+                vm.Controller.SetSize(resizeX, vm.Height);
+            }
+            else if (resizeY > MinHeight)
+            {
+                vm.Controller.SetSize(vm.Width, resizeY);
+                xPropertiesList.Height = resizeY - ListBoxHeightOffset;
+                xFilterList.Height = resizeY - ListBoxHeightOffset;
+            }
+            e.Handled = true;
         }
     }
     
