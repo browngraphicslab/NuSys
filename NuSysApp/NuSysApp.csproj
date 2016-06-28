@@ -536,6 +536,7 @@
     <Compile Include="Network\NetworkSession.cs" />
     <Compile Include="Network\NetworkUser.cs" />
     <Compile Include="Network\NuSysNetworkSession.cs" />
+    <Compile Include="Network\Requests\NewPresentationLinkRequest.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
     <Compile Include="Network\Requests\ChangeContentRequest.cs" />
     <Compile Include="Network\Requests\ChatDialogRequest.cs" />

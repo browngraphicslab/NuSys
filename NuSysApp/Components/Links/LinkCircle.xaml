@@ -11,6 +11,6 @@
 
     <Grid>
         <Image x:Name ="thumbnail"></Image>
-        <Button x:Name ="linkButton" Height="30" Width="30" Background="Blue"></Button>
+        <Ellipse x:Name ="linkButton" Height="30" Width="30" Opacity =".5" Fill="Blue"></Ellipse>
     </Grid>
 </UserControl>

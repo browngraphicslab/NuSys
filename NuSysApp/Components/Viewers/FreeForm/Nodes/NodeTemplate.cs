@@ -291,8 +291,7 @@ namespace NuSysApp
                                 }
                                 else
                                 {
-                                    vm.Controller.RequestLinkTo(dc.Id, (RectangleView) element, null, inFgDictionary,
-                                        outFgDictionary);
+                                    SessionController.Instance.LinkController.RequestLink(dc.ContentId, vm.ContentId);
                                 }
                             }
                         }
@@ -323,8 +322,7 @@ namespace NuSysApp
                                 }
                                 else
                                 {
-                                    vm.Controller.RequestLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary,
-                                        outFgDictionary);
+                                    SessionController.Instance.LinkController.RequestLink(dc.ContentId, vm.ContentId);
                                 }
                             }
                             

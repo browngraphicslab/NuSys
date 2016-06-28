@@ -24,13 +24,24 @@ namespace NuSysApp
 
         public void AddLink(string id)
         {
-            
-            var link =  SessionController.Instance.ContentController.GetContent(id) as LinkLibraryElementModel;
+
+            var link = SessionController.Instance.ContentController.GetContent(id) as LinkLibraryElementModel;
             if (!_links.ContainsKey(link.InAtomId))
             {
                 _links[link.InAtomId] = new HashSet<string>();
             }
+            foreach (var l in _links[link.InAtomId])
+            {
+                var temp = SessionController.Instance.ContentController.GetContent(l) as LinkLibraryElementModel;
+                if ((temp.InAtomId == link.InAtomId && temp.OutAtomId == link.OutAtomId) ||
+                    (temp.InAtomId == link.OutAtomId && temp.OutAtomId == link.InAtomId))
+                {
+                    return;
+                }
+            }
+
             _links[link.InAtomId].Add(id);
+
             if (!_links.ContainsKey(link.OutAtomId))
             {
                 _links[link.OutAtomId] = new HashSet<string>();

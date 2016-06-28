@@ -150,14 +150,18 @@ namespace NuSysApp
 
             CircleLinks.Clear();
             var circleList = SessionController.Instance.LinkController.GetLinkedIds(this.ContentId);
-                if(circleList == null)
+            if(circleList == null)
             {
                 return;
             }
+            var i = 0; 
+
             foreach (var circle in circleList)
             {
                 //sorry about this - should also be in frontend and not in viewmodel
                 var circlelink = new LinkCircle(circle);
+                circlelink.Circle.Fill = new SolidColorBrush(Constants.linkColors[i%Constants.linkColors.Count]);
+                i++;
 //                tagBlock.Background = new SolidColorBrush(Constants.color4);
 //                tagBlock.Content = tag.Text;
 //                tagBlock.Height = 30;
