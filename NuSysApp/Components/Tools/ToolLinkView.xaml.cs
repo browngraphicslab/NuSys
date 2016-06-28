@@ -47,6 +47,8 @@ namespace NuSysApp
         private void UpdateControlPoints()
         {
             this.UpdateEndPoints();
+            this.UpdateArrow();
+
 
             var vm = (ToolLinkViewModel)this.DataContext;
 
@@ -65,6 +67,18 @@ namespace NuSysApp
             curveInner.Point1 = new Point(anchor2.X + distanceX / 2, anchor1.Y);
 
 
+        }
+        private void UpdateArrow()
+        {
+            var center = new Point((pathfigure.StartPoint.X + curve.Point3.X) / 2.0, (pathfigure.StartPoint.Y + curve.Point3.Y) / 2.0);
+            var xDiff = curve.Point3.X - pathfigure.StartPoint.X;
+            var yDiff = curve.Point3.Y - pathfigure.StartPoint.Y;
+            var angle = Math.Atan2(yDiff, xDiff) * (180 / Math.PI);
+            var tranformGroup = new TransformGroup();
+            tranformGroup.Children.Add(new RotateTransform { Angle = angle, CenterX = 20, CenterY = 20 });
+            tranformGroup.Children.Add(new TranslateTransform { X = center.X - 20, Y = center.Y - 20 });
+
+            arrow.RenderTransform = tranformGroup;
         }
 
         private void UpdateEndPoints()
