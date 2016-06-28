@@ -18,7 +18,7 @@ namespace NuSysApp
         {
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
             Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
-            Controller.LibraryElementController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
+            //Controller.LibraryElementController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
             Controller.SizeChanged += Controller_SizeChanged;
             Controller.LibraryElementController.Loaded += LibraryElementController_Loaded;
         }
@@ -116,6 +116,7 @@ namespace NuSysApp
                 foreach (var model in regionHashSet)
                 {
                     var regionController = new RegionController(model);
+                    regionController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
                     var viewmodel = new VideoRegionViewModel(model as VideoRegionModel, elementController, regionController,this);
                     viewmodel.Editable = false;
                     var view = new VideoRegionView(viewmodel);

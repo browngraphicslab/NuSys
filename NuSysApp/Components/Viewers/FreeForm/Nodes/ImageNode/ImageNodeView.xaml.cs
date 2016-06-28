@@ -67,7 +67,6 @@ namespace NuSysApp
 
             vm.Controller.Disposed += ControllerOnDisposed;
             SizeChanged += ImageNodeView_SizeChanged;
-
         }
 
         private void ImageNodeView_SizeChanged(object sender, SizeChangedEventArgs e)
