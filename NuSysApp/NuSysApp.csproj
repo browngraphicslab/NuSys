@@ -255,6 +255,7 @@
     <Compile Include="Components\Misc\SpeechToTextUI\BooleanToVisibilityConverter.cs" />
     <Compile Include="Components\Misc\SpeechToTextUI\CorrectionSuggester.cs" />
     <Compile Include="Components\Misc\SpeechToTextUI\HtmlRemoval.cs" />
+    <Compile Include="Components\Misc\SpeechToTextUI\ISpeakable.cs" />
     <Compile Include="Components\Misc\SpeechToTextUI\SpeechToTextBox.xaml.cs">
       <DependentUpon>SpeechToTextBox.xaml</DependentUpon>
     </Compile>

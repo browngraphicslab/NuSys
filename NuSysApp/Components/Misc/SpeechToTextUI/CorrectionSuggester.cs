@@ -92,6 +92,8 @@ namespace NuSysApp.Misc.SpeechToTextUI
                 alternateWordsByIndex[i].Remove(finalSentence[i]);
             }
 
+            //tODO take care of punctuation
+
             // prepare the output
             var words = results?.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
 

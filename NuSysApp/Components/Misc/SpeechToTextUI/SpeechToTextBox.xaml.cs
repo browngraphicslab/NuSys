@@ -29,7 +29,7 @@ namespace NuSysApp
     public sealed partial class SpeechToTextBox : UserControl
     {
         private SpeechToTextViewModel _vm;
-        private object _pairedController;
+        private ISpeakable _pairedController;
 
 
         // speech recognition variables
@@ -100,18 +100,8 @@ namespace NuSysApp
 
             if (_vm.IsEnabled == Visibility.Visible)
             {
-                if ((_pairedController as TextNodeController) != null)
-                {
-                    var textNodeController = _pairedController as TextNodeController;
-                    textNodeController.LibraryElementController.SetContentData(_vm.Text);
-                    _pairedController = null;
-                } else if (_pairedController as TextInputBlock != null)
-                {
-                    var textInputBlock = _pairedController as TextInputBlock;
-                    textInputBlock.Text = _vm.Text;
-                    _pairedController = null;
-                }
-
+                
+                _pairedController.SetData(_vm.Text);
                 CleanlyCloseSpeechRecognizer();
 
 
@@ -135,6 +125,7 @@ namespace NuSysApp
 
                 this._speechRecognizer.Dispose();
                 this._speechRecognizer = null;
+                _pairedController = null;
 
                 _vm.IsEnabled = Visibility.Collapsed;
                 _vm.Text = string.Empty;
@@ -143,7 +134,7 @@ namespace NuSysApp
         }
 
         // instantiation for use with textnodes
-        public async void Instantiate(TextNodeController controller, string text="")
+        public async void Instantiate(ISpeakable controller, string text="")
         {
             if (_vm.IsEnabled == Visibility.Collapsed)
             {
@@ -155,27 +146,6 @@ namespace NuSysApp
                 _myCorrectionSuggester = new CorrectionSuggester();
 
                 
-                _vm.Text = HtmlRemoval.StripTagsReplaceDivCloseWithNewLines(text);
-                _vm.PrepareForAlternates(); // make sure to call this after setting _vm.Text
-                _textChanged = true;
-                await InitializeRecognizer(SpeechRecognizer.SystemSpeechLanguage);
-                SessionController.Instance.SessionView.MainCanvas.PointerPressed += MainCanvas_PointerPressed;
-            }
-        }
-
-        // instantiate for use with textInputBlcoks
-        public async void Instantiate(TextInputBlock controller, string text)
-        {
-            if (_vm.IsEnabled == Visibility.Collapsed)
-            {
-                _vm.IsEnabled = Visibility.Visible;
-                _vm.IsListening = false;
-                _pairedController = controller;
-                _vm.ErrorButtonVisibility = Visibility.Collapsed;
-                _hypothesesList = new List<string>();
-                _myCorrectionSuggester = new CorrectionSuggester();
-
-
                 _vm.Text = HtmlRemoval.StripTagsReplaceDivCloseWithNewLines(text);
                 _vm.PrepareForAlternates(); // make sure to call this after setting _vm.Text
                 _textChanged = true;

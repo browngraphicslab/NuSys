@@ -32,7 +32,7 @@ using NuSysApp.Util;
 namespace NuSysApp
 {
 
-    public sealed partial class TextNodeView : AnimatableUserControl, IThumbnailable
+    public sealed partial class TextNodeView : AnimatableUserControl, IThumbnailable, ISpeakable
     {
         private MediaCapture _mediaCapture;
         private bool _isRecording;
@@ -404,9 +404,8 @@ namespace NuSysApp
         private async void RecordButton_OnClick(object sender, PointerRoutedEventArgs e)
         {
             e.Handled = true;
-            var vm = DataContext as TextNodeViewModel;
-            if (vm == null) return;
-            SessionController.Instance.SessionView.SpeechToTextBox.Instantiate(vm.Controller as TextNodeController, _text);
+
+            SessionController.Instance.SessionView.SpeechToTextBox.Instantiate(this, _text);
 
             /* old code
             _isRecording = true;
@@ -552,5 +551,11 @@ namespace NuSysApp
         //        TempRegion.Width = e.GetCurrentPoint((UIElement)sender).Position.X - Canvas.GetLeft(TempRegion);
         //    }
         //}
+        public void SetData(string text)
+        {
+            var vm = DataContext as TextNodeViewModel;
+            if (vm == null) return;
+            vm.Controller.LibraryElementController.SetContentData(text);
+        }
     }
 }

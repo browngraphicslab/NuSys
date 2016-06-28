@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using MyToolkit.UI;
+using NuSysApp.Components.Misc.SpeechToTextUI;
 using SharpDX;
 using Point = Windows.Foundation.Point;
 
@@ -24,7 +25,7 @@ using Point = Windows.Foundation.Point;
 
 namespace NuSysApp
 {
-    public sealed partial class TextInputBlock : AnimatableUserControl
+    public sealed partial class TextInputBlock : AnimatableUserControl, ISpeakable
     {
         private bool _recordMode;
         private bool _inkMode;
@@ -430,6 +431,11 @@ namespace NuSysApp
             var result = await im.RecognizeAsync(InkRecognitionTarget.All);
             return result[0].GetTextCandidates().ToList();
 
+        }
+
+        public void SetData(string text)
+        {
+            this.Text = text;
         }
     }
 }
