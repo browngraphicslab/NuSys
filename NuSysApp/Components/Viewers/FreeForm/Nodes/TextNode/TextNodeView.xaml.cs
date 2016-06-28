@@ -61,7 +61,7 @@ namespace NuSysApp
 
         public TextNodeView(TextNodeViewModel vm)
         {
-            if(_speechRecognizer == null && !WaitingRoomView.IS_HUB)
+            if (_speechRecognizer == null && !WaitingRoomView.IS_HUB)
             {
                 _speechRecognizer = new SpeechRecognizer();
             }
@@ -73,7 +73,7 @@ namespace NuSysApp
             DataContext = vm;
 
             this.SetUpInking();
-  
+
             vm.Controller.Disposed += ControllerOnDisposed;
             vm.TextBindingChanged += TextChanged;
             vm.TextUnselected += Blur;
@@ -92,25 +92,25 @@ namespace NuSysApp
             var vm = (TextNodeViewModel)DataContext;
             navigated = true;
             UpdateText(vm.Text);
-           
+
         }
 
         private void TextChanged(object source, string text)
         {
-             if (navigated)
-             {
-                 UpdateText(text);
-             }
-             else
-             {
-                 TextNodeWebView.NavigationCompleted -= TextNodeWebViewOnNavigationCompleted;
-                 TextNodeWebView.NavigationCompleted += TextNodeWebViewOnNavigationCompleted;
-             }
+            if (navigated)
+            {
+                UpdateText(text);
+            }
+            else
+            {
+                TextNodeWebView.NavigationCompleted -= TextNodeWebViewOnNavigationCompleted;
+                TextNodeWebView.NavigationCompleted += TextNodeWebViewOnNavigationCompleted;
+            }
         }
 
         private void ControllerOnDisposed(object source)
         {
-            var vm = (TextNodeViewModel) DataContext;
+            var vm = (TextNodeViewModel)DataContext;
             vm.TextBindingChanged -= TextChanged;
             TextNodeWebView.NavigationCompleted -= TextNodeWebViewOnNavigationCompleted;
             TextNodeWebView.ScriptNotify -= wvBrowser_ScriptNotify;
@@ -255,15 +255,17 @@ namespace NuSysApp
             string data = e.Value;
             if (data != "")
             {
-                UpdateController(data);             
+                UpdateController(data);
             }
         }
 
         private void UpdateController(String s)
         {
-            var vm = DataContext as ElementViewModel;
+            var vm = DataContext as TextNodeViewModel;
             var controller = (TextNodeController)vm.Controller;
+            vm.TextBindingChanged -= TextChanged;
             controller.LibraryElementController?.SetContentData(s);
+            vm.TextBindingChanged += TextChanged;
             _text = s;
         }
 
@@ -297,12 +299,12 @@ namespace NuSysApp
 
         private void borderRect_OnPointerEntered(object sender, PointerRoutedEventArgs e)
         {
-           // borderRect.Opacity = 1;
+            // borderRect.Opacity = 1;
         }
 
         private void borderRect_OnPointerExited(object sender, PointerRoutedEventArgs e)
         {
-         //       borderRect.Opacity = 0;
+            //       borderRect.Opacity = 0;
         }
 
         #region Speech Recognition
@@ -325,7 +327,7 @@ namespace NuSysApp
 
         private void propertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == "IsSelected")
+            if (e.PropertyName == "IsSelected")
             {
                 if (((ElementViewModel)DataContext).IsSelected)
                 {
@@ -350,7 +352,7 @@ namespace NuSysApp
             }
         }
 
-        private async void SpeechRecognizer_HypothesisGenerated( SpeechRecognizer sender, SpeechRecognitionHypothesisGeneratedEventArgs args)
+        private async void SpeechRecognizer_HypothesisGenerated(SpeechRecognizer sender, SpeechRecognitionHypothesisGeneratedEventArgs args)
         {
             string hypothesis = args.Hypothesis.Text;
             string textboxContent = _hypothesisBuilder.ToString() + " " + hypothesis + "...";
@@ -371,12 +373,12 @@ namespace NuSysApp
             //{
             _dictatedTextBuilder.Append(args.Result.Text + " ");
 
-                await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    UpdateText(_saved + " " + _dictatedTextBuilder.ToString());
-                    UpdateController(_text);
-                    Debug.WriteLine(_dictatedTextBuilder.ToString());
-                });
+            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                UpdateText(_saved + " " + _dictatedTextBuilder.ToString());
+                UpdateController(_text);
+                Debug.WriteLine(_dictatedTextBuilder.ToString());
+            });
             //}
         }
 
@@ -392,7 +394,7 @@ namespace NuSysApp
                     {
                         UpdateText(_saved + " " + _dictatedTextBuilder.ToString());
                         UpdateController(_text);
-        
+
                     });
                 }
             }
@@ -401,6 +403,12 @@ namespace NuSysApp
 
         private async void RecordButton_OnClick(object sender, PointerRoutedEventArgs e)
         {
+            e.Handled = true;
+            var vm = DataContext as TextNodeViewModel;
+            if (vm == null) return;
+            SessionController.Instance.SessionView.SpeechToTextBox.Instantiate(vm.Controller as TextNodeController, _text);
+
+            /* old code
             _isRecording = true;
             _saved = _text;
             _dictatedTextBuilder = new StringBuilder();
@@ -414,6 +422,7 @@ namespace NuSysApp
             {
                 await _speechRecognizer.ContinuousRecognitionSession.StartAsync();
             }
+            */
 
             //if (!session.IsRecording)
             //{
@@ -435,11 +444,15 @@ namespace NuSysApp
             //    UpdateController(_text);
             //}
             //speechString = "";
+
+
+            /* old code
             if (_speechRecognizer.State != SpeechRecognizerState.Idle)
             {
                 await _speechRecognizer.ContinuousRecognitionSession.StopAsync();
             }
             _isRecording = false;
+            */
         }
 
         #endregion

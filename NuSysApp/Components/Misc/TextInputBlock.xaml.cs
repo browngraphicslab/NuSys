@@ -287,6 +287,9 @@ namespace NuSysApp
 
         private async void RecordButton_OnClick(object sender, RoutedEventArgs e)
         {
+            SessionController.Instance.SessionView.SpeechToTextBox.Instantiate(this, _text);
+
+            /*
             //record functionality
             RecordModeOn();
             //InputMenu.Visibility = Visibility.Collapsed;
@@ -302,14 +305,15 @@ namespace NuSysApp
             }
            // TextModeOn();
            // this.SetImage("ms-appx:///Assets/icon_node_text.png");
+           */
         }
 
         //private void ResetTextFromInk()
         //{
-           // FlipClose.Begin();
-            //TextModeOn();
-           // this.SetImage("ms-appx:///Assets/icon_node_text.png");
-       // }
+        // FlipClose.Begin();
+        //TextModeOn();
+        // this.SetImage("ms-appx:///Assets/icon_node_text.png");
+        // }
 
         private void InkButton_OnClick(object sender, RoutedEventArgs e)
         {
