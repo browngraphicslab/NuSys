@@ -56,6 +56,27 @@ namespace NuSysApp
             SetServerEchoType(ServerEchoType.Everyone);
             SetServerItemType(ServerItemType.Alias);
             SetServerRequestType(ServerRequestType.Add);
+            var time = DateTime.UtcNow.ToString();
+            _message["library_element_creation_timestamp"] = time;
+            string url = null;
+            if (_message.ContainsKey("server_url"))
+            {
+                url = _message["server_url"].ToString();
+            }
+
+            ElementType type = (ElementType) Enum.Parse(typeof (ElementType), (string) _message["type"], true);
+
+            var libraryElement = new LinkLibraryElementModel((string) _message["id1"],(string) _message["id2"],(string) _message["id"], type);
+            SessionController.Instance.ContentController.Add(libraryElement);
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElement.LibraryElementId);
+            libraryElement.Timestamp = time;
+            var loadEventArgs = new LoadContentEventArgs(_message["data"]?.ToString());
+            if (_message.ContainsKey("data") && _message["data"] != null)
+            {
+                controller.Load(loadEventArgs);
+            }
+            libraryElement.ServerUrl = url;
+            SessionController.Instance.LinkController.AddLink(_message.GetString("id"));
         }
 
         public override async Task ExecuteRequestFunction()

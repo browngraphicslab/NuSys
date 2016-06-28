@@ -55,9 +55,11 @@ namespace NuSysApp
             controller.Deleted += ControllerOnDeleted;
 
             Tags = new ObservableCollection<Button>();
+            CircleLinks = new ObservableCollection<LinkCircle>();
             ReadFromModel();
 
             RegionsListTest = new ObservableCollection<RectangleView>();
+            SessionController.Instance.LinkController.OnNewLink += UpdateLinks;
             
             if (ElementType == ElementType.Image)
             {
@@ -71,6 +73,11 @@ namespace NuSysApp
         private void KeywordsChanged(object sender, HashSet<Keyword> keywords)
         {
             CreateTags();
+        }
+
+        private void UpdateLinks(LinkLibraryElementModel model)
+        {
+            UITask.Run(async delegate { CreateCircleLinks(); });    
         }
         private void ControllerOnDeleted(object source)
         {
@@ -138,6 +145,34 @@ namespace NuSysApp
                 CreateTags();
         }
 
+        private void CreateCircleLinks()
+        {
+
+            CircleLinks.Clear();
+            var circleList = SessionController.Instance.LinkController.GetLinkedIds(this.ContentId);
+                if(circleList == null)
+            {
+                return;
+            }
+            foreach (var circle in circleList)
+            {
+                //sorry about this - should also be in frontend and not in viewmodel
+                var circlelink = new LinkCircle(circle);
+//                tagBlock.Background = new SolidColorBrush(Constants.color4);
+//                tagBlock.Content = tag.Text;
+//                tagBlock.Height = 30;
+//                tagBlock.Padding = new Thickness(5);
+//                tagBlock.BorderThickness = new Thickness(0);
+//                tagBlock.Foreground = new SolidColorBrush(Constants.foreground6);
+//                tagBlock.Margin = new Thickness(2, 2, 2, 2);///
+//                tagBlock.FontStyle = FontStyle.Italic;
+//                tagBlock.IsHitTestVisible = false;
+
+                CircleLinks.Add(circlelink);
+            }
+            
+            RaisePropertyChanged("CircleLinks");
+        }
         private void CreateTags()
         {
             Tags.Clear();
@@ -189,6 +224,7 @@ namespace NuSysApp
             Transform.TranslateY = model.Y;
 
             CreateTags();
+            CreateCircleLinks();
         }
 
         public virtual void WriteToModel()
@@ -377,11 +413,9 @@ namespace NuSysApp
         }
 
         public string Title { get; set; }
-
         //public string Tags { get; set; }
-
         public ObservableCollection<Button> Tags { get; set; }
-
+        public ObservableCollection<LinkCircle> CircleLinks { get; set; }
         public ElementController Controller
         {
             get { return _controller; }

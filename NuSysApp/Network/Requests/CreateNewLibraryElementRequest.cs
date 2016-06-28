@@ -50,6 +50,10 @@ namespace NuSysApp
             {
                 libraryElement =  new CollectionLibraryElementModel((string) _message["id"]);
             }
+            else if (type == ElementType.Link)
+            {
+                libraryElement = new LinkLibraryElementModel((string) _message["id1"],(string) _message["id2"],(string) _message["id"], type);
+            }
             else
             {
                 libraryElement = new LibraryElementModel((string) _message["id"], type);
