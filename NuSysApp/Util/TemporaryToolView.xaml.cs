@@ -33,6 +33,9 @@ namespace NuSysApp
         private Image _dragItem;
         private enum DragMode { Filter };
         private DragMode _currenDragMode = DragMode.Filter;
+
+        private double _x;
+        private double _y;
         public TemporaryToolView(ToolViewModel vm, double x, double y)
         {
             _dragItem = new Image();
@@ -175,7 +178,7 @@ namespace NuSysApp
 
         }
 
-        private void UIElement_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        private void Tool_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
 
 
@@ -184,21 +187,25 @@ namespace NuSysApp
 
         }
 
-        private void Canvas_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        private void Tool_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
 
             var vm = DataContext as ToolViewModel;
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+
+
+            var x = e.Delta.Translation.X / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
+            var y = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
+
+
+
             if (vm != null)
             {
-                vm.Controller.SetLocation(vm.X + e.Delta.Translation.X, vm.Y + e.Delta.Translation.Y);
+                vm.Controller.SetLocation(vm.X + x, vm.Y + y);
             }
-            e.Handled = true;
+
         }
 
-        private void Grid_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            e.Handled = true;
-        }
 
         private void XFilterElement_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
@@ -207,19 +214,147 @@ namespace NuSysApp
 
         private void xList_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            e.Handled = true;
-            CapturePointer(e.Pointer);
+        //    //don't think this is necessary
+        //    var view = SessionController.Instance.SessionView;
+        //    _x = e.GetCurrentPoint(view).Position.X - 25;
+        //    _y = e.GetCurrentPoint(view).Position.Y - 25;
+        //    e.Handled = true;
+        //    CapturePointer(e.Pointer);
+
         }
 
         private void xList_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
+
+            //LibraryElementModel element = SessionController.Instance.ContentController.GetContent(xPropertiesList.SelectedItem as string);
+            //if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element.LibraryElementId) || (element.Type == ElementType.Link))
+            //{
+            //    e.Handled = true;
+            //    return;
+            //}
+
+
+            //var view = SessionController.Instance.SessionView;
+            //view.LibraryDraggingRectangle.SwitchType(element.Type);
+            //view.LibraryDraggingRectangle.Show();
+            //var rect = view.LibraryDraggingRectangle;
+            //Canvas.SetZIndex(rect, 3);
+            //rect.RenderTransform = new CompositeTransform();
+            //var t = (CompositeTransform)rect.RenderTransform;
+
+
+            //t.TranslateX += _x;
+            //t.TranslateY += _y;
+
+            //if (!SessionController.Instance.ContentController.ContainsAndLoaded(element.LibraryElementId))
+            //{
+            //    Task.Run(async delegate
+            //    {
+            //        SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(element.LibraryElementId);
+            //    });
+            //}
+
             e.Handled = true;
         }
 
         private void xList_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            e.Handled = true;
+            //LibraryElementModel element = SessionController.Instance.ContentController.GetContent(xPropertiesList.SelectedItem as string);
+            //if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
+            //{
+            //    e.Handled = true;
+            //    return;
+            //}
 
+            //var el = (FrameworkElement)sender;
+            //var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
+
+            //var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(sp, null).Where(i => i is LibraryView);
+            //if (itemsBelow.Any())
+            //{
+            //    SessionController.Instance.SessionView.LibraryDraggingRectangle.Hide();
+            //}
+            //else
+            //{
+            //    SessionController.Instance.SessionView.LibraryDraggingRectangle.Show();
+
+            //}
+            //var view = SessionController.Instance.SessionView;
+            //var rect = view.LibraryDraggingRectangle;
+            //var t = (CompositeTransform)rect.RenderTransform;
+
+            //t.TranslateX += e.Delta.Translation.X;
+            //t.TranslateY += e.Delta.Translation.Y;
+
+            //_x += e.Delta.Translation.X;
+            //_y += e.Delta.Translation.Y;
+
+
+            e.Handled = true;
+        }
+
+        private async void xList_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            //LibraryElementModel element = SessionController.Instance.ContentController.GetContent(xPropertiesList.SelectedItem as string);
+            //if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
+            //{
+            //    e.Handled = true;
+            //    return;
+            //}
+
+            //var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
+
+
+            //if (rect.Visibility == Visibility.Collapsed)
+            //    return;
+
+            //rect.Hide();
+            //var r = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(_x, _y));
+            //await this.AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type, element.LibraryElementId);
+
+            e.Handled = true;
+        }
+
+
+
+        public async Task AddNode(Point pos, Size size, ElementType elementType, string libraryId)
+        {
+            Task.Run(async delegate
+            {
+                if (elementType != ElementType.Collection)
+                {
+                    var element = SessionController.Instance.ContentController.GetContent(libraryId);
+                    var dict = new Message();
+                    Dictionary<string, object> metadata;
+
+                    metadata = new Dictionary<string, object>();
+                    metadata["node_creation_date"] = DateTime.Now;
+                    metadata["node_type"] = elementType + "Node";
+
+                    dict = new Message();
+                    dict["title"] = element?.Title + " element";
+                    dict["width"] = size.Width.ToString();
+                    dict["height"] = size.Height.ToString();
+                    dict["nodeType"] = elementType.ToString();
+                    dict["x"] = pos.X;
+                    dict["y"] = pos.Y;
+                    dict["contentId"] = libraryId;
+                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
+                    dict["metadata"] = metadata;
+                    dict["autoCreate"] = true;
+                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                    var request = new NewElementRequest(dict);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                }
+                else
+                {
+                    await
+                        StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, libraryId, size.Width,
+                            size.Height);
+                }
+            });
+
+            // TOOD: refresh library
         }
 
         private void XPropertiesList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -278,6 +413,22 @@ namespace NuSysApp
             xTitle.Text = selection.ToString();
             xUniqueButton.Visibility = Visibility.Visible;
             xUniqueText.Visibility = Visibility.Visible;
+        }
+
+        private void xFilterList_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+            //keep this method.
+            e.Handled = true;
+        }
+
+        private void xFilterList_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void xFilterList_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            e.Handled = true;
         }
     }
     

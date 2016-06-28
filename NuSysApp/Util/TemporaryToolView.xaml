@@ -26,11 +26,11 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <TextBlock x:Name="xTitle" Text="Filter Type" Height="35" Grid.Row="0" ManipulationMode="All" ManipulationStarted="UIElement_OnManipulationStarted" ManipulationDelta="Canvas_OnManipulationDelta"/>
-                <ListBox x:Name="xPropertiesList" SelectionChanged="XPropertiesList_OnSelectionChanged"  Height="200" Grid.Row="1" Width="200" Background="AliceBlue" SelectionMode="Single" PointerPressed="xList_PointerPressed" ManipulationMode="All" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta"/>
+                <TextBlock x:Name="xTitle" Text="Filter Type" Height="35" Grid.Row="0" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta"/>
+                <ListBox x:Name="xPropertiesList" SelectionChanged="XPropertiesList_OnSelectionChanged"  Height="200" Grid.Row="1" Width="200" Background="AliceBlue" SelectionMode="Single" PointerPressed="xList_PointerPressed" ManipulationMode="All" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted"/>
 
-                <ListBox x:Name="xFilterList" SelectionChanged="XFilterList_OnSelectionChanged" Height="200" Grid.Row="1" Width="200" Background="AliceBlue" ItemsSource="{x:Bind Filters}" SelectionMode="Single" PointerPressed="xList_PointerPressed" ManipulationMode="All" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta"/>
-                <StackPanel Name ="bottompanel" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center" ManipulationMode="All" ManipulationStarted="UIElement_OnManipulationStarted" ManipulationDelta="Canvas_OnManipulationDelta">
+                <ListBox x:Name="xFilterList" SelectionChanged="XFilterList_OnSelectionChanged" Height="200" Grid.Row="1" Width="200" Background="AliceBlue" ItemsSource="{x:Bind Filters}" SelectionMode="Single" ManipulationMode="All" ManipulationStarted="xFilterList_ManipulationStarted" ManipulationDelta="xFilterList_ManipulationDelta" ManipulationCompleted="xFilterList_ManipulationCompleted"/>
+                <StackPanel Name ="bottompanel" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta">
                     <TextBlock x:Name="xUniqueText" Visibility ="Collapsed" Text="Unique" Margin="10,0,0,0"/>
                     <ToggleButton Visibility ="Collapsed" x:Name="xUniqueButton" Checked="XUniqueButton_OnChecked" Unchecked="XUniqueButton_OnUnchecked" Margin="20,0,0,0"/>
                 </StackPanel>
