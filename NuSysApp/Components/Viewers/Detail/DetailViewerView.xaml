@@ -51,7 +51,7 @@
                                 <Border.RenderTransform>
                                     <TranslateTransform Y="15"></TranslateTransform>
                                 </Border.RenderTransform>
-                                <TextBlock x:Name="TabTitle" Text="ABCHSGEHKEJB" VerticalAlignment="Top" RenderTransformOrigin="0,1">
+                                <TextBlock x:Name="TabTitle" Text="{Binding Title}" VerticalAlignment="Top" RenderTransformOrigin="0,1">
                                     <TextBlock.RenderTransform>
                                         <RotateTransform Angle="90"></RotateTransform>
                                     </TextBlock.RenderTransform>
