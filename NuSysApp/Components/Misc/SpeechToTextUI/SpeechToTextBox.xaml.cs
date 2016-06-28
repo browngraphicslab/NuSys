@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using MyToolkit.UI;
 using NuSysApp.Components.Misc.SpeechToTextUI;
 using NuSysApp.Misc.SpeechToTextUI;
 
@@ -138,6 +139,10 @@ namespace NuSysApp
         {
             if (_vm.IsEnabled == Visibility.Collapsed)
             {
+                
+                // reset the speach to text box to the center of the canvas
+                xMatrixTransform.Matrix = Matrix.Identity;
+
                 _vm.IsEnabled = Visibility.Visible;
                 _vm.IsListening = false;
                 _pairedController = controller;
@@ -300,27 +305,28 @@ namespace NuSysApp
             var point = transform.TransformPoint(new Point(0, 0));
             if (point.X > 0)
             {
-                xCompositeTransform.TranslateX = -e.Delta.Translation.X;
+                // arrived at the left side of the canvas
+                xCompositeTransform.TranslateX += point.X;//-e.Delta.Translation.X;
                 e.Complete();
-                Debug.WriteLine("Hi Left");
             }
             if (point.Y > 0)
             {
-                xCompositeTransform.TranslateY = -e.Delta.Translation.Y;
+                // arrived at the top of the canvas
+                xCompositeTransform.TranslateY += point.Y;//-e.Delta.Translation.Y;
                 e.Complete();
-                Debug.WriteLine("Hi Top");
             }
             if (point.X - _vm.Width < -SessionController.Instance.SessionView.MainCanvas.ActualWidth)
             {
-                xCompositeTransform.TranslateX = -e.Delta.Translation.X;
+                // arrived at the right of the canvas
+                xCompositeTransform.TranslateX += SessionController.Instance.SessionView.MainCanvas.ActualWidth + point.X - _vm.Width;
                 e.Complete();
-                Debug.WriteLine("Hi right");
             }
             if (point.Y - _vm.Height < -SessionController.Instance.SessionView.MainCanvas.ActualHeight)
             {
-                xCompositeTransform.TranslateY = -e.Delta.Translation.Y;
+                // arrived at the bottom of the canvas
+                xCompositeTransform.TranslateY += SessionController.Instance.SessionView.MainCanvas.ActualHeight + point.Y - _vm.Height;
+
                 e.Complete();
-                Debug.WriteLine("Hi Bottom");
             }
             
 
@@ -483,6 +489,7 @@ namespace NuSysApp
             // and end of the selection is to the left of the start of the selection.
             double x, y, dx, dy;
             y = point.Y + rectFirst.Top;
+            y -= textbox.GetVerticalScrollPosition(); // to account for text that causes scrolling to occur
             dy = rectLast.Bottom - rectFirst.Top;
             if (rectLast.Right > rectFirst.Left)
             {
@@ -495,7 +502,7 @@ namespace NuSysApp
                 dx = rectFirst.Left - rectLast.Right;
             }
 
-            return new Rect(x, y, dx, dy);
+            return new Rect(x, y , dx, dy);
         }
 
 
