@@ -105,11 +105,7 @@ namespace NuSysApp
                     var pvm = (PdfNodeViewModel) cvm;
                     LaunchLDA(pvm.GetAllText());
                 }
-                /*if (cvm is TextNodeViewModel)
-                {
-                    var tvm = (TextNodeViewModel)cvm;
-                    LaunchLDA(tvm.Controller.LibraryElementModel.Data);
-                }*/
+                
             };
 
 
@@ -390,13 +386,13 @@ namespace NuSysApp
 
         private void TabList_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            var metadatable = TabList.SelectedItem as IMetadatable;
+            var metadatable = (IMetadatable)(sender as FrameworkElement).DataContext;
             ShowElement(metadatable);
         }
 
         private void ExitTab_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            var metadatable = TabList.SelectedItem as IMetadatable;
+            var metadatable = (IMetadatable) (sender as FrameworkElement).DataContext; 
             var vm = DataContext as DetailViewerViewModel;
             if (vm == null)
             {
@@ -415,7 +411,6 @@ namespace NuSysApp
             }
             vm.TabHeight = vm.TabPaneHeight/vm.Tabs.Count;
             e.Handled = true;
-
         }
     }
 }

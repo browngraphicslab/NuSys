@@ -208,12 +208,12 @@ namespace NuSysApp
                 return true;
             } else if (metadatable.MetadatableType() == MetadatableType.Region)
             {
-                var regionModel = metadatable as Region;
-                if (regionModel == null)
+                var controller = metadatable as RegionController;
+                if (controller == null)
                 {
                     return false;
                 }
-                
+                var regionModel = controller.Model;
                 View = await _viewHomeTabViewFactory.CreateFromSendable(CurrentElementController);
                 if (View == null)
                 {
@@ -291,6 +291,7 @@ namespace NuSysApp
             Tabs = _tabs;
             TabHeight = TabPaneHeight/Tabs.Count;
         }
+
 
         private void RemoveRegionFromList(object source, Region region)
         {

@@ -71,6 +71,7 @@ namespace NuSysApp
             Debug.Assert(libraryElementModel != null);
             _libraryElementModel = libraryElementModel;
             _debouncingDictionary = new DebouncingDictionary(libraryElementModel.LibraryElementId, true);
+            Title = libraryElementModel.Title;
         }
 
         /// <summary>

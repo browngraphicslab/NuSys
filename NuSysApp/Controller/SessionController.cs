@@ -25,6 +25,7 @@ namespace NuSysApp
         private FreeFormViewerViewModel _activeFreeFormViewer;
 
         private ContentController _contentController = new ContentController();
+        private RegionsController _regionsController = new RegionsController();
 
         private NuSysNetworkSession _nuSysNetworkSession;
 
@@ -51,6 +52,11 @@ namespace NuSysApp
         public ContentController ContentController
         {
             get { return _contentController; }
+        }
+
+        public RegionsController RegionsController
+        {
+            get { return _regionsController; }
         }
         public SpeechRecognizer Recognizer { get; set; }
 
