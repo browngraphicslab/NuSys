@@ -320,6 +320,7 @@ namespace NuSysApp
         }
 
         private async Task ParseFetchedLibraryElement(Dictionary<string, object> dict, string libraryId)
+
         {
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             var contentData = (string)dict["data"] ?? "";
@@ -355,14 +356,13 @@ namespace NuSysApp
                 }
             }
             var inks = dict.ContainsKey("inks") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["inks"].ToString()) : null;
-
             var metadata = dict.ContainsKey("metadata") ? JsonConvert.DeserializeObject<Dictionary<string, Tuple<string, bool>>>(dict["metadata"].ToString()) : null;
+
 
             if (NeededLibraryDataIDs.Contains(id))
             {
                 NeededLibraryDataIDs.Remove(id);
             }
-
 
             if (dict.ContainsKey("inklist"))
             {
@@ -449,6 +449,37 @@ namespace NuSysApp
                 }
             });
         }
+
+        public async Task<List<SearchResult>> AdvancedSearchOverLibraryElements(Query searchQuery)
+        {
+            return await Task.Run(async delegate
+            {
+                try
+                {
+                    JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+                    var dict = new Dictionary<string, object>();
+                    dict["query"] = JsonConvert.SerializeObject(searchQuery,settings);
+                    var data = await SendDictionaryToServer("advancedsearch", dict);
+                    try
+                    {
+                        var list = JsonConvert.DeserializeObject<List<SearchResult>>(data);
+                        return list;
+                    }
+                    catch (Exception deserializeException)
+                    {
+                        Debug.WriteLine("error parsing list returned from server for advacned search");
+                    }
+                    return null;
+
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Error searching on server");
+                    return null;
+                }
+            });
+        }
+
         public async Task SendMessageToServer(Message message)
         {
             await SendToServer(message.GetSerialized());

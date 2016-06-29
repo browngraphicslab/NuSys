@@ -355,6 +355,13 @@
       <DependentUpon>RectangleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\RectangleViewModel.cs" />
+    <Compile Include="Components\Viewers\Search\Query.cs" />
+    <Compile Include="Components\Viewers\Search\SearchResult.cs" />
+    <Compile Include="Components\Viewers\Search\SearchResultTemplate.cs" />
+    <Compile Include="Components\Viewers\Search\SearchView.xaml.cs">
+      <DependentUpon>SearchView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Search\SearchViewModel.cs" />
     <Compile Include="Components\WaitingRoom\SelectionHull.cs" />
     <Compile Include="Components\Viewers\Detail\DetailViewHomeTabViewFactory.cs" />
     <Compile Include="Components\Viewers\Detail\DetailViewerView.xaml.cs">
@@ -1056,6 +1063,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Viewers\FreeForm\RectangleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Search\SearchView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

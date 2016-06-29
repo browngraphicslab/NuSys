@@ -81,7 +81,7 @@
 
                                 <TextBlock Grid.Column="0" Text="TAGS" Foreground="{StaticResource darkforeground}" FontSize="30" CharacterSpacing="45" VerticalAlignment="Center"></TextBlock>
                                 <local:TextInputBlock Grid.Column="1" x:Name ="NewTagBox" BubbleTop ="True" LeftJustified="False" SetHeight="30"  KeyUp="NewTagBox_OnKeyUp" HorizontalAlignment="Stretch">
-    
+
                                 </local:TextInputBlock>
                                 <Button Grid.Column="2" x:Name="AddTagButton"  Height="30" Width="30" Content="+" Foreground="{StaticResource darkforeground}" Click="AddTagButton_OnClick"  Background="{StaticResource color6}" VerticalAlignment="Center"></Button>
                                 <Button Grid.Column="3" x:Name="SuggestButton"  Height="40" Width="100" Content="Suggest" Foreground="{StaticResource darkforeground}" Click="AddTagButton_OnClick"  Background="{StaticResource color6}" VerticalAlignment="Center" Margin="10,0,0,0"></Button>
@@ -98,17 +98,12 @@
                             </ItemsControl>
                         </Grid>
                     </Grid>
-
-
                 </PivotItem>
-
-
                 <PivotItem Header="Region Editor">
                     <local:RegionEditorTabView x:Name="xRegionEditorView"  Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></local:RegionEditorTabView>
 
                 </PivotItem>
                    
-
             </Pivot>
 
 

@@ -282,6 +282,7 @@ namespace NuSysApp
         //    //vm.Controller.LibraryElementModel.OnTitleChanged += ChangeTitle;
 
 
+
         //    var tempvm = (DetailHomeTabViewModel)View.DataContext;
         //    tempvm.TitleChanged += NodeVMTitleChanged;
         //    MakeTagList();

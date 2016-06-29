@@ -110,6 +110,7 @@ namespace NuSysApp
 
             
             xDetailViewer.DataContext = new DetailViewerViewModel();
+            xSearchViewer.DataContext = new SearchViewModel();
 
             var xRegionEditorView = (RegionEditorTabView)xDetailViewer.FindName("xRegionEditorView");
             xRegionEditorView.DataContext = xDetailViewer.DataContext;
@@ -684,6 +685,18 @@ namespace NuSysApp
         private void CurrentCollectionDV_OnClick(object sender, RoutedEventArgs e)
         {
             xDetailViewer.ShowElement(SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController);
+        }
+
+        private void SearchButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (xSearchViewer.Visibility == Visibility.Collapsed)
+            {
+                xSearchViewer.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                xSearchViewer.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }
