@@ -522,8 +522,6 @@ namespace NuSysApp
             Canvas.SetTop(ChatButton, mainCanvas.ActualHeight - 70);
             Canvas.SetLeft(ChatNotifs, 37);
             Canvas.SetTop(ChatNotifs, mainCanvas.ActualHeight - 67);
-            Canvas.SetTop(xSearchWindowView, 25);
-            Canvas.SetLeft(xSearchWindowView, 50);
             Canvas.SetLeft(SnapshotButton, MainCanvas.ActualWidth - 65);
             Canvas.SetTop(SnapshotButton, MainCanvas.ActualHeight - 65);
         }
@@ -544,17 +542,6 @@ namespace NuSysApp
             {
                 xWorkspaceTitle.SetText(title);
             }
-        }
-
-        public void SearchView()
-        {
-            Canvas.SetTop(xSearchWindowView, 25);
-            Canvas.SetLeft(xSearchWindowView, 50);
-        }
-
-        public void SearchHide(object sender, TappedRoutedEventArgs e)
-        {
-            xSearchWindowView.Visibility = Visibility.Collapsed;
         }
 
         public void ShowDetailView(IMetadatable metadatable)
@@ -691,17 +678,9 @@ namespace NuSysApp
             xDetailViewer.ShowElement(SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController);
         }
 
-
-        private void SearchButton_OnClick(object sender, RoutedEventArgs e)
+        internal SearchView SearchView
         {
-            if (xSearchViewer.Visibility == Visibility.Collapsed)
-            {
-                xSearchViewer.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                xSearchViewer.Visibility = Visibility.Collapsed;
-            }
+            get { return xSearchViewer; }
         }
 
     }

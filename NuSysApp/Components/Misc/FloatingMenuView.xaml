@@ -76,6 +76,7 @@
             <local:FloatingMenuButtonView x:Name="btnAddNode" Icon="ms-appx:///Assets/icon_mainmenu_add_node.png" Caption="" />
             <local:FloatingMenuButtonView x:Name="btnLibrary" Icon="ms-appx:///Assets/icon_library.png" Caption="" />
             <local:FloatingMenuButtonView x:Name="btnPen" Icon="ms-appx:///Assets/node icons/pen.png" Caption="" Visibility="Collapsed"/>
+            <local:FloatingMenuButtonView x:Name="btnSearch" Icon="ms-appx:///Assets/node icons/search_icon.png" Caption=""/>
         </StackPanel>
     </Canvas>
 </UserControl>

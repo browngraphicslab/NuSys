@@ -23,6 +23,29 @@ namespace NuSysApp
             }
         }
 
+        private Visibility _searchViewHelperTextVisibility;
+
+        public Visibility SearchViewHelperTextVisibility
+        {
+            get { return _searchViewHelperTextVisibility; }
+            set
+            {
+                _searchViewHelperTextVisibility = value;
+                RaisePropertyChanged("SearchViewHelperTextVisibility");
+            }
+        }
+
+        private Visibility _searchResultsListVisibility;
+
+        public Visibility SearchResultsListVisibility
+        {
+            get { return _searchResultsListVisibility; }
+            set
+            {
+                _searchResultsListVisibility = value;
+                RaisePropertyChanged("SearchResultsListVisibility");
+            }
+        }
 
         public ObservableCollection<SearchResultTemplate> PageElements { get; set; }
         private string _searchString = string.Empty;
@@ -41,6 +64,8 @@ namespace NuSysApp
         {
             PageElements = new ObservableCollection<SearchResultTemplate>();
             NoResultsFound = Visibility.Collapsed;
+            SearchViewHelperTextVisibility = Visibility.Visible;
+            SearchResultsListVisibility = Visibility.Collapsed;
         }
 
         public async void AdvancedSearch(Query searchQuery)
@@ -53,6 +78,7 @@ namespace NuSysApp
                 if (NoResultsFound == Visibility.Collapsed)
                 {
                     NoResultsFound = Visibility.Visible;
+                    SearchResultsListVisibility = Visibility.Collapsed;
                 }
                 return;
             }
@@ -66,6 +92,7 @@ namespace NuSysApp
                     PageElements.Add(new SearchResultTemplate(result));
 
                 }
+                SearchResultsListVisibility = Visibility.Visible;
             }
         }
     }
