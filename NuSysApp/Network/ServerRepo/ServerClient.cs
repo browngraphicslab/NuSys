@@ -282,7 +282,7 @@ namespace NuSysApp
                 libraryIdsUsed.Add(libraryId);
                 await Task.Run(async delegate
                 {
-                    SessionController.Instance.ContentController.GetLibraryElementController(libraryId).SetLoading(true);
+                    SessionController.Instance.ContentController.GetLibraryElementController(libraryId)?.SetLoading(true);
                     HttpClient client = new HttpClient();
                     var response = await client.GetAsync(GetUri("getcontent/" + libraryId));
 
@@ -356,7 +356,7 @@ namespace NuSysApp
             }
             var inks = dict.ContainsKey("inks") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["inks"].ToString()) : null;
 
-            var metadata = dict.ContainsKey("metadata") ? JsonConvert.DeserializeObject<Dictionary<string, Tuple<string, Boolean>>>(dict["metadata"].ToString()) : null;
+            var metadata = dict.ContainsKey("metadata") ? JsonConvert.DeserializeObject<Dictionary<string, Tuple<string, bool>>>(dict["metadata"].ToString()) : null;
 
             if (NeededLibraryDataIDs.Contains(id))
             {

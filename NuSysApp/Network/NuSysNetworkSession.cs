@@ -321,7 +321,6 @@ namespace NuSysApp
         {
             await DropNetworkUser(id);
         }
-
         public async Task FetchLibraryElementData(string id)
         {
             await _serverClient.FetchLibraryElementData(id);

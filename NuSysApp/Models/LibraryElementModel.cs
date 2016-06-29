@@ -45,6 +45,7 @@ namespace NuSysApp
             Regions = new HashSet<Region>();
             SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
         }
+        //public static List<string> PDFStrings = new List<string>();
         public async Task UnPack(Message message)
         {
             if (message.ContainsKey("keywords"))
@@ -55,6 +56,12 @@ namespace NuSysApp
             {
                 Regions = new HashSet<Region>(message.GetList<Region>("regions"));
             }
+            //TO DOWNLOAD PDFS
+            /*
+            if (Type == ElementType.PDF)
+            {
+                PDFStrings.Add(LibraryElementId);
+            }*/
         }
         protected virtual void OnSessionControllerEnterNewCollection()
         {

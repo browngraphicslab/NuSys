@@ -52,12 +52,13 @@ namespace NuSysApp
         private bool _loggedIn = false;
         private bool _isLoaded = false;
 
-        private const string LoginCredentialsFilePath = @"C:\Users\Leandro Bengzon\AppData\Local\Packages\151be203-7bd2-4ce5-80d2-fe29687cfa91_746ymgxbw3b6t\LocalState\LoginInfo.json";
+        private static string LoginCredentialsFilePath;
 
         private HashSet<string> _preloadedIDs = new HashSet<string>();
         public WaitingRoomView()
         {
             this.InitializeComponent();
+            LoginCredentialsFilePath = StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp).Result.Path + "\\LoginInfo.json";
             //waitingroomanimation.Begin();
 
             //TelemetryConfiguration.Active.TelemetryChannel.DeveloperMode = true;
@@ -206,236 +207,259 @@ namespace NuSysApp
 
         private async void AutoLogin()
         {
-
-            if (File.Exists(LoginCredentialsFilePath))
+            Task.Run(async delegate
             {
-                Tuple<string, string> creds = this.GetLoginCredentials();
-
-                try
+                if (File.Exists(LoginCredentialsFilePath))
                 {
-                    JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                    var cred = new Dictionary<string, string>();
+                    await UITask.Run(async delegate { 
+                    Tuple<string, string> creds = this.GetLoginCredentials();
 
-                    //cred["user"] = Convert.ToBase64String(Encrypt(usernameInput.Text));
-
-
-                    cred["user"] = creds.Item1;
-                    cred["pass"] = creds.Item2;
-                    var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/login/";
-                    var client = new HttpClient(
-                     new HttpClientHandler
-                     {
-                         ClientCertificateOptions = ClientCertificateOption.Automatic
-                     });
-                    string getData;
-                    var getResponse = await client.GetAsync(url);
-                    using (var content = getResponse.Content)
-                    {
-                        getData = await content.ReadAsStringAsync();
-                    }
                     try
                     {
-                        var timestamp = long.Parse(getData);
-                        cred["timestamp"] = timestamp.ToString();
-                    }
-                    catch (Exception longParseException)
-                    {
-                        throw new Exception("error trying to parse timestamp to long");
-                    }
-
-                    string data;
-                    var text = JsonConvert.SerializeObject(cred, settings);
-                    var response = await client.PostAsync(new Uri(url), new StringContent(text, Encoding.UTF8, "application/xml"));
-                    using (var content = response.Content)
-                    {
-                        data = await content.ReadAsStringAsync();
-                    }
-                    bool validCredentials;
-                    string serverSessionId;
-                    string userID = "";
-                    try
-                    {
-                        XmlDocument doc = new XmlDocument();
-                        doc.LoadXml(data);
-                        var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(doc.ChildNodes[0].InnerText);
-                        validCredentials = bool.Parse(dict["valid"]);
-                        if (dict.ContainsKey("user_id"))
+                        JsonSerializerSettings settings = new JsonSerializerSettings
                         {
-                            userID = dict["user_id"].ToString();
+                            StringEscapeHandling = StringEscapeHandling.EscapeNonAscii
+                        };
+                        var cred = new Dictionary<string, string>();
+
+                        //cred["user"] = Convert.ToBase64String(Encrypt(usernameInput.Text));
+
+
+                        cred["user"] = creds.Item1;
+                        cred["pass"] = creds.Item2;
+                        var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/login/";
+                        var client = new HttpClient(
+                            new HttpClientHandler
+                            {
+                                ClientCertificateOptions = ClientCertificateOption.Automatic
+                            });
+                        string getData;
+                        var getResponse = await client.GetAsync(url);
+                        using (var content = getResponse.Content)
+                        {
+                            getData = await content.ReadAsStringAsync();
                         }
-                        serverSessionId = dict.ContainsKey("server_session_id") ? dict["server_session_id"] : "";
-                    }
-                    catch (Exception boolParsException)
-                    {
-                        Debug.WriteLine("error parsing bool and serverSessionId returned from server");
-                        validCredentials = false;
-                        serverSessionId = null;
-                    }
-                    if (validCredentials)
-                    {
-                        ServerSessionID = serverSessionId;
                         try
                         {
-                            await SessionController.Instance.NuSysNetworkSession.Init();
-                            SessionController.Instance.LocalUserID = userID;
+                            var timestamp = long.Parse(getData);
+                            cred["timestamp"] = timestamp.ToString();
+                        }
+                        catch (Exception longParseException)
+                        {
+                            throw new Exception("error trying to parse timestamp to long");
+                        }
 
-                            SessionController.Instance.ContentController.OnNewContent += ContentControllerOnOnNewContent;
-
-                            loggedInText.Text = "Logged In!";
-
-                            NewWorkspaceButton.IsEnabled = true;
-                            _loggedIn = true;
-                            if (_isLoaded)
+                        string data;
+                        var text = JsonConvert.SerializeObject(cred, settings);
+                        var response =
+                            await
+                                client.PostAsync(new Uri(url), new StringContent(text, Encoding.UTF8, "application/xml"));
+                        using (var content = response.Content)
+                        {
+                            data = await content.ReadAsStringAsync();
+                        }
+                        bool validCredentials;
+                        string serverSessionId;
+                        string userID = "";
+                        try
+                        {
+                            XmlDocument doc = new XmlDocument();
+                            doc.LoadXml(data);
+                            var dict =
+                                JsonConvert.DeserializeObject<Dictionary<string, string>>(doc.ChildNodes[0].InnerText);
+                            validCredentials = bool.Parse(dict["valid"]);
+                            if (dict.ContainsKey("user_id"))
                             {
-                                UITask.Run(delegate
-                                {
-                                    JoinWorkspaceButton.Content = "Enter";
-                                    JoinWorkspaceButton.IsEnabled = true;
-                                    JoinWorkspaceButton.Visibility = Visibility.Visible;
-                                });
+                                userID = dict["user_id"].ToString();
                             }
-                            LoginButton.IsEnabled = false;
-                            SlideOutLogin.Begin();
-                            SlideInWorkspace.Begin();
-
-                            UserName = userID;
-                            if (userID.ToLower() != "rosemary" && userID.ToLower() != "rms" && userID.ToLower() != "gfxadmin")
+                            serverSessionId = dict.ContainsKey("server_session_id") ? dict["server_session_id"] : "";
+                        }
+                        catch (Exception boolParsException)
+                        {
+                            Debug.WriteLine("error parsing bool and serverSessionId returned from server");
+                            validCredentials = false;
+                            serverSessionId = null;
+                        }
+                        if (validCredentials)
+                        {
+                            ServerSessionID = serverSessionId;
+                            try
                             {
-                                foreach (var box in List.Items)
+                                await SessionController.Instance.NuSysNetworkSession.Init();
+                                SessionController.Instance.LocalUserID = userID;
+
+                                SessionController.Instance.ContentController.OnNewContent +=
+                                    ContentControllerOnOnNewContent;
+
+                                NewWorkspaceButton.IsEnabled = true;
+                                _loggedIn = true;
+                                if (_isLoaded)
                                 {
-                                    if ((box as CollectionTextBox).MadeByRosemary)
+                                    UITask.Run(delegate
                                     {
-                                        List.Items.Remove(box);
-                                    }
-                                }
-                            }
-
-                            await Task.Run(async delegate
-                            {
-                                var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
-                                foreach (var kvp in dictionaries)
-                                {
-                                    var id = (string)kvp.Value["id"];
-                                    //var element = new LibraryElementModel(kvp.Value);
-
-                                    bool favorited = false;
-                                    Dictionary<String, Tuple<string, Boolean>> metadata = new Dictionary<string, Tuple<string, Boolean>>();
-                                    var dict = kvp.Value;
-                                    var message = new Message(dict);
-                                    string title = null;
-                                    ElementType type = ElementType.Text;
-                                    string timestamp = "";
-                                    string creator = null;
-                                    string serverUrl = null;
-                                    if (dict.ContainsKey("library_element_creation_timestamp"))
-                                    {
-                                        timestamp = dict["library_element_creation_timestamp"].ToString();
-                                    }
-                                    if (dict.ContainsKey("favorited") && bool.Parse(dict["favorited"].ToString()) == true)
-                                    {
-                                        favorited = true;
-                                    }
-                                    if (dict.ContainsKey("metadata"))
-                                    {
-
-                                        if (dict["metadata"] != null)
-                                        {
-                                            metadata = JsonConvert.DeserializeObject<Dictionary<string, Tuple<string, Boolean>>>(dict["metadata"].ToString());
-                                        }
-
-                                    }
-
-                                    if (dict.ContainsKey("creator_user_id"))
-                                    {
-                                        creator = dict["creator_user_id"].ToString();
-                                    }
-                                    if (dict.ContainsKey("title"))
-                                    {
-                                        title = (string)dict["title"]; // title
-                                    }
-                                    if (dict.ContainsKey("server_url"))
-                                    {
-                                        serverUrl = dict["server_url"].ToString();
-                                    }
-                                    if (dict.ContainsKey("type"))
-                                    {
-                                        try
-                                        {
-                                            type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            continue;
-                                        }
-                                    }
-
-                                    LibraryElementModel element;
-                                    if (type == ElementType.Collection)
-                                    {
-                                        element = new CollectionLibraryElementModel(id, metadata, title, favorited);
-                                    }
-                                    else
-                                    {
-                                        element = new LibraryElementModel(id, type, metadata, title, favorited);
-                                    }
-                                    element.UnPack(message);
-                                    element.Creator = creator;
-                                    element.Timestamp = timestamp;
-                                    element.ServerUrl = serverUrl;
-                                    if (SessionController.Instance.ContentController.GetContent(id) == null)
-                                    {
-                                        SessionController.Instance.ContentController.Add(element);
-                                    }
-                                }
-                                _isLoaded = true;
-                                if (_loggedIn)
-                                {
-                                    UITask.Run(delegate {
-                                        JoinWorkspaceButton.IsEnabled = true;
                                         JoinWorkspaceButton.Content = "Enter";
+                                        JoinWorkspaceButton.IsEnabled = true;
                                         JoinWorkspaceButton.Visibility = Visibility.Visible;
                                     });
-                                    if (!File.Exists(LoginCredentialsFilePath))
-                                    {
-                                        this.SaveLoginInfo(cred["user"], cred["pass"]);
-                                    }
                                 }
-                            });
+                                LoginButton.IsEnabled = false;
+                                SlideOutLogin.Begin();
+                                SlideInWorkspace.Begin();
+                                await UITask.Run(async delegate
+                                {
+                                    UserName = userID;
+                                    if (userID.ToLower() != "rosemary" && userID.ToLower() != "rms" &&
+                                        userID.ToLower() != "gfxadmin")
+                                    {
+                                        foreach (var box in List.Items)
+                                        {
+                                            if ((box as CollectionTextBox).MadeByRosemary)
+                                            {
+                                                List.Items.Remove(box);
+                                            }
+                                        }
+                                    }
+                                });
+                                await Task.Run(async delegate
+                                {
+                                    var dictionaries =
+                                        await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
+                                    foreach (var kvp in dictionaries)
+                                    {
+                                        var id = (string) kvp.Value["id"];
+                                        //var element = new LibraryElementModel(kvp.Value);
+
+                                        bool favorited = false;
+                                        Dictionary<String, Tuple<string, Boolean>> metadata =
+                                            new Dictionary<string, Tuple<string, Boolean>>();
+                                        var dict = kvp.Value;
+                                        var message = new Message(dict);
+                                        string title = null;
+                                        ElementType type = ElementType.Text;
+                                        string timestamp = "";
+                                        string creator = null;
+                                        string serverUrl = null;
+                                        if (dict.ContainsKey("library_element_creation_timestamp"))
+                                        {
+                                            timestamp = dict["library_element_creation_timestamp"].ToString();
+                                        }
+                                        if (dict.ContainsKey("favorited") &&
+                                            bool.Parse(dict["favorited"].ToString()) == true)
+                                        {
+                                            favorited = true;
+                                        }
+                                        if (dict.ContainsKey("metadata"))
+                                        {
+
+                                            if (dict["metadata"] != null)
+                                            {
+                                                metadata =
+                                                    JsonConvert
+                                                        .DeserializeObject<Dictionary<string, Tuple<string, Boolean>>>(
+                                                            dict["metadata"].ToString());
+                                            }
+
+                                        }
+
+                                        if (dict.ContainsKey("creator_user_id"))
+                                        {
+                                            creator = dict["creator_user_id"].ToString();
+                                        }
+                                        if (dict.ContainsKey("title"))
+                                        {
+                                            title = (string) dict["title"]; // title
+                                        }
+                                        if (dict.ContainsKey("server_url"))
+                                        {
+                                            serverUrl = dict["server_url"].ToString();
+                                        }
+                                        if (dict.ContainsKey("type"))
+                                        {
+                                            try
+                                            {
+                                                type =
+                                                    (ElementType)
+                                                        Enum.Parse(typeof(ElementType), (string) dict["type"], true);
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                continue;
+                                            }
+                                        }
+
+                                        LibraryElementModel element;
+                                        if (type == ElementType.Collection)
+                                        {
+                                            element = new CollectionLibraryElementModel(id, metadata, title, favorited);
+                                        }
+                                        else
+                                        {
+                                            element = new LibraryElementModel(id, type, metadata, title, favorited);
+                                        }
+                                        element.UnPack(message);
+                                        element.Creator = creator;
+                                        element.Timestamp = timestamp;
+                                        element.ServerUrl = serverUrl;
+                                        if (SessionController.Instance.ContentController.GetContent(id) == null)
+                                        {
+                                            SessionController.Instance.ContentController.Add(element);
+                                        }
+                                    }
+                                    _isLoaded = true;
+                                    if (_loggedIn)
+                                    {
+                                        UITask.Run(delegate
+                                        {
+                                            JoinWorkspaceButton.IsEnabled = true;
+                                            JoinWorkspaceButton.Content = "Enter";
+                                            JoinWorkspaceButton.Visibility = Visibility.Visible;
+                                        });
+                                        if (!File.Exists(LoginCredentialsFilePath))
+                                        {
+                                            this.SaveLoginInfo(cred["user"], cred["pass"]);
+                                        }
+                                    }
+                                });
+                            }
+                            catch (ServerClient.IncomingDataReaderException loginException)
+                            {
+                                loggedInText.Text = "Log in failed!";
+                                //     throw new Exception("Your account is probably already logged in");
+                            }
                         }
-                        catch (ServerClient.IncomingDataReaderException loginException)
+                        else
                         {
                             loggedInText.Text = "Log in failed!";
-                            //     throw new Exception("Your account is probably already logged in");
-                        }
-                    }
-                    else
-                    {
-                        loggedInText.Text = "Log in failed!";
-                        /*
+                            /*
                         if (!createNewUser) { 
                             Login(true);
                         }*/
+                        }
+
                     }
-
-                }
-                catch (HttpRequestException h)
-                {
-                    Debug.WriteLine("cannot connect to server");
-                }
-
+                    catch (HttpRequestException h)
+                    {
+                        Debug.WriteLine("cannot connect to server");
+                    }
+                })
+                ;
             }
+            });
         }
 
         private Tuple<string, string> GetLoginCredentials()
         {
-            JObject o1 = JObject.Parse(File.ReadAllText(LoginCredentialsFilePath));
-            var username = o1.GetValue("Username").ToString();
-            var password = o1.GetValue("Password").ToString();
+            return Task.Run(async delegate
+            {
+                JObject o1 = JObject.Parse(File.ReadAllText(LoginCredentialsFilePath));
+                var username = o1.GetValue("Username").ToString();
+                var password = o1.GetValue("Password").ToString();
 
 
 
-            Tuple<string, string> credentials = new Tuple<string, string>(username,password);
-            return credentials;
+                Tuple<string, string> credentials = new Tuple<string, string>(username, password);
+                return credentials;
+            }).Result;
         }
 
         private void SaveLoginInfo(string username, string password)
