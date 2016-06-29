@@ -21,7 +21,16 @@ namespace NuSysApp
         private DetailViewHomeTabViewFactory _viewHomeTabViewFactory = new DetailViewHomeTabViewFactory();
         private string _tagToDelete;
         public bool DeleteOnFocus;
-        public string Title { get; set; }
+        private string _title;
+        public string Title
+        {
+            get { return _title; }
+            set
+            {
+                _title = value;
+                RaisePropertyChanged("Title");
+            }
+        }
         public string Date { get; set; }
 
         public UserControl View { get; set; }
@@ -92,8 +101,7 @@ namespace NuSysApp
 
         public void Dispose()
         {
-            var tempvm = (DetailHomeTabViewModel)View.DataContext;
-            tempvm.TitleChanged -= NodeVMTitleChanged;
+            CurrentElementController.TitleChanged -= ControllerTitleChanged;
 
             _nodeModel = null;
 
@@ -178,12 +186,10 @@ namespace NuSysApp
                 //_nodeModel = controller.LibraryElementModel;
 
                 Title = controller.LibraryElementModel.Title;
-                this.ChangeTitle(this, controller.LibraryElementModel.Title);
+                //this.ChangeTitle(this, controller.LibraryElementModel.Title);
 
-                var tempvm = (DetailHomeTabViewModel)View.DataContext;
-                tempvm.TitleChanged += NodeVMTitleChanged;
+                controller.TitleChanged += ControllerTitleChanged;
                 MakeTagList();
-                RaisePropertyChanged("Title");
                 RaisePropertyChanged("View");
                 RaisePropertyChanged("Tags");
                 RaisePropertyChanged("Metadata");
@@ -228,10 +234,10 @@ namespace NuSysApp
                 SizeChanged += (sender, left, width, height) => _regionableHomeTabViewModel.SizeChanged(sender, width, height);
                 
                 Title = regionModel.Name;
-                this.ChangeTitle(this, regionModel.Name);
+                //this.ChangeTitle(this, regionModel.Name);
                 
                 //var tempvm = (DetailHomeTabViewModel)View.DataContext;
-                //tempvm.TitleChanged += NodeVMTitleChanged;
+                //tempvm.TitleChanged += ControllerTitleChanged;
                 
                 RaisePropertyChanged("Title");
                 RaisePropertyChanged("View");
@@ -288,12 +294,13 @@ namespace NuSysApp
             MakeTagList();
         }
 
-
+        /*
         public void ChangeTitle(object sender, string title)
         {
             TitleChanged?.Invoke(this, title);
             Title = title;
         }
+        */
 
         public void ChangeSize(object sender, double left, double width, double height)
         {
@@ -308,10 +315,9 @@ namespace NuSysApp
             }
         }
 
-        private void NodeVMTitleChanged(object sender, string title)
+        private void ControllerTitleChanged(object sender, string title)
         {
             Title = title;
-            RaisePropertyChanged("Title");
         }
 
         
@@ -358,7 +364,6 @@ namespace NuSysApp
             Grid.SetColumn(tagContent,1);
 
             Button tagBlock = new Button();
-            tagBlock.Tapped += TagBlock_Tapped;
             tagBlock.Background = new SolidColorBrush(Constants.color4);
             tagBlock.Content = stackPanel;
             tagBlock.Height = 30;
@@ -379,12 +384,13 @@ namespace NuSysApp
                 return;
             CurrentElementController?.RemoveKeyword(new Keyword(t));
         }
-        
-        private async void TagBlock_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
-        {
-      
-        }
 
+        public void ChangeControllersTitle(string title)
+        {
+            CurrentElementController.TitleChanged -= ControllerTitleChanged;
+            CurrentElementController.SetTitle(title);
+            CurrentElementController.TitleChanged += ControllerTitleChanged;
+        }
 
     }
 

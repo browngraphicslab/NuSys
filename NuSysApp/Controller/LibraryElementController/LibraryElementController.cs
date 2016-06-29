@@ -103,13 +103,6 @@ namespace NuSysApp
             RegionRemoved?.Invoke(this, region);
             SessionController.Instance.NuSysNetworkSession.RemoveRegionFromContent(region);
         }
-
-        /// <summary>
-        /// This method simply fires the update region event and updates the server (using debouncing)
-        /// Because of the lack of a region controller to update individual region properties,
-        /// THIS METHOD ASSUMES THAT YOU'VE ALREADY CHANGED THE REGION'S MODEL PROPERTIES
-        /// </summary>
-
         /// <summary>
         /// This will change the library element model's title and update the server.  
         /// Then it will fire an event notifying all listeners of the change

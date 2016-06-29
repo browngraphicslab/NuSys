@@ -34,7 +34,6 @@ namespace NuSysApp
         private bool _isInking;
         private bool _isActivated;
         private string _savedForInking="";
-        private string _text;
 
         public delegate void TextInputBlockChangedHandler(object source, string title);
         public event TextInputBlockChangedHandler TextChanged;
@@ -45,11 +44,9 @@ namespace NuSysApp
         public static readonly DependencyProperty ButtonBgProperty = DependencyProperty.RegisterAttached("ButtonBg", typeof(Windows.UI.Color), typeof(TextInputBlock), null);
         public static readonly DependencyProperty TextProperty = DependencyProperty.RegisterAttached("Text", typeof(string), typeof(TextInputBlock), null);
 
-
         public TextInputBlock()
         {
-            _text = "";
-           // _textMode = true;
+            // _textMode = true;
             _recordMode = false;
             _inkMode = false;
             _isRecording = false;
@@ -57,14 +54,16 @@ namespace NuSysApp
             _isActivated = false;
             this.InitializeComponent();
 
-            TextBox.KeyUp += TextBoxOnKeyUp;
+            //TextBox.KeyUp += TextBoxOnKeyUp;
             this.SetUpInking();
         }
 
+        /*
         private void TextBoxOnKeyUp(object sender, KeyRoutedEventArgs keyRoutedEventArgs)
         {
             TextChanged?.Invoke(this, this.Text);
         }
+        */
 
         public Windows.UI.Color ButtonBg
         {
@@ -125,24 +124,12 @@ namespace NuSysApp
             }
         }
 
+        
         private void TextBox_OnTextChanged(object sender, TextChangedEventArgs args)
         {
-            this.Text = this.TextBox.Text;
             TextChanged?.Invoke(this, this.Text);
         }
-
-        public string Text
-        {
-            get
-            {
-                return _text;
-            }
-            set
-            {
-                this.TextBox.Text = value??"";
-                _text = value;
-            }
-        }
+        
 
         public double SetHeight
         {
@@ -200,7 +187,7 @@ namespace NuSysApp
 
         private void SetUpInking()
         {
-            _savedForInking = _text;
+            _savedForInking = TextBox.Text;
             var inqModel = new InqCanvasModel(SessionController.Instance.GenerateId());
             var inqViewModel = new InqCanvasViewModel(inqModel, new Size(Inker.Width, Inker.Height));
 
@@ -219,7 +206,7 @@ namespace NuSysApp
                 if (texts.Count > 0)
                 {
                     TextBox.Text = _savedForInking + " " + texts[0];
-                    this.Text = this.TextBox.Text.Trim();
+                    TextBox.Text = this.TextBox.Text.Trim();
                 }
                 TextChanged?.Invoke(this, TextBox.Text.Trim());
             };
@@ -288,7 +275,7 @@ namespace NuSysApp
 
         private async void RecordButton_OnClick(object sender, RoutedEventArgs e)
         {
-            SessionController.Instance.SessionView.SpeechToTextBox.Instantiate(this, _text);
+            SessionController.Instance.SessionView.SpeechToTextBox.Instantiate(this, TextBox.Text);
 
             /*
             //record functionality
@@ -333,7 +320,7 @@ namespace NuSysApp
             else
             {
                 InkBubble.Visibility = Visibility.Collapsed;
-                this.Text = this.TextBox.Text.Trim();
+                TextBox.Text = this.TextBox.Text.Trim();
                 TextChanged?.Invoke(this, TextBox.Text.Trim());
                 SetImage("ms-appx:///Assets/icon_node_ink.png", InkImg);
             }
@@ -432,10 +419,21 @@ namespace NuSysApp
             return result[0].GetTextCandidates().ToList();
 
         }
+        public string Text
+        {
+            get { return TextBox.Text; }
+            set { TextBox.Text = value; }
+        }
 
+        public void SetText(string text)
+        {
+            TextBox.TextChanged -= TextBox_OnTextChanged;
+            SetData(text ?? "");
+            TextBox.TextChanged += TextBox_OnTextChanged;
+        }
         public void SetData(string text)
         {
-            this.Text = text;
+            TextBox.Text = text ?? "";
         }
     }
 }

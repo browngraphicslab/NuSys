@@ -687,5 +687,6 @@ namespace NuSysApp
         {
             xDetailViewer.ShowElement(SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController);
         }
+
     }
 }
