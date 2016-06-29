@@ -16,6 +16,8 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using NuSysApp.Viewers;
+using WinRTXamlToolkit.Controls;
+using WinRTXamlToolkit.Controls.DataVisualization.Charting;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -37,7 +39,7 @@ namespace NuSysApp
         private DragMode _currentDragMode = DragMode.Filter;
 
 
-        private const int MinWidth = 150;
+        private const int MinWidth = 250;
         private const int MinHeight = 300;
         private const int  ListBoxHeightOffset = 175;
 
@@ -60,10 +62,12 @@ namespace NuSysApp
 
             xPropertiesList.Height = vm.Height - 175;
             xFilterList.Height = vm.Height - 175;
+            PieChart.Height = vm.Height - 175;
+            PieChart.Width = vm.Width;
+            
 
-            Binding b = new Binding();
-            b.Path = new PropertyPath("PropertiesToDisplay");
-            xPropertiesList.SetBinding(ListBox.ItemsSourceProperty, b);
+            (PieChart.Series[0] as PieSeries).ItemsSource =
+                    (DataContext as ToolViewModel).PieChartDictionary;
 
         }
 
@@ -73,7 +77,10 @@ namespace NuSysApp
             {
                 xPropertiesList.SelectedItem = (DataContext as ToolViewModel).Selection;
             }
-            
+
+                (PieChart.Series[0] as PieSeries).ItemsSource =
+                    (DataContext as ToolViewModel).PieChartDictionary;
+
         }
 
         public void Dispose()
@@ -103,12 +110,44 @@ namespace NuSysApp
                 hitsStart = hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList();
                 if (hitsStart.Any())
                 {
+                    
                     var first = hitsStart.First() as TemporaryToolView;
-                    var linkviewmodel = new ToolLinkViewModel(this, first);
-                    var link = new ToolLinkView(linkviewmodel);
-                    Canvas.SetZIndex(link, Canvas.GetZIndex(this) - 1);
-                    wvm.AtomViewList.Add(link);
-                    (first.DataContext as ToolViewModel).Controller.AddParent((DataContext as ToolViewModel).Controller);
+                    if (first != this)
+                    {
+                        bool createsLoop = false;
+                        //checks if tools will create a loop, and prevent that from happening
+                        var controllers = new List<ToolController>((DataContext as ToolViewModel).Controller.Model.ParentIds.Select(item => ToolController.ToolControllers.ContainsKey(item) ? ToolController.ToolControllers[item] : null));
+
+                        while (controllers != null && controllers.Count != 0)
+                        {
+                            if (controllers.Contains((first.DataContext as ToolViewModel).Controller))
+                            {
+                                createsLoop = true;
+                                break;
+                            }
+                            var tempControllers = new List<ToolController>();
+                            foreach (var controller in controllers)
+                            {
+                                tempControllers = new List<ToolController>(tempControllers.Union(new List<ToolController>(
+                                        controller.Model.ParentIds.Select(
+                                            item =>
+                                                ToolController.ToolControllers.ContainsKey(item)
+                                                    ? ToolController.ToolControllers[item]
+                                                    : null))));
+                            }
+                            controllers = tempControllers;
+                        }
+                        if (createsLoop == false)
+                        {
+                            var linkviewmodel = new ToolLinkViewModel(this, first);
+                            var link = new ToolLinkView(linkviewmodel);
+                            Canvas.SetZIndex(link, Canvas.GetZIndex(this) - 1);
+                            wvm.AtomViewList.Add(link);
+                            (first.DataContext as ToolViewModel).Controller.AddParent((DataContext as ToolViewModel).Controller);
+                        }
+                        
+                    }
+                    
                 }
                 else
                 {
@@ -421,8 +460,6 @@ namespace NuSysApp
 
         private void XPropertiesList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            
-
             if (xPropertiesList.SelectedItems.Count == 1)
             {
                 (DataContext as ToolViewModel).Selection  = ((string)(xPropertiesList.SelectedItems[0]));
@@ -435,23 +472,30 @@ namespace NuSysApp
             Binding b = new Binding();
             b.Path = new PropertyPath("PropertiesToDisplayUnique");
             xPropertiesList.SetBinding(ListBox.ItemsSourceProperty, b);
-
+            
             if ((DataContext as ToolViewModel).Selection != null && xPropertiesList.SelectedItems.Count == 0)
             {
                 xPropertiesList.SelectedItem = (DataContext as ToolViewModel).Selection;
             }
+
+            PieChart.Visibility = Visibility.Collapsed;
+            xPropertiesList.Visibility = Visibility.Visible;
         }
 
         private void XUniqueButton_OnUnchecked(object sender, RoutedEventArgs e)
         {
             Binding b = new Binding();
-            b.Path = new PropertyPath("PropertiesToDisplay");
+            b.Path = new PropertyPath("PropertiesToDisplayUnique");
             xPropertiesList.SetBinding(ListBox.ItemsSourceProperty, b);
+
 
             if ((DataContext as ToolViewModel).Selection != null && xPropertiesList.SelectedItems.Count == 0)
             {
                 xPropertiesList.SelectedItem = (DataContext as ToolViewModel).Selection;
             }
+
+            PieChart.Visibility = Visibility.Visible;
+            xPropertiesList.Visibility = Visibility.Collapsed;
         }
 
         private void XFilterList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -469,7 +513,8 @@ namespace NuSysApp
             toolViewModel.reloadPropertiesToDisplay();
             //do i need this
             //PropertiesToDisplay = (DataContext as ToolViewModel).PropertiesToDisplay;
-            xPropertiesList.ItemsSource = (DataContext as ToolViewModel).PropertiesToDisplay;
+
+            xUniqueButton.IsChecked = true;
 
             xGrid.Children.Remove(xFilterList);
             xTitle.Text = selection.ToString();
@@ -494,6 +539,9 @@ namespace NuSysApp
                 vm.Controller.SetSize(resizeX, resizeY);
                 xPropertiesList.Height = resizeY - ListBoxHeightOffset;
                 xFilterList.Height = resizeY - ListBoxHeightOffset;
+                PieChart.Height = resizeY - 175;
+                PieChart.Width = resizeX;
+
             }
             else if (resizeX > MinWidth)
             {
@@ -504,6 +552,8 @@ namespace NuSysApp
                 vm.Controller.SetSize(vm.Width, resizeY);
                 xPropertiesList.Height = resizeY - ListBoxHeightOffset;
                 xFilterList.Height = resizeY - ListBoxHeightOffset;
+                PieChart.Height = resizeY - 175;
+                PieChart.Width = resizeX;
             }
         }
 
@@ -522,6 +572,15 @@ namespace NuSysApp
         {
 
             e.Handled = true;
+        }
+
+        private void DataPointSeries_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if ((sender as PieSeries).SelectedItem != null)
+            {
+                var selected = (sender as PieSeries).SelectedItem is KeyValuePair<string, int> ? (KeyValuePair<string, int>) (sender as PieSeries).SelectedItem : new KeyValuePair<string, int>();
+                (DataContext as ToolViewModel).Selection = selected.Key;
+            }
         }
     }
     
