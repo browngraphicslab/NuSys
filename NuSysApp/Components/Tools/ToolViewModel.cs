@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Windows.UI.Xaml;
@@ -9,6 +10,11 @@ using NuSysApp.Util;
 
 namespace NuSysApp
 {
+    public class ChartSlice
+    {
+        public string Name { get; set; }
+        public int Amount { get; set; }
+    }
     public class ToolViewModel : BaseINPC
     {
         public delegate void PropertiesToDisplayChangedEventHandler(string selection);
@@ -91,8 +97,9 @@ namespace NuSysApp
             Controller.LocationChanged += OnLocationChanged;
             PropertiesToDisplay = new ObservableCollection<string>();
             PropertiesToDisplayUnique = new ObservableCollection<string>();
+            PropertiesToDisplayPieChart = new ObservableCollection<ChartSlice>();
             Height = 400;
-            Width = 200;
+            Width = 260;
         }
 
         public void OnSizeChanged(object sender, double width, double height)
@@ -114,12 +121,6 @@ namespace NuSysApp
         {
             reloadPropertiesToDisplay();
             
-            if (_controller.Model.Selection != null && !PropertiesToDisplay.Contains(_controller.Model.Selection))
-            {
-                _controller.UnSelect();
-                reloadPropertiesToDisplay();
-            }
-            PropertiesToDisplayChanged?.Invoke(_controller.Model.Selection);
         }
 
 
@@ -137,22 +138,49 @@ namespace NuSysApp
         public void reloadPropertiesToDisplay()
         {
             var temp = new ObservableCollection<string>(_controller.GetAllProperties());
-            HashSet<string> hs = new HashSet<string>();
+            if (_controller.Model.Selection != null && !PropertiesToDisplay.Contains(_controller.Model.Selection))
+            {
+                _controller.UnSelect();
+                temp = new ObservableCollection<string>(_controller.GetAllProperties());
+            }
+
+            PieChartDictionary = new Dictionary<string, int>();
             PropertiesToDisplay.Clear();
             PropertiesToDisplayUnique.Clear();
+            PropertiesToDisplayPieChart = new ObservableCollection<ChartSlice>();
             foreach (var item in temp)
             {
-                PropertiesToDisplay.Add(item);
-                if (!hs.Contains(item))
+                if (item != null)
                 {
-                    hs.Add(item);
-                    PropertiesToDisplayUnique.Add(item);
+                    PropertiesToDisplay.Add(item);
+                    if (!PieChartDictionary.ContainsKey(item))
+                    {
+                        PieChartDictionary.Add(item, 1);
+                        PropertiesToDisplayUnique.Add(item);
+                    }
+                    else
+                    {
+                        PieChartDictionary[item] = PieChartDictionary[item] + 1;
+                    }
                 }
             }
+            //foreach (var item in dic)
+            //{
+            //    ChartSlice slice = new ChartSlice();
+            //    slice.Name = item.Key;
+            //    slice.Amount = item.Value;
+            //    PropertiesToDisplayPieChart.Add(slice);
+            //}
+            PropertiesToDisplayChanged?.Invoke(_controller.Model.Selection);
+
         }
+
+        public Dictionary<string, int> PieChartDictionary { get; set; }
 
         public ObservableCollection<string> PropertiesToDisplay { get; set; }
 
         public ObservableCollection<string> PropertiesToDisplayUnique { get; set; }
+
+        public ObservableCollection<ChartSlice> PropertiesToDisplayPieChart { get; set; } 
     }
 }
