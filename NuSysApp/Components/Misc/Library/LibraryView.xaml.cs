@@ -1,14 +1,19 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Imaging;
+using Windows.Storage;
+using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
 using Windows.System;
 using Windows.UI;
@@ -18,7 +23,13 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using SharpDX.Direct2D1;
+using SharpDX.WIC;
+using Image = Windows.UI.Xaml.Controls.Image;
+using SolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
+
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace NuSysApp
@@ -226,6 +237,7 @@ namespace NuSysApp
             ElementType elementType = ElementType.Text;
             string data = "";
             string title = "";
+            string text = "";
 
             var storageFiles = await FileManager.PromptUserForFiles(Constants.AllFileTypes);
             foreach (var storageFile in storageFiles)
@@ -240,6 +252,8 @@ namespace NuSysApp
 
                 bool validFileType = true;
 
+                // Create a thumbnail dictionary mapping thumbnail sizes to the byte arrays
+                var thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile);                    
                 if (Constants.ImageFileTypes.Contains(fileType))
                 {
                     elementType = ElementType.Image;
@@ -271,6 +285,55 @@ namespace NuSysApp
                     }
 
                     data = Convert.ToBase64String(fileBytes);
+
+                    // Get text from the pdf
+                    var myDoc = await MediaUtil.DataToPDF(data); 
+                    
+                    int numPages = myDoc.PageCount;
+                    int currPage = 0;
+                    while (currPage < numPages)
+                    {
+                        text = text + myDoc.GetAllTexts(currPage);
+                        currPage++;
+                    }
+
+                    /// The following was supposed to create a thumbnail from the first page of the pdf and save
+                    /// it as a 64 bit string, however there is an exception thrown when converting the 
+                    /// RenderBitmap to a ByteArray...something about the index being larger than the capacity of 
+                    /// the buffer...
+
+                    /*
+                    // Instantiate a MuPDF doc and save the rendered first page to a WritableBitmap
+                    var doc = await MediaUtil.DataToPDF(data);
+                    var width = 50;
+                    var height = 50;
+                    var writableBitmap = new WriteableBitmap(width, height);
+                    IBuffer buf = new Windows.Storage.Streams.Buffer(writableBitmap.PixelBuffer.Capacity);
+                    buf.Length = writableBitmap.PixelBuffer.Length;
+                    doc.DrawPage(1, buf, 0, 0, 0, 0, false);
+                    var ss = buf.AsStream();
+                    await ss.CopyToAsync(writableBitmap.PixelBuffer.AsStream());
+                    writableBitmap.Invalidate();
+
+                    // Create an Image, and set the source to the writable bitmap
+                    var myImage = new Image();
+                    myImage.Source = writableBitmap;
+                    myImage.Height = 50;
+                    myImage.Width = 50;
+
+                    // Take screenshot of Image using a render bitmap. In order to do this, the image must
+                    // be inside a visual component, like the session view.
+                    var r = new RenderTargetBitmap();
+                    SessionController.Instance.SessionView.MainCanvas.Children.Add(myImage);
+                    await r.RenderAsync(myImage);
+                    SessionController.Instance.SessionView.MainCanvas.Children.Remove(myImage);
+
+                    // Obtain a ByteArray from the RenderBitmap, store it as a string in the thumbnail dictionary
+                    var tdata = await MediaUtil.RenderTargetBitmapToByteArray(r);
+                    thumbnails[ThumbnailSize.SMALL] =
+                        Convert.ToBase64String(tdata);
+                    */
+
                 }
                 else if (Constants.VideoFileTypes.Contains(fileType))
                 {
@@ -317,6 +380,11 @@ namespace NuSysApp
                     var m = new Message();
                     m["id"] = contentId;
                     m["data"] = data;
+                    m["small_thumbnail"] = thumbnails[ThumbnailSize.SMALL];
+                    //await StorageUtil.SaveAsStorageFile(thumbnails[ThumbnailSize.SMALL], @"C:\Users\Zach\Documents\test.jpg");
+                    m["medium_thumbnail"] = thumbnails[ThumbnailSize.MEDIUM];
+                    m["large_thumbnail"] = thumbnails[ThumbnailSize.LARGE];
+                    m["text"] = text;
                     m["type"] = elementType.ToString();
                     if (title != null)
                     {
@@ -350,6 +418,19 @@ namespace NuSysApp
                 }
             }
         }
+
+        private Task Goto(int v)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ThumbnailTest(string b64)
+        {
+           //ShellFile file =new ShellFile();
+          
+
+        }
+
         public async Task AddNode(Point pos, Size size, ElementType elementType, string libraryId)
         {
             Task.Run(async delegate
@@ -642,6 +723,11 @@ namespace NuSysApp
             _searchExportPos.Y = e.GetCurrentPoint(view).Position.Y - 25;
             e.Handled = true;
         }
+    }
+
+    public enum ThumbnailSize
+    {
+        SMALL,MEDIUM,LARGE
     }
 
 }

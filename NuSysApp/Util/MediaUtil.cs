@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
+using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -34,6 +35,21 @@ namespace NuSysApp
             stream.Dispose();
 
             return bitmapImage;
+        }
+
+        /// <summary>
+        /// Converts the passed in source into a byte array
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static async Task<byte[]> IRandomAcessStreamToByteArray(IRandomAccessStream s)
+        {
+                var dr = new DataReader(s.GetInputStreamAt(0));
+                var bytes = new byte[s.Size];
+                await dr.LoadAsync((uint)s.Size);
+                dr.ReadBytes(bytes);
+                return bytes;
+            
         }
 
         public static async Task<byte[]> RenderTargetBitmapToByteArray(RenderTargetBitmap source)
@@ -80,12 +96,39 @@ namespace NuSysApp
 
             return document;
         }
-        /*
-        public static async Task<StorageFile> ConvertByteToAudio(byte[] byteArray)
+
+
+        /// <summary>
+        /// Returns a dictionary mapping thumbnail strings to all thumbnailsize 
+        /// enums for the passed in storage file
+        /// </summary>
+        /// <param name="storageFile"></param>
+        /// <returns></returns>
+        public static async Task<Dictionary<ThumbnailSize,string>>  GetThumbnailDictionary(StorageFile storageFile)
         {
-            var recordStorageFile = await _rootFolder.CreateFileAsync(Id + ".mp3", CreationCollisionOption.GenerateUniqueName);
-            await FileIO.WriteBytesAsync(recordStorageFile, byteArray);
-            return recordStorageFile;
-        }*/
+            // Create some variables to help create the dictionary
+            var thumbnails = new Dictionary<ThumbnailSize, string>();
+            var intSizes = new uint[] { 50, 150, 300 };
+            var thumbSizes = new ThumbnailSize[] { ThumbnailSize.SMALL, ThumbnailSize.MEDIUM, ThumbnailSize.LARGE };
+
+            // Fill out the dictionary for every thumbnail size
+            for (int i = 0; i < 3; i++)
+            {
+                var thumbnail = new BitmapImage();
+                var source = await storageFile.GetThumbnailAsync(ThumbnailMode.SingleItem, intSizes[i]);
+                var byteArray = await MediaUtil.IRandomAcessStreamToByteArray(source);
+                thumbnails[thumbSizes[i]] = Convert.ToBase64String(byteArray);
+            }
+
+            // Return the completed dictionary
+            return thumbnails;
+        }
+        /*
+public static async Task<StorageFile> ConvertByteToAudio(byte[] byteArray)
+{
+   var recordStorageFile = await _rootFolder.CreateFileAsync(Id + ".mp3", CreationCollisionOption.GenerateUniqueName);
+   await FileIO.WriteBytesAsync(recordStorageFile, byteArray);
+   return recordStorageFile;
+}*/
     }
 }
