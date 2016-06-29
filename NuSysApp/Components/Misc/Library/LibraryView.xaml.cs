@@ -237,7 +237,7 @@ namespace NuSysApp
             ElementType elementType = ElementType.Text;
             string data = "";
             string title = "";
-            string text = "";
+            string pdf_text = "";
 
             var storageFiles = await FileManager.PromptUserForFiles(Constants.AllFileTypes);
             foreach (var storageFile in storageFiles)
@@ -293,7 +293,7 @@ namespace NuSysApp
                     int currPage = 0;
                     while (currPage < numPages)
                     {
-                        text = text + myDoc.GetAllTexts(currPage);
+                        pdf_text = pdf_text + myDoc.GetAllTexts(currPage);
                         currPage++;
                     }
 
@@ -384,7 +384,10 @@ namespace NuSysApp
                     //await StorageUtil.SaveAsStorageFile(thumbnails[ThumbnailSize.SMALL], @"C:\Users\Zach\Documents\test.jpg");
                     m["medium_thumbnail"] = thumbnails[ThumbnailSize.MEDIUM];
                     m["large_thumbnail"] = thumbnails[ThumbnailSize.LARGE];
-                    m["text"] = text;
+                    if (!string.IsNullOrEmpty(pdf_text))
+                    {
+                        m["pdf_text"] = pdf_text;
+                    }
                     m["type"] = elementType.ToString();
                     if (title != null)
                     {

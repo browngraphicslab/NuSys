@@ -275,6 +275,67 @@ namespace NuSysApp
             _onLoaded?.Invoke(this);
         }
 
+        public Uri LargeIconUri
+        {
+            get
+            {
+                if (LibraryElementModel.LargeIconUrl != null)
+                {
+                    return new Uri("http://" + WaitingRoomView.ServerName + "/" +LibraryElementModel.LargeIconUrl);
+                }
+                switch (LibraryElementModel.Type)
+                {
+                    case ElementType.Image:
+                    case ElementType.Video:
+                        return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_large.jpg");
+                        break;
+                    default:
+                        return new Uri("ms-apps:////Assets/icon_chat.png");
+                        break;
+                }
+            }
+        }
+        public Uri MediumIconUri
+        {
+            get
+            {
+                if (LibraryElementModel.MediumIconUrl != null)
+                {
+                    return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.MediumIconUrl);
+                }
+                switch (LibraryElementModel.Type)
+                {
+                    case ElementType.Image:
+                    case ElementType.Video:
+                        return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_medium.jpg");
+                        break;
+                    default:
+                        return new Uri("ms-apps:////Assets/icon_chat.png");
+                        break;
+                }
+            }
+        }
+        public Uri SmallIconUri
+        {
+            get
+            {
+                if (LibraryElementModel.SmallIconUrl != null)
+                {
+                    return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.SmallIconUrl);
+                }
+                switch (LibraryElementModel.Type)
+                {
+                    case ElementType.Image:
+                    case ElementType.Video:
+                        return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_small.jpg");
+                        break;
+                    default:
+                        return new Uri("ms-apps:////Assets/icon_chat.png");
+                        break;
+                }
+            }
+        }
+
         public Dictionary<string, Tuple<string, bool>> GetMetadata()
         {
             return _libraryElementModel?.Metadata;

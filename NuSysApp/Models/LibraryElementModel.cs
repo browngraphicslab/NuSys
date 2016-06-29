@@ -25,7 +25,9 @@ namespace NuSysApp
         public string Title { get; set; }
 
         public bool Favorited { set; get; }
-
+        public string LargeIconUrl { get; private set; }
+        public string MediumIconUrl { get; private set; }
+        public string SmallIconUrl { get; private set; }
         public Dictionary<string, Tuple<string, Boolean>> Metadata { get; set; }
 
         public string Creator { set; get; }
@@ -55,6 +57,18 @@ namespace NuSysApp
             if (message.ContainsKey("regions"))
             {
                 Regions = new HashSet<Region>(message.GetList<Region>("regions"));
+            }
+            if (message.GetString("small_thumbnail_url") != null)
+            {
+                SmallIconUrl = message.GetString("small_thumbnail_url");
+            }
+            if (message.GetString("medium_thumbnail_url") != null)
+            {
+                MediumIconUrl = message.GetString("medium_thumbnail_url");
+            }
+            if (message.GetString("large_thumbnail_url") != null)
+            {
+                LargeIconUrl = message.GetString("large_thumbnail_url");
             }
             //TO DOWNLOAD PDFS
             /*
