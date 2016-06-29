@@ -31,28 +31,12 @@ namespace NuSysApp
         
         public DetailViewerView()
         {
-
-
             this.InitializeComponent();
 
             xMetadataEditorView = (MetadataEditorView) FindName("xMetadataEditorView");
-            
-
             xRegionEditorView = (RegionEditorTabView)FindName("xRegionEditorView");
             xRegionEditorView.DetailViewerView = this;
-            //xRegionEditorView.DataContext = this.DataContext;
-            //xRegionEditorView.DataContext = (DetailViewerViewModel)this.DataContext;
-
-
-
-
-
-
-            //xRegionEditorView = (RegionEditorView)FindName("xRegionEditorView");
-            //xRegionEditorView.DetailViewerView = this;
-
-
-
+            
             Visibility = Visibility.Collapsed;
             
             //NewTagBox.Activate();
@@ -61,6 +45,7 @@ namespace NuSysApp
             DataContextChanged += delegate(FrameworkElement sender, DataContextChangedEventArgs args)
             {
                 var dataContext = DataContext as DetailViewerViewModel;
+
                 if (dataContext == null) { 
                     return;
                 }
@@ -70,22 +55,11 @@ namespace NuSysApp
                 var vm = dataContext;
 
                 vm.PropertyChanged += OnPropertyChanged;
-                vm.TitleChanged += LibraryElementModelTitleChanged;
                 Tags.ItemsSource = vm.Tags;
                 vm.MakeTagList();
 
                 xMetadataEditorView.Metadatable = vm.CurrentElementController;
                 
-                //xRegionEditorView = (RegionEditorTabView)FindName("xRegionEditorView");
-                //xRegionEditorView.DetailViewerView = this;
-                //xRegionEditorView.DataContext = this.DataContext;
-                //xRegionEditorView.DataContext = (DetailViewerViewModel)this.DataContext;
-
-                //xRegionEditorView = (RegionEditorView)FindName("xRegionEditorView");
-                //xRegionEditorView.DataContext = this.DataContext;
-                //xRegionEditorView.DetailViewerViewModel = (DetailViewerViewModel)this.DataContext;
-                //xRegionEditorView.DetailViewerView = this;
-
                 this.Width = SessionController.Instance.SessionView.ActualWidth / 2;
                 this.Height = SessionController.Instance.SessionView.ActualHeight;
                 vm.TabPaneHeight = this.Height;
@@ -94,6 +68,7 @@ namespace NuSysApp
                 Canvas.SetTop(this, 0);
                 Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);
                 // Metadata.ItemsSource = vm.Metadata;
+                
               };
 
             SuggestButton.Click += delegate(object sender, RoutedEventArgs args)
@@ -110,14 +85,6 @@ namespace NuSysApp
 
 
 
-        }
-
-        private void LibraryElementModelTitleChanged(object sender, string newTitle)
-        {
-            if (sender!=this && TitleBox.Text != newTitle)
-            {
-                TitleBox.Text = newTitle;
-            }
         }
 
         public async Task LaunchLDA(string text)
@@ -224,11 +191,10 @@ namespace NuSysApp
         {
 
             var vm = (DetailViewerViewModel) DataContext;
+            var prop = propertyChangedEventArgs.PropertyName;
 
-
-
-            Tags.ItemsSource = vm.Tags;
-
+            // setting here because you Cannot! bind to a local user control (textInputBlock)
+            TitleBox.SetText(vm.Title);
         }
 
         private async void NewTagBox_OnKeyUp(object sender, KeyRoutedEventArgs e)
@@ -238,14 +204,6 @@ namespace NuSysApp
                 await AddTag();
                 e.Handled = true;
             }
-        }
-
-        private void TitleChanged(object sender, KeyRoutedEventArgs e)
-        {
-            var vm = (DetailViewerViewModel)DataContext;
-            vm.CurrentElementController.SetTitle(TitleBox.Text);
-            //vm.LibraryElementModelOnOnTitleChanged(this, TitleBox.Text);
-            
         }
 
         private async void AddTagButton_OnClick(object sender, RoutedEventArgs e)
@@ -268,7 +226,7 @@ namespace NuSysApp
                    // Tags.ItemsSource = vm.Tags;
                 }
             }
-            
+
             NewTagBox.Text = "";
         }
 
@@ -413,6 +371,12 @@ namespace NuSysApp
             }
             vm.TabHeight = vm.TabPaneHeight/vm.Tabs.Count;
             e.Handled = true;
+        }
+
+        private void TitleBox_OnTextChanged(object source, string title)
+        {
+            var vm = (DetailViewerViewModel)DataContext;
+            vm.ChangeControllersTitle(title);
         }
     }
 }
