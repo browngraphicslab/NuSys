@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,12 +29,64 @@ namespace NuSysApp
 
 
         public ToolModel Model { get;}
+        private int _countPDFS = 0;
         public ToolController(ToolModel model)
         {
             Debug.Assert(model != null);
             Model = model;
             ToolControllers.Add(model.Id, this);
             Model.SetLibraryIds(Filter(GetUpdatedDataList()));
+
+            //CODE BELOW IS HACKY WAY TO DOWNLOAD ALL THE PDF'S 
+            /*
+            Task.Run(async delegate
+            {
+                int i = 0;
+                foreach (var id in LibraryElementModel.PDFStrings)
+                {
+                    Debug.WriteLine((double)i++ / (double)LibraryElementModel.PDFStrings.Count);
+                    if (SessionController.Instance.ContentController.GetContent(id) != null &&
+                        SessionController.Instance.ContentController.GetContent(id).Type == ElementType.PDF)
+                    {
+                        await Task.Run(async delegate
+                        {
+                            await SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(id);
+                            try
+                            {
+                                var lem = SessionController.Instance.ContentController.GetContent(id);
+                                var document = await MediaUtil.DataToPDF(lem.Data);
+                                lem.Data = null;
+                                string data = "";
+                                int numPages = document.PageCount;
+                                int currPage = 0;
+                                while (currPage < numPages)
+                                {
+                                    data = data + document.GetAllTexts(currPage);
+                                    currPage++;
+                                }
+
+                                using (
+                                    var stream =
+                                        new FileStream(
+                                            @"C:\Users\graphics_lab\Documents\junsu_pdfs\" + _countPDFS++ + ".txt",
+                                            FileMode.OpenOrCreate,
+                                            FileAccess.Write))
+                                {
+                                    using (var writer = new StreamWriter(stream))
+                                    {
+                                        writer.Write(data);
+                                    }
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                return;
+                            }
+                        });
+
+                    }
+                }
+            });*/
         }
 
         public void SetFilter(ToolModel.FilterTitle filter)
@@ -201,7 +254,7 @@ namespace NuSysApp
             var element = SessionController.Instance.ContentController.GetContent(libraryId);
             if (element != null)
             {
-                var metadata = (element?.Metadata.ToDictionary(k=>k.Key,v=>v.Value.Item1)) ?? new Dictionary<string, string>();
+                var metadata = (element?.Metadata?.ToDictionary(k=>k.Key,v=>v.Value?.Item1)) ?? new Dictionary<string, string>();
 
                 metadata["Title"] = element.Title;
                 metadata["Type"] = element.Type.ToString();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -60,7 +61,15 @@ namespace NuSysApp
             var ch = multipoint.ConvexHull().Coordinates.Select(p => new Vector2((float)p.X, (float)p.Y)).ToArray();
             var geom = CanvasGeometry.CreatePolygon(_dryCanvas, ch);
             _adornments.Add(geom);
-            _inkStrokes.Add(stroke, geom);
+
+            try
+            {
+                _inkStrokes.Add(stroke, geom);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("error in INKING");
+            }
 
             if (fireEvent)
                 AdornmentAdded?.Invoke(this, stroke);
