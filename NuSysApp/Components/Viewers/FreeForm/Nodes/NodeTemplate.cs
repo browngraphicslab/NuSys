@@ -247,6 +247,7 @@ namespace NuSysApp
         {
             isSearched.Visibility = searched ? Visibility.Visible : Visibility.Collapsed;
         }
+
         private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)
         {
             xCanvas.Children.Remove(_dragItem);

@@ -30,10 +30,10 @@ namespace NuSysApp.Util
         private HashSet<LinkElementController> _linksUsed = new HashSet<LinkElementController>();
         public ElementViewModel CurrentNode { get { return _currentNode; } }
         private RelatedListBox _relatedListBox;
+        private Stack<ElementViewModel> _explorationHistory;
+        private Stack<ElementViewModel> _explorationFuture;
 
         public ModeType Mode { get { return ModeType.EXPLORATION;} }
-    
-        
 
         public ExplorationMode(ElementViewModel start)
         {
@@ -50,7 +50,8 @@ namespace NuSysApp.Util
             _storyboard = new Storyboard();
             _currentNode = start;
             _originalTransform = MakeShallowCopy(SessionController.Instance.ActiveFreeFormViewer.CompositeTransform);
-            
+            _explorationHistory = new Stack<ElementViewModel>();
+            _explorationHistory.Push(start);
             FullScreen();    
         }
 
@@ -69,21 +70,38 @@ namespace NuSysApp.Util
 
         public bool Next()
         {
-            return false;
+            if (_explorationFuture == null || _explorationFuture.Count == 0)
+            { 
+                return false;
+            }
+            return true;
         }
 
         /// <summary>
         /// Full screen zooms into the next node found
         /// </summary>
         public void MoveToNext()
-        {     
-            FullScreen();
+        {
+            if (Next())
+            {
+                _explorationHistory.Push(_currentNode);
+                _currentNode = _explorationFuture.Pop();   
+                FullScreen();
+            }
         }
 
         public void MoveTo(ElementViewModel evm)
         {
-            
+            // push the current node if it isn't null
+            if (_currentNode != null)
+            {
+                _explorationHistory.Push(CurrentNode);
+                _currentNode.IsSelected = false;
+            }
+            // reset the exploration future
+            _explorationFuture = null;
             _currentNode = evm;
+            _currentNode.IsSelected = true;
             FullScreen();
         }
 
@@ -93,7 +111,7 @@ namespace NuSysApp.Util
         /// <returns></returns>
         public bool Previous()
         {
-            return false;
+            return _explorationHistory.Count > 1;
         }
 
         /// <summary>
@@ -101,7 +119,23 @@ namespace NuSysApp.Util
         /// </summary>
         public void MoveToPrevious()
         {
-            FullScreen();
+            if (Previous())
+            {
+
+                if (_explorationFuture == null)
+                {
+                    _explorationFuture = new Stack<ElementViewModel>();
+                }
+
+                _explorationFuture.Push(_currentNode);
+
+                _currentNode = _explorationHistory.Pop();
+                FullScreen();
+
+                
+
+                
+            }
         }
 
         /// <summary>

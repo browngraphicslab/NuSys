@@ -176,7 +176,7 @@ namespace NuSysApp
 
                     }
                     // Handles exploration mode
-                    SessionController.Instance.SessionView.ExploreLink(vm);
+                    SessionController.Instance.SessionView.Explore(vm);
                 }
                 else
                 {

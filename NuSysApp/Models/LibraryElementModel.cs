@@ -65,7 +65,6 @@ namespace NuSysApp
         public event ElementMetadataChangedEventHandler OnMetadataChanged;
 
 
-
         public ElementType Type { get; set; }
 
         public string Data

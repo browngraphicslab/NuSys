@@ -402,6 +402,13 @@ namespace NuSysApp
                 {
                     return;
                 }
+                // don't edit if we are in exploration or presentation mode
+                if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
+                    SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
+                {
+                    return;
+                }
+
                 _isEditing = value;
                 RaisePropertyChanged("IsEditing");
             }

@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 
 using NuSysApp.Util;
@@ -31,7 +32,8 @@ namespace NuSysApp
         private Options _prevOptions = Options.SelectNode;
 
         private IModable _modeInstance = null;
-       
+        public IModable ModeInstance => _modeInstance;
+
 
         private ContentImporter _contentImporter = new ContentImporter();
 
@@ -221,6 +223,9 @@ namespace NuSysApp
         {
             _modeInstance = new ExplorationMode(em);
 
+            var myCanvasPic = new ImageBrush() {ImageSource = new BitmapImage(new Uri("ms-appx:///Assets/tedCruzCanvasBackdrop.jpg"))};
+            FreeFormViewer.CanvasColor = myCanvasPic;//new SolidColorBrush(Colors.Chartreuse);
+
             NextNode.Visibility = Visibility.Visible;
             PreviousNode.Visibility = Visibility.Visible;
             CurrentNode.Visibility = Visibility.Visible;
@@ -234,13 +239,20 @@ namespace NuSysApp
         /// Explores (aka zooms in on) the passed in element view model
         /// </summary>
         /// <param name="em"></param>
-        public void Explore(ElementViewModel em)
+        public void Explore(ElementViewModel elementViewModel)
         {
-            if (_modeInstance != null && _modeInstance.Mode == ModeType.EXPLORATION)
+            if (_modeInstance == null || _modeInstance.Mode != ModeType.EXPLORATION) return;
+            var exp = _modeInstance as ExplorationMode;
+            var linkViewModel = elementViewModel as LinkViewModel;
+            if (linkViewModel != null)
             {
-                var exp = _modeInstance as ExplorationMode;
-                exp.MoveTo(em);
+                exp?.ExploreLink(linkViewModel);
             }
+            else
+            {
+                exp?.MoveTo(elementViewModel);
+            }
+            SetModeButtons();
         }
 
         public void ExitMode()
@@ -252,6 +264,8 @@ namespace NuSysApp
             PreviousNode.Visibility = Visibility.Collapsed;
             CurrentNode.Visibility = Visibility.Collapsed;
             xPresentation.Visibility = Visibility.Collapsed;
+            FreeFormViewer.CanvasColor = new SolidColorBrush(Colors.White);
+
         }
 
        
@@ -294,22 +308,6 @@ namespace NuSysApp
             SetModeButtons();
             
         }
-
-        /// <summary>
-        /// Will move to the end of the other end of the link if we are in exploration mode
-        /// </summary>
-        /// <param name="vm"></param>
-        public void ExploreLink(LinkViewModel vm)
-        {
-            // If we are in exploration mode, NOT presentation mode
-             if ((_modeInstance!=null)&&(_modeInstance.Mode==ModeType.EXPLORATION))
-            {
-                // Call the appropriate exploration method
-                var exp = _modeInstance as ExplorationMode;
-                exp.ExploreLink(vm);
-            }
-        }
-
        
         private void SetModeButtons()
         {
