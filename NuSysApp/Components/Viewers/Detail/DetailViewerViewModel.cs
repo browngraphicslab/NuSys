@@ -282,15 +282,14 @@ namespace NuSysApp
 
             if (_tabs.Count > 1)
             {
-              //  TabVisibility = Visibility.Visible;
+                TabVisibility = Visibility.Visible;
             }
             else
             {
-              //  TabVisibility = Visibility.Collapsed;
+                TabVisibility = Visibility.Collapsed;
             }
-
-           // Tabs = _tabs;
             TabHeight = TabPaneHeight/Tabs.Count;
+            Tabs = _tabs;
         }
 
 
