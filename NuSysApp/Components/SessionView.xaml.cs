@@ -498,12 +498,12 @@ namespace NuSysApp
             SessionController.Instance.SessionView = this;
 
             if (collectionController.LibraryElementModel.Title != null)
-                xWorkspaceTitle.Text = collectionController.LibraryElementModel.Title;
+                xWorkspaceTitle.SetText(collectionController.LibraryElementModel.Title);
 
             xWorkspaceTitle.Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
             xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");
 
-            xWorkspaceTitle.KeyUp += UpdateTitle;
+            xWorkspaceTitle.TextChanged += UpdateTitle;
             xWorkspaceTitle.DropCompleted += UpdateTitle;
 
             freeFormViewerViewModel.Controller.LibraryElementController.TitleChanged += TitleChanged;
@@ -530,7 +530,10 @@ namespace NuSysApp
         private void UpdateTitle(object sender, object args)
         {
             var model = ((FreeFormViewerViewModel)_activeFreeFormViewer.DataContext).Model;
+            SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController.TitleChanged -= TitleChanged;
             SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController.SetTitle(xWorkspaceTitle.Text);
+            SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController.TitleChanged += TitleChanged;
+            xWorkspaceTitle.TextChanged += TitleChanged;
             model.Title = xWorkspaceTitle.Text;
             xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");
         }
@@ -539,7 +542,7 @@ namespace NuSysApp
         {
             if (xWorkspaceTitle.Text != title)
             {
-                xWorkspaceTitle.Text = title;
+                xWorkspaceTitle.SetText(title);
             }
         }
 
