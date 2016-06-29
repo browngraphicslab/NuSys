@@ -25,17 +25,17 @@ namespace NuSysApp
 
         public override void AddRegion(object sender, RegionController controller)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public override void RemoveRegion(object sender, Region displayedRegion)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public override void SizeChanged(object sender, double width, double height)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public override void SetExistingRegions(HashSet<Region> regions)
@@ -45,7 +45,7 @@ namespace NuSysApp
 
         public override Region GetNewRegion()
         {
-            throw new NotImplementedException();
+            return null;
         }
     }
 }

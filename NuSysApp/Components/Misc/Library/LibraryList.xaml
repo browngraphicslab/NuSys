@@ -74,7 +74,7 @@
 
     <Grid>
 
-        <ListView  x:Name="ListView" ItemClick="ListView_OnItemClick" IsItemClickEnabled="True" ItemsSource="{Binding PageElements}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollMode="Enabled" ScrollViewer.IsVerticalRailEnabled="True">
+        <ListView  x:Name="ListView" IsItemClickEnabled="True" ItemsSource="{Binding PageElements}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollMode="Enabled" ScrollViewer.IsVerticalRailEnabled="True" Padding="0">
             <ListView.Header>
                 <Grid VerticalAlignment="Center" Background="{StaticResource color6}">
                     <Grid.ColumnDefinitions>
@@ -94,28 +94,60 @@
                     </Button>
                 </Grid>
             </ListView.Header>
-
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property= "VerticalContentAlignment" Value="Stretch" />
+                    <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Padding" Value="5,5,5,5"/>
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid x:Name="LibraryListItem"  Height="20" VerticalAlignment="Center" Padding="0" Margin="0" Background="#ECECEA" ManipulationMode="TranslateX, TranslateY" PointerPressed="LibraryListItem_OnPointerPressed" DoubleTapped="ListItem_OnDoubleTapped" IsDoubleTapEnabled="True" ManipulationStarted="LibraryListItem_ManipulationStarted"  ManipulationDelta="LibraryListItem_ManipulationDelta" ManipulationCompleted="LibraryListItem_ManipulationCompleted">
-                            <Grid.ColumnDefinitions>
+                    <Grid x:Name="LibraryListItem" Tapped="LibraryListItem_OnTapped" VerticalAlignment="Center" Padding="0" Margin="0" Background="#ECECEA" ManipulationMode="TranslateX, TranslateY" PointerPressed="LibraryListItem_OnPointerPressed" IsDoubleTapEnabled="True" ManipulationStarted="LibraryListItem_ManipulationStarted"  ManipulationDelta="LibraryListItem_ManipulationDelta" ManipulationCompleted="LibraryListItem_ManipulationCompleted">
+                        <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="175" />
                             <ColumnDefinition Width="10" />
                             <ColumnDefinition Width="90" />
                             <ColumnDefinition Width="125" />
-                </Grid.ColumnDefinitions>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
                         
-                        <TextBlock  Grid.Column="0"  Text="{Binding Title}" FontSize="12" />
-                        <TextBlock  Grid.Column="2"  Text="{Binding Type}" FontSize="12"/>
-                        <TextBlock Grid.Column="3" Text="{Binding Timestamp}" FontSize="12"/>
-
+                        <Grid x:Name="HeaderPanel" Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" Height="40" Tapped="HeaderPanel_OnTapped" DoubleTapped="HeaderPanel_OnDoubleTapped">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="175" />
+                                <ColumnDefinition Width="10" />
+                                <ColumnDefinition Width="90" />
+                                <ColumnDefinition Width="125" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock  Grid.Column="0" Grid.Row="0"  Text="{Binding Title}" FontSize="14" />
+                            <TextBlock  Grid.Column="2" Grid.Row="0" Text="{Binding Type}" FontSize="14"/>
+                            <TextBlock Grid.Column="3" Grid.Row="0" Text="{Binding Timestamp}" FontSize="14"/>
+                        </Grid>
+                        
+                        <Grid x:Name="RegionsPanel" Grid.Row="1" Grid.ColumnSpan="4" Grid.Column="0" Visibility="Collapsed" MinHeight="50">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                        </Grid>
 
                     </Grid>
-                    </DataTemplate>
+                    
+                </DataTemplate>
 
             </ListView.ItemTemplate>
             
         </ListView>
+        
+        
        
     </Grid>
 </UserControl>

@@ -1,13 +1,13 @@
-// Copyright 2013 Basarat Ali Syed. All Rights Reserved.
-//
-// Licensed under MIT open source license http://opensource.org/licenses/MIT
-//
-// Orginal javascript code was by Mauricio Santos
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+// Copyright 2013 Basarat Ali Syed. All Rights Reserved.
+//
+// Licensed under MIT open source license http://opensource.org/licenses/MIT
+//
+// Orginal javascript code was by Mauricio Santos
 /**
  * @namespace Top level namespace for collections, a TypeScript data structure library.
  */
@@ -691,7 +691,7 @@ var collections;
             };
         };
         return LinkedList;
-    })();
+    }());
     collections.LinkedList = LinkedList; // End of linked list 
     var Dictionary = (function () {
         /**
@@ -864,7 +864,7 @@ var collections;
             return toret + "\n}";
         };
         return Dictionary;
-    })();
+    }());
     collections.Dictionary = Dictionary; // End of dictionary
     /**
      * This class is used by the LinkedDictionary Internally
@@ -881,7 +881,7 @@ var collections;
             this.next.prev = this.prev;
         };
         return LinkedDictionaryPair;
-    })();
+    }());
     var LinkedDictionary = (function (_super) {
         __extends(LinkedDictionary, _super);
         function LinkedDictionary(toStrFunction) {
@@ -1054,7 +1054,7 @@ var collections;
             }
         };
         return LinkedDictionary;
-    })(Dictionary);
+    }(Dictionary));
     collections.LinkedDictionary = LinkedDictionary; // End of LinkedDictionary
     // /**
     //  * Returns true if this dictionary is equal to the given dictionary.
@@ -1234,7 +1234,7 @@ var collections;
             return this.dict.isEmpty();
         };
         return MultiDictionary;
-    })();
+    }());
     collections.MultiDictionary = MultiDictionary; // end of multi dictionary 
     var Heap = (function () {
         /**
@@ -1456,7 +1456,7 @@ var collections;
             collections.arrays.forEach(this.data, callback);
         };
         return Heap;
-    })();
+    }());
     collections.Heap = Heap;
     var Stack = (function () {
         /**
@@ -1555,7 +1555,7 @@ var collections;
             this.list.forEach(callback);
         };
         return Stack;
-    })();
+    }());
     collections.Stack = Stack; // End of stack 
     var Queue = (function () {
         /**
@@ -1659,7 +1659,7 @@ var collections;
             this.list.forEach(callback);
         };
         return Queue;
-    })();
+    }());
     collections.Queue = Queue; // End of queue
     var PriorityQueue = (function () {
         /**
@@ -1766,7 +1766,7 @@ var collections;
             this.heap.forEach(callback);
         };
         return PriorityQueue;
-    })();
+    }());
     collections.PriorityQueue = PriorityQueue; // end of priority queue
     var Set = (function () {
         /**
@@ -1929,7 +1929,7 @@ var collections;
             return collections.arrays.toString(this.toArray());
         };
         return Set;
-    })();
+    }());
     collections.Set = Set; // end of Set
     var Bag = (function () {
         /**
@@ -2109,7 +2109,7 @@ var collections;
             this.dictionary.clear();
         };
         return Bag;
-    })();
+    }());
     collections.Bag = Bag; // End of bag 
     var BSTree = (function () {
         /**
@@ -2504,7 +2504,7 @@ var collections;
             };
         };
         return BSTree;
-    })();
+    }());
     collections.BSTree = BSTree; // end of BSTree
 })(collections || (collections = {})); // End of module 
 var BrushStroke = (function () {
@@ -2514,10 +2514,14 @@ var BrushStroke = (function () {
     }
     return BrushStroke;
 <<<<<<< HEAD
+<<<<<<< HEAD
 }());
 =======
 })();
 >>>>>>> origin/trent_controller2
+=======
+}());
+>>>>>>> origin/Luke_Fix_Detail_Viewer
 var MarqueeBrush = (function () {
     function MarqueeBrush(x, y) {
         this._startX = x;
@@ -2547,10 +2551,14 @@ var MarqueeBrush = (function () {
     };
     return MarqueeBrush;
 <<<<<<< HEAD
+<<<<<<< HEAD
 }());
 =======
 })();
 >>>>>>> origin/trent_controller2
+=======
+}());
+>>>>>>> origin/Luke_Fix_Detail_Viewer
 var LineBrush = (function () {
     function LineBrush() {
     }
@@ -2589,10 +2597,14 @@ var LineBrush = (function () {
     };
     return LineBrush;
 <<<<<<< HEAD
+<<<<<<< HEAD
 }());
 =======
 })();
 >>>>>>> origin/trent_controller2
+=======
+}());
+>>>>>>> origin/Luke_Fix_Detail_Viewer
 var MultiSelectionBrush = (function () {
     function MultiSelectionBrush(rect, toRemove) {
         this._rectlist = rect;
@@ -2629,10 +2641,14 @@ var MultiSelectionBrush = (function () {
     };
     return MultiSelectionBrush;
 <<<<<<< HEAD
+<<<<<<< HEAD
 }());
 =======
 })();
 >>>>>>> origin/trent_controller2
+=======
+}());
+>>>>>>> origin/Luke_Fix_Detail_Viewer
 //var diff = this._rectlist.length - this._remList.length;
 //if (diff > 0) {
 //    console.log("add!!!!");
@@ -2729,10 +2745,14 @@ var SelectionBrush = (function () {
     };
     return SelectionBrush;
 <<<<<<< HEAD
+<<<<<<< HEAD
 }());
 =======
 })();
 >>>>>>> origin/trent_controller2
+=======
+}());
+>>>>>>> origin/Luke_Fix_Detail_Viewer
 var HighlightBrush = (function () {
     function HighlightBrush() {
         this._img = new Image();
@@ -2756,10 +2776,14 @@ var HighlightBrush = (function () {
     };
     return HighlightBrush;
 <<<<<<< HEAD
+<<<<<<< HEAD
 }());
 =======
 })();
 >>>>>>> origin/trent_controller2
+=======
+}());
+>>>>>>> origin/Luke_Fix_Detail_Viewer
 /// <reference path="brush/BrushStroke.ts"/>
 var InkCanvas = (function () {
     function InkCanvas(canvas) {
@@ -2852,10 +2876,14 @@ var InkCanvas = (function () {
     };
     return InkCanvas;
 <<<<<<< HEAD
+<<<<<<< HEAD
 }());
 =======
 })();
 >>>>>>> origin/trent_controller2
+=======
+}());
+>>>>>>> origin/Luke_Fix_Detail_Viewer
 var Rectangle = (function () {
     function Rectangle(x, y, w, h) {
         this.x = x;
@@ -2949,7 +2977,7 @@ var Stroke = (function () {
 =======
     };
     return Rectangle;
-})();
+}());
 /// <reference path="../util/Rectangle.ts"/>
 var Stroke = (function () {
     function Stroke() {
@@ -3069,10 +3097,14 @@ var Stroke = (function () {
     };
     return Stroke;
 <<<<<<< HEAD
+<<<<<<< HEAD
 }());
 =======
 })();
 >>>>>>> origin/trent_controller2
+=======
+}());
+>>>>>>> origin/Luke_Fix_Detail_Viewer
 var GestireClassifier = (function () {
     function GestireClassifier() {
     }
@@ -3098,10 +3130,14 @@ var GestireClassifier = (function () {
     };
     return GestireClassifier;
 <<<<<<< HEAD
+<<<<<<< HEAD
 }());
 =======
 })();
 >>>>>>> origin/trent_controller2
+=======
+}());
+>>>>>>> origin/Luke_Fix_Detail_Viewer
 var StrokeType;
 (function (StrokeType) {
     StrokeType[StrokeType["Null"] = 0] = "Null";
@@ -3292,10 +3328,14 @@ var BracketSelection = (function (_super) {
     };
     return BracketSelection;
 <<<<<<< HEAD
+<<<<<<< HEAD
 }(AbstractSelection));
 =======
 })(AbstractSelection);
 >>>>>>> origin/trent_controller2
+=======
+}(AbstractSelection));
+>>>>>>> origin/Luke_Fix_Detail_Viewer
 /// <reference path="../ink/brush/MarqueeBrush.ts" />
 ///find parent element p of word 
 ///find word index compared to container
@@ -3806,10 +3846,14 @@ var MarqueeSelection = (function (_super) {
     };
     return MarqueeSelection;
 <<<<<<< HEAD
+<<<<<<< HEAD
 }(AbstractSelection));
 =======
 })(AbstractSelection);
 >>>>>>> origin/trent_controller2
+=======
+}(AbstractSelection));
+>>>>>>> origin/Luke_Fix_Detail_Viewer
 var GestureType;
 (function (GestureType) {
     GestureType[GestureType["Null"] = 0] = "Null";
@@ -4042,7 +4086,7 @@ var UnknownSelection = (function (_super) {
         return this._content;
     };
     return MultiLineSelection;
-})(AbstractSelection);
+}(AbstractSelection));
 /// <reference path="../../typings/jquery/jquery.d.ts"/>
 var DomUtil = (function () {
     function DomUtil() {
@@ -4067,7 +4111,7 @@ var DomUtil = (function () {
         return found;
     };
     return DomUtil;
-})();
+}());
 /// <reference path="../../typings/jquery/jquery.d.ts"/>
 /// <reference path="../ink/InkCanvas.ts"/>
 /// <reference path="../ink/brush/BrushStroke.ts"/>
@@ -4109,8 +4153,12 @@ var UnknownSelection = (function (_super) {
         return null;
     };
     return UnknownSelection;
+<<<<<<< HEAD
 })(AbstractSelection);
 >>>>>>> origin/trent_controller2
+=======
+}(AbstractSelection));
+>>>>>>> origin/Luke_Fix_Detail_Viewer
 var AbstractSelection = (function () {
     function AbstractSelection(className) {
         this.selectedElements = new Array();
@@ -4249,10 +4297,14 @@ var AbstractSelection = (function () {
     AbstractSelection.prototype.getContent = function () { return null; };
     return AbstractSelection;
 <<<<<<< HEAD
+<<<<<<< HEAD
 }());
 =======
 })();
 >>>>>>> origin/trent_controller2
+=======
+}());
+>>>>>>> origin/Luke_Fix_Detail_Viewer
 /// <reference path="../../typings/jquery/jquery.d.ts"/>
 /// <reference path="../ink/InkCanvas.ts"/>
 /// <reference path="../ink/brush/BrushStroke.ts"/>
@@ -4347,10 +4399,14 @@ var LineSelection = (function (_super) {
     };
     return LineSelection;
 <<<<<<< HEAD
+<<<<<<< HEAD
 }(AbstractSelection));
 =======
 })(AbstractSelection);
 >>>>>>> origin/trent_controller2
+=======
+}(AbstractSelection));
+>>>>>>> origin/Luke_Fix_Detail_Viewer
 var Line = (function () {
     function Line() {
     }
@@ -4381,10 +4437,14 @@ var Line = (function () {
     };
     return Line;
 <<<<<<< HEAD
+<<<<<<< HEAD
 }());
 =======
 })();
 >>>>>>> origin/trent_controller2
+=======
+}());
+>>>>>>> origin/Luke_Fix_Detail_Viewer
 var Statistics = (function () {
     function Statistics() {
     }
@@ -4416,10 +4476,14 @@ var Statistics = (function () {
     };
     return Statistics;
 <<<<<<< HEAD
+<<<<<<< HEAD
 }());
 =======
 })();
 >>>>>>> origin/trent_controller2
+=======
+}());
+>>>>>>> origin/Luke_Fix_Detail_Viewer
 var Vector2 = (function () {
     function Vector2(x, y) {
         this.x = x;
@@ -4502,10 +4566,14 @@ var Vector2 = (function () {
     };
     return Vector2;
 <<<<<<< HEAD
+<<<<<<< HEAD
 }());
 =======
 })();
 >>>>>>> origin/trent_controller2
+=======
+}());
+>>>>>>> origin/Luke_Fix_Detail_Viewer
 /// <reference path="../typings/chrome/chrome.d.ts"/>
 /// <reference path="../typings/jquery/jquery.d.ts"/>
 /// <reference path="ink/InkCanvas.ts"/>
@@ -5003,10 +5071,14 @@ var Main = (function () {
     };
     return Main;
 <<<<<<< HEAD
+<<<<<<< HEAD
 }());
 =======
 })();
 >>>>>>> origin/trent_controller2
+=======
+}());
+>>>>>>> origin/Luke_Fix_Detail_Viewer
 /// <reference path="Main.ts"/>
 var greeter = new Main();
 //# sourceMappingURL=NuSysChromeExtension.js.map

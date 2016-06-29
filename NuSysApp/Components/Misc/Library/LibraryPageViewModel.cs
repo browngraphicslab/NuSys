@@ -94,7 +94,7 @@ namespace NuSysApp
             PageElements.Clear();
 
             var valids = await SessionController.Instance.NuSysNetworkSession.SearchOverLibraryElements(s);
-            if (valids == null)
+             if (valids == null)
             {
                 return;
             }

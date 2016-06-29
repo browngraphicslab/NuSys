@@ -51,11 +51,12 @@ namespace NuSysApp
             get { return DraggingGraphImage; }
         }
 
+        public SpeechToTextBox SpeechToTextBox => xSpeechToTextBox;
 
         #endregion Private Members
 
         private int initChatNotifs;
-        
+
         public SessionView()
         {
             this.InitializeComponent();
@@ -66,27 +67,27 @@ namespace NuSysApp
             SessionController.Instance.SessionView = this;
 
             SizeChanged +=
-                delegate(object sender, SizeChangedEventArgs args)
+                delegate (object sender, SizeChangedEventArgs args)
                 {
-                    Clip = new RectangleGeometry {Rect = new Rect(0, 0, args.NewSize.Width, args.NewSize.Height)};
+                    Clip = new RectangleGeometry { Rect = new Rect(0, 0, args.NewSize.Width, args.NewSize.Height) };
                     if (_activeFreeFormViewer != null)
                     {
                         _activeFreeFormViewer.Width = args.NewSize.Width;
-                        _activeFreeFormViewer.Height = args.NewSize.Height;                        
+                        _activeFreeFormViewer.Height = args.NewSize.Height;
                     }
-         
+
                 };
 
-        
-    
+
+
 
             xWorkspaceTitle.IsActivated = true;
 
             Loaded += OnLoaded;
 
-            _contentImporter.ContentImported += delegate(List<string> markdown)
+            _contentImporter.ContentImported += delegate (List<string> markdown)
             {
-                
+
             };
             MainCanvas.SizeChanged += Resize;
             //_glass = new MGlass(MainCanvas);
@@ -108,9 +109,10 @@ namespace NuSysApp
                 await LoadWorkspaceFromServer(l, WaitingRoomView.InitialWorkspaceId);
             }
 
-            
+
             xDetailViewer.DataContext = new DetailViewerViewModel();
             xSearchViewer.DataContext = new SearchViewModel();
+            xSpeechToTextBox.DataContext = new SpeechToTextViewModel();
 
             var xRegionEditorView = (RegionEditorTabView)xDetailViewer.FindName("xRegionEditorView");
             xRegionEditorView.DataContext = xDetailViewer.DataContext;
@@ -118,13 +120,13 @@ namespace NuSysApp
 
             await SessionController.Instance.InitializeRecog();
 
-            foreach(var user in SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values)
+            foreach (var user in SessionController.Instance.NuSysNetworkSession.NetworkMembers.Values)
             {
                 NewNetworkUser(user);
             }
 
 
-           // await Library.Reload();
+            // await Library.Reload();
         }
         private void NewNetworkUser(NetworkUser user)
         {
@@ -135,7 +137,7 @@ namespace NuSysApp
                 user.OnUserRemoved += delegate
                 {
                     UITask.Run(delegate {
-                                            Users.Children.Remove(b);
+                        Users.Children.Remove(b);
                     });
                 };
             });
@@ -145,7 +147,7 @@ namespace NuSysApp
         {
             if (eventArgs.Pointer.PointerDeviceType == PointerDeviceType.Pen && _prevOptions == Options.PenGlobalInk)
             {
-               
+
             }
         }
 
@@ -297,7 +299,7 @@ namespace NuSysApp
             }
 
             SessionController.Instance.IdToControllers.Clear();
-            
+
             var elementCollectionInstance = new CollectionElementModel("Fake Instance ID")
             {
                 Title = "Instance title",
@@ -310,7 +312,6 @@ namespace NuSysApp
 
             elementCollectionInstance.LibraryId = collectionId;
 
-            //((CollectionLibraryElementModel)SessionController.Instance.ContentController.Get(collectionId)).SetTotalChildrenCount(nodeMessages.Count());
             var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
             SessionController.Instance.IdToControllers[elementCollectionInstance.Id] = elementCollectionInstanceController;
 
@@ -337,7 +338,7 @@ namespace NuSysApp
                 }
                 dict[id] = msg;
             }
-            await Task.Run(async delegate{
+            await Task.Run(async delegate {
                 await MakeCollection(dict, true, 2);
             });
             Debug.WriteLine("done joining collection: " + collectionId);
@@ -404,7 +405,7 @@ namespace NuSysApp
                 await MakeElement(made, messagesLeft, messagesLeft.First().Value, loadCollections, levelsLeft);
             }
         }
-        private async Task MakeElement(HashSet<string> made, Dictionary<string,Message> messagesLeft, Message message, bool loadCollections, int levelsLeft = 1)
+        private async Task MakeElement(HashSet<string> made, Dictionary<string, Message> messagesLeft, Message message, bool loadCollections, int levelsLeft = 1)
         {
             var libraryId = message.GetString("contentId");
             var id = message.GetString("id");
@@ -423,7 +424,7 @@ namespace NuSysApp
                     {
                         var messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(libraryId);
                         var subMessagesLeft = new Dictionary<string, Message>();
-                        foreach(var m in messages)
+                        foreach (var m in messages)
                         {
                             subMessagesLeft.Add(m.GetString("id"), m);
                         }
@@ -433,13 +434,13 @@ namespace NuSysApp
                 case ElementType.Link:
                     var id1 = message.GetString("id1");
                     var id2 = message.GetString("id2");
-                    if(made.Contains(id1) && made.Contains(id2))//both have been made
+                    if (made.Contains(id1) && made.Contains(id2))//both have been made
                     {
                         await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(message));
                     }
-                    else if(!made.Contains(id1) && !made.Contains(id2))//neither have been made
+                    else if (!made.Contains(id1) && !made.Contains(id2))//neither have been made
                     {
-                        if(messagesLeft.ContainsKey(id1) && messagesLeft.ContainsKey(id2))
+                        if (messagesLeft.ContainsKey(id1) && messagesLeft.ContainsKey(id2))
                         {
                             await MakeElement(made, messagesLeft, messagesLeft[id1], loadCollections, levelsLeft);
                             if (messagesLeft.ContainsKey(id2))
@@ -483,7 +484,7 @@ namespace NuSysApp
             if (_activeFreeFormViewer != null && mainCanvas.Children.Contains(_activeFreeFormViewer))
                 mainCanvas.Children.Remove(_activeFreeFormViewer);
 
-            
+
             var freeFormViewerViewModel = new FreeFormViewerViewModel(collectionController);
 
             _activeFreeFormViewer = new FreeFormViewer(freeFormViewerViewModel);
@@ -497,12 +498,12 @@ namespace NuSysApp
             SessionController.Instance.SessionView = this;
 
             if (collectionController.LibraryElementModel.Title != null)
-                xWorkspaceTitle.Text = collectionController.LibraryElementModel.Title;
+                xWorkspaceTitle.SetText(collectionController.LibraryElementModel.Title);
 
             xWorkspaceTitle.Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
             xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");
 
-            xWorkspaceTitle.KeyUp += UpdateTitle;
+            xWorkspaceTitle.TextChanged += UpdateTitle;
             xWorkspaceTitle.DropCompleted += UpdateTitle;
 
             freeFormViewerViewModel.Controller.LibraryElementController.TitleChanged += TitleChanged;
@@ -528,8 +529,11 @@ namespace NuSysApp
         }
         private void UpdateTitle(object sender, object args)
         {
-            var model = ((FreeFormViewerViewModel) _activeFreeFormViewer.DataContext).Model;
+            var model = ((FreeFormViewerViewModel)_activeFreeFormViewer.DataContext).Model;
+            SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController.TitleChanged -= TitleChanged;
             SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController.SetTitle(xWorkspaceTitle.Text);
+            SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController.TitleChanged += TitleChanged;
+            xWorkspaceTitle.TextChanged += TitleChanged;
             model.Title = xWorkspaceTitle.Text;
             xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");
         }
@@ -538,7 +542,7 @@ namespace NuSysApp
         {
             if (xWorkspaceTitle.Text != title)
             {
-                xWorkspaceTitle.Text = title;
+                xWorkspaceTitle.SetText(title);
             }
         }
 
@@ -552,7 +556,7 @@ namespace NuSysApp
         {
             xSearchWindowView.Visibility = Visibility.Collapsed;
         }
-        
+
         public void ShowDetailView(IMetadatable metadatable)
         {
             xDetailViewer.ShowElement(metadatable);
@@ -687,6 +691,7 @@ namespace NuSysApp
             xDetailViewer.ShowElement(SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController);
         }
 
+
         private void SearchButton_OnClick(object sender, RoutedEventArgs e)
         {
             if (xSearchViewer.Visibility == Visibility.Collapsed)
@@ -698,5 +703,6 @@ namespace NuSysApp
                 xSearchViewer.Visibility = Visibility.Collapsed;
             }
         }
+
     }
 }

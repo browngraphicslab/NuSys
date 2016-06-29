@@ -60,7 +60,7 @@ namespace NuSysApp
             Width = (model.BottomRightPoint.X * sizeable.GetWidth()) - (model.TopLeftPoint.X * sizeable.GetWidth());
             ContainerHeight = sizeable.GetHeight();
             ContainerWidth = sizeable.GetWidth();
-            elementController.RegionUpdated += RegionUpdated;
+            RegionController.RegionUpdated += RegionUpdated;
             Editable = true;
 
         }
@@ -125,7 +125,7 @@ namespace NuSysApp
 
             model.TopLeftPoint = new Point(normalTopLeftX, normalTopLeftY);
             model.BottomRightPoint = new Point(normalBottomRightX, normalBottomRightY);
-            LibraryElementController.UpdateRegion(Model);
+            RegionController.UpdateRegion(Model);
         }
 
     }

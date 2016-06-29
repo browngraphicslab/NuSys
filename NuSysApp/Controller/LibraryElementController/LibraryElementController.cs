@@ -17,12 +17,13 @@ namespace NuSysApp
         private LibraryElementModel _libraryElementModel;
         private bool _loading = false;
         private RegionControllerFactory _regionControllerFactory = new RegionControllerFactory();
+        public string Title { get; set; }
+        
 
         #region Events
         public delegate void ContentChangedEventHandler(object source, string contentData);
         public delegate void RegionAddedEventHandler(object source, RegionController regionController);
         public delegate void RegionRemovedEventHandler(object source, Region region);
-        public delegate void RegionUpdatedEventHandler(object source, Region region);
         public delegate void MetadataChangedEvenetHandler(object source);
         public delegate void DisposeEventHandler(object source);
         public delegate void TitleChangedEventHandler(object sender, string title);
@@ -34,7 +35,6 @@ namespace NuSysApp
         public event ContentChangedEventHandler ContentChanged;
         public event RegionAddedEventHandler RegionAdded;
         public event RegionRemovedEventHandler RegionRemoved;
-        public event RegionUpdatedEventHandler RegionUpdated;
         public event MetadataChangedEvenetHandler MetadataChanged;
         public event DisposeEventHandler Disposed;
         public event TitleChangedEventHandler TitleChanged;
@@ -69,6 +69,7 @@ namespace NuSysApp
             Debug.Assert(libraryElementModel != null);
             _libraryElementModel = libraryElementModel;
             _debouncingDictionary = new DebouncingDictionary(libraryElementModel.LibraryElementId, true);
+            Title = libraryElementModel.Title;
         }
 
         /// <summary>
@@ -105,18 +106,6 @@ namespace NuSysApp
             RegionRemoved?.Invoke(this, region);
             SessionController.Instance.NuSysNetworkSession.RemoveRegionFromContent(region);
         }
-
-        /// <summary>
-        /// This method simply fires the update region event and updates the server (using debouncing)
-        /// Because of the lack of a region controller to update individual region properties,
-        /// THIS METHOD ASSUMES THAT YOU'VE ALREADY CHANGED THE REGION'S MODEL PROPERTIES
-        /// </summary>
-        public void UpdateRegion(Region region)
-        {
-            RegionUpdated?.Invoke(this, region);
-            SessionController.Instance.NuSysNetworkSession.UpdateRegion(region);
-        }
-
         /// <summary>
         /// This will change the library element model's title and update the server.  
         /// Then it will fire an event notifying all listeners of the change
@@ -126,6 +115,7 @@ namespace NuSysApp
             _libraryElementModel.Title = title;
             TitleChanged?.Invoke(this, title);
             _debouncingDictionary.Add("title", title);
+            Title = title;
         }
 
         /// <summary>
@@ -394,5 +384,6 @@ namespace NuSysApp
         {
             return NuSysApp.MetadatableType.Content;
         }
+        
     }
 }
