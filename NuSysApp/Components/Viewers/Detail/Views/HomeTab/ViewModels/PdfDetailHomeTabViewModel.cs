@@ -22,6 +22,8 @@ using NuSysApp.Components.Viewers.FreeForm;
 using System.Net;
 using Newtonsoft.Json;
 using LdaLibrary;
+using WinRTXamlToolkit.Imaging;
+using Image = SharpDX.Direct2D1.Image;
 using Point = Windows.Foundation.Point;
 
 namespace NuSysApp
@@ -92,7 +94,7 @@ namespace NuSysApp
         public async Task FlipRight()
         {
             await Goto(_pageNumber + 1);
-            await LaunchLDA();
+            //await LaunchLDA();
             foreach (var regionView in RegionViews)
             {
                 var model = (regionView.DataContext as PdfRegionViewModel)?.Model;
