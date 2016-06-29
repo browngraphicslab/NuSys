@@ -112,6 +112,7 @@ namespace NuSysApp
 
             xDetailViewer.DataContext = new DetailViewerViewModel();
             xSpeechToTextBox.DataContext = new SpeechToTextViewModel();
+            xPopupView.DataContext = new SessionViewPopupViewModel();
 
             var xRegionEditorView = (RegionEditorTabView)xDetailViewer.FindName("xRegionEditorView");
             xRegionEditorView.DataContext = xDetailViewer.DataContext;
@@ -686,6 +687,11 @@ namespace NuSysApp
         private void CurrentCollectionDV_OnClick(object sender, RoutedEventArgs e)
         {
             xDetailViewer.ShowElement(SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController);
+        }
+
+        private void OpenPopup_OnClick(object sender, RoutedEventArgs e)
+        {
+            xPopupView.Open();
         }
     }
 }

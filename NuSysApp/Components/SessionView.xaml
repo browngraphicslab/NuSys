@@ -77,9 +77,10 @@
 
 
             <local:FloatingMenuView x:Name="xFloatingMenu" Canvas.Left="120" Canvas.Top="125"/>
-
             <local:SearchWindowView x:Name="xSearchWindowView" Visibility="Collapsed"></local:SearchWindowView>
             <local:SpeechToTextBox x:Name="xSpeechToTextBox"></local:SpeechToTextBox>
+            <local:SessionViewPopupView x:Name="xPopupView"></local:SessionViewPopupView>
+            <Button x:Name="OpenPopup" Content="Open Popup" Click="OpenPopup_OnClick" VerticalAlignment="Center" HorizontalAlignment="Left"/>
         </Canvas>
         <local:TextInputBlock x:Name ="xWorkspaceTitle" ButtonBg="#FF113D40" BubbleTop="False"  LeftJustified="False" HorizontalAlignment="Right" VerticalAlignment="Top"  Width="{Binding ElementName=Properties, Path=Width}" Height="45" MinWidth="300"  MaxWidth="300"></local:TextInputBlock>
         <local:DetailViewerView x:Name="xDetailViewer" HorizontalAlignment="Right"></local:DetailViewerView>

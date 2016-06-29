@@ -252,6 +252,10 @@
       <DependentUpon>LibraryFavorites.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\Library\LibraryFavoritesViewModel.cs" />
+    <Compile Include="Components\Misc\SessionViewPopup\SessionViewPopupView.xaml.cs">
+      <DependentUpon>SessionViewPopupView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\SessionViewPopup\SessionViewPopupViewModel.cs" />
     <Compile Include="Components\Misc\SpeechToTextUI\BooleanToVisibilityConverter.cs" />
     <Compile Include="Components\Misc\SpeechToTextUI\CorrectionSuggester.cs" />
     <Compile Include="Components\Misc\SpeechToTextUI\HtmlRemoval.cs" />
@@ -792,6 +796,10 @@
     <Page Include="Components\Misc\Library\LibraryFavorites.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Misc\SessionViewPopup\SessionViewPopupView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Misc\SpeechToTextUI\SpeechToTextBox.xaml">
       <Generator>MSBuild:Compile</Generator>
