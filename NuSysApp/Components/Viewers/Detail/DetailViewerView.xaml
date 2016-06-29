@@ -43,7 +43,6 @@
                                 <TextBlock Text="X" Foreground="White" FontSize="20" VerticalAlignment="Top" RenderTransformOrigin="0,1">
                                     <TextBlock.RenderTransform>
                                         <RotateTransform Angle="90"></RotateTransform>
-                                        
                                     </TextBlock.RenderTransform>
                                 </TextBlock>
                             </Border>
