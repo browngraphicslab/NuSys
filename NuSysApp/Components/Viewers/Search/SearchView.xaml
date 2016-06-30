@@ -63,51 +63,48 @@
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="Margin" Value="0"/>
+                            <Setter Property="Padding" Value="0"/>
                         </Style>
                     </ListView.ItemContainerStyle>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Grid x:Name="RootGrid" BorderBrush="LightGray" Tapped="ResultHeader_OnTapped" BorderThickness="2" Width="{Binding ResultWidth}"  HorizontalAlignment="Stretch" PointerPressed="ListItem_OnPointerPressed" ManipulationStarted="ListItem_ManipulationStarted" ManipulationDelta="ListItem_ManipulationDelta" ManipulationCompleted="ListItem_ManipulationCompleted" ManipulationMode="All">
+                            <Grid x:Name="RootGrid" Background="White"  BorderBrush="LightGray" BorderThickness="2" Width="{Binding ResultWidth}"  HorizontalAlignment="Stretch" Tapped="RootGrid_OnTapped" PointerPressed="ListItem_OnPointerPressed" ManipulationStarted="ListItem_ManipulationStarted" ManipulationDelta="ListItem_ManipulationDelta" ManipulationCompleted="ListItem_ManipulationCompleted" ManipulationMode="All">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <!-- Top Row -->
-                                <Grid Background="LightGray" x:Name="ResultHeader" Width="{Binding ResultWidth}">
+                                <Grid x:Name="ResultHeader" Width="{Binding ResultWidth}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <Image x:Name="xThumbnail" Source="../../../Assets/logos/icon_upload.png" Height="20" HorizontalAlignment="Center" Grid.RowSpan="2"/>
-                                    <TextBlock x:Name="xTitle" Text="{Binding Title}" Grid.ColumnSpan="2" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,10,0" MinWidth="100"/>
-                                    <TextBlock x:Name="xCreator" Text="{Binding Creator}" Grid.Column ="1" Grid.Row="1"/>
-                                    <TextBlock x:Name="xElementType" Text="{Binding Type}" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Center" Margin="0,0,10,0"/>
-                                    <TextBlock x:Name="xTimeStamp" Text="{Binding TimeStamp}" Grid.Column="3" Grid.RowSpan="2" HorizontalAlignment="Right" VerticalAlignment="Center"  Margin="0,0,10,0"/>
+                                    <TextBlock Text="{Binding Title}" FontWeight="Bold" HorizontalAlignment="Left" Margin="5"/>
+                                    <TextBlock Text="{Binding Creator}" Grid.Row="1" HorizontalAlignment="Left" Margin="5"/>
+                                    <TextBlock Text="{Binding Type}" Grid.Column="1" HorizontalAlignment="Right" Margin="5"/>
+                                    <TextBlock Text="{Binding TimeStamp}" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Margin="5"/>
                                 </Grid>
                                 <!-- Expandable Information -->
-                                <Grid x:Name="ResultInfo" Grid.Row="1" Visibility="Collapsed"  HorizontalAlignment="Stretch" Width="{Binding ResultWidth}">
+                                <Grid x:Name="ResultInfo" Grid.Row="1" Visibility="Collapsed"  HorizontalAlignment="Stretch" Width="{Binding ResultWidth}" Background="White">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="2*"/>
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
                                     <!-- Left Column -->
-                                    <TextBlock Text="Creator"/>
-                                    <TextBlock Grid.Row="1" Text="Keywords"/>
-                                    <TextBlock Grid.Row="2" Text="MetaData"/>
+                                    <TextBlock Text="Tags" FontWeight="Bold" HorizontalAlignment="Left" Margin="5"/>
+                                    <TextBlock Text="Metadata" Grid.Row="1" FontWeight="Bold" HorizontalAlignment="Left" Margin="5"/>
                                     <!-- Right Column -->
-                                    <TextBlock x:Name="xKeywords" Text="{Binding Keywords}" Grid.Row="1"  Grid.Column ="1"/>
-                                    <TextBlock x:Name="xMetaData" Text="{Binding MetaData}" Grid.Row="2" Grid.Column ="1"/>
+                                    <TextBlock Text="{Binding Keywords}" Grid.Column ="1" HorizontalAlignment="Right" TextWrapping="Wrap" TextAlignment="Right" Margin="5"/>
+                                    <TextBlock Text="{Binding Metadata}" Grid.Row="1" Grid.Column ="1" HorizontalAlignment="Right" TextWrapping="Wrap" TextAlignment="Right" Margin="5"/>
                                 </Grid>
                             </Grid>
                         </DataTemplate>
@@ -116,7 +113,8 @@
                 <Button Grid.Row="1" x:Name="ShowHelpButton" Content="Show Help" Foreground="{StaticResource color2}" HorizontalAlignment="Center" Background="White"  VerticalAlignment="Bottom" Margin="10,0,10,5" Visibility="Collapsed" Tapped="ShowHelpButton_OnTapped"/>
             </Grid>
 
-            <TextBlock Grid.Row="2" x:Name="HelperText" Visibility="{Binding SearchViewHelperTextVisibility}"  Text="blah blah" FontFamily="FiraSans" FontSize="16" Foreground="{StaticResource color2}" VerticalAlignment="Top" HorizontalAlignment="Center" TextAlignment="Center" Margin="10"/>
+            <TextBlock Grid.Row="2" x:Name="HelperText" Visibility="{Binding SearchViewHelperTextVisibility}" FontFamily="FiraSans" FontSize="16" Foreground="{StaticResource color2}" VerticalAlignment="Top" HorizontalAlignment="Center" TextAlignment="Center" Margin="30,10" TextWrapping="Wrap"
+                       Text="The advanced search textbox is not setup right now but if it were the tutorial text would go here. It would be full of very helpful information."/>
 
 
 

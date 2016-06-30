@@ -72,6 +72,15 @@ namespace NuSysApp
         {
             PageElements.Clear();        
 
+            // remove from here
+            PageElements.Add(new SearchResultTemplate(new SearchResult("7dd03643ef834684a8691be532b4fec5", SearchResult.ResultType.Type)));
+            PageElements.Add(new SearchResultTemplate(new SearchResult("2e9fee2571094c05a1999b44e9aee36d", SearchResult.ResultType.Type)));
+            SearchResultsListVisibility = Visibility.Visible;
+            // to here
+
+
+
+            /*
             var searchResults = await SessionController.Instance.NuSysNetworkSession.AdvancedSearchOverLibraryElements(searchQuery);
             if (searchResults == null || searchResults.Count == 0)
             {
@@ -94,7 +103,9 @@ namespace NuSysApp
                 }
                 SearchResultsListVisibility = Visibility.Visible;
             }
+            */
         }
+     
     }
 
 
