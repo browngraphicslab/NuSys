@@ -128,7 +128,6 @@ namespace NuSysApp
 
         private void TextBox_OnTextChanging(Object sender, String args)
         {
-            return;
             if (ListContainer.Children[0] == _libraryList)
             {
                 _libraryList.Search(((TextInputBlock)sender).Text.ToLower());
