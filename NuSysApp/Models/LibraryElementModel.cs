@@ -71,6 +71,10 @@ namespace NuSysApp
             {
                 LargeIconUrl = message.GetString("large_thumbnail_url");
             }
+            if (message.GetString("creator_user_id") != null)
+            {
+                Creator = message.GetString("creator_user_id");
+            }
             //TO DOWNLOAD PDFS
             
             if (Type == ElementType.PDF)

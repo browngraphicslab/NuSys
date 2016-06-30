@@ -252,14 +252,19 @@ namespace NuSysApp
                 title = storageFile.DisplayName;
 
                 bool validFileType = true;
+                // Create a thumbnail dictionary mapping thumbnail sizes to the byte arrays.
+                // Note that only video and images are to get thumbnails this way, currently.
+                var thumbnails = new Dictionary<ThumbnailSize, string>();
+                thumbnails[ThumbnailSize.SMALL] = "";
+                thumbnails[ThumbnailSize.MEDIUM] = "";
+                thumbnails[ThumbnailSize.LARGE] = "";
 
-                // Create a thumbnail dictionary mapping thumbnail sizes to the byte arrays
-                //var thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile);                    
                 if (Constants.ImageFileTypes.Contains(fileType))
                 {
                     elementType = ElementType.Image;
                     data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
                     serverURL = contentId + fileType;
+                    thumbnails =await MediaUtil.GetThumbnailDictionary(storageFile);
                 }
                 else if (Constants.WordFileTypes.Contains(fileType))
                 {
@@ -353,6 +358,7 @@ namespace NuSysApp
                     }
 
                     data = Convert.ToBase64String(fileBytes);
+                    thumbnails=await MediaUtil.GetThumbnailDictionary(storageFile);
                 }
                 else if (Constants.AudioFileTypes.Contains(fileType))
                 {
@@ -381,10 +387,10 @@ namespace NuSysApp
                     var m = new Message();
                     m["id"] = contentId;
                     m["data"] = data;
-                    //m["small_thumbnail"] = thumbnails[ThumbnailSize.SMALL];
+                    m["small_thumbnail"] = thumbnails[ThumbnailSize.SMALL];
                     //await StorageUtil.SaveAsStorageFile(thumbnails[ThumbnailSize.SMALL], @"C:\Users\Zach\Documents\test.jpg");
-                    //m["medium_thumbnail"] = thumbnails[ThumbnailSize.MEDIUM];
-                    //m["large_thumbnail"] = thumbnails[ThumbnailSize.LARGE];
+                    m["medium_thumbnail"] = thumbnails[ThumbnailSize.MEDIUM];
+                    m["large_thumbnail"] = thumbnails[ThumbnailSize.LARGE];
                     if (!string.IsNullOrEmpty(pdf_text))
                     {
                         m["pdf_text"] = pdf_text;
