@@ -79,11 +79,14 @@ namespace NuSysApp
 
         public void SetItems(ICollection<LibraryElementModel> elements)
         {
-            var col = ((LibraryPageViewModel) DataContext).PageElements;
-            col.Clear();
+            var itemlist = ((LibraryPageViewModel) DataContext).ItemList;
+            itemlist.Clear();
             foreach (var libraryElementModel in elements)
             {
-                col.Add(libraryElementModel);
+                var controller =
+                    SessionController.Instance.ContentController.GetLibraryElementController(
+                        libraryElementModel.LibraryElementId);
+                itemlist.Add(new LibraryItemTemplate(controller));
             }
         }
 
@@ -101,7 +104,7 @@ namespace NuSysApp
 
         public async void Update()
         {
-            this.SetItems(((LibraryPageViewModel)this.DataContext).PageElements);
+            //this.SetItems(((LibraryPageViewModel)this.DataContext).ItemList);
         }
 
         private void LibraryListItem_OnPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -128,7 +131,8 @@ namespace NuSysApp
         }
         private void LibraryListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
+            LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
+            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(itemTemplate.ContentID);
             if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element.LibraryElementId) || (element.Type == ElementType.Link))
             {
                 e.Handled = true;
@@ -160,7 +164,8 @@ namespace NuSysApp
         private void LibraryListItem_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
 
-            LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
+            LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
+            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(itemTemplate.ContentID);
             if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
             {
                 e.Handled = true;
@@ -282,7 +287,8 @@ namespace NuSysApp
 
             regionsPanel?.RowDefinitions.Clear();
             regionsPanel.Children.Clear();
-            var elementModel = ListView.SelectedItem as LibraryElementModel;
+            var elementTemplate = ListView.SelectedItem as LibraryItemTemplate; 
+            var elementModel = SessionController.Instance.ContentController.GetContent(elementTemplate?.ContentID);
 
             if (elementModel?.Regions == null || elementModel?.Regions.Count == 0)
             {

@@ -253,6 +253,7 @@
       <DependentUpon>LibraryFavorites.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\Library\LibraryFavoritesViewModel.cs" />
+    <Compile Include="Components\Misc\Library\LibraryItemTemplate.cs" />
     <Compile Include="Components\Misc\SpeechToTextUI\BooleanToVisibilityConverter.cs" />
     <Compile Include="Components\Misc\SpeechToTextUI\CorrectionSuggester.cs" />
     <Compile Include="Components\Misc\SpeechToTextUI\HtmlRemoval.cs" />

@@ -74,22 +74,23 @@
 
     <Grid>
 
-        <ListView  x:Name="ListView" IsItemClickEnabled="True" ItemsSource="{Binding PageElements}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollMode="Enabled" ScrollViewer.IsVerticalRailEnabled="True" Padding="0">
+        <ListView  x:Name="ListView" IsItemClickEnabled="True" ItemsSource="{Binding ItemList}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollMode="Enabled" ScrollViewer.IsVerticalRailEnabled="True" Padding="0">
             <ListView.Header>
                 <Grid VerticalAlignment="Center" Background="{StaticResource color6}">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="185" />
-                        <ColumnDefinition Width="90" />
-                        <ColumnDefinition Width="125" />
+                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition Width="170" />
+                        <ColumnDefinition Width="60" />
+                        <ColumnDefinition Width="120" />
                     </Grid.ColumnDefinitions>
 
-                    <Button Style="{StaticResource SortButton}"  HorizontalAlignment="Left" Grid.Column="0" Click="Sort_Button_Click" Background="Transparent"  Foreground="{StaticResource color2}"  FontSize="17" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                    <Button Style="{StaticResource SortButton}"  HorizontalAlignment="Left" Grid.Column="1" Click="Sort_Button_Click" Background="Transparent"  Foreground="{StaticResource color2}"  FontSize="15" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
                         Title
                     </Button>
-                    <Button Style="{StaticResource SortButton}" HorizontalAlignment="Left" Grid.Column="1" Click="Sort_Button_Click" Foreground="{StaticResource color2}" Background="Transparent"  FontSize="17" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                    <Button Style="{StaticResource SortButton}" HorizontalAlignment="Left" Grid.Column="2" Click="Sort_Button_Click" Foreground="{StaticResource color2}" Background="Transparent"  FontSize="15" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
                     Type
                     </Button>
-                    <Button Style="{StaticResource SortButton}" HorizontalAlignment="Left" Grid.Column="2" Click="Sort_Button_Click" Foreground="{StaticResource color2}" Background="Transparent"  FontSize="17" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                    <Button Style="{StaticResource SortButton}" HorizontalAlignment="Left" Grid.Column="3" Click="Sort_Button_Click" Foreground="{StaticResource color2}" Background="Transparent"  FontSize="15" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
                    Date/Time
                     </Button>
                 </Grid>
@@ -117,16 +118,17 @@
                         
                         <Grid x:Name="HeaderPanel" Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" Height="40" Tapped="HeaderPanel_OnTapped" DoubleTapped="HeaderPanel_OnDoubleTapped">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="175" />
-                                <ColumnDefinition Width="10" />
-                                <ColumnDefinition Width="90" />
-                                <ColumnDefinition Width="125" />
+                                <ColumnDefinition Width="50" />
+                                <ColumnDefinition Width="170" />
+                                <ColumnDefinition Width="60" />
+                                <ColumnDefinition Width="120" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            
-                            <TextBlock  Grid.Column="0" Grid.Row="0"  Text="{Binding Title}" FontSize="14" />
+
+                            <Image Source="{Binding ThumbnailUri}" MaxHeight="50" MaxWidth="50" Grid.Column="0" Grid.Row="0"></Image>
+                            <TextBlock  Grid.Column="1" Grid.Row="0"  Text="{Binding Title}" FontSize="14" />
                             <TextBlock  Grid.Column="2" Grid.Row="0" Text="{Binding Type}" FontSize="14"/>
                             <TextBlock Grid.Column="3" Grid.Row="0" Text="{Binding Timestamp}" FontSize="14"/>
                         </Grid>
@@ -134,8 +136,8 @@
                         <Grid x:Name="RegionsPanel" Grid.Row="1" Grid.ColumnSpan="4" Grid.Column="0" Visibility="Collapsed" MinHeight="50">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"></ColumnDefinition>
-                                <ColumnDefinition Width="Auto"></ColumnDefinition>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                         </Grid>
 
