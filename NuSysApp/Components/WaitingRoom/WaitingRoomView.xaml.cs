@@ -330,8 +330,8 @@ namespace NuSysApp
                                         //var element = new LibraryElementModel(kvp.Value);
 
                                         bool favorited = false;
-                                        Dictionary<String, Tuple<string, Boolean>> metadata =
-                                            new Dictionary<string, Tuple<string, Boolean>>();
+                                        var metadata =
+                                            new Dictionary<string, MetadataEntry>();
                                         var dict = kvp.Value;
                                         var message = new Message(dict);
                                         string title = null;
@@ -355,7 +355,7 @@ namespace NuSysApp
                                             {
                                                 metadata =
                                                     JsonConvert
-                                                        .DeserializeObject<Dictionary<string, Tuple<string, Boolean>>>(
+                                                        .DeserializeObject<Dictionary<string, MetadataEntry>>(
                                                             dict["metadata"].ToString());
                                             }
 
@@ -404,6 +404,9 @@ namespace NuSysApp
                                         {
                                             SessionController.Instance.ContentController.Add(element);
                                         }
+                                        
+                                        
+
                                     }
                                     _isLoaded = true;
                                     if (_loggedIn)
@@ -582,7 +585,7 @@ namespace NuSysApp
                                 //var element = new LibraryElementModel(kvp.Value);
 
                                 bool favorited = false;
-                                Dictionary<String, Tuple<string, Boolean>> metadata = new Dictionary<string, Tuple<string, Boolean>>();
+                                var metadata = new Dictionary<string, MetadataEntry>();
                                 var dict = kvp.Value;
                                 var message = new Message(dict);
                                 string title = null;
@@ -603,7 +606,7 @@ namespace NuSysApp
 
                                     if (dict["metadata"] != null)
                                     {
-                                        metadata = JsonConvert.DeserializeObject<Dictionary<string, Tuple<string, Boolean>>>(dict["metadata"].ToString());
+                                        metadata = JsonConvert.DeserializeObject<Dictionary<string, MetadataEntry>>(dict["metadata"].ToString());
                                     }
 
                                 }
@@ -649,6 +652,8 @@ namespace NuSysApp
                                 {
                                     SessionController.Instance.ContentController.Add(element);
                                 }
+
+                               
                             }
                             _isLoaded = true;
                             if (_loggedIn)

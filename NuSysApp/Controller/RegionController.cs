@@ -24,28 +24,28 @@ namespace NuSysApp
             TitleChanged?.Invoke(this, title);
             SessionController.Instance.NuSysNetworkSession.UpdateRegion(Model);
         }
-        public Dictionary<string, Tuple<string, bool>> GetMetadata()
+        public Dictionary<string, MetadataEntry> GetMetadata()
         {
             if (Model.Metadata == null)
             {
-                Model.Metadata = new Dictionary<string, Tuple<string, bool>>();
+                Model.Metadata = new Dictionary<string, MetadataEntry>();
             }
             return Model.Metadata;
         }
 
         public bool AddMetadata(MetadataEntry entry)
         {
-            if (string.IsNullOrEmpty(entry.Value) || string.IsNullOrEmpty(entry.Key) || string.IsNullOrWhiteSpace(entry.Key) || string.IsNullOrWhiteSpace(entry.Value))
+            if (entry.Values==null || string.IsNullOrEmpty(entry.Key) || string.IsNullOrWhiteSpace(entry.Key))
                 return false;
             if (Model.Metadata.ContainsKey(entry.Key))
             {
-                if (Model.Metadata[entry.Key].Item2 == false)//weird syntax in case we want to change mutability to an enum eventually
+                if (entry.Mutability==MetadataMutability.IMMUTABLE)//weird syntax in case we want to change mutability to an enum eventually
                 {
                     return false;
                 }
                 Model.Metadata.Remove(entry.Key);
             }
-            Model.Metadata.Add(entry.Key, new Tuple<string, bool>(entry.Value, entry.Mutability));
+            Model.Metadata.Add(entry.Key,entry);
             return true;
         }
 
@@ -57,13 +57,13 @@ namespace NuSysApp
             Model.Metadata.Remove(key);
             return true;
         }
-        public string GetMetadata(string key)
+        public List<string> GetMetadata(string key)
         {
             if (string.IsNullOrEmpty(key) || !Model.Metadata.ContainsKey(key) || string.IsNullOrWhiteSpace(key))
             {
                 return null;
             }
-            return Model.Metadata[key].Item1;
+            return Model.Metadata[key].Values;
         }
 
         public MetadatableType MetadatableType()

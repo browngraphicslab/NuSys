@@ -143,7 +143,7 @@ namespace NuSysApp
         /// This will change the library element model's metadata dictionary and update the server.  
         /// Then it will fire an event notifying all listeners of the new dictionary they can fetch 
         /// </summary>
-        private void ChangeMetadata(Dictionary<string,Tuple<string,bool>> metadata)
+        private void ChangeMetadata(Dictionary<string,MetadataEntry> metadata)
         {
             _libraryElementModel.Metadata = metadata;
             MetadataChanged?.Invoke(this);
@@ -157,26 +157,26 @@ namespace NuSysApp
         public bool AddMetadata(MetadataEntry entry)
         {
             //Keys should be unique; values obviously don't have to be.
-            if (string.IsNullOrEmpty(entry.Value) || string.IsNullOrEmpty(entry.Key) ||
-                string.IsNullOrWhiteSpace(entry.Key) || string.IsNullOrWhiteSpace(entry.Value))
+            if (entry.Values==null || string.IsNullOrEmpty(entry.Key) ||
+                string.IsNullOrWhiteSpace(entry.Key))
             {
                 return false;
             }
             if (_libraryElementModel.Metadata == null)
             {
-                _libraryElementModel.Metadata = new Dictionary<string, Tuple<string, bool>>();
+                _libraryElementModel.Metadata = new Dictionary<string, MetadataEntry>();
                 return false;
             }
 
             if (_libraryElementModel.Metadata.ContainsKey(entry.Key))
             {
-                if (_libraryElementModel.Metadata[entry.Key].Item2 == false)//weird syntax in case we want to change mutability to an enum eventually
+                if (_libraryElementModel.Metadata[entry.Key].Mutability == MetadataMutability.IMMUTABLE)//weird syntax in case we want to change mutability to an enum eventually
                 {
                     return false;
                 }
                 _libraryElementModel.Metadata.Remove(entry.Key);
             }
-            _libraryElementModel.Metadata.Add(entry.Key, new Tuple<string, bool>(entry.Value, entry.Mutability));
+            _libraryElementModel.Metadata.Add(entry.Key,entry);
             ChangeMetadata(_libraryElementModel.Metadata);
             return true;
         }
@@ -199,13 +199,13 @@ namespace NuSysApp
         /// Returns the value of the metadata at the specified key
         /// null if not exist
         /// </summary>
-        public string GetMetadata(string key)
+        public List<string> GetMetadata(string key)
         {
             if (string.IsNullOrEmpty(key) || !_libraryElementModel.Metadata.ContainsKey(key) || string.IsNullOrWhiteSpace(key))
             {
                 return null;
             }
-            return _libraryElementModel.Metadata[key].Item1;
+            return _libraryElementModel.Metadata[key].Values;
         }
 
         /// <summary>
@@ -275,7 +275,7 @@ namespace NuSysApp
             _onLoaded?.Invoke(this);
         }
 
-        public Dictionary<string, Tuple<string, bool>> GetMetadata()
+        public Dictionary<string, MetadataEntry> GetMetadata()
         {
             return _libraryElementModel?.Metadata;
         }

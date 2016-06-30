@@ -26,14 +26,14 @@ namespace NuSysApp
 
         public bool Favorited { set; get; }
 
-        public Dictionary<string, Tuple<string, Boolean>> Metadata { get; set; }
+        public Dictionary<string, MetadataEntry> Metadata { get; set; }
 
         public string Creator { set; get; }
         public string Timestamp { get; set; }//TODO maybe put in a timestamp, maybe remove the field from the library
 
         public string ServerUrl { get; set; }
        
-        public LibraryElementModel(string id, ElementType elementType, Dictionary<string, Tuple<string,Boolean>> metadata = null, string contentName = null, bool favorited = false)
+        public LibraryElementModel(string id, ElementType elementType, Dictionary<string, MetadataEntry> metadata = null, string contentName = null, bool favorited = false)
         {
             Data = null;
             LibraryElementId = id;

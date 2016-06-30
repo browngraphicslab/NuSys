@@ -63,6 +63,12 @@ namespace NuSysApp
                 controller.Load(loadEventArgs);
             }
             libraryElement.ServerUrl = url;
+            libraryElement.Metadata = libraryElement.Metadata ?? new Dictionary<string, MetadataEntry>();
+            //ADD IMMUTABLE DATA TO METADATA, so they can show up in md editor
+            libraryElement.Metadata.Add("Timestamp", new MetadataEntry("Timestamp", new List<string> {libraryElement.Timestamp}, MetadataMutability.IMMUTABLE));
+            libraryElement.Metadata.Add("Creator", new MetadataEntry("Creator", new List<string> {libraryElement.Creator}, MetadataMutability.IMMUTABLE));
+            libraryElement.Metadata.Add("Title", new MetadataEntry("Title", new List<string> {libraryElement.Title}, MetadataMutability.IMMUTABLE));
+            libraryElement.Metadata.Add("Type", new MetadataEntry("Type", new List<string> {type.ToString()}, MetadataMutability.IMMUTABLE));
         }
     }
 }
