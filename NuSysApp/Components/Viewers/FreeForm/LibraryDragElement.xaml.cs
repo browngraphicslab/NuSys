@@ -69,6 +69,7 @@ namespace NuSysApp
             }
         }
 
+        // sets the drag icon to an image
         public void SetIcon(LibraryElementModel element)
         {
             audio.Visibility = Visibility.Collapsed;
@@ -79,6 +80,12 @@ namespace NuSysApp
             collection.Visibility = Visibility.Collapsed;
             IconImage.Visibility = Visibility.Collapsed;
 
+            // move this code to a switch statement if we eventually don't support icons for certain types
+            var iconUri = SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId).SmallIconUri;
+            IconImage.Source = new BitmapImage(iconUri);
+            IconImage.Visibility = Visibility.Visible;
+
+            /*
             switch (element.Type)
             {
                 case ElementType.Image:
@@ -91,6 +98,7 @@ namespace NuSysApp
                     SwitchType(element.Type);
                     break;
             }
+            */
 
 
         }
