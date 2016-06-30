@@ -22,6 +22,8 @@ using NuSysApp.Components.Viewers.FreeForm;
 using System.Net;
 using Newtonsoft.Json;
 using LdaLibrary;
+using WinRTXamlToolkit.Imaging;
+using Image = SharpDX.Direct2D1.Image;
 using Point = Windows.Foundation.Point;
 
 namespace NuSysApp
@@ -42,7 +44,9 @@ namespace NuSysApp
         }
         public override async Task Init()
         {
-            _document = await MediaUtil.DataToPDF(Controller.LibraryElementModel.Data);
+            await Task.Run(async delegate {
+                _document = await MediaUtil.DataToPDF(Controller.LibraryElementModel.Data);
+            });
             await Goto(_pageNumber);
         }
         private async Task Goto(int pageNumber)
@@ -50,7 +54,10 @@ namespace NuSysApp
             if (_document == null)
                 return;
             if (pageNumber == -1) return;
-            if (pageNumber >= (_document.PageCount)) return;
+            if (pageNumber >= (_document.PageCount))
+            {
+                return;
+            }
             _pageNumber = pageNumber;
             await RenderPage(_pageNumber);
         }
@@ -92,7 +99,7 @@ namespace NuSysApp
         public async Task FlipRight()
         {
             await Goto(_pageNumber + 1);
-            await LaunchLDA();
+            //await LaunchLDA();
             foreach (var regionView in RegionViews)
             {
                 var model = (regionView.DataContext as PdfRegionViewModel)?.Model;

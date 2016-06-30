@@ -208,12 +208,12 @@ namespace NuSysApp
                 return false;
             });
         }
-        public async Task<string> SendDictionaryToServer(string postName,Dictionary<string,object> dict)
+        public async Task<string> SendDictionaryToServer(string postName, Dictionary<string, object> dict)
         {
             dict["sessionID"] = WaitingRoomView.ServerSessionID;
             var serialized = JsonConvert.SerializeObject(dict, new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii });
             var client = new HttpClient(new HttpClientHandler { ClientCertificateOptions = ClientCertificateOption.Automatic });
-            var response = await client.PostAsync(GetUri(postName+"/"), new StringContent(serialized, Encoding.UTF8, "application/xml"));
+            var response = await client.PostAsync(GetUri(postName + "/"), new StringContent(serialized, Encoding.UTF8, "application/xml"));
             string data;
             using (var content = response.Content)
             {
@@ -225,7 +225,7 @@ namespace NuSysApp
                 doc.LoadXml(data);
                 data = doc.ChildNodes[0].InnerText;
             }
-            catch (Exception boolParsException)
+            catch (Exception boolParseException)
             {
                 Debug.WriteLine("error parsing string from sending dictionary to server");
             }
@@ -282,7 +282,7 @@ namespace NuSysApp
                 libraryIdsUsed.Add(libraryId);
                 await Task.Run(async delegate
                 {
-                    SessionController.Instance.ContentController.GetLibraryElementController(libraryId).SetLoading(true);
+                    SessionController.Instance.ContentController.GetLibraryElementController(libraryId)?.SetLoading(true);
                     HttpClient client = new HttpClient();
                     var response = await client.GetAsync(GetUri("getcontent/" + libraryId));
 
@@ -319,7 +319,8 @@ namespace NuSysApp
             }
         }
 
-        private async Task ParseFetchedLibraryElement(Dictionary<string,object> dict, string libraryId)
+        private async Task ParseFetchedLibraryElement(Dictionary<string, object> dict, string libraryId)
+
         {
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             var contentData = (string)dict["data"] ?? "";
@@ -355,14 +356,13 @@ namespace NuSysApp
                 }
             }
             var inks = dict.ContainsKey("inks") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["inks"].ToString()) : null;
+            var metadata = dict.ContainsKey("metadata") ? JsonConvert.DeserializeObject<Dictionary<string, MetadataEntry>>(dict["metadata"].ToString()) : null;
 
-            var metadata = dict.ContainsKey("metadata") ? JsonConvert.DeserializeObject<Dictionary<string, Tuple<string, Boolean>>>(dict["metadata"].ToString()) : null;
 
             if (NeededLibraryDataIDs.Contains(id))
             {
                 NeededLibraryDataIDs.Remove(id);
             }
-
 
             if (dict.ContainsKey("inklist"))
             {
@@ -458,8 +458,10 @@ namespace NuSysApp
                 {
                     JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                     var dict = new Dictionary<string, object>();
-                    dict["query"] = JsonConvert.SerializeObject(searchQuery,settings);
+                    dict["SEARCH"] = JsonConvert.SerializeObject(searchQuery,settings);
+                    //HttpClient client = new HttpClient();
                     var data = await SendDictionaryToServer("advancedsearch", dict);
+                    
                     try
                     {
                         var list = JsonConvert.DeserializeObject<List<SearchResult>>(data);
@@ -592,6 +594,16 @@ namespace NuSysApp
 
         }
         */
+
+        private class SearchIntermediate
+        {
+            public string Data { set; get; }
+
+            public SearchIntermediate(string data)
+            {
+                Data = data;
+            }
+        }
         private class RegionIntermediate
         {
             public Region.RegionType Type;
@@ -602,3 +614,4 @@ namespace NuSysApp
         }
     }
 }
+

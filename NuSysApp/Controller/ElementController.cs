@@ -225,7 +225,7 @@ namespace NuSysApp
         {
             var contentId = SessionController.Instance.GenerateId();
             var libraryElementRequest = new CreateNewLibraryElementRequest(contentId, null, ElementType.Link, "NEW PRESENTATION LINK");
-            var request = new NewLinkRequest(Model.Id, otherId, Model.ParentCollectionId, contentId, block, rectangle, inFGDictionary, outFGDictionary, null, true);
+            var request = new NewPresentationLinkRequest(Model.Id, otherId, Model.ParentCollectionId, contentId, block, rectangle, inFGDictionary, outFGDictionary, null, true);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }

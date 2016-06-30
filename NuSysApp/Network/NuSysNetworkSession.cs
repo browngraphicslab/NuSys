@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -101,7 +102,7 @@ namespace NuSysApp
                 var id = (string)dict["id"];
                 string title = null;
                 ElementType type = ElementType.Text;
-                Dictionary<string, Tuple<string, bool>> metadata = new Dictionary<string, Tuple<string, bool>>();
+                var metadata = new Dictionary<string, MetadataEntry>();
                 if (dict.ContainsKey("title"))
                 {
                     title = (string)dict["title"];
@@ -112,7 +113,7 @@ namespace NuSysApp
                 }
                 if (dict.ContainsKey("metadata"))
                 {
-                    metadata = JsonConvert.DeserializeObject<Dictionary<string, Tuple<string, bool>>>(dict["metadata"].ToString());
+                    metadata = JsonConvert.DeserializeObject<Dictionary<string, MetadataEntry>>(dict["metadata"].ToString());
                 }
 
                 UITask.Run(async delegate {
@@ -230,6 +231,9 @@ namespace NuSysApp
                 case Request.RequestType.RemoveInkRequest:
                     request = new RemoveInkRequest(message);
                     break;
+                case Request.RequestType.NewPresentationLinkRequest:
+                    request = new NewPresentationLinkRequest(message);
+                    break;
                 default:
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
             }
@@ -320,7 +324,6 @@ namespace NuSysApp
         {
             await DropNetworkUser(id);
         }
-
         public async Task FetchLibraryElementData(string id)
         {
             await _serverClient.FetchLibraryElementData(id);

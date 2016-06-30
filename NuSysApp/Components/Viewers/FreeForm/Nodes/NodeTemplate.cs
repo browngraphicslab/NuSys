@@ -67,6 +67,7 @@ namespace NuSysApp
             this.DefaultStyleKey = typeof(NodeTemplate);
             SubMenu = null;
             Inner = null;
+
         }
 
         public void Dispose()
@@ -101,8 +102,6 @@ namespace NuSysApp
 
         protected override void OnApplyTemplate()
         {
-            var vm = (ElementViewModel)this.DataContext;
-
             bg = (Grid)GetTemplateChild("bg");
             hitArea = (Rectangle)GetTemplateChild("HitArea");
 
@@ -150,8 +149,11 @@ namespace NuSysApp
             title = (TextBox)GetTemplateChild("xTitle");
             title.KeyUp += TitleOnTextChanged;
 
-            if (vm.Controller.LibraryElementModel != null)
-                vm.Controller.LibraryElementController.TitleChanged += LibraryElementModelOnOnTitleChanged;
+            if ((DataContext as ElementViewModel)?.Controller.LibraryElementModel != null)
+            {
+                (DataContext as ElementViewModel).Controller.LibraryElementController.TitleChanged +=
+                    LibraryElementModelOnOnTitleChanged;
+            }
             titleContainer = (Grid)GetTemplateChild("xTitleContainer");
 
             title.Loaded += delegate (object sender, RoutedEventArgs args)
@@ -164,7 +166,7 @@ namespace NuSysApp
 
             //vm.Controller.LibraryElementController.UserChanged += ControllerOnUserChanged;
 
-            vm.PropertyChanged += OnPropertyChanged;
+            (DataContext as BaseINPC).PropertyChanged += OnPropertyChanged;
             base.OnApplyTemplate();
             OnTemplateReady?.Invoke();
         }
@@ -291,8 +293,7 @@ namespace NuSysApp
                                 }
                                 else
                                 {
-                                    vm.Controller.RequestLinkTo(dc.Id, (RectangleView) element, null, inFgDictionary,
-                                        outFgDictionary);
+                                    SessionController.Instance.LinkController.RequestLink(dc.ContentId, vm.ContentId);
                                 }
                             }
                         }
@@ -323,8 +324,7 @@ namespace NuSysApp
                                 }
                                 else
                                 {
-                                    vm.Controller.RequestLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary,
-                                        outFgDictionary);
+                                    SessionController.Instance.LinkController.RequestLink(dc.ContentId, vm.ContentId);
                                 }
                             }
                             
@@ -365,9 +365,13 @@ namespace NuSysApp
 
 
                         if (_currenDragMode == DragMode.Link)
-                            vm.Controller.RequestLinkTo(dc.Id);
+                        {
+                          SessionController.Instance.LinkController.RequestLink(dc.ContentId, vm.ContentId); 
+                        }
                         if (_currenDragMode == DragMode.PresentationLink)
+                        {
                             vm.Controller.RequestPresentationLinkTo(dc.Id);
+                        }
                     }
                 }
             }

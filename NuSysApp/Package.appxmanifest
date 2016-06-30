@@ -25,14 +25,10 @@
       </uap:VisualElements>
       <Extensions>
         <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="nusys">
+          <uap:FileTypeAssociation Name="pdf">
             <uap:SupportedFileTypes>
-              <uap:FileType>.nusys</uap:FileType>
-              <uap:FileType>.txt</uap:FileType>
-              <uap:FileType>.png</uap:FileType>
-              <uap:FileType>.jpg</uap:FileType>
-              <uap:FileType>.pptx#3</uap:FileType>
-              <uap:FileType>.pptx</uap:FileType>
+              <uap:FileType>.pdf</uap:FileType>
+              <uap:FileType>.json</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
@@ -44,9 +40,14 @@
           </uap:FileTypeAssociation>
         </uap:Extension>
         <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="pdf">
+          <uap:FileTypeAssociation Name="nusys">
             <uap:SupportedFileTypes>
-              <uap:FileType>.pdf</uap:FileType>
+              <uap:FileType>.nusys</uap:FileType>
+              <uap:FileType>.txt</uap:FileType>
+              <uap:FileType>.png</uap:FileType>
+              <uap:FileType>.jpg</uap:FileType>
+              <uap:FileType>.pptx#3</uap:FileType>
+              <uap:FileType>.pptx</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>

@@ -56,9 +56,6 @@
                 <Button x:Name="CurrentCollectionDV" Click="CurrentCollectionDV_OnClick"  VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource CircleButton}" Background="{StaticResource color4}" Width="50" Height="50" Margin="10,10,0,0">
                     <Image Source="https://cdn0.iconfinder.com/data/icons/web-and-application/512/about_faq_help_hint_info_information_free_hand_drawn_sketch-512.png" Width="60" Height="60" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
                 </Button>
-                <Button x:Name="SearchButton" Click="SearchButton_OnClick"  VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource CircleButton}" Background="{StaticResource color3}" Width="50" Height="50" Margin="10,10,0,0">
-                    <Image Source="http://www.clker.com/cliparts/5/N/0/x/w/j/search-icon-marine-md.png" Stretch="UniformToFill" Width="40" Height="40" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
-                </Button>
             </StackPanel>
 
             <Button x:Name="SnapshotButton" Click="SnapshotButton_OnClick" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource CircleButton}" Background="{StaticResource color4}" Width="50" Height="50" Margin="10,10,0,0">

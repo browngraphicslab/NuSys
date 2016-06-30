@@ -29,6 +29,8 @@ namespace NuSysApp
 
         private double _x;
         private double _y;
+        private bool _isSingleTap;
+        private HashSet<FrameworkElement> _openInfo;
 
         public SearchView()
         {
@@ -40,11 +42,14 @@ namespace NuSysApp
                 if (!(DataContext is SearchViewModel))
                     return;
                 _vm = (SearchViewModel)DataContext;
+                _openInfo = new HashSet<FrameworkElement>();
 
                 // set the view equal to the size of the window
                 this.ResizeView(true, true);
                 // when the size of the winow changes reset the view
                 SessionController.Instance.SessionView.SizeChanged += SessionView_SizeChanged;
+
+                SessionController.Instance.SessionView.MainCanvas.PointerPressed += MainCanvas_PointerPressed;
                 // Metadata.ItemsSource = vm.Metadata;
             };
 
@@ -82,18 +87,18 @@ namespace NuSysApp
             Canvas.SetLeft(this, 0);
         }
 
-        private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        private void MainCanvas_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            // todo errorchecking
-            this.Width += e.Delta.Translation.X;
-            _vm.ResultWidth = this.Width - resizer.Width;
+            var mainCanvas = SessionController.Instance.SessionView.MainCanvas;
+            // return if the pointer is pressed inside the grid
+            var position = e.GetCurrentPoint(mainCanvas).Position;
+            if (position.X <= this.Width)
+                return;
 
-        }
-
-        private void closeSV_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
             Visibility = Visibility.Collapsed;
+
         }
+
         #endregion manipulation code
 
         #region search bar text manipulation
@@ -132,14 +137,42 @@ namespace NuSysApp
             // sender.TextMemberPath = textMemberPath
 
             // if you need more than a simple property You can use args.SelectedItem to build your text string.
-            //sender.Text;
+            //sender.Text;        
+        }
 
-           
+        private void HideHelperText()
+        {
+            _vm.SearchViewHelperTextVisibility = Visibility.Collapsed;
+            xContainer.RowDefinitions.Clear();
+            xContainer.RowDefinitions.Add(new RowDefinition());
+            Grid.SetRow(SearchBarGrid, 0);
+            ShowHelpButton.Visibility = Visibility.Visible;
+        }
+
+        private void ShowHelperText()
+        {
+            ShowHelpButton.Visibility = Visibility.Collapsed;
+            _vm.NoResultsFound = Visibility.Collapsed;
+            _vm.PageElements.Clear();
+            _vm.SearchViewHelperTextVisibility = Visibility.Visible;
+            xContainer.RowDefinitions.Add(new RowDefinition());
+            xContainer.RowDefinitions.Add(new RowDefinition());
+            Grid.SetRow(TitleBlock, 0);
+            Grid.SetRow(SearchBarGrid, 1);
+            Grid.SetRow(HelperText, 2);
+            xContainer.RowDefinitions[0].Height = new GridLength(1, GridUnitType.Star);
+            xContainer.RowDefinitions[1].Height = new GridLength(1, GridUnitType.Auto);
+            xContainer.RowDefinitions[2].Height = new GridLength(1, GridUnitType.Star);
+            _vm.SearchResultsListVisibility = Visibility.Collapsed;
+            //TODO reset searchbar
         }
 
         // when the user submits a query show the query results
         private void SearchBox_OnQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
+            // hide helper text and any open info boxes
+            HideHelperText();
+            foreach (var element in _openInfo) element.Visibility = Visibility.Collapsed;
 
             if (args.ChosenSuggestion != null)
             {
@@ -153,10 +186,12 @@ namespace NuSysApp
         }
         #endregion search bar text manipulation
 
-
-        // display extra info when the header is tapped
-        private void ResultHeader_OnTapped(object sender, TappedRoutedEventArgs e)
+        private async void RootGrid_OnTapped(object sender, TappedRoutedEventArgs e)
         {
+            // check to see if double tap gets called
+            _isSingleTap = true;
+            await Task.Delay(200);
+            if (!_isSingleTap) return;
 
             var header = sender as Grid;
             var info = header?.FindName("ResultInfo") as FrameworkElement;
@@ -165,15 +200,21 @@ namespace NuSysApp
             if (info.Visibility == Visibility.Visible)
             {
                 info.Visibility = Visibility.Collapsed;
+                if (_openInfo.Contains(info))
+                {
+                    _openInfo.Remove(info);
+                }
             }
             else
             {
                 info.Visibility = Visibility.Visible;
+                _openInfo.Add(info);
             }
         }
 
         private void ListView_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
+            _isSingleTap = false;
             var item = ListView.SelectedItem as SearchResultTemplate;
             var id = item.Id;
 
@@ -320,5 +361,13 @@ namespace NuSysApp
                 }
             });
         }
+
+        private void ShowHelpButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            ShowHelperText();
+        }
+
+
+
     }
 }
