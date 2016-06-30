@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -11,6 +12,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -42,6 +44,7 @@ namespace NuSysApp
             pdf.Visibility = Visibility.Collapsed;
             text.Visibility = Visibility.Collapsed;
             collection.Visibility = Visibility.Collapsed;
+            IconImage.Visibility = Visibility.Collapsed;
 
             switch (type)
             {
@@ -64,6 +67,32 @@ namespace NuSysApp
                     video.Visibility = Visibility.Visible;
                     break;
             }
+        }
+
+        public void SetIcon(LibraryElementModel element)
+        {
+            audio.Visibility = Visibility.Collapsed;
+            image.Visibility = Visibility.Collapsed;
+            video.Visibility = Visibility.Collapsed;
+            pdf.Visibility = Visibility.Collapsed;
+            text.Visibility = Visibility.Collapsed;
+            collection.Visibility = Visibility.Collapsed;
+            IconImage.Visibility = Visibility.Collapsed;
+
+            switch (element.Type)
+            {
+                case ElementType.Image:
+                case ElementType.Video:
+                    var iconUri = SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId).SmallIconUri;
+                    IconImage.Source = new BitmapImage(iconUri);
+                    IconImage.Visibility = Visibility.Visible;
+                    break;
+                default:
+                    SwitchType(element.Type);
+                    break;
+            }
+
+
         }
     }
 }
