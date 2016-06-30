@@ -202,7 +202,8 @@ namespace NuSysApp
 
         private async void LibraryListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
+            LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
+            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(itemTemplate.ContentID);
             if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
             {
                 e.Handled = true;
@@ -286,7 +287,7 @@ namespace NuSysApp
             }
 
             regionsPanel?.RowDefinitions.Clear();
-            regionsPanel.Children.Clear();
+            regionsPanel?.Children.Clear();
             var elementTemplate = ListView.SelectedItem as LibraryItemTemplate; 
             var elementModel = SessionController.Instance.ContentController.GetContent(elementTemplate?.ContentID);
 
@@ -297,25 +298,34 @@ namespace NuSysApp
                 textBox.Text = "No regions associated with this element.";
                 textBox.FontSize = 13;
                 regionsPanel?.Children.Add(textBox);
+                textBox.HorizontalAlignment = HorizontalAlignment.Stretch;
                 Grid.SetRow(textBox, 1);
                 Grid.SetColumn(textBox, 1);
                 regionsPanel.Visibility = Visibility.Visible;
                 return;
             }
 
-            regionsPanel?.RowDefinitions.Add(new RowDefinition());
-            var panelTitle = new TextBlock();
-            panelTitle.Text = "Regions:";
-            regionsPanel?.Children.Add(panelTitle);
-            Grid.SetRow(panelTitle, 0);
-            Grid.SetColumn(panelTitle, 1);
-            var count = 1;
+            //regionsPanel?.RowDefinitions.Add(new RowDefinition());
+            //var panelTitle = new TextBlock();
+            //panelTitle.Text = "Regions:";
+            //regionsPanel?.Children.Add(panelTitle);
+            //panelTitle.HorizontalAlignment = HorizontalAlignment.Left;
+            //Grid.SetRow(panelTitle, 0);
+            //Grid.SetColumn(panelTitle, 1);
+            var count = 0;
 
             foreach (var regionModel in elementModel.Regions)
             {
-                regionsPanel?.RowDefinitions.Add(new RowDefinition());
+                var regionController = SessionController.Instance.RegionsController.GetRegionController(regionModel.Id);
+                var row = new RowDefinition();
+                row.Height = GridLength.Auto;
+                regionsPanel?.RowDefinitions.Add(row);
                 var textBox = new Button();
                 textBox.Content = regionModel.Name;
+                regionController.TitleChanged += delegate
+                {
+                    textBox.Content = regionController.Model.Name;
+                };
                 textBox.FontSize = 13;
                 if (textBox.IsPointerOver)
                 {
@@ -323,15 +333,16 @@ namespace NuSysApp
                 }
                 textBox.DoubleTapped += delegate
                 {
+                    SessionController.Instance.SessionView.ShowDetailView(SessionController.Instance.ContentController.GetLibraryElementController(elementModel.LibraryElementId));
                     var controller = SessionController.Instance.RegionsController.GetRegionController(regionModel.Id);
                     SessionController.Instance.SessionView.ShowDetailView(controller);
                 };
                 regionsPanel?.Children.Add(textBox);
-                Grid.SetColumn(textBox, 2);
+                textBox.HorizontalAlignment = HorizontalAlignment.Right;
+                Grid.SetColumn(textBox, 1);
                 Grid.SetRow(textBox, count);
                 count++;
             }
-            regionsPanel.Height = regionsPanel.RowDefinitions.Count * 50;
             regionsPanel.Width = listItem.ActualWidth;
             regionsPanel.Visibility = Visibility.Visible;
         }
@@ -339,7 +350,8 @@ namespace NuSysApp
         private void HeaderPanel_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             _singleTap = false;
-            LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
+            LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
+            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(itemTemplate.ContentID);
             SessionController.Instance.SessionView.ShowDetailView(SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId));
         }
     }

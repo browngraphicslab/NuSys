@@ -24,12 +24,12 @@ namespace NuSysApp
         public string Timestamp { get; private set; }
         public string ContentID { get; private set; }
         
-        public BitmapImage ThumbnailUri { get; private set; }
+        public Uri ThumbnailUri { get; private set; }
         public LibraryItemTemplate(LibraryElementController controller)
         {
             Title = controller.LibraryElementModel.Title;
             controller.TitleChanged += Controller_TitleChanged;
-            ThumbnailUri = new BitmapImage(controller.SmallIconUri);
+            ThumbnailUri = controller.SmallIconUri;
             Timestamp = controller.LibraryElementModel.Timestamp;
             Type = controller.LibraryElementModel.Type.ToString();
             ContentID = controller.LibraryElementModel.LibraryElementId;
