@@ -237,7 +237,7 @@ namespace NuSysApp
             string newKey = ((TextBox)e.OriginalSource).Text.Trim();
             if (newKey != "")
             {
-                vm.CurrentElementController.AddMetadata(new MetadataEntry(newKey, "", false));
+                vm.CurrentElementController.AddMetadata(new MetadataEntry(newKey, new List<string>(), MetadataMutability.IMMUTABLE));
             }
           //  NewMetadataBox.Text = "";
         }

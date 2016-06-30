@@ -62,7 +62,7 @@ namespace NuSysApp
             return output.ToString();
         }
 
-        private string parseMetaDataToHyphenBulletList(Dictionary<string, Tuple<string, bool>> metadataDict)
+        private string parseMetaDataToHyphenBulletList(Dictionary<string, MetadataEntry> metadataDict)
         {
             StringBuilder output = new StringBuilder();
             var separator = ", ";
@@ -74,7 +74,7 @@ namespace NuSysApp
                 // append a separator
                 output.Append(" - ");
                 // TODO currently append one value, should append multiple
-                output.Append(metadataDict[entry.Key].Item1);
+                output.Append(metadataDict[entry.Key].Values);
                 // break to new line
                 output.Append("\n");
             }

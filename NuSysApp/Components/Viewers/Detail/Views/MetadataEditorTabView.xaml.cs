@@ -17,6 +17,9 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using MyToolkit.UI;
 using System.Threading.Tasks;
+using Windows.System;
+using Windows.UI;
+using Windows.UI.Core;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -25,13 +28,14 @@ namespace NuSysApp
     /// <summary>
     /// Defines back end logic for search, sort, and the list view in the metadata editor
     /// </summary>
-    public sealed partial class MetadataEditorView : UserControl
+    public sealed partial class MetadataEditorView : AnimatableUserControl
     {
 
         private ObservableCollection<MetadataEntry> MetadataCollection { get; set; }
         private List<MetadataEntry> _orgList;
         // important for edge case, where your pointer goes over the button first instead of the whole grid
-        private bool _edgeCaseButtonExited;
+        private List<Button> _shownButtons;
+        private List<TextBox> _highlightedTextBoxes; 
         private bool _sortedDescending;
 
         public IMetadatable Metadatable { set; get; }
@@ -47,8 +51,12 @@ namespace NuSysApp
             MetadataCollection = new ObservableCollection<MetadataEntry>();
             _orgList = new List<MetadataEntry>();
             _sortedDescending = false;
+            _shownButtons = new List<Button>();
+            _highlightedTextBoxes = new List<TextBox>();
+            CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
         }
 
+        
         /// <summary>
         /// Updates the MetadataCollection (the data displayed in the ListView) based
         /// on the specific LibraryElement being investigated. The library element's 
@@ -61,26 +69,26 @@ namespace NuSysApp
             _orgList.Clear();
 
             // Extract dictionary from libraryelementmodel.
-            var dict = Metadatable.GetMetadata() ?? new Dictionary<string, Tuple<string, bool>>();
+            var dict = Metadatable.GetMetadata() ?? new Dictionary<string, MetadataEntry>();
 
             // Convert dictionary entries to MetadataEntries, and add to MetadataCollection
             foreach (var key in dict.Keys)
             {
 
                 // Create new entry from the dictionary information
-                var entry = new MetadataEntry(key, dict[key].Item1, dict[key].Item2);
+                var entry = dict[key];
                 _orgList.Add(entry);
-                xField.Text = "";
+                xKey.Text = "";
                 xValue.Text = "";
 
                 // If showing immutable data, add all entries
-                if (xToggleSwitch.IsOn)
+                if ((bool) xCheckBox.IsChecked)
                 {
                     MetadataCollection.Add(entry);
                 }
 
                 // Otherwise we only show mutable data
-                else if (entry.Mutability)
+                else if (entry.Mutability==MetadataMutability.MUTABLE)
                 {
                     MetadataCollection.Add(entry);
                 }
@@ -89,25 +97,17 @@ namespace NuSysApp
         }
 
 
-        /// <summary>
-        /// Controls the presence of immutable entries in the list view, based on the toggle switch
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ToggleSwitch_OnToggled(object sender, RoutedEventArgs e)
-        {
-            this.Update();
-        }
+        
 
         /// <summary>
         /// Adds a new entry and resets text when the "insert" button is clicked
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        private void AddEntryButton_OnClick(object sender, RoutedEventArgs e)
         {
 
-            var key = xField.Text;
+            var key = xKey.Text;
             var val = xValue.Text;
 
             // Obtains metadata dictionary, and uses it to handle bad input
@@ -117,12 +117,12 @@ namespace NuSysApp
                 return;
 
 
-            var entry = new MetadataEntry(xField.Text, xValue.Text, true);
+            var entry = new MetadataEntry(xKey.Text, new List<string>() { xValue.Text}, MetadataMutability.MUTABLE);
 
             // Adds metadata entry to the library element and updates the listview
             Metadatable.AddMetadata(entry);
             this.Update();
-            xField.Text = "";
+            xKey.Text = "";
             xValue.Text = "";
         }
 
@@ -136,7 +136,9 @@ namespace NuSysApp
         {
             // Finds the MetadataEntry, then uses that to delete the metadata from the lib element
             var button = sender as Button;
-            var grid = button.GetVisualParent() as Grid;
+            var stackPanel = button.GetVisualParent() as StackPanel;
+            var relPanel = stackPanel.GetVisualParent() as RelativePanel;
+            var grid = relPanel.GetVisualParent() as Grid;
             var entry = grid.DataContext as MetadataEntry;
             Metadatable.RemoveMetadata(entry.Key);
 
@@ -146,20 +148,23 @@ namespace NuSysApp
 
 
         /// <summary>
-        /// Controls the visibility of the delete button by calling a helper method when appropriate
+        /// Controls the visibility of the delete & edit buttons by calling a helper method when appropriate
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void XListViewItemGrid_OnPointerEnterExit(object sender, PointerRoutedEventArgs e)
+        private void XListViewItemGrid_OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
             // Obtain Grid and Entry 
             var grid = sender as Grid;
             var entry = grid.DataContext as MetadataEntry;
 
-            // If the entry is mutable, toggle the visibility of the delete button
-            if (entry != null && entry.Mutability)
+            // First hide all of the currently shown buttons and clear the list
+           this.HideSelectionButtonsFromPreviousSelection();
+
+            // If the entry is mutable, toggle the visibility of the selection (delete & edit)
+            if (entry != null && (entry.Mutability==MetadataMutability.MUTABLE))
             {
-                this.ToggleDeleteButtonVisibility(grid);
+                this.ToggleSelectionButtonsVisibility(grid);
             }
         }
 
@@ -167,39 +172,35 @@ namespace NuSysApp
         /// Toggles the delete button visibility in the passed in grid by switching the visibility property
         /// </summary>
         /// <param name="grid"></param>
-        private void ToggleDeleteButtonVisibility(Grid grid)
+        private void ToggleSelectionButtonsVisibility(Grid grid)
         {
-            // Loop thru the grid's children to find the button
+            // The button is a couple panes deep, so loop thru all containers to find it
             foreach (var element in grid.Children)
             {
-                if (element.ToString().Equals("Windows.UI.Xaml.Controls.Button"))
+                if (element.ToString().Equals("Windows.UI.Xaml.Controls.RelativePanel"))
                 {
-                    // Once the button is found, toggle visibility
-                    if (element.Visibility == Visibility.Collapsed && !_edgeCaseButtonExited)
+                    var relPanel = element as RelativePanel;
+                    foreach (var item in relPanel.Children)
                     {
-                        element.Visibility = Visibility.Visible;
+                        if (item.ToString().Equals("Windows.UI.Xaml.Controls.StackPanel"))
+                        {
+                            var stackPanel = item as StackPanel;
+                            foreach (var child in stackPanel.Children)
+                            {
+                                if (child.ToString().Equals("Windows.UI.Xaml.Controls.Button"))
+                                {
+                                    child.Visibility = Visibility.Visible;
+                                    _shownButtons.Add(child as Button);
+                                }
+                            }
 
-                    }
-                    else
-                    {
-                        element.Visibility = Visibility.Collapsed;
-                        _edgeCaseButtonExited = false;
+                        }
                     }
                 }
+                    
             }
         }
 
-        /// <summary>
-        /// Ensures the button will dissapear when you move out of it
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DeleteButton_OnPointerExited(object sender, PointerRoutedEventArgs e)
-        {
-            var button = sender as Button;
-            button.Visibility = Visibility.Collapsed;
-            _edgeCaseButtonExited = true;
-        }
 
 
         /// <summary>
@@ -211,6 +212,7 @@ namespace NuSysApp
         {
             var button = sender as Button;
             List<MetadataEntry> lst = new List<MetadataEntry>(MetadataCollection.OrderBy(a => a.Key));
+            
 
             // CHANGE THIS WHEN YOU GET AN ICON
             if (!_sortedDescending)
@@ -231,6 +233,9 @@ namespace NuSysApp
             {
                 MetadataCollection.Add(entry);
             }
+
+            // Make sure to get rid of any artficats from the previous selection
+            this.HideSelectionButtonsFromPreviousSelection();
         }
 
 
@@ -256,17 +261,18 @@ namespace NuSysApp
             var valResult = new HashSet<MetadataEntry>();
 
             // If toggle switch on, search thru both mutable and immutable entries
-            if (xToggleSwitch.IsOn)
+            if ((bool)xCheckBox.IsChecked)
             {
                 keyResult = new HashSet<MetadataEntry>(_orgList.Where(w => this.StringContains(w.Key, text, StringComparison.OrdinalIgnoreCase)));
-                valResult = new HashSet<MetadataEntry>(_orgList.Where(w => this.StringContains(w.Value, text, StringComparison.OrdinalIgnoreCase)));
+                valResult = new HashSet<MetadataEntry>(_orgList.Where(w => this.EntryContainsValue(w, text)));
+
             }
 
             // Otherwise, the switch is off and only search through mutable entries
             else
             {
-                keyResult = new HashSet<MetadataEntry>(_orgList.Where(w => (this.StringContains(w.Key, text, StringComparison.OrdinalIgnoreCase)) && w.Mutability));
-                valResult = new HashSet<MetadataEntry>(_orgList.Where(w => (this.StringContains(w.Value, text, StringComparison.OrdinalIgnoreCase)) && w.Mutability));
+                keyResult = new HashSet<MetadataEntry>(_orgList.Where(w => (this.StringContains(w.Key, text, StringComparison.OrdinalIgnoreCase)) && (w.Mutability==MetadataMutability.MUTABLE)));
+                valResult = new HashSet<MetadataEntry>(_orgList.Where(w => (this.EntryContainsValue(w, text)) && (w.Mutability == MetadataMutability.MUTABLE)));
             }
 
             // Join the result sets, and add them back to the observable collection
@@ -276,6 +282,24 @@ namespace NuSysApp
             {
                 MetadataCollection.Add(element);
             }
+        }
+
+        /// <summary>
+        /// Checks if a string value is in the list of an entry's values
+        /// </summary>
+        /// <param name="entry"></param>
+        /// <param name="toCheck"></param>
+        /// <returns></returns>
+        private bool EntryContainsValue(MetadataEntry entry, string toCheck)
+        {
+            foreach (var value in entry.Values)
+            {
+                if (this.StringContains(value, toCheck, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -317,8 +341,106 @@ namespace NuSysApp
             var entry = textbox.DataContext as MetadataEntry;
             if (!textbox.Text.Equals(""))
             {
-                entry.Value = textbox.Text;
+                var keys = textbox.Text.Split(',').Select(sValue => sValue.Trim()).ToArray();
+                entry.Values = keys.ToList();
             }
         }
+
+        /// <summary>
+        /// Finds the text boxes and makes it obvious that you should edit them.
+        /// See .xaml file for grid/pane containment.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XEditButton_OnClick(object sender, RoutedEventArgs e)
+        {
+
+            // Get the containers
+            var button = sender as Button;
+            var sp = button.GetVisualParent() as StackPanel;
+            var rp = sp.GetVisualParent() as RelativePanel;
+            var grid = rp.GetVisualParent() as Grid;
+
+            // The first text box is in the relative panel
+            foreach (var child in rp.Children)
+            {
+                if (child.ToString().Equals("Windows.UI.Xaml.Controls.TextBox"))
+                {
+                    var box = child as TextBox;     
+                    box.Background = new SolidColorBrush(Colors.CadetBlue);
+                    box.IsHitTestVisible = true;
+                    _highlightedTextBoxes.Add(box);
+                }
+            }
+
+            // The second text box is in the grid 
+            foreach (var child in grid.Children)
+            {
+                if (child.ToString().Equals("Windows.UI.Xaml.Controls.TextBox"))
+                {
+                    var box = child as TextBox;
+                    box.Background = new SolidColorBrush(Colors.CadetBlue);
+                    box.IsHitTestVisible = true;
+                    _highlightedTextBoxes.Add(box);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Updates the observable collection when check box checked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XCheckBox_OnChecked(object sender, RoutedEventArgs e)
+        {
+            this.HideSelectionButtonsFromPreviousSelection();
+            this.Update();
+        }
+
+        /// <summary>
+        /// Updates the observable collection when check box unchecked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XCheckBox_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            this.HideSelectionButtonsFromPreviousSelection();
+            this.Update();
+        }
+
+        /// <summary>
+        /// Hides the edit and delete buttons from the previous selection. Also removes the highlight
+        /// from their text boxes
+        /// </summary>
+        private void HideSelectionButtonsFromPreviousSelection()
+        {
+            foreach (var box in _highlightedTextBoxes)
+            {
+                box.Background = null;
+                box.IsHitTestVisible = false;
+            }
+            foreach (var button in _shownButtons)
+            {
+                button.Visibility = Visibility.Collapsed;
+            }
+            _highlightedTextBoxes.Clear();
+            _shownButtons.Clear();
+        }
+
+        /// <summary>
+        /// Enables the user to add metadata using the enter key, if they have filled out the 
+        /// appropriate info
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnKeyDown(CoreWindow sender, KeyEventArgs args)
+        {
+            if (args.VirtualKey == VirtualKey.Enter && !xKey.Text.Equals("") && !xValue.Text.Equals(""))
+            {
+                this.AddEntryButton_OnClick(new Object(), new RoutedEventArgs());
+                xKey.Focus(FocusState.Keyboard);
+            }
+        }
+
     }
 }
