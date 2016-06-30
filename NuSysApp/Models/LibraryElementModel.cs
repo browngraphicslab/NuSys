@@ -44,12 +44,18 @@ namespace NuSysApp
             Keywords = new HashSet<Keyword>();
             Metadata = metadata ?? new Dictionary<string, MetadataEntry>();
             Regions = new HashSet<Region>();
+            if (Type == ElementType.Link)
+            {
+                
+            }
             SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
             
 
         }
-        public static List<string> PDFStrings = new List<string>();
-        public async Task UnPack(Message message)
+        //FOR PDF DOWNLOADING  --HACKY AF
+        //public static List<string> PDFStrings = new List<string>();
+
+        public virtual async Task UnPack(Message message)
         {
             if (message.ContainsKey("keywords"))
             {
@@ -104,5 +110,11 @@ namespace NuSysApp
         {
             Data = null;
         }
+        /*
+         * Trent, Help ME.!!!!! He's talking about bio. What did I do to deserve this. 
+         * Help me. He just won't stop. Dear god what have I done. Sahil save me.
+         * This is my life now. I will suffer every day. Is there no way to escape this hell?
+         * 
+         */
     }
 }
