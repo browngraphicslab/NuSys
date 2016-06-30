@@ -37,7 +37,7 @@ namespace NuSysApp
             Model.SetLibraryIds(Filter(GetUpdatedDataList()));
 
             //CODE BELOW IS HACKY WAY TO DOWNLOAD ALL THE PDF'S 
-            
+            /*
             Task.Run(async delegate
             {
                 int i = 0;
@@ -85,7 +85,7 @@ namespace NuSysApp
 
                     }
                 }
-            });
+            });*/
         }
 
         public void SetFilter(ToolModel.FilterTitle filter)

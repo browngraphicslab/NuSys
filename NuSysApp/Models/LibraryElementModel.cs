@@ -76,11 +76,12 @@ namespace NuSysApp
                 Creator = message.GetString("creator_user_id");
             }
             //TO DOWNLOAD PDFS
-            
+            /*
             if (Type == ElementType.PDF)
             {
                 PDFStrings.Add(LibraryElementId);
-            }
+            }*/
+
             //ADD IMMUTABLE DATA TO METADATA, so they can show up in md editor
             Metadata.Add("Timestamp", new MetadataEntry("Timestamp", new List<string> { Timestamp }, MetadataMutability.IMMUTABLE));
             Metadata.Add("Creator", new MetadataEntry("Creator", new List<string> { Creator }, MetadataMutability.IMMUTABLE));
