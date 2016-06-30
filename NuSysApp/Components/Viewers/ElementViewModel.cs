@@ -56,6 +56,7 @@ namespace NuSysApp
 
             Tags = new ObservableCollection<Button>();
             CircleLinks = new ObservableCollection<LinkCircle>();
+            CreateCircleLinks();
             ReadFromModel();
 
             RegionsListTest = new ObservableCollection<RectangleView>();
@@ -154,23 +155,13 @@ namespace NuSysApp
             {
                 return;
             }
-            var i = 0; 
-
             foreach (var circle in circleList)
             {
                 //sorry about this - should also be in frontend and not in viewmodel
                 var circlelink = new LinkCircle(circle);
-                circlelink.Circle.Fill = new SolidColorBrush(Constants.linkColors[i%Constants.linkColors.Count]);
-                i++;
-//                tagBlock.Background = new SolidColorBrush(Constants.color4);
-//                tagBlock.Content = tag.Text;
-//                tagBlock.Height = 30;
-//                tagBlock.Padding = new Thickness(5);
-//                tagBlock.BorderThickness = new Thickness(0);
-//                tagBlock.Foreground = new SolidColorBrush(Constants.foreground6);
-//                tagBlock.Margin = new Thickness(2, 2, 2, 2);///
-//                tagBlock.FontStyle = FontStyle.Italic;
-//                tagBlock.IsHitTestVisible = false;
+                var link = SessionController.Instance.ContentController.GetContent(circle) as LinkLibraryElementModel;
+                Color color = link.Color;
+                circlelink.Circle.Fill = new SolidColorBrush(color);
 
                 CircleLinks.Add(circlelink);
             }

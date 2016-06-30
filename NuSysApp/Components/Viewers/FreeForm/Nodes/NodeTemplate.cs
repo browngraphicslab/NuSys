@@ -67,6 +67,7 @@ namespace NuSysApp
             this.DefaultStyleKey = typeof(NodeTemplate);
             SubMenu = null;
             Inner = null;
+
         }
 
         public void Dispose()

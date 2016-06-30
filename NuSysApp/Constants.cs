@@ -83,11 +83,35 @@ namespace NuSysApp
         public static Color color7 = Color.FromArgb(255, 230, 230, 230); // light gray
         public static Color color8 = Colors.DarkGray; // dark gray
         public static Color salmonColor = Colors.DarkSalmon; // dark salmon
-
+        public static Color linkColor1 = Color.FromArgb(255, 255, 222, 222);
+        public static Color linkColor2 = Color.FromArgb(255, 255, 163, 163);
+        public static Color linkColor3 = Color.FromArgb(255, 220, 163, 197);
+        public static Color linkColor4 = Color.FromArgb(255, 205, 163, 163);
+        public static Color linkColor5 = Color.FromArgb(254, 254, 241, 223);
+        public static Color linkColor6 = Color.FromArgb(255, 254, 226, 184);
+        public static Color linkColor7 = Color.FromArgb(255, 254, 212, 184);
+        public static Color linkColor8 = Color.FromArgb(255, 238, 186, 163);
+        public static Color linkColor9 = Color.FromArgb(255, 237, 249, 175);
+        public static Color linkColor10 = Color.FromArgb(255, 254, 249, 175);
+        public static Color linkColor11 = Color.FromArgb(255, 237, 239, 175);
+        public static Color linkColor12 = Color.FromArgb(255, 237, 219, 175);
+        public static Color linkColor13 = Color.FromArgb(255, 237, 248, 226);
+        public static Color linkColor14 = Color.FromArgb(255, 214, 234, 186);
+        public static Color linkColor15 = Color.FromArgb(255, 184, 228, 190);
+        public static Color linkColor16 = Color.FromArgb(255, 166, 195, 176);
+        public static Color linkColor17 = Color.FromArgb(255, 220, 237, 245);
+        public static Color linkColor18 = Color.FromArgb(255, 178, 225, 245);
+        public static Color linkColor19 = Color.FromArgb(255, 169, 210, 255);
+        public static Color linkColor20 = Color.FromArgb(255, 163, 187, 253);
+        public static Color linkColor21 = Color.FromArgb(255, 237, 219, 251);
+        public static Color linkColor22 = Color.FromArgb(255, 200, 179, 215);
+        public static Color linkColor23 = Color.FromArgb(255, 180, 181, 216);
+        public static Color linkColor24 = Color.FromArgb(255, 172, 163, 216);
         public static List<Color> linkColors = new List<Color>()
         {
-            salmonColor
-            //color1, color2, color3, color4, color5, color7
+            linkColor1, linkColor2, linkColor3, linkColor4, linkColor5, linkColor7,
+            linkColor8, linkColor9, linkColor10, linkColor11, linkColor12, linkColor13, linkColor14, linkColor15, linkColor16,
+            linkColor17, linkColor19, linkColor20, linkColor21, linkColor22, linkColor23, linkColor24
         };
 
         #endregion Color

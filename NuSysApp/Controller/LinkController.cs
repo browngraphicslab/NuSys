@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using NuSysApp.Components.Viewers.FreeForm;
 
@@ -9,6 +10,7 @@ namespace NuSysApp
     public class LinkController
     {
         private ConcurrentDictionary<string, HashSet<string>> _links = new ConcurrentDictionary<string, HashSet<string>>();
+ //       private ConcurrentDictionary<string, Color> _colors = new ConcurrentDictionary<string, Color>();
         public delegate void NewLinkEventHandler(LinkLibraryElementModel link);
         public event NewLinkEventHandler OnNewLink;
 

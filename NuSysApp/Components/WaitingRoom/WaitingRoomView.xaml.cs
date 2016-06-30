@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -367,6 +368,17 @@ namespace NuSysApp
                                 {
                                     element = new CollectionLibraryElementModel(id, metadata, title, favorited);
                                 }
+                                else if (type == ElementType.Link)
+                                {
+                                    string hexColor = dict["color"] as string;
+                                    byte a = byte.Parse(hexColor.Substring(1, 2), NumberStyles.HexNumber);
+                                    byte r = byte.Parse(hexColor.Substring(3, 2), NumberStyles.HexNumber);
+                                    byte g = byte.Parse(hexColor.Substring(5, 2), NumberStyles.HexNumber);
+                                    byte b = byte.Parse(hexColor.Substring(7, 2), NumberStyles.HexNumber);
+
+                                    var color = Color.FromArgb(a, r, g, b);
+                                    element = new LinkLibraryElementModel(dict[ "id1"] as string, dict["id2"] as string, id, color, type, metadata, title, favorited);
+                                }
                                 else
                                 {
                                     element = new LibraryElementModel(id, type, metadata, title, favorited);
@@ -378,6 +390,10 @@ namespace NuSysApp
                                 if (SessionController.Instance.ContentController.GetContent(id) == null)
                                 {
                                     SessionController.Instance.ContentController.Add(element);
+                                }
+                                if (type == ElementType.Link)
+                                {
+                                    SessionController.Instance.LinkController.AddLink(id);
                                 }
                             }
                             _isLoaded = true;

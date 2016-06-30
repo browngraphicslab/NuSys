@@ -43,6 +43,10 @@ namespace NuSysApp
             Keywords = new HashSet<Keyword>();
             Metadata = metadata;
             Regions = new HashSet<Region>();
+            if (Type == ElementType.Link)
+            {
+                
+            }
             SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
         }
         public virtual async Task UnPack(Message message)

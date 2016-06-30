@@ -11,6 +11,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 
@@ -21,10 +22,43 @@ namespace NuSysApp
     public sealed partial class LinkCircle : UserControl
     {
         public string cID;
+        private bool pinned;
         public LinkCircle(string cID)
         {
             this.cID = cID;
             this.InitializeComponent();
+            pinned = false;
+            //this.thumbnail = SessionController.Instance.ContentController.GetContent(cID).T
+            thumbnail.Source =
+                new BitmapImage(SessionController.Instance.ContentController.GetLibraryElementController(cID).Thumbnail);
+        }
+
+        private async void circlePointerPressedHandler(object sender, RoutedEventArgs e)
+        {
+            pinned = !pinned;
+            if (pinned)
+            {
+                thumbnail.Visibility = Visibility.Visible;
+                //positiion thumbnail
+            }
+            else
+            {
+                thumbnail.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void circlePointerEnteredHandler(object sender, RoutedEventArgs e)
+        {
+            thumbnail.Visibility = Visibility.Visible;
+            //position thumbnail
+        }
+
+        private async void circlePointerExitedHandler(object sender, RoutedEventArgs e)
+        {
+            if (!pinned)
+            {
+                thumbnail.Visibility = Visibility.Collapsed;
+            }
         }
 
         public Ellipse Circle

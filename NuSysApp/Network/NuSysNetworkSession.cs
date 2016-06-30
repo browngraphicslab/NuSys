@@ -230,6 +230,9 @@ namespace NuSysApp
                 case Request.RequestType.RemoveInkRequest:
                     request = new RemoveInkRequest(message);
                     break;
+                case Request.RequestType.NewPresentationLinkRequest:
+                    request = new NewPresentationLinkRequest(message);
+                    break;
                 default:
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
             }

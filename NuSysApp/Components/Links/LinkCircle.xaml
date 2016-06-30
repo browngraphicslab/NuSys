@@ -10,7 +10,7 @@
     d:DesignWidth="400">
 
     <Grid>
-        <Image x:Name ="thumbnail"></Image>
-        <Ellipse x:Name ="linkButton" Height="30" Width="30" Opacity =".5" Fill="Blue"></Ellipse>
+        <Image x:Name ="thumbnail" Visibility ="Collapsed"></Image>
+        <Ellipse x:Name ="linkButton" Height="30" Width="30" PointerPressed ="circlePointerPressedHandler" Opacity =".5" Fill="Blue"></Ellipse>
     </Grid>
 </UserControl>

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI;
 using NuSysApp.Components.Nodes;
 using NuSysApp.Components.Viewers.FreeForm;
 using NuSysApp.Controller;
@@ -41,7 +43,16 @@ namespace NuSysApp
             {
                 _message["rectangleMod"] = (rectangle.DataContext as RectangleViewModel);
             }
+            SetServerSettings();
         }
+
+        private void SetServerSettings()
+        {
+            SetServerEchoType(ServerEchoType.None);
+            SetServerItemType(ServerItemType.Content);
+            SetServerRequestType(ServerRequestType.Add);
+        }
+
         public override async Task CheckOutgoingRequest()
         {
             if (!_message.ContainsKey("id"))
@@ -53,9 +64,11 @@ namespace NuSysApp
                 throw new Exception("new link request requires a contentId");
             }
             _message["type"] = ElementType.Link.ToString();
+            /*
             SetServerEchoType(ServerEchoType.Everyone);
             SetServerItemType(ServerItemType.Alias);
             SetServerRequestType(ServerRequestType.Add);
+            */
             var time = DateTime.UtcNow.ToString();
             _message["library_element_creation_timestamp"] = time;
             string url = null;
@@ -63,10 +76,12 @@ namespace NuSysApp
             {
                 url = _message["server_url"].ToString();
             }
-
+            Random rand = new Random();
+            Color c = Constants.linkColors[rand.Next(0, Constants.linkColors.Count)];
+            _message["color"] = c.ToString();
             ElementType type = (ElementType) Enum.Parse(typeof (ElementType), (string) _message["type"], true);
 
-            var libraryElement = new LinkLibraryElementModel((string) _message["id1"],(string) _message["id2"],(string) _message["id"], type);
+            var libraryElement = new LinkLibraryElementModel((string)_message["id1"], (string)_message["id2"], (string) _message["id"], c, type);
             SessionController.Instance.ContentController.Add(libraryElement);
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElement.LibraryElementId);
             libraryElement.Timestamp = time;
@@ -89,13 +104,21 @@ namespace NuSysApp
             if (SessionController.Instance.ContentController.ContainsAndLoaded(id1) &&
                 SessionController.Instance.ContentController.ContainsAndLoaded(id2))
             {
-                var link = new LinkLibraryElementModel(id1, id2, id);
+                string hexColor = _message.GetString("color");
+                byte a = byte.Parse(hexColor.Substring(1, 2), NumberStyles.HexNumber);
+                byte r = byte.Parse(hexColor.Substring(3, 2), NumberStyles.HexNumber);
+                byte g = byte.Parse(hexColor.Substring(5, 2), NumberStyles.HexNumber);
+                byte b = byte.Parse(hexColor.Substring(7, 2), NumberStyles.HexNumber);
+
+                var c = Color.FromArgb(a, r, g, b);
+                var link = new LinkLibraryElementModel(id1, id2, id, c);
                 await link.UnPack(_message);
                 //var linkController = new LinkElementController(link);
                 //SessionController.Instance.IdToControllers[id] = linkController;
 
                 var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(creator);
                 parentCollectionLibraryElement.AddChild(id);
+                SetServerSettings();
             }
         }
     }

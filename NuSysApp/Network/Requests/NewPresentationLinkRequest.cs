@@ -14,8 +14,8 @@ namespace NuSysApp
 {
     public class NewPresentationLinkRequest : Request
     {
-        public NewPresentationLinkRequest(Message m) : base(RequestType.NewLinkRequest, m) { }
-        public NewPresentationLinkRequest(string id1, string id2, string creator, string contentId, UserControl regionView, RectangleView rectangle, Dictionary<string, object> inFineGrainDictionary, Dictionary<string, object> outFineGrainDictionary, string id = null, bool IsPresentationLink = false) : base(RequestType.NewLinkRequest)
+        public NewPresentationLinkRequest(Message m) : base(RequestType.NewPresentationLinkRequest, m) { }
+        public NewPresentationLinkRequest(string id1, string id2, string creator, string contentId, UserControl regionView, RectangleView rectangle, Dictionary<string, object> inFineGrainDictionary, Dictionary<string, object> outFineGrainDictionary, string id = null, bool IsPresentationLink = false) : base(RequestType.NewPresentationLinkRequest)
         {
             _message["id1"] = id1;
             _message["id2"] = id2;
