@@ -29,6 +29,7 @@ namespace NuSysApp
 
         private double _x;
         private double _y;
+        private bool _isSingleTap;
 
         public SearchView()
         {
@@ -45,6 +46,8 @@ namespace NuSysApp
                 this.ResizeView(true, true);
                 // when the size of the winow changes reset the view
                 SessionController.Instance.SessionView.SizeChanged += SessionView_SizeChanged;
+
+                SessionController.Instance.SessionView.MainCanvas.PointerPressed += MainCanvas_PointerPressed;
                 // Metadata.ItemsSource = vm.Metadata;
             };
 
@@ -82,18 +85,18 @@ namespace NuSysApp
             Canvas.SetLeft(this, 0);
         }
 
-        private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        private void MainCanvas_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            // todo errorchecking
-            this.Width += e.Delta.Translation.X;
-            _vm.ResultWidth = this.Width - resizer.Width;
+            var mainCanvas = SessionController.Instance.SessionView.MainCanvas;
+            // return if the pointer is pressed inside the grid
+            var position = e.GetCurrentPoint(mainCanvas).Position;
+            if (position.X <= this.Width)
+                return;
 
-        }
-
-        private void closeSV_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
             Visibility = Visibility.Collapsed;
+
         }
+
         #endregion manipulation code
 
         #region search bar text manipulation
@@ -178,10 +181,12 @@ namespace NuSysApp
         }
         #endregion search bar text manipulation
 
-
-        // display extra info when the header is tapped
-        private void ResultHeader_OnTapped(object sender, TappedRoutedEventArgs e)
+        private async void RootGrid_OnTapped(object sender, TappedRoutedEventArgs e)
         {
+            // check to see if double tap gets called
+            _isSingleTap = true;
+            await Task.Delay(200);
+            if (!_isSingleTap) return;
 
             var header = sender as Grid;
             var info = header?.FindName("ResultInfo") as FrameworkElement;
@@ -199,6 +204,7 @@ namespace NuSysApp
 
         private void ListView_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
+            _isSingleTap = false;
             var item = ListView.SelectedItem as SearchResultTemplate;
             var id = item.Id;
 
@@ -350,5 +356,8 @@ namespace NuSysApp
         {
             ShowHelperText();
         }
+
+
+
     }
 }
