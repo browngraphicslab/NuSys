@@ -30,6 +30,7 @@ namespace NuSysApp
         private double _x;
         private double _y;
         private bool _isSingleTap;
+        private HashSet<FrameworkElement> _openInfo;
 
         public SearchView()
         {
@@ -41,6 +42,7 @@ namespace NuSysApp
                 if (!(DataContext is SearchViewModel))
                     return;
                 _vm = (SearchViewModel)DataContext;
+                _openInfo = new HashSet<FrameworkElement>();
 
                 // set the view equal to the size of the window
                 this.ResizeView(true, true);
@@ -168,7 +170,10 @@ namespace NuSysApp
         // when the user submits a query show the query results
         private void SearchBox_OnQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
+            // hide helper text and any open info boxes
             HideHelperText();
+            foreach (var element in _openInfo) element.Visibility = Visibility.Collapsed;
+
             if (args.ChosenSuggestion != null)
             {
                 // User selected an item from the suggestion list, take an action on it here.
@@ -195,10 +200,15 @@ namespace NuSysApp
             if (info.Visibility == Visibility.Visible)
             {
                 info.Visibility = Visibility.Collapsed;
+                if (_openInfo.Contains(info))
+                {
+                    _openInfo.Remove(info);
+                }
             }
             else
             {
                 info.Visibility = Visibility.Visible;
+                _openInfo.Add(info);
             }
         }
 
@@ -233,7 +243,7 @@ namespace NuSysApp
             }
 
             var view = SessionController.Instance.SessionView;
-            view.LibraryDraggingRectangle.SwitchType(element.Type);
+            view.LibraryDraggingRectangle.SetIcon(element);
             view.LibraryDraggingRectangle.Show();
             var rect = view.LibraryDraggingRectangle;
             Canvas.SetZIndex(rect, 3);

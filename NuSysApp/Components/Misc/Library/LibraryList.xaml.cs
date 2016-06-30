@@ -140,7 +140,7 @@ namespace NuSysApp
             }
             
             var view = SessionController.Instance.SessionView;
-            view.LibraryDraggingRectangle.SwitchType(element.Type);
+            view.LibraryDraggingRectangle.SetIcon(element);
             view.LibraryDraggingRectangle.Show();
             var rect = view.LibraryDraggingRectangle;
             Canvas.SetZIndex(rect, 3);

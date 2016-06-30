@@ -70,17 +70,10 @@ namespace NuSysApp
 
         public async void AdvancedSearch(Query searchQuery)
         {
-            PageElements.Clear();        
 
-            // remove from here
-            PageElements.Add(new SearchResultTemplate(new SearchResult("7dd03643ef834684a8691be532b4fec5", SearchResult.ResultType.Type)));
-            PageElements.Add(new SearchResultTemplate(new SearchResult("2e9fee2571094c05a1999b44e9aee36d", SearchResult.ResultType.Type)));
-            SearchResultsListVisibility = Visibility.Visible;
-            // to here
+            // because sorting the actual observable collection breaks binding
+            var tempPageElements = new ObservableCollection<SearchResultTemplate>();
 
-
-
-            /*
             var searchResults = await SessionController.Instance.NuSysNetworkSession.AdvancedSearchOverLibraryElements(searchQuery);
             if (searchResults == null || searchResults.Count == 0)
             {
@@ -92,18 +85,38 @@ namespace NuSysApp
                 return;
             }
             else
-            {
+            {                
+                var idResult = new Dictionary<string, SearchResultTemplate>();
 
                 foreach (var result in searchResults)
                 {
-                    //var id = result.ContentID;
-                    //if (id != null)
-                    PageElements.Add(new SearchResultTemplate(result));
 
+                    if (idResult.ContainsKey(result.ContentID))
+                    {
+                        //Todo possibly weight importance by result type
+                        idResult[result.ContentID].IncrementImportance();
+                    }
+                    else
+                    {
+                        var template = new SearchResultTemplate(result);
+                        idResult.Add(template.Id, template);
+                        tempPageElements.Add(template);
+                    }
                 }
+
+                tempPageElements = new ObservableCollection<SearchResultTemplate>(tempPageElements.OrderByDescending(i => i.Importance));
+
+                PageElements?.Clear();
+                foreach (var tempElement in tempPageElements)
+                {
+                    PageElements?.Add(tempElement);
+                }
+
+
                 SearchResultsListVisibility = Visibility.Visible;
+
             }
-            */
+            
         }
      
     }

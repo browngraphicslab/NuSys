@@ -143,7 +143,7 @@ namespace NuSysApp
             {
                 var vm = (ElementViewModel) userControl.DataContext;
                 var model = vm.Model;
-                if (vm.Controller.LibraryElementController.GetMetadata("visualCopyOf") == nodeToTag.Id)
+                if (vm.Controller.LibraryElementController.GetMetadata("visualCopyOf").Contains(nodeToTag.Id))
                 {
                     var t = nodeToTag.Controller.LibraryElementController.LibraryElementModel.Keywords;
                     t.Add(new Keyword(inkCaption));
@@ -161,7 +161,7 @@ namespace NuSysApp
                     UITask.Run(() =>
                     {
                         var newNodeController = SessionController.Instance.IdToControllers[s];
-                        newNodeController.LibraryElementController.AddMetadata(new MetadataEntry("visualCopyOf", nodeToTag.Id, true));
+                        newNodeController.LibraryElementController.AddMetadata(new MetadataEntry("visualCopyOf",new List<string> {nodeToTag.Id}, MetadataMutability.MUTABLE));
                         //newNodeModel.MoveToGroup((NodeContainerModel)groupTagNode.Model, true);
                     });
                 });

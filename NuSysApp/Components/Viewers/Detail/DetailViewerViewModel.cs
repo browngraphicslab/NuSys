@@ -137,6 +137,12 @@ namespace NuSysApp
                 {
                     return false;
                 }
+                if (!controller.IsLoaded)
+                {
+                    await
+                        SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(
+                            controller.LibraryElementModel.LibraryElementId);
+                }
                 if (CurrentElementController != null)
                 {
                     CurrentElementController.KeywordsChanged -= KeywordsChanged;

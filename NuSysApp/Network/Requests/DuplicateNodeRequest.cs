@@ -28,7 +28,7 @@ namespace NuSysApp
                     var childModel = SessionController.Instance.IdToControllers[childId].Model;
                     var group = (SessionController.Instance.IdToControllers[childId].LibraryElementController.GetMetadata("groups"));
                     var groups = new List<string>();
-                    groups.Add(group);
+                    groups.AddRange(group);
 
                     //TODO: refactor
                    // childModel.Creator = id;

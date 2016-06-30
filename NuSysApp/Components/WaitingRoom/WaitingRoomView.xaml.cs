@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
+using System.Globalization;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,11 +15,7 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using Microsoft.ApplicationInsights.Extensibility;
-using MyToolkit.Utilities;
 using Newtonsoft.Json;
-using NuSysApp;
-using NuSysApp.Util;
 using Windows.UI.Xaml.Input;
 using Newtonsoft.Json.Linq;
 
@@ -46,7 +38,7 @@ namespace NuSysApp
 
         public static bool TEST_LOCAL_BOOLEAN = false;
 
-        public static bool IS_HUB = false;
+        public static bool IS_HUB = true;
 
         private static IEnumerable<Message> _firstLoadList;
         private bool _loggedIn = false;
@@ -330,8 +322,8 @@ namespace NuSysApp
                                         //var element = new LibraryElementModel(kvp.Value);
 
                                         bool favorited = false;
-                                        Dictionary<String, Tuple<string, Boolean>> metadata =
-                                            new Dictionary<string, Tuple<string, Boolean>>();
+                                        var metadata =
+                                            new Dictionary<string, MetadataEntry>();
                                         var dict = kvp.Value;
                                         var message = new Message(dict);
                                         string title = null;
@@ -355,7 +347,7 @@ namespace NuSysApp
                                             {
                                                 metadata =
                                                     JsonConvert
-                                                        .DeserializeObject<Dictionary<string, Tuple<string, Boolean>>>(
+                                                        .DeserializeObject<Dictionary<string, MetadataEntry>>(
                                                             dict["metadata"].ToString());
                                             }
 
@@ -404,6 +396,9 @@ namespace NuSysApp
                                         {
                                             SessionController.Instance.ContentController.Add(element);
                                         }
+                                        
+                                        
+
                                     }
                                     _isLoaded = true;
                                     if (_loggedIn)
@@ -582,7 +577,7 @@ namespace NuSysApp
                                 //var element = new LibraryElementModel(kvp.Value);
 
                                 bool favorited = false;
-                                Dictionary<String, Tuple<string, Boolean>> metadata = new Dictionary<string, Tuple<string, Boolean>>();
+                                var metadata = new Dictionary<string, MetadataEntry>();
                                 var dict = kvp.Value;
                                 var message = new Message(dict);
                                 string title = null;
@@ -603,7 +598,7 @@ namespace NuSysApp
 
                                     if (dict["metadata"] != null)
                                     {
-                                        metadata = JsonConvert.DeserializeObject<Dictionary<string, Tuple<string, Boolean>>>(dict["metadata"].ToString());
+                                        metadata = JsonConvert.DeserializeObject<Dictionary<string, MetadataEntry>>(dict["metadata"].ToString());
                                     }
 
                                 }
@@ -637,17 +632,47 @@ namespace NuSysApp
                                 {
                                     element = new CollectionLibraryElementModel(id, metadata, title, favorited);
                                 }
+                                else if (type == ElementType.Link)
+                                {
+                                    Color color;
+                                    if (dict.ContainsKey("color"))
+                                    {
+                                        string hexColor = dict["color"] as string;
+                                        byte a = byte.Parse(hexColor.Substring(1, 2), NumberStyles.HexNumber);
+                                        byte r = byte.Parse(hexColor.Substring(3, 2), NumberStyles.HexNumber);
+                                        byte g = byte.Parse(hexColor.Substring(5, 2), NumberStyles.HexNumber);
+                                        byte b = byte.Parse(hexColor.Substring(7, 2), NumberStyles.HexNumber);
+                                        Color.FromArgb(a, r, g, b);
+                                    }
+                                    color = Colors.Tomato;
+                                    if (dict.ContainsKey("id1") && dict.ContainsKey("id2"))
+                                    {
+                                        element = new LinkLibraryElementModel(dict["id1"] as string,
+                                            dict["id2"] as string, id, color, type, metadata, title, favorited);
+                                    }
+                                    else
+                                    {
+                                        element = null;
+                                    }
+                                }
                                 else
                                 {
                                     element = new LibraryElementModel(id, type, metadata, title, favorited);
                                 }
-                                element.UnPack(message);
-                                element.Creator = creator;
-                                element.Timestamp = timestamp;
-                                element.ServerUrl = serverUrl;
-                                if (SessionController.Instance.ContentController.GetContent(id) == null)
+                                if (element != null)
                                 {
-                                    SessionController.Instance.ContentController.Add(element);
+                                    element.UnPack(message);
+                                    element.Creator = creator;
+                                    element.Timestamp = timestamp;
+                                    element.ServerUrl = serverUrl;
+                                    if (SessionController.Instance.ContentController.GetContent(id) == null)
+                                    {
+                                        SessionController.Instance.ContentController.Add(element);
+                                    }
+                                    if (type == ElementType.Link)
+                                    {
+                                        SessionController.Instance.LinkController.AddLink(id);
+                                    }
                                 }
                             }
                             _isLoaded = true;

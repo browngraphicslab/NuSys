@@ -58,7 +58,7 @@
                    
 
                 <!-- The search results -->
-                <ListView x:Name="ListView" ItemsSource="{Binding PageElements}" Grid.Row="1" Width="{Binding ResultWidth}" HorizontalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollMode="Enabled" IsDoubleTapEnabled="True" DoubleTapped="ListView_OnDoubleTapped" Visibility="{Binding SearchResultsListVisibility}">
+                <ListView x:Name="ListView" ItemsSource="{Binding PageElements}" Grid.Row="1" Width="{Binding ResultWidth}" HorizontalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollMode="Enabled" IsDoubleTapEnabled="True" DoubleTapped="ListView_OnDoubleTapped" Visibility="{Binding SearchResultsListVisibility}">
                     <!-- Search Result Item Template -->
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">

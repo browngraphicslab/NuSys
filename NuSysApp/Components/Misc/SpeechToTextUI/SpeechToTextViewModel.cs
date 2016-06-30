@@ -25,6 +25,7 @@ namespace NuSysApp
                 {
                     RecordButtonVisibility = Visibility.Collapsed;
                     StopButtonVisibility = Visibility.Visible;
+                    IsTextBoxEnabled = false;
                     StatusText = "Tap Stop and Await Results";
                 }
                 else
@@ -32,10 +33,23 @@ namespace NuSysApp
                     StopButtonVisibility = Visibility.Collapsed;
                     RecordButtonVisibility = Visibility.Visible;
                     StatusText = "Tap the Microphone and Speak";
+                    IsTextBoxEnabled = true;
                 }
                 RaisePropertyChanged("IsListening");
             }
 
+        }
+
+        private bool _isTextBoxEnabled;
+        public bool IsTextBoxEnabled
+        {
+            get { return _isTextBoxEnabled; }
+            set
+            {
+                _isTextBoxEnabled = value;
+                RaisePropertyChanged("IsTextBoxEnabled");
+            }
+            
         }
 
         // the visibility of the record button
