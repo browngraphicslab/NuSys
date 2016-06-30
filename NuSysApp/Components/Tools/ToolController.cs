@@ -29,7 +29,6 @@ namespace NuSysApp
 
 
         public ToolModel Model { get;}
-        private int _countPDFS = 0;
         public ToolController(ToolModel model)
         {
             Debug.Assert(model != null);
@@ -38,7 +37,7 @@ namespace NuSysApp
             Model.SetLibraryIds(Filter(GetUpdatedDataList()));
 
             //CODE BELOW IS HACKY WAY TO DOWNLOAD ALL THE PDF'S 
-            /*
+            
             Task.Run(async delegate
             {
                 int i = 0;
@@ -68,7 +67,7 @@ namespace NuSysApp
                                 using (
                                     var stream =
                                         new FileStream(
-                                            @"C:\Users\graphics_lab\Documents\junsu_pdfs\" + _countPDFS++ + ".txt",
+                                            @"C:\Users\graphics_lab\Documents\junsu_pdfs\" + lem.Title + ".txt",
                                             FileMode.OpenOrCreate,
                                             FileAccess.Write))
                                 {
@@ -86,7 +85,7 @@ namespace NuSysApp
 
                     }
                 }
-            });*/
+            });
         }
 
         public void SetFilter(ToolModel.FilterTitle filter)
