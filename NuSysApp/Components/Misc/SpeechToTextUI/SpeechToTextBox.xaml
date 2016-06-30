@@ -54,7 +54,7 @@
             <TextBlock Text="{Binding StatusText}" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"></TextBlock>
             <TextBlock Text="This feature provides continuous, multi-sentence dictation with progressing hypothesis." FontSize="12" TextWrapping="Wrap" TextAlignment="Center"></TextBlock>
         </StackPanel>
-        <TextBox x:Name="DictationTextbox" Text="{Binding Text}"  Grid.Row="2" Background="White" BorderBrush="SlateGray" BorderThickness="2" AcceptsReturn="True" TextWrapping="Wrap"
+        <TextBox x:Name="DictationTextbox" Text="{Binding Text}"  Grid.Row="2" Background="White" BorderBrush="SlateGray" BorderThickness="2" AcceptsReturn="True" TextWrapping="Wrap" IsEnabled="{Binding IsTextBoxEnabled}"
                  TextChanged="DictationTextbox_OnTextChanged" ManipulationDelta="DictationTextBox_OnManipulationDelta" ManipulationMode="All" ContextMenuOpening="DictationTextBox_OnContextMenuOpening"></TextBox>
         <TextBlock Grid.Row="3" Text="Tapping outside the box will minimize it" FontSize="12" TextWrapping="Wrap" TextAlignment="Center"></TextBlock>
 
