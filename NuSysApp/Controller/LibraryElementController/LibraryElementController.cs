@@ -382,12 +382,5 @@ namespace NuSysApp
         {
             return NuSysApp.MetadatableType.Content;
         }
-        public Uri Thumbnail
-        {
-            get
-            {
-                return new Uri("https://usercontent1.hubstatic.com/8201646_50.jpg");
-            } 
-        }
     }
 }
