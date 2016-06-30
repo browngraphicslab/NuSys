@@ -93,7 +93,6 @@ namespace NuSysApp
                     document = MuPDFWinRT.Document.Create(readBuffer, MuPDFWinRT.DocumentType.PDF, 120);
                 }
             }
-
             return document;
         }
 

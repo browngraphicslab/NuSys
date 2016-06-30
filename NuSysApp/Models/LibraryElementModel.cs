@@ -83,10 +83,22 @@ namespace NuSysApp
             }*/
 
             //ADD IMMUTABLE DATA TO METADATA, so they can show up in md editor
-            Metadata.Add("Timestamp", new MetadataEntry("Timestamp", new List<string> { Timestamp }, MetadataMutability.IMMUTABLE));
-            Metadata.Add("Creator", new MetadataEntry("Creator", new List<string> { Creator }, MetadataMutability.IMMUTABLE));
-            Metadata.Add("Title", new MetadataEntry("Title", new List<string> { Title }, MetadataMutability.IMMUTABLE));
-            Metadata.Add("Type", new MetadataEntry("Type", new List<string> { Type.ToString() }, MetadataMutability.IMMUTABLE));
+            if (!Metadata.ContainsKey("Timestamp"))
+            {
+                Metadata.Add("Timestamp", new MetadataEntry("Timestamp", new List<string> {Timestamp}, MetadataMutability.IMMUTABLE));
+            }
+            if (!Metadata.ContainsKey("Creator"))
+            {
+                Metadata.Add("Creator", new MetadataEntry("Creator", new List<string> {Creator}, MetadataMutability.IMMUTABLE));
+            }
+            if (!Metadata.ContainsKey("Title"))
+            {
+                Metadata.Add("Title", new MetadataEntry("Title", new List<string> {Title}, MetadataMutability.IMMUTABLE));
+            }
+            if (!Metadata.ContainsKey("Type"))
+            {
+                Metadata.Add("Type", new MetadataEntry("Type", new List<string> {Type.ToString()}, MetadataMutability.IMMUTABLE));
+            }
         }
         protected virtual void OnSessionControllerEnterNewCollection()
         {
