@@ -95,7 +95,7 @@ namespace NuSysApp
         //        UITask.Run(delegate {
         //            OnNewContents?.Invoke(_elements.ContentValues);
         //        });
-        //    });
+        //    })
         //}
 
         //public void AddNewElement(LibraryElement element)
@@ -115,6 +115,7 @@ namespace NuSysApp
 
         private void TextBox_OnTextChanging(Object sender, String args)
         {
+            return;
             if (ListContainer.Children[0] == _libraryList)
             {
                 _libraryList.Search(((TextInputBlock)sender).Text.ToLower());
@@ -372,6 +373,7 @@ namespace NuSysApp
                 }
             });
 
+            // TODO: Remove Tood
             // TOOD: refresh library
         }
 

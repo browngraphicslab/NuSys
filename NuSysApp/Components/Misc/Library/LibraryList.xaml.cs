@@ -22,6 +22,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using MyToolkit.UI;
+using Panel = Windows.Devices.Enumeration.Panel;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -29,8 +30,7 @@ namespace NuSysApp
 {
     public sealed partial class LibraryList : UserControl, LibraryViewable
     {
-        //public delegate void LibraryElementDragEventHandler(object sender, DragItemsStartingEventArgs e);
-        //public event LibraryElementDragEventHandler OnLibraryElementDrag;
+        
         private LibraryElementPropertiesWindow _propertiesWindow;
 
         private double _x;
@@ -51,8 +51,7 @@ namespace NuSysApp
             ((LibraryBucketViewModel)library.DataContext).OnHighlightElement += Select;
             _propertiesWindow = propertiesWindow;
             _library = library;
-            //vm.OnItemsChanged += Update;
-            //Canvas.SetZIndex(Header, Canvas.GetZIndex(ListView)+1)
+            
         }
 
         private void Select(LibraryElementModel model, bool lightup = true)
@@ -109,15 +108,13 @@ namespace NuSysApp
             _x = e.GetCurrentPoint(view).Position.X-25;
             _y = e.GetCurrentPoint(view).Position.Y-25;
         }
-        private void ListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
-        {
+        //private void ListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        //{
 
-            LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
+        //    LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
 
-            //_propertiesWindow.SetElement(element);
-            SessionController.Instance.SessionView.ShowDetailView(SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId));
-            //_propertiesWindow.Visibility = Visibility.Visible;
-        }
+        //    SessionController.Instance.SessionView.ShowDetailView(SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId));
+        //}
         private async void Sort_Button_Click(object sender, RoutedEventArgs e)
         {
             var btnStr = ((Button) sender).Content.ToString();
@@ -218,7 +215,119 @@ namespace NuSysApp
 
         private void ListView_OnItemClick(object sender, ItemClickEventArgs e)
         {
-            _propertiesWindow.SetElement(((LibraryElementModel)e.ClickedItem));         
+            return;
+            
+            var listItem = sender as ListView;
+            
+            var regionsPanel = listItem?.FindName("RegionsPanel") as Grid;
+            
+            if (regionsPanel?.Visibility == Visibility.Visible)
+            {
+                regionsPanel.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            regionsPanel?.RowDefinitions.Clear();
+            var x = listItem.SelectedItem;
+            var elementModel = ListView.SelectedItem as LibraryElementModel;
+            var count = 0;
+
+            if (elementModel?.Regions == null)
+            {
+                regionsPanel?.RowDefinitions.Add(new RowDefinition());
+                var textBox = new TextBlock();
+                textBox.Text = "No regions associated with this element.";
+                regionsPanel?.Children.Add(textBox);
+                Grid.SetRow(textBox, 0);
+                regionsPanel.Visibility = Visibility.Visible;
+                return;
+            }
+           
+            foreach (var regionModel in elementModel.Regions)
+            {
+                regionsPanel?.RowDefinitions.Add(new RowDefinition());
+                var textBox = new TextBlock();
+                textBox.Text = regionModel.Name;
+                regionsPanel?.Children.Add(textBox);
+                Grid.SetRow(textBox, count);
+                count++;
+            }
+
+            regionsPanel.Visibility = Visibility.Visible;
+            
+        }
+
+
+        private void LibraryListItem_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            
+        }
+
+        private void HeaderPanel_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var listItem = (Grid)sender;
+            var regionsPanel = listItem.FindName("RegionsPanel") as Grid;
+
+            if (regionsPanel?.Visibility == Visibility.Visible)
+            {
+                regionsPanel.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            regionsPanel?.RowDefinitions.Clear();
+            regionsPanel.Children.Clear();
+            var elementModel = ListView.SelectedItem as LibraryElementModel;
+
+            if (elementModel?.Regions == null || elementModel?.Regions.Count == 0)
+            {
+                regionsPanel?.RowDefinitions.Add(new RowDefinition());
+                var textBox = new TextBlock();
+                textBox.Text = "No regions associated with this element.";
+                textBox.FontSize = 13;
+                regionsPanel?.Children.Add(textBox);
+                Grid.SetRow(textBox, 1);
+                Grid.SetColumn(textBox, 1);
+                regionsPanel.Visibility = Visibility.Visible;
+                return;
+            }
+
+            regionsPanel?.RowDefinitions.Add(new RowDefinition());
+            var panelTitle = new TextBlock();
+            panelTitle.Text = "Regions:";
+            regionsPanel?.Children.Add(panelTitle);
+            Grid.SetRow(panelTitle, 0);
+            Grid.SetColumn(panelTitle, 1);
+            var count = 1;
+
+            foreach (var regionModel in elementModel.Regions)
+            {
+                regionsPanel?.RowDefinitions.Add(new RowDefinition());
+                var textBox = new Button();
+                textBox.Content = regionModel.Name;
+                textBox.FontSize = 13;
+                if (textBox.IsPointerOver)
+                {
+                    textBox.Background = new SolidColorBrush(Colors.DarkOliveGreen);
+                }
+                textBox.DoubleTapped += delegate
+                {
+                    var controller = SessionController.Instance.RegionsController.GetRegionController(regionModel.Id);
+                    SessionController.Instance.SessionView.ShowDetailView(controller);
+                };
+                regionsPanel?.Children.Add(textBox);
+                Grid.SetColumn(textBox, 2);
+                Grid.SetRow(textBox, count);
+                count++;
+            }
+            regionsPanel.Height = regionsPanel.RowDefinitions.Count * 50;
+            regionsPanel.Width = listItem.ActualWidth;
+            regionsPanel.Visibility = Visibility.Visible;
+        }
+
+        private void HeaderPanel_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
+            SessionController.Instance.SessionView.ShowDetailView(SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId));
         }
     }
 

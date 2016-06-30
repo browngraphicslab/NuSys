@@ -25,6 +25,7 @@ namespace NuSysApp
         private FreeFormViewerViewModel _activeFreeFormViewer;
 
         private ContentController _contentController = new ContentController();
+        private RegionsController _regionsController = new RegionsController();
 
         private RegionControllersController _regionControllersController = new RegionControllersController();
 
@@ -55,10 +56,16 @@ namespace NuSysApp
             get { return _contentController; }
         }
 
+<<<<<<< HEAD
 
         public RegionControllersController RegionControllersController
         {
             get { return _regionControllersController; }
+=======
+        public RegionsController RegionsController
+        {
+            get { return _regionsController; }
+>>>>>>> 1c3e761dab38c45fc1441c301e613c47082a47bc
         }
         public SpeechRecognizer Recognizer { get; set; }
 

@@ -7,8 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:views="using:NuSysApp"
     mc:Ignorable="d"
-    d:DesignHeight="300"
-    d:DesignWidth="400"
+    d:DesignHeight="960"
+    d:DesignWidth="500"
     BorderBrush="DarkSlateGray"
     BorderThickness="2"
     
@@ -26,29 +26,79 @@
             <Grid.RenderTransform>
                 <TranslateTransform X="-60"></TranslateTransform>
             </Grid.RenderTransform>
-            <ListView x:Name="TabList" VerticalAlignment="Stretch" ItemsSource="{Binding Tabs}" Tapped="TabList_OnTapped">
-                
-                <ListView.ItemTemplate>
+
+            <ItemsControl x:Name="IC"  ItemsSource="{Binding Tabs}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel x:Name="TabList" VerticalAlignment="Top" Tapped="TabList_OnTapped" Width="30" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel x:Name="TabStack" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <Border x:Name="ExitTab" Tapped="ExitTab_OnTapped">
-                                <TextBlock Text="X" Foreground="White" FontSize="20">
+                        <Canvas x:Name="TabStack" Height="{Binding ElementName=TabList, Path=DataContext.TabHeight}" Width="30">
+                            <Border x:Name="ExitTab" Tapped="ExitTab_OnTapped" >
+                                <Border.RenderTransform>
+                                    <TranslateTransform Y="-20"></TranslateTransform>
+                                </Border.RenderTransform>
+                                <TextBlock Text="X" Foreground="White" FontSize="20" VerticalAlignment="Top" RenderTransformOrigin="0,1">
                                     <TextBlock.RenderTransform>
-                                        <RotateTransform CenterX="0.5" CenterY="0.5" Angle="90"/>
+                                        <RotateTransform Angle="90"></RotateTransform>
+                                        
                                     </TextBlock.RenderTransform>
                                 </TextBlock>
                             </Border>
-                            <TextBlock x:Name="TabTitle" Text="Tab">
-                                <TextBlock.RenderTransform>
-                                    <RotateTransform CenterX="0.5" CenterY="0.5" Angle="90"/>
-                                </TextBlock.RenderTransform>
-                            </TextBlock>
-                        </StackPanel>
+                            <Border x:Name="Tab" Tapped="TabList_OnTapped">
+                                <Border.RenderTransform>
+                                    <TranslateTransform Y="15"></TranslateTransform>
+                                </Border.RenderTransform>
+                                <TextBlock x:Name="TabTitle" Text="{Binding Title}" VerticalAlignment="Top" RenderTransformOrigin="0,1">
+                                    <TextBlock.RenderTransform>
+                                        <RotateTransform Angle="90"></RotateTransform>
+                                    </TextBlock.RenderTransform>
+                                </TextBlock>
+                            </Border>
+                        </Canvas>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!--<ListView x:Name="ListView"  ItemsSource="{Binding Tabs}" >
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel x:Name="TabList" VerticalAlignment="Stretch" HorizontalAlignment="Left" Tapped="TabList_OnTapped" Padding="0" Width="30" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property= "VerticalContentAlignment" Value="Stretch" />
+                        <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Padding" Value="0,0,0,0"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Canvas x:Name="TabStack" VerticalAlignment="Stretch" HorizontalAlignment="Right" Height="{Binding ElementName=TabList, Path=DataContext.TabHeight}" Width="30">
+                            <Border x:Name="ExitTab" Tapped="ExitTab_OnTapped" >
+                                <TextBlock Text="X" Foreground="White" FontSize="20" VerticalAlignment="Top">
+                                    <TextBlock.RenderTransform>
+                                        <RotateTransform CenterX="0.5" CenterY="0.5" Angle="-90"></RotateTransform>
+                                    </TextBlock.RenderTransform>
+                                </TextBlock>
+                            </Border>
+                            <Border x:Name="Tab" Tapped="TabList_OnTapped">
+                                <Border.RenderTransform>
+                                    <TranslateTransform Y ="-30"></TranslateTransform>
+                                </Border.RenderTransform>
+                                <TextBlock x:Name="TabTitle" Text="{Binding Title}" VerticalAlignment="Top">
+                                    <TextBlock.RenderTransform>
+                                        <RotateTransform CenterX="0.5" CenterY="0.5" Angle="-90"></RotateTransform>
+                                    </TextBlock.RenderTransform>
+                                </TextBlock>
+                            </Border>
+                        </Canvas>
                     </DataTemplate>
                 </ListView.ItemTemplate>
-                
-            </ListView>
-            
+            </ListView>-->
         </Grid>
         <Grid x:Name="xContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource color2}" Padding="25,10,25,10">
             <Grid.RowDefinitions>
@@ -72,8 +122,7 @@
 
             <StackPanel Grid.Row="1" Canvas.ZIndex="100" x:Name="TitleEnter" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,20">
                 <!--<TextBlock Text="{Binding Title}" Foreground="White" FontSize="30" CharacterSpacing="45" HorizontalAlignment="Stretch"/>-->
-                <local:TextInputBlock  x:Name ="TitleBox" Text="{Binding Title}" FontWeight="SemiBold" FontSize="40" Foreground="{StaticResource darkforeground}" BubbleTop="False" KeyUp="TitleChanged" LeftJustified="False" SetHeight="40" HorizontalAlignment="Stretch">
-                </local:TextInputBlock>
+                <local:TextInputBlock  x:Name ="TitleBox" FontWeight="SemiBold" FontSize="40" Foreground="{StaticResource darkforeground}" BubbleTop="False" LeftJustified="False" SetHeight="40" HorizontalAlignment="Stretch" TextChanged="TitleBox_OnTextChanged"/>
                 <Rectangle HorizontalAlignment="Stretch" Fill="{StaticResource darkforeground}" Height="2"/>
             </StackPanel>
 
@@ -110,7 +159,7 @@
 
                                 <TextBlock Grid.Column="0" Text="TAGS" Foreground="{StaticResource darkforeground}" FontSize="30" CharacterSpacing="45" VerticalAlignment="Center"></TextBlock>
                                 <local:TextInputBlock Grid.Column="1" x:Name ="NewTagBox" BubbleTop ="True" LeftJustified="False" SetHeight="30"  KeyUp="NewTagBox_OnKeyUp" HorizontalAlignment="Stretch">
-    
+
                                 </local:TextInputBlock>
                                 <Button Grid.Column="2" x:Name="AddTagButton"  Height="30" Width="30" Content="+" Foreground="{StaticResource darkforeground}" Click="AddTagButton_OnClick"  Background="{StaticResource color6}" VerticalAlignment="Center"></Button>
                                 <Button Grid.Column="3" x:Name="SuggestButton"  Height="40" Width="100" Content="Suggest" Foreground="{StaticResource darkforeground}" Click="AddTagButton_OnClick"  Background="{StaticResource color6}" VerticalAlignment="Center" Margin="10,0,0,0"></Button>
@@ -127,17 +176,12 @@
                             </ItemsControl>
                         </Grid>
                     </Grid>
-
-
                 </PivotItem>
-
-
                 <PivotItem Header="Region Editor">
                     <local:RegionEditorTabView x:Name="xRegionEditorView"  Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></local:RegionEditorTabView>
 
                 </PivotItem>
                    
-
             </Pivot>
 
 

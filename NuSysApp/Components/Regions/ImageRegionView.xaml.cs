@@ -58,6 +58,7 @@ namespace NuSysApp
             var parentHeight = vm.ContainerViewModel.GetHeight();
             composite.TranslateX = model.TopLeftPoint.X * parentWidth;
             composite.TranslateY = model.TopLeftPoint.Y * parentHeight;
+
             _tx = composite.TranslateX;
             _ty = composite.TranslateY;
             //vm.Width = (model.BottomRightPoint.X - model.TopLeftPoint.X) * parentWidth;
@@ -70,6 +71,8 @@ namespace NuSysApp
             var vm = (ImageRegionViewModel)DataContext;
             vm.Width = width;
             vm.Height = height;
+            // TODO Refactor to Controller
+
         }
 
         private void ChangeSize(object sender, Point topLeft, Point bottomRight)
