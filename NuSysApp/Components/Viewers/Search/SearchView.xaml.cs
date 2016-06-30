@@ -132,15 +132,40 @@ namespace NuSysApp
             // sender.TextMemberPath = textMemberPath
 
             // if you need more than a simple property You can use args.SelectedItem to build your text string.
-            //sender.Text;
+            //sender.Text;        
+        }
 
-           
+        private void HideHelperText()
+        {
+            _vm.SearchViewHelperTextVisibility = Visibility.Collapsed;
+            xContainer.RowDefinitions.Clear();
+            xContainer.RowDefinitions.Add(new RowDefinition());
+            Grid.SetRow(SearchBarGrid, 0);
+            ShowHelpButton.Visibility = Visibility.Visible;
+        }
+
+        private void ShowHelperText()
+        {
+            ShowHelpButton.Visibility = Visibility.Collapsed;
+            _vm.NoResultsFound = Visibility.Collapsed;
+            _vm.PageElements.Clear();
+            _vm.SearchViewHelperTextVisibility = Visibility.Visible;
+            xContainer.RowDefinitions.Add(new RowDefinition());
+            xContainer.RowDefinitions.Add(new RowDefinition());
+            Grid.SetRow(TitleBlock, 0);
+            Grid.SetRow(SearchBarGrid, 1);
+            Grid.SetRow(HelperText, 2);
+            xContainer.RowDefinitions[0].Height = new GridLength(1, GridUnitType.Star);
+            xContainer.RowDefinitions[1].Height = new GridLength(1, GridUnitType.Auto);
+            xContainer.RowDefinitions[2].Height = new GridLength(1, GridUnitType.Star);
+            _vm.SearchResultsListVisibility = Visibility.Collapsed;
+            //TODO reset searchbar
         }
 
         // when the user submits a query show the query results
         private void SearchBox_OnQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
-
+            HideHelperText();
             if (args.ChosenSuggestion != null)
             {
                 // User selected an item from the suggestion list, take an action on it here.
@@ -319,6 +344,11 @@ namespace NuSysApp
                             size.Height);
                 }
             });
+        }
+
+        private void ShowHelpButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            ShowHelperText();
         }
     }
 }

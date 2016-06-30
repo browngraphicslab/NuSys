@@ -225,7 +225,7 @@ namespace NuSysApp
                 doc.LoadXml(data);
                 data = doc.ChildNodes[0].InnerText;
             }
-            catch (Exception boolParsException)
+            catch (Exception boolParseException)
             {
                 Debug.WriteLine("error parsing string from sending dictionary to server");
             }
@@ -458,8 +458,10 @@ namespace NuSysApp
                 {
                     JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                     var dict = new Dictionary<string, object>();
-                    dict["query"] = JsonConvert.SerializeObject(searchQuery,settings);
+                    dict["SEARCH"] = JsonConvert.SerializeObject(searchQuery,settings);
+                    //HttpClient client = new HttpClient();
                     var data = await SendDictionaryToServer("advancedsearch", dict);
+                    
                     try
                     {
                         var list = JsonConvert.DeserializeObject<List<SearchResult>>(data);
@@ -592,6 +594,16 @@ namespace NuSysApp
 
         }
         */
+
+        private class SearchIntermediate
+        {
+            public string Data { set; get; }
+
+            public SearchIntermediate(string data)
+            {
+                Data = data;
+            }
+        }
         private class RegionIntermediate
         {
             public Region.RegionType Type;

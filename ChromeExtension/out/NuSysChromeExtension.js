@@ -2513,15 +2513,7 @@ var BrushStroke = (function () {
         this.stroke = stroke;
     }
     return BrushStroke;
-<<<<<<< HEAD
-<<<<<<< HEAD
 }());
-=======
-})();
->>>>>>> origin/trent_controller2
-=======
-}());
->>>>>>> origin/Luke_Fix_Detail_Viewer
 var MarqueeBrush = (function () {
     function MarqueeBrush(x, y) {
         this._startX = x;
@@ -2550,15 +2542,7 @@ var MarqueeBrush = (function () {
         this.draw(lastPoint.x - inkCanvas._scrollOffset.x + stroke.documentOffsetX, lastPoint.y - inkCanvas._scrollOffset.y + stroke.documentOffsetY, inkCanvas);
     };
     return MarqueeBrush;
-<<<<<<< HEAD
-<<<<<<< HEAD
 }());
-=======
-})();
->>>>>>> origin/trent_controller2
-=======
-}());
->>>>>>> origin/Luke_Fix_Detail_Viewer
 var LineBrush = (function () {
     function LineBrush() {
     }
@@ -2596,15 +2580,7 @@ var LineBrush = (function () {
         }
     };
     return LineBrush;
-<<<<<<< HEAD
-<<<<<<< HEAD
 }());
-=======
-})();
->>>>>>> origin/trent_controller2
-=======
-}());
->>>>>>> origin/Luke_Fix_Detail_Viewer
 var MultiSelectionBrush = (function () {
     function MultiSelectionBrush(rect, toRemove) {
         this._rectlist = rect;
@@ -2640,15 +2616,7 @@ var MultiSelectionBrush = (function () {
         ctx.fill();
     };
     return MultiSelectionBrush;
-<<<<<<< HEAD
-<<<<<<< HEAD
 }());
-=======
-})();
->>>>>>> origin/trent_controller2
-=======
-}());
->>>>>>> origin/Luke_Fix_Detail_Viewer
 //var diff = this._rectlist.length - this._remList.length;
 //if (diff > 0) {
 //    console.log("add!!!!");
@@ -2744,15 +2712,7 @@ var SelectionBrush = (function () {
         ctx.fill();
     };
     return SelectionBrush;
-<<<<<<< HEAD
-<<<<<<< HEAD
 }());
-=======
-})();
->>>>>>> origin/trent_controller2
-=======
-}());
->>>>>>> origin/Luke_Fix_Detail_Viewer
 var HighlightBrush = (function () {
     function HighlightBrush() {
         this._img = new Image();
@@ -2775,15 +2735,7 @@ var HighlightBrush = (function () {
         }
     };
     return HighlightBrush;
-<<<<<<< HEAD
-<<<<<<< HEAD
 }());
-=======
-})();
->>>>>>> origin/trent_controller2
-=======
-}());
->>>>>>> origin/Luke_Fix_Detail_Viewer
 /// <reference path="brush/BrushStroke.ts"/>
 var InkCanvas = (function () {
     function InkCanvas(canvas) {
@@ -2875,15 +2827,7 @@ var InkCanvas = (function () {
         console.log("reveal canvas");
     };
     return InkCanvas;
-<<<<<<< HEAD
-<<<<<<< HEAD
 }());
-=======
-})();
->>>>>>> origin/trent_controller2
-=======
-}());
->>>>>>> origin/Luke_Fix_Detail_Viewer
 var Rectangle = (function () {
     function Rectangle(x, y, w, h) {
         this.x = x;
@@ -2896,7 +2840,6 @@ var Rectangle = (function () {
             r2.x + r2.w < this.x ||
             r2.y > this.y + this.h ||
             r2.y + r2.h < this.y);
-<<<<<<< HEAD
     };
     return Rectangle;
 }());
@@ -2974,85 +2917,6 @@ var Stroke = (function () {
         error /= this.points.length;
         return { length: this.points.length, error: m };
     };
-=======
-    };
-    return Rectangle;
-}());
-/// <reference path="../util/Rectangle.ts"/>
-var Stroke = (function () {
-    function Stroke() {
-        this.documentOffsetX = 0;
-        this.documentOffsetY = 0;
-        this.points = new Array();
-    }
-    Stroke.fromPoints = function (points) {
-        var stroke = new Stroke();
-        stroke.points = points.slice(0);
-        return stroke;
-    };
-    Stroke.prototype.getBoundingRect = function () {
-        var minX = 1000000;
-        var maxX = -1000000;
-        var minY = 1000000;
-        var maxY = -1000000;
-        for (var i = 0; i < this.points.length; i++) {
-            var p = this.points[i];
-            maxY = p.y > maxY ? p.y : maxY;
-            maxX = p.x > maxX ? p.x : maxX;
-            minX = p.x < minX ? p.x : minX;
-            minY = p.y < minY ? p.y : minY;
-        }
-        return new Rectangle(minX, minY, maxX - minX, maxY - minY);
-    };
-    Stroke.prototype.breakUp = function () {
-        var segments = new Array();
-        for (var i = 1; i < this.points.length; i++) {
-            var p0 = this.points[i - 1];
-            var p1 = this.points[i];
-            segments.push(Line.fromPoint(p0, p1));
-        }
-        return segments;
-    };
-    Stroke.prototype.getResampled = function (samples) {
-        var c = this.getCopy();
-        c.resample(samples);
-        return c;
-    };
-    Stroke.prototype.getEntropy = function () {
-        var angles = [];
-        for (var i = 1; i < this.points.length; i++) {
-            var v0 = new Vector2(this.points[i - 1].x, this.points[i - 1].y);
-            var v1 = new Vector2(this.points[i].x, this.points[i].y);
-            angles.push(v0.angleTo(v1));
-        }
-    };
-    Stroke.prototype.getStrokeMetrics = function () {
-        var startPoint = Vector2.fromPoint(this.points[0]);
-        var endPoint = Vector2.fromPoint(this.points[this.points.length - 1]);
-        var l = endPoint.subtract(startPoint);
-        var ln = l.getNormalized();
-        var error = 0;
-        var errors = [];
-        for (var i = 0; i < this.points.length; i++) {
-            var a = Vector2.fromPoint(this.points[i]).subtract(startPoint);
-            var b = ln.multiply(a.dot(ln));
-            var c = a.subtract(b);
-            error += Math.abs(c.length());
-            errors.push(Math.abs(c.length()));
-        }
-        function median(values) {
-            values.sort(function (a, b) { return a - b; });
-            var half = Math.floor(values.length / 2);
-            if (values.length % 2)
-                return values[half];
-            else
-                return (values[half - 1] + values[half]) / 2.0;
-        }
-        var m = median(errors);
-        error /= this.points.length;
-        return { length: this.points.length, error: m };
-    };
->>>>>>> origin/trent_controller2
     Stroke.prototype.resample = function (numSamples) {
         var oldSamples = this.points;
         var scale = numSamples / oldSamples.length;
@@ -3096,15 +2960,7 @@ var Stroke = (function () {
         return s;
     };
     return Stroke;
-<<<<<<< HEAD
-<<<<<<< HEAD
 }());
-=======
-})();
->>>>>>> origin/trent_controller2
-=======
-}());
->>>>>>> origin/Luke_Fix_Detail_Viewer
 var GestireClassifier = (function () {
     function GestireClassifier() {
     }
@@ -3129,15 +2985,7 @@ var GestireClassifier = (function () {
         }
     };
     return GestireClassifier;
-<<<<<<< HEAD
-<<<<<<< HEAD
 }());
-=======
-})();
->>>>>>> origin/trent_controller2
-=======
-}());
->>>>>>> origin/Luke_Fix_Detail_Viewer
 var StrokeType;
 (function (StrokeType) {
     StrokeType[StrokeType["Null"] = 0] = "Null";
@@ -3327,15 +3175,7 @@ var BracketSelection = (function (_super) {
         return this._content;
     };
     return BracketSelection;
-<<<<<<< HEAD
-<<<<<<< HEAD
 }(AbstractSelection));
-=======
-})(AbstractSelection);
->>>>>>> origin/trent_controller2
-=======
-}(AbstractSelection));
->>>>>>> origin/Luke_Fix_Detail_Viewer
 /// <reference path="../ink/brush/MarqueeBrush.ts" />
 ///find parent element p of word 
 ///find word index compared to container
@@ -3600,7 +3440,6 @@ var MarqueeSelection = (function (_super) {
                     ay2 <= this._marqueeY2)) {
                     return false;
                 }
-<<<<<<< HEAD
             }
             return true;
         }
@@ -3635,42 +3474,6 @@ var MarqueeSelection = (function (_super) {
                 realNList.push(trueEl.childNodes[i]);
                 indexList.push(i);
             }
-=======
-            }
-            return true;
-        }
-        else if (el.nodeName != "#comment") {
-            var rectX = el.getBoundingClientRect();
-            var realDim = this.getRealHeightWidth(el.getClientRects());
-            var realHeight = realDim[0];
-            var realWidth = realDim[1];
-            if (rectX == null) {
-                return false;
-            }
-            if (rectX["left"] >= this._marqueeX1 &&
-                rectX["left"] + realWidth <= this._marqueeX2 &&
-                rectX["top"] >= this._marqueeY1 &&
-                rectX["top"] + realHeight <= this._marqueeY2) {
-                this.setTextStyle(myEl, el);
-                return true;
-            }
-            return false;
-        }
-    };
-    MarqueeSelection.prototype.rmChildNodes = function (el, trueEl) {
-        var removed = [];
-        var realNList = [];
-        var indexList = [];
-        //iterate through childNodes and add to list(removed).
-        for (var i = 0; i < el.childNodes.length; i++) {
-            if (!this.intersectWith(el.childNodes[i], trueEl.childNodes[i])) {
-                removed.push(el.childNodes[i]);
-            }
-            else {
-                realNList.push(trueEl.childNodes[i]);
-                indexList.push(i);
-            }
->>>>>>> origin/trent_controller2
         }
         //remove not intersecting elements; 
         for (var i = 0; i < removed.length; i++) {
@@ -3795,7 +3598,6 @@ var MarqueeSelection = (function (_super) {
             var rects = range.getClientRects();
             if (rects.length == 0) {
                 return;
-<<<<<<< HEAD
             }
             for (var i = 0; i < rects.length; i++) {
                 var ax1 = rects[i].left;
@@ -3806,18 +3608,6 @@ var MarqueeSelection = (function (_super) {
                     return true;
                 }
             }
-=======
-            }
-            for (var i = 0; i < rects.length; i++) {
-                var ax1 = rects[i].left;
-                var ax2 = rects[i].left + rects[i].width;
-                var ay1 = rects[i].top;
-                var ay2 = rects[i].top + rects[i].height;
-                if (ax1 < bx2 && ax2 > bx1 && ay1 < by2 && ay2 > by1) {
-                    return true;
-                }
-            }
->>>>>>> origin/trent_controller2
             return false;
         }
         else if (el.nodeName != "#comment") {
@@ -3845,15 +3635,7 @@ var MarqueeSelection = (function (_super) {
         return this._content;
     };
     return MarqueeSelection;
-<<<<<<< HEAD
-<<<<<<< HEAD
 }(AbstractSelection));
-=======
-})(AbstractSelection);
->>>>>>> origin/trent_controller2
-=======
-}(AbstractSelection));
->>>>>>> origin/Luke_Fix_Detail_Viewer
 var GestureType;
 (function (GestureType) {
     GestureType[GestureType["Null"] = 0] = "Null";
@@ -4006,7 +3788,6 @@ var MultiLineSelection = (function (_super) {
         return new Rectangle(1, 10, 10, 10);
     };
     MultiLineSelection.prototype.analyzeContent = function () {
-<<<<<<< HEAD
     };
     MultiLineSelection.prototype.getContent = function () {
         return this._content;
@@ -4080,85 +3861,6 @@ var UnknownSelection = (function (_super) {
     };
     return UnknownSelection;
 }(AbstractSelection));
-=======
-    };
-    MultiLineSelection.prototype.getContent = function () {
-        return this._content;
-    };
-    return MultiLineSelection;
-}(AbstractSelection));
-/// <reference path="../../typings/jquery/jquery.d.ts"/>
-var DomUtil = (function () {
-    function DomUtil() {
-    }
-    DomUtil.getCommonAncestor = function (a, b) {
-        var parentsa = $(a).parents().toArray();
-        var parentsb = $(b).parents().toArray();
-        parentsa.unshift(a);
-        parentsb.unshift(b);
-        var found = null;
-        $.each(parentsa, function () {
-            var thisa = this;
-            $.each(parentsb, function () {
-                if (thisa == this) {
-                    found = this;
-                    return false;
-                }
-            });
-            if (found)
-                return false;
-        });
-        return found;
-    };
-    return DomUtil;
-}());
-/// <reference path="../../typings/jquery/jquery.d.ts"/>
-/// <reference path="../ink/InkCanvas.ts"/>
-/// <reference path="../ink/brush/BrushStroke.ts"/>
-/// <reference path="../ink/brush/HighlightBrush.ts"/>
-/// <reference path="../ink/brush/SelectionBrush.ts"/>
-/// <reference path="../ink/brush/LineBrush.ts"/>
-/// <reference path="../util/Rectangle.ts"/>
-/// <reference path="../util/DomUtil.ts"/>
-var UnknownSelection = (function (_super) {
-    __extends(UnknownSelection, _super);
-    function UnknownSelection(inkCanvas, fromActiveStroke) {
-        if (fromActiveStroke === void 0) { fromActiveStroke = false; }
-        _super.call(this, "UnknownSelection");
-        this._brushStroke = null;
-        this._inkCanvas = inkCanvas;
-        if (fromActiveStroke) {
-            inkCanvas.setBrush(new LineBrush());
-        }
-    }
-    UnknownSelection.prototype.start = function (x, y) {
-        this._inkCanvas.startDrawing(x, y, new LineBrush());
-    };
-    UnknownSelection.prototype.update = function (x, y) {
-        this._inkCanvas.draw(x, y);
-    };
-    UnknownSelection.prototype.end = function (x, y) {
-        this._inkCanvas.endDrawing(x, y);
-    };
-    UnknownSelection.prototype.deselect = function () {
-        this._inkCanvas.removeBrushStroke(this._brushStroke);
-    };
-    UnknownSelection.prototype.getBoundingRect = function () {
-        return this._brushStroke.stroke.getBoundingRect();
-    };
-    UnknownSelection.prototype.analyzeContent = function () {
-        // nothing to analyze.
-    };
-    UnknownSelection.prototype.getContent = function () {
-        return null;
-    };
-    return UnknownSelection;
-<<<<<<< HEAD
-})(AbstractSelection);
->>>>>>> origin/trent_controller2
-=======
-}(AbstractSelection));
->>>>>>> origin/Luke_Fix_Detail_Viewer
 var AbstractSelection = (function () {
     function AbstractSelection(className) {
         this.selectedElements = new Array();
@@ -4296,15 +3998,7 @@ var AbstractSelection = (function () {
     AbstractSelection.prototype.analyzeContent = function () { };
     AbstractSelection.prototype.getContent = function () { return null; };
     return AbstractSelection;
-<<<<<<< HEAD
-<<<<<<< HEAD
 }());
-=======
-})();
->>>>>>> origin/trent_controller2
-=======
-}());
->>>>>>> origin/Luke_Fix_Detail_Viewer
 /// <reference path="../../typings/jquery/jquery.d.ts"/>
 /// <reference path="../ink/InkCanvas.ts"/>
 /// <reference path="../ink/brush/BrushStroke.ts"/>
@@ -4398,15 +4092,7 @@ var LineSelection = (function (_super) {
         return this._content;
     };
     return LineSelection;
-<<<<<<< HEAD
-<<<<<<< HEAD
 }(AbstractSelection));
-=======
-})(AbstractSelection);
->>>>>>> origin/trent_controller2
-=======
-}(AbstractSelection));
->>>>>>> origin/Luke_Fix_Detail_Viewer
 var Line = (function () {
     function Line() {
     }
@@ -4436,15 +4122,7 @@ var Line = (function () {
         return false; // No collision
     };
     return Line;
-<<<<<<< HEAD
-<<<<<<< HEAD
 }());
-=======
-})();
->>>>>>> origin/trent_controller2
-=======
-}());
->>>>>>> origin/Luke_Fix_Detail_Viewer
 var Statistics = (function () {
     function Statistics() {
     }
@@ -4475,15 +4153,7 @@ var Statistics = (function () {
         return Statistics.getNumWithSetDec(stdDev, numOfDec);
     };
     return Statistics;
-<<<<<<< HEAD
-<<<<<<< HEAD
 }());
-=======
-})();
->>>>>>> origin/trent_controller2
-=======
-}());
->>>>>>> origin/Luke_Fix_Detail_Viewer
 var Vector2 = (function () {
     function Vector2(x, y) {
         this.x = x;
@@ -4530,7 +4200,6 @@ var Vector2 = (function () {
     };
     Vector2.prototype.getNormalized = function () {
         return this.divide(this.length());
-<<<<<<< HEAD
     };
     Vector2.prototype.distanceTo = function (other) {
         return Math.sqrt((this.x - other.x) * (this.x - other.x) + (this.y - other.y) * (this.y - other.y));
@@ -4544,36 +4213,13 @@ var Vector2 = (function () {
     Vector2.prototype.angleTo = function (a) {
         return Math.acos(this.dot(a) / (this.length() * a.length()));
     };
-=======
-    };
-    Vector2.prototype.distanceTo = function (other) {
-        return Math.sqrt((this.x - other.x) * (this.x - other.x) + (this.y - other.y) * (this.y - other.y));
-    };
-    Vector2.prototype.cross = function (other) {
-        return this.x * other.y - this.y * other.x;
-    };
-    Vector2.prototype.clone = function () {
-        return new Vector2(this.x, this.y);
-    };
-    Vector2.prototype.angleTo = function (a) {
-        return Math.acos(this.dot(a) / (this.length() * a.length()));
-    };
->>>>>>> origin/trent_controller2
     Vector2.prototype.init = function (x, y) {
         this.x = x;
         this.y = y;
         return this;
     };
     return Vector2;
-<<<<<<< HEAD
-<<<<<<< HEAD
 }());
-=======
-})();
->>>>>>> origin/trent_controller2
-=======
-}());
->>>>>>> origin/Luke_Fix_Detail_Viewer
 /// <reference path="../typings/chrome/chrome.d.ts"/>
 /// <reference path="../typings/jquery/jquery.d.ts"/>
 /// <reference path="ink/InkCanvas.ts"/>
@@ -4618,7 +4264,6 @@ var Main = (function () {
             }
             catch (e) {
                 console.log("no canvas visible." + e);
-<<<<<<< HEAD
             }
             var hitElem = document.elementFromPoint(e.clientX, e.clientY);
             console.log(hitElem);
@@ -4689,83 +4334,8 @@ var Main = (function () {
         this.canvasUp = function (e) {
             console.log("canvas up");
             if (!_this.isSelecting) {
-=======
-            }
-            var hitElem = document.elementFromPoint(e.clientX, e.clientY);
-            console.log(hitElem);
-            if (hitElem.nodeName == "A") {
-                var link = hitElem.getAttribute("href").toString();
-                if (link.indexOf("http") == -1) {
-                    link = "http://" + window.location.host + link;
-                }
-                console.log(link);
-                window.open(link, "_self");
-            }
-            switch (_this.currentStrokeType) {
-                case StrokeType.MultiLine:
-                    _this.selection = new MultiLineSelection(_this.inkCanvas);
-                    break;
-                case StrokeType.Line:
-                case StrokeType.Bracket:
-                    _this.selection = new BracketSelection(_this.inkCanvas);
-                    break;
-                case StrokeType.Marquee:
-                    _this.selection = new MarqueeSelection(_this.inkCanvas);
-                    break;
-            }
-            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee || _this.currentStrokeType == StrokeType.Line) {
-                console.log("current selection: " + _this.currentStrokeType);
-                document.body.appendChild(_this.canvas);
-                _this.canvas.addEventListener("mousemove", _this.mouseMove);
-            }
-            else {
-                try {
-                    document.body.removeChild(_this.canvas);
-                }
-                catch (e) {
-                    console.log("no canvas visible." + e);
-                }
-            }
-            _this.selection.start(e.clientX, e.clientY);
-            _this.isSelecting = true;
-        };
-        this.documentScroll = function (e) {
-            _this.inkCanvas.update();
-        };
-        this.documentUp = function (e) {
-            console.log("document up");
-            if (!_this.isSelecting)
-                return;
-            _this.isSelecting = false;
-            if (_this.currentStrokeType == StrokeType.MultiLine)
-                _this.selection.end(e.clientX, e.clientY);
-            _this.selection.id = Date.now();
-            _this.selection.url = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            _this.selection.tags = $(_this.menuIframe).contents().find("#tagfield").val();
-            _this.selections.push(_this.selection);
-            chrome.runtime.sendMessage({ msg: "store_selection", data: _this.selection });
-            _this.selection = new MultiLineSelection(_this.inkCanvas);
-            _this.updateSelectedList();
-        };
-        this.windowUp = function (e) {
-            if (!_this.isSelecting)
->>>>>>> origin/trent_controller2
-                return;
-            if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee) {
-                _this.canvas.removeEventListener("mousemove", _this.mouseMove);
-                _this.inkCanvas.removeBrushStroke(_this.inkCanvas._activeStroke);
-                _this.inkCanvas.update();
-            }
-<<<<<<< HEAD
-=======
-            _this.isSelecting = false;
-        };
-        this.canvasUp = function (e) {
-            console.log("canvas up");
-            if (!_this.isSelecting) {
                 return;
             }
->>>>>>> origin/trent_controller2
             _this.canvas.removeEventListener("mousemove", _this.mouseMove);
             if (_this.currentStrokeType == StrokeType.Bracket || _this.currentStrokeType == StrokeType.Marquee || _this.currentStrokeType == StrokeType.Line) {
                 document.body.removeChild(_this.canvas);
@@ -5070,15 +4640,7 @@ var Main = (function () {
         return finalval;
     };
     return Main;
-<<<<<<< HEAD
-<<<<<<< HEAD
 }());
-=======
-})();
->>>>>>> origin/trent_controller2
-=======
-}());
->>>>>>> origin/Luke_Fix_Detail_Viewer
 /// <reference path="Main.ts"/>
 var greeter = new Main();
 //# sourceMappingURL=NuSysChromeExtension.js.map

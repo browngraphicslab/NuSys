@@ -48,6 +48,7 @@ namespace NuSysApp
             btnLibrary.Tapped += BtnLibrary_Tapped;
             btnAddNode.Tapped += BtnAddNode_Tapped;
             btnPen.Tapped += BtnPen_Tapped;
+            btnSearch.Tapped += BtnSearch_Tapped;
             libProp = new LibraryElementPropertiesWindow();
             _lib = new LibraryView(new LibraryBucketViewModel(), libProp, this);
             xWrapper.Children.Add(_lib);
@@ -64,6 +65,21 @@ namespace NuSysApp
             AddNodeSubmenuButton(btnRecording);
             AddNodeSubmenuButton(btnNew);
             AddNodeSubmenuButton(btnTools);
+        }
+
+        private void BtnSearch_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
+            var SearchViewer = SessionController.Instance.SessionView.SearchView;
+
+            if (SearchViewer.Visibility == Visibility.Collapsed)
+            {
+                SearchViewer.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                SearchViewer.Visibility = Visibility.Collapsed;
+            }
         }
 
         public void Reset()
