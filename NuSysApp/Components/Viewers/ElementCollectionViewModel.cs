@@ -74,9 +74,10 @@ namespace NuSysApp
             {
                 if (toLinkIds.Contains(atom.ContentId))
                 {
-                    var lc = new LinkElementController(new LinkModel(SessionController.Instance.GenerateId()));
-                    lc.InElement = controller;
-                    lc.OutElement = atom.Controller;
+                    var lm = new LinkModel(SessionController.Instance.GenerateId());
+                    lm.InAtomId = controller.Model.Id;
+                    lm.OutAtomId = atom.Controller.Model.Id;
+                    var lc = new LinkElementController(lm);
                     var view = new BezierLinkView(new LinkViewModel(lc));
                     AtomViewList.Add(view);
                 }
