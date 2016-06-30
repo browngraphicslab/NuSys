@@ -45,30 +45,7 @@ namespace NuSysApp
             DataContextChanged += delegate(FrameworkElement sender, DataContextChangedEventArgs args)
             {
                 var dataContext = DataContext as DetailViewerViewModel;
-<<<<<<< HEAD
-                  if (dataContext == null) { 
-                      return;
-                   }
 
-                  dataContext.SizeChanged += Resize;
-
-                  var vm = dataContext;
-
-                  vm.PropertyChanged += OnPropertyChanged;
-                  vm.TitleChanged += LibraryElementModelTitleChanged;
-                  Tags.ItemsSource = vm.Tags;
-                  vm.MakeTagList();
-
-                  xMetadataEditorView.Metadatable = vm.CurrentElementController;
-
-                  this.Width = SessionController.Instance.SessionView.ActualWidth / 2;
-                  this.Height = SessionController.Instance.SessionView.ActualHeight;
-                  this.MaxHeight = SessionController.Instance.SessionView.ActualHeight;
-                  this.MaxWidth = SessionController.Instance.SessionView.ActualWidth - resizer.ActualWidth-30;
-                  Canvas.SetTop(this, 0);
-                  Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);
-                  // Metadata.ItemsSource = vm.Metadata;
-=======
 
                 if (dataContext == null) { 
                     return;
@@ -93,7 +70,6 @@ namespace NuSysApp
                 Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);
                 // Metadata.ItemsSource = vm.Metadata;
                 
->>>>>>> 1c3e761dab38c45fc1441c301e613c47082a47bc
               };
 
             SuggestButton.Click += delegate(object sender, RoutedEventArgs args)
@@ -195,14 +171,14 @@ namespace NuSysApp
                     SuggestButton.Visibility = Visibility.Collapsed;
                 }
 
-                if (controller.LibraryElementModel.Type == ElementType.Image)
+                if (controller.LibraryElementModel.Type == ElementType.PDF)
                 {
-                    xRegionEditorView.ShowListView(false);
+                    xRegionEditorView.ShowListView(true, ElementType.PDF);
                    
                 }
                 else
                 {
-                    xRegionEditorView.ShowListView(true);
+                    xRegionEditorView.ShowListView(false, controller.LibraryElementModel.Type);
 
                 }
 

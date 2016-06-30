@@ -288,6 +288,9 @@
     <Compile Include="Components\Regions\RegionViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
     <Compile Include="Components\Viewers\Detail\Sizeable.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\PDFRegionListView.xaml.cs">
+      <DependentUpon>PDFRegionListView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">
       <DependentUpon>AudioMediaPlayer.xaml</DependentUpon>
     </Compile>
@@ -298,11 +301,8 @@
     <Compile Include="Controller\PdfRegionController.cs" />
     <Compile Include="Controller\RegionController.cs" />
     <Compile Include="Controller\RegionControllerFactory.cs" />
-<<<<<<< HEAD
     <Compile Include="Controller\RegionControllersController.cs" />
-=======
     <Compile Include="Controller\RegionsController.cs" />
->>>>>>> 1c3e761dab38c45fc1441c301e613c47082a47bc
     <Compile Include="Converters\BoolToManipulationModeConverter.cs" />
     <Compile Include="Models\Regions\PDFRegion.cs" />
     <Compile Include="Models\Regions\TimeRegionModel.cs" />
@@ -864,6 +864,10 @@
     <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\PowerpointDetailHomeTabView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\PDFRegionListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\Detail\Views\RegionEditorTabView.xaml">
       <SubType>Designer</SubType>

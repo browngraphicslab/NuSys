@@ -97,7 +97,13 @@ namespace NuSysApp
         }
         public override void SetExistingRegions(HashSet<Region> regions)
         {
+            if (regions == null)
+            {
+                return;
+            }
+
             RegionViews.Clear();
+
             foreach (var regionModel in regions)
             {
                 var imageRegion = regionModel as RectangleRegion;
@@ -106,12 +112,14 @@ namespace NuSysApp
                     return;
                 }
                 RegionController regionController;
-                if (SessionController.Instance.RegionControllersController.GetRegionController(imageRegion.Id) == null)
+                if (SessionController.Instance.RegionsController.GetRegionController(imageRegion.Id) == null)
                 {
-                    regionController = SessionController.Instance.RegionControllersController.Add(imageRegion);
+                    var factory = new RegionControllerFactory();
+                    regionController = factory.CreateFromSendable(regionModel);
+                    SessionController.Instance.RegionsController.Add(regionController);
                 }
                 else {
-                    regionController = SessionController.Instance.RegionControllersController.GetRegionController(imageRegion.Id);
+                    regionController = SessionController.Instance.RegionsController.GetRegionController(imageRegion.Id);
                 }
 
 

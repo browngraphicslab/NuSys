@@ -161,8 +161,6 @@ namespace NuSysApp
 
                 var diff = detailVM.GetWidth() - detailVM.GetImageWidth();
 
-                //topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
-                //bottomRight = new Point(model.BottomRightPoint.X * width, model.BottomRightPoint.Y * height);
 
                 topLeft = new Point(model.TopLeftPoint.X * ContainerWidth + diff / 2, model.TopLeftPoint.Y * height);
                 bottomRight = new Point(model.BottomRightPoint.X * ContainerWidth + diff / 2, model.BottomRightPoint.Y * height);
@@ -198,9 +196,7 @@ namespace NuSysApp
 
             model.TopLeftPoint = new Point(normalTopLeftX, normalTopLeftY);
             model.BottomRightPoint = new Point(normalBottomRightX, normalBottomRightY);
-
             RegionController.UpdateRegion(Model);
-
         }
 
 

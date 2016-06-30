@@ -66,12 +66,14 @@ namespace NuSysApp
                 //var regionController = SessionController.Instance.RegionControllersController.GetRegionController(model.Id);
 
                 RegionController regionController;
-                if (SessionController.Instance.RegionControllersController.GetRegionController(model.Id) == null)
+                if (SessionController.Instance.RegionsController.GetRegionController(model.Id) == null)
                 {
-                    regionController = SessionController.Instance.RegionControllersController.Add(model);
+                    var factory = new RegionControllerFactory();
+                    regionController = factory.CreateFromSendable(model);
+                    SessionController.Instance.RegionsController.Add(regionController);
                 }
                 else {
-                    regionController = SessionController.Instance.RegionControllersController.GetRegionController(model.Id);
+                    regionController = SessionController.Instance.RegionsController.GetRegionController(model.Id);
                 }
 
                 var viewmodel = new ImageRegionViewModel(model as RectangleRegion, elementController, regionController, this);
