@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -33,13 +32,11 @@ namespace NuSysApp
 
         private ObservableCollection<MetadataEntry> MetadataCollection { get; set; }
         private List<MetadataEntry> _orgList;
-        // important for edge case, where your pointer goes over the button first instead of the whole grid
-        private List<Button> _shownButtons;
+        private List<Image> _shownButtons;
         private List<TextBox> _highlightedTextBoxes; 
         private bool _sortedDescending;
 
         public IMetadatable Metadatable { set; get; }
-
 
         /// <summary>
         /// The observable collection will contain displayed entries, 
@@ -51,7 +48,7 @@ namespace NuSysApp
             MetadataCollection = new ObservableCollection<MetadataEntry>();
             _orgList = new List<MetadataEntry>();
             _sortedDescending = false;
-            _shownButtons = new List<Button>();
+            _shownButtons = new List<Image>();
             _highlightedTextBoxes = new List<TextBox>();
             CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
         }
@@ -96,9 +93,6 @@ namespace NuSysApp
             }
         }
 
-
-        
-
         /// <summary>
         /// Adds a new entry and resets text when the "insert" button is clicked
         /// </summary>
@@ -115,7 +109,6 @@ namespace NuSysApp
             var metadata = Metadatable.GetMetadata();
             if (metadata.ContainsKey(key) || string.IsNullOrEmpty(key) || string.IsNullOrEmpty(val) || string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(val))
                 return;
-
 
             var entry = new MetadataEntry(xKey.Text, new List<string>() { xValue.Text}, MetadataMutability.MUTABLE);
 
@@ -135,15 +128,18 @@ namespace NuSysApp
         private void XDeleteButton_OnClick(object sender, RoutedEventArgs e)
         {
             // Finds the MetadataEntry, then uses that to delete the metadata from the lib element
-            var button = sender as Button;
+            var button = sender as Image;
             var stackPanel = button.GetVisualParent() as StackPanel;
             var relPanel = stackPanel.GetVisualParent() as RelativePanel;
             var grid = relPanel.GetVisualParent() as Grid;
             var entry = grid.DataContext as MetadataEntry;
             Metadatable.RemoveMetadata(entry.Key);
 
-            // Finally, updates the ListView to reflect the changes
-            this.Update();
+            // Finally, updates the ListView to reflect the changes. Note that we are not calling
+            // the update method in order to preserve order
+            MetadataCollection.Remove(entry);
+            _orgList.Remove(entry);
+            this.HideSelectionButtonsFromPreviousSelection();
         }
 
 
@@ -187,10 +183,10 @@ namespace NuSysApp
                             var stackPanel = item as StackPanel;
                             foreach (var child in stackPanel.Children)
                             {
-                                if (child.ToString().Equals("Windows.UI.Xaml.Controls.Button"))
+                                if (child.ToString().Equals("Windows.UI.Xaml.Controls.Image"))
                                 {
                                     child.Visibility = Visibility.Visible;
-                                    _shownButtons.Add(child as Button);
+                                    _shownButtons.Add(child as Image);
                                 }
                             }
 
@@ -217,14 +213,12 @@ namespace NuSysApp
             // CHANGE THIS WHEN YOU GET AN ICON
             if (!_sortedDescending)
             {
-                button.Content = "^";
                 _sortedDescending = true;
             }
             else
             {
                 lst.Reverse();
                 _sortedDescending = false;
-                button.Content = "v";
             }
 
             // Clear old collection, re-add items in sorted order
@@ -356,7 +350,7 @@ namespace NuSysApp
         {
 
             // Get the containers
-            var button = sender as Button;
+            var button = sender as Image;
             var sp = button.GetVisualParent() as StackPanel;
             var rp = sp.GetVisualParent() as RelativePanel;
             var grid = rp.GetVisualParent() as Grid;
@@ -367,7 +361,7 @@ namespace NuSysApp
                 if (child.ToString().Equals("Windows.UI.Xaml.Controls.TextBox"))
                 {
                     var box = child as TextBox;     
-                    box.Background = new SolidColorBrush(Colors.CadetBlue);
+                    box.Background = new SolidColorBrush(Colors.CornflowerBlue);
                     box.IsHitTestVisible = true;
                     _highlightedTextBoxes.Add(box);
                 }
@@ -379,7 +373,7 @@ namespace NuSysApp
                 if (child.ToString().Equals("Windows.UI.Xaml.Controls.TextBox"))
                 {
                     var box = child as TextBox;
-                    box.Background = new SolidColorBrush(Colors.CadetBlue);
+                    box.Background = new SolidColorBrush(Colors.CornflowerBlue);
                     box.IsHitTestVisible = true;
                     _highlightedTextBoxes.Add(box);
                 }
@@ -398,14 +392,20 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Updates the observable collection when check box unchecked
+        /// Updates the observable collection when check box unchecked. Update method is not called in order to preserve order
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void XCheckBox_OnUnchecked(object sender, RoutedEventArgs e)
         {
             this.HideSelectionButtonsFromPreviousSelection();
-            this.Update();
+
+            // Find immutable entries and remove them
+            var imEntries = MetadataCollection.Where(s => s.Mutability == MetadataMutability.IMMUTABLE).ToList();
+            foreach (var entry in imEntries)
+            {
+                MetadataCollection.Remove(entry);
+            }
         }
 
         /// <summary>

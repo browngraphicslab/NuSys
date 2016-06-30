@@ -39,12 +39,15 @@
 
 
 
-            <TextBox x:Name="xKey" PlaceholderText="Enter a Key" Margin="0,0,10,0" />
-            <TextBox Grid.Column="1" x:Name="xValue" Margin="0,0,10,0" PlaceholderText="Enter Values"  />
-            <Button Grid.Column="2" Content="+"  Tapped="AddEntryButton_OnClick " HorizontalAlignment="Stretch" Foreground="White"    />
+            <TextBox x:Name="xKey" PlaceholderText="Enter a Key" Margin="0,0,10,0" Background="White" Foreground="White"/>
+            <TextBox Grid.Column="1" x:Name="xValue" Margin="0,0,10,0" PlaceholderText="Enter Values" Background="White" Foreground="White" />
+            <Grid Grid.Column="2" Background="White">
+                <Image Grid.Column="2" Source ="ms-appx:///Assets/icon_metadata_plus.png"   Tapped="AddEntryButton_OnClick " HorizontalAlignment="Stretch" Height="25" Width="25" Margin="5" />
+            </Grid>
+            
         </Grid>
 
-        <TextBox PlaceholderText="Search" Grid.Row="1" Margin="0,10,0,0" TextChanged="SearchBox_OnTextChanged"></TextBox>
+        <TextBox PlaceholderText="Search" Grid.Row="1" Margin="0,10,0,0" TextChanged="SearchBox_OnTextChanged" Background="White" Foreground="White"></TextBox>
 
         <Grid Grid.Row="2" Margin="0,15,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
@@ -54,7 +57,7 @@
 
 
 
-            <ListView ItemsSource="{x:Bind MetadataCollection}" x:Name="xListView" HorizontalAlignment="Stretch" Background="Gainsboro"   BorderBrush="Black" BorderThickness="1.0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch"  >
+            <ListView ItemsSource="{x:Bind MetadataCollection}" x:Name="xListView" HorizontalAlignment="Stretch" Background="LightSteelBlue"   BorderBrush="Black" BorderThickness="1.0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch"  >
 
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
@@ -64,18 +67,19 @@
 
 
                 <ListView.Header>
-                    <Grid Background="Gray" BorderBrush="Black" BorderThickness="1.0"  Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Center" Padding="0,5,0,0" >
+                    <Grid Background="White" BorderBrush="Black" BorderThickness="1.0"  Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Center" Padding="0,5,0,0" >
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"></ColumnDefinition>
                             <ColumnDefinition Width="*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 
                         <RelativePanel Grid.Column="0">
-                            <Button x:Name="xSortButton"  Content="v"  Click="XSortButton_OnClick" VerticalAlignment="Center" VerticalContentAlignment="Center" Height="30" Width="30">
-                                <Button.RenderTransform>
-                                    <TranslateTransform X ="19"></TranslateTransform>
-                                </Button.RenderTransform>
-                            </Button>
+                            <Image x:Name="xSortButton"  Source ="ms-appx:///Assets/icon_metadata_sort.png"  Tapped="XSortButton_OnClick" VerticalAlignment="Center" HorizontalAlignment="Center" Height="20" Width="20">
+                                <Image.RenderTransform>
+                                    <TranslateTransform X="23" Y="4"></TranslateTransform>
+                                </Image.RenderTransform>
+                                
+                            </Image>
                             <TextBlock Padding="10,0,0,0" Text="Key" FontWeight="Bold" FontSize="18"  RelativePanel.AlignHorizontalCenterWithPanel="True"></TextBlock>
                         </RelativePanel>
                         
@@ -91,14 +95,14 @@
                             </Grid.ColumnDefinitions>
 
                             <RelativePanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <Button  Content="X" x:Name="DeleteButton" Click="XDeleteButton_OnClick"  Visibility="Collapsed"  FontSize="8" Padding="5" HorizontalAlignment="Center" Margin="5" VerticalContentAlignment="Center" VerticalAlignment="Center"></Button>
-                                    
-                                 <Button x:Name="xEditButton" FontFamily="Segoe MDL2 Assets" Content="&#xE70F;" FontSize="8"   Visibility="Collapsed"  Padding="5" HorizontalAlignment="Center" Click="XEditButton_OnClick"></Button>
+                                <StackPanel Orientation="Horizontal" Margin="15,10,0,0">
+                                    <Image Source ="ms-appx:///Assets/icon_metadata_x.png" x:Name="DeleteButton" Tapped="XDeleteButton_OnClick"  Visibility="Collapsed"   HorizontalAlignment="Center"  VerticalAlignment="Center" Width="10" Height="10"></Image>
+
+                                    <Image x:Name="xEditButton" Source ="ms-appx:///Assets/icon_metadata_edit.png"   Visibility="Collapsed" HorizontalAlignment="Center" Tapped="XEditButton_OnClick" Margin="15,0,0,0" Width="10" Height="10"></Image>
                                     
                                 </StackPanel>
 
-                                <TextBox  Text="{x:Bind Key}" PlaceholderText="Enter a Key"    Background="{Binding Mutability, Converter={StaticResource brushConverter}}"  PointerExited="KeyTextBox_OnPointerExited" RelativePanel.AlignHorizontalCenterWithPanel="True" BorderThickness="0" IsHitTestVisible="False"></TextBox>
+                                <TextBox  Text="{x:Bind Key}" PlaceholderText="Enter a Key"    Background="{Binding Mutability, Converter={StaticResource brushConverter}}"  PointerExited="KeyTextBox_OnPointerExited" RelativePanel.AlignHorizontalCenterWithPanel="True" BorderThickness="0" IsHitTestVisible="False" ></TextBox>
                               
                             </RelativePanel>
 
@@ -112,7 +116,7 @@
                 </ListView.ItemTemplate>
             </ListView>
             
-            <CheckBox x:Name="xCheckBox" HorizontalAlignment="Left" Grid.Row="1" Content="Show Immutable Entries" Checked="XCheckBox_OnChecked" Unchecked="XCheckBox_OnUnchecked"></CheckBox>
+            <CheckBox x:Name="xCheckBox" HorizontalAlignment="Left" Grid.Row="1" Content="show immutable entries" Checked="XCheckBox_OnChecked" Unchecked="XCheckBox_OnUnchecked" Foreground="White" ></CheckBox>
             
         </Grid>
 
