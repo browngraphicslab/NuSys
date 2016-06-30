@@ -80,8 +80,24 @@ namespace NuSysApp
             var xdiff = addMenuTransform.X;
             var ydiff = addMenuTransform.Y;
 
-            var xpos = floatingTransform.TranslateX;
-            var ypos = floatingTransform.TranslateY;
+            var xpos = floatingTransform.TranslateX + Canvas.GetLeft(SessionController.Instance.SessionView.FloatingMenu);
+            var ypos = floatingTransform.TranslateY + Canvas.GetTop(SessionController.Instance.SessionView.FloatingMenu);
+
+            var lefttop = new Point(xpos+xdiff, ypos+ydiff);
+
+            if (position.X > lefttop.X && position.X < lefttop.X + 400)
+            {
+                if (position.Y > lefttop.Y && position.Y < lefttop.Y + 150) return;
+            }
+
+            //do we want this for the library?
+            if (position.X > xpos && position.X < xpos + 450)
+            {
+                if (position.Y > ypos + 100 && position.Y < ypos + 650) return;
+            }
+
+            Reset();
+
         }
 
         private void BtnSearch_Tapped(object sender, TappedRoutedEventArgs e)
@@ -160,7 +176,7 @@ namespace NuSysApp
             if (checkPointerAdded != true)
             {
                 SessionController.Instance.SessionView.MainCanvas.PointerPressed += CheckPointerPressed;
-                this.checkPointerAdded = true;
+                checkPointerAdded = true;
             }
             
         }
@@ -182,7 +198,7 @@ namespace NuSysApp
             if (checkPointerAdded != true)
             {
                 SessionController.Instance.SessionView.MainCanvas.PointerPressed += CheckPointerPressed;
-                this.checkPointerAdded = true;
+                checkPointerAdded = true;
             }
 
         }
