@@ -544,9 +544,9 @@ namespace NuSysApp
             }
         }
 
-        public void ShowDetailView(IMetadatable metadatable)
+        public async void ShowDetailView(IMetadatable metadatable)
         {
-            xDetailViewer.ShowElement(metadatable);
+            await xDetailViewer.ShowElement(metadatable);
         }
 
         public async void OpenFile(ElementViewModel vm)

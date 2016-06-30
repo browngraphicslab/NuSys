@@ -44,7 +44,9 @@ namespace NuSysApp
         }
         public override async Task Init()
         {
-            _document = await MediaUtil.DataToPDF(Controller.LibraryElementModel.Data);
+            await Task.Run(async delegate {
+                _document = await MediaUtil.DataToPDF(Controller.LibraryElementModel.Data);
+            });
             await Goto(_pageNumber);
         }
         private async Task Goto(int pageNumber)
@@ -52,7 +54,10 @@ namespace NuSysApp
             if (_document == null)
                 return;
             if (pageNumber == -1) return;
-            if (pageNumber >= (_document.PageCount)) return;
+            if (pageNumber >= (_document.PageCount))
+            {
+                return;
+            }
             _pageNumber = pageNumber;
             await RenderPage(_pageNumber);
         }

@@ -67,6 +67,7 @@ namespace NuSysApp
             this.DefaultStyleKey = typeof(NodeTemplate);
             SubMenu = null;
             Inner = null;
+
         }
 
         public void Dispose()
@@ -292,8 +293,7 @@ namespace NuSysApp
                                 }
                                 else
                                 {
-                                    vm.Controller.RequestLinkTo(dc.Id, (RectangleView) element, null, inFgDictionary,
-                                        outFgDictionary);
+                                    SessionController.Instance.LinkController.RequestLink(dc.ContentId, vm.ContentId);
                                 }
                             }
                         }
@@ -324,8 +324,7 @@ namespace NuSysApp
                                 }
                                 else
                                 {
-                                    vm.Controller.RequestLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary,
-                                        outFgDictionary);
+                                    SessionController.Instance.LinkController.RequestLink(dc.ContentId, vm.ContentId);
                                 }
                             }
                             
@@ -366,9 +365,13 @@ namespace NuSysApp
 
 
                         if (_currenDragMode == DragMode.Link)
-                            vm.Controller.RequestLinkTo(dc.Id);
+                        {
+                          SessionController.Instance.LinkController.RequestLink(dc.ContentId, vm.ContentId); 
+                        }
                         if (_currenDragMode == DragMode.PresentationLink)
+                        {
                             vm.Controller.RequestPresentationLinkTo(dc.Id);
+                        }
                     }
                 }
             }

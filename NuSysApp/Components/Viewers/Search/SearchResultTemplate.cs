@@ -78,10 +78,16 @@ namespace NuSysApp
             {
                 // append the key
                 output.Append(entry.Key);
-                // append a separator
-                output.Append(" - ");
-                // TODO currently append one value, should append multiple
-                output.Append(string.Join(", ",metadataDict[entry.Key].Values ?? new List<string>()));
+                if (entry.Value?.Values?.Count > 0)
+                {
+                    // append a separator
+                    output.Append(" - ");
+                    // TODO currently append one value, should append multiple
+                    output.Append(string.Join(separator, metadataDict[entry.Key].Values ?? new List<string>()));
+                    // remove the final comma if any output was added
+                    //if (output.ToString().EndsWith(" - "))
+                        //output.Remove(output.Length - separator.Length, separator.Length);
+                }
                 // break to new line
                 output.Append("\n");
             }

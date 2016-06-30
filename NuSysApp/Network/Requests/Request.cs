@@ -29,7 +29,8 @@ namespace NuSysApp
             UnsubscribeFromCollectionRequest,
             DeleteLibraryElementRequest,
             AddInkRequest,
-            RemoveInkRequest
+            RemoveInkRequest,
+            NewPresentationLinkRequest
         }
 
         public enum ServerItemType
@@ -145,8 +146,7 @@ namespace NuSysApp
                 {
                     if (!_serverItemTypeSet || !_serverRequestTypeSet)
                     {
-                        throw new Exception(
-                            "Request tried to be sent to server without specifying request and item type");
+                        throw new Exception("Request tried to be sent to server without specifying request and item type");
                     }
                     else
                     {

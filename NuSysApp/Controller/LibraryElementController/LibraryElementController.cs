@@ -382,6 +382,5 @@ namespace NuSysApp
         {
             return NuSysApp.MetadatableType.Content;
         }
-        
     }
 }

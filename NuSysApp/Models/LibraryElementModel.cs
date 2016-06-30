@@ -44,12 +44,18 @@ namespace NuSysApp
             Keywords = new HashSet<Keyword>();
             Metadata = metadata ?? new Dictionary<string, MetadataEntry>();
             Regions = new HashSet<Region>();
+            if (Type == ElementType.Link)
+            {
+                
+            }
             SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
             
 
         }
-        public static List<string> PDFStrings = new List<string>();
-        public async Task UnPack(Message message)
+        //FOR PDF DOWNLOADING  --HACKY AF
+        //public static List<string> PDFStrings = new List<string>();
+
+        public virtual async Task UnPack(Message message)
         {
             if (message.ContainsKey("keywords"))
             {
@@ -83,14 +89,32 @@ namespace NuSysApp
             }*/
 
             //ADD IMMUTABLE DATA TO METADATA, so they can show up in md editor
-            Metadata.Add("Timestamp", new MetadataEntry("Timestamp", new List<string> { Timestamp }, MetadataMutability.IMMUTABLE));
-            Metadata.Add("Creator", new MetadataEntry("Creator", new List<string> { Creator }, MetadataMutability.IMMUTABLE));
-            Metadata.Add("Title", new MetadataEntry("Title", new List<string> { Title }, MetadataMutability.IMMUTABLE));
-            Metadata.Add("Type", new MetadataEntry("Type", new List<string> { Type.ToString() }, MetadataMutability.IMMUTABLE));
+            if (!Metadata.ContainsKey("Timestamp"))
+            {
+                Metadata.Add("Timestamp", new MetadataEntry("Timestamp", new List<string> {Timestamp}, MetadataMutability.IMMUTABLE));
+            }
+            if (!Metadata.ContainsKey("Creator"))
+            {
+                Metadata.Add("Creator", new MetadataEntry("Creator", new List<string> {Creator}, MetadataMutability.IMMUTABLE));
+            }
+            if (!Metadata.ContainsKey("Title"))
+            {
+                Metadata.Add("Title", new MetadataEntry("Title", new List<string> {Title}, MetadataMutability.IMMUTABLE));
+            }
+            if (!Metadata.ContainsKey("Type"))
+            {
+                Metadata.Add("Type", new MetadataEntry("Type", new List<string> {Type.ToString()}, MetadataMutability.IMMUTABLE));
+            }
         }
         protected virtual void OnSessionControllerEnterNewCollection()
         {
             Data = null;
         }
+        /*
+         * Trent, Help ME.!!!!! He's talking about bio. What did I do to deserve this. 
+         * Help me. He just won't stop. Dear god what have I done. Sahil save me.
+         * This is my life now. I will suffer every day. Is there no way to escape this hell?
+         * 
+         */
     }
 }
