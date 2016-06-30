@@ -39,7 +39,9 @@ namespace NuSysApp
 
         private CompositeTransform _ct;
         private LibraryView _library;
-        private Dictionary<string, bool> _reverseTable = new Dictionary<string, bool>(); 
+        private Dictionary<string, bool> _reverseTable = new Dictionary<string, bool>();
+
+        private bool _singleTap; 
         public LibraryList(LibraryView library, LibraryPageViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
         {
             this.DataContext = vm;
@@ -263,8 +265,12 @@ namespace NuSysApp
             
         }
 
-        private void HeaderPanel_OnTapped(object sender, TappedRoutedEventArgs e)
+        private async void HeaderPanel_OnTapped(object sender, TappedRoutedEventArgs e)
         {
+            _singleTap = true;
+            await Task.Delay(200);
+            if (!_singleTap) return;
+
             var listItem = (Grid)sender;
             var regionsPanel = listItem.FindName("RegionsPanel") as Grid;
 
@@ -326,6 +332,7 @@ namespace NuSysApp
 
         private void HeaderPanel_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
+            _singleTap = false;
             LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
             SessionController.Instance.SessionView.ShowDetailView(SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId));
         }

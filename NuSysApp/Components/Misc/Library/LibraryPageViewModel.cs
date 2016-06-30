@@ -93,8 +93,16 @@ namespace NuSysApp
             _searchString = s;
             PageElements.Clear();
 
-            var valids = await SessionController.Instance.NuSysNetworkSession.SearchOverLibraryElements(s);
-             if (valids == null)
+            HashSet<string> valids;
+            if (string.IsNullOrEmpty(s))
+            {
+                valids = SessionController.Instance.ContentController.IdList;
+            }
+            else
+            {
+                valids = await SessionController.Instance.NuSysNetworkSession.SearchOverLibraryElements(s);
+            }
+            if (valids == null)
             {
                 return;
             }

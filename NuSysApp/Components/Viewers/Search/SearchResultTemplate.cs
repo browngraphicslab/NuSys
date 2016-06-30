@@ -15,6 +15,7 @@ namespace NuSysApp
         public string Keywords { get; set; }
         public string Metadata { get; set; }
         public string Data { get; set; }
+        public int Importance { get; private set; }
 
         // unused
         public string Id { get; set; }
@@ -28,10 +29,13 @@ namespace NuSysApp
             var model = controller.LibraryElementModel;
             if (model == null) return;
 
+            // default fields
             this.Title = model.Title;
             this.Type = model.Type;
             this.TimeStamp = parseTimeStampToDDMMYYFormat(model.Timestamp);
             this.Creator = model.Creator;
+
+            // extra info fields
             this.Keywords = parseKeyWordsToCommaSeparatedList(model.Keywords);
             this.Metadata = parseMetaDataToHyphenBulletList(model.Metadata);
 
@@ -41,12 +45,14 @@ namespace NuSysApp
             this.Data = model.Data;
         }
 
+        //formatting helper class
         private string parseTimeStampToDDMMYYFormat(string timestamp)
         {
             // trim whitespace then split on the first space and return the first element
             return timestamp.Trim().Split()[0];
         }
 
+        //formatting helper class
         private string parseKeyWordsToCommaSeparatedList(HashSet<Keyword> keywords)
         {
             StringBuilder output = new StringBuilder();
@@ -62,7 +68,8 @@ namespace NuSysApp
             return output.ToString();
         }
 
-        private string parseMetaDataToHyphenBulletList(Dictionary<string, Tuple<string, bool>> metadataDict)
+        //formatting helper class
+        private string parseMetaDataToHyphenBulletList(Dictionary<string, MetadataEntry> metadataDict)
         {
             StringBuilder output = new StringBuilder();
             var separator = ", ";
@@ -74,7 +81,7 @@ namespace NuSysApp
                 // append a separator
                 output.Append(" - ");
                 // TODO currently append one value, should append multiple
-                output.Append(metadataDict[entry.Key].Item1);
+                output.Append(string.Join(", ",metadataDict[entry.Key].Values ?? new List<string>()));
                 // break to new line
                 output.Append("\n");
             }
@@ -82,6 +89,11 @@ namespace NuSysApp
             if (output.Length > 0)
                 output.Remove(output.Length - 1, 1);
             return output.ToString();
+        }
+
+        public void IncrementImportance()
+        {
+            Importance += 1;
         }
     }
 

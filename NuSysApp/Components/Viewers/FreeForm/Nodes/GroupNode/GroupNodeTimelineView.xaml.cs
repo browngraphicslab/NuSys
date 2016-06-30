@@ -486,7 +486,7 @@ namespace NuSysApp
                     var atom = node.FindVisualChild("TimelineNode").GetVisualChild(0);
                     var vm = (ElementViewModel)atom.DataContext;
                     var nodeModel = (ElementModel)vm.Model;
-                    vm.Controller.LibraryElementController.AddMetadata(new MetadataEntry(custom, index.ToString() ,true));
+                    vm.Controller.LibraryElementController.AddMetadata(new MetadataEntry(custom, new List<string> {index.ToString()} ,MetadataMutability.MUTABLE));
                     index++;
                 }
             }

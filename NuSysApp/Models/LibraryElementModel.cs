@@ -28,14 +28,13 @@ namespace NuSysApp
         public string LargeIconUrl { get; private set; }
         public string MediumIconUrl { get; private set; }
         public string SmallIconUrl { get; private set; }
-        public Dictionary<string, Tuple<string, Boolean>> Metadata { get; set; }
-
+        public Dictionary<string, MetadataEntry> Metadata { get; set; }
         public string Creator { set; get; }
         public string Timestamp { get; set; }//TODO maybe put in a timestamp, maybe remove the field from the library
 
         public string ServerUrl { get; set; }
        
-        public LibraryElementModel(string id, ElementType elementType, Dictionary<string, Tuple<string,Boolean>> metadata = null, string contentName = null, bool favorited = false)
+        public LibraryElementModel(string id, ElementType elementType, Dictionary<string, MetadataEntry> metadata = null, string contentName = null, bool favorited = false)
         {
             Data = null;
             LibraryElementId = id;
@@ -43,11 +42,13 @@ namespace NuSysApp
             Type = elementType;
             Favorited = favorited;
             Keywords = new HashSet<Keyword>();
-            Metadata = metadata;
+            Metadata = metadata ?? new Dictionary<string, MetadataEntry>();
             Regions = new HashSet<Region>();
             SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
+            
+
         }
-        //public static List<string> PDFStrings = new List<string>();
+        public static List<string> PDFStrings = new List<string>();
         public async Task UnPack(Message message)
         {
             if (message.ContainsKey("keywords"))
@@ -70,12 +71,22 @@ namespace NuSysApp
             {
                 LargeIconUrl = message.GetString("large_thumbnail_url");
             }
+            if (message.GetString("creator_user_id") != null)
+            {
+                Creator = message.GetString("creator_user_id");
+            }
             //TO DOWNLOAD PDFS
             /*
             if (Type == ElementType.PDF)
             {
                 PDFStrings.Add(LibraryElementId);
             }*/
+
+            //ADD IMMUTABLE DATA TO METADATA, so they can show up in md editor
+            Metadata.Add("Timestamp", new MetadataEntry("Timestamp", new List<string> { Timestamp }, MetadataMutability.IMMUTABLE));
+            Metadata.Add("Creator", new MetadataEntry("Creator", new List<string> { Creator }, MetadataMutability.IMMUTABLE));
+            Metadata.Add("Title", new MetadataEntry("Title", new List<string> { Title }, MetadataMutability.IMMUTABLE));
+            Metadata.Add("Type", new MetadataEntry("Type", new List<string> { Type.ToString() }, MetadataMutability.IMMUTABLE));
         }
         protected virtual void OnSessionControllerEnterNewCollection()
         {

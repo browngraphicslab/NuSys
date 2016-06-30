@@ -19,7 +19,7 @@ namespace NuSysApp
 
         public WordNodeViewModel(ElementController controller) : base(controller)
         {
-            String path = Controller.LibraryElementController.GetMetadata("FilePath");
+            String path = Controller.LibraryElementController.GetMetadata("FilePath").First();
 
             if (!String.IsNullOrEmpty(path))
             {
@@ -31,7 +31,7 @@ namespace NuSysApp
 
         private async void WatchForPdf()
         {
-            string token = Controller.LibraryElementController.GetMetadata("Token");
+            string token = Controller.LibraryElementController.GetMetadata("Token").First();
 
             if (!String.IsNullOrEmpty(token) && Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token))
             {

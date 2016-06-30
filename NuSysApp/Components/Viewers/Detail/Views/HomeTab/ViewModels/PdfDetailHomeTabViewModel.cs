@@ -206,6 +206,7 @@ namespace NuSysApp
 
         public override void SetExistingRegions(HashSet<Region> regions)
         {
+            if (regions == null) return;
             foreach (var regionModel in regions)
             {
                 var pdfRegion = regionModel as PdfRegion;

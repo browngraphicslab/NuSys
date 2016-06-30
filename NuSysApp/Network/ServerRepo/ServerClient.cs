@@ -356,7 +356,7 @@ namespace NuSysApp
                 }
             }
             var inks = dict.ContainsKey("inks") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["inks"].ToString()) : null;
-            var metadata = dict.ContainsKey("metadata") ? JsonConvert.DeserializeObject<Dictionary<string, Tuple<string, bool>>>(dict["metadata"].ToString()) : null;
+            var metadata = dict.ContainsKey("metadata") ? JsonConvert.DeserializeObject<Dictionary<string, MetadataEntry>>(dict["metadata"].ToString()) : null;
 
 
             if (NeededLibraryDataIDs.Contains(id))

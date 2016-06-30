@@ -307,6 +307,8 @@
     <Compile Include="Controller\RegionControllerFactory.cs" />
     <Compile Include="Controller\RegionsController.cs" />
     <Compile Include="Converters\BoolToManipulationModeConverter.cs" />
+    <Compile Include="Converters\ListToStringConverter.cs" />
+    <Compile Include="Converters\MutabilityToBrushConverter.cs" />
     <Compile Include="Models\Regions\PDFRegion.cs" />
     <Compile Include="Models\Regions\TimeRegionModel.cs" />
     <Compile Include="Components\Viewers\Detail\Regionable.cs" />
