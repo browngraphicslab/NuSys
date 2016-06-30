@@ -69,7 +69,7 @@ namespace NuSysApp
         {
             get { return _activeFreeFormViewer; }
             set
-            {
+           {
                 _activeFreeFormViewer = value;
                 WorkspaceChanged?.Invoke(this, _activeFreeFormViewer);
             }

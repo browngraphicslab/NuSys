@@ -28,7 +28,6 @@ namespace NuSysApp
             this.cID = cID;
             this.InitializeComponent();
             pinned = false;
-            //this.thumbnail = SessionController.Instance.ContentController.GetContent(cID).T
             var bmp = new BitmapImage(SessionController.Instance.ContentController.GetLibraryElementController(cID).Thumbnail);
             thumbnail.Source = bmp;
             (thumbnail.RenderTransform as CompositeTransform).TranslateY = -bmp.DecodePixelHeight - 20;
