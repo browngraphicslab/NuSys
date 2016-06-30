@@ -29,8 +29,10 @@ namespace NuSysApp
             this.InitializeComponent();
             pinned = false;
             //this.thumbnail = SessionController.Instance.ContentController.GetContent(cID).T
-            thumbnail.Source =
-                new BitmapImage(SessionController.Instance.ContentController.GetLibraryElementController(cID).Thumbnail);
+            var bmp = new BitmapImage(SessionController.Instance.ContentController.GetLibraryElementController(cID).Thumbnail);
+            thumbnail.Source = bmp;
+            (thumbnail.RenderTransform as CompositeTransform).TranslateY = -bmp.DecodePixelHeight - 20;
+            
         }
 
         private async void circlePointerPressedHandler(object sender, RoutedEventArgs e)
