@@ -116,6 +116,7 @@
     <Content Include="Assets\icon_pano.png" />
     <Content Include="Assets\icon_pdf.png" />
     <Content Include="Assets\icon_plus.png" />
+    <Content Include="Assets\icon_plus2.png" />
     <Content Include="Assets\icon_presentation_link.png" />
     <Content Include="Assets\icon_record.png" />
     <Content Include="Assets\icon_recording.png" />
@@ -287,6 +288,7 @@
     <Compile Include="Controller\PdfRegionController.cs" />
     <Compile Include="Controller\RegionController.cs" />
     <Compile Include="Controller\RegionControllerFactory.cs" />
+    <Compile Include="Controller\RegionControllersController.cs" />
     <Compile Include="Converters\BoolToManipulationModeConverter.cs" />
     <Compile Include="Models\Regions\PDFRegion.cs" />
     <Compile Include="Models\Regions\TimeRegionModel.cs" />
@@ -739,6 +741,7 @@
     <Content Include="Assets\icon_window_search.png" />
     <Content Include="Assets\icon_node_x.png" />
     <Content Include="Assets\icon_node_x2.png" />
+    <Content Include="Assets\plus_icon.png" />
     <Content Include="Assets\powerpointIcon.png" />
     <Content Include="Assets\presentation_backward.png" />
     <Content Include="Assets\presentation_forward.png" />

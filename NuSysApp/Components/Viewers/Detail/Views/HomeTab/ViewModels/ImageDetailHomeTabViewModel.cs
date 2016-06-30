@@ -81,8 +81,10 @@ namespace NuSysApp
                 return 0;
             }
             //return view.ActualHeight;
-            return view.GetImgHeight();
+            return view.ActualHeight;
         }
+
+
         public double GetWidth()
         {
             var view = (View as ImageDetailHomeTabView);
@@ -91,7 +93,7 @@ namespace NuSysApp
                 return 0;
             }
            //return view.ActualWidth;
-            return view.GetImgWidth();
+            return view.ActualWidth;
         }
         public override void SetExistingRegions(HashSet<Region> regions)
         {
@@ -103,8 +105,17 @@ namespace NuSysApp
                 {
                     return;
                 }
+                RegionController regionController;
+                if (SessionController.Instance.RegionControllersController.GetRegionController(imageRegion.Id) == null)
+                {
+                    regionController = SessionController.Instance.RegionControllersController.Add(imageRegion);
+                }
+                else {
+                    regionController = SessionController.Instance.RegionControllersController.GetRegionController(imageRegion.Id);
+                }
 
-                var regionController = new RegionController(imageRegion);
+
+                //var regionController = new RegionController(imageRegion);
                 var vm = new ImageRegionViewModel(imageRegion, LibraryElementController, regionController, this);
                 if (!Editable)
                     vm.Editable = false;
@@ -121,6 +132,27 @@ namespace NuSysApp
         {
             var region = new RectangleRegion(new Point(.25, .25), new Point(.75, .75));
             return region;
+        }
+
+        public double GetImageWidth()
+        {
+            var view = (View as ImageDetailHomeTabView);
+            if (view == null)
+            {
+                return 0;
+            }
+            //return view.ActualHeight;
+            return view.GetImgWidth();
+        }
+        public double GetImageHeight()
+        {
+            var view = (View as ImageDetailHomeTabView);
+            if (view == null)
+            {
+                return 0;
+            }
+            //return view.ActualHeight;
+            return view.GetImgHeight();
         }
     }
 }

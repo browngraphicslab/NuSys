@@ -1,4 +1,4 @@
-﻿<UserControl MaxHeight="{Binding ContainerHeight}" MaxWidth="{Binding ContainerWidth}"
+﻿<UserControl
     x:Class="NuSysApp.ImageRegionView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -14,6 +14,8 @@
         <Grid.RenderTransform>
             <CompositeTransform x:Name="GridTranform"></CompositeTransform>
         </Grid.RenderTransform>
+
+        <TextBox x:Name="xNameTextBox" Height="15" Text="{Binding Name, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,-30,0,0"></TextBox>
         <Rectangle  x:Name="xMainRectangle"  Width="{Binding Width}" Height="{Binding Height}"  MaxHeight="{Binding ContainerHeight}" MaxWidth="{Binding ContainerWidth}"  PointerPressed="xMainRectangle_PointerPressed" Fill="Transparent" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" ManipulationStarted="RectangleRegionView_ManipulationStarted" ManipulationDelta="RectangleRegionView_ManipulationDelta">
             <Rectangle.RenderTransform>
                 <CompositeTransform x:Name="RectangleTranform"></CompositeTransform>
@@ -27,6 +29,8 @@
                 </CompositeTransform>
             </Path.RenderTransform>
         </Path>
+
+        <Image x:Name="xDelete" Width="25" Height="25" Margin="0,5,5,0" PointerPressed="xDelete_PointerPressed"  HorizontalAlignment="Right"  VerticalAlignment="Top" Stretch="Uniform" Source="ms-appx:///Assets/icon_delete_color.png"></Image>
 
     </Grid>
 </UserControl>

@@ -32,6 +32,7 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             _edgeCaseButtonExited = true;
+            Canvas.SetZIndex(xButtonStack, 20);
         }
 
         private void XListViewItemGrid_OnPointerEnterExit(object sender, PointerRoutedEventArgs e)
@@ -106,6 +107,20 @@ namespace NuSysApp
         {
             //((ImageFullScreenView)(((DetailViewerViewModel)DetailViewerView.DataContext).RegionView)).SelectedRegion(test);
 
+        }
+
+        public void ShowListView(bool visible)
+        {
+            if (!visible)
+            {
+                xMainGrid.Children.Remove(xListView);
+                xMainGrid.ColumnDefinitions.Remove(xSecondColumn);
+            }
+            else
+            {
+                xMainGrid.Children.Add(xListView);
+                xMainGrid.ColumnDefinitions.Add(xSecondColumn);
+            }
         }
     }
 }

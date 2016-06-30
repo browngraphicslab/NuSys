@@ -12,11 +12,23 @@ namespace NuSysApp
     public class ImageRegionViewModel : RegionViewModel
     {
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        //public event PropertyChangedEventHandler PropertyChanged;
         public double ContainerHeight { get; set; }
         public double ContainerWidth { get; set; }
         private double _height;
         private double _width;
+        private string _name;
+
+        public string Name {
+            get { return _name; }
+            set
+            {
+                _name = value;
+                Model.Name = _name;
+                RegionController.UpdateRegion(Model);
+                RaisePropertyChanged("Name");
+            }
+        }
 
         public double Height
         {
@@ -65,6 +77,8 @@ namespace NuSysApp
 
         public event RegionUpdatedEventHandler RegionChanged;
 
+        public bool Selected { set; get; }
+
         public ImageRegionViewModel(RectangleRegion model, LibraryElementController libraryElementController, RegionController regionController, Sizeable sizeable) : base(model,libraryElementController, regionController,sizeable)
         {
             if (model == null)
@@ -77,6 +91,7 @@ namespace NuSysApp
             ContainerHeight = sizeable.GetHeight();
             ContainerWidth = sizeable.GetWidth();
             regionController.RegionUpdated += Controller_RegionUpdated;
+            Name = Model.Name;
             Editable = true;
 
         }
@@ -102,8 +117,8 @@ namespace NuSysApp
             SizeChanged?.Invoke(this, topLeft, bottomRight);
 
 
-            RaisePropertyChanged("Height");
-            RaisePropertyChanged("Width");
+            //RaisePropertyChanged("Height");
+            //RaisePropertyChanged("Width");
 
         }
 
@@ -115,13 +130,51 @@ namespace NuSysApp
             {
                 return;
             }
-            Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y) * height;
-            Width = (model.BottomRightPoint.X - model.TopLeftPoint.X) * width;
-            ContainerHeight = height;
-            ContainerWidth = width;
+            if (ContainerViewModel is ImageDetailHomeTabViewModel)
+            {
 
-            var topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
-            var bottomRight = new Point(model.BottomRightPoint.X * width, model.BottomRightPoint.Y * height);
+                var detailVM = ContainerViewModel as ImageDetailHomeTabViewModel;
+                var diff = detailVM.GetWidth() - detailVM.GetImageWidth();
+
+
+
+                Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y) * height;
+                Width = (model.BottomRightPoint.X - model.TopLeftPoint.X) * detailVM.GetImageWidth();
+                ContainerHeight = height;
+                ContainerWidth = detailVM.GetImageWidth();
+            }
+            else {
+
+                Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y) * height;
+                Width = (model.BottomRightPoint.X - model.TopLeftPoint.X) * width;
+                ContainerHeight = height;
+                ContainerWidth = width;
+            }
+
+
+            Point topLeft;
+            Point bottomRight;
+
+            if (ContainerViewModel is ImageDetailHomeTabViewModel)
+            {
+                var detailVM = ContainerViewModel as ImageDetailHomeTabViewModel;
+
+                var diff = detailVM.GetWidth() - detailVM.GetImageWidth();
+
+                //topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
+                //bottomRight = new Point(model.BottomRightPoint.X * width, model.BottomRightPoint.Y * height);
+
+                topLeft = new Point(model.TopLeftPoint.X * ContainerWidth + diff / 2, model.TopLeftPoint.Y * height);
+                bottomRight = new Point(model.BottomRightPoint.X * ContainerWidth + diff / 2, model.BottomRightPoint.Y * height);
+            }
+            else {
+
+                topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
+                bottomRight = new Point(model.BottomRightPoint.X * width, model.BottomRightPoint.Y * height);
+            }
+
+            
+
             SizeChanged?.Invoke(this, topLeft, bottomRight);
 
             RegionChanged?.Invoke(this, Height, Width);

@@ -76,16 +76,6 @@ namespace NuSysApp
 
                   xMetadataEditorView.Metadatable = vm.CurrentElementController;
 
-                  //xRegionEditorView = (RegionEditorTabView)FindName("xRegionEditorView");
-                  //xRegionEditorView.DetailViewerView = this;
-                  //xRegionEditorView.DataContext = this.DataContext;
-                  //xRegionEditorView.DataContext = (DetailViewerViewModel)this.DataContext;
-
-                  //xRegionEditorView = (RegionEditorView)FindName("xRegionEditorView");
-                  //xRegionEditorView.DataContext = this.DataContext;
-                  //xRegionEditorView.DetailViewerViewModel = (DetailViewerViewModel)this.DataContext;
-                  //xRegionEditorView.DetailViewerView = this;
-
                   this.Width = SessionController.Instance.SessionView.ActualWidth / 2;
                   this.Height = SessionController.Instance.SessionView.ActualHeight;
                   this.MaxHeight = SessionController.Instance.SessionView.ActualHeight;
@@ -184,6 +174,7 @@ namespace NuSysApp
             if (await vm.ShowElement(metadatable))
                 Visibility = Visibility.Visible;
 
+
             //if (controller.Model is TextElementModel || controller.Model is PdfNodeModel)
             if (metadatable.MetadatableType() == MetadatableType.Content)
             {
@@ -199,6 +190,17 @@ namespace NuSysApp
                 else
                 {
                     SuggestButton.Visibility = Visibility.Collapsed;
+                }
+
+                if (controller.LibraryElementModel.Type == ElementType.Image)
+                {
+                    xRegionEditorView.ShowListView(false);
+                   
+                }
+                else
+                {
+                    xRegionEditorView.ShowListView(true);
+
                 }
 
                 xMetadataEditorView.Metadatable = vm.CurrentElementController;

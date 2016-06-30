@@ -379,6 +379,21 @@ namespace NuSysApp
                                 {
                                     SessionController.Instance.ContentController.Add(element);
                                 }
+                                /*
+                                if (element.Regions != null && element.Regions.Count > 0)
+                                {
+                                    foreach (var region in element.Regions)
+                                    {
+                                        if (SessionController.Instance.RegionControllersController.GetRegionController(region.Id) == null)
+                                        {
+                                            SessionController.Instance.RegionControllersController.Add(region);
+                                        }
+                                    }
+                                }
+
+                                */
+
+
                             }
                             _isLoaded = true;
                             if (_loggedIn)

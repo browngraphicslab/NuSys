@@ -114,7 +114,7 @@ namespace NuSysApp
                     viewmodel.Editable = false;
                     var view = new AudioRegionView(viewmodel);
                     collection.Add(view);
-                }
+                }   
                 return collection;
             }
         }

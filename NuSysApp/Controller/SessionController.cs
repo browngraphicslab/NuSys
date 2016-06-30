@@ -26,6 +26,8 @@ namespace NuSysApp
 
         private ContentController _contentController = new ContentController();
 
+        private RegionControllersController _regionControllersController = new RegionControllersController();
+
         private NuSysNetworkSession _nuSysNetworkSession;
 
         public Dictionary<string, ImageSource> Thumbnails = new Dictionary<string, ImageSource>();
@@ -51,6 +53,12 @@ namespace NuSysApp
         public ContentController ContentController
         {
             get { return _contentController; }
+        }
+
+
+        public RegionControllersController RegionControllersController
+        {
+            get { return _regionControllersController; }
         }
         public SpeechRecognizer Recognizer { get; set; }
 
