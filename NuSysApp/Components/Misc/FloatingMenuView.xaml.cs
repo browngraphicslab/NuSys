@@ -40,9 +40,14 @@ namespace NuSysApp
         private LibraryView _lib;
         private LibraryElementPropertiesWindow libProp;
         private bool IsPenMode;
+
+        private bool checkPointerAdded;
+        private CompositeTransform floatingTransform;
+
         public FloatingMenuView()
         {
-            RenderTransform = new CompositeTransform();
+            floatingTransform = new CompositeTransform();
+            RenderTransform = floatingTransform;
             InitializeComponent();
 
             btnLibrary.Tapped += BtnLibrary_Tapped;
@@ -65,6 +70,18 @@ namespace NuSysApp
             AddNodeSubmenuButton(btnRecording);
             AddNodeSubmenuButton(btnNew);
             AddNodeSubmenuButton(btnTools);
+        }
+
+        private void CheckPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var mainCanvas = SessionController.Instance.SessionView.MainCanvas;
+            var position = e.GetCurrentPoint(mainCanvas).Position;
+
+            var xdiff = addMenuTransform.X;
+            var ydiff = addMenuTransform.Y;
+
+            var xpos = floatingTransform.TranslateX;
+            var ypos = floatingTransform.TranslateY;
         }
 
         private void BtnSearch_Tapped(object sender, TappedRoutedEventArgs e)
@@ -129,6 +146,8 @@ namespace NuSysApp
 
         private void BtnAddNode_Tapped(object sender, TappedRoutedEventArgs e)
         {
+            _lib.Visibility = Visibility.Collapsed;
+            btnLibrary.Icon = "ms-appx:///Assets/icon_library.png";
             if (xAddNodeMenu.Visibility == Visibility.Visible)
             {
                 xAddNodeMenu.Visibility = Visibility.Collapsed;
@@ -136,6 +155,14 @@ namespace NuSysApp
             else {
                 xAddNodeMenu.Visibility = Visibility.Visible;
             }
+
+            //collapse things as necessary
+            if (checkPointerAdded != true)
+            {
+                SessionController.Instance.SessionView.MainCanvas.PointerPressed += CheckPointerPressed;
+                this.checkPointerAdded = true;
+            }
+            
         }
 
         private void BtnLibrary_Tapped(object sender, TappedRoutedEventArgs e)
@@ -150,6 +177,14 @@ namespace NuSysApp
             {
                 btnLibrary.Icon = "ms-appx:///Assets/icon_library.png";
             }
+
+            //collapse things as necessary
+            if (checkPointerAdded != true)
+            {
+                SessionController.Instance.SessionView.MainCanvas.PointerPressed += CheckPointerPressed;
+                this.checkPointerAdded = true;
+            }
+
         }
 
         private async void BtnAddNodeOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs args)
@@ -306,5 +341,6 @@ namespace NuSysApp
         {
             get { return _lib; }
         }
+
     }
 }
