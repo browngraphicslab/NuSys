@@ -279,7 +279,7 @@ namespace NuSysApp
                         return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_large.jpg");
                         break;
                     default:
-                        return new Uri("ms-apps:////Assets/icon_chat.png");
+                        return new Uri("ms-appx:///Assets/icon_chat.png");
                         break;
                 }
             }
@@ -299,7 +299,7 @@ namespace NuSysApp
                         return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_medium.jpg");
                         break;
                     default:
-                        return new Uri("ms-apps:////Assets/icon_chat.png");
+                        return new Uri("ms-appx:///Assets/icon_chat.png");
                         break;
                 }
             }
@@ -318,8 +318,17 @@ namespace NuSysApp
                     case ElementType.Video:
                         return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_small.jpg");
                         break;
+                    case ElementType.PDF:
+                        return new Uri("ms-appx:///Assets/icon_pdf");
+                        break;
+                    case ElementType.Audio:
+                        return new Uri("ms-appx:///Assets/icon_recording.png");
+                        break;
+                    case ElementType.Text:
+                        return new Uri("ms-appx:///Assets/icon_text.png");
+                        break;
                     default:
-                        return new Uri("ms-apps:////Assets/icon_chat.png");
+                        return new Uri("ms-appx:///Assets/icon_chat.png");
                         break;
                 }
             }

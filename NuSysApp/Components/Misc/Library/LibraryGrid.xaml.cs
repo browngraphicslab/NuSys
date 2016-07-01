@@ -26,7 +26,7 @@ namespace NuSysApp
         //public delegate void LibraryElementDragEventHandler(object sender, DragStartingEventArgs e);
         //public event LibraryElementDragEventHandler OnLibraryElementDrag;
 
-        public ObservableCollection<LibraryElementModel> _items;
+        public ObservableCollection<LibraryElementModel> _items; // TODO Change this to LibraryItemTemplate
         private int _count = 0;
 
         private LibraryElementPropertiesWindow _propertiesWindow;
@@ -41,7 +41,7 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.DataContext = vm;
-            _items = vm.PageElements;
+            // _items = vm.PageElements; TODO
 
             _propertiesWindow = propertiesWindow;
             for (int i = 1; i < _items.Count/3 + 1; i++)
@@ -82,15 +82,15 @@ namespace NuSysApp
             var numCols = 3;
             _count = 0;
             xGrid.Children.Clear();
-            foreach (var item in ((LibraryPageViewModel)this.DataContext).PageElements)
-            {
-                LoadThumbnails(_numRows, numCols, item);
-            }
+            //foreach (var item in ((LibraryPageViewModel)this.DataContext).PageElements) // TODO
+            //{
+            //    LoadThumbnails(_numRows, numCols, item);
+            //}
         }
 
         public void SetItems(ICollection<LibraryElementModel> elements)
         {
-            ((LibraryPageViewModel)this.DataContext).PageElements = new ObservableCollection<LibraryElementModel>(elements);
+            //((LibraryPageViewModel)this.DataContext).PageElements = new ObservableCollection<LibraryElementModel>(elements); TODO
         }
 
         public async Task Sort(string s, bool reverse = false)
@@ -101,10 +101,10 @@ namespace NuSysApp
             var numCols = 3;
             _count = 0;
             xGrid.Children.Clear();
-            foreach (var item in ((LibraryPageViewModel)this.DataContext).PageElements)
-            {
-                LoadThumbnails(_numRows, numCols, item);
-            }
+            //foreach (var item in ((LibraryPageViewModel)this.DataContext).PageElements) //TODO
+            //{
+            //    LoadThumbnails(_numRows, numCols, item);
+            //}
         }
 
         //public void addItems()
@@ -366,7 +366,7 @@ namespace NuSysApp
 
         public async Task Update()
         {
-            this.SetItems(((LibraryPageViewModel)this.DataContext).PageElements);
+            // this.SetItems(((LibraryPageViewModel)this.DataContext).PageElements); TODO
         }
     }
 }

@@ -13,19 +13,24 @@ namespace NuSysApp
 {
     public class LibraryPageViewModel
     {
-        public ObservableCollection<LibraryElementModel> PageElements { get; set; }
-
-        private List<LibraryElementModel> _orgList;
+        // public ObservableCollection<LibraryElementModel> PageElements { get; set; }  TODO If LibraryGrid needs to be made functional, PageElements => ItemList
+        public ObservableCollection<LibraryItemTemplate> ItemList { get; set; } 
+        private List<LibraryElementController> _controllerList;
 
         private string _searchString = string.Empty;
 
 
         public delegate void ItemsChangedEventHandler();
         public event ItemsChangedEventHandler OnItemsChanged;
-        public LibraryPageViewModel(ObservableCollection<LibraryElementModel> elements)
+        public LibraryPageViewModel(ObservableCollection<LibraryElementController> controllers)
         {
-            PageElements = elements;
-            _orgList = new List<LibraryElementModel>(elements);
+            ItemList = new ObservableCollection<LibraryItemTemplate>();
+            foreach (var controller in controllers)
+            {
+                var template = new LibraryItemTemplate(controller);
+                ItemList.Add(template);   
+            }
+            _controllerList = new List<LibraryElementController>(controllers);
             SessionController.Instance.ContentController.OnNewContent += NewContent;
             SessionController.Instance.ContentController.OnElementDelete += DeleteContent;
         }
@@ -34,8 +39,8 @@ namespace NuSysApp
         {
             UITask.Run(() =>
             {
-                if(content.Type!= ElementType.Link)
-                    _orgList.Add(content);
+                
+                _controllerList.Add(SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId));
                 Search(_searchString);
             });
 
@@ -45,13 +50,15 @@ namespace NuSysApp
         {
             UITask.Run(() =>
             {
-                _orgList.Remove(content);
-                PageElements.Remove(content);
+                var controller =
+                    SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId);
+                _controllerList.Remove(controller);
+                ItemList.Remove(new LibraryItemTemplate(controller));
             });
         }
         public async Task Sort(string s, bool reverse = false)
         {
-            List<LibraryElementModel> ordered = null;
+            List<LibraryItemTemplate> ordered = null;
             switch (s)
             {
                 //case "title":
@@ -61,13 +68,13 @@ namespace NuSysApp
                 //    ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.NodeType.ToString());
                 //    break;
                 case "Title":
-                    ordered = new List<LibraryElementModel>(PageElements.OrderBy(l => ((LibraryElementModel)l).Title));
+                    ordered = new List<LibraryItemTemplate>(ItemList.OrderBy(l => ((LibraryItemTemplate)l).Title));
                     break;
                 case "Type":
-                    ordered = new List<LibraryElementModel>(PageElements.OrderBy(l => ((LibraryElementModel)l).Type.ToString()));
+                    ordered = new List<LibraryItemTemplate>(ItemList.OrderBy(l => ((LibraryItemTemplate)l).Type.ToString()));
                     break;
-                case "Date/Time":
-                    ordered = new List<LibraryElementModel>(PageElements.OrderByDescending(l => Constants.GetTimestampTicksOfLibraryElementModel((LibraryElementModel)l)));
+                case "Date/Timestamp":
+                    ordered = new List<LibraryItemTemplate>(ItemList.OrderByDescending(l => Constants.GetTimestampTicksOfLibraryElementModel((LibraryItemTemplate)l)));
                     break;
                 default:
                     break;
@@ -79,11 +86,11 @@ namespace NuSysApp
                     ordered.Reverse();
                 }
                 //  ObservableCollection<LibraryElementModel> newCollection = new ObservableCollection<LibraryElementModel>();
-                PageElements.Clear();
+                ItemList.Clear();
 
                 foreach (var item in ordered)
                 {
-                    PageElements.Add(item);
+                    ItemList.Add(item);
                 }
           
             }
@@ -91,7 +98,7 @@ namespace NuSysApp
         public async Task Search(string s)
         {
             _searchString = s;
-            PageElements.Clear();
+            ItemList.Clear();
 
             HashSet<string> valids;
             if (string.IsNullOrEmpty(s))
@@ -106,12 +113,12 @@ namespace NuSysApp
             {
                 return;
             }
-            var hash = new HashSet<LibraryElementModel>(PageElements);
-            foreach (var item in _orgList)
+            var hash = new HashSet<string>(ItemList.Select(item => item.ContentID));
+            foreach (var item in _controllerList)
             {
-                if (valids.Contains(item.LibraryElementId) && !hash.Contains(item))
+                if (valids.Contains(item.LibraryElementModel.LibraryElementId) && !hash.Contains(item.LibraryElementModel.LibraryElementId))
                 {
-                    PageElements.Add(item);
+                    ItemList.Add(new LibraryItemTemplate(item));
                 }
             }
         }

@@ -13,9 +13,9 @@ namespace NuSysApp
 {
     public class LibraryFavoritesViewModel
     {
-        public ObservableCollection<LibraryElementModel> PageElements { get; set; }
-
-        private List<LibraryElementModel> _orgList;
+        //public ObservableCollection<LibraryElementModel> PageElements { get; set; }
+        public ObservableCollection<LibraryItemTemplate> ItemList { get; set; } 
+        private List<LibraryElementController> _controllerList;
 
         //private string _searchString = string.Empty;
 
@@ -25,17 +25,17 @@ namespace NuSysApp
         
 
 
-        public LibraryFavoritesViewModel(ObservableCollection<LibraryElementModel> elements)
+        public LibraryFavoritesViewModel(ObservableCollection<LibraryElementController> controllers)
         {
             SessionController.Instance.ContentController.ContentValues.Where(item => item.Favorited == true);
-            PageElements = new ObservableCollection<LibraryElementModel>();
+            ItemList = new ObservableCollection<LibraryItemTemplate>();
             //PageElements = elements.Where(item => item.Favorited == true);
-            _orgList = new List<LibraryElementModel>(elements);
-            foreach(var element in _orgList)
+            _controllerList = new List<LibraryElementController>(controllers);
+            foreach(var controller in _controllerList)
             {
-                SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId).Favorited += LibraryElementModel_OnFavorited;
-                if (element.Favorited == true)
-                    PageElements.Add(element);
+                SessionController.Instance.ContentController.GetLibraryElementController(controller.LibraryElementModel.LibraryElementId).Favorited += LibraryElementModel_OnFavorited;
+                if (controller.LibraryElementModel.Favorited)
+                    ItemList.Add(new LibraryItemTemplate(controller));
             };
 
             SessionController.Instance.ContentController.OnNewContent += NewContent;
@@ -50,14 +50,17 @@ namespace NuSysApp
         private void LibraryElementModel_OnFavorited(object sender, bool favorited)
         {
             var element = (sender as LibraryElementController).LibraryElementModel;
+            var controller =
+                SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId);
+            var template = new LibraryItemTemplate(controller);
 
-            if (!PageElements.Contains(element))
+            if (!ItemList.Contains(template))
             {
-                PageElements.Add(element);
+                ItemList.Add(template);
             }
             else
             {
-                PageElements.Remove(element);
+                ItemList.Remove(template);
             }
 
            // OnItemsChanged?.Invoke(this, favorited);
@@ -70,12 +73,13 @@ namespace NuSysApp
             UITask.Run(() =>
             {
                 //if (content.Favorited == true)
-                SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId).Favorited += LibraryElementModel_OnFavorited;
+                var controller = SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId);
+                controller.Favorited += LibraryElementModel_OnFavorited;
                 if (content.Favorited)
                 {
                     LibraryElementModel_OnFavorited(content, true);
                 }
-                _orgList.Add(content);
+                _controllerList.Add(controller);
 
                 //Search(_searchString);
             });
@@ -88,7 +92,8 @@ namespace NuSysApp
             UITask.Run(() =>
             {
                 //_orgList.Remove(content);
-                PageElements.Remove(content);
+                var controller = SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId);
+                ItemList.Remove(new LibraryItemTemplate(controller));
             });
         }
 

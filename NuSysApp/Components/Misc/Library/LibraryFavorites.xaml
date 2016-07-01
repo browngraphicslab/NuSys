@@ -41,7 +41,7 @@
                         Type
                     </Button>
                     <Button  HorizontalAlignment="Left" Grid.Column="2" Foreground="{StaticResource color2}" Background="Transparent"  FontSize="17" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
-                        Date/Time
+                        Date/Timestamp
                     </Button>
 
 

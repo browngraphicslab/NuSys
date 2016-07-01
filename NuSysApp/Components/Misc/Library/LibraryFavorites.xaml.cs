@@ -65,24 +65,24 @@ namespace NuSysApp
 
         public void SetItems(ICollection<LibraryElementModel> elements)
         {
-            var col = ((LibraryFavoritesViewModel)DataContext).PageElements;
-            col.Clear();
-            foreach (var libraryElementModel in elements)
-            {
+            //var itemlist = ((LibraryFavoritesViewModel)DataContext).ItemList;
+            //itemlist.Clear();
+            //foreach (var libraryElementModel in elements)
+            //{
 
-                if (libraryElementModel.Favorited)
-                {
-                    col.Add(libraryElementModel);
+            //    if (libraryElementModel.Favorited)
+            //    {
+            //        col.Add(libraryElementModel);
                     
-                }
+            //    }
 
                
-            }
+            //}
         }
 
         public async void Update()
         {
-            this.SetItems(((LibraryFavoritesViewModel)this.DataContext).PageElements);
+            //this.SetItems(((LibraryFavoritesViewModel)this.DataContext).PageElements);
         }
 
         private void LibraryListItem_OnPointerPressed(object sender, PointerRoutedEventArgs e)

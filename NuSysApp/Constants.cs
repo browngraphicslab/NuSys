@@ -167,6 +167,17 @@ namespace NuSysApp
             }
             return true;
         }
+
+        public static long GetTimestampTicksOfLibraryElementModel(LibraryItemTemplate template)
+        {
+            if (template == null)
+            {
+                return 0;
+            }
+            return
+                GetTimestampTicksOfLibraryElementModel(
+                    SessionController.Instance.ContentController.GetContent(template.ContentID));
+        }
         public static long GetTimestampTicksOfLibraryElementModel(LibraryElementModel model)
         {
             if (!String.IsNullOrEmpty(model.Timestamp))

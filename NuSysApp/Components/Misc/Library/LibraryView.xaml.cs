@@ -59,9 +59,9 @@ namespace NuSysApp
         {
             this.DataContext = vm;
             this.InitializeComponent();
-            var data = SessionController.Instance.ContentController.ContentValues.Where(item => item.Type != ElementType.Link);
-            _pageViewModel = new LibraryPageViewModel(new ObservableCollection<LibraryElementModel>(data));
-            _favoritesViewModel = new LibraryFavoritesViewModel(new ObservableCollection<LibraryElementModel>(data));
+            var data = SessionController.Instance.ContentController.ContentValues.Select(item => SessionController.Instance.ContentController.GetLibraryElementController(item.LibraryElementId));
+            _pageViewModel = new LibraryPageViewModel(new ObservableCollection<LibraryElementController>(data));
+            _favoritesViewModel = new LibraryFavoritesViewModel(new ObservableCollection<LibraryElementController>(data));
             this.MakeViews(_pageViewModel, properties);
             _propertiesWindow = properties;
             properties.AddedToFavorite += AddToFavorites;
@@ -137,15 +137,15 @@ namespace NuSysApp
         }
 
 
-        public async void UpdateList()
-        {
-            _libraryList.Update();
-        }
+        //public async void UpdateList()
+        //{
+        //    _libraryList.Update();
+        //}
 
         private async void GridButton_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             //await this.AddNode(new Point(12, 0), new Size(12, 12), ElementType.Document);
-            this.UpdateList();
+            //this.UpdateList();
             //if (WorkspacePivot.Content != _libraryGrid)
             //{
             //    await _libraryGrid.Update();
@@ -617,16 +617,16 @@ namespace NuSysApp
             var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(r.X, r.Y, contentId, 300, 300, newCollectionId);
             if (ListContainer.Children[0] == _libraryList)
             {
-                foreach (var libraryElementModel in _pageViewModel.PageElements.ToList().GetRange(0, Math.Min(_pageViewModel.PageElements.Count, 10)))
+                foreach (var libraryItemTemplate in _pageViewModel.ItemList.ToList().GetRange(0, Math.Min(_pageViewModel.ItemList.Count, 10)))
                 {
                     var dict = new Message();
-                    dict["title"] = libraryElementModel?.Title;
+                    dict["title"] = libraryItemTemplate?.Title;
                     dict["width"] = "300";
                     dict["height"] = "300";
-                    dict["nodeType"] = libraryElementModel.Type.ToString();
+                    dict["nodeType"] = libraryItemTemplate?.Type;
                     dict["x"] = "50000";
                     dict["y"] = "50000";
-                    dict["contentId"] = libraryElementModel.LibraryElementId;
+                    dict["contentId"] = libraryItemTemplate?.ContentID;
                     dict["metadata"] = metadata;
                     dict["autoCreate"] = true;
                     dict["creator"] = controller.LibraryElementModel.LibraryElementId;
@@ -636,16 +636,16 @@ namespace NuSysApp
             }
             else if (ListContainer.Children[0] == _libraryFavorites)
             {
-                foreach (var libraryElementModel in _favoritesViewModel.PageElements.ToList().GetRange(0, Math.Min(_favoritesViewModel.PageElements.Count, 10)))
+                foreach (var itemTemplate in _favoritesViewModel.ItemList.ToList().GetRange(0, Math.Min(_favoritesViewModel.ItemList.Count, 10)))
                 {
                     var dict = new Message();
-                    dict["title"] = libraryElementModel?.Title;
+                    dict["title"] = itemTemplate?.Title;
                     dict["width"] = "300";
                     dict["height"] = "300";
-                    dict["nodeType"] = libraryElementModel.Type.ToString();
+                    dict["nodeType"] = itemTemplate?.Type;
                     dict["x"] = "50000";
                     dict["y"] = "50000";
-                    dict["contentId"] = libraryElementModel.LibraryElementId;
+                    dict["contentId"] = itemTemplate?.ContentID;
                     dict["metadata"] = metadata;
                     dict["autoCreate"] = true;
                     dict["creator"] = controller.LibraryElementModel.LibraryElementId;

@@ -28,9 +28,10 @@ namespace NuSysApp
         public void SetTitle(string title)
         {
             Model.Name = title;
+            Title = title;
             TitleChanged?.Invoke(this, title);
             SessionController.Instance.NuSysNetworkSession.UpdateRegion(Model);
-            Title = title;
+            
             
         }
         public Dictionary<string, MetadataEntry> GetMetadata()
