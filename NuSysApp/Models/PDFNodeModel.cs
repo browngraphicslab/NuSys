@@ -20,10 +20,8 @@ namespace NuSysApp
                 PageChange?.Invoke(value);
             }
         }
-
-        public event PdfImagesCreatedHandler OnPdfImagesCreated;
+        
         public event PageChangeHandler PageChange;
-        public delegate void PdfImagesCreatedHandler();
         public delegate void PageChangeHandler(int page);
 
         public PdfNodeModel(string id) : base(id)
