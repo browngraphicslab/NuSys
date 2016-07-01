@@ -272,7 +272,7 @@
 
             <Grid Grid.Row="2">
                 <Canvas Width="400" Height="38" Background="Transparent" VerticalAlignment="Bottom" Margin="-40,0,0,0">
-                    <local:TextInputBlock x:Name ="Searchfield"  Width="670"  BubbleTop="False" TextChanged="TextBox_OnTextChanging"  LeftJustified="False" Height="34" ></local:TextInputBlock>
+                    <local:TextInputBlock x:Name ="Searchfield"  Width="400"  BubbleTop="False" TextChanged="TextBox_OnTextChanging"  LeftJustified="False" Height="34" ></local:TextInputBlock>
                 </Canvas>
                 <Border  HorizontalAlignment="Right" Background="Transparent"  x:Name="xSearchExportButton" ManipulationMode="TranslateX,TranslateY" ManipulationStarted="XSearchExportButton_OnManipulationStarted" ManipulationDelta="XSearchExportButton_OnManipulationDelta" ManipulationCompleted="XSearchExportButton_OnManipulationCompleted" PointerPressed="XSearchExportButton_OnPointerPressed">
                     <TextBlock Text="&#xE8AD;" FontFamily="Segoe MDL2 Assets" Margin="10,15,10,10" Foreground="White"></TextBlock>
