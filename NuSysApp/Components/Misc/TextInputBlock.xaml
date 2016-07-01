@@ -85,11 +85,11 @@
                 </Button>-->
 
             <Button x:Name="RecordButton"  Click="RecordButton_OnClick" Style="{StaticResource InputButton}" Margin="5 0 5 0">
-                    <Image  x:Name="RecordImg" Source= "ms-appx:///Assets/icon_audionode_record.png" MaxHeight="18" MaxWidth="18"/>
+                    <Image  x:Name="RecordImg" Source= "ms-appx:///Assets/node icons/record.png" MaxHeight="18" MaxWidth="18"/>
                 </Button>
-                <Button x:Name="InkButton" Click="InkButton_OnClick" Style="{StaticResource InputButton}" Margin="5 0 5 0">
+                <!--<Button x:Name="InkButton" Click="InkButton_OnClick" Style="{StaticResource InputButton}" Margin="5 0 5 0">
                     <Image  x:Name="InkImg" Source="ms-appx:///Assets/icon_node_ink.png" MaxHeight="18" MaxWidth="18"/>
-                </Button>
+                </Button>-->
             </StackPanel>
         <!--</StackPanel>-->
     </Grid>
