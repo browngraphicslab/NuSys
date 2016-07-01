@@ -504,38 +504,38 @@ namespace NuSysApp
         }
 
 
-        private void Favorites_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
+        //private void Favorites_OnTapped(object sender, TappedRoutedEventArgs e)
+        //{
 
-            _propertiesWindow.Visibility = Visibility.Collapsed;
+        //    _propertiesWindow.Visibility = Visibility.Collapsed;
 
-            if (((Button)sender == btnFav))
-            {
-                ListContainer.Children.Clear();
-                ListContainer.Children.Add(_libraryFavorites);
-            }
-            else if (((Button)sender == btnAll))
-            {
-                ListContainer.Children.Clear();
-                ListContainer.Children.Add(_libraryList);
-            }
+        //    if (((Button)sender == btnFav))
+        //    {
+        //        ListContainer.Children.Clear();
+        //        ListContainer.Children.Add(_libraryFavorites);
+        //    }
+        //    else if (((Button)sender == btnAll))
+        //    {
+        //        ListContainer.Children.Clear();
+        //        ListContainer.Children.Add(_libraryList);
+        //    }
 
-            this.updateTabs();
+        //    this.updateTabs();
 
-        }
+        //}
 
         private void updateTabs()
         {
-            if (ListContainer.Children[0] == _libraryFavorites)
-            {
-                btnFav.Background = new SolidColorBrush(Colors.White);
-                btnAll.Background = (SolidColorBrush)Application.Current.Resources["color9"];
-            }
-            else if (ListContainer.Children[0] == _libraryList)
-            {
-                btnAll.Background = new SolidColorBrush(Colors.White);
-                btnFav.Background = (SolidColorBrush)Application.Current.Resources["color9"];
-            }
+            //if (ListContainer.Children[0] == _libraryFavorites)
+            //{
+            //    btnFav.Background = new SolidColorBrush(Colors.White);
+            //    btnAll.Background = (SolidColorBrush)Application.Current.Resources["color9"];
+            //}
+            //else if (ListContainer.Children[0] == _libraryList)
+            //{
+            //    btnAll.Background = new SolidColorBrush(Colors.White);
+            //    btnFav.Background = (SolidColorBrush)Application.Current.Resources["color9"];
+            //}
         }
 
         private void Graph_OnPointerPressed(object sender, PointerRoutedEventArgs e)
