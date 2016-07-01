@@ -295,12 +295,28 @@
     </Compile>
     <Compile Include="Components\Regions\PDFRegionViewModel.cs" />
     <Compile Include="Components\Regions\RegionViewModel.cs" />
+    <Compile Include="Components\Tools\BasicToolController.cs" />
+    <Compile Include="Components\Tools\BasicToolModel.cs" />
+    <Compile Include="Components\Tools\MetadataToolController.cs" />
+    <Compile Include="Components\Tools\MetadataToolModel.cs" />
+    <Compile Include="Components\Tools\MetadataToolView.xaml.cs">
+      <DependentUpon>MetadataToolView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Tools\MetadataToolViewModel.cs" />
     <Compile Include="Components\Tools\ToolController.cs" />
+    <Compile Include="Components\Tools\ToolFilterLinkView.xaml.cs">
+      <DependentUpon>ToolFilterLinkView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Tools\ToolFilterLinkViewModel.cs" />
+    <Compile Include="Components\Tools\ToolFilterView.xaml.cs">
+      <DependentUpon>ToolFilterView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Tools\ToolLinkView.xaml.cs">
       <DependentUpon>ToolLinkView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Tools\ToolLinkViewModel.cs" />
     <Compile Include="Components\Tools\ToolModel.cs" />
+    <Compile Include="Components\Tools\BasicToolViewModel.cs" />
     <Compile Include="Components\Tools\ToolViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
     <Compile Include="Components\Viewers\Detail\Sizeable.cs" />
@@ -859,6 +875,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Regions\PDFRegionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Tools\MetadataToolView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Tools\ToolFilterLinkView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Tools\ToolFilterView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

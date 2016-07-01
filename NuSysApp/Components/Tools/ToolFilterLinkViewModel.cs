@@ -1,29 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.UI.Xaml.Media;
-
-namespace NuSysApp
-{
-    public class ToolLinkViewModel : BaseINPC
+﻿namespace NuSysApp {
+    public class ToolFilterLinkViewModel : BaseINPC
     {
-
         public ToolController InToolController;
-        public ToolController OutToolController;
 
         public ElementController InToolElementController;
-        public ElementController OutToolElementController;
 
         public ToolViewModel InTool;
-        public ToolViewModel OutTool;
 
+        public ToolFilterView OutTool;
 
 
         //public LinkModel LinkModel { get; }
         //private SolidColorBrush _defaultColor;
-        public ToolLinkViewModel(ToolViewModel inTool, ToolViewModel outTool)
+        public ToolFilterLinkViewModel(ToolViewModel inTool, ToolFilterView outTool)
         {
             //InToolController
             InTool = inTool;
@@ -31,12 +20,12 @@ namespace NuSysApp
             
 
             InToolController = inTool.Controller;
-            OutToolController = outTool.Controller;
 
-            InToolController.LocationChanged += InToolController_LocationChanged; ;
-            OutToolController.LocationChanged += OutToolController_LocationChanged; ;
+            InToolController.LocationChanged += InToolController_LocationChanged; 
             InToolController.SizeChanged += OutElementControllerOnSizeChanged;
-            OutToolController.SizeChanged += OutElementControllerOnSizeChanged;
+
+            OutTool.LocationChanged += OutToolController_LocationChanged;
+            OutTool.SizeChanged += OutElementControllerOnSizeChanged;
 
         }
 
@@ -60,4 +49,5 @@ namespace NuSysApp
             RaisePropertyChanged("Anchor");
         }
     }
+    
 }

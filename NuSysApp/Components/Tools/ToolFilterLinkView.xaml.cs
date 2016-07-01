@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -18,31 +17,26 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
-    public sealed partial class ToolLinkView : AnimatableUserControl
+    public sealed partial class ToolFilterLinkView : AnimatableUserControl
     {
-
-
-        public ToolLinkView(ToolLinkViewModel vm)
+        public ToolFilterLinkView(ToolFilterLinkViewModel vm)
         {
             this.DataContext = vm;
             vm.PropertyChanged += OnPropertyChanged;
             this.InitializeComponent();
-
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
                 UpdateControlPoints();
             };
-
-
-
-
+            
 
         }
 
-        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             this.UpdateControlPoints();
         }
+        
 
         private void UpdateControlPoints()
         {
@@ -50,11 +44,11 @@ namespace NuSysApp
             this.UpdateArrow();
 
 
-            var vm = (ToolLinkViewModel)this.DataContext;
+            var vm = (ToolFilterLinkViewModel)this.DataContext;
 
             var inToolVM = vm.InTool;
             var outToolVM = vm.OutTool;
-            
+
 
             var anchor1 = new Point(inToolVM.X + inToolVM.Width / 2, inToolVM.Y + inToolVM.Height / 2);
             var anchor2 = new Point(outToolVM.X + outToolVM.Width / 2, outToolVM.Y + outToolVM.Height / 2);
@@ -84,7 +78,7 @@ namespace NuSysApp
 
         private void UpdateEndPoints()
         {
-            var vm = (ToolLinkViewModel)this.DataContext;
+            var vm = (ToolFilterLinkViewModel)this.DataContext;
 
             var inToolVM = vm.InTool;
             var outToolVM = vm.OutTool;
@@ -101,15 +95,5 @@ namespace NuSysApp
 
         }
 
-
-        private void Delete_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Annotation_Loaded(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }
