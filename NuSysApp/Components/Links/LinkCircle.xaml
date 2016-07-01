@@ -13,11 +13,10 @@
         <Ellipse x:Name ="linkButton" Height="30" Width="30"  PointerPressed ="circlePointerPressedHandler" PointerEntered="circlePointerEnteredHandler" PointerExited="circlePointerExitedHandler" Opacity =".5" Fill="Blue"></Ellipse>
         <Canvas>
             <Border x:Name ="border" BorderThickness="1" BorderBrush="#FF000000" VerticalAlignment="Top">
-                <Image x:Name ="thumbnail" Visibility ="Collapsed" Width="50">
-                    <Image.RenderTransform>
-                        <CompositeTransform/>
-                    </Image.RenderTransform>
-                </Image>
+                <Border.RenderTransform>
+                    <CompositeTransform/>
+                </Border.RenderTransform>
+                <Image x:Name ="thumbnail" Visibility ="Collapsed" Width="50"/>
             </Border>
         </Canvas>
     </Grid>
