@@ -1,14 +1,19 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Imaging;
+using Windows.Storage;
+using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
 using Windows.System;
 using Windows.UI;
@@ -18,7 +23,13 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using SharpDX.Direct2D1;
+using SharpDX.WIC;
+using Image = Windows.UI.Xaml.Controls.Image;
+using SolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
+
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace NuSysApp
@@ -41,7 +52,8 @@ namespace NuSysApp
         private LibraryElementPropertiesWindow _propertiesWindow;
         private LibraryPageViewModel _pageViewModel;
         private LibraryFavoritesViewModel _favoritesViewModel;
-
+        private Point2d _searchExportPos; 
+        
         //private Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
         public LibraryView(LibraryBucketViewModel vm, LibraryElementPropertiesWindow properties, FloatingMenuView menu)
         {
@@ -68,6 +80,7 @@ namespace NuSysApp
             {
                 Visibility = Visibility.Collapsed;
             };
+            _searchExportPos = new Point2d(0,0);
         }
 
         public async void ToggleVisiblity()
@@ -95,7 +108,7 @@ namespace NuSysApp
         //        UITask.Run(delegate {
         //            OnNewContents?.Invoke(_elements.ContentValues);
         //        });
-        //    });
+        //    })
         //}
 
         //public void AddNewElement(LibraryElement element)
@@ -224,6 +237,7 @@ namespace NuSysApp
             ElementType elementType = ElementType.Text;
             string data = "";
             string title = "";
+            string pdf_text = "";
 
             var storageFiles = await FileManager.PromptUserForFiles(Constants.AllFileTypes);
             foreach (var storageFile in storageFiles)
@@ -237,12 +251,19 @@ namespace NuSysApp
                 title = storageFile.DisplayName;
 
                 bool validFileType = true;
+                // Create a thumbnail dictionary mapping thumbnail sizes to the byte arrays.
+                // Note that only video and images are to get thumbnails this way, currently.
+                var thumbnails = new Dictionary<ThumbnailSize, string>();
+                thumbnails[ThumbnailSize.SMALL] = "";
+                thumbnails[ThumbnailSize.MEDIUM] = "";
+                thumbnails[ThumbnailSize.LARGE] = "";
 
                 if (Constants.ImageFileTypes.Contains(fileType))
                 {
                     elementType = ElementType.Image;
                     data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
                     serverURL = contentId + fileType;
+                    thumbnails =await MediaUtil.GetThumbnailDictionary(storageFile);
                 }
                 else if (Constants.WordFileTypes.Contains(fileType))
                 {
@@ -269,6 +290,55 @@ namespace NuSysApp
                     }
 
                     data = Convert.ToBase64String(fileBytes);
+
+                    // Get text from the pdf
+                    var myDoc = await MediaUtil.DataToPDF(data); 
+                    
+                    int numPages = myDoc.PageCount;
+                    int currPage = 0;
+                    while (currPage < numPages)
+                    {
+                        pdf_text = pdf_text + myDoc.GetAllTexts(currPage);
+                        currPage++;
+                    }
+
+                    /// The following was supposed to create a thumbnail from the first page of the pdf and save
+                    /// it as a 64 bit string, however there is an exception thrown when converting the 
+                    /// RenderBitmap to a ByteArray...something about the index being larger than the capacity of 
+                    /// the buffer...
+
+                    /*
+                    // Instantiate a MuPDF doc and save the rendered first page to a WritableBitmap
+                    var doc = await MediaUtil.DataToPDF(data);
+                    var width = 50;
+                    var height = 50;
+                    var writableBitmap = new WriteableBitmap(width, height);
+                    IBuffer buf = new Windows.Storage.Streams.Buffer(writableBitmap.PixelBuffer.Capacity);
+                    buf.Length = writableBitmap.PixelBuffer.Length;
+                    doc.DrawPage(1, buf, 0, 0, 0, 0, false);
+                    var ss = buf.AsStream();
+                    await ss.CopyToAsync(writableBitmap.PixelBuffer.AsStream());
+                    writableBitmap.Invalidate();
+
+                    // Create an Image, and set the source to the writable bitmap
+                    var myImage = new Image();
+                    myImage.Source = writableBitmap;
+                    myImage.Height = 50;
+                    myImage.Width = 50;
+
+                    // Take screenshot of Image using a render bitmap. In order to do this, the image must
+                    // be inside a visual component, like the session view.
+                    var r = new RenderTargetBitmap();
+                    SessionController.Instance.SessionView.MainCanvas.Children.Add(myImage);
+                    await r.RenderAsync(myImage);
+                    SessionController.Instance.SessionView.MainCanvas.Children.Remove(myImage);
+
+                    // Obtain a ByteArray from the RenderBitmap, store it as a string in the thumbnail dictionary
+                    var tdata = await MediaUtil.RenderTargetBitmapToByteArray(r);
+                    thumbnails[ThumbnailSize.SMALL] =
+                        Convert.ToBase64String(tdata);
+                    */
+
                 }
                 else if (Constants.VideoFileTypes.Contains(fileType))
                 {
@@ -287,6 +357,7 @@ namespace NuSysApp
                     }
 
                     data = Convert.ToBase64String(fileBytes);
+                    thumbnails=await MediaUtil.GetThumbnailDictionary(storageFile);
                 }
                 else if (Constants.AudioFileTypes.Contains(fileType))
                 {
@@ -315,6 +386,14 @@ namespace NuSysApp
                     var m = new Message();
                     m["id"] = contentId;
                     m["data"] = data;
+                    m["small_thumbnail"] = thumbnails[ThumbnailSize.SMALL];
+                    //await StorageUtil.SaveAsStorageFile(thumbnails[ThumbnailSize.SMALL], @"C:\Users\Zach\Documents\test.jpg");
+                    m["medium_thumbnail"] = thumbnails[ThumbnailSize.MEDIUM];
+                    m["large_thumbnail"] = thumbnails[ThumbnailSize.LARGE];
+                    if (!string.IsNullOrEmpty(pdf_text))
+                    {
+                        m["pdf_text"] = pdf_text;
+                    }
                     m["type"] = elementType.ToString();
                     if (title != null)
                     {
@@ -324,7 +403,20 @@ namespace NuSysApp
                     {
                         m["server_url"] = serverURL;
                     }
-
+                    /*
+                    if (elementType == ElementType.PDF)
+                    {
+                        var document = await MediaUtil.DataToPDF(data);
+                        string d = "";
+                        int numPages = document.PageCount;
+                        int currPage = 0;
+                        while (currPage < numPages)
+                        {
+                            d = d + document.GetAllTexts(currPage);
+                            currPage++;
+                        }
+                        m["pdf_text"] = d;
+                    }*/
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(m));
                     vm.ClearSelection();
                     //   vm.ClearMultiSelection();
@@ -335,6 +427,19 @@ namespace NuSysApp
                 }
             }
         }
+
+        private Task Goto(int v)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ThumbnailTest(string b64)
+        {
+           //ShellFile file =new ShellFile();
+          
+
+        }
+
         public async Task AddNode(Point pos, Size size, ElementType elementType, string libraryId)
         {
             Task.Run(async delegate
@@ -372,6 +477,7 @@ namespace NuSysApp
                 }
             });
 
+            // TODO: Remove Tood
             // TOOD: refresh library
         }
 
@@ -469,13 +575,17 @@ namespace NuSysApp
 
 
             // graph is added by passing in the bounding rectangle
-            await AddGraph(r);
+            await ExportSearchResultsToCollection(r);
 
         }
 
-        // adds the graph/chart based on the location that the graph button was dragged to
-
-        private async Task AddGraph(Point r)
+        /// <summary>
+        /// Exports the search results to a collection, and places the new collection at the passed in point
+        /// @tdgreen, plz comment this, thx. -zkirsche 
+        /// </summary>
+        /// <param name="r"></param>
+        /// <returns></returns>
+        private async Task ExportSearchResultsToCollection(Point r)
         {
 
             var metadata = new Dictionary<string, object>();
@@ -496,7 +606,7 @@ namespace NuSysApp
             elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             elementMsg["id"] = newCollectionId;
             if (ListContainer.Children[0] == _libraryList)
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Search Results"));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Search Results for '"+Searchfield.Text+"'"));
             else if (ListContainer.Children[0] == _libraryFavorites)
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Favorites"));
 
@@ -545,6 +655,89 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Adds a library dragging rectangle to represent where the exported collection will be
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XSearchExportButton_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+          
+            // Since we are adding a collection, we should make the dragging rectangle reflect this
+            var view = SessionController.Instance.SessionView;
+            view.LibraryDraggingRectangle.SwitchType(ElementType.Collection);
+            view.LibraryDraggingRectangle.Show();
+            var rect = view.LibraryDraggingRectangle;
+            Canvas.SetZIndex(rect, 3);
+
+            // Make the rectangle movable and set its position
+            rect.RenderTransform = new CompositeTransform();
+            var t = (CompositeTransform)rect.RenderTransform;
+            t.TranslateX += _searchExportPos.X;
+            t.TranslateY += _searchExportPos.Y;
+            e.Handled = true;
+        }
+
+        /// <summary>
+        /// Moves the library dragging rectangle
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XSearchExportButton_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            // Obtain the library dragging rectangle  
+            var view = SessionController.Instance.SessionView;
+            var rect = view.LibraryDraggingRectangle;
+
+            // Update its transform
+            var t = (CompositeTransform)rect.RenderTransform;
+            t.TranslateX += e.Delta.Translation.X;
+            t.TranslateY += e.Delta.Translation.Y;
+
+            // Update the position instance variable
+            _searchExportPos.X += e.Delta.Translation.X;
+            _searchExportPos.Y += e.Delta.Translation.Y;
+
+            // Handled!
+            e.Handled = true;
+        }
+
+        /// <summary>
+        /// Creates a collection based on the search results, and places it where the cursor was left off 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void XSearchExportButton_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            // Hide the library dragging rect
+            var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
+            rect.Hide();
+
+            // Add a collection to the dropped location
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            var dropPoint = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(_searchExportPos);
+            await ExportSearchResultsToCollection(dropPoint);
+            e.Handled = true;
+           
+        }
+
+        /// <summary>
+        /// When the search export button is clicked, first find the position
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XSearchExportButton_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var view = SessionController.Instance.SessionView;
+            _searchExportPos.X = e.GetCurrentPoint(view).Position.X - 25;
+            _searchExportPos.Y = e.GetCurrentPoint(view).Position.Y - 25;
+            e.Handled = true;
+        }
+    }
+
+    public enum ThumbnailSize
+    {
+        SMALL,MEDIUM,LARGE
     }
 
 }

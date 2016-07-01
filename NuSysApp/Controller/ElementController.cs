@@ -221,6 +221,12 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }
 
+        public void RequestVisualLinkTo()
+        {
+            var parent = SessionController.Instance.ContentController.GetContent(Model.ParentCollectionId) as CollectionLibraryElementModel;
+            parent.addLink();
+        }
+
         public virtual async Task RequestPresentationLinkTo(string otherId, RectangleView rectangle = null, LinkedTimeBlock block = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
         {
             var contentId = SessionController.Instance.GenerateId();

@@ -18,7 +18,7 @@
     
     <Canvas x:Name="xWrapper" Background="Transparent"  HorizontalAlignment="Left" Visibility="Visible">
         <Canvas x:Name="xAddNodeMenu">
-        <Image Source="ms-appx:///Assets/menububble2.png" Width="300">
+        <Image Source="ms-appx:///Assets/menububble2.png" Width="400">
                 <Image.RenderTransform>
                     <TranslateTransform X="-115" Y =" -90"></TranslateTransform>
             </Image.RenderTransform>
@@ -62,6 +62,16 @@
                             <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path4140" Fill="{StaticResource color3}" Data="M 8.421 0.659 C 7.615 0.068 7.224 0 7 0 L 1.25 0 C 0.561 0 0 0.561 0 1.25 l 0 11.5 c 0 0.604 0.43 1.109 1 1.225 L 1 1.25 C 1 1.115 1.115 1 1.25 1 L 8.857 1 C 8.706 0.876 8.56 0.762 8.42 0.659 Z"/>
                         </Canvas>
                     </Grid>
+                    <Grid x:Name="btnTools" Width="60" Height="60" Margin="10,0,10,0" Background="Transparent">
+                        <TextBlock Margin="0,0,0,12" Text="Tools" TextAlignment="Center" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="{StaticResource color3}" ></TextBlock>
+                        <Canvas Background="Transparent" Width="20" Height="20">
+                            <Canvas.RenderTransform>
+                                <ScaleTransform ScaleX="2" ScaleY="2"></ScaleTransform>
+                            </Canvas.RenderTransform>
+
+                            <Image Height="25" Width="25" Stretch="Uniform" Source="ms-appx:///Assets/tool_icon.png" ></Image>                            
+                        </Canvas>
+                    </Grid>
                 </StackPanel>
                 <StackPanel>
                     <TextBlock Text="Drag to Create" TextAlignment="Center" FontSize="15" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="{StaticResource color2}" Margin="0,5,0,0"></TextBlock>
@@ -76,6 +86,7 @@
             <local:FloatingMenuButtonView x:Name="btnAddNode" Icon="ms-appx:///Assets/icon_mainmenu_add_node.png" Caption="" />
             <local:FloatingMenuButtonView x:Name="btnLibrary" Icon="ms-appx:///Assets/icon_library.png" Caption="" />
             <local:FloatingMenuButtonView x:Name="btnPen" Icon="ms-appx:///Assets/node icons/pen.png" Caption="" Visibility="Collapsed"/>
+            <local:FloatingMenuButtonView x:Name="btnSearch" Icon="ms-appx:///Assets/node icons/search_icon.png" Caption=""/>
         </StackPanel>
     </Canvas>
 </UserControl>

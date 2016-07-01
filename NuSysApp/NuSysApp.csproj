@@ -196,6 +196,7 @@
     <Content Include="Assets\node icons\icon_video.png" />
     <Content Include="Assets\node icons\pen.png" />
     <Content Include="Assets\node icons\record.png" />
+    <Content Include="Assets\node icons\search_icon.png" />
     <Content Include="Assets\node icons\text.png" />
     <Content Include="Assets\logos\icon_pano.png" />
     <Content Include="Assets\logos\icon_upload.png" />
@@ -255,9 +256,19 @@
       <DependentUpon>LibraryFavorites.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\Library\LibraryFavoritesViewModel.cs" />
+    <Compile Include="Components\Misc\SpeechToTextUI\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Components\Misc\SpeechToTextUI\CorrectionSuggester.cs" />
+    <Compile Include="Components\Misc\SpeechToTextUI\HtmlRemoval.cs" />
+    <Compile Include="Components\Misc\SpeechToTextUI\ISpeakable.cs" />
+    <Compile Include="Components\Misc\SpeechToTextUI\SpeechToTextBox.xaml.cs">
+      <DependentUpon>SpeechToTextBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\SpeechToTextUI\SpeechToTextViewModel.cs" />
+    <Compile Include="Components\Misc\SpeechToTextUI\WordAlternates.cs" />
     <Compile Include="Components\Misc\TextInputBlock.xaml.cs">
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Misc\TextInputBlockViewModel.cs" />
     <Compile Include="Components\Regions\VideoRegionView.xaml.cs">
       <DependentUpon>VideoRegionView.xaml</DependentUpon>
     </Compile>
@@ -278,6 +289,13 @@
     </Compile>
     <Compile Include="Components\Regions\PDFRegionViewModel.cs" />
     <Compile Include="Components\Regions\RegionViewModel.cs" />
+    <Compile Include="Components\Tools\ToolController.cs" />
+    <Compile Include="Components\Tools\ToolLinkView.xaml.cs">
+      <DependentUpon>ToolLinkView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Tools\ToolLinkViewModel.cs" />
+    <Compile Include="Components\Tools\ToolModel.cs" />
+    <Compile Include="Components\Tools\ToolViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
     <Compile Include="Components\Viewers\Detail\Sizeable.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">
@@ -291,7 +309,10 @@
     <Compile Include="Controller\PdfRegionController.cs" />
     <Compile Include="Controller\RegionController.cs" />
     <Compile Include="Controller\RegionControllerFactory.cs" />
+    <Compile Include="Controller\RegionsController.cs" />
     <Compile Include="Converters\BoolToManipulationModeConverter.cs" />
+    <Compile Include="Converters\ListToStringConverter.cs" />
+    <Compile Include="Converters\MutabilityToBrushConverter.cs" />
     <Compile Include="Models\LinkLibraryElementModel.cs" />
     <Compile Include="Models\Regions\PDFRegion.cs" />
     <Compile Include="Models\Regions\TimeRegionModel.cs" />
@@ -353,6 +374,13 @@
       <DependentUpon>RectangleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\RectangleViewModel.cs" />
+    <Compile Include="Components\Viewers\Search\Query.cs" />
+    <Compile Include="Components\Viewers\Search\SearchResult.cs" />
+    <Compile Include="Components\Viewers\Search\SearchResultTemplate.cs" />
+    <Compile Include="Components\Viewers\Search\SearchView.xaml.cs">
+      <DependentUpon>SearchView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Search\SearchViewModel.cs" />
     <Compile Include="Components\WaitingRoom\SelectionHull.cs" />
     <Compile Include="Components\Viewers\Detail\DetailViewHomeTabViewFactory.cs" />
     <Compile Include="Components\Viewers\Detail\DetailViewerView.xaml.cs">
@@ -572,6 +600,7 @@
     <Compile Include="Util\ExtensionMethods.cs" />
     <Compile Include="Util\GestureRecognizer.cs" />
     <Compile Include="Util\GestureType.cs" />
+    <Compile Include="Util\LibraryTab.cs" />
     <Compile Include="Util\LineEquation.cs" />
     <Compile Include="Util\LineSegment.cs" />
     <Compile Include="Util\MathUtil.cs" />
@@ -583,6 +612,9 @@
     <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\Statistics.cs" />
     <Compile Include="Util\Telemetry.cs" />
+    <Compile Include="Util\TemporaryToolView.xaml.cs">
+      <DependentUpon>TemporaryToolView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Util\UITask.cs" />
     <Compile Include="Components\InqCanvas\InqCanvasViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoNodeViewModel.cs" />
@@ -760,6 +792,7 @@
     <Content Include="Assets\star-xxl.png" />
     <Content Include="Assets\star_icon.png" />
     <Content Include="Assets\StoreLogo.png" />
+    <Content Include="Assets\tool_icon.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\wordIcon.png" />
     <Content Include="Components\Misc\icon_folder.png" />
@@ -794,6 +827,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Components\Misc\SpeechToTextUI\SpeechToTextBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Components\Misc\TextInputBlock.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -815,6 +852,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Regions\PDFRegionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Tools\ToolLinkView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1054,6 +1095,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\Viewers\Search\SearchView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ResourceDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1106,6 +1151,10 @@
     <Page Include="Components\WaitingRoom\WaitingRoomView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Util\TemporaryToolView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

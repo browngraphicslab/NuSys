@@ -20,7 +20,7 @@ namespace NuSysApp
         public RegionType Type { get; set; }
         public string Name { get; set; }
         public string Id { get; set; }
-        public Dictionary<string, Tuple<string, bool>> Metadata { get; set; }
+        public Dictionary<string, MetadataEntry> Metadata { get; set; }
         public Region(string name = "Untitled Region")
         {
             Id = SessionController.Instance.GenerateId();

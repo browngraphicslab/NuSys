@@ -56,7 +56,6 @@ namespace NuSysApp
 
             Tags = new ObservableCollection<Button>();
             CircleLinks = new ObservableCollection<LinkCircle>();
-            CreateCircleLinks();
             ReadFromModel();
 
             RegionsListTest = new ObservableCollection<RectangleView>();
@@ -148,9 +147,13 @@ namespace NuSysApp
 
         private void CreateCircleLinks()
         {
+            if (this is LinkViewModel)
+            {
+                return;
+            }
 
             CircleLinks.Clear();
-            var circleList = SessionController.Instance.LinkController.GetLinkedIds(this.ContentId);
+            var circleList = SessionController.Instance.LinkController.GetLinkedIds(this.Controller.LibraryElementModel.LibraryElementId);
             if(circleList == null)
             {
                 return;

@@ -35,7 +35,7 @@ namespace NuSysApp
                 Rect.Height = args.NewSize.Height;
             };
 
-            Annotation.Text = vm.Annotation;
+        //    Annotation.Text = vm.Annotation;
             Annotation.TextChanged += AnnotationOnTextChanged;
 
  

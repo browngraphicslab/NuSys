@@ -12,8 +12,13 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Shapes;
+using NuSysApp.Components.Viewers.FreeForm;
+using NuSysApp.Util;
+using NuSysApp.Viewers;
 using SharpDX.Direct2D1;
 using Image = Windows.UI.Xaml.Controls.Image;
+using SolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -43,6 +48,7 @@ namespace NuSysApp
             btnLibrary.Tapped += BtnLibrary_Tapped;
             btnAddNode.Tapped += BtnAddNode_Tapped;
             btnPen.Tapped += BtnPen_Tapped;
+            btnSearch.Tapped += BtnSearch_Tapped;
             libProp = new LibraryElementPropertiesWindow();
             _lib = new LibraryView(new LibraryBucketViewModel(), libProp, this);
             xWrapper.Children.Add(_lib);
@@ -58,6 +64,22 @@ namespace NuSysApp
             AddNodeSubmenuButton(btnText);
             AddNodeSubmenuButton(btnRecording);
             AddNodeSubmenuButton(btnNew);
+            AddNodeSubmenuButton(btnTools);
+        }
+
+        private void BtnSearch_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
+            var SearchViewer = SessionController.Instance.SessionView.SearchView;
+
+            if (SearchViewer.Visibility == Visibility.Collapsed)
+            {
+                SearchViewer.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                SearchViewer.Visibility = Visibility.Collapsed;
+            }
         }
 
         public void Reset()
@@ -166,12 +188,15 @@ namespace NuSysApp
             if (_dragItem != null && xWrapper.Children.Contains(_dragItem))
                 xWrapper.Children.Remove(_dragItem);
 
+      
             if (sender == btnText)
                 _elementType = ElementType.Text;
             if (sender == btnRecording)
                 _elementType = ElementType.Recording;
             if (sender == btnNew)
                 _elementType = ElementType.Collection;
+            if (sender == btnTools)
+                _elementType = ElementType.Tools;
 
             args.Container = xWrapper;
             var bmp = new RenderTargetBitmap();
@@ -240,6 +265,26 @@ namespace NuSysApp
            
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, data == null ? "" : data.ToString(), elementType, dict.ContainsKey("title") ? dict["title"].ToString() : null));
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(dict));
+
+            }
+
+            // Adds a toolview to the atom view list when an tool is droped
+            else if (_elementType == ElementType.Tools)
+            {
+
+                //var tool = new TemporaryToolView(new ElementViewModel(new ElementController(new ElementModel("")
+                //{
+                //    X = pos.X,
+                //    Y = pos.Y,
+                //    Width = 300,
+                //    Height = 300,
+                //})));
+                ToolModel model = new ToolModel();
+                ToolController controller = new ToolController(model);
+                ToolViewModel viewmodel = new ToolViewModel(controller);
+                TemporaryToolView view = new TemporaryToolView(viewmodel, pos.X, pos.Y);
+                //rect.Background = new SolidColorBrush(Colors.Blue);
+                vm.AtomViewList.Add(view);
 
             }
 

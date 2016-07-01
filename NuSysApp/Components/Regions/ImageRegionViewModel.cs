@@ -145,7 +145,9 @@ namespace NuSysApp
 
             model.TopLeftPoint = new Point(normalTopLeftX, normalTopLeftY);
             model.BottomRightPoint = new Point(normalBottomRightX, normalBottomRightY);
+
             RegionController.UpdateRegion(Model);
+
         }
 
 

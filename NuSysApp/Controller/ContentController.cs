@@ -28,7 +28,11 @@ namespace NuSysApp
         {
             get { return _contents.Count; }
         }
-    
+
+        public HashSet<string> IdList
+        {
+            get { return new HashSet<string>(_contents.Keys); }
+        }
         public LibraryElementModel GetContent(string id)
         {
             return _contents.ContainsKey(id) ? _contents[id] : null;

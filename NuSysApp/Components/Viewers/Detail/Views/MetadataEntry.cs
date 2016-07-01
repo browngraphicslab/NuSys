@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.UI;
 using Windows.UI.Xaml;
 using SharpDX.Direct2D1;
 
@@ -16,11 +15,9 @@ namespace NuSysApp
     public class MetadataEntry
     {
         public string Key { get; set; }
-        public string Value { get; set; }
-        public Visibility TextBlockVisiblility => Mutability ? Visibility.Collapsed : Visibility.Visible;
-        public Visibility TextBoxVisiblility => Mutability ? Visibility.Visible : Visibility.Collapsed;
-        public bool Mutability { get; set; }
-        public Windows.UI.Xaml.Media.SolidColorBrush Brush { get; set; }
+        public List<string> Values { get; set; }       
+        public MetadataMutability Mutability { get; set; }
+        //public Windows.UI.Xaml.Media.SolidColorBrush Brush { get; set; }
 
         /// <summary>
         /// Creates a meta data entry with a key, value, mutability, and brush (based on mutability)
@@ -28,19 +25,29 @@ namespace NuSysApp
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="mutability"></param>
-        public MetadataEntry(string key, string value, bool mutability)
+        public MetadataEntry(string key, List<string> values, MetadataMutability mutability)
         {
             Key = key;
-            Value = value;
+            Values = values;
             Mutability = mutability;
-            Brush = new Windows.UI.Xaml.Media.SolidColorBrush(Colors.DarkGray);
-            if (!mutability)
+            /*
+            Mutability = MetadataMutability.IMMUTABLE;
+            if (mutability)
             {
-                // On Wednesdays, we code in pink
-                Brush.Color = Colors.DarkMagenta;
-                Brush.Opacity = .15;
-            }
+                Mutability = MetadataMutability.MUTABLE; 
+            }*/
+
+
+
         }
+    }
+
+    /// <summary>
+    /// Enum to describe mutability of a metadata entry
+    /// </summary>
+    public enum MetadataMutability
+    {
+        MUTABLE,IMMUTABLE
     }
 
 }

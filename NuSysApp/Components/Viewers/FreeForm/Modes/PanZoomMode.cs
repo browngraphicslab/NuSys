@@ -64,7 +64,7 @@ namespace NuSysApp
             var atoms = vm.AtomViewList.ToArray();
             foreach (var frameworkElement in atoms)
             {
-                var dc = (ElementViewModel) frameworkElement.DataContext;
+                var dc = frameworkElement.DataContext as ElementViewModel;
                 if (dc == null)
                     continue;
     

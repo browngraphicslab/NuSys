@@ -1,29 +1,23 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.IO;
 using System.Globalization;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using Windows.Storage;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using Microsoft.ApplicationInsights.Extensibility;
-using MyToolkit.Utilities;
 using Newtonsoft.Json;
-using NuSysApp;
-using NuSysApp.Util;
 using Windows.UI.Xaml.Input;
+using Newtonsoft.Json.Linq;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -44,16 +38,19 @@ namespace NuSysApp
 
         public static bool TEST_LOCAL_BOOLEAN = false;
 
-        public static bool IS_HUB = false;
+        public static bool IS_HUB = true;
 
         private static IEnumerable<Message> _firstLoadList;
         private bool _loggedIn = false;
         private bool _isLoaded = false;
 
+        private static string LoginCredentialsFilePath;
+
         private HashSet<string> _preloadedIDs = new HashSet<string>();
         public WaitingRoomView()
         {
             this.InitializeComponent();
+            LoginCredentialsFilePath = StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp).Result.Path + "\\LoginInfo.json";
             //waitingroomanimation.Begin();
 
             //TelemetryConfiguration.Active.TelemetryChannel.DeveloperMode = true;
@@ -84,6 +81,7 @@ namespace NuSysApp
             SlideOutLogin.Completed += SlideOutLoginComplete;
 
             AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(Prresseed), true);
+            AutoLogin();
         }
 
         private void SlideOutLoginComplete(object sender, object e)
@@ -197,6 +195,272 @@ namespace NuSysApp
         private async void LoginButton_OnClick(object sender, RoutedEventArgs e)
         {
             Login(false);
+        }
+
+        private async void AutoLogin()
+        {
+            Task.Run(async delegate
+            {
+                if (File.Exists(LoginCredentialsFilePath))
+                {
+                    await UITask.Run(async delegate { 
+                    Tuple<string, string> creds = this.GetLoginCredentials();
+
+                    try
+                    {
+                        JsonSerializerSettings settings = new JsonSerializerSettings
+                        {
+                            StringEscapeHandling = StringEscapeHandling.EscapeNonAscii
+                        };
+                        var cred = new Dictionary<string, string>();
+
+                        //cred["user"] = Convert.ToBase64String(Encrypt(usernameInput.Text));
+
+
+                        cred["user"] = creds.Item1;
+                        cred["pass"] = creds.Item2;
+                        var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/login/";
+                        var client = new HttpClient(
+                            new HttpClientHandler
+                            {
+                                ClientCertificateOptions = ClientCertificateOption.Automatic
+                            });
+                        string getData;
+                        var getResponse = await client.GetAsync(url);
+                        using (var content = getResponse.Content)
+                        {
+                            getData = await content.ReadAsStringAsync();
+                        }
+                        try
+                        {
+                            var timestamp = long.Parse(getData);
+                            cred["timestamp"] = timestamp.ToString();
+                        }
+                        catch (Exception longParseException)
+                        {
+                            throw new Exception("error trying to parse timestamp to long");
+                        }
+
+                        string data;
+                        var text = JsonConvert.SerializeObject(cred, settings);
+                        var response =
+                            await
+                                client.PostAsync(new Uri(url), new StringContent(text, Encoding.UTF8, "application/xml"));
+                        using (var content = response.Content)
+                        {
+                            data = await content.ReadAsStringAsync();
+                        }
+                        bool validCredentials;
+                        string serverSessionId;
+                        string userID = "";
+                        try
+                        {
+                            XmlDocument doc = new XmlDocument();
+                            doc.LoadXml(data);
+                            var dict =
+                                JsonConvert.DeserializeObject<Dictionary<string, string>>(doc.ChildNodes[0].InnerText);
+                            validCredentials = bool.Parse(dict["valid"]);
+                            if (dict.ContainsKey("user_id"))
+                            {
+                                userID = dict["user_id"].ToString();
+                            }
+                            serverSessionId = dict.ContainsKey("server_session_id") ? dict["server_session_id"] : "";
+                        }
+                        catch (Exception boolParsException)
+                        {
+                            Debug.WriteLine("error parsing bool and serverSessionId returned from server");
+                            validCredentials = false;
+                            serverSessionId = null;
+                        }
+                        if (validCredentials)
+                        {
+                            ServerSessionID = serverSessionId;
+                            try
+                            {
+                                await SessionController.Instance.NuSysNetworkSession.Init();
+                                SessionController.Instance.LocalUserID = userID;
+
+                                SessionController.Instance.ContentController.OnNewContent +=
+                                    ContentControllerOnOnNewContent;
+
+                                NewWorkspaceButton.IsEnabled = true;
+                                _loggedIn = true;
+                                if (_isLoaded)
+                                {
+                                    UITask.Run(delegate
+                                    {
+                                        JoinWorkspaceButton.Content = "Enter";
+                                        JoinWorkspaceButton.IsEnabled = true;
+                                        JoinWorkspaceButton.Visibility = Visibility.Visible;
+                                    });
+                                }
+                                LoginButton.IsEnabled = false;
+                                SlideOutLogin.Begin();
+                                SlideInWorkspace.Begin();
+                                await UITask.Run(async delegate
+                                {
+                                    UserName = userID;
+                                    if (userID.ToLower() != "rosemary" && userID.ToLower() != "rms" &&
+                                        userID.ToLower() != "gfxadmin")
+                                    {
+                                        foreach (var box in List.Items)
+                                        {
+                                            if ((box as CollectionTextBox).MadeByRosemary)
+                                            {
+                                                List.Items.Remove(box);
+                                            }
+                                        }
+                                    }
+                                });
+                                await Task.Run(async delegate
+                                {
+                                    var dictionaries =
+                                        await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
+                                    foreach (var kvp in dictionaries)
+                                    {
+                                        var id = (string) kvp.Value["id"];
+                                        //var element = new LibraryElementModel(kvp.Value);
+
+                                        bool favorited = false;
+                                        var metadata =
+                                            new Dictionary<string, MetadataEntry>();
+                                        var dict = kvp.Value;
+                                        var message = new Message(dict);
+                                        string title = null;
+                                        ElementType type = ElementType.Text;
+                                        string timestamp = "";
+                                        string creator = null;
+                                        string serverUrl = null;
+                                        if (dict.ContainsKey("library_element_creation_timestamp"))
+                                        {
+                                            timestamp = dict["library_element_creation_timestamp"].ToString();
+                                        }
+                                        if (dict.ContainsKey("favorited") &&
+                                            bool.Parse(dict["favorited"].ToString()) == true)
+                                        {
+                                            favorited = true;
+                                        }
+                                        if (dict.ContainsKey("metadata"))
+                                        {
+
+                                            if (dict["metadata"] != null)
+                                            {
+                                                metadata =
+                                                    JsonConvert
+                                                        .DeserializeObject<Dictionary<string, MetadataEntry>>(
+                                                            dict["metadata"].ToString());
+                                            }
+
+                                        }
+
+                                        if (dict.ContainsKey("creator_user_id"))
+                                        {
+                                            creator = dict["creator_user_id"].ToString();
+                                        }
+                                        if (dict.ContainsKey("title"))
+                                        {
+                                            title = (string) dict["title"]; // title
+                                        }
+                                        if (dict.ContainsKey("server_url"))
+                                        {
+                                            serverUrl = dict["server_url"].ToString();
+                                        }
+                                        if (dict.ContainsKey("type"))
+                                        {
+                                            try
+                                            {
+                                                type =
+                                                    (ElementType)
+                                                        Enum.Parse(typeof(ElementType), (string) dict["type"], true);
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                continue;
+                                            }
+                                        }
+
+                                        LibraryElementModel element;
+                                        if (type == ElementType.Collection)
+                                        {
+                                            element = new CollectionLibraryElementModel(id, metadata, title, favorited);
+                                        }
+                                        else
+                                        {
+                                            element = new LibraryElementModel(id, type, metadata, title, favorited);
+                                        }
+                                        element.UnPack(message);
+                                        element.Creator = creator;
+                                        element.Timestamp = timestamp;
+                                        element.ServerUrl = serverUrl;
+                                        if (SessionController.Instance.ContentController.GetContent(id) == null)
+                                        {
+                                            SessionController.Instance.ContentController.Add(element);
+                                        }
+                                        
+                                        
+
+                                    }
+                                    _isLoaded = true;
+                                    if (_loggedIn)
+                                    {
+                                        UITask.Run(delegate
+                                        {
+                                            JoinWorkspaceButton.IsEnabled = true;
+                                            JoinWorkspaceButton.Content = "Enter";
+                                            JoinWorkspaceButton.Visibility = Visibility.Visible;
+                                        });
+                                        if (!File.Exists(LoginCredentialsFilePath))
+                                        {
+                                            this.SaveLoginInfo(cred["user"], cred["pass"]);
+                                        }
+                                    }
+                                });
+                            }
+                            catch (ServerClient.IncomingDataReaderException loginException)
+                            {
+                                loggedInText.Text = "Log in failed!";
+                                //     throw new Exception("Your account is probably already logged in");
+                            }
+                        }
+                        else
+                        {
+                            loggedInText.Text = "Log in failed!";
+                            /*
+                        if (!createNewUser) { 
+                            Login(true);
+                        }*/
+                        }
+
+                    }
+                    catch (HttpRequestException h)
+                    {
+                        Debug.WriteLine("cannot connect to server");
+                    }
+                })
+                ;
+            }
+            });
+        }
+
+        private Tuple<string, string> GetLoginCredentials()
+        {
+            return Task.Run(async delegate
+            {
+                JObject o1 = JObject.Parse(File.ReadAllText(LoginCredentialsFilePath));
+                var username = o1.GetValue("Username").ToString();
+                var password = o1.GetValue("Password").ToString();
+
+
+
+                Tuple<string, string> credentials = new Tuple<string, string>(username, password);
+                return credentials;
+            }).Result;
+        }
+
+        private void SaveLoginInfo(string username, string password)
+        {
+            JObject loginCredentials = new JObject(new JProperty("Username", username), new JProperty("Password", password));
+            File.WriteAllText(LoginCredentialsFilePath, loginCredentials.ToString());
         }
 
         private async void Login(bool createNewUser)
@@ -313,7 +577,7 @@ namespace NuSysApp
                                 //var element = new LibraryElementModel(kvp.Value);
 
                                 bool favorited = false;
-                                Dictionary<String, Tuple<string, Boolean>> metadata = new Dictionary<string, Tuple<string, Boolean>>();
+                                var metadata = new Dictionary<string, MetadataEntry>();
                                 var dict = kvp.Value;
                                 var message = new Message(dict);
                                 string title = null;
@@ -334,7 +598,7 @@ namespace NuSysApp
 
                                     if (dict["metadata"] != null)
                                     {
-                                        metadata = JsonConvert.DeserializeObject<Dictionary<string, Tuple<string, Boolean>>>(dict["metadata"].ToString());
+                                        metadata = JsonConvert.DeserializeObject<Dictionary<string, MetadataEntry>>(dict["metadata"].ToString());
                                     }
 
                                 }
@@ -370,30 +634,45 @@ namespace NuSysApp
                                 }
                                 else if (type == ElementType.Link)
                                 {
-                                    string hexColor = dict["color"] as string;
-                                    byte a = byte.Parse(hexColor.Substring(1, 2), NumberStyles.HexNumber);
-                                    byte r = byte.Parse(hexColor.Substring(3, 2), NumberStyles.HexNumber);
-                                    byte g = byte.Parse(hexColor.Substring(5, 2), NumberStyles.HexNumber);
-                                    byte b = byte.Parse(hexColor.Substring(7, 2), NumberStyles.HexNumber);
-
-                                    var color = Color.FromArgb(a, r, g, b);
-                                    element = new LinkLibraryElementModel(dict[ "id1"] as string, dict["id2"] as string, id, color, type, metadata, title, favorited);
+                                    Color color;
+                                    if (dict.ContainsKey("color"))
+                                    {
+                                        string hexColor = dict["color"] as string;
+                                        byte a = byte.Parse(hexColor.Substring(1, 2), NumberStyles.HexNumber);
+                                        byte r = byte.Parse(hexColor.Substring(3, 2), NumberStyles.HexNumber);
+                                        byte g = byte.Parse(hexColor.Substring(5, 2), NumberStyles.HexNumber);
+                                        byte b = byte.Parse(hexColor.Substring(7, 2), NumberStyles.HexNumber);
+                                        Color.FromArgb(a, r, g, b);
+                                    }
+                                    color = Colors.Tomato;
+                                    if (dict.ContainsKey("id1") && dict.ContainsKey("id2"))
+                                    {
+                                        element = new LinkLibraryElementModel(dict["id1"] as string,
+                                            dict["id2"] as string, id, color, type, metadata, title, favorited);
+                                    }
+                                    else
+                                    {
+                                        element = null;
+                                    }
                                 }
                                 else
                                 {
                                     element = new LibraryElementModel(id, type, metadata, title, favorited);
                                 }
-                                element.UnPack(message);
-                                element.Creator = creator;
-                                element.Timestamp = timestamp;
-                                element.ServerUrl = serverUrl;
-                                if (SessionController.Instance.ContentController.GetContent(id) == null)
+                                if (element != null)
                                 {
-                                    SessionController.Instance.ContentController.Add(element);
-                                }
-                                if (type == ElementType.Link)
-                                {
-                                    SessionController.Instance.LinkController.AddLink(id);
+                                    element.UnPack(message);
+                                    element.Creator = creator;
+                                    element.Timestamp = timestamp;
+                                    element.ServerUrl = serverUrl;
+                                    if (SessionController.Instance.ContentController.GetContent(id) == null)
+                                    {
+                                        SessionController.Instance.ContentController.Add(element);
+                                    }
+                                    if (type == ElementType.Link)
+                                    {
+                                        SessionController.Instance.LinkController.AddLink(id);
+                                    }
                                 }
                             }
                             _isLoaded = true;
@@ -404,6 +683,10 @@ namespace NuSysApp
                                     JoinWorkspaceButton.Content = "Enter";
                                     JoinWorkspaceButton.Visibility = Visibility.Visible;
                                 });
+                                if (!File.Exists(LoginCredentialsFilePath))
+                                {
+                                    this.SaveLoginInfo(cred["user"], cred["pass"]);
+                                }
                             }
                         });
                     }

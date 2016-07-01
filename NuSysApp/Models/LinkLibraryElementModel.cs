@@ -14,7 +14,7 @@ namespace NuSysApp
         public string InAtomId { get; set; }
         public string OutAtomId { get; set; }
         public Color Color { get; set; }
-        public LinkLibraryElementModel(string id1, string id2, string id, Color c, ElementType elementType = ElementType.Link, Dictionary<string, Tuple<string, Boolean>> metadata = null, string contentName = null, bool favorited = false): base(id, elementType, metadata, contentName, favorited)
+        public LinkLibraryElementModel(string id1, string id2, string id, Color c, ElementType elementType = ElementType.Link, Dictionary<string, MetadataEntry> metadata = null, string contentName = null, bool favorited = false): base(id, elementType, metadata, contentName, favorited)
 
         {
             InAtomId = id1;

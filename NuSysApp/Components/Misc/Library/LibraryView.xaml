@@ -247,7 +247,16 @@
                 <RowDefinition Height="42"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid x:Name="xHeaderRow" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                
+                <Border Grid.Row="0"  HorizontalAlignment="Right" Background="Transparent"  x:Name="xSearchExportButton" ManipulationMode="TranslateX,TranslateY" ManipulationStarted="XSearchExportButton_OnManipulationStarted" ManipulationDelta="XSearchExportButton_OnManipulationDelta" ManipulationCompleted="XSearchExportButton_OnManipulationCompleted" PointerPressed="XSearchExportButton_OnPointerPressed">
+                    <TextBlock Text="&#xE8AD;" FontFamily="Segoe MDL2 Assets" Margin="10" Foreground="White"></TextBlock>
+                </Border>
+                
+                <StackPanel  Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
                     <StackPanel.RenderTransform>
                         <TranslateTransform Y="3"></TranslateTransform>
                     </StackPanel.RenderTransform>
