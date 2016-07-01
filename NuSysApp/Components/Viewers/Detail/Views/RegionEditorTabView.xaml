@@ -9,81 +9,74 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <Style TargetType="Button" x:Key="FloatingButton" >
+        <Setter Property="Template" >
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid Width="70" Height="80">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="PointerOver">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Ellipse"
+                                                                   Storyboard.TargetProperty="Opacity">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value=".9" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Ellipse"
+                                                                           Storyboard.TargetProperty="Opacity">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1"></DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Ellipse Height="54" Width ="54" Fill="{StaticResource color3}" VerticalAlignment="Bottom" x:Name="Ellipse" Opacity="1" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="2" HorizontalAlignment="Center"/>
+                        <ContentPresenter></ContentPresenter>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    </ResourceDictionary>
+    </UserControl.Resources>
 
+    
 
-    <!--<Grid>
+    <Grid x:Name="xMainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
-
         </Grid.RowDefinitions>
-
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"></ColumnDefinition>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Grid>
-                <ContentPresenter Grid.Column="0" Content="{Binding RegionView}" x:Name ="xContentPresenter" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"  VerticalAlignment="Stretch"></ContentPresenter>
-                <ItemsControl>
-                    
-                </ItemsControl>
-            </Grid>-->
-    <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="70"></ColumnDefinition>
             <ColumnDefinition Width="2*"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition x:Name="xSecondColumn" Width="*"></ColumnDefinition>
 
         </Grid.ColumnDefinitions>
-        <ContentPresenter Grid.Column="0" Content="{Binding RegionView}" x:Name ="xContentPresenter" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"  VerticalAlignment="Stretch" Margin="0,0,10,0" ></ContentPresenter>
-
-        <Grid  Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="3*"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
-
-            </Grid.RowDefinitions>
-            
-            
-            
-            <ListView Grid.Row="0" ItemsSource="{Binding RegionCollection}"  VerticalContentAlignment="Top" >
-
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
-                    </Style>
-                </ListView.ItemContainerStyle>
 
 
-                <ListView.Header>
-                    <Grid Background="Gray" BorderBrush="Black" BorderThickness="1.0"  Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Center" Padding="0,5,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
 
-                        <Grid Grid.Column="0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Padding="10,0,0,0" Text="Region" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center"></TextBlock>
-                        </Grid>
-                    </Grid>
-                </ListView.Header>
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="local:Region">
-                        <Grid x:Name="RegionListViewItem" PointerPressed="RegionListViewItem_PointerPressed" HorizontalAlignment="Stretch" Height="30" VerticalAlignment="Center" PointerEntered="XListViewItemGrid_OnPointerEnterExit" PointerExited="XListViewItemGrid_OnPointerEnterExit" >
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="250" ></ColumnDefinition>
-                                <ColumnDefinition Width="50"></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-                            <TextBox Grid.Column="0" Text="{Binding Name}" PlaceholderText="Enter a name" Width="250" HorizontalAlignment="Center" HorizontalContentAlignment="Center" BorderThickness="0"  VerticalAlignment="Center" VerticalContentAlignment="Center"></TextBox>
-                            <Button Grid.Column="1" Content="X" Click="DeleteRegion_Clicked"  Visibility="Visible" PointerExited="DeleteButton_OnPointerExited"></Button>
-                        </Grid>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-            <Button Grid.Row="1" x:Name="xCreateReagionButton" Click="AddRegion_Clicked" HorizontalAlignment="Right"  Height="40" Width="50" Margin="0,10,0,0"/>
 
-        </Grid>
+        <StackPanel Grid.Column="0" x:Name="xButtonStack" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Button x:Name="xAddRegion" Style="{StaticResource FloatingButton}" BorderBrush="{StaticResource color2}" Click="AddRegion_Clicked">
+                    <Button.Content>
+                        <StackPanel Orientation="Vertical">
+                            <Image x:Name="icon" Width="30" Height="30" Margin="0,36,0,0" VerticalAlignment="Stretch" Stretch="Uniform" HorizontalAlignment="Stretch" Source="ms-appx:///Assets/icon_plus.png"></Image>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+        </StackPanel>
+        
+        <ContentPresenter Grid.Column="1" Content="{Binding RegionView}" x:Name ="xContentPresenter" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"  VerticalAlignment="Stretch" Margin="0,0,10,0" ></ContentPresenter>
+
+        <ContentPresenter Grid.Column="2" x:Name="xListViewPresenter"></ContentPresenter>
+        
 
 
 

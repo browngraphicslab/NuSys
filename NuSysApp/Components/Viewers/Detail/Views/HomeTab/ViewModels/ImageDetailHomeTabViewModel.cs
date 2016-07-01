@@ -81,8 +81,10 @@ namespace NuSysApp
                 return 0;
             }
             //return view.ActualHeight;
-            return view.GetImgHeight();
+            return view.ActualHeight;
         }
+
+
         public double GetWidth()
         {
             var view = (View as ImageDetailHomeTabView);
@@ -91,11 +93,17 @@ namespace NuSysApp
                 return 0;
             }
            //return view.ActualWidth;
-            return view.GetImgWidth();
+            return view.ActualWidth;
         }
         public override void SetExistingRegions(HashSet<Region> regions)
         {
+            if (regions == null)
+            {
+                return;
+            }
+
             RegionViews.Clear();
+
             foreach (var regionModel in regions)
             {
                 var imageRegion = regionModel as RectangleRegion;
@@ -103,8 +111,19 @@ namespace NuSysApp
                 {
                     return;
                 }
+                RegionController regionController;
+                if (SessionController.Instance.RegionsController.GetRegionController(imageRegion.Id) == null)
+                {
+                    var factory = new RegionControllerFactory();
+                    regionController = factory.CreateFromSendable(regionModel);
+                    SessionController.Instance.RegionsController.Add(regionController);
+                }
+                else {
+                    regionController = SessionController.Instance.RegionsController.GetRegionController(imageRegion.Id);
+                }
 
-                var regionController = new RegionController(imageRegion);
+
+                //var regionController = new RegionController(imageRegion);
                 var vm = new ImageRegionViewModel(imageRegion, LibraryElementController, regionController, this);
                 if (!Editable)
                     vm.Editable = false;
@@ -121,6 +140,27 @@ namespace NuSysApp
         {
             var region = new RectangleRegion(new Point(.25, .25), new Point(.75, .75));
             return region;
+        }
+
+        public double GetImageWidth()
+        {
+            var view = (View as ImageDetailHomeTabView);
+            if (view == null)
+            {
+                return 0;
+            }
+            //return view.ActualHeight;
+            return view.GetImgWidth();
+        }
+        public double GetImageHeight()
+        {
+            var view = (View as ImageDetailHomeTabView);
+            if (view == null)
+            {
+                return 0;
+            }
+            //return view.ActualHeight;
+            return view.GetImgHeight();
         }
     }
 }
