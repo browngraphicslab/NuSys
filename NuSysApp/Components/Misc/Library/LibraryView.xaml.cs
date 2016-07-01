@@ -268,6 +268,18 @@ namespace NuSysApp
                 else if (Constants.WordFileTypes.Contains(fileType))
                 {
                     elementType = ElementType.Word;
+                    
+                    byte[] fileBytes = null;
+                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                    {
+                        fileBytes = new byte[stream.Size];
+                        using (DataReader reader = new DataReader(stream))
+                        {
+                            await reader.LoadAsync((uint)stream.Size);
+                            reader.ReadBytes(fileBytes);
+                        }
+                    }
+                    data = Convert.ToBase64String(fileBytes);
                 }
                 else if (Constants.PowerpointFileTypes.Contains(fileType))
                 {
