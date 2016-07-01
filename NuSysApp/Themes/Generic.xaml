@@ -75,8 +75,11 @@
                                                 <TextBlock Text="Present" TextAlignment="Center" Foreground="#9CC5C2" FontSize="12"></TextBlock>
                                             </StackPanel>
                                         </Button>
-                                        <Button x:Name ="ExplorationMode" Background="DarkSeaGreen"   Margin="10,280,0,0" Height="40" Width="40" FontFamily="Segoe MDL2 Assets"  Content="&#xE128;">
-                                            
+                                        <Button x:Name ="ExplorationMode" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,280,0,0">
+                                            <StackPanel>
+                                                <Image Source="ms-appx:///Assets/node icons/icon_exploration.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                                                <TextBlock Text="Explore" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
+                                            </StackPanel>
                                         </Button>
 
                                     </Canvas>

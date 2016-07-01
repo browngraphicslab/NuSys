@@ -158,7 +158,7 @@ namespace NuSysApp
           
 
 
-              title = (TextBox)GetTemplateChild("xTitle");
+            title = (TextBox)GetTemplateChild("xTitle");
             title.KeyUp += TitleOnTextChanged;
 
             if (vm.Controller.LibraryElementModel != null)

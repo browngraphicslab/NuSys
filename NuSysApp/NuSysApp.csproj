@@ -182,6 +182,7 @@
     <Content Include="Assets\menububblebtm.png" />
     <Content Include="Assets\menu_bubble.png" />
     <Content Include="Assets\node icons\delete.png" />
+    <Content Include="Assets\node icons\icon_exploration.png" />
     <Content Include="Assets\node icons\icon_duplicate.png" />
     <Content Include="Assets\node icons\icon_enter.png" />
     <Content Include="Assets\node icons\icon_freeform.png" />
