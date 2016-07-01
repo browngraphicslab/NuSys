@@ -80,25 +80,32 @@ namespace NuSysApp
             collection.Visibility = Visibility.Collapsed;
             IconImage.Visibility = Visibility.Collapsed;
 
+            /*
             // move this code to a switch statement if we eventually don't support icons for certain types
             var iconUri = SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId).SmallIconUri;
             IconImage.Source = new BitmapImage(iconUri);
             IconImage.Visibility = Visibility.Visible;
+            */
 
-            /*
             switch (element.Type)
             {
+                // icons supported
                 case ElementType.Image:
                 case ElementType.Video:
                     var iconUri = SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId).SmallIconUri;
                     IconImage.Source = new BitmapImage(iconUri);
                     IconImage.Visibility = Visibility.Visible;
                     break;
+                // no icon support
+                case ElementType.PDF:
+                case ElementType.Audio:
+                case ElementType.Text:
                 default:
                     SwitchType(element.Type);
                     break;
             }
-            */
+
+
 
 
         }

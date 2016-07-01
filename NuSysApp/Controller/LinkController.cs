@@ -14,6 +14,9 @@ namespace NuSysApp
         public delegate void NewLinkEventHandler(LinkLibraryElementModel link);
         public event NewLinkEventHandler OnNewLink;
 
+        public delegate void RemoveLinkEventHandler(LinkLibraryElementModel link);
+        public event RemoveLinkEventHandler OnLinkRemoved;
+
         public HashSet<string> GetLinkedIds(string id)
         {
             if (_links.ContainsKey(id))
@@ -71,6 +74,26 @@ namespace NuSysApp
             var request = new NewLinkRequest(anotherId, otherId, SessionController.Instance.ContentController.GetContent(anotherId)?.Creator, 
                 contentId, regionView, rectangle, inFGDictionary, outFGDictionary);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+        }
+
+        public void ChangeLinkTitle(string linkLibraryElementId, string title)
+        {
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(linkLibraryElementId);
+            controller.SetTitle(title);
+        }
+
+        public void ChangeLinkTags(string linkLibraryElementId, HashSet<string> tags)
+        {
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(linkLibraryElementId);
+
+            foreach (var tag in tags)
+            {
+                if (!controller.LibraryElementModel.Keywords.Contains(new Keyword(tag)))
+                {
+                    controller.AddKeyword(new Keyword(tag));
+                }
+            }
+            
         }
     }
 }

@@ -7,7 +7,7 @@ using Windows.Foundation;
 
 namespace NuSysApp
 {
-    public class RegionController : IMetadatable
+    public class RegionController : IMetadatable, ILinkable
     {
         public Region Model;
 
@@ -84,6 +84,51 @@ namespace NuSysApp
         {
             RegionUpdated?.Invoke(this, region);
             SessionController.Instance.NuSysNetworkSession.UpdateRegion(region);
+        }
+
+        public void AddNewLink(string idToLinkTo)
+        {
+             SessionController.Instance.LinkController.RequestLink(this.Model.Id, idToLinkTo);
+        }
+
+        public void RemoveLink(string linkID)
+        {
+            SessionController.Instance.LinkController.RemoveLink(linkID);
+        }
+
+        public void ChangeLinkTitle(string linkLibraryElementID, string title)
+        {
+            SessionController.Instance.LinkController.ChangeLinkTitle(linkLibraryElementID, title);
+        }
+
+        public void ChangeLinkTags(string linkLibraryElementID, HashSet<String> tags)
+        {
+            SessionController.Instance.LinkController.ChangeLinkTags(linkLibraryElementID, tags);
+        }
+
+        void ILinkable.AddNewLink(string idToLinkTo)
+        {
+            throw new NotImplementedException();
+        }
+
+        void ILinkable.RemoveLink(string linkID)
+        {
+            throw new NotImplementedException();
+        }
+
+        void ILinkable.ChangeLinkTitle()
+        {
+            throw new NotImplementedException();
+        }
+
+        void ILinkable.ChangeLinkTags()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<string> GetAllLinks()
+        {
+            return new List<string>();
         }
     }
 }

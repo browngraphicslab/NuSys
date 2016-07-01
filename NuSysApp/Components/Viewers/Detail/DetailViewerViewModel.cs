@@ -44,8 +44,9 @@ namespace NuSysApp
         }
 
         public ObservableCollection<FrameworkElement> Tags { get; set; }
-        private ObservableCollection<IMetadatable> _tabs;
 
+        // Tabs keeps track of which tabs are open in the DV
+        private ObservableCollection<IMetadatable> _tabs;
         public ObservableCollection<IMetadatable> Tabs
         {
             get { return _tabs; }
@@ -56,6 +57,8 @@ namespace NuSysApp
             }
         }
 
+
+        //Visibility binding for the DV tabs. Visible when 2+ tabs.
         private Visibility _tabVisibility;
 
         public Visibility TabVisibility
@@ -67,8 +70,11 @@ namespace NuSysApp
                 RaisePropertyChanged("TabVisibility");
             }
         }
+        // Tab Pane Height is a reference to the height of the Tab pane 
         public double TabPaneHeight { get; set; }
         private double _tabHeight;
+
+        // TabHeight controls the standard height that tabs have. It is some factor of the TabPaneHeight
         public double TabHeight
         {
             get { return _tabHeight; }
