@@ -42,6 +42,7 @@ namespace NuSysApp
         public static readonly DependencyProperty BubbleTopProperty = DependencyProperty.RegisterAttached("BubbleLocation", typeof(bool), typeof(TextInputBlock), null);
         public static readonly DependencyProperty HeightProperty = DependencyProperty.RegisterAttached("SetHeight", typeof(double), typeof(TextInputBlock), null);
         public static readonly DependencyProperty ButtonBgProperty = DependencyProperty.RegisterAttached("ButtonBg", typeof(Windows.UI.Color), typeof(TextInputBlock), null);
+        public static readonly DependencyProperty ButtonStrokeProperty = DependencyProperty.RegisterAttached("ButtonStroke", typeof(Windows.UI.Color), typeof(TextInputBlock), null);
         public static readonly DependencyProperty TextProperty = DependencyProperty.RegisterAttached("Text", typeof(string), typeof(TextInputBlock), null);
 
         public TextInputBlock()
@@ -73,6 +74,15 @@ namespace NuSysApp
                // TextButton.Background = new SolidColorBrush(value);
                 RecordButton.Background = new SolidColorBrush(value);
                 InkButton.Background = new SolidColorBrush(value);
+            }
+        }
+
+        public Windows.UI.Color ButtonStroke
+        {
+            set
+            {
+                RecordButton.Foreground = new SolidColorBrush(value);
+                InkButton.Foreground = new SolidColorBrush(value);
             }
         }
 

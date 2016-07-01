@@ -17,16 +17,17 @@
     </UserControl.Resources>
     
     <Canvas x:Name="xWrapper" Background="Transparent"  HorizontalAlignment="Left" Visibility="Visible">
-        <Canvas x:Name="xAddNodeMenu">
+        <Canvas x:Name="xAddNodeMenu" Width="400">
+            <Canvas.RenderTransform>
+                <TranslateTransform x:Name="addMenuTransform" X="-165" Y="-130"></TranslateTransform>
+            </Canvas.RenderTransform>
         <Image Source="ms-appx:///Assets/menububble2.png" Width="400">
-                <Image.RenderTransform>
-                    <TranslateTransform X="-115" Y =" -90"></TranslateTransform>
-            </Image.RenderTransform>
+
         </Image>
 
             <StackPanel>
                 <StackPanel.RenderTransform>
-                    <TranslateTransform X="-90" Y="-80"></TranslateTransform>
+                    <TranslateTransform X="40" Y="40"></TranslateTransform>
                 </StackPanel.RenderTransform>
                 <StackPanel Orientation="Horizontal">
                     <Grid x:Name="btnRecording" Width="60" Height="60"  Margin="10,0,10,0" Background="Transparent">
@@ -69,7 +70,7 @@
                                 <ScaleTransform ScaleX="2" ScaleY="2"></ScaleTransform>
                             </Canvas.RenderTransform>
 
-                            <Image Height="25" Width="25" Stretch="Uniform" Source="ms-appx:///Assets/tool_icon.png" ></Image>                            
+                            <Image Height="20" Width="20" Margin="-5,-2,0,0"  Stretch="Uniform" Source="ms-appx:///Assets/tool_icon.png" ></Image>                            
                         </Canvas>
                     </Grid>
                 </StackPanel>
