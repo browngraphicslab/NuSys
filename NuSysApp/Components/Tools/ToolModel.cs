@@ -6,33 +6,27 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class ToolModel
+    public abstract class ToolModel
     {
-        public enum FilterTitle
+        public enum ToolFilterTypeTitle
         {
             Title,
             Type,
             Creator,
             Date,
+            AllMetadata,
             MetadataKeys,
             MetadataValues
         }
-        public FilterTitle Filter { get; private set; }
         public HashSet<string> LibraryIds { get; private set; }
-        public string Selection { get; private set; }
         public HashSet<string> ParentIds { get; private set; }
-
+        public bool Selected { get; private set; }
         public string Id { get; set; }
-
         public ToolModel()
         {
             Id = SessionController.Instance.GenerateId();
             ParentIds = new HashSet<string>();
             LibraryIds = new HashSet<string>();
-        }
-        public void SetFilter(FilterTitle filter)
-        {
-            Filter = filter;
         }
 
         public void SetLibraryIds(HashSet<string> libraryIds)
@@ -87,9 +81,10 @@ namespace NuSysApp
             }
             return false;
         }
-        public void SetSelection(string selection)
+
+        public void SetSelected(bool selected)
         {
-            Selection = selection;
+            Selected = selected;
         }
     }
 }

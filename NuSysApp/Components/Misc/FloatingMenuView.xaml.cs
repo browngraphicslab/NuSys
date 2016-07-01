@@ -263,12 +263,13 @@ namespace NuSysApp
                 //    Width = 300,
                 //    Height = 300,
                 //})));
-                ToolModel model = new ToolModel();
-                ToolController controller = new ToolController(model);
-                ToolViewModel viewmodel = new ToolViewModel(controller);
-                TemporaryToolView view = new TemporaryToolView(viewmodel, pos.X, pos.Y);
+                //BasicToolModel model = new BasicToolModel();
+                //BasicToolController controller = new BasicToolController(model);
+                //BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
+                //TemporaryToolView view = new TemporaryToolView(viewmodel, pos.X, pos.Y);
+                ToolFilterView filter = new ToolFilterView(pos.X, pos.Y);
                 //rect.Background = new SolidColorBrush(Colors.Blue);
-                vm.AtomViewList.Add(view);
+                vm.AtomViewList.Add(filter);
 
             }
 

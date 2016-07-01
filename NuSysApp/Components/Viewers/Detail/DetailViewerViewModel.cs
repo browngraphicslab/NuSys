@@ -462,8 +462,4 @@ namespace NuSysApp
 
 
     }
-
-    internal class T
-    {
-    }
 }
