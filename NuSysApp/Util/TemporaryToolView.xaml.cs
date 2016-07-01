@@ -40,7 +40,7 @@ namespace NuSysApp
 
         private const int MinWidth = 250;
         private const int MinHeight = 300;
-        private const int  ListBoxHeightOffset = 175;
+        private const int ListBoxHeightOffset = 175;
 
         private double _x;
         private double _y;
@@ -68,6 +68,7 @@ namespace NuSysApp
             xUniqueButton.IsChecked = true;
             (PieChart.Series[0] as PieSeries).ItemsSource =
                     (DataContext as BasicToolViewModel).PieChartDictionary;
+            
 
         }
 
@@ -76,7 +77,7 @@ namespace NuSysApp
             if ((DataContext as BasicToolViewModel).Selection != null && ((DataContext as BasicToolViewModel).Controller as BasicToolController).Model.Selected && xPropertiesList.SelectedItems.Count == 0)
             {
                 xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
-                xPropertiesList.SelectedItem = (DataContext as BasicToolViewModel).Selection;
+                xPropertiesList.SelectedItem = GetListItem((DataContext as BasicToolViewModel).Selection);
                 xPropertiesList.SelectionChanged += XPropertiesList_OnSelectionChanged;
             }
 
@@ -326,22 +327,36 @@ namespace NuSysApp
             //_x = e.GetCurrentPoint(xCanvas).Position.X;
             //_y = e.GetCurrentPoint(xCanvas).Position.Y;
             //    e.Handled = true;
-            //    CapturePointer(e.Pointer);
+            //CapturePointer(e.Pointer);
+        }
+
+        public ToolItemTemplate GetListItem(string selectionText)
+        {
+            foreach (ToolItemTemplate item in xPropertiesList.Items)
+            {
+                if (item.Value.Equals(selectionText))
+                {
+                    return item;
+                }
+            }
+            return null;
         }
 
         private async void xList_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            _x = e.Position.X;
-            _y = e.Position.Y;
 
-            var el = (FrameworkElement)sender;
-            var x = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
-
+            //var x = e.OriginalSource as ListBox;
+            //var y = x.SelectedItems;
             if (xCanvas.Children.Contains(_dragItem))
                 xCanvas.Children.Remove(_dragItem);
 
+            xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
+            xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
+            xPropertiesList.SelectedItem = GetListItem(((sender as Grid).Children[0] as TextBlock).Text);
+            xPropertiesList.SelectionChanged += XPropertiesList_OnSelectionChanged;
+
+            _currentDragMode = DragMode.Filter;
             var button = xFilterElement;
-            double f = e.Position.X;
 
             var bmp = new RenderTargetBitmap();
             await bmp.RenderAsync(button);
@@ -351,25 +366,21 @@ namespace NuSysApp
             _dragItem.Height = 50;
             xCanvas.Children.Add(_dragItem);
             _dragItem.RenderTransform = new CompositeTransform();
-            (sender as FrameworkElement).AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta), true);
-            
+
             Canvas.SetZIndex(_dragItem, 3);
-            _dragItem.RenderTransform = new CompositeTransform();
             var t = (CompositeTransform)_dragItem.RenderTransform;
 
-            t.TranslateX += e.Position.X;
-            t.TranslateY += e.Position.Y;
-
-            //e.Handled = true;
+            t.TranslateX += e.Position.X - _dragItem.ActualWidth / 2;
+            t.TranslateY += e.Position.Y + _dragItem.ActualWidth / 2;
         }
 
         private void xList_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
 
-            var el = (FrameworkElement)sender;
-            var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
+            //var el = (FrameworkElement)sender;
+            //var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
 
-            var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(sp, null).Where(i => i is LibraryView);
+            //var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(sp, null).Where(i => i is LibraryView);
             //if (itemsBelow.Any())
             //{
             //    SessionController.Instance.SessionView.LibraryDraggingRectangle.Hide();
@@ -379,14 +390,18 @@ namespace NuSysApp
             //    SessionController.Instance.SessionView.LibraryDraggingRectangle.Show();
 
             //}
-            
-            var t = (CompositeTransform)_dragItem.RenderTransform;
+            if ((_dragItem.RenderTransform as CompositeTransform) != null)
+            {
+                var t = (CompositeTransform)_dragItem.RenderTransform;
+                var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
 
-            t.TranslateX += e.Delta.Translation.X;
-            t.TranslateY += e.Delta.Translation.Y;
+                t.TranslateX += (e.Delta.Translation.X) / zoom;
+                t.TranslateY += (e.Delta.Translation.Y) / zoom;
+                _x = t.TranslateX;
+                _y = t.TranslateY;
+            }
 
-            _x += e.Delta.Translation.X;
-            _y += e.Delta.Translation.Y;
+
 
 
 
@@ -395,14 +410,73 @@ namespace NuSysApp
 
         private async void xList_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-
-
-
-
-            if (_dragItem.Visibility == Visibility.Collapsed)
-                return;
-
             xCanvas.Children.Remove(_dragItem);
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            var el = (FrameworkElement)sender;
+            var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
+            var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(sp.X, sp.Y, 300, 300));
+
+            if (_currentDragMode == DragMode.Filter)
+            {
+                var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
+                var hitsStartList = hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList();
+                if (!hitsStartList.Any())
+                {
+                    hitsStartList = hitsStart.Where(uiElem => (uiElem is MetadataToolView)).ToList();
+                }
+                if (hitsStartList.Any())
+                {
+
+                    ToolViewModel toolViewModel;
+                    if ((hitsStartList.First() as TemporaryToolView) != null)
+                    {
+                        toolViewModel = (hitsStartList.First() as TemporaryToolView).DataContext as ToolViewModel;
+                    }
+                    else
+                    {
+                        toolViewModel = (hitsStartList.First() as MetadataToolView).DataContext as ToolViewModel;
+                    }
+                    if (toolViewModel != DataContext as ToolViewModel)
+                    {
+                        bool createsLoop = false;
+                        //checks if tools will create a loop, and prevent that from happening
+                        var controllers = new List<ToolController>((DataContext as ToolViewModel).Controller.Model.ParentIds.Select(item => ToolController.ToolControllers.ContainsKey(item) ? ToolController.ToolControllers[item] : null));
+
+                        while (controllers != null && controllers.Count != 0)
+                        {
+                            if (controllers.Contains(toolViewModel.Controller))
+                            {
+                                createsLoop = true;
+                                break;
+                            }
+                            var tempControllers = new List<ToolController>();
+                            foreach (var controller in controllers)
+                            {
+                                tempControllers = new List<ToolController>(tempControllers.Union(new List<ToolController>(
+                                        controller.Model.ParentIds.Select(
+                                            item =>
+                                                ToolController.ToolControllers.ContainsKey(item)
+                                                    ? ToolController.ToolControllers[item]
+                                                    : null))));
+                            }
+                            controllers = tempControllers;
+                        }
+                        if (createsLoop == false)
+                        {
+                            (DataContext as BasicToolViewModel).Selection = (((Grid)sender).Children[0] as TextBlock).Text;
+                            var linkviewmodel = new ToolLinkViewModel(this.DataContext as ToolViewModel, toolViewModel);
+                            var link = new ToolLinkView(linkviewmodel);
+                            Canvas.SetZIndex(link, Canvas.GetZIndex(this) - 1);
+                            wvm.AtomViewList.Add(link);
+                            toolViewModel.Controller.AddParent((DataContext as ToolViewModel).Controller);
+                        }
+
+                    }
+
+                }
+            }
+
+            //ReleasePointerCaptures();
 
             //var r = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(_x, _y));
             //await _library.AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type, element.LibraryElementId);
@@ -456,8 +530,8 @@ namespace NuSysApp
         {
             if (xPropertiesList.SelectedItems.Count == 1)
             {
-                (DataContext as BasicToolViewModel).Selection  = ((string)(xPropertiesList.SelectedItems[0]));
-                
+                (DataContext as BasicToolViewModel).Selection = (((ToolItemTemplate)(xPropertiesList.SelectedItems[0])).Value);
+
             }
         }
 
@@ -467,10 +541,10 @@ namespace NuSysApp
             Binding b = new Binding();
             b.Path = new PropertyPath("PropertiesToDisplayUnique");
             xPropertiesList.SetBinding(ListBox.ItemsSourceProperty, b);
-            
+
             if ((DataContext as BasicToolViewModel).Selection != null && xPropertiesList.SelectedItems.Count == 0)
             {
-                xPropertiesList.SelectedItem = (DataContext as BasicToolViewModel).Selection;
+                xPropertiesList.SelectedItem = GetListItem((DataContext as BasicToolViewModel).Selection);
             }
 
             PieChart.Visibility = Visibility.Collapsed;
@@ -486,13 +560,13 @@ namespace NuSysApp
 
             if ((DataContext as BasicToolViewModel).Selection != null && xPropertiesList.SelectedItems.Count == 0)
             {
-                xPropertiesList.SelectedItem = (DataContext as BasicToolViewModel).Selection;
+                xPropertiesList.SelectedItem = GetListItem((DataContext as BasicToolViewModel).Selection);
             }
 
             PieChart.Visibility = Visibility.Visible;
             xPropertiesList.Visibility = Visibility.Collapsed;
         }
-        
+
 
 
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -500,11 +574,11 @@ namespace NuSysApp
             if (SessionController.Instance.SessionView.IsPenMode)
                 return;
 
-            var vm = (BasicToolViewModel) this.DataContext;
+            var vm = (BasicToolViewModel)this.DataContext;
 
             var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
-            var resizeX = vm.Width + e.Delta.Translation.X/zoom;
-            var resizeY = vm.Height + e.Delta.Translation.Y/zoom;
+            var resizeX = vm.Width + e.Delta.Translation.X / zoom;
+            var resizeY = vm.Height + e.Delta.Translation.Y / zoom;
 
             if (resizeX > MinWidth && resizeY > MinHeight)
             {
@@ -548,10 +622,10 @@ namespace NuSysApp
         {
             if ((sender as PieSeries).SelectedItem != null)
             {
-                var selected = (sender as PieSeries).SelectedItem is KeyValuePair<string, int> ? (KeyValuePair<string, int>) (sender as PieSeries).SelectedItem : new KeyValuePair<string, int>();
+                var selected = (sender as PieSeries).SelectedItem is KeyValuePair<string, int> ? (KeyValuePair<string, int>)(sender as PieSeries).SelectedItem : new KeyValuePair<string, int>();
                 (DataContext as BasicToolViewModel).Selection = selected.Key;
             }
         }
     }
-    
+
 }
