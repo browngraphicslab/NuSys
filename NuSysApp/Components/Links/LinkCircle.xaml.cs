@@ -21,19 +21,27 @@ namespace NuSysApp
 {
     public sealed partial class LinkCircle : UserControl
     {
+        //link id
+        public string lID;
+        //content id the link is linked to
         public string cID;
         private bool pinned;
-        public LinkCircle(string cID)
+        private Thickness _collapsedThickness;
+        private Thickness _visibleThickness;
+        public LinkCircle(string lID, string cID)
         {
+            this.lID = lID;
             this.cID = cID;
+            _collapsedThickness = new Thickness(0);
+            _visibleThickness = new Thickness(1);
             this.InitializeComponent();
             pinned = false;
-            //this.thumbnail = SessionController.Instance.ContentController.GetContent(cID).T
-            var s = SessionController.Instance.ContentController.GetLibraryElementController(cID);
-            var bmp = new BitmapImage(SessionController.Instance.ContentController.GetLibraryElementController(cID).LargeIconUri);
+            var bmp = new BitmapImage(SessionController.Instance.ContentController.GetLibraryElementController(cID).SmallIconUri);
             thumbnail.Source = bmp;
+            Canvas.SetZIndex(thumbnail, 50);
+            border.Height = bmp.DecodePixelHeight;
+            border.Width = bmp.DecodePixelWidth;
             (thumbnail.RenderTransform as CompositeTransform).TranslateY = -bmp.DecodePixelHeight - 20;
-            
         }
 
         private async void circlePointerPressedHandler(object sender, RoutedEventArgs e)
@@ -42,10 +50,11 @@ namespace NuSysApp
             if (pinned)
             {
                 thumbnail.Visibility = Visibility.Visible;
-                //positiion thumbnail
+                border.BorderThickness = _visibleThickness;
             }
             else
             {
+                border.BorderThickness = _collapsedThickness;
                 thumbnail.Visibility = Visibility.Collapsed;
             }
         }
@@ -53,13 +62,13 @@ namespace NuSysApp
         private async void circlePointerEnteredHandler(object sender, RoutedEventArgs e)
         {
             thumbnail.Visibility = Visibility.Visible;
-            //position thumbnail
         }
 
         private async void circlePointerExitedHandler(object sender, RoutedEventArgs e)
         {
             if (!pinned)
             {
+                border.BorderThickness = _collapsedThickness;
                 thumbnail.Visibility = Visibility.Collapsed;
             }
         }
