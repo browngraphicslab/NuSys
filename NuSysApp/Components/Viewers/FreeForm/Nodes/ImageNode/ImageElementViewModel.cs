@@ -22,10 +22,12 @@ namespace NuSysApp
         public ImageElementViewModel(ElementController controller) : base(controller)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));       
-            Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
-            Controller.LibraryElementController.RegionRemoved += LibraryElementControllerOnRegionRemoved;
             Regions = new ObservableCollection<ImageRegionView>();
             this.CreateRegionViews();
+
+            Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
+            Controller.LibraryElementController.RegionRemoved += LibraryElementControllerOnRegionRemoved;
+
 
         }
 
@@ -56,9 +58,24 @@ namespace NuSysApp
                 return ;
 
             Regions.Clear();
+
             foreach (var model in regionHashSet)
             {
-                var regionController = new RegionController(model as RectangleRegion);
+
+                //var regionController = new RegionController(model as RectangleRegion);
+                //var regionController = SessionController.Instance.RegionControllersController.GetRegionController(model.Id);
+
+                RegionController regionController;
+                if (SessionController.Instance.RegionsController.GetRegionController(model.Id) == null)
+                {
+                    var factory = new RegionControllerFactory();
+                    regionController = factory.CreateFromSendable(model);
+                    SessionController.Instance.RegionsController.Add(regionController);
+                }
+                else {
+                    regionController = SessionController.Instance.RegionsController.GetRegionController(model.Id);
+                }
+
                 var viewmodel = new ImageRegionViewModel(model as RectangleRegion, elementController, regionController, this);
                 viewmodel.Editable = false;
                 var view = new ImageRegionView(viewmodel);
@@ -78,14 +95,13 @@ namespace NuSysApp
             }
         }
 
-        private void LibraryElementControllerOnRegionAdded(object source, RegionController controller)
+        private void LibraryElementControllerOnRegionAdded(object source, RegionController regionController)
         {
-            var imageRegion = controller?.Model as RectangleRegion;
+            var imageRegion = regionController?.Model as RectangleRegion;
             if (imageRegion == null)
             {
                 return;
             }
-            var regionController = new RegionController(imageRegion);
             var vm = new ImageRegionViewModel(imageRegion, Controller.LibraryElementController, regionController, this);
             var view = new ImageRegionView(vm);
             vm.Editable = false;

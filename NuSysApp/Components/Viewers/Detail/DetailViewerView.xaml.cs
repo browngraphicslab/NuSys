@@ -46,6 +46,7 @@ namespace NuSysApp
             {
                 var dataContext = DataContext as DetailViewerViewModel;
 
+
                 if (dataContext == null) { 
                     return;
                 }
@@ -152,6 +153,7 @@ namespace NuSysApp
             }
                 
 
+
             //if (controller.Model is TextElementModel || controller.Model is PdfNodeModel)
             if (metadatable.MetadatableType() == MetadatableType.Content)
             {
@@ -167,6 +169,17 @@ namespace NuSysApp
                 else
                 {
                     SuggestButton.Visibility = Visibility.Collapsed;
+                }
+
+                if (controller.LibraryElementModel.Type == ElementType.PDF)
+                {
+                    xRegionEditorView.ShowListView(true, ElementType.PDF);
+                   
+                }
+                else
+                {
+                    xRegionEditorView.ShowListView(false, controller.LibraryElementModel.Type);
+
                 }
 
                 xMetadataEditorView.Metadatable = vm.CurrentElementController;

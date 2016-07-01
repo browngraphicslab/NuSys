@@ -116,6 +116,7 @@
     <Content Include="Assets\icon_pano.png" />
     <Content Include="Assets\icon_pdf.png" />
     <Content Include="Assets\icon_plus.png" />
+    <Content Include="Assets\icon_plus2.png" />
     <Content Include="Assets\icon_presentation_link.png" />
     <Content Include="Assets\icon_record.png" />
     <Content Include="Assets\icon_recording.png" />
@@ -329,6 +330,9 @@
     </Compile>
     <Compile Include="Components\Viewers\Detail\Views\LinkEditorTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\LinkTemplate.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\PDFRegionListView.xaml.cs">
+      <DependentUpon>PDFRegionListView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">
       <DependentUpon>AudioMediaPlayer.xaml</DependentUpon>
     </Compile>
@@ -808,6 +812,7 @@
     <Content Include="Assets\icon_window_search.png" />
     <Content Include="Assets\icon_node_x.png" />
     <Content Include="Assets\icon_node_x2.png" />
+    <Content Include="Assets\plus_icon.png" />
     <Content Include="Assets\powerpointIcon.png" />
     <Content Include="Assets\presentation_backward.png" />
     <Content Include="Assets\presentation_forward.png" />
@@ -934,6 +939,10 @@
     <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\PowerpointDetailHomeTabView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\PDFRegionListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\Detail\Views\RegionEditorTabView.xaml">
       <SubType>Designer</SubType>

@@ -32,27 +32,28 @@ namespace NuSysApp
         public delegate void RegionSelectedEventHandler(object sender, bool selected);
         public event RegionSelectedEventHandler OnSelected;
 
+        public bool Selected { set; get; }
+
         public ImageRegionView(ImageRegionViewModel vm)
         {
             this.InitializeComponent();
             this.DataContext = vm;
-            this.Selected();
-
-            vm.RegionChanged += RegionVM_RegionChanged;
-            OnSelected?.Invoke(this, true);
-
+            this.Deselect();
 
             CompositeTransform composite = new CompositeTransform();
             this.RenderTransform = composite;
             OnSelected?.Invoke(this, true);
 
-            vm.PropertyChanged += PropertyChanged;
+            //vm.PropertyChanged += PropertyChanged;
             vm.SizeChanged += ChangeSize;
             var model = vm.Model as RectangleRegion;
             if (model == null)
             {
                 return;
             }
+
+            vm.RegionChanged += RegionVM_RegionChanged;
+
             var parentWidth = vm.ContainerViewModel.GetWidth();
             var parentHeight = vm.ContainerViewModel.GetHeight();
             composite.TranslateX = model.TopLeftPoint.X * parentWidth;
@@ -60,8 +61,8 @@ namespace NuSysApp
 
             _tx = composite.TranslateX;
             _ty = composite.TranslateY;
-            vm.Width = (model.BottomRightPoint.X - model.TopLeftPoint.X) * parentWidth;
-            vm.Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y) * parentHeight;
+            //vm.Width = (model.BottomRightPoint.X - model.TopLeftPoint.X) * parentWidth;
+            //vm.Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y) * parentHeight;
 
         }
 
@@ -76,6 +77,8 @@ namespace NuSysApp
 
         private void ChangeSize(object sender, Point topLeft, Point bottomRight)
         {
+            var vm = DataContext as ImageRegionViewModel;
+
             var composite = RenderTransform as CompositeTransform;
             if (composite == null)
             {
@@ -153,7 +156,9 @@ namespace NuSysApp
         private void xResizingTriangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
 
-            OnSelected?.Invoke(this, true);
+            //OnSelected?.Invoke(this, true);
+
+            this.Select();
             e.Handled = true;
         }
 
@@ -237,41 +242,66 @@ namespace NuSysApp
 
             vm.OriginalHeight = vm.Height;
             vm.OriginalWidth = vm.Width;
-            OnSelected?.Invoke(this, true);
+            //OnSelected?.Invoke(this, true);
+            this.Select();
             e.Handled = true;
 
         }
 
-        public void Deselected()
+        public void Deselect()
         {
             xMainRectangle.StrokeThickness = 3;
             xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Blue);
             xResizingTriangle.Visibility = Visibility.Collapsed;
+            xDelete.Visibility = Visibility.Collapsed;
+            xNameTextBox.Visibility = Visibility.Collapsed;
+            Selected = false;
 
-
-        }
-
-        public void Selected()
-        {
-            xMainRectangle.StrokeThickness = 6;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
-            //xResizingTriangle.Visibility = Visibility.Visible;
 
         }
 
         public void Select()
         {
-            xMainRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
-            xMainRectangle.Fill.Opacity = 0.3;
-            
+            xMainRectangle.StrokeThickness = 6;
+            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Red);
+            xResizingTriangle.Visibility = Visibility.Visible;
+            xDelete.Visibility = Visibility.Visible;
+            xNameTextBox.Visibility = Visibility.Visible;
+            Selected = true;
 
         }
+
+
+        
         private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            OnSelected?.Invoke(this, true);
+            var vm = DataContext as ImageRegionViewModel;
 
+            if (!vm.Editable)
+                return;
+
+            if (Selected)
+                this.Deselect();
+            else
+                this.Select();
+                
         }
 
+        private void xDelete_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
 
+
+            var vm = this.DataContext as ImageRegionViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+
+            var libraryElementController = vm.LibraryElementController;
+            libraryElementController.RemoveRegion(vm.RegionController.Model);
+
+
+        }
+        
     }
 }
