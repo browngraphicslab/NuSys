@@ -57,6 +57,9 @@ namespace NuSysApp
             Height = height;
             Width = width;
             xFilterList.Height = height - ListBoxHeightOffset;
+            xCanvas.Height = height;
+            xGrid.Height = height;
+            Grid1.Height = height;
             xFilterList.Width = width;
             xTitle.Width = width;
             xCanvas.Width = width;
@@ -150,8 +153,8 @@ namespace NuSysApp
                     BasicToolModel model = new BasicToolModel();
                     BasicToolController controller = new BasicToolController(model);
                     BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
-                    TemporaryToolView view = new TemporaryToolView(viewmodel, (RenderTransform as CompositeTransform).TranslateX, (RenderTransform as CompositeTransform).TranslateY);
                     viewmodel.Filter = selection;
+                    TemporaryToolView view = new TemporaryToolView(viewmodel, (RenderTransform as CompositeTransform).TranslateX, (RenderTransform as CompositeTransform).TranslateY);
 
                     if (_parentToolViewModel != null)
                     {
