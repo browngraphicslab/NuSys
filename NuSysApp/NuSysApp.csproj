@@ -196,8 +196,11 @@
     <Content Include="Assets\icon_metadata_x.png" />
     <Content Include="Assets\node icons\icon_new_collection.png" />
     <Content Include="Assets\node icons\icon_pause.png" />
+    <Content Include="Assets\node icons\icon_pause_dark.png" />
     <Content Include="Assets\node icons\icon_play.png" />
+    <Content Include="Assets\node icons\icon_play_dark.png" />
     <Content Include="Assets\node icons\icon_stop.png" />
+    <Content Include="Assets\node icons\icon_stop_dark.png" />
     <Content Include="Assets\node icons\icon_video.png" />
     <Content Include="Assets\node icons\pen.png" />
     <Content Include="Assets\node icons\record.png" />
