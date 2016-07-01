@@ -129,6 +129,7 @@
     <Content Include="Assets\icon_webnode.png" />
     <Content Include="Assets\icon_web_color.png" />
     <Content Include="Assets\icon_whitex.png" />
+    <Content Include="Assets\info.png" />
     <Content Include="Assets\ink.png" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\logos\150x150.png" />
