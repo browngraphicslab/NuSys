@@ -17,10 +17,10 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    
-    <Border x:Name="xBorder" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <Grid x:Name="totalStackPanel">
-            <StackPanel x:Name="buttons" Orientation="Horizontal" Background="#565F6D" VerticalAlignment="Top" HorizontalAlignment="Stretch"  Height="30" Visibility="Collapsed">
+
+    <Border x:Name="xBorder" BorderBrush="{StaticResource color6}" Background="Brown" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid x:Name="totalStackPanel" >
+            <StackPanel x:Name="buttons" Orientation="Vertical" Background="#565F6D" VerticalAlignment="Top" HorizontalAlignment="Stretch"  Height="30" Visibility="Collapsed">
                 <Button Click="ButtonBase_OnClick" Foreground="{StaticResource foreground6}" Background="Transparent">INK</Button>
                 <Button Name="SourceBttn" Foreground="{StaticResource foreground6}" Click="OnGoToSource" Background="Transparent">GO TO SOURCE</Button>
             </StackPanel>
@@ -29,6 +29,7 @@
                     <BitmapImage ImageOpened="BitmapImage_ImageOpened" UriSource="{Binding Path=Image}"></BitmapImage>
                 </Image.Source>
             </Image>
+
             <ItemsControl ItemsSource="{Binding RegionViews}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>

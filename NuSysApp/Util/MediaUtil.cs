@@ -82,6 +82,7 @@ namespace NuSysApp
         public static async Task<MuPDFWinRT.Document> DataToPDF(string base64StringData)
         {
             var dataBytes = Convert.FromBase64String(base64StringData ?? "");
+            var c = dataBytes.Length;
             var ms = new MemoryStream(dataBytes);
             MuPDFWinRT.Document document;
             using (IInputStream inputStreamAt = ms.AsInputStream())

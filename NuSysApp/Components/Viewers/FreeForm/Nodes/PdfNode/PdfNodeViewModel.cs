@@ -58,7 +58,7 @@ namespace NuSysApp
 
         private void LibraryElementControllerOnRegionAdded(object source, RegionController regionController)
         {
-            var pdfRegion = regionController.Model as PdfRegion;
+            var pdfRegion = regionController?.Model as PdfRegion;
             if (pdfRegion == null)
             {
                 return;

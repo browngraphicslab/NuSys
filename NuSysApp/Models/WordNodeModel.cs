@@ -15,18 +15,15 @@ namespace NuSysApp
         {
             ElementType = ElementType.Word;
         }
-
-        public string FilePath { get; set; }
-       
-        public override async Task UnPack(Message props)
-        {
-            await base.UnPack(props);
-        }
-
         public override async Task<Dictionary<string, object>> Pack()
         {
             var props = await base.Pack();
             return props;
+        }
+
+        public override async Task UnPack(Message props)
+        {
+            await base.UnPack(props);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace NuSysApp
     /// Takes care of all the modifying and events invoking for the library element model
     /// Should manage keeping the library element model up to date as well as updating the server
     /// </summary>
-    public class LibraryElementController : IMetadatable
+    public class LibraryElementController : IMetadatable, ILinkable
     {
         protected DebouncingDictionary _debouncingDictionary;
         private LibraryElementModel _libraryElementModel;
@@ -90,7 +90,10 @@ namespace NuSysApp
         public void AddRegion(Region region)
         {
             _libraryElementModel.Regions.Add(region);
-            var regionController = _regionControllerFactory.CreateFromSendable(region);
+
+            var factory = new RegionControllerFactory();
+            var regionController = factory.CreateFromSendable(region);
+            SessionController.Instance.RegionsController.Add(regionController);
             RegionAdded?.Invoke(this, regionController);
             SessionController.Instance.NuSysNetworkSession.AddRegionToContent(LibraryElementModel.LibraryElementId, region);
         }
@@ -390,6 +393,43 @@ namespace NuSysApp
         public MetadatableType MetadatableType()
         {
             return NuSysApp.MetadatableType.Content;
+        }
+
+        public void AddNewLink(string idToLinkTo)
+        {
+            SessionController.Instance.LinkController.RequestLink(this.LibraryElementModel.LibraryElementId, idToLinkTo);
+        }
+
+        public void RemoveLink(string linkLibraryElementID)
+        {
+            SessionController.Instance.LinkController.RemoveLink(linkLibraryElementID);
+        }
+
+        public void ChangeLinkTitle(string linkLibraryElementID, string title)
+        {
+            SessionController.Instance.LinkController.ChangeLinkTitle(linkLibraryElementID, title);
+        }
+
+        public void ChangeLinkTags(string linkLibraryElementID, HashSet<String> tags)
+        {
+            SessionController.Instance.LinkController.ChangeLinkTags(linkLibraryElementID, tags);
+        }
+
+        public List<string> GetAllLinks()
+        {
+            return
+                new List<string>(
+                    SessionController.Instance.LinkController.GetLinkedIds(LibraryElementModel.LibraryElementId));
+        }
+
+        public void ChangeLinkTitle()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ChangeLinkTags()
+        {
+            throw new NotImplementedException();
         }
     }
 }

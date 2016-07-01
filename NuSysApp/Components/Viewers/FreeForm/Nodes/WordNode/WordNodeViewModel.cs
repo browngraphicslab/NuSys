@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -8,125 +9,214 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.UI;
+using Windows.UI.Text;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using LdaLibrary;
 
 namespace NuSysApp
 {
     public class WordNodeViewModel : ElementViewModel
     {
+        public int CurrentPageNumber { get; private set; }
+        public MuPDFWinRT.Document _document;
 
         public WordNodeViewModel(ElementController controller) : base(controller)
         {
-            String path = Controller.LibraryElementController.GetMetadata("FilePath").First();
-
-            if (!String.IsNullOrEmpty(path))
-            {
-                Title = Path.GetFileName(path);
-            }
-            
-            WatchForPdf();
+            Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
         }
 
-        private async void WatchForPdf()
+        public override void Dispose()
         {
-            string token = Controller.LibraryElementController.GetMetadata("Token").First();
-
-            if (!String.IsNullOrEmpty(token) && Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token))
+            var model = (PdfNodeModel)Controller.Model;
+            if (_document != null)
             {
-                Task.Run(async () =>
+                _document.Dispose();
+            }
+            base.Dispose();
+        }
+
+        public async override Task Init()
+        {
+            if (Controller.LibraryElementController.IsLoaded)
+            {
+                await DisplayPdf();
+            }
+            else
+            {
+                Controller.LibraryElementController.Loaded += LibraryElementModelOnOnLoaded;
+            }
+        }
+
+        private async void LibraryElementModelOnOnLoaded(object sender)
+        {
+            await DisplayPdf();
+        }
+
+        private async Task DisplayPdf()
+        {
+            if (Controller.LibraryElementModel == null || Controller.LibraryElementModel.Data == null)
+            {
+                return;
+            }
+            if (Controller.LibraryElementModel.Data == "docx too large")
+            {
+                _document = null;
+            }
+            else
+            {
+                _document = await MediaUtil.DataToPDF(Controller.LibraryElementModel.Data);
+            }
+            await Goto(CurrentPageNumber);
+            SetSize(Width, Height);
+            //LaunchLDA((PdfNodeModel)this.Model);
+        }
+
+        public async Task FlipRight()
+        {
+            await Goto(CurrentPageNumber + 1);
+        }
+
+        public async Task FlipLeft()
+        {
+            await Goto(CurrentPageNumber - 1);
+        }
+
+        public async Task Goto(int pageNumber)
+        {
+            if (_document == null)
+                return;
+            if (pageNumber == -1) return;
+            if (pageNumber >= (_document.PageCount)) return;
+            CurrentPageNumber = pageNumber;
+            await RenderPage(pageNumber);
+        }
+
+        private async Task RenderPage(int pageNumber)
+        {
+            if (_document == null)
+                return;
+            var pageSize = _document.GetPageSize(pageNumber);
+            var width = pageSize.X;
+            var height = pageSize.Y;
+            var image = new WriteableBitmap(width, height);
+            IBuffer buf = new Windows.Storage.Streams.Buffer(image.PixelBuffer.Capacity);
+            buf.Length = image.PixelBuffer.Length;
+
+            _document.DrawPage(pageNumber, buf, 0, 0, width, height, false);
+
+            var s = buf.AsStream();
+            await s.CopyToAsync(image.PixelBuffer.AsStream());
+            image.Invalidate();
+            ImageSource = image;
+            RaisePropertyChanged("ImageSource");
+        }
+
+
+        public override void SetSize(double width, double height)
+        {
+            if (ImageSource == null)
+                return;
+
+            if (ImageSource.PixelWidth > ImageSource.PixelHeight)
+            {
+                var r = ImageSource.PixelHeight / (double)ImageSource.PixelWidth;
+                base.SetSize(width, width * r);
+            }
+            else
+            {
+                var r = ImageSource.PixelWidth / (double)ImageSource.PixelHeight;
+                base.SetSize(height * r, height);
+            }
+        }
+
+        protected override void OnSizeChanged(object source, double width, double height)
+        {
+            SetSize(width, height);
+        }
+
+        public string GetAllText()
+        {
+            string data = "";
+            int numPages = _document.PageCount;
+            int currPage = 0;
+            while (currPage < numPages)
+            {
+                data = data + _document.GetAllTexts(currPage);
+                currPage++;
+            }
+            return data;
+        }
+
+        public async Task LaunchLDA(PdfNodeModel model)
+        {
+
+            Task.Run(async () =>
+            {
+                var test = new List<string>();
+
+                // parameters for our LDA algorithm
+                string filename = model.Title;
+                test.Add(filename);
+                test.Add("niters 8");
+                test.Add("ntopics 5");
+                test.Add("twords 10");
+                test.Add("dir ");
+                test.Add("est true");
+                test.Add("alpha 12.5");
+                test.Add("beta .1");
+                test.Add("model model-final");
+
+                string data = GetAllText();
+                
+                DieStopWords ds = new DieStopWords();
+                data = await ds.removeStopWords(data);
+                List<string> topics = await TagExtractor.launch(test, new List<string>() { data });
+                await UITask.Run(() =>
                 {
-                    while (true)
+                    var topicKeywords = new HashSet<Keyword>();
+                    foreach (var topic in topics)
                     {
-                        var fileList = await NuSysStorages.Media.GetFilesAsync();
-                        bool foundPdf = false;
-
-                        foreach (StorageFile file in fileList)
-                        {
-                            string ext = Path.GetExtension(file.Path);
-                            string name = Path.GetFileNameWithoutExtension(file.Path);
-
-                            if (Constants.PdfFileTypes.Contains(ext) && token == name)
-                            {
-                                foundPdf = true;
-                                try
-                                {
-                                    await CreatePdfNode(file);
-                                }
-                                catch (Exception ex)
-                                {
-                                //TODO error handling
-                            }
-                            }
-                        }
-
-                        if (!foundPdf)
-                        {
-                            await Task.Delay(1000 * 5);
-                        }
-                        else
-                        {
-                            return;
-                        }
+                        topicKeywords.Add(new Keyword(topic, Keyword.KeywordSource.TopicModeling));
                     }
+                    Controller.LibraryElementController.SetKeywords((topicKeywords));
+                    RaisePropertyChanged("Tags");
                 });
-            }
+            });
         }
 
-        private async Task CreatePdfNode(StorageFile pdfFile)
+        public MuPDFWinRT.Document Document
         {
-            var wordModel = ((WordNodeModel)this.Model);
-            var wordId = wordModel.Id;
-
-            var contentId = SessionController.Instance.GenerateId();
-            Message m = new Message();
-            m["contentId"] = contentId;
-            m["x"] = wordModel.X;
-            m["y"] = wordModel.Y;
-            m["width"] = 400;
-            m["height"] = 400;
-            m["autoCreate"] = true;
-            m["nodeType"] = ElementType.PDF.ToString();
-            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
-
-            var metadata = new Dictionary<string, object>();
-            metadata["BookmarkId"] = Controller.LibraryElementController.GetMetadata("BookmarkId");
-            metadata["IsExported"] = Controller.LibraryElementController.GetMetadata("IsExported");
-            metadata["FilePath"] = Controller.LibraryElementController.GetMetadata("FilePath");
-            metadata["DateTimeExported"] = Controller.LibraryElementController.GetMetadata("DateTimeExported");
-            metadata["Token"] = Controller.LibraryElementController.GetMetadata("Token");
-            m["metadata"] = metadata;
-
-            byte[] fileBytes = null;
-            using (IRandomAccessStreamWithContentType stream = await pdfFile.OpenReadAsync())
+            get
             {
-                fileBytes = new byte[stream.Size];
-                using (DataReader reader = new DataReader(stream))
-                {
-                    await reader.LoadAsync((uint)stream.Size);
-                    reader.ReadBytes(fileBytes);
-                }
+                return this._document;
             }
-
-            var pdfContent = Convert.ToBase64String(fileBytes);
-
-
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, pdfContent, ElementType.PDF));
-            /*
-            await
-                SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
-                    new NewContentSystemRequest(contentId,
-                        pdfContent), NetworkClient.PacketType.TCP, null, true);*/
-
-            Request deleteRequest = new DeleteSendableRequest(wordId);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(deleteRequest);
+            set
+            {
+                this._document = value;
+            }
         }
 
-        public override async Task Init()
+        public WriteableBitmap ImageSource
         {
+            get; set;
+        }
 
+        public Button MakeTagBlock(string text)
+        {
+            Button tagBlock = new Button();
+            tagBlock.Content = text;
+            tagBlock.Foreground = new SolidColorBrush(Constants.foreground6);
+            tagBlock.FontStyle = FontStyle.Italic;
+            tagBlock.Height = 40;
+            tagBlock.Margin = new Thickness(2, 2, 2, 2);
+            tagBlock.Padding = new Thickness(5);
+            tagBlock.Background = new SolidColorBrush(Colors.Transparent);
+
+            return tagBlock;
         }
     }
 }

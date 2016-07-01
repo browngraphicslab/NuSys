@@ -33,12 +33,11 @@
                     <Charting:PieSeries  SelectionChanged="DataPointSeries_OnSelectionChanged" Margin="0" IndependentValuePath="Key" DependentValuePath="Value" IsSelectionEnabled="True"/>
                 </Charting:Chart>
                 <ListBox x:Name="xPropertiesList" SelectionChanged="XPropertiesList_OnSelectionChanged"  Height="200" Grid.Row="1" Width="Auto" Background="AliceBlue" SelectionMode="Single" PointerPressed="xList_PointerPressed" ManipulationMode="All" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted"/>
+                
+                <StackPanel Name ="xbottompanel" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta">
 
-                <ListBox x:Name="xFilterList" SelectionChanged="XFilterList_OnSelectionChanged" Height="200" Grid.Row="1" Width="Auto" Background="AliceBlue" ItemsSource="{x:Bind Filters}" SelectionMode="Single" ManipulationMode="All" ManipulationStarted="xFilterList_ManipulationStarted" ManipulationDelta="xFilterList_ManipulationDelta" ManipulationCompleted="xFilterList_ManipulationCompleted"/>
-                <StackPanel Name ="bottompanel" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta">
-
-                    <TextBlock x:Name="xUniqueText" Visibility ="Collapsed" Text="Unique" Margin="10,0,0,0"/>
-                    <ToggleButton Visibility ="Collapsed" x:Name="xUniqueButton" Checked="XUniqueButton_OnChecked" Unchecked="XUniqueButton_OnUnchecked" Margin="20,0,0,0"/>
+                    <TextBlock x:Name="xUniqueText" Text="Unique" Margin="10,0,0,0"/>
+                    <ToggleButton x:Name="xUniqueButton" Checked="XUniqueButton_OnChecked" Unchecked="XUniqueButton_OnUnchecked" Margin="20,0,0,0"/>
                 </StackPanel>
             </Grid>
             <StackPanel Grid.Row="2" Orientation="Horizontal">

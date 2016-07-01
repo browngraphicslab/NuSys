@@ -117,6 +117,7 @@
     <Content Include="Assets\icon_pano.png" />
     <Content Include="Assets\icon_pdf.png" />
     <Content Include="Assets\icon_plus.png" />
+    <Content Include="Assets\icon_plus2.png" />
     <Content Include="Assets\icon_presentation_link.png" />
     <Content Include="Assets\icon_record.png" />
     <Content Include="Assets\icon_recording.png" />
@@ -198,8 +199,11 @@
     <Content Include="Assets\icon_metadata_x.png" />
     <Content Include="Assets\node icons\icon_new_collection.png" />
     <Content Include="Assets\node icons\icon_pause.png" />
+    <Content Include="Assets\node icons\icon_pause_dark.png" />
     <Content Include="Assets\node icons\icon_play.png" />
+    <Content Include="Assets\node icons\icon_play_dark.png" />
     <Content Include="Assets\node icons\icon_stop.png" />
+    <Content Include="Assets\node icons\icon_stop_dark.png" />
     <Content Include="Assets\node icons\icon_video.png" />
     <Content Include="Assets\node icons\pen.png" />
     <Content Include="Assets\node icons\record.png" />
@@ -297,15 +301,40 @@
     </Compile>
     <Compile Include="Components\Regions\PDFRegionViewModel.cs" />
     <Compile Include="Components\Regions\RegionViewModel.cs" />
+    <Compile Include="Components\Tools\BasicToolController.cs" />
+    <Compile Include="Components\Tools\BasicToolModel.cs" />
+    <Compile Include="Components\Tools\MetadataToolController.cs" />
+    <Compile Include="Components\Tools\MetadataToolModel.cs" />
+    <Compile Include="Components\Tools\MetadataToolView.xaml.cs">
+      <DependentUpon>MetadataToolView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Tools\MetadataToolViewModel.cs" />
     <Compile Include="Components\Tools\ToolController.cs" />
+    <Compile Include="Components\Tools\ToolFilterLinkView.xaml.cs">
+      <DependentUpon>ToolFilterLinkView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Tools\ToolFilterLinkViewModel.cs" />
+    <Compile Include="Components\Tools\ToolFilterView.xaml.cs">
+      <DependentUpon>ToolFilterView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Tools\ToolLinkView.xaml.cs">
       <DependentUpon>ToolLinkView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Tools\ToolLinkViewModel.cs" />
     <Compile Include="Components\Tools\ToolModel.cs" />
+    <Compile Include="Components\Tools\BasicToolViewModel.cs" />
     <Compile Include="Components\Tools\ToolViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\ILinkable.cs" />
     <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
     <Compile Include="Components\Viewers\Detail\Sizeable.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\LinkEditorTab.xaml.cs">
+      <DependentUpon>LinkEditorTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\LinkEditorTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\LinkTemplate.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\PDFRegionListView.xaml.cs">
+      <DependentUpon>PDFRegionListView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">
       <DependentUpon>AudioMediaPlayer.xaml</DependentUpon>
     </Compile>
@@ -785,6 +814,7 @@
     <Content Include="Assets\icon_window_search.png" />
     <Content Include="Assets\icon_node_x.png" />
     <Content Include="Assets\icon_node_x2.png" />
+    <Content Include="Assets\plus_icon.png" />
     <Content Include="Assets\powerpointIcon.png" />
     <Content Include="Assets\presentation_backward.png" />
     <Content Include="Assets\presentation_forward.png" />
@@ -864,6 +894,18 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\Tools\MetadataToolView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Tools\ToolFilterLinkView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Tools\ToolFilterView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Tools\ToolLinkView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -888,6 +930,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Components\Viewers\Detail\Views\LinkEditorTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Viewers\Detail\Views\MetadataEditorTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -895,6 +941,10 @@
     <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\PowerpointDetailHomeTabView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\PDFRegionListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\Detail\Views\RegionEditorTabView.xaml">
       <SubType>Designer</SubType>

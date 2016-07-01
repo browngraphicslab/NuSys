@@ -52,12 +52,15 @@ namespace NuSysApp
 
         public double GetImgHeight()
         {
-            return ActualHeight;
+            //return ActualHeight;
+            return xImg.ActualHeight;
         }
 
         public double GetImgWidth()
         {
-            return ActualWidth;
+
+            //return ActualWidth;
+            return xImg.ActualWidth;
         }
 
         private void PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -73,9 +76,9 @@ namespace NuSysApp
 
         private void SelectRegion(ImageRegionView region)
         {
-            //SelectedRegion?.Deselect();
+            SelectedRegion?.Deselect();
             SelectedRegion = region;
-            //SelectedRegion.Select();
+            SelectedRegion.Select();
         }
 
 
@@ -135,8 +138,11 @@ namespace NuSysApp
 
         private void xImg_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            //SelectedRegion?.Deselected();
-            //SelectedRegion = null;
+            var vm = DataContext as ImageDetailHomeTabViewModel;
+            foreach (var regionView in vm.RegionViews)
+            {
+                regionView.Deselect();
+            }
         }
 
         private void BitmapImage_ImageOpened(object sender, RoutedEventArgs e)

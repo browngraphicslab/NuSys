@@ -32,32 +32,10 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             _edgeCaseButtonExited = true;
+            Canvas.SetZIndex(xButtonStack, 20);
         }
 
-        private void XListViewItemGrid_OnPointerEnterExit(object sender, PointerRoutedEventArgs e)
-        {
-
-        }
-
-        private void KeyTextBox_OnPointerExited(object sender, PointerRoutedEventArgs e)
-        {
-
-        }
-
-        private void DeleteRegion_Clicked(object sender, RoutedEventArgs e)
-        {
-            var vm = DetailViewerView.DataContext as DetailViewerViewModel;
-            if (vm == null)
-            {
-                return;
-            }
-            var button = sender as Button;
-            var region = button.DataContext as Region;
-
-            vm.CurrentElementController.RemoveRegion(region);
-            
-        }
-        private void AddRegion_Clicked(object sender, RoutedEventArgs e)
+            private void AddRegion_Clicked(object sender, RoutedEventArgs e)
         {
             var vm = DetailViewerView.DataContext as DetailViewerViewModel;
             if (vm == null)
@@ -90,22 +68,49 @@ namespace NuSysApp
                     region = null;
                     break;
             }
-            
+
             vm.CurrentElementController.AddRegion(region);
         }
 
-        private void DeleteButton_OnPointerExited(object sender, PointerRoutedEventArgs e)
+        private void KeyTextBox_OnPointerExited(object sender, PointerRoutedEventArgs e)
         {
-            var button = sender as Button;
-            button.Visibility = Visibility.Collapsed;
-            _edgeCaseButtonExited = true;
 
         }
-        
-        private void RegionListViewItem_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            //((ImageFullScreenView)(((DetailViewerViewModel)DetailViewerView.DataContext).RegionView)).SelectedRegion(test);
 
+        private void DeleteRegion_Clicked(object sender, RoutedEventArgs e)
+        {
+            var vm = DetailViewerView.DataContext as DetailViewerViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+            var button = sender as Button;
+            var region = button.DataContext as Region;
+
+            vm.CurrentElementController.RemoveRegion(region);
+            
+        }
+
+
+
+
+        public void ShowListView(bool visible, ElementType type)
+        {
+            if (!visible)
+            {
+                xListViewPresenter.Content = null;
+                xMainGrid.ColumnDefinitions.Remove(xSecondColumn);
+                return;
+            }
+            else
+            {
+                if (type == ElementType.PDF)
+                {
+                    xListViewPresenter.Content = new PDFRegionListView(DetailViewerView);
+                    xMainGrid.ColumnDefinitions.Add(xSecondColumn);
+                    return;
+                }
+            }
         }
     }
 }

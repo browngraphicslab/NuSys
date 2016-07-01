@@ -52,8 +52,9 @@ namespace NuSysApp
 
             var vm = (ToolLinkViewModel)this.DataContext;
 
-            var inToolVM = vm.InTool.DataContext as ToolViewModel;
-            var outToolVM = vm.OutTool.DataContext as ToolViewModel;
+            var inToolVM = vm.InTool;
+            var outToolVM = vm.OutTool;
+            
 
             var anchor1 = new Point(inToolVM.X + inToolVM.Width / 2, inToolVM.Y + inToolVM.Height / 2);
             var anchor2 = new Point(outToolVM.X + outToolVM.Width / 2, outToolVM.Y + outToolVM.Height / 2);
@@ -85,8 +86,8 @@ namespace NuSysApp
         {
             var vm = (ToolLinkViewModel)this.DataContext;
 
-            var inToolVM = vm.InTool.DataContext as ToolViewModel;
-            var outToolVM = vm.OutTool.DataContext as ToolViewModel;
+            var inToolVM = vm.InTool;
+            var outToolVM = vm.OutTool;
 
             var anchor1 = new Point(inToolVM.X + inToolVM.Width / 2, inToolVM.Y + inToolVM.Height / 2);
             var anchor2 = new Point(outToolVM.X + outToolVM.Width / 2, outToolVM.Y + outToolVM.Height / 2);

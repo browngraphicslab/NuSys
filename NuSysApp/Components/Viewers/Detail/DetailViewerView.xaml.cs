@@ -27,7 +27,7 @@ namespace NuSysApp
     {
 
         private ElementViewModel _activeVm;
-        private object _metadataPivotItem;
+        private object _regionEditorPivotItem;
         
         public DetailViewerView()
         {
@@ -45,6 +45,7 @@ namespace NuSysApp
             DataContextChanged += delegate(FrameworkElement sender, DataContextChangedEventArgs args)
             {
                 var dataContext = DataContext as DetailViewerViewModel;
+
 
                 if (dataContext == null) { 
                     return;
@@ -152,6 +153,7 @@ namespace NuSysApp
             }
                 
 
+
             //if (controller.Model is TextElementModel || controller.Model is PdfNodeModel)
             if (metadatable.MetadatableType() == MetadatableType.Content)
             {
@@ -169,17 +171,28 @@ namespace NuSysApp
                     SuggestButton.Visibility = Visibility.Collapsed;
                 }
 
+                if (controller.LibraryElementModel.Type == ElementType.PDF)
+                {
+                    xRegionEditorView.ShowListView(true, ElementType.PDF);
+                   
+                }
+                else
+                {
+                    xRegionEditorView.ShowListView(false, controller.LibraryElementModel.Type);
+
+                }
+
                 xMetadataEditorView.Metadatable = vm.CurrentElementController;
                 xMetadataEditorView.Update();
                 if (xRootPivot.Items.Count == 2)
                 {
-                    var pivotItem = _metadataPivotItem as PivotItem;
+                    var pivotItem = _regionEditorPivotItem as PivotItem;
                     xRootPivot.Items.Add(pivotItem);
 
                 }
             } else if (metadatable.MetadatableType() == MetadatableType.Region)
             {
-                _metadataPivotItem = xRootPivot.Items[2];
+                _regionEditorPivotItem = xRootPivot.Items[2];
                 xRootPivot.Items.RemoveAt(2);
                 xMetadataEditorView.Metadatable = metadatable;
                 xMetadataEditorView.Update();

@@ -16,22 +16,22 @@ namespace NuSysApp
         public ElementController InToolElementController;
         public ElementController OutToolElementController;
 
-        public TemporaryToolView InTool;
-        public TemporaryToolView OutTool;
+        public ToolViewModel InTool;
+        public ToolViewModel OutTool;
 
 
 
         //public LinkModel LinkModel { get; }
         //private SolidColorBrush _defaultColor;
-        public ToolLinkViewModel(TemporaryToolView inTool, TemporaryToolView outTool)
+        public ToolLinkViewModel(ToolViewModel inTool, ToolViewModel outTool)
         {
             //InToolController
             InTool = inTool;
             OutTool = outTool;
+            
 
-
-            InToolController = ((ToolViewModel)inTool.DataContext).Controller;
-            OutToolController = ((ToolViewModel)outTool.DataContext).Controller;
+            InToolController = inTool.Controller;
+            OutToolController = outTool.Controller;
 
             InToolController.LocationChanged += InToolController_LocationChanged; ;
             OutToolController.LocationChanged += OutToolController_LocationChanged; ;
