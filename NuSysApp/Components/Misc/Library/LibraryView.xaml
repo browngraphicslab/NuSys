@@ -240,7 +240,7 @@
 
 
     <Grid x:Name="Container" Width="450" Height="500" BorderBrush="{StaticResource color3}">
-        <Grid x:Name="Pivot" Background="{StaticResource color2}" BorderBrush="{StaticResource color3}" BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid x:Name="Pivot" Background="{StaticResource color1}" BorderBrush="{StaticResource color3}" BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
                 <RowDefinition Height="42"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
@@ -248,7 +248,7 @@
             </Grid.RowDefinitions>
             <Grid x:Name="xHeaderRow" Grid.Row="0" HorizontalAlignment="Stretch"  Background="Transparent">
                 <Grid>
-                    <TextBlock Text="Library" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Foreground="White" FontSize="24" Margin="5,5,5,5"></TextBlock>
+                    <TextBlock Text="Library" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Foreground="{StaticResource color3}" FontSize="24" Margin="5,5,5,5"></TextBlock>
                     <Button HorizontalAlignment="Right" Margin="0,0,0,3"  Height="40" Width="50"  Tapped="Folder_Tapped" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Bottom">
                         <Image Source="ms-appx:/Assets/add from file.png"></Image>
                     </Button>
@@ -275,7 +275,7 @@
                     <local:TextInputBlock x:Name ="Searchfield"  Width="400"  BubbleTop="False" TextChanged="TextBox_OnTextChanging"  LeftJustified="True" Height="34" ></local:TextInputBlock>
                 </Canvas>
                 <Border  HorizontalAlignment="Right" Background="Transparent"  x:Name="xSearchExportButton" ManipulationMode="TranslateX,TranslateY" ManipulationStarted="XSearchExportButton_OnManipulationStarted" ManipulationDelta="XSearchExportButton_OnManipulationDelta" ManipulationCompleted="XSearchExportButton_OnManipulationCompleted" PointerPressed="XSearchExportButton_OnPointerPressed">
-                    <TextBlock Text="&#xE8AD;" FontFamily="Segoe MDL2 Assets" Margin="10,15,10,10" Foreground="White"></TextBlock>
+                    <TextBlock Text="&#xE8AD;" FontFamily="Segoe MDL2 Assets" Margin="10,15,10,10" Foreground="{StaticResource color3}"></TextBlock>
                 </Border>
 
             </Grid>
