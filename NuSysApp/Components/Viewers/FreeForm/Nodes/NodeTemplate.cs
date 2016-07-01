@@ -367,6 +367,7 @@ namespace NuSysApp
                         if (_currenDragMode == DragMode.Link)
                         {
                           SessionController.Instance.LinkController.RequestLink(dc.ContentId, vm.ContentId); 
+                            vm.Controller.RequestVisualLinkTo();
                         }
                         if (_currenDragMode == DragMode.PresentationLink)
                         {

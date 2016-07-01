@@ -21,6 +21,9 @@ namespace NuSysApp
 
         public delegate void ChildRemovedEventHandler(string id);
         public event ChildRemovedEventHandler OnChildRemoved;
+
+        public delegate void LinkAddedEventHandler();
+        public event LinkAddedEventHandler OnLinkAdded;
         public CollectionLibraryElementModel(string id, Dictionary<String, MetadataEntry> metadata = null, string contentName = null, bool favorited = false) : base(id, ElementType.Collection, metadata, contentName)
         {
             _children = new HashSet<string>();
@@ -54,6 +57,10 @@ namespace NuSysApp
                 return true;
             }
             return false;
+        }
+        public void addLink()
+        {
+            OnLinkAdded?.Invoke();
         }
 
         private void ElementControllerOnDeleted(object source)
