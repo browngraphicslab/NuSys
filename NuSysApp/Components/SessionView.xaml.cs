@@ -210,12 +210,28 @@ namespace NuSysApp
         public void EnterPresentationMode(ElementViewModel em)
         {
             _modeInstance = new PresentationMode(em);
-           
+
+            // change the proper visibilities
+            xFloatingMenu.Visibility = Visibility.Collapsed;
             NextNode.Visibility = Visibility.Visible;
             PreviousNode.Visibility = Visibility.Visible;
             CurrentNode.Visibility = Visibility.Visible;
-
             xPresentation.Visibility = Visibility.Visible;
+
+            // center the buttons
+            var buttonMargin = 10;
+            var top = mainCanvas.ActualHeight - PreviousNode.Height - buttonMargin;
+            var buttonWidth = PreviousNode.Width;
+            var left = (mainCanvas.ActualWidth - buttonMargin) / 2.0 - (2 * buttonWidth) - buttonMargin;
+            var buttonDiff = buttonWidth + buttonMargin;
+            foreach (var button in new List<Button> { PreviousNode, NextNode, CurrentNode, xPresentation })
+            {
+                Canvas.SetLeft(button, left);
+                Canvas.SetTop(button, top);
+                left += buttonDiff;
+            }
+
+            // set the buttons
             SetModeButtons();
         }
 
@@ -223,16 +239,33 @@ namespace NuSysApp
         {
             _modeInstance = new ExplorationMode(em);
 
+            /* uncomment this and go into exploration mode for a good time :)
             var myCanvasPic = new ImageBrush() {ImageSource = new BitmapImage(new Uri("ms-appx:///Assets/tedCruzCanvasBackdrop.jpg"))};
-            FreeFormViewer.CanvasColor = myCanvasPic;//new SolidColorBrush(Colors.Chartreuse);
+            FreeFormViewer.CanvasColor = myCanvasPic;
+            */
 
+            // change the proper visibilities
+            xFloatingMenu.Visibility = Visibility.Collapsed;
             NextNode.Visibility = Visibility.Visible;
             PreviousNode.Visibility = Visibility.Visible;
             CurrentNode.Visibility = Visibility.Visible;
-
             xPresentation.Visibility = Visibility.Visible;
+
+            // center the buttons
+            var buttonMargin = 10;
+            var top = mainCanvas.ActualHeight - PreviousNode.Height - buttonMargin;
+            var buttonWidth = PreviousNode.Width;
+            var left = (mainCanvas.ActualWidth - buttonMargin)/2.0 - (2*buttonWidth) - buttonMargin;
+            var buttonDiff = buttonWidth + buttonMargin;
+            foreach(var button in new List<Button> {PreviousNode, NextNode, CurrentNode, xPresentation})
+            {
+                Canvas.SetLeft(button, left);
+                Canvas.SetTop(button, top);
+                left += buttonDiff;
+            }
+
+            // set the buttons
             SetModeButtons();
-            
         }
 
         /// <summary>
@@ -264,11 +297,13 @@ namespace NuSysApp
             PreviousNode.Visibility = Visibility.Collapsed;
             CurrentNode.Visibility = Visibility.Collapsed;
             xPresentation.Visibility = Visibility.Collapsed;
-            FreeFormViewer.CanvasColor = new SolidColorBrush(Colors.White);
+            xFloatingMenu.Visibility = Visibility.Visible;
+
+            //FreeFormViewer.CanvasColor = new SolidColorBrush(Colors.White);
 
         }
 
-       
+
 
         private void Presentation_OnClick(object sender, RoutedEventArgs e)
         {

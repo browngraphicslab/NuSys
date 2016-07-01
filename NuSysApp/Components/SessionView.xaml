@@ -59,16 +59,16 @@
         <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5,0,0,50"></local:ChatPopupView >
 
 
-            <Button x:Name="PreviousNode" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="{StaticResource color3}" Width="50" Height="50" Margin="50,40,0,10" Visibility="Collapsed">
+            <Button x:Name="PreviousNode" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="{StaticResource color3}" Width="50" Height="50" Visibility="Collapsed">
             <Image Source="/Assets/presentation_backward.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,5,0"></Image>
         </Button>
-            <Button x:Name="NextNode" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="{StaticResource color3}" Width="50" Height="50" Margin="115,40,0,10" Visibility="Collapsed">
+            <Button x:Name="NextNode" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="{StaticResource color3}" Width="50" Height="50" Visibility="Collapsed">
             <Image Source="/Assets/presentation_forward.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5,0,0,0"></Image>
         </Button>
-            <Button x:Name="CurrentNode"  Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="{StaticResource color3}" Width="50" Height="50" Margin="180,40,0,10" Visibility="Collapsed">
+            <Button x:Name="CurrentNode"  Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="{StaticResource color3}" Width="50" Height="50" Visibility="Collapsed">
             <Image Source="/Assets/icon_mainmenu_node.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Button>
-            <Button x:Name="xPresentation" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="{StaticResource color3}" Width="50" Height="50" Margin="245,40,0,10" Visibility="Collapsed">
+            <Button x:Name="xPresentation" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="{StaticResource color3}" Width="50" Height="50" Visibility="Collapsed">
             <Image Source="/Assets/icon_whitex.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Button>
 

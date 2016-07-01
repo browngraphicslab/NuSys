@@ -85,7 +85,9 @@ namespace NuSysApp.Util
             if (Next())
             {
                 _explorationHistory.Push(_currentNode);
-                _currentNode = _explorationFuture.Pop();   
+                _currentNode.IsSelected = false;
+                _currentNode = _explorationFuture.Pop();
+                _currentNode.IsSelected = true;
                 FullScreen();
             }
         }
@@ -128,8 +130,10 @@ namespace NuSysApp.Util
                 }
 
                 _explorationFuture.Push(_currentNode);
+                _currentNode.IsSelected = false;
 
                 _currentNode = _explorationHistory.Pop();
+                _currentNode.IsSelected = true;
                 FullScreen();
 
                 
