@@ -27,7 +27,7 @@ namespace NuSysApp
     {
 
         private ElementViewModel _activeVm;
-        private object _metadataPivotItem;
+        private object _regionEditorPivotItem;
         
         public DetailViewerView()
         {
@@ -173,13 +173,13 @@ namespace NuSysApp
                 xMetadataEditorView.Update();
                 if (xRootPivot.Items.Count == 2)
                 {
-                    var pivotItem = _metadataPivotItem as PivotItem;
+                    var pivotItem = _regionEditorPivotItem as PivotItem;
                     xRootPivot.Items.Add(pivotItem);
 
                 }
             } else if (metadatable.MetadatableType() == MetadatableType.Region)
             {
-                _metadataPivotItem = xRootPivot.Items[2];
+                _regionEditorPivotItem = xRootPivot.Items[2];
                 xRootPivot.Items.RemoveAt(2);
                 xMetadataEditorView.Metadatable = metadatable;
                 xMetadataEditorView.Update();

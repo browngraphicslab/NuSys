@@ -297,8 +297,14 @@
     <Compile Include="Components\Tools\ToolLinkViewModel.cs" />
     <Compile Include="Components\Tools\ToolModel.cs" />
     <Compile Include="Components\Tools\ToolViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\ILinkable.cs" />
     <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
     <Compile Include="Components\Viewers\Detail\Sizeable.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\LinkEditorTab.xaml.cs">
+      <DependentUpon>LinkEditorTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\LinkEditorTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\LinkTemplate.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">
       <DependentUpon>AudioMediaPlayer.xaml</DependentUpon>
     </Compile>
@@ -879,6 +885,10 @@
     <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\LinkDetailHomeTabView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\LinkEditorTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\Detail\Views\MetadataEditorTabView.xaml">
       <SubType>Designer</SubType>
