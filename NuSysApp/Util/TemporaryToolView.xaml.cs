@@ -323,62 +323,53 @@ namespace NuSysApp
 
         private void xList_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-        //    //don't think this is necessary
-        //    var view = SessionController.Instance.SessionView;
-        //    _x = e.GetCurrentPoint(view).Position.X - 25;
-        //    _y = e.GetCurrentPoint(view).Position.Y - 25;
-        //    e.Handled = true;
-        //    CapturePointer(e.Pointer);
-
+            //_x = e.GetCurrentPoint(xCanvas).Position.X;
+            //_y = e.GetCurrentPoint(xCanvas).Position.Y;
+            //    e.Handled = true;
+            //    CapturePointer(e.Pointer);
         }
 
-        private void xList_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        private async void xList_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
+            _x = e.Position.X;
+            _y = e.Position.Y;
 
-            //LibraryElementModel element = SessionController.Instance.ContentController.GetContent(xPropertiesList.SelectedItem as string);
-            //if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element.LibraryElementId) || (element.Type == ElementType.Link))
-            //{
-            //    e.Handled = true;
-            //    return;
-            //}
+            var el = (FrameworkElement)sender;
+            var x = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
 
+            if (xCanvas.Children.Contains(_dragItem))
+                xCanvas.Children.Remove(_dragItem);
 
-            //var view = SessionController.Instance.SessionView;
-            //view.LibraryDraggingRectangle.SwitchType(element.Type);
-            //view.LibraryDraggingRectangle.Show();
-            //var rect = view.LibraryDraggingRectangle;
-            //Canvas.SetZIndex(rect, 3);
-            //rect.RenderTransform = new CompositeTransform();
-            //var t = (CompositeTransform)rect.RenderTransform;
+            var button = xFilterElement;
+            double f = e.Position.X;
 
+            var bmp = new RenderTargetBitmap();
+            await bmp.RenderAsync(button);
+            _dragItem = new Image();
+            _dragItem.Source = bmp;
+            _dragItem.Width = 50;
+            _dragItem.Height = 50;
+            xCanvas.Children.Add(_dragItem);
+            _dragItem.RenderTransform = new CompositeTransform();
+            (sender as FrameworkElement).AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta), true);
+            
+            Canvas.SetZIndex(_dragItem, 3);
+            _dragItem.RenderTransform = new CompositeTransform();
+            var t = (CompositeTransform)_dragItem.RenderTransform;
 
-            //t.TranslateX += _x;
-            //t.TranslateY += _y;
+            t.TranslateX += e.Position.X;
+            t.TranslateY += e.Position.Y;
 
-            //if (!SessionController.Instance.ContentController.ContainsAndLoaded(element.LibraryElementId))
-            //{
-            //    Task.Run(async delegate
-            //    {
-            //        SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(element.LibraryElementId);
-            //    });
-            //}
-
-            e.Handled = true;
+            //e.Handled = true;
         }
 
         private void xList_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            //LibraryElementModel element = SessionController.Instance.ContentController.GetContent(xPropertiesList.SelectedItem as string);
-            //if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
-            //{
-            //    e.Handled = true;
-            //    return;
-            //}
 
-            //var el = (FrameworkElement)sender;
-            //var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
+            var el = (FrameworkElement)sender;
+            var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
 
-            //var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(sp, null).Where(i => i is LibraryView);
+            var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(sp, null).Where(i => i is LibraryView);
             //if (itemsBelow.Any())
             //{
             //    SessionController.Instance.SessionView.LibraryDraggingRectangle.Hide();
@@ -388,40 +379,35 @@ namespace NuSysApp
             //    SessionController.Instance.SessionView.LibraryDraggingRectangle.Show();
 
             //}
-            //var view = SessionController.Instance.SessionView;
-            //var rect = view.LibraryDraggingRectangle;
-            //var t = (CompositeTransform)rect.RenderTransform;
+            
+            var t = (CompositeTransform)_dragItem.RenderTransform;
 
-            //t.TranslateX += e.Delta.Translation.X;
-            //t.TranslateY += e.Delta.Translation.Y;
+            t.TranslateX += e.Delta.Translation.X;
+            t.TranslateY += e.Delta.Translation.Y;
 
-            //_x += e.Delta.Translation.X;
-            //_y += e.Delta.Translation.Y;
+            _x += e.Delta.Translation.X;
+            _y += e.Delta.Translation.Y;
 
 
-            e.Handled = true;
+
+            //e.Handled = true;
         }
 
         private async void xList_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            //LibraryElementModel element = SessionController.Instance.ContentController.GetContent(xPropertiesList.SelectedItem as string);
-            //if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
-            //{
-            //    e.Handled = true;
-            //    return;
-            //}
-
-            //var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
 
 
-            //if (rect.Visibility == Visibility.Collapsed)
-            //    return;
 
-            //rect.Hide();
+
+            if (_dragItem.Visibility == Visibility.Collapsed)
+                return;
+
+            xCanvas.Children.Remove(_dragItem);
+
             //var r = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(_x, _y));
-            //await this.AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type, element.LibraryElementId);
+            //await _library.AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type, element.LibraryElementId);
 
-            e.Handled = true;
+            //e.Handled = true;
         }
 
 
