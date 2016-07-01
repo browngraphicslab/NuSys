@@ -77,10 +77,10 @@ namespace NuSysApp.Util
         private void Grid_OnTapped(object sender, PointerRoutedEventArgs e)
         {
             var grid = sender as Grid;
-            var block = grid.Children[1] as TextBlock;
-            var model = block.DataContext as LibraryElementModel;
+            var block = grid?.FindName("xListViewItem") as TextBlock;
+            var model = block?.DataContext as LibraryElementModel;
             
-            var vms = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => ((ElementViewModel)item.DataContext).Controller.LibraryElementModel.Id == model.Id);
+            var vms = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => ((ElementViewModel)item.DataContext).Controller.LibraryElementModel.Id == model?.Id);
             var foo = vms.ToList();
             var element = foo[0].DataContext as ElementViewModel;
             SessionController.Instance.SessionView.Explore(element);

@@ -11,7 +11,7 @@
     d:DesignWidth="400">
 
     <!-- On Wednesdays, we code in pink-->
-    <Grid x:Name="xRootGrid" Width="300" Height="300" Background="{StaticResource color4}" ManipulationMode="TranslateX,TranslateY" ManipulationDelta="XRootGrid_OnManipulationDelta">
+    <Grid x:Name="xRootGrid" Width="300" Background="{StaticResource color1}" ManipulationMode="TranslateX,TranslateY" ManipulationDelta="XRootGrid_OnManipulationDelta">
 
 
         <Grid.RowDefinitions>
@@ -33,19 +33,25 @@
         </Grid>
 
 
-        <ListView Grid.Row="1" Background="Gainsboro" x:Name="xListView" ItemsSource="{x:Bind RelatedElements}" Padding="0,5,0,5" SelectionMode="Extended">
+        <ListView Grid.Row="1" Background="White" x:Name="xListView" ItemsSource="{x:Bind RelatedElements}" SelectionMode="Extended" >
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="Margin" Value="0"/>
+                    <Setter Property="Height" Value="Auto"/>
+                    <Setter Property="MinHeight" Value="0"/>
                 </Style>
             </ListView.ItemContainerStyle>
+
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="nuSysApp:LibraryElementModel">
-                    <Grid PointerPressed="Grid_OnTapped" Padding="5">
-                        <Grid Background="Gray" Opacity=".5"></Grid>
-                        <TextBlock Text="{x:Bind Title}" x:Name="ListViewItem" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-
-                        </TextBlock>
+                    <Grid PointerPressed="Grid_OnTapped" BorderBrush="Gray" BorderThickness="2" Background="White">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="11*"/>
+                            <ColumnDefinition Width="19*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{x:Bind Title}" x:Name="xListViewItem" Grid.ColumnSpan="2" Padding="5,5"/>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
@@ -56,13 +62,10 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
-                
+
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0" x:Name="xRandomButton" HorizontalAlignment="Left"  Tapped="XRandomButton_OnTapped"  Padding="10,0,10,0">
-                <TextBlock Text="R" Foreground="White" FontSize="24"/>
-            </Border>
-            <TextBox Grid.Column="1" PlaceholderText="Implement Search Later" VerticalContentAlignment="Center"></TextBox>
+            <Border Grid.Column="0" x:Name="xRandomButton" HorizontalAlignment="Left"  Tapped="XRandomButton_OnTapped"  Padding="10,0,10,0" Height="30"/>
         </Grid>
 
 

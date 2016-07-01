@@ -213,12 +213,10 @@ namespace NuSysApp
 
             // change the proper visibilities
             xFloatingMenu.Visibility = Visibility.Collapsed;
-            NextNode.Visibility = Visibility.Visible;
-            PreviousNode.Visibility = Visibility.Visible;
-            CurrentNode.Visibility = Visibility.Visible;
-            xPresentation.Visibility = Visibility.Visible;
+            this.xDetailViewer.Visibility = Visibility.Collapsed;
 
-            // center the buttons
+
+            // center the buttons, make them visibile
             var buttonMargin = 10;
             var top = mainCanvas.ActualHeight - PreviousNode.Height - buttonMargin;
             var buttonWidth = PreviousNode.Width;
@@ -229,6 +227,7 @@ namespace NuSysApp
                 Canvas.SetLeft(button, left);
                 Canvas.SetTop(button, top);
                 left += buttonDiff;
+                button.Visibility = Visibility.Visible;
             }
 
             // set the buttons
@@ -246,22 +245,20 @@ namespace NuSysApp
 
             // change the proper visibilities
             xFloatingMenu.Visibility = Visibility.Collapsed;
-            NextNode.Visibility = Visibility.Visible;
-            PreviousNode.Visibility = Visibility.Visible;
-            CurrentNode.Visibility = Visibility.Visible;
-            xPresentation.Visibility = Visibility.Visible;
+            this.xDetailViewer.Visibility = Visibility.Collapsed;
 
-            // center the buttons
+            // center the buttons, make them visibile
             var buttonMargin = 10;
             var top = mainCanvas.ActualHeight - PreviousNode.Height - buttonMargin;
             var buttonWidth = PreviousNode.Width;
-            var left = (mainCanvas.ActualWidth - buttonMargin)/2.0 - (2*buttonWidth) - buttonMargin;
+            var left = (mainCanvas.ActualWidth - buttonMargin) / 2.0 - (2 * buttonWidth) - buttonMargin;
             var buttonDiff = buttonWidth + buttonMargin;
-            foreach(var button in new List<Button> {PreviousNode, NextNode, CurrentNode, xPresentation})
+            foreach (var button in new List<Button> { PreviousNode, NextNode, CurrentNode, xPresentation })
             {
                 Canvas.SetLeft(button, left);
                 Canvas.SetTop(button, top);
                 left += buttonDiff;
+                button.Visibility = Visibility.Visible;
             }
 
             // set the buttons
