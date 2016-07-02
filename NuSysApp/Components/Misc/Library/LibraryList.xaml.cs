@@ -354,13 +354,6 @@ namespace NuSysApp
             LibraryElementModel element = SessionController.Instance.ContentController.GetContent(itemTemplate.ContentID);
             SessionController.Instance.SessionView.ShowDetailView(SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId));
         }
-
-        private void RegionsPanel_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-            var panel = sender as Grid;
-            if (panel == null) return;
-            panel.Visibility = Visibility.Collapsed;
-        }
     }
 
 }

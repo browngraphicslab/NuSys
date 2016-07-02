@@ -184,11 +184,11 @@
                                 <Border.RenderTransform>
                                     <TranslateTransform Y="-20"></TranslateTransform>
                                 </Border.RenderTransform>
-                                <Image Source="ms-appx:///Assets/icon_whitex.png" VerticalAlignment="Top" RenderTransformOrigin="0,1">
-                                    <Image.RenderTransform>
+                                <TextBlock Text="X" Foreground="White" FontSize="20" VerticalAlignment="Top" RenderTransformOrigin="0,1">
+                                    <TextBlock.RenderTransform>
                                         <RotateTransform Angle="90"></RotateTransform>
-                                    </Image.RenderTransform>
-                                </Image>
+                                    </TextBlock.RenderTransform>
+                                </TextBlock>
                             </Border>
                             <Border x:Name="Tab" Tapped="TabList_OnTapped">
                                 <Border.RenderTransform>
@@ -247,31 +247,26 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
-                <RowDefinition Height="515*"></RowDefinition>
-                <RowDefinition Height="67*"/>
-                <RowDefinition Height="112*"/>
-                <RowDefinition Height="194*"/>
-                <RowDefinition Height="12*"/>
+                <RowDefinition Height="*"></RowDefinition>
 
             </Grid.RowDefinitions>
 
             <!-- NOT USED!!!!! -->
-            <TextBlock Visibility="Collapsed" Grid.Row="2" x:Name="metadataButton" HorizontalAlignment="Right" Text="Metadata" Foreground="{StaticResource darkforeground}" FontSize="24" Margin="0,0,125,515" Tapped="metaData_OnTapped"/>
+            <TextBlock Visibility="Collapsed" Grid.Row="0" x:Name="metadataButton" HorizontalAlignment="Right" Text="Metadata" Foreground="{StaticResource darkforeground}" FontSize="24" Margin="0,0,25,0" Tapped="metaData_OnTapped"/>
 
             <!-- NOT USED!!!!! -->
-            <Border Grid.Row="2" Visibility="Collapsed" x:Name="exitButton" HorizontalAlignment="Right" VerticalAlignment="Top" Tapped="closeDV_OnTapped" Padding="5,5,5,5" Margin="0,0,100,0">
+            <Border Grid.Row="0" Visibility="Collapsed" x:Name="exitButton" HorizontalAlignment="Right" VerticalAlignment="Top" Tapped="closeDV_OnTapped" Padding="5,5,5,5">
                 <TextBlock Text="x" Foreground="White" FontSize="24"/>
             </Border>
 
-            <Border Grid.Row="0" x:Name="exitButton2" HorizontalAlignment="Left" VerticalAlignment="Top" Tapped="closeDV_OnTapped"  Padding="5,0,5,0" Margin="0,0,0,0">
-                <!--<TextBlock Text="X" Foreground="White" FontSize="32"/>-->
-                <Image Source="ms-appx:///Assets/icon_whitex.png" Height="20"></Image>
+            <Border Grid.Row="0" x:Name="exitButton2" HorizontalAlignment="Left" VerticalAlignment="Top" Tapped="closeDV_OnTapped"  Padding="5,0,5,0">
+                <TextBlock Text="X" Foreground="White" FontSize="32"/>
             </Border>
 
-            <StackPanel Grid.Row="1" Canvas.ZIndex="100" x:Name="TitleEnter" BorderBrush="White" BorderThickness="0,0,0,1"  HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,0" Grid.RowSpan="2">
+            <StackPanel Grid.Row="1" Canvas.ZIndex="100" x:Name="TitleEnter" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,20">
                 <!--<TextBlock Text="{Binding Title}" Foreground="White" FontSize="30" CharacterSpacing="45" HorizontalAlignment="Stretch"/>-->
                 <local:TextInputBlock  x:Name ="TitleBox" FontWeight="SemiBold" LeftJustified="True"  FontSize="40" Foreground="{StaticResource darkforeground}" BubbleTop="False" SetHeight="40" HorizontalAlignment="Stretch" TextChanged="TitleBox_OnTextChanged"/>
-                <!--<Rectangle HorizontalAlignment="Stretch" Fill="White" Height="2"/>-->
+                    <!--<Rectangle HorizontalAlignment="Stretch" Fill="White" Height="2"/>-->
             </StackPanel>
 
             <Pivot x:Name="xRootPivot" Grid.Row="2" Margin="0,50,0,-40" Grid.RowSpan="5">
@@ -282,10 +277,7 @@
                     <!--Pivot content goes here-->
                     <ContentPresenter Grid.Row="2" x:Name ="nodeContent" Content="{Binding View}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></ContentPresenter>
                 </PivotItem>
-                <PivotItem>
-                    <PivotItem.Header Style="{StaticResource WhiteHeaderStyle}">
-                        <system:String>Metadata</system:String>
-                    </PivotItem.Header>
+                <PivotItem Header="Metadata">
                     <!--Pivot content goes here-->
                     <Grid>
                         <Grid.RowDefinitions>
@@ -340,7 +332,7 @@
                     </PivotItem.Header>
                     <local:RegionEditorTabView x:Name="xRegionEditorView"  Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></local:RegionEditorTabView>
                 </PivotItem>
-
+                   
             </Pivot>
 
 
