@@ -62,12 +62,12 @@ namespace NuSysApp
 
         public double GetWidth()
         {
-            return View.ActualWidth;
+            return (View as VideoDetailHomeTabView).VideoWidth;
         }
 
         public double GetHeight()
         {
-            return View.ActualHeight;
+            return (View as VideoDetailHomeTabView).VideoHeight;
         }
         public void MediaPlayerOnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
