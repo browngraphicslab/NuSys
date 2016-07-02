@@ -72,7 +72,7 @@ namespace NuSysApp
         private void RectangleRegionView_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = DataContext as VideoRegionViewModel;
-            if (vm == null || RectangleTranform == null)
+            if (vm == null || GridTransform == null)
             {
                 return;
             }
@@ -89,12 +89,12 @@ namespace NuSysApp
             {
                 return;
             }
-
-            RectangleTranform.TranslateX += e.Delta.Translation.X;
-            RectangleTranform.TranslateY += e.Delta.Translation.Y;
+            
+            GridTransform.TranslateX += e.Delta.Translation.X;
+            GridTransform.TranslateY += e.Delta.Translation.Y;
             
 
-            vm.SetRegionLocation(new Point(RectangleTranform.TranslateX, RectangleTranform.TranslateY));
+            vm.SetRegionLocation(new Point(GridTransform.TranslateX, GridTransform.TranslateY));
             e.Handled = true;
         }
 

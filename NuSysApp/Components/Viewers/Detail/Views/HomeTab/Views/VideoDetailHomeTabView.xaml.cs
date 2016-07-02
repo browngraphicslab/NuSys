@@ -72,7 +72,7 @@ namespace NuSysApp
             vm.Controller.Disposed -= ControllerOnDisposed;
         }
 
-        public double VideoWidth => VideoMediaPlayer.ActualWidth;
-        public double VideoHeight => VideoMediaPlayer.ActualHeight;
+        public double VideoWidth => VideoMediaPlayer.MediaPlayer.ActualWidth;
+        public double VideoHeight => VideoMediaPlayer.MediaPlayer.ActualHeight;
     }
 }
