@@ -176,7 +176,7 @@ namespace NuSysApp
         }
         
         //Returns all the library ids of everything in the previous filter
-        protected HashSet<string> GetUpdatedDataList()
+        public HashSet<string> GetUpdatedDataList()
         {
             var controllers = Model.ParentIds.Select(item => ToolControllers.ContainsKey(item) ? ToolControllers[item] : null);
             var list = new List<string>();

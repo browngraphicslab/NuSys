@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace NuSysApp
 {
-    public class MetadataToolViewModel:ToolViewModel
+    public class MetadataToolViewModel : ToolViewModel
     {
         public MetadataToolViewModel(ToolController toolController) : base(toolController)
         {
-            AllMetadataDictionary = new Dictionary<string, HashSet<string>>();
+            AllMetadataDictionary = new Dictionary<string, HashSet<ToolItemTemplate>>();
 
         }
 
@@ -16,12 +16,12 @@ namespace NuSysApp
         public ToolModel.ToolFilterTypeTitle Filter { get { return (_controller as MetadataToolController).MetadataToolModel.Filter; } set { (_controller as MetadataToolController).SetFilter(value); } }
 
 
-        public Dictionary<string, HashSet<string>> AllMetadataDictionary { get; set; }
+        public Dictionary<string, HashSet<ToolItemTemplate>> AllMetadataDictionary { get; set; }
 
 
         protected override void ReloadPropertiesToDisplay()
         {
-            
+
             AllMetadataDictionary = (_controller as MetadataToolController).GetAllMetadata();
             if ((_controller as MetadataToolController).MetadataToolModel.Selection != null && (_controller as MetadataToolController).MetadataToolModel.Selected == true)
             {
@@ -31,13 +31,24 @@ namespace NuSysApp
                     (_controller as MetadataToolController).UnSelect();
                     //AllMetadataDictionary = (_controller as MetadataToolController).GetAllMetadata();
                 }
-                else if(Selection.Item2 != null && !AllMetadataDictionary[Selection.Item1].Contains(Selection.Item2))
+                else if (Selection.Item2 != null && !ValueContainedWithinKey(Selection.Item1, Selection.Item2))
                 {
                     Selection = new Tuple<string, string>(Selection.Item1, null);
                 }
             }
             InvokePropertiesToDisplayChanged();
+        }
 
+        private bool ValueContainedWithinKey(string key, string value)
+        {
+            foreach (ToolItemTemplate item in AllMetadataDictionary[key])
+            {
+                if (item.Value.Equals(value))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

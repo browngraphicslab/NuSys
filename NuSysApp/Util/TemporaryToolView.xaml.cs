@@ -20,7 +20,6 @@ using WinRTXamlToolkit.Controls;
 using WinRTXamlToolkit.Controls.DataVisualization.Charting;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
-
 namespace NuSysApp
 {
 
@@ -35,6 +34,9 @@ namespace NuSysApp
 
 
         private enum DragMode { Filter, Collection };
+        private enum ViewMode { PieChart, List }
+
+        private ViewMode _currentViewMode;
         private DragMode _currentDragMode = DragMode.Filter;
 
 
@@ -47,8 +49,12 @@ namespace NuSysApp
 
         public TemporaryToolView(BasicToolViewModel vm, double x, double y)
         {
-            _dragItem = new Image();
             this.InitializeComponent();
+            _dragItem = new Image();
+            _dragItem.Source = new BitmapImage(new Uri("ms-appx:///Assets/filter.png"));
+            _dragItem.Height = 50;
+            _dragItem.Width = 50;
+            _currentViewMode = ViewMode.List;
             vm.Controller.SetLocation(x, y);
             this.DataContext = vm;
             xCollectionElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
@@ -63,10 +69,9 @@ namespace NuSysApp
             Binding b = new Binding();
             b.Path = new PropertyPath("PropertiesToDisplayUnique");
             xPropertiesList.SetBinding(ListBox.ItemsSourceProperty, b);
-            xUniqueButton.IsChecked = true;
             (PieChart.Series[0] as PieSeries).ItemsSource =
                     (DataContext as BasicToolViewModel).PieChartDictionary;
-            
+
 
         }
 
@@ -86,7 +91,6 @@ namespace NuSysApp
         public void Dispose()
         {
             xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
-            xUniqueButton.Checked -= XUniqueButton_OnChecked;
             (DataContext as BasicToolViewModel).PropertiesToDisplayChanged -= Vm_PropertiesToDisplayChanged;
             xResizer.ManipulationDelta -= Resizer_OnManipulationDelta;
         }
@@ -102,80 +106,9 @@ namespace NuSysApp
             var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(p.X, p.Y, 300, 300));
             var send = (FrameworkElement)sender;
 
-            if (_currentDragMode == DragMode.Filter)
+            if (_currentDragMode == DragMode.Collection)
             {
-                var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
-                var hitsStartList = hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList();
-                if (!hitsStartList.Any())
-                {
-                    hitsStartList = hitsStart.Where(uiElem => (uiElem is MetadataToolView)).ToList();
-                }
-                if (hitsStartList.Any())
-                {
-
-                    ToolViewModel toolViewModel;
-                    if ((hitsStartList.First() as TemporaryToolView) != null)
-                    {
-                        toolViewModel = (hitsStartList.First() as TemporaryToolView).DataContext as ToolViewModel;
-                    }
-                    else
-                    {
-                        toolViewModel = (hitsStartList.First() as MetadataToolView).DataContext as ToolViewModel;
-                    }
-                    if (true) //(first != this)
-                    {
-                        bool createsLoop = false;
-                        //checks if tools will create a loop, and prevent that from happening
-                        var controllers = new List<ToolController>((DataContext as ToolViewModel).Controller.Model.ParentIds.Select(item => ToolController.ToolControllers.ContainsKey(item) ? ToolController.ToolControllers[item] : null));
-
-                        while (controllers != null && controllers.Count != 0)
-                        {
-                            if (controllers.Contains(toolViewModel.Controller))
-                            {
-                                createsLoop = true;
-                                break;
-                            }
-                            var tempControllers = new List<ToolController>();
-                            foreach (var controller in controllers)
-                            {
-                                tempControllers = new List<ToolController>(tempControllers.Union(new List<ToolController>(
-                                        controller.Model.ParentIds.Select(
-                                            item =>
-                                                ToolController.ToolControllers.ContainsKey(item)
-                                                    ? ToolController.ToolControllers[item]
-                                                    : null))));
-                            }
-                            controllers = tempControllers;
-                        }
-                        if (createsLoop == false)
-                        {
-                            var linkviewmodel = new ToolLinkViewModel(this.DataContext as ToolViewModel, toolViewModel);
-                            var link = new ToolLinkView(linkviewmodel);
-                            Canvas.SetZIndex(link, Canvas.GetZIndex(this) - 1);
-                            wvm.AtomViewList.Add(link);
-                            toolViewModel.Controller.AddParent((DataContext as ToolViewModel).Controller);
-                        }
-
-                    }
-
-                }
-                else
-                {
-                    var toolFilter = new ToolFilterView(r.X, r.Y, DataContext as ToolViewModel);
-                    var toolFilterLinkViewModel = new ToolFilterLinkViewModel(DataContext as ToolViewModel, toolFilter);
-                    var toolFilterLink = new ToolFilterLinkView(toolFilterLinkViewModel);
-                    Canvas.SetZIndex(toolFilterLink, Canvas.GetZIndex(this) - 1);
-
-                    toolFilter.AddLink(toolFilterLink);
-                    wvm.AtomViewList.Add(toolFilter);
-                    wvm.AtomViewList.Add(toolFilterLink);
-                }
-
-
-            }
-            else if (_currentDragMode == DragMode.Collection)
-            {
-                var vm = DataContext as MetadataToolViewModel;
+                var vm = DataContext as ToolViewModel;
                 if (vm != null)
                 {
                     await Task.Run(async delegate
@@ -195,7 +128,7 @@ namespace NuSysApp
                         m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Model.LibraryId;
                         var collRequest = new NewElementRequest(m);
                         await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(collRequest);
-                        foreach (var id in vm.Controller.Model.LibraryIds)
+                        foreach (var id in vm.Controller.GetUpdatedDataList())
                         {
                             var lem = SessionController.Instance.ContentController.GetContent(id);
                             if (lem == null)
@@ -241,12 +174,13 @@ namespace NuSysApp
             {
                 _currentDragMode = DragMode.Collection;
             }
+
             var bmp = new RenderTargetBitmap();
             await bmp.RenderAsync((UIElement)sender);
             _dragItem = new Image();
             _dragItem.Source = bmp;
-            _dragItem.Width = 50;
-            _dragItem.Height = 50;
+            _dragItem.Width = ((Button)sender).Width;
+            _dragItem.Height = ((Button)sender).Height;
             xCanvas.Children.Add(_dragItem);
             _dragItem.RenderTransform = new CompositeTransform();
             (sender as FrameworkElement).AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta), true);
@@ -341,15 +275,9 @@ namespace NuSysApp
             xPropertiesList.SelectedItem = GetListItem(((sender as Grid).Children[0] as TextBlock).Text);
             xPropertiesList.SelectionChanged += XPropertiesList_OnSelectionChanged;
 
-            _currentDragMode = DragMode.Filter;
-            var button = xCollectionElement;
 
-            var bmp = new RenderTargetBitmap();
-            await bmp.RenderAsync(button);
-            _dragItem = new Image();
-            _dragItem.Source = bmp;
-            _dragItem.Width = 50;
-            _dragItem.Height = 50;
+            _currentDragMode = DragMode.Filter;
+
             xCanvas.Children.Add(_dragItem);
             _dragItem.RenderTransform = new CompositeTransform();
             var t = (CompositeTransform)_dragItem.RenderTransform;
@@ -362,13 +290,13 @@ namespace NuSysApp
         {
             if ((_dragItem.RenderTransform as CompositeTransform) != null)
             {
-                
+
                 var t = (CompositeTransform)_dragItem.RenderTransform;
                 var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
 
                 var p = e.Position;
-                t.TranslateX += e.Delta.Translation.X/zoom;
-                t.TranslateY += e.Delta.Translation.Y/zoom;
+                t.TranslateX += e.Delta.Translation.X / zoom;
+                t.TranslateY += e.Delta.Translation.Y / zoom;
             }
         }
 
@@ -392,20 +320,25 @@ namespace NuSysApp
                 if (hitsStartList.Any())
                 {
                     AddFilterToExistingTool(hitsStartList, wvm);
-                    
+
                 }
                 else
                 {
-                    var toolFilter = new ToolFilterView(r.X, r.Y, DataContext as ToolViewModel);
-                    var toolFilterLinkViewModel = new ToolFilterLinkViewModel(DataContext as ToolViewModel, toolFilter);
-                    var toolFilterLink = new ToolFilterLinkView(toolFilterLinkViewModel);
-                    Canvas.SetZIndex(toolFilterLink, Canvas.GetZIndex(this) - 1);
-                    toolFilter.AddLink(toolFilterLink);
-                    wvm.AtomViewList.Add(toolFilter);
-                    wvm.AtomViewList.Add(toolFilterLink);
+                    AddNewFilterTool(r.X, r.Y, wvm);
                 }
 
             }
+        }
+
+        public void AddNewFilterTool(double x, double y, FreeFormViewerViewModel wvm)
+        {
+            var toolFilter = new ToolFilterView(x, y, DataContext as ToolViewModel);
+            var toolFilterLinkViewModel = new ToolFilterLinkViewModel(DataContext as ToolViewModel, toolFilter);
+            var toolFilterLink = new ToolFilterLinkView(toolFilterLinkViewModel);
+            Canvas.SetZIndex(toolFilterLink, Canvas.GetZIndex(this) - 1);
+            toolFilter.AddLink(toolFilterLink);
+            wvm.AtomViewList.Add(toolFilter);
+            wvm.AtomViewList.Add(toolFilterLink);
         }
 
         public void AddFilterToExistingTool(List<UIElement> hitsStartList, FreeFormViewerViewModel wvm)
@@ -578,16 +511,6 @@ namespace NuSysApp
             e.Handled = true;
         }
 
-        private void xFilterList_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            e.Handled = true;
-        }
-
-        private void xFilterList_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-        {
-
-            e.Handled = true;
-        }
 
         private void DataPointSeries_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -595,6 +518,44 @@ namespace NuSysApp
             {
                 var selected = (sender as PieSeries).SelectedItem is KeyValuePair<string, int> ? (KeyValuePair<string, int>)(sender as PieSeries).SelectedItem : new KeyValuePair<string, int>();
                 (DataContext as BasicToolViewModel).Selection = selected.Key;
+            }
+        }
+
+        private void XPieChartButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (_currentViewMode == ViewMode.List)
+            {
+                Binding b = new Binding();
+                b.Path = new PropertyPath("PropertiesToDisplayUnique");
+                xPropertiesList.SetBinding(ListBox.ItemsSourceProperty, b);
+
+                if ((DataContext as BasicToolViewModel).Selection != null && xPropertiesList.SelectedItems.Count == 0)
+                {
+                    xPropertiesList.SelectedItem = GetListItem((DataContext as BasicToolViewModel).Selection);
+                }
+
+                PieChart.Visibility = Visibility.Visible;
+                xPropertiesList.Visibility = Visibility.Collapsed;
+                _currentViewMode = ViewMode.PieChart;
+            }
+        }
+
+        private void XListViewButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (_currentViewMode == ViewMode.PieChart)
+            {
+                Binding b = new Binding();
+                b.Path = new PropertyPath("PropertiesToDisplayUnique");
+                xPropertiesList.SetBinding(ListBox.ItemsSourceProperty, b);
+
+                if ((DataContext as BasicToolViewModel).Selection != null && xPropertiesList.SelectedItems.Count == 0)
+                {
+                    xPropertiesList.SelectedItem = GetListItem((DataContext as BasicToolViewModel).Selection);
+                }
+
+                PieChart.Visibility = Visibility.Collapsed;
+                xPropertiesList.Visibility = Visibility.Visible;
+                _currentViewMode = ViewMode.List;
             }
         }
     }

@@ -100,6 +100,8 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\collection icon bluegreen.png" />
+    <Content Include="Assets\filter.png" />
     <Content Include="Assets\icon_chat.png" />
     <Content Include="Assets\icon_collapse.png" />
     <Content Include="Assets\icon_delete_color.png" />
@@ -129,6 +131,7 @@
     <Content Include="Assets\icon_web_color.png" />
     <Content Include="Assets\icon_whitex.png" />
     <Content Include="Assets\ink.png" />
+    <Content Include="Assets\listview bluegreen.png" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\logos\150x150.png" />
     <Content Include="Assets\logos\150x150.scale-100.png" />
@@ -800,6 +803,7 @@
     <Content Include="Assets\icon_window_search.png" />
     <Content Include="Assets\icon_node_x.png" />
     <Content Include="Assets\icon_node_x2.png" />
+    <Content Include="Assets\piegraph bluegreen.png" />
     <Content Include="Assets\powerpointIcon.png" />
     <Content Include="Assets\presentation_backward.png" />
     <Content Include="Assets\presentation_forward.png" />

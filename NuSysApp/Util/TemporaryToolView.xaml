@@ -15,25 +15,25 @@
     RenderTransform="{Binding Transform}"
     IsDoubleTapEnabled="True">
 
-    <Canvas x:Name="xCanvas">
+    <Canvas x:Name="xCanvas" >
         <Grid Height="{Binding Height}" Width="{Binding Width}" MinHeight="100">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Grid x:Name ="xGrid" Grid.Row ="0" Background="LightCyan">
+            <Grid x:Name ="xGrid" Grid.Row ="0" BorderBrush="CadetBlue" BorderThickness="1" Background="White">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <TextBlock x:Name="xTitle" Text="Filter Type" Height="35" Grid.Row="0" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta"/>
+                <TextBlock x:Name="xTitle" TextAlignment="Center" Foreground="DarkSlateGray"  Text="Filter Type" Height="35" Grid.Row="0" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta"/>
                 <Charting:Chart Visibility="Collapsed" Grid.Row="1" x:Name="PieChart" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0" Width="Auto" Height="Auto">
                     <Charting:PieSeries  SelectionChanged="DataPointSeries_OnSelectionChanged" Margin="0" IndependentValuePath="Key" DependentValuePath="Value" IsSelectionEnabled="True"/>
                 </Charting:Chart>
                 <!--<ListBox x:Name="xPropertiesList" CanDrag="True" SelectionChanged="XPropertiesList_OnSelectionChanged"  Height="200" Grid.Row="1" Width="Auto" Background="AliceBlue" SelectionMode="Single" PointerPressed="xList_PointerPressed" ManipulationMode="TranslateX, TranslateY" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted"/>-->
-                <ListView x:Name="xPropertiesList" CanDrag="True" SelectionChanged="XPropertiesList_OnSelectionChanged"  Height="200" Grid.Row="1" Width="Auto" Background="AliceBlue" SelectionMode="Single" ItemsSource="{Binding PropertiesToDisplayUnique}" >
+                <ListView x:Name="xPropertiesList" CanDrag="True" ManipulationMode="All"  SelectionChanged="XPropertiesList_OnSelectionChanged"  Height="200" Grid.Row="1" Width="Auto" Background="White" SelectionMode="Single" ItemsSource="{Binding PropertiesToDisplayUnique}" >
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
@@ -44,21 +44,25 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid PointerPressed="xList_PointerPressed" ManipulationMode="TranslateX, TranslateY" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted">
-                                <TextBlock Text="{Binding Value}"/>
+                                <TextBlock Text="{Binding Value}" Foreground="DarkSlateGray"/>
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-                <StackPanel Name ="xbottompanel" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta">
+                <StackPanel Name ="xbottompanel" BorderBrush="CadetBlue"  BorderThickness="0.3" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta">
 
-                    <TextBlock x:Name="xUniqueText" Text="Unique" Margin="10,0,0,0"/>
-                    <ToggleButton x:Name="xUniqueButton" Checked="XUniqueButton_OnChecked" Unchecked="XUniqueButton_OnUnchecked" Margin="20,0,0,0"/>
+                    <Button x:Name="xPieChartButton" Click="XPieChartButton_OnClick"  Margin="20,0,0,0" Background="Transparent">
+                        <Image Source="ms-appx:///Assets/piegraph bluegreen.png" Height="20" Width="20"></Image>
+                    </Button>
+                    <Button x:Name="xListViewButton" Click="XListViewButton_OnClick"  Margin="20,0,0,0" Background="Transparent">
+                        <Image Source="ms-appx:///Assets/listview bluegreen.png" Height="20" Width="20"></Image>
+                    </Button>
                 </StackPanel>
             </Grid>
             <StackPanel Grid.Row="2" Orientation="Horizontal">
                 <Button x:Name="xCollectionElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Center" ManipulationDelta="XFilterElement_OnManipulationDelta">
                     <StackPanel>
-                        <Image Source="ms-appx:///Assets/icon_duplicate.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                        <Image Source="ms-appx:///Assets/collection icon bluegreen.png" Height="28" Width="28" Stretch="Uniform"></Image>
                         <TextBlock Text="Collection" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
                     </StackPanel>
                 </Button>
@@ -66,7 +70,7 @@
             <Path x:Name="xResizer" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
                       Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
                       Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" ManipulationDelta="Resizer_OnManipulationDelta"/>
-            
+
         </Grid>
 
     </Canvas>
