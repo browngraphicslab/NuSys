@@ -60,7 +60,10 @@ namespace NuSysApp
             var loadEventArgs = new LoadContentEventArgs(_message["data"]?.ToString());
             if (_message.ContainsKey("data") && _message["data"] != null)
             {
-                controller.Load(loadEventArgs);
+                if (libraryElement.Type != ElementType.Word)
+                {
+                    controller.Load(loadEventArgs);
+                }
             }
             libraryElement.ServerUrl = url;
         }

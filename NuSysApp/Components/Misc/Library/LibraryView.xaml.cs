@@ -415,20 +415,6 @@ namespace NuSysApp
                     {
                         m["server_url"] = serverURL;
                     }
-                    /*
-                    if (elementType == ElementType.PDF)
-                    {
-                        var document = await MediaUtil.DataToPDF(data);
-                        string d = "";
-                        int numPages = document.PageCount;
-                        int currPage = 0;
-                        while (currPage < numPages)
-                        {
-                            d = d + document.GetAllTexts(currPage);
-                            currPage++;
-                        }
-                        m["pdf_text"] = d;
-                    }*/
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(m));
                     vm.ClearSelection();
                     //   vm.ClearMultiSelection();

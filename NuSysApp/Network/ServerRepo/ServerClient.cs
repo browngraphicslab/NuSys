@@ -39,6 +39,12 @@ namespace NuSysApp
         public delegate void ClientJoinedEventHandler(NetworkUser user);
         public event ClientJoinedEventHandler OnClientJoined;
 
+        public delegate void LockAddedEventHandler(object sender, string id, string userId);
+        public event LockAddedEventHandler OnLockAdded;
+
+        public delegate void LockRemovedEventHandler(object sender, string id);
+        public event LockRemovedEventHandler OnLockRemoved;
+
         public static HashSet<string> NeededLibraryDataIDs = new HashSet<string>();
         public string ServerBaseURI { get; private set; }
 

@@ -176,6 +176,7 @@ namespace NuSysApp
         
         public void SetRegionSize(double width, double height)
         {
+            var h = height;
             var controller = RegionController as VideoRegionController;
             controller?.SetSize(width / ContainerViewModel.GetWidth(), height / ContainerViewModel.GetHeight());
         }

@@ -30,7 +30,7 @@ namespace NuSysApp
 
         public delegate void NewUserEventHandler(NetworkUser user);
         public event NewUserEventHandler OnNewNetworkUser;
-
+        public LockController LockController;
         #endregion Public Members
         #region Private Members
         private HashSet<string> NetworkMemberIPs
@@ -53,6 +53,7 @@ namespace NuSysApp
             _serverClient.OnClientDrop += ClientDrop;
             _serverClient.OnContentAvailable += ContentAvailable;
             _serverClient.OnClientJoined += AddNetworkUser;
+            LockController = new LockController(_serverClient);
         }
         #region Requests
 

@@ -99,7 +99,10 @@ namespace NuSysApp
             if (!visible)
             {
                 xListViewPresenter.Content = null;
-                xMainGrid.ColumnDefinitions.Remove(xSecondColumn);
+                if (xMainGrid.ColumnDefinitions.Contains(xSecondColumn))
+                {
+                    xMainGrid.ColumnDefinitions.Remove(xSecondColumn);
+                }
                 return;
             }
             else
@@ -107,7 +110,10 @@ namespace NuSysApp
                 if (type == ElementType.PDF)
                 {
                     xListViewPresenter.Content = new PDFRegionListView(DetailViewerView);
-                    xMainGrid.ColumnDefinitions.Add(xSecondColumn);
+                    if (!xMainGrid.ColumnDefinitions.Contains(xSecondColumn))
+                    {
+                        xMainGrid.ColumnDefinitions.Add(xSecondColumn);
+                    }
                     return;
                 }
             }

@@ -28,7 +28,6 @@ namespace NuSysApp
             Title = model.Name;
             SessionController.Instance.RegionsController.Add(this);
         }
-
         public void SetTitle(string title)
         {
             Model.Name = title;

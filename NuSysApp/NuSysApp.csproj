@@ -340,6 +340,8 @@
     <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoMediaPlayer.xaml.cs">
       <DependentUpon>VideoMediaPlayer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controller\LibraryElementController\LibraryElementControllerFactory.cs" />
+    <Compile Include="Controller\LibraryElementController\WordNodeLibraryElementController.cs" />
     <Compile Include="Controller\LinkController.cs" />
     <Compile Include="Controller\RectangleRegionController.cs" />
     <Compile Include="Controller\PdfRegionController.cs" />
@@ -627,6 +629,8 @@
       <DependentUpon>SearchWindowView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Network\Requests\UnsubscribeFromCollectionRequest.cs" />
+    <Compile Include="Network\ServerRepo\ILockable.cs" />
+    <Compile Include="Network\ServerRepo\LockController.cs" />
     <Compile Include="Network\ServerRepo\ServerClient.cs" />
     <Compile Include="Network\StaticServerCalls.cs" />
     <Compile Include="TransformHelper.cs" />
