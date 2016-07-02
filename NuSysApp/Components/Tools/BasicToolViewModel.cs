@@ -22,7 +22,7 @@ namespace NuSysApp
         {
             
             PropertiesToDisplay = new ObservableCollection<string>();
-            PropertiesToDisplayUnique = new ObservableCollection<string>();
+            PropertiesToDisplayUnique = new ObservableCollection<ToolItemTemplate>();
             PropertiesToDisplayPieChart = new ObservableCollection<ChartSlice>();
             
         }
@@ -53,7 +53,7 @@ namespace NuSysApp
                     if (!PieChartDictionary.ContainsKey(item))
                     {
                         PieChartDictionary.Add(item, 1);
-                        PropertiesToDisplayUnique.Add(item);
+                        PropertiesToDisplayUnique.Add(new ToolItemTemplate(item));
                     }
                     else
                     {
@@ -77,7 +77,7 @@ namespace NuSysApp
 
         public ObservableCollection<string> PropertiesToDisplay { get; set; }
 
-        public ObservableCollection<string> PropertiesToDisplayUnique { get; set; }
+        public ObservableCollection<ToolItemTemplate> PropertiesToDisplayUnique { get; set; }
 
         public ObservableCollection<ChartSlice> PropertiesToDisplayPieChart { get; set; } 
 

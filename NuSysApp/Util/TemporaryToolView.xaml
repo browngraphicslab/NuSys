@@ -32,8 +32,23 @@
                 <Charting:Chart Visibility="Collapsed" Grid.Row="1" x:Name="PieChart" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0" Width="Auto" Height="Auto">
                     <Charting:PieSeries  SelectionChanged="DataPointSeries_OnSelectionChanged" Margin="0" IndependentValuePath="Key" DependentValuePath="Value" IsSelectionEnabled="True"/>
                 </Charting:Chart>
-                <ListBox x:Name="xPropertiesList" SelectionChanged="XPropertiesList_OnSelectionChanged"  Height="200" Grid.Row="1" Width="Auto" Background="AliceBlue" SelectionMode="Single" PointerPressed="xList_PointerPressed" ManipulationMode="All" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted"/>
-                
+                <!--<ListBox x:Name="xPropertiesList" CanDrag="True" SelectionChanged="XPropertiesList_OnSelectionChanged"  Height="200" Grid.Row="1" Width="Auto" Background="AliceBlue" SelectionMode="Single" PointerPressed="xList_PointerPressed" ManipulationMode="TranslateX, TranslateY" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted"/>-->
+                <ListView x:Name="xPropertiesList" CanDrag="True" SelectionChanged="XPropertiesList_OnSelectionChanged"  Height="200" Grid.Row="1" Width="Auto" Background="AliceBlue" SelectionMode="Single" ItemsSource="{Binding PropertiesToDisplayUnique}" >
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
+                            <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="Padding" Value="5,5,5,5"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid PointerPressed="xList_PointerPressed" ManipulationMode="TranslateX, TranslateY" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted">
+                                <TextBlock Text="{Binding Value}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
                 <StackPanel Name ="xbottompanel" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta">
 
                     <TextBlock x:Name="xUniqueText" Text="Unique" Margin="10,0,0,0"/>
@@ -41,12 +56,6 @@
                 </StackPanel>
             </Grid>
             <StackPanel Grid.Row="2" Orientation="Horizontal">
-                <Button x:Name="xFilterElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Center" ManipulationDelta="XFilterElement_OnManipulationDelta">
-                    <StackPanel>
-                        <Image Source="ms-appx:///Assets/icon_duplicate.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                        <TextBlock Text="Filter" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
-                    </StackPanel>
-                </Button>
                 <Button x:Name="xCollectionElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Center" ManipulationDelta="XFilterElement_OnManipulationDelta">
                     <StackPanel>
                         <Image Source="ms-appx:///Assets/icon_duplicate.png" Height="28" Width="28" Stretch="Uniform"></Image>
