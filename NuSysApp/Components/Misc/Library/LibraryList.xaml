@@ -102,6 +102,8 @@
                     <Setter Property= "VerticalContentAlignment" Value="Stretch" />
                     <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
                     <Setter Property="Padding" Value="5,5,5,5"/>
+                    <Setter Property="MinHeight" Value="0"/>
+                    <Setter Property="Height" Value="Auto"/>
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
@@ -117,8 +119,7 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        
-                        <Grid x:Name="HeaderPanel" Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" Height="40" Tapped="HeaderPanel_OnTapped" DoubleTapped="HeaderPanel_OnDoubleTapped">
+                        <Grid x:Name="HeaderPanel" Background="White"  Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" Height="40" Tapped="HeaderPanel_OnTapped" DoubleTapped="HeaderPanel_OnDoubleTapped">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="50" />
                                 <ColumnDefinition Width="170" />
@@ -134,8 +135,8 @@
                             <TextBlock  Grid.Column="2" Grid.Row="0" Text="{Binding Type}" FontSize="14" Margin="4,0,4,0" VerticalAlignment="Center"/>
                             <TextBlock Grid.Column="3" Grid.Row="0" Text="{Binding Timestamp}" FontSize="14" Margin="4,0,0,0" VerticalAlignment="Center"/>
                         </Grid>
-                        
-                        <Grid x:Name="RegionsPanel" Grid.Row="1" Grid.ColumnSpan="4" Grid.Column="0" Visibility="Collapsed" MinHeight="50">
+
+                        <Grid x:Name="RegionsPanel" Grid.Row="1" Grid.ColumnSpan="4" Grid.Column="0" Visibility="Collapsed" MinHeight="50" Background="White" Tapped="RegionsPanel_OnTapped">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
