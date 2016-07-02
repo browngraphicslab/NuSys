@@ -49,7 +49,7 @@ namespace NuSysApp
             });
             await Goto(_pageNumber);
         }
-        private async Task Goto(int pageNumber)
+        public async Task Goto(int pageNumber)
         {
             if (_document == null)
                 return;

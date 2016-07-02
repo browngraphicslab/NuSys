@@ -89,6 +89,12 @@ namespace NuSysApp
         /// </summary>
         public void AddRegion(Region region)
         {
+            if (_libraryElementModel.Regions == null)
+            {
+                return;
+            }
+
+
             _libraryElementModel.Regions.Add(region);
 
             var factory = new RegionControllerFactory();

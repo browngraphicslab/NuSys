@@ -114,8 +114,8 @@ namespace NuSysApp
             regionController.SizeChanged += SizeChanged;
             regionController.LocationChanged += LocationChanged;
             regionController.IntervalChanged += IntervalChanged;
-            _height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y) * ContainerViewModel.GetHeight();
-            _width = (model.BottomRightPoint.X - model.TopLeftPoint.X) * ContainerViewModel.GetWidth();
+            _height = (model.Height) * ContainerViewModel.GetHeight();
+            _width = (model.Width) * ContainerViewModel.GetWidth();
             _topLeftPoint = new Point(model.TopLeftPoint.X * ContainerViewModel.GetWidth(), model.TopLeftPoint.Y * ContainerViewModel.GetHeight());
             _intervalStart = model.Start * ContainerViewModel.GetWidth();
             _intervalEnd = model.End * ContainerViewModel.GetWidth();

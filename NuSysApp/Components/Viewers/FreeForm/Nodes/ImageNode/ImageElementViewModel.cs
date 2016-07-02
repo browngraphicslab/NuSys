@@ -65,15 +65,15 @@ namespace NuSysApp
                 //var regionController = new RegionController(model as RectangleRegion);
                 //var regionController = SessionController.Instance.RegionControllersController.GetRegionController(model.Id);
 
-                RegionController regionController;
+                RectangleRegionController regionController;
                 if (SessionController.Instance.RegionsController.GetRegionController(model.Id) == null)
                 {
                     var factory = new RegionControllerFactory();
-                    regionController = factory.CreateFromSendable(model);
+                    regionController = factory.CreateFromSendable(model) as RectangleRegionController;
                     SessionController.Instance.RegionsController.Add(regionController);
                 }
                 else {
-                    regionController = SessionController.Instance.RegionsController.GetRegionController(model.Id);
+                    regionController = SessionController.Instance.RegionsController.GetRegionController(model.Id) as RectangleRegionController;
                 }
 
                 var viewmodel = new ImageRegionViewModel(model as RectangleRegion, elementController, regionController, this);
@@ -97,12 +97,13 @@ namespace NuSysApp
 
         private void LibraryElementControllerOnRegionAdded(object source, RegionController regionController)
         {
-            var imageRegion = regionController?.Model as RectangleRegion;
+            var rectRegionController = regionController as RectangleRegionController;
+            var imageRegion = rectRegionController?.Model as RectangleRegion;
             if (imageRegion == null)
             {
                 return;
             }
-            var vm = new ImageRegionViewModel(imageRegion, Controller.LibraryElementController, regionController, this);
+            var vm = new ImageRegionViewModel(imageRegion, Controller.LibraryElementController, rectRegionController, this);
             var view = new ImageRegionView(vm);
             vm.Editable = false;
             Regions.Add(view);

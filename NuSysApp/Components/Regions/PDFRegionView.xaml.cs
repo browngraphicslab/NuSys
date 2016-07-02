@@ -287,5 +287,22 @@ namespace NuSysApp
             var regionController = vm?.RegionController;
             SessionController.Instance.SessionView.ShowDetailView(regionController);
         }
+
+
+        private void xDelete_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+
+
+            var vm = this.DataContext as PdfRegionViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+
+            var libraryElementController = vm.LibraryElementController;
+            libraryElementController.RemoveRegion(vm.RegionController.Model);
+
+
+        }
     }
 }
