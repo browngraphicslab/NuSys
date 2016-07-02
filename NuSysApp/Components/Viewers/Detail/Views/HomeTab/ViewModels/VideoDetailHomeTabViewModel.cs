@@ -33,11 +33,12 @@ namespace NuSysApp
         public override void AddRegion(object sender, RegionController controller)
         {
             var videoRegion = controller?.Model as VideoRegionModel;
-            if (videoRegion == null)
+            var videoRegionController = controller as VideoRegionController;
+            if (videoRegion == null || videoRegionController == null)
             {
                 return;
             }
-            var vm = new VideoRegionViewModel(videoRegion, Controller, controller, this);
+            var vm = new VideoRegionViewModel(videoRegion, Controller, videoRegionController, this);
             var view = new VideoRegionView(vm);
             RegionViews.Add(view);
             RaisePropertyChanged("RegionViews");
@@ -77,13 +78,13 @@ namespace NuSysApp
         {
             foreach (var regionModel in regions)
             {
-                var VideoRegion = regionModel as VideoRegionModel;
-                if (VideoRegion == null)
+                var videoRegion = regionModel as VideoRegionModel;
+                if (videoRegion == null)
                 {
                     return;
                 }
-                var regionController = new RegionController(regionModel);
-                var vm = new VideoRegionViewModel(VideoRegion, Controller, regionController, this);
+                var regionController = new VideoRegionController(videoRegion);
+                var vm = new VideoRegionViewModel(videoRegion, Controller, regionController, this);
                 var view = new VideoRegionView(vm);
                 RegionViews.Add(view);
 
@@ -93,7 +94,7 @@ namespace NuSysApp
 
         public override Region GetNewRegion()
         {
-            var region = new VideoRegionModel(new Point(0.25, 0.25), new Point(0.75, 0.75), .25, .75);
+            var region = new VideoRegionModel(new Point(.25,.25), new Point(.75, .75) );
             return region;
         }
     }

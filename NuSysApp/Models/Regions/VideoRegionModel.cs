@@ -7,18 +7,14 @@ using Windows.Foundation;
 
 namespace NuSysApp
 {
-    public class VideoRegionModel : Region
+    public class VideoRegionModel : RectangleRegion
     {
-        public VideoRegionModel(Point topleft, Point bottomright, double start, double end, string name="untitled node") : base(name)
+        public VideoRegionModel(Point topLeft, Point bottomRight, double start = .25, double end = .75, string name="untitled node") : base(topLeft, bottomRight, name)
         {
-            TopLeft = topleft;
-            BottomRight = bottomright;
             Start = start;
             End = end;
             Type = RegionType.Video; 
         }
-        public Point TopLeft { get; set; }
-        public Point BottomRight { get; set; }
         public double Start { get; set; }
         public double End { get; set; }
 

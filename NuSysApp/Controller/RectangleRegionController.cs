@@ -9,8 +9,11 @@ namespace NuSysApp
 {
     public class RectangleRegionController : RegionController
     {
-        public event RegionSizeChangedEventHandler SizeChanged;
-        public delegate void RegionSizeChangedEventHandler(object sender, Point topLeft, Point bottomRight);
+        public event LocationChangedEventHandler LocationChanged;
+        public delegate void LocationChangedEventHandler(object sender, Point topLeft);
+
+        public event SizeChangedEventHandler SizeChanged;
+        public delegate void SizeChangedEventHandler(object sender, double width, double height);
 
         public RectangleRegion Model
         {
@@ -19,10 +22,18 @@ namespace NuSysApp
         public RectangleRegionController(RectangleRegion model) : base(model)
         {
         }
-        public void ChangeSize(Point topLeft, Point bottomRight)
+
+        public void SetSize(double width, double height)
         {
-            Model.TopLeftPoint = topLeft;
-            Model.BottomRightPoint = bottomRight;
+            Model.BottomRightPoint = new Point(Model.TopLeftPoint.X + width, Model.TopLeftPoint.Y + height);
+            SizeChanged?.Invoke(this,width,height);
+            UpdateServer();
+        }
+        public void SetLocation(Point topLeft)
+        {
+            Model.TopLeftPoint = new Point(Math.Max(0.001, topLeft.X), Math.Max(0.001, topLeft.Y));
+            LocationChanged?.Invoke(this, Model.TopLeftPoint);
+            UpdateServer();
         }
     }
 }

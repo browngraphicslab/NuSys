@@ -14,6 +14,39 @@ namespace NuSysApp
 {
     public class VideoNodeViewModel : ElementViewModel, Sizeable
     {
+        private ObservableCollection<VideoRegionView> _regionViews = new ObservableCollection<VideoRegionView>();
+        public ObservableCollection<VideoRegionView> RegionViews
+        {
+            get
+            {
+                _regionViews.Clear();
+                var elementController = Controller.LibraryElementController;
+                var regionHashSet = elementController.LibraryElementModel.Regions;
+
+                if (regionHashSet == null)
+                {
+                    return _regionViews;
+                }
+
+                foreach (var model in regionHashSet)
+                {
+                    var videoRegionModel = model as VideoRegionModel;
+                    if (videoRegionModel == null)
+                    {
+                        return _regionViews;
+                    }
+                    var regionController = new VideoRegionController(videoRegionModel);
+                    regionController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
+                    var viewmodel = new VideoRegionViewModel(videoRegionModel, elementController, regionController, this);
+                    viewmodel.Editable = false;
+                    var view = new VideoRegionView(viewmodel);
+                    _regionViews.Add(view);
+                }
+                return _regionViews;
+
+            }
+        }
+
         public VideoNodeViewModel(ElementController controller) : base(controller)
         {
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
@@ -102,31 +135,7 @@ namespace NuSysApp
             SetSize(width, height);
         }
 
-        public ObservableCollection<VideoRegionView> RegionViews
-        {
-            get
-            {
-                var collection = new ObservableCollection<VideoRegionView>();
-                var elementController = Controller.LibraryElementController;
-                var regionHashSet = elementController.LibraryElementModel.Regions;
-
-                if (regionHashSet == null)
-                    return collection;
-                
-                foreach (var model in regionHashSet)
-                {
-                    var regionController = new RegionController(model);
-                    regionController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
-                    var viewmodel = new VideoRegionViewModel(model as VideoRegionModel, elementController, regionController,this);
-                    viewmodel.Editable = false;
-                    var view = new VideoRegionView(viewmodel);
-                    collection.Add(view);
-                }
-                return collection;
-
-            }
-        }
-
+      
         public double GetWidth()
         {
             return Width;

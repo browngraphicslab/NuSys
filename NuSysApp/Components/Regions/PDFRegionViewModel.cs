@@ -123,9 +123,15 @@ namespace NuSysApp
             var normalBottomRightX = bottomRight.X / ContainerViewModel.GetWidth();
             var normalBottomRightY = bottomRight.Y / ContainerViewModel.GetHeight();
 
-            model.TopLeftPoint = new Point(normalTopLeftX, normalTopLeftY);
-            model.BottomRightPoint = new Point(normalBottomRightX, normalBottomRightY);
-            RegionController.UpdateRegion(Model);
+            var normalWidth = normalBottomRightX - normalTopLeftX;
+            var normalHeight = normalBottomRightY - normalTopLeftY;
+
+            //model.TopLeftPoint = new Point(normalTopLeftX, normalTopLeftY);
+            //model.BottomRightPoint = new Point(normalBottomRightX, normalBottomRightY);
+            //RegionController.UpdateRegion(Model);
+            var pdfRegionController = RegionController as PdfRegionController;
+            pdfRegionController?.SetLocation(new Point(normalTopLeftX, normalTopLeftY));
+            pdfRegionController?.SetSize(normalWidth, normalHeight);
         }
 
     }

@@ -7,24 +7,34 @@ using Windows.Foundation;
 
 namespace NuSysApp
 {
-    public class VideoRegionController : RegionController
+    public class VideoRegionController : RectangleRegionController
     {
-        public event RegionSizeChangedEventHandler SizeChanged;
-        public delegate void RegionSizeChangedEventHandler(object sender, Point topLeft, Point bottomRight);
+        public delegate void IntervalChangedEventHandler(object sender, double start, double end);
 
-        public VideoRegionModel Model
+        public event IntervalChangedEventHandler IntervalChanged;
+        public VideoRegionModel VideoRegionModel
         {
-            get { return base.Model  as VideoRegionModel;}
+            get
+            {
+                return base.Model as VideoRegionModel;
+            }
         }
         public VideoRegionController(VideoRegionModel model) : base(model)
         {
+            
         }
-        public void ChangeSize(double start, double end, Point topLeft, Point bottomRight)
+
+        public void SetStartTime(double startTime)
         {
-            Model.Start = start;
-            Model.End = end;
-            Model.TopLeft = topLeft;
-            Model.BottomRight = bottomRight;
+            VideoRegionModel.Start = startTime;
+            IntervalChanged?.Invoke(this, VideoRegionModel.Start, VideoRegionModel.End);
+            UpdateServer();
+        }
+        public void SetEndTime(double endTime)
+        {
+            VideoRegionModel.Start = endTime;
+            IntervalChanged?.Invoke(this, VideoRegionModel.Start, VideoRegionModel.End);
+            UpdateServer();
         }
     }
 }

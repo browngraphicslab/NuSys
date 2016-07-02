@@ -19,122 +19,171 @@ using NuSysApp.Nodes.AudioNode;
 namespace NuSysApp
 {
     public class VideoRegionViewModel : RegionViewModel
-    {
+    {/*
         public event PropertyChangedEventHandler PropertyChanged;
         public delegate void DoubleChanged(object sender, double e);
         public event DoubleChanged WidthChanged;
-        public event DoubleChanged HeightChanged;
-        public double Height { get;
-            set; }
-        public double Width{ get; set; }
+        public event DoubleChanged HeightChanged;*/
 
-        public double AudioRegionWidth
-        {
-            get
+        #region PrivateVariables
+        private double _width;
+        private double _height;
+        private double _intervalRegionWidth;
+        private double _intervalStart;
+        private double _intervalEnd;
+        private Point _topLeftPoint;
+        private bool _editable;
+        private double containerViewWidth;
+        private double containerViewHeight;
+        #endregion PrivateVariables
+        public bool Editable {
+            get { return _editable; }
+            set
             {
-                var model = RegionController.Model as VideoRegionModel;
-                return (model.End - model.Start) * ContainerViewModel.GetWidth();
+                _editable = value;
+                RaisePropertyChanged("Editable");
             }
         }
 
-        public double AudioRegionHeight
-        {
+        public double RectangleHeight {
             get
             {
-                return ContainerViewModel.GetHeight() - 95 - (Convert.ToDouble(!Editable) * 45);
+                return _height;
+            }
+            set
+            {
+                _height = value;
+                RaisePropertyChanged("RectangleHeight");
+            }
+        }
+        public double RectangleWidth {
+            get { return _width; }
+            set
+            {
+                _width = value;
+                RaisePropertyChanged("RectangleWidth");
             }
         }
 
-        public Boolean Editable { get; set; }
-        public double LeftHandleX
+
+        public double IntervalRegionWidth
         {
             get
             {
-                var model = RegionController.Model as VideoRegionModel;
-                return ContainerViewModel.GetWidth() * model.Start;
-            } 
+                return _intervalRegionWidth;
+            }
+            set
+            {
+                _intervalRegionWidth = value;
+                RaisePropertyChanged("IntervalRegionWidth");
+            }
         }
-        public double RightHandleX
+        public double IntervalStart
         {
-            get
+            get { return _intervalStart; }
+            set
             {
-                var model = RegionController.Model as VideoRegionModel;
-                return ContainerViewModel.GetWidth() * model.End;
+                _intervalStart = value; 
+                RaisePropertyChanged("IntervalStart");
+            }
+        }
+        public double IntervalEnd
+        {
+            get { return _intervalEnd; }
+            set
+            {
+                _intervalEnd = value;
+                RaisePropertyChanged("IntervalEnd");
             } 
         }
         public Point TopLeft 
         {
             get
             {
-                var model = RegionController.Model as VideoRegionModel;
-                return new Point(model.TopLeft.X* ContainerViewModel.GetWidth(), model.TopLeft.Y * ContainerViewModel.GetHeight());
-            } 
-        }
-        public Point BottomRight 
-        {
-            get
+                return new Point(_topLeftPoint.X, _topLeftPoint.Y); 
+            }
+            set
             {
-                var model = RegionController.Model as VideoRegionModel;
-                return new Point(model.BottomRight.X* ContainerViewModel.GetWidth(), model.BottomRight.Y * ContainerViewModel.GetHeight());
-            } 
+                _topLeftPoint = new Point(value.X, value.Y);
+                RaisePropertyChanged("TopLeft");
+            }
         }
-        public Point RectSize 
-        {
-            get
-            {
-                var model = RegionController.Model as VideoRegionModel;
-                return new Point((model.BottomRight.X - model.TopLeft.X)* ContainerViewModel.GetWidth(), (model.BottomRight.Y - model.TopLeft.Y) * ContainerViewModel.GetHeight());
-            } 
-        }
-
-        public VideoRegionViewModel(VideoRegionModel model, LibraryElementController controller, RegionController regionController,Sizeable sizeable) : base(model,controller, regionController,sizeable)
+        public VideoRegionViewModel(VideoRegionModel model, LibraryElementController controller, VideoRegionController regionController,Sizeable sizeable) : base(model,controller, regionController,sizeable)
         {
             ContainerSizeChanged += BaseSizeChanged;
-            Height = sizeable.GetHeight();
-            Width = sizeable.GetWidth();
+            regionController.SizeChanged += SizeChanged;
+            regionController.LocationChanged += LocationChanged;
+            regionController.IntervalChanged += IntervalChanged;
+            _height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y) * ContainerViewModel.GetHeight();
+            _width = (model.BottomRightPoint.X - model.TopLeftPoint.X) * ContainerViewModel.GetWidth();
+            _topLeftPoint = new Point(model.TopLeftPoint.X * ContainerViewModel.GetWidth(), model.TopLeftPoint.Y * ContainerViewModel.GetHeight());
+            _intervalStart = model.Start * ContainerViewModel.GetWidth();
+            _intervalEnd = model.End * ContainerViewModel.GetWidth();
+
+            containerViewHeight = ContainerViewModel.GetHeight();
+            containerViewWidth = ContainerViewModel.GetWidth();
+
             Editable = true;
         }
 
+        private void LocationChanged(object sender, Point topLeft)
+        {
+            TopLeft = new Point(topLeft.X * ContainerViewModel.GetWidth(), topLeft.Y * ContainerViewModel.GetHeight());
+        }
+
+        private void IntervalChanged(object sender, double start, double end)
+        {
+            IntervalStart = start*ContainerViewModel.GetWidth();
+            IntervalEnd = end*ContainerViewModel.GetWidth();
+        }
+
+        private void SizeChanged(object sender, double width, double height)
+        {
+            RectangleWidth = width * ContainerViewModel.GetWidth();
+            RectangleHeight = height * ContainerViewModel.GetHeight();
+        }
 
         private void BaseSizeChanged(object sender, double width, double height)
         {
-            var model = Model as VideoRegionModel;
-            if (model == null)
-            {
-                return;
-            }
-            Width = width;
-            Height = height;
-            RaisePropertyChanged("LeftHandleX");
-            RaisePropertyChanged("RightHandleX");
+            // set the different sizes based on the new width and height of the container view model
+            RectangleWidth *= width/containerViewWidth;
+            RectangleHeight *= height / containerViewHeight;
+            IntervalStart *= width/containerViewWidth;
+            IntervalEnd *= width/containerViewWidth;
+            TopLeft = new Point(width/containerViewWidth * TopLeft.X, height/containerViewHeight * TopLeft.Y);
+            containerViewWidth = width;
+            containerViewHeight = height;
+
+            RaisePropertyChanged("RectangleWidth");
+            RaisePropertyChanged("RectangleHeight");
+            RaisePropertyChanged("IntervalRegionWidth");
+            RaisePropertyChanged("IntervalStart");
+            RaisePropertyChanged("IntervalEnd");
             RaisePropertyChanged("TopLeft");
             RaisePropertyChanged("BottomRight");
-            RaisePropertyChanged("AudioRegionWidth");
-            RaisePropertyChanged("AudioRegionHeight");
-            RaisePropertyChanged("RectSize");
         }
 
-        internal void SetNewPoints(double Start, double End, Point TopLeft, Point BottomRight)
+        public void SetIntervalStart(double start)
         {
-            var model = RegionController.Model as VideoRegionModel;
-            if (model == null)
-            {
-                return;
-            }
-            model.Start += Start / ContainerViewModel.GetWidth();
-            model.End += End / ContainerViewModel.GetWidth();
-            model.BottomRight = new Point(model.BottomRight.X+(BottomRight.X/ContainerViewModel.GetWidth()),model.BottomRight.Y+(BottomRight.Y/ContainerViewModel.GetHeight()));
-            model.TopLeft = new Point(model.TopLeft.X+(TopLeft.X / ContainerViewModel.GetWidth()),model.TopLeft.Y+(TopLeft.Y / ContainerViewModel.GetHeight()));
+            var controller = RegionController as VideoRegionController;
+            controller?.SetStartTime(start / ContainerViewModel.GetWidth());
+        }
+        public void SetIntervalEnd(double end)
+        {
+            var controller = RegionController as VideoRegionController;
+            controller?.SetEndTime(end / ContainerViewModel.GetWidth());
+        }
+        
+        public void SetRegionSize(double width, double height)
+        {
+            var controller = RegionController as VideoRegionController;
+            controller?.SetSize(width / ContainerViewModel.GetWidth(), height / ContainerViewModel.GetHeight());
+        }
 
-            RegionController.UpdateRegion(model);
-
-            RaisePropertyChanged("LeftHandleX");
-            RaisePropertyChanged("RightHandleX");
-            RaisePropertyChanged("TopLeft");
-            RaisePropertyChanged("BottomRight");
-            RaisePropertyChanged("AudioRegionWidth");
-            RaisePropertyChanged("AudioRegionHeight");
-            RaisePropertyChanged("RectSize");
+        public void SetRegionLocation(Point topLeft)
+        {
+            var controller = RegionController as VideoRegionController;
+            controller?.SetLocation(new Point(topLeft.X / ContainerViewModel.GetWidth(), topLeft.Y / ContainerViewModel.GetHeight()));
         }
     }
 

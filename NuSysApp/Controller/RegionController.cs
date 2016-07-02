@@ -10,14 +10,18 @@ namespace NuSysApp
     public class RegionController : IMetadatable, ILinkable
     {
         public Region Model;
+        public string Title { get; set; }
 
         public delegate void TitleChangedEventHandler(object source, string title);
         public event TitleChangedEventHandler TitleChanged;
-
-        public string Title { get; set; }
-
         public delegate void RegionUpdatedEventHandler(object source, Region region);
         public event RegionUpdatedEventHandler RegionUpdated;
+        public delegate void SelectHandler(RegionController regionController);
+        public event SelectHandler OnSelect;
+        public delegate void DeselectHandler(RegionController regionController);
+        public event DeselectHandler OnDeselect;
+
+        private bool _selected;
         public RegionController(Region model)
         {
             Model = model;
@@ -30,9 +34,7 @@ namespace NuSysApp
             Model.Name = title;
             Title = title;
             TitleChanged?.Invoke(this, title);
-            SessionController.Instance.NuSysNetworkSession.UpdateRegion(Model);
-            
-            
+            UpdateServer();
         }
         public Dictionary<string, MetadataEntry> GetMetadata()
         {
@@ -76,6 +78,10 @@ namespace NuSysApp
             return Model.Metadata[key].Values;
         }
 
+        protected void UpdateServer()
+        {
+            SessionController.Instance.NuSysNetworkSession.UpdateRegion(Model);
+        }
         public MetadatableType MetadatableType()
         {
             return NuSysApp.MetadatableType.Region;
@@ -83,7 +89,7 @@ namespace NuSysApp
         public void UpdateRegion(Region region)
         {
             RegionUpdated?.Invoke(this, region);
-            SessionController.Instance.NuSysNetworkSession.UpdateRegion(region);
+            UpdateServer();
         }
 
         public void AddNewLink(string idToLinkTo)
@@ -94,6 +100,17 @@ namespace NuSysApp
         public void RemoveLink(string linkID)
         {
             SessionController.Instance.LinkController.RemoveLink(linkID);
+        }
+        public void Select()
+        {
+            _selected = true;
+            OnSelect?.Invoke(this);
+        }
+
+        public void Deselect()
+        {
+            _selected = false;
+            OnDeselect?.Invoke(this);
         }
 
         public void ChangeLinkTitle(string linkLibraryElementID, string title)

@@ -95,7 +95,6 @@ namespace NuSysApp
             Editable = true;
 
         }
-
         private void Controller_RegionUpdated(object source, Region region)
         {
             if (region.Id != Model.Id)

@@ -16,6 +16,7 @@ namespace NuSysApp
 
         public delegate void SizeChangedEventHandler(object sender, double width, double height);
         public event SizeChangedEventHandler ContainerSizeChanged;
+
         #endregion Public variables
         public LibraryElementController LibraryElementController;
         public RegionController RegionController;
