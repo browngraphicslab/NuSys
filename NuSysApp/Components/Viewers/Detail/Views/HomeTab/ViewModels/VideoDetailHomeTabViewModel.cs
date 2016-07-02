@@ -18,6 +18,7 @@ namespace NuSysApp
             Controller = controller;
             RegionViews = new ObservableCollection<VideoRegionView>();
             Controller.Loaded += Controller_Loaded;
+            
         }
 
         private void Controller_Loaded(object sender)

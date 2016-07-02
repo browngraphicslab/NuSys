@@ -35,6 +35,7 @@ namespace NuSysApp
         private bool _editable;
         private double containerViewWidth;
         private double containerViewHeight;
+        private double _intervalRegionTranslateY;
         #endregion PrivateVariables
         public bool Editable {
             get { return _editable; }
@@ -78,6 +79,18 @@ namespace NuSysApp
                 RaisePropertyChanged("IntervalRegionWidth");
             }
         }
+        public double IntervalRegionTranslateY
+        {
+            get
+            {
+                return _intervalRegionTranslateY;
+            }
+            set
+            {
+                _intervalRegionTranslateY = value;
+                RaisePropertyChanged("IntervalRegionTranslateY");
+            }
+        }
         public double IntervalStart
         {
             get { return _intervalStart; }
@@ -119,6 +132,8 @@ namespace NuSysApp
             _topLeftPoint = new Point(model.TopLeftPoint.X * ContainerViewModel.GetWidth(), model.TopLeftPoint.Y * ContainerViewModel.GetHeight());
             _intervalStart = model.Start * ContainerViewModel.GetWidth();
             _intervalEnd = model.End * ContainerViewModel.GetWidth();
+            _intervalRegionWidth = _intervalEnd - _intervalStart;
+            _intervalRegionTranslateY = ContainerViewModel.GetHeight();
 
             containerViewHeight = ContainerViewModel.GetHeight();
             containerViewWidth = ContainerViewModel.GetWidth();
@@ -150,9 +165,11 @@ namespace NuSysApp
             RectangleHeight *= height / containerViewHeight;
             IntervalStart *= width/containerViewWidth;
             IntervalEnd *= width/containerViewWidth;
+            IntervalRegionWidth *= width/containerViewWidth;
             TopLeft = new Point(width/containerViewWidth * TopLeft.X, height/containerViewHeight * TopLeft.Y);
             containerViewWidth = width;
             containerViewHeight = height;
+            IntervalRegionTranslateY = height;
 
             RaisePropertyChanged("RectangleWidth");
             RaisePropertyChanged("RectangleHeight");
