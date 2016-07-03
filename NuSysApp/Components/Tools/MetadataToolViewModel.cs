@@ -43,7 +43,7 @@ namespace NuSysApp
         {
             foreach (ToolItemTemplate item in AllMetadataDictionary[key])
             {
-                if (item.Value.Equals(value))
+                if (value.Equals(item.Value))
                 {
                     return true;
                 }

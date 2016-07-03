@@ -42,9 +42,9 @@ namespace NuSysApp
             _dragItem.Width = 50;
             vm.Controller.SetLocation(x, y);
             this.DataContext = vm;
-            xTitle.Text = vm.Filter.ToString();
             xCollectionElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             xCollectionElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
+            SetSize(400,500);
             vm.PropertiesToDisplayChanged += Vm_PropertiesToDisplayChanged;
             //xMetadataKeysList.ItemsSource = (DataContext as MetadataToolViewModel).AllMetadataDictionary.Keys;
             xMetadataKeysList.ItemsSource = (DataContext as MetadataToolViewModel).AllMetadataDictionary;
@@ -264,21 +264,27 @@ namespace NuSysApp
 
             if (resizeX > MinWidth && resizeY > MinHeight)
             {
-                vm.Controller.SetSize(resizeX, resizeY);
-                xMetadataKeysList.Height = resizeY - ListBoxHeightOffset;
-                xMetadataValuesList.Height = resizeY - ListBoxHeightOffset;
+                SetSize(resizeX, resizeY);
 
             }
             else if (resizeX > MinWidth)
             {
-                vm.Controller.SetSize(resizeX, vm.Height);
+                SetSize(resizeX, vm.Height);
             }
             else if (resizeY > MinHeight)
             {
-                vm.Controller.SetSize(vm.Width, resizeY);
-                xMetadataKeysList.Height = resizeY - ListBoxHeightOffset;
-                xMetadataValuesList.Height = resizeY - ListBoxHeightOffset;
+                SetSize(vm.Width, resizeY);
             }
+        }
+
+        private void SetSize(double width, double height)
+        {
+            (DataContext as MetadataToolViewModel).Controller.SetSize(width, height);
+            xMetadataKeysList.Height = height - ListBoxHeightOffset;
+            xMetadataValuesList.Height = height - ListBoxHeightOffset;
+            xMetadataKeysList.Width = width/2;
+            xMetadataValuesList.Width =width/2;
+
         }
 
         private void Tool_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -540,7 +546,7 @@ namespace NuSysApp
             var i = 0;
             foreach (ToolItemTemplate item in xMetadataValuesList.Items)
             {
-                if (item.Value.Equals(value))
+                if (value.Equals(item.Value))
                 {
                     xMetadataValuesList.SelectedItem = xMetadataValuesList.Items[i];
                 }
