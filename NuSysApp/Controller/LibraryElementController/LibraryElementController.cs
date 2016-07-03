@@ -403,7 +403,7 @@ namespace NuSysApp
         #region Linking methods
         public void AddNewLink(string idToLinkTo)
         {
-            SessionController.Instance.LinkController.RequestLink(this.LibraryElementModel.LibraryElementId, idToLinkTo);
+            SessionController.Instance.LinkController.RequestLink(new LinkId(this.LibraryElementModel.LibraryElementId), idToLinkTo);
         }
 
         public void RemoveLink(string linkLibraryElementID)

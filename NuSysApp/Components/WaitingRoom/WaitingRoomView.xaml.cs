@@ -418,8 +418,8 @@ namespace NuSysApp
                                     color = Colors.Tomato;
                                     if (dict.ContainsKey("id1") && dict.ContainsKey("id2"))
                                     {
-                                        element = new LinkLibraryElementModel(dict["id1"] as string,
-                                            dict["id2"] as string, id, color, type, metadata, title, favorited);
+                                        element = new LinkLibraryElementModel(JsonConvert.DeserializeObject<LinkId>(dict["id1"] as string),
+                                            JsonConvert.DeserializeObject<LinkId>(dict["id2"] as string), id, color, type, metadata, title, favorited);
                                     }
                                     else
                                     {

@@ -11,16 +11,17 @@ using NuSysApp.Controller;
 using NuSysApp.Nodes.AudioNode;
 using NuSysApp.Viewers;
 using Windows.UI.Xaml.Controls;
+using Newtonsoft.Json;
 
 namespace NuSysApp
 {
     public class NewLinkRequest : Request
     {
         public NewLinkRequest(Message m) : base(RequestType.NewLinkRequest,m){}
-        public NewLinkRequest(string id1, string id2, string creator, string contentId, UserControl regionView, RectangleView rectangle, Dictionary<string, object> inFineGrainDictionary, Dictionary<string, object> outFineGrainDictionary, string id = null, bool IsPresentationLink = false) : base(RequestType.NewLinkRequest)
+        public NewLinkRequest(LinkId id1, LinkId id2, string creator, string contentId, UserControl regionView, RectangleView rectangle, Dictionary<string, object> inFineGrainDictionary, Dictionary<string, object> outFineGrainDictionary, string id = null, bool IsPresentationLink = false) : base(RequestType.NewLinkRequest)
         {
-            _message["id1"] = id1;
-            _message["id2"] = id2;
+            _message["id1"] = JsonConvert.SerializeObject(id1);
+            _message["id2"] = JsonConvert.SerializeObject(id2);
             _message["id"] = id ?? SessionController.Instance.GenerateId();
             _message["creator"] = creator;
             _message["contentId"] = contentId;
@@ -81,7 +82,7 @@ namespace NuSysApp
             _message["color"] = c.ToString();
             ElementType type = (ElementType) Enum.Parse(typeof (ElementType), (string) _message["type"], true);
 
-            var libraryElement = new LinkLibraryElementModel((string)_message["id1"], (string)_message["id2"], (string) _message["id"], c, type);
+            var libraryElement = new LinkLibraryElementModel(JsonConvert.DeserializeObject<LinkId>((string)_message["id1"]), JsonConvert.DeserializeObject<LinkId>((string)_message["id2"]), (string) _message["id"], c, type);
             SessionController.Instance.ContentController.Add(libraryElement);
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElement.LibraryElementId);
             libraryElement.Timestamp = time;
