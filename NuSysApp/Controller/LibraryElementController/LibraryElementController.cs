@@ -42,6 +42,8 @@ namespace NuSysApp
         public event DeletedEventHandler Deleted;
         public event KeywordsChangedEventHandler KeywordsChanged;
         public event NetworkUserChangedEventHandler UserChanged;
+        public event EventHandler<LinkLibraryElementController> LinkAdded;
+        public event EventHandler<string> LinkRemoved;
         public event LoadedEventHandler Loaded
         {
             add
@@ -406,13 +408,23 @@ namespace NuSysApp
             return NuSysApp.MetadatableType.Content;
         }
 
+        public void AddLink(LinkLibraryElementController linkController)
+        {
+            LinkAdded?.Invoke(this, linkController);
+        }
+
+        public void RemoveLink(LinkLibraryElementController linkController)
+        {
+            LinkRemoved?.Invoke(this, linkController.Id);
+        }
+
         #region Linking methods
-        public void AddNewLink(string idToLinkTo)
+        public  void RequestAddNewLink(string idToLinkTo)
         {
             SessionController.Instance.LinkController.RequestLink(this.LibraryElementModel.LibraryElementId, idToLinkTo);
         }
 
-        public void RemoveLink(string linkLibraryElementID)
+        public void RequestRemoveLink(string linkLibraryElementID)
         {
             SessionController.Instance.LinkController.RemoveLink(linkLibraryElementID);
         }

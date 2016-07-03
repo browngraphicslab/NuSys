@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -92,6 +93,13 @@ namespace NuSysApp
             }
             libraryElement.ServerUrl = url;
             SessionController.Instance.LinkController.AddLink(_message.GetString("id"));
+
+            var controller1 = SessionController.Instance.ContentController.GetLibraryElementController(_message.GetString("id1"));
+            var controller2 = SessionController.Instance.ContentController.GetLibraryElementController(_message.GetString("id2"));
+            var linkController = SessionController.Instance.ContentController.GetLibraryElementController(_message.GetString("id"));
+            Debug.Assert(controller1 != null && controller2 != null && linkController != null && linkController is LinkLibraryElementController);
+            controller1.AddLink(linkController as LinkLibraryElementController);
+            controller2.AddLink(linkController as LinkLibraryElementController);
         }
 
         public override async Task ExecuteRequestFunction()
@@ -101,24 +109,28 @@ namespace NuSysApp
             var id = _message.GetString("id");
             var creator = _message.GetString("creator");
             //var contentId = _message.GetString("contentId");
-            if (SessionController.Instance.ContentController.ContainsAndLoaded(id1) &&
-                SessionController.Instance.ContentController.ContainsAndLoaded(id2))
-            {
-                string hexColor = _message.GetString("color");
-                byte a = byte.Parse(hexColor.Substring(1, 2), NumberStyles.HexNumber);
-                byte r = byte.Parse(hexColor.Substring(3, 2), NumberStyles.HexNumber);
-                byte g = byte.Parse(hexColor.Substring(5, 2), NumberStyles.HexNumber);
-                byte b = byte.Parse(hexColor.Substring(7, 2), NumberStyles.HexNumber);
 
-                var c = Color.FromArgb(a, r, g, b);
-                var link = new LinkLibraryElementModel(id1, id2, id, c);
-                await link.UnPack(_message);
-                //var linkController = new LinkElementController(link);
-                //SessionController.Instance.IdToControllers[id] = linkController;
+            string hexColor = _message.GetString("color");
+            byte a = byte.Parse(hexColor.Substring(1, 2), NumberStyles.HexNumber);
+            byte r = byte.Parse(hexColor.Substring(3, 2), NumberStyles.HexNumber);
+            byte g = byte.Parse(hexColor.Substring(5, 2), NumberStyles.HexNumber);
+            byte b = byte.Parse(hexColor.Substring(7, 2), NumberStyles.HexNumber);
 
-                var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(creator);
-                parentCollectionLibraryElement.AddChild(id);
-            }
+            var c = Color.FromArgb(a, r, g, b);
+            var link = new LinkLibraryElementModel(id1, id2, id, c);
+            await link.UnPack(_message);
+
+
+            var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(creator);
+            parentCollectionLibraryElement.AddChild(id);
+            
+            var controller1 = SessionController.Instance.ContentController.GetLibraryElementController(id1);
+            var controller2 = SessionController.Instance.ContentController.GetLibraryElementController(id2);
+            var linkController = SessionController.Instance.ContentController.GetLibraryElementController(id);
+            Debug.Assert(controller1 != null && controller2 != null && linkController != null && linkController is LinkLibraryElementController);
+            controller1.AddLink(linkController as LinkLibraryElementController);
+            controller2.AddLink(linkController as LinkLibraryElementController);
+
         }
     }
 }
