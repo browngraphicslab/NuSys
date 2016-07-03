@@ -73,7 +73,7 @@
     </UserControl.Resources>
     
     
-    <Grid x:Name="rootGrid">
+    <Grid x:Name="rootGrid" VerticalAlignment="Top">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -86,19 +86,19 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <Grid Padding="20,10,2.5,5" Grid.Row="0" Grid.Column="0">
+        <Grid Padding="20,10,2.5,5" Grid.Row="0" Grid.Column="0" VerticalAlignment="Top">
             <TextBox x:Name="linkTitle" PlaceholderText="link title..." HorizontalAlignment="Stretch" ></TextBox>
         </Grid>
-        <Grid Padding="2.5,10,20,5"  Grid.Row="0" Grid.Column="1">
+        <Grid Padding="2.5,10,20,5"  Grid.Row="0" Grid.Column="1" VerticalAlignment="Top">
             <TextBox x:Name="linkTo" PlaceholderText="linked to..." HorizontalAlignment="Stretch" ></TextBox>
         </Grid>
-        <Grid Padding="20,0,20,5" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+        <Grid Padding="20,0,20,5" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top">
             <TextBox x:Name="tags" PlaceholderText="tags - separate with commas"  HorizontalAlignment="Stretch"></TextBox>
         </Grid>
-        <Button x:Name="createLinkButton" Content="create link" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center"></Button>
+        <Button x:Name="createLinkButton" Content="create link" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top"></Button>
 
-        <Grid Padding="20,5,20,10" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
-            <ListView x:Name="linkList" ItemsSource="{Binding LinkList}" HorizontalAlignment="Stretch">
+        <Grid Padding="20,5,20,10" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top">
+            <ListView x:Name="linkList" ItemsSource="{Binding LinkTemplates}" HorizontalAlignment="Stretch">
                 <ListView.Header>
                     <Grid VerticalAlignment="Center" Background="{StaticResource color6}">
                         <Grid.ColumnDefinitions>

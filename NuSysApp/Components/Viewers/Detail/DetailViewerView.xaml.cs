@@ -83,9 +83,7 @@ namespace NuSysApp
                 }
                 
             };
-
-
-
+            
         }
 
         public async Task LaunchLDA(string text)
@@ -179,12 +177,14 @@ namespace NuSysApp
                 else
                 {
                     xRegionEditorView.ShowListView(false, controller.LibraryElementModel.Type);
-
                 }
+
+                var linkEditorViewModel = xLinkEditorView.DataContext as LinkEditorTabViewModel;
+                linkEditorViewModel?.ChangeLinkTemplates(controller);
 
                 xMetadataEditorView.Metadatable = vm.CurrentElementController;
                 xMetadataEditorView.Update();
-                if (xRootPivot.Items.Count == 2)
+                if (xRootPivot.Items.Count == 3)
                 {
                     var pivotItem = _regionEditorPivotItem as PivotItem;
                     xRootPivot.Items.Add(pivotItem);
@@ -192,8 +192,8 @@ namespace NuSysApp
                 }
             } else if (metadatable.MetadatableType() == MetadatableType.Region)
             {
-                _regionEditorPivotItem = xRootPivot.Items[2];
-                xRootPivot.Items.RemoveAt(2);
+                _regionEditorPivotItem = xRootPivot.Items[3];
+                xRootPivot.Items.RemoveAt(3);
                 xMetadataEditorView.Metadatable = metadatable;
                 xMetadataEditorView.Update();
             }

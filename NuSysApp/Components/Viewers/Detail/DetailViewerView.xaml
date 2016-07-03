@@ -176,9 +176,9 @@
                         </Grid>
                     </Grid>
                 </PivotItem>
-                <!--<PivotItem Header="Link Editor">
-                    <local:LinkEditorTab x:Name="LinkEditorTab" Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"/>
-                </PivotItem>-->
+                <PivotItem Header="Link Editor">
+                    <local:LinkEditorTab x:Name="xLinkEditorView" Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"/>
+                </PivotItem>
                 <PivotItem Header="Region Editor">
                     <local:RegionEditorTabView x:Name="xRegionEditorView"  Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></local:RegionEditorTabView>
                 </PivotItem>

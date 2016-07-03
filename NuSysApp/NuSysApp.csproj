@@ -341,6 +341,7 @@
       <DependentUpon>VideoMediaPlayer.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controller\LibraryElementController\LibraryElementControllerFactory.cs" />
+    <Compile Include="Controller\LibraryElementController\LinkLibraryElementController.cs" />
     <Compile Include="Controller\LibraryElementController\WordNodeLibraryElementController.cs" />
     <Compile Include="Controller\LinkController.cs" />
     <Compile Include="Controller\RectangleRegionController.cs" />

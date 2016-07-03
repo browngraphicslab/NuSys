@@ -190,255 +190,26 @@ namespace NuSysApp
         }
         private async void NewUser_OnClick(object sender, RoutedEventArgs e)
         {
-            Login(true);
+            var username = usernameInput.Text;
+            var password = Convert.ToBase64String(Encrypt(passwordInput.Password));
+            Login(username, password, true);
         }
         private async void LoginButton_OnClick(object sender, RoutedEventArgs e)
         {
-            Login(false);
+            var username = usernameInput.Text;
+            var password = Convert.ToBase64String(Encrypt(passwordInput.Password));
+            Login(username,password,false);
         }
 
         private async void AutoLogin()
         {
-            Task.Run(async delegate
+            UITask.Run(async delegate
             {
                 if (File.Exists(LoginCredentialsFilePath))
                 {
-                    await UITask.Run(async delegate { 
                     Tuple<string, string> creds = this.GetLoginCredentials();
-
-                    try
-                    {
-                        JsonSerializerSettings settings = new JsonSerializerSettings
-                        {
-                            StringEscapeHandling = StringEscapeHandling.EscapeNonAscii
-                        };
-                        var cred = new Dictionary<string, string>();
-
-                        //cred["user"] = Convert.ToBase64String(Encrypt(usernameInput.Text));
-
-
-                        cred["user"] = creds.Item1;
-                        cred["pass"] = creds.Item2;
-                        var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/login/";
-                        var client = new HttpClient(
-                            new HttpClientHandler
-                            {
-                                ClientCertificateOptions = ClientCertificateOption.Automatic
-                            });
-                        string getData;
-                        var getResponse = await client.GetAsync(url);
-                        using (var content = getResponse.Content)
-                        {
-                            getData = await content.ReadAsStringAsync();
-                        }
-                        try
-                        {
-                            var timestamp = long.Parse(getData);
-                            cred["timestamp"] = timestamp.ToString();
-                        }
-                        catch (Exception longParseException)
-                        {
-                            throw new Exception("error trying to parse timestamp to long");
-                        }
-
-                        string data;
-                        var text = JsonConvert.SerializeObject(cred, settings);
-                        var response =
-                            await
-                                client.PostAsync(new Uri(url), new StringContent(text, Encoding.UTF8, "application/xml"));
-                        using (var content = response.Content)
-                        {
-                            data = await content.ReadAsStringAsync();
-                        }
-                        bool validCredentials;
-                        string serverSessionId;
-                        string userID = "";
-                        try
-                        {
-                            XmlDocument doc = new XmlDocument();
-                            doc.LoadXml(data);
-                            var dict =
-                                JsonConvert.DeserializeObject<Dictionary<string, string>>(doc.ChildNodes[0].InnerText);
-                            validCredentials = bool.Parse(dict["valid"]);
-                            if (dict.ContainsKey("user_id"))
-                            {
-                                userID = dict["user_id"].ToString();
-                            }
-                            serverSessionId = dict.ContainsKey("server_session_id") ? dict["server_session_id"] : "";
-                        }
-                        catch (Exception boolParsException)
-                        {
-                            Debug.WriteLine("error parsing bool and serverSessionId returned from server");
-                            validCredentials = false;
-                            serverSessionId = null;
-                        }
-                        if (validCredentials)
-                        {
-                            ServerSessionID = serverSessionId;
-                            try
-                            {
-                                await SessionController.Instance.NuSysNetworkSession.Init();
-                                SessionController.Instance.LocalUserID = userID;
-
-                                SessionController.Instance.ContentController.OnNewContent +=
-                                    ContentControllerOnOnNewContent;
-
-                                NewWorkspaceButton.IsEnabled = true;
-                                _loggedIn = true;
-                                if (_isLoaded)
-                                {
-                                    UITask.Run(delegate
-                                    {
-                                        JoinWorkspaceButton.Content = "Enter";
-                                        JoinWorkspaceButton.IsEnabled = true;
-                                        JoinWorkspaceButton.Visibility = Visibility.Visible;
-                                    });
-                                }
-                                LoginButton.IsEnabled = false;
-                                SlideOutLogin.Begin();
-                                SlideInWorkspace.Begin();
-                                await UITask.Run(async delegate
-                                {
-                                    UserName = userID;
-                                    if (userID.ToLower() != "rosemary" && userID.ToLower() != "rms" &&
-                                        userID.ToLower() != "gfxadmin")
-                                    {
-                                        foreach (var box in List.Items)
-                                        {
-                                            if ((box as CollectionTextBox).MadeByRosemary)
-                                            {
-                                                List.Items.Remove(box);
-                                            }
-                                        }
-                                    }
-                                });
-                                await Task.Run(async delegate
-                                {
-                                    var dictionaries =
-                                        await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
-                                    foreach (var kvp in dictionaries)
-                                    {
-                                        var id = (string) kvp.Value["id"];
-                                        //var element = new LibraryElementModel(kvp.Value);
-
-                                        bool favorited = false;
-                                        var metadata =
-                                            new Dictionary<string, MetadataEntry>();
-                                        var dict = kvp.Value;
-                                        var message = new Message(dict);
-                                        string title = null;
-                                        ElementType type = ElementType.Text;
-                                        string timestamp = "";
-                                        string creator = null;
-                                        string serverUrl = null;
-                                        if (dict.ContainsKey("library_element_creation_timestamp"))
-                                        {
-                                            timestamp = dict["library_element_creation_timestamp"].ToString();
-                                        }
-                                        if (dict.ContainsKey("favorited") &&
-                                            bool.Parse(dict["favorited"].ToString()) == true)
-                                        {
-                                            favorited = true;
-                                        }
-                                        if (dict.ContainsKey("metadata"))
-                                        {
-
-                                            if (dict["metadata"] != null)
-                                            {
-                                                metadata =
-                                                    JsonConvert
-                                                        .DeserializeObject<Dictionary<string, MetadataEntry>>(
-                                                            dict["metadata"].ToString());
-                                            }
-
-                                        }
-
-                                        if (dict.ContainsKey("creator_user_id"))
-                                        {
-                                            creator = dict["creator_user_id"].ToString();
-                                        }
-                                        if (dict.ContainsKey("title"))
-                                        {
-                                            title = (string) dict["title"]; // title
-                                        }
-                                        if (dict.ContainsKey("server_url"))
-                                        {
-                                            serverUrl = dict["server_url"].ToString();
-                                        }
-                                        if (dict.ContainsKey("type"))
-                                        {
-                                            try
-                                            {
-                                                type =
-                                                    (ElementType)
-                                                        Enum.Parse(typeof(ElementType), (string) dict["type"], true);
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                continue;
-                                            }
-                                        }
-
-                                        LibraryElementModel element;
-                                        if (type == ElementType.Collection)
-                                        {
-                                            element = new CollectionLibraryElementModel(id, metadata, title, favorited);
-                                        }
-                                        else
-                                        {
-                                            element = new LibraryElementModel(id, type, metadata, title, favorited);
-                                        }
-                                        element.UnPack(message);
-                                        element.Creator = creator;
-                                        element.Timestamp = timestamp;
-                                        element.ServerUrl = serverUrl;
-                                        if (SessionController.Instance.ContentController.GetContent(id) == null)
-                                        {
-                                            SessionController.Instance.ContentController.Add(element);
-                                        }
-                                        
-                                        
-
-                                    }
-                                    _isLoaded = true;
-                                    if (_loggedIn)
-                                    {
-                                        UITask.Run(delegate
-                                        {
-                                            JoinWorkspaceButton.IsEnabled = true;
-                                            JoinWorkspaceButton.Content = "Enter";
-                                            JoinWorkspaceButton.Visibility = Visibility.Visible;
-                                        });
-                                        if (!File.Exists(LoginCredentialsFilePath))
-                                        {
-                                            this.SaveLoginInfo(cred["user"], cred["pass"]);
-                                        }
-                                    }
-                                });
-                            }
-                            catch (ServerClient.IncomingDataReaderException loginException)
-                            {
-                                loggedInText.Text = "Log in failed!";
-                                //     throw new Exception("Your account is probably already logged in");
-                            }
-                        }
-                        else
-                        {
-                            loggedInText.Text = "Log in failed!";
-                            /*
-                        if (!createNewUser) { 
-                            Login(true);
-                        }*/
-                        }
-
-                    }
-                    catch (HttpRequestException h)
-                    {
-                        Debug.WriteLine("cannot connect to server");
-                    }
-                })
-                ;
-            }
+                    Login(creds.Item1, creds.Item2, false);
+                }
             });
         }
 
@@ -463,7 +234,7 @@ namespace NuSysApp
             File.WriteAllText(LoginCredentialsFilePath, loginCredentials.ToString());
         }
 
-        private async void Login(bool createNewUser)
+        private async void Login(string username, string password, bool createNewUser)
         {
             try
             {
@@ -473,8 +244,8 @@ namespace NuSysApp
                 //cred["user"] = Convert.ToBase64String(Encrypt(usernameInput.Text));
 
 
-                cred["user"] = usernameInput.Text;
-                cred["pass"] = Convert.ToBase64String(Encrypt(passwordInput.Password));
+                cred["user"] = username;
+                cred["pass"] = password;
                 if (createNewUser)
                 {
                     cred["new_user"] = "";

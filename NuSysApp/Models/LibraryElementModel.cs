@@ -44,7 +44,7 @@ namespace NuSysApp
             Keywords = new HashSet<Keyword>();
             Metadata = metadata ?? new Dictionary<string, MetadataEntry>();
             Regions = new HashSet<Region>();
-            if (Type == ElementType.Link)
+            if (Type == ElementType.Link && !(this is LinkLibraryElementModel))
             {
                 
             }

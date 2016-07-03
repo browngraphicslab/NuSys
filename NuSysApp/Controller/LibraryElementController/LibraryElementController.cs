@@ -385,6 +385,11 @@ namespace NuSysApp
             get { return _loading || IsLoaded; }
         }
 
+        public string Id
+        {
+            get { return this.LibraryElementModel.LibraryElementId; }
+        }
+
         public void SetNetworkUser(NetworkUser user)
         {
             UserChanged?.Invoke(this, user);
@@ -395,6 +400,7 @@ namespace NuSysApp
             return NuSysApp.MetadatableType.Content;
         }
 
+        #region Linking methods
         public void AddNewLink(string idToLinkTo)
         {
             SessionController.Instance.LinkController.RequestLink(this.LibraryElementModel.LibraryElementId, idToLinkTo);
@@ -415,21 +421,13 @@ namespace NuSysApp
             SessionController.Instance.LinkController.ChangeLinkTags(linkLibraryElementID, tags);
         }
 
-        public List<string> GetAllLinks()
+        public HashSet<LinkLibraryElementController> GetAllLinks()
         {
-            return
-                new List<string>(
-                    SessionController.Instance.LinkController.GetLinkedIds(LibraryElementModel.LibraryElementId));
+            var controllers = SessionController.Instance.LinkController.GetLinkedIds(Id)
+                .Select(id =>SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
+            return new HashSet<LinkLibraryElementController>(controllers);
         }
+        #endregion
 
-        public void ChangeLinkTitle()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ChangeLinkTags()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

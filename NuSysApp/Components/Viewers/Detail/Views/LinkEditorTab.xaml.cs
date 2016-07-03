@@ -21,9 +21,10 @@ namespace NuSysApp
     {
         public LinkEditorTab()
         {
-            this.InitializeComponent();
+            DataContext = new LinkEditorTabViewModel();
+            InitializeComponent();
+            
         }
-
         private void SortButton_OnClick(object sender, RoutedEventArgs e)
         {
             throw new NotImplementedException();

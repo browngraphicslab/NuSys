@@ -75,7 +75,7 @@ namespace NuSysApp
             CreateTags();
         }
 
-        private void UpdateLinks(LinkLibraryElementModel model)
+        private void UpdateLinks(LinkLibraryElementController model)
         {
             UITask.Run(async delegate { CreateCircleLinks(); });    
         }

@@ -91,6 +91,7 @@ namespace NuSysApp
             foreach ( var atom in AtomViewList.Where(r => !(r.DataContext is LinkViewModel)).Select(e => e.DataContext as ElementViewModel))
             {
                 if (toLinkIds.Contains(atom.ContentId))
+
                 {
                     var lm = new LinkModel(SessionController.Instance.GenerateId());
                     lm.InAtomId = controller.Model.Id;

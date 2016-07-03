@@ -10,8 +10,9 @@ namespace NuSysApp
     {
         void AddNewLink(string idToLinkTo);
         void RemoveLink(string linkID);
-        void ChangeLinkTitle();
-        void ChangeLinkTags();
-        List<string> GetAllLinks();
+        void ChangeLinkTitle(string linkLibraryElementID, string title);
+        void ChangeLinkTags(string linkLibraryElementID, HashSet<String> tags);
+        string Id { get; }
+        HashSet<LinkLibraryElementController> GetAllLinks();
     }
 }

@@ -12,6 +12,11 @@ namespace NuSysApp
         public Region Model;
         public string Title { get; set; }
 
+        public string Id
+        {
+            get { return this.Model.Id; }
+        }
+
         public delegate void TitleChangedEventHandler(object source, string title);
         public event TitleChangedEventHandler TitleChanged;
         public delegate void RegionUpdatedEventHandler(object source, Region region);
@@ -91,15 +96,6 @@ namespace NuSysApp
             UpdateServer();
         }
 
-        public void AddNewLink(string idToLinkTo)
-        {
-             SessionController.Instance.LinkController.RequestLink(this.Model.Id, idToLinkTo);
-        }
-
-        public void RemoveLink(string linkID)
-        {
-            SessionController.Instance.LinkController.RemoveLink(linkID);
-        }
         public void Select()
         {
             _selected = true;
@@ -112,6 +108,17 @@ namespace NuSysApp
             OnDeselect?.Invoke(this);
         }
 
+        #region Linking methods
+        public void AddNewLink(string idToLinkTo)
+        {
+            SessionController.Instance.LinkController.RequestLink(this.Model.Id, idToLinkTo);
+        }
+
+        public void RemoveLink(string linkLibraryElementID)
+        {
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(linkLibraryElementID) as LinkLibraryElementController;
+            SessionController.Instance.LinkController.RemoveLink(controller.Id);
+        }
         public void ChangeLinkTitle(string linkLibraryElementID, string title)
         {
             SessionController.Instance.LinkController.ChangeLinkTitle(linkLibraryElementID, title);
@@ -121,30 +128,13 @@ namespace NuSysApp
         {
             SessionController.Instance.LinkController.ChangeLinkTags(linkLibraryElementID, tags);
         }
-
-        void ILinkable.AddNewLink(string idToLinkTo)
+        
+        public HashSet<LinkLibraryElementController> GetAllLinks()
         {
             throw new NotImplementedException();
+            //return SessionController.Instance.LinkController.GetLinkLibraryElementControllers(this);
         }
+        #endregion 
 
-        void ILinkable.RemoveLink(string linkID)
-        {
-            throw new NotImplementedException();
-        }
-
-        void ILinkable.ChangeLinkTitle()
-        {
-            throw new NotImplementedException();
-        }
-
-        void ILinkable.ChangeLinkTags()
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<string> GetAllLinks()
-        {
-            return new List<string>();
-        }
     }
 }

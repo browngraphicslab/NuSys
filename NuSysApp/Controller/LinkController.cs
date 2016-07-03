@@ -1,8 +1,11 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
+using NuSysApp;
 using NuSysApp.Components.Viewers.FreeForm;
 
 namespace NuSysApp
@@ -11,10 +14,10 @@ namespace NuSysApp
     {
         private ConcurrentDictionary<string, HashSet<string>> _links = new ConcurrentDictionary<string, HashSet<string>>();
  //       private ConcurrentDictionary<string, Color> _colors = new ConcurrentDictionary<string, Color>();
-        public delegate void NewLinkEventHandler(LinkLibraryElementModel link);
+        public delegate void NewLinkEventHandler(LinkLibraryElementController link);
         public event NewLinkEventHandler OnNewLink;
 
-        public delegate void RemoveLinkEventHandler(LinkLibraryElementModel link);
+        public delegate void RemoveLinkEventHandler(LinkLibraryElementController link);
         public event RemoveLinkEventHandler OnLinkRemoved;
 
         public HashSet<string> GetLinkedIds(string id)
@@ -29,7 +32,6 @@ namespace NuSysApp
 
         public void AddLink(string id)
         {
-
             var link = SessionController.Instance.ContentController.GetContent(id) as LinkLibraryElementModel;
             if (!_links.ContainsKey(link.InAtomId))
             {
@@ -52,8 +54,42 @@ namespace NuSysApp
                 _links[link.OutAtomId] = new HashSet<string>();
             }
             _links[link.OutAtomId].Add(id);
-            OnNewLink?.Invoke(link);
+            OnNewLink?.Invoke(SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
+
         }
+        public HashSet<LinkLibraryElementController> IdHashSetToControllers(IEnumerable<string> ids) { 
+            return new HashSet<LinkLibraryElementController>(ids.Select(item => GetLinkLibraryElementController(item)));
+        }
+
+        public LinkLibraryElementController GetLinkLibraryElementController(string id)
+        {
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(id);
+            Debug.Assert(controller is LinkLibraryElementController);
+            return controller as LinkLibraryElementController;
+        }
+
+        public HashSet<LibraryElementController> GetOppositeLibraryElementControllers(LibraryElementController controller)
+        {
+            var libraryElementId = controller.LibraryElementModel.LibraryElementId;
+            if (!_links.ContainsKey(libraryElementId))
+            {
+                return new HashSet<LibraryElementController>();
+            }
+            var controllersToReturn = new HashSet<LibraryElementController>();
+            foreach (var linkId in _links[libraryElementId])
+            {
+                var linkModel = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
+                if (linkModel.InAtomId == controller.LibraryElementModel.LibraryElementId)
+                {
+                    controllersToReturn.Add(SessionController.Instance.ContentController.GetLibraryElementController(linkModel.OutAtomId));
+                    continue;
+                }
+                controllersToReturn.Add(SessionController.Instance.ContentController.GetLibraryElementController(linkModel.InAtomId));
+            }
+            return controllersToReturn;
+        }
+
+            
 
         public void RemoveLink(string id)
         {
