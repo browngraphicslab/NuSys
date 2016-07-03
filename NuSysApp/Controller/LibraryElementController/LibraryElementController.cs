@@ -429,8 +429,8 @@ namespace NuSysApp
 
         public HashSet<LinkLibraryElementController> GetAllLinks()
         {
-            var controllers = SessionController.Instance.LinkController.GetLinkedIds(Id)
-                .Select(id =>SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
+            var linkedIds = SessionController.Instance.LinkController.GetLinkedIds(Id);
+            var controllers = linkedIds.Select(id =>SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
             return new HashSet<LinkLibraryElementController>(controllers);
         }
         #endregion
