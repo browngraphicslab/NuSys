@@ -11,7 +11,7 @@
 
 
 
-    <Grid x:Name="xListView" Grid.Column="2">
+    <Grid x:Name="xListView" Grid.Column="2" Background="{StaticResource color1}">
         <Grid.RowDefinitions>
             <RowDefinition Height="3*"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
@@ -31,7 +31,7 @@
 
             <ListView.Header>
                 <Border BorderBrush="White" BorderThickness="0,0,0,3">
-                    <Grid  Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Center" Padding="0,0,0,0">
+                    <Grid Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Center" Padding="0,0,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"></ColumnDefinition>
                             <ColumnDefinition Width="*"></ColumnDefinition>
@@ -48,14 +48,13 @@
                             <ColumnDefinition Width="*" ></ColumnDefinition>
                             <ColumnDefinition Width="*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="{Binding Name}"  HorizontalAlignment="Left" ></TextBlock>
-                        <TextBlock Grid.Column="1" Text="{Binding PageLocation}"  HorizontalAlignment="Right"></TextBlock>
+                        <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="White" HorizontalAlignment="Left" ></TextBlock>
+                        <TextBlock Grid.Column="1" Text="{Binding PageLocation}" Foreground="White" HorizontalAlignment="Right"></TextBlock>
 
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <Button Grid.Row="1" x:Name="xCreateReagionButton" Click="AddRegion_Clicked" HorizontalAlignment="Right"  Height="40" Width="50" Margin="0,10,0,0"/>
 
     </Grid>
 </UserControl>

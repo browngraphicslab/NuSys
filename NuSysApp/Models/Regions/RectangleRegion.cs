@@ -12,11 +12,16 @@ namespace NuSysApp
         public RectangleRegion(Point topLeft, Point bottomRight, string name = "Untitled Rectangle") : base(name)
         {
             TopLeftPoint = topLeft;
-            BottomRightPoint = bottomRight;
+            //BottomRightPoint = bottomRight;
+            Width = bottomRight.X - topLeft.X;
+            Height = bottomRight.Y - topLeft.Y;
+
             Type = RegionType.Rectangle;
         }
 
         public Point TopLeftPoint { set; get; }
-        public Point BottomRightPoint { set; get; }
+        public double Width { set; get; }
+        public double Height { set; get; }
+
     }
 }

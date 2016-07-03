@@ -15,7 +15,8 @@ namespace NuSysApp
             switch (regionModel.Type)
             {
                 case Region.RegionType.Rectangle:
-                    controller = new RegionController(regionModel);
+                    var imageModel = regionModel as RectangleRegion;
+                    controller = new RectangleRegionController(imageModel);
                     break;
                 case Region.RegionType.Pdf:
                     var pdfModel = regionModel as PdfRegion;

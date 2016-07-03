@@ -49,7 +49,7 @@ namespace NuSysApp
             });
             await Goto(_pageNumber);
         }
-        private async Task Goto(int pageNumber)
+        public async Task Goto(int pageNumber)
         {
             if (_document == null)
                 return;
@@ -166,12 +166,13 @@ namespace NuSysApp
             }
             var pdfRegionController = regionController as PdfRegionController;
             pdfRegionController?.SetPageLocation(_pageNumber);
-            var vm = new PdfRegionViewModel(pdfRegion, Controller, regionController, this);
+            var vm = new PdfRegionViewModel(pdfRegion, Controller, pdfRegionController, this);
             var view = new PDFRegionView(vm);
             
             RegionViews.Add(view);
             RaisePropertyChanged("RegionViews");
         }
+
 
         public override void RemoveRegion(object sender, Region displayedRegion)
         {
@@ -197,6 +198,8 @@ namespace NuSysApp
             {
                 return 0;
             }
+            //return view.ActualHeight;
+
             return view.GetPdfHeight();
         }
         public double GetWidth()
@@ -206,7 +209,19 @@ namespace NuSysApp
             {
                 return 0;
             }
+            //return view.ActualWidth;
             return view.GetPdfWidth();
+        }
+
+        public double GetViewWidth()
+        {
+            var view = (View as PdfDetailHomeTabView);
+            if (view == null)
+            {
+                return 0;
+            }
+            //return view.ActualWidth;
+            return view.ActualWidth;
         }
 
         public override void SetExistingRegions(HashSet<Region> regions)
@@ -214,13 +229,26 @@ namespace NuSysApp
             if (regions == null) return;
             foreach (var regionModel in regions)
             {
+
+
                 var pdfRegion = regionModel as PdfRegion;
                 if (pdfRegion == null)
                 {
                     return;
                 }
+                PdfRegionController regionController;
+                if (SessionController.Instance.RegionsController.GetRegionController(pdfRegion.Id) == null)
+                {
+                    var factory = new RegionControllerFactory();
+                    regionController = factory.CreateFromSendable(pdfRegion) as PdfRegionController;
+                    SessionController.Instance.RegionsController.Add(regionController);
+                }
+                else {
+                    regionController = SessionController.Instance.RegionsController.GetRegionController(pdfRegion.Id) as PdfRegionController;
+                }
 
-                var regionController = new RegionController(pdfRegion);
+
+               
                 var vm = new PdfRegionViewModel(pdfRegion, Controller, regionController, this);
                 var view = new PDFRegionView(vm);
                 if (pdfRegion.PageLocation != _pageNumber)
