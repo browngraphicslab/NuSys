@@ -8,7 +8,7 @@ namespace NuSysApp
 {
     public class RegionControllerFactory
     {
-        public RegionController CreateFromSendable(Region regionModel)
+        public RegionController CreateFromSendable(Region regionModel, string contentId)
         {
             RegionController controller = null;
 
@@ -29,9 +29,12 @@ namespace NuSysApp
                     controller = new RegionController(regionModel);
                     break;
             }
-
             if (controller == null)
+            {
                 return null;
+            }
+
+            SessionController.Instance.RegionsController.Add(controller, contentId);
             return controller;
         }
     }

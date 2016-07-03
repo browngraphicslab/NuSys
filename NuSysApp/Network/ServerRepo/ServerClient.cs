@@ -1,22 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
-using Windows.UI.Xaml;
 using Newtonsoft.Json;
-using NuSysApp.Network.Requests.SystemRequests;
 using Windows.UI.Input.Inking;
-using System.Numerics;
-using System.Reflection;
 
 namespace NuSysApp
 {
@@ -361,6 +353,7 @@ namespace NuSysApp
                         break;
                 }
             }
+
             var inks = dict.ContainsKey("inks") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["inks"].ToString()) : null;
             var metadata = dict.ContainsKey("metadata") ? JsonConvert.DeserializeObject<Dictionary<string, MetadataEntry>>(dict["metadata"].ToString()) : null;
 

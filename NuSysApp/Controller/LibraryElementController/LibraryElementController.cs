@@ -98,8 +98,7 @@ namespace NuSysApp
             _libraryElementModel.Regions.Add(region);
 
             var factory = new RegionControllerFactory();
-            var regionController = factory.CreateFromSendable(region);
-            SessionController.Instance.RegionsController.Add(regionController);
+            var regionController = factory.CreateFromSendable(region, Id);
             RegionAdded?.Invoke(this, regionController);
             SessionController.Instance.NuSysNetworkSession.AddRegionToContent(LibraryElementModel.LibraryElementId, region);
         }
