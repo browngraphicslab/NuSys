@@ -37,15 +37,16 @@ namespace NuSysApp
             this.DataContext = regionVM;
             this.Selected();
 
-            regionVM.RegionChanged += RegionVM_RegionChanged;
+            //regionVM.RegionChanged += RegionVM_RegionChanged;
             OnSelected?.Invoke(this, true);
             
             CompositeTransform composite = new CompositeTransform();
             this.RenderTransform = composite;
            
             OnSelected?.Invoke(this, true);
-            regionVM.PropertyChanged += PropertyChanged;
+            //regionVM.PropertyChanged += PropertyChanged;
             regionVM.SizeChanged += ChangeSize;
+            regionVM.LocationChanged += ChangeLocation;
             var model = regionVM.Model as PdfRegion;
             if (model == null)
             {
@@ -57,9 +58,38 @@ namespace NuSysApp
             composite.TranslateY = model.TopLeftPoint.Y * parentHeight;
             _tx = composite.TranslateX;
             _ty = composite.TranslateY;
-            regionVM.Width = (model.BottomRightPoint.X - model.TopLeftPoint.X) * parentWidth;
-            regionVM.Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y) * parentHeight;
+            regionVM.Width = (model.Width) * parentWidth;
+            regionVM.Height = (model.Height) * parentHeight;
+        }
 
+
+        private void ChangeLocation(object sender, Point topLeft)
+        {
+
+            var vm = DataContext as PdfRegionViewModel;
+
+            var composite = RenderTransform as CompositeTransform;
+            if (composite == null)
+            {
+                return;
+            }
+            composite.TranslateX = topLeft.X;
+            composite.TranslateY = topLeft.Y;
+        }
+
+        private void ChangeSize(object sender, double width, double height)
+        {
+            var vm = DataContext as PdfRegionViewModel;
+
+            var composite = RenderTransform as CompositeTransform;
+            if (composite == null)
+            {
+                return;
+            }
+            xMainRectangle.Width = width;
+            xMainRectangle.Height = height;
+            vm.Width = width;
+            vm.Height = height;
         }
 
         private void RegionVM_RegionChanged(object sender, double height, double width)
@@ -151,8 +181,8 @@ namespace NuSysApp
                 vm.Width = xMainRectangle.Width;
                 vm.Height = xMainRectangle.Height;
             }
-            
-            UpdateViewModel();
+
+            vm.SetNewSize(xMainRectangle.Width, xMainRectangle.Height);
         }
 
         private void PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -225,9 +255,11 @@ namespace NuSysApp
                 rt.TranslateY = _ty;
                 vm.Height = vm.OriginalHeight;
             }
-            
-            UpdateViewModel();
-            e.Handled = true;
+
+            var composite = RenderTransform as CompositeTransform;
+            var topLeft = new Point(composite.TranslateX, composite.TranslateY);
+            vm.SetNewLocation(topLeft);
+            e.Handled = true; 
         }
 
         private void RectangleRegionView_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)

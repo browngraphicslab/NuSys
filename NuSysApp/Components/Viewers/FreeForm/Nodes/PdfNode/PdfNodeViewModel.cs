@@ -59,14 +59,14 @@ namespace NuSysApp
         private void LibraryElementControllerOnRegionAdded(object source, RegionController regionController)
         {
             var pdfRegion = regionController?.Model as PdfRegion;
+            var pdfRegionController = regionController as PdfRegionController;
             if (pdfRegion == null)
             {
                 return;
             }
-            var vm = new PdfRegionViewModel(pdfRegion, Controller.LibraryElementController, regionController, this);
+            var vm = new PdfRegionViewModel(pdfRegion, Controller.LibraryElementController, pdfRegionController, this);
             vm.Editable = false;
             var view = new PDFRegionView(vm);
-            var pdfRegionController = regionController as PdfRegionController;
             pdfRegionController.PageLocationChanged += PdfRegionControllerOnPageLocationChanged;
 
             if (pdfRegion.PageLocation != CurrentPageNumber)
@@ -99,13 +99,20 @@ namespace NuSysApp
             }
             foreach (var regionModel in Controller.LibraryElementModel.Regions)
             {
+
+
                 var pdfRegion = regionModel as PdfRegion;
-                if (pdfRegion == null)
+                PdfRegionController regionController;
+                if (SessionController.Instance.RegionsController.GetRegionController(pdfRegion.Id) == null)
                 {
-                    return null;
+                    var factory = new RegionControllerFactory();
+                    regionController = factory.CreateFromSendable(pdfRegion) as PdfRegionController;
+                    SessionController.Instance.RegionsController.Add(regionController);
+                }
+                else {
+                    regionController = SessionController.Instance.RegionsController.GetRegionController(pdfRegion.Id) as PdfRegionController;
                 }
 
-                var regionController = new RegionController(pdfRegion);
                 var vm = new PdfRegionViewModel(pdfRegion, Controller.LibraryElementController, regionController, this);
                 vm.Editable = false;
                 var view = new PDFRegionView(vm);

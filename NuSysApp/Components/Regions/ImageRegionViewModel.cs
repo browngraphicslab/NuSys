@@ -125,7 +125,6 @@ namespace NuSysApp
             
             Height = model.Height * ContainerViewModel.GetHeight();
             Width = model.Width * ContainerViewModel.GetWidth();
-            //TODO: is this even necessary?... probably not............
             SizeChanged?.Invoke(this, Width, Height);
 
         }
@@ -168,6 +167,9 @@ namespace NuSysApp
             {
                 return;
             }
+            Point topLeft;
+            Point bottomRight;
+
             if (ContainerViewModel is ImageDetailHomeTabViewModel)
             {
 
@@ -180,6 +182,8 @@ namespace NuSysApp
                 Width = model.Width * detailVM.GetImageWidth();
                 ContainerHeight = height;
                 ContainerWidth = detailVM.GetImageWidth();
+                topLeft = new Point(model.TopLeftPoint.X * ContainerWidth + diff / 2, model.TopLeftPoint.Y * height);
+
             }
             else {
 
@@ -187,27 +191,11 @@ namespace NuSysApp
                 Width = model.Width * width;
                 ContainerHeight = height;
                 ContainerWidth = width;
-            }
-
-
-            Point topLeft;
-            Point bottomRight;
-
-            if (ContainerViewModel is ImageDetailHomeTabViewModel)
-            {
-                var detailVM = ContainerViewModel as ImageDetailHomeTabViewModel;
-
-                var diff = detailVM.GetWidth() - detailVM.GetImageWidth();
-
-
-                topLeft = new Point(model.TopLeftPoint.X * ContainerWidth + diff / 2, model.TopLeftPoint.Y * height);
-               // bottomRight = new Point(model.BottomRightPoint.X * ContainerWidth + diff / 2, model.BottomRightPoint.Y * height);
-            }
-            else {
-
                 topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
-                //bottomRight = new Point(model.BottomRightPoint.X * width, model.BottomRightPoint.Y * height);
+
             }
+
+ 
 
             
             //TODO: HOOK THIS UP

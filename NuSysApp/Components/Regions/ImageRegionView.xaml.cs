@@ -65,10 +65,7 @@ namespace NuSysApp
 
             vm.Width = (model.Width) * parentWidth;
             vm.Height = (model.Height) * parentHeight;
-            Loaded += delegate (object sender, RoutedEventArgs args)
-            {
 
-            };
         }
 
 
