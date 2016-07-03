@@ -18,17 +18,12 @@
             <Grid.RenderTransform>
                 <CompositeTransform x:Name="GridTransform" TranslateX="{Binding TopLeft.X}" TranslateY="{Binding TopLeft.Y}"></CompositeTransform>
             </Grid.RenderTransform>
-            <Rectangle  x:Name="xMainRectangle"  Height="{Binding RectangleHeight}" Width="{Binding RectangleWidth}"  PointerPressed="xMainRectangle_PointerPressed" Fill="Transparent" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" ManipulationStarted="RectangleRegionView_ManipulationStarted" ManipulationDelta="RectangleRegionView_ManipulationDelta" StrokeThickness="3" Stroke="Blue" HorizontalAlignment="Left" VerticalAlignment="Top">
-                <Rectangle.RenderTransform>
-                    <CompositeTransform x:Name="RectangleTranform" >
-                    </CompositeTransform>
-                </Rectangle.RenderTransform>
-            </Rectangle>
+            <Rectangle  x:Name="xMainRectangle"  Height="{Binding RectangleHeight}" Width="{Binding RectangleWidth}"  PointerPressed="xMainRectangle_PointerPressed" Fill="Transparent" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" ManipulationStarted="RectangleRegionView_ManipulationStarted" ManipulationDelta="RectangleRegionView_ManipulationDelta" StrokeThickness="3" Stroke="Blue" HorizontalAlignment="Left" VerticalAlignment="Top"/>
             <Path x:Name="xResizingTriangle" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Left" VerticalAlignment="Top"                
                   Height="25" Stretch="Fill" Margin="-28,-28,0,0" UseLayoutRounding="False" Width="25"
                       Opacity=".35"  Canvas.ZIndex="20" Visibility="{Binding Editable,Converter={StaticResource vConverter}}"  ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" ManipulationStarted="xResizingTriangle_ManipulationStarted" ManipulationDelta="xResizingTriangle_ManipulationDelta" ManipulationCompleted="xResizingTriangle_ManipulationCompleted">
                 <Path.RenderTransform>
-                    <CompositeTransform TranslateX="{Binding RectangleHeight}" TranslateY="{Binding RectangleWidth}">
+                    <CompositeTransform TranslateY="{Binding RectangleHeight}" TranslateX="{Binding RectangleWidth}">
                     </CompositeTransform>
                 </Path.RenderTransform>
             </Path>
@@ -36,9 +31,9 @@
         </Grid>
         <Grid>
         <Grid.RenderTransform>
-            <CompositeTransform TranslateY="75"></CompositeTransform>
+            <CompositeTransform TranslateY="{Binding IntervalRegionTranslateY}"></CompositeTransform>
         </Grid.RenderTransform>
-            <Rectangle x:Name="IntervalRectangle" Width="{Binding Path=IntervalRegionwidth}" Fill="YellowGreen" Height="25"  Opacity=".2" HorizontalAlignment="Left" VerticalAlignment="Top" >
+            <Rectangle x:Name="IntervalRectangle" Width="{Binding Path=IntervalRegionwidth}" Fill="DarkBlue" Height="25"  Opacity=".2" HorizontalAlignment="Left" VerticalAlignment="Top" >
                 <Rectangle.RenderTransform>
                     <CompositeTransform TranslateX="{Binding IntervalStart}"/>
                 </Rectangle.RenderTransform>

@@ -25,7 +25,8 @@ namespace NuSysApp
 
         public void SetSize(double width, double height)
         {
-            Model.BottomRightPoint = new Point(Model.TopLeftPoint.X + width, Model.TopLeftPoint.Y + height);
+            Model.Width = width;
+            Model.Height = height;
             SizeChanged?.Invoke(this,width,height);
             UpdateServer();
         }

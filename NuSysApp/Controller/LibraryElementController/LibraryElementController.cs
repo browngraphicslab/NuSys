@@ -89,11 +89,16 @@ namespace NuSysApp
         /// </summary>
         public void AddRegion(Region region)
         {
+            if (_libraryElementModel.Regions == null)
+            {
+                return;
+            }
+
+
             _libraryElementModel.Regions.Add(region);
 
             var factory = new RegionControllerFactory();
-            var regionController = factory.CreateFromSendable(region);
-            SessionController.Instance.RegionsController.Add(regionController);
+            var regionController = factory.CreateFromSendable(region, Id);
             RegionAdded?.Invoke(this, regionController);
             SessionController.Instance.NuSysNetworkSession.AddRegionToContent(LibraryElementModel.LibraryElementId, region);
         }
@@ -423,8 +428,8 @@ namespace NuSysApp
 
         public HashSet<LinkLibraryElementController> GetAllLinks()
         {
-            var controllers = SessionController.Instance.LinkController.GetLinkedIds(Id)
-                .Select(id =>SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
+            var linkedIds = SessionController.Instance.LinkController.GetLinkedIds(Id);
+            var controllers = linkedIds.Select(id =>SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
             return new HashSet<LinkLibraryElementController>(controllers);
         }
         #endregion

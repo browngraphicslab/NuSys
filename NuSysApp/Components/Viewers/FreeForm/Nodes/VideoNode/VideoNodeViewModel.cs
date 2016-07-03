@@ -15,6 +15,11 @@ namespace NuSysApp
     public class VideoNodeViewModel : ElementViewModel, Sizeable
     {
         private ObservableCollection<VideoRegionView> _regionViews = new ObservableCollection<VideoRegionView>();
+
+        public delegate double GetWidthEventHandler(object sender);
+        public event GetWidthEventHandler OnGetMediaPlayerWidth;
+        public delegate double GetHeightEventHandler(object sender);
+        public event GetHeightEventHandler OnGetMediaPlayerHeight;
         public ObservableCollection<VideoRegionView> RegionViews
         {
             get
@@ -134,16 +139,24 @@ namespace NuSysApp
         {
             SetSize(width, height);
         }
-
-      
         public double GetWidth()
         {
-            return Width;
+            var width = OnGetMediaPlayerWidth?.Invoke(this);
+            if (width != null)
+            {
+                return width.Value;
+            }
+            return 0;
         }
 
         public double GetHeight()
         {
-            return Height;
+            var height = OnGetMediaPlayerHeight?.Invoke(this);
+            if (height != null)
+            {
+                return height.Value;
+            }
+            return 0;
         }
     }
 }

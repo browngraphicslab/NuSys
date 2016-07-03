@@ -18,6 +18,7 @@ namespace NuSysApp
             Controller = controller;
             RegionViews = new ObservableCollection<VideoRegionView>();
             Controller.Loaded += Controller_Loaded;
+            
         }
 
         private void Controller_Loaded(object sender)
@@ -62,12 +63,12 @@ namespace NuSysApp
 
         public double GetWidth()
         {
-            return View.ActualWidth;
+            return (View as VideoDetailHomeTabView).VideoWidth;
         }
 
         public double GetHeight()
         {
-            return View.ActualHeight;
+            return (View as VideoDetailHomeTabView).VideoHeight;
         }
         public void MediaPlayerOnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {

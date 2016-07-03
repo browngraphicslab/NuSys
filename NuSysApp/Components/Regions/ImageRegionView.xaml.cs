@@ -46,13 +46,14 @@ namespace NuSysApp
 
             //vm.PropertyChanged += PropertyChanged;
             vm.SizeChanged += ChangeSize;
+            vm.LocationChanged += ChangeLocation;
             var model = vm.Model as RectangleRegion;
             if (model == null)
             {
                 return;
             }
 
-            vm.RegionChanged += RegionVM_RegionChanged;
+            //vm.RegionChanged += RegionVM_RegionChanged;
 
             var parentWidth = vm.ContainerViewModel.GetWidth();
             var parentHeight = vm.ContainerViewModel.GetHeight();
@@ -61,22 +62,16 @@ namespace NuSysApp
 
             _tx = composite.TranslateX;
             _ty = composite.TranslateY;
-            //vm.Width = (model.BottomRightPoint.X - model.TopLeftPoint.X) * parentWidth;
-            //vm.Height = (model.BottomRightPoint.Y - model.TopLeftPoint.Y) * parentHeight;
+
+            vm.Width = (model.Width) * parentWidth;
+            vm.Height = (model.Height) * parentHeight;
 
         }
 
-        private void RegionVM_RegionChanged(object sender, double height, double width)
-        {
-            var vm = (ImageRegionViewModel)DataContext;
-            vm.Width = width;
-            vm.Height = height;
-            // TODO Refactor to Controller
 
-        }
-
-        private void ChangeSize(object sender, Point topLeft, Point bottomRight)
+        private void ChangeLocation(object sender, Point topLeft)
         {
+
             var vm = DataContext as ImageRegionViewModel;
 
             var composite = RenderTransform as CompositeTransform;
@@ -86,6 +81,21 @@ namespace NuSysApp
             }
             composite.TranslateX = topLeft.X;
             composite.TranslateY = topLeft.Y;
+        }
+
+        private void ChangeSize(object sender, double width, double height)
+        {
+            var vm = DataContext as ImageRegionViewModel;
+
+            var composite = RenderTransform as CompositeTransform;
+            if (composite == null)
+            {
+                return;
+            }
+            xMainRectangle.Width = width;
+            xMainRectangle.Height = height;
+            vm.Width = width;
+            vm.Height = height;
         }
         private void PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -149,7 +159,8 @@ namespace NuSysApp
                 vm.Height = xMainRectangle.Height;
             }
 
-            UpdateViewModel();
+            //UpdateViewModel();
+            vm.SetNewSize(xMainRectangle.Width, xMainRectangle.Height);
 
         }
 
@@ -208,7 +219,10 @@ namespace NuSysApp
                 vm.Height = vm.OriginalHeight;
             }
 
-            UpdateViewModel();
+            //UpdateViewModel();
+            var composite = RenderTransform as CompositeTransform;
+            var topLeft = new Point(composite.TranslateX, composite.TranslateY);
+            vm.SetNewLocation(topLeft);
             e.Handled = true;
         }
 

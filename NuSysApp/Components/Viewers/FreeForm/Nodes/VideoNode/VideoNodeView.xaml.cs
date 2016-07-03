@@ -69,6 +69,18 @@ namespace NuSysApp
             ((VideoNodeModel)vm.Model).OnJump += VideoNodeView_OnJump;
 
            // playbackElement.MediaEnded += MediaEnded;
+            vm.OnGetMediaPlayerWidth += OnGetMediaPlayerWidth;
+            vm.OnGetMediaPlayerHeight += OnGetMediaPlayerHeight;
+        }
+
+        private double OnGetMediaPlayerHeight(object sender)
+        {
+            return VideoMediaPlayer.MediaPlayer.ActualHeight;
+        }
+
+        private double OnGetMediaPlayerWidth(object sender)
+        {
+            return VideoMediaPlayer.MediaPlayer.ActualWidth;
         }
 
         private void MediaEnded(object sender, RoutedEventArgs e)

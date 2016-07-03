@@ -110,7 +110,7 @@ namespace NuSysApp
             if (metadata.ContainsKey(key) || string.IsNullOrEmpty(key) || string.IsNullOrEmpty(val) || string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(val))
                 return;
 
-            var entry = new MetadataEntry(xKey.Text, new List<string>() { xValue.Text}, MetadataMutability.MUTABLE);
+            var entry = new MetadataEntry(xKey.Text, new List<string>(xValue.Text.Split(new char[] { ','}, StringSplitOptions.RemoveEmptyEntries)), MetadataMutability.MUTABLE);
 
             // Adds metadata entry to the library element and updates the listview
             Metadatable.AddMetadata(entry);

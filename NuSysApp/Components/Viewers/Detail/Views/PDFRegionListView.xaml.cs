@@ -36,6 +36,16 @@ namespace NuSysApp
         {
             //((ImageFullScreenView)(((DetailViewerViewModel)DetailViewerView.DataContext).RegionView)).SelectedRegion(test);
 
+            var vm = DetailViewerView.DataContext as DetailViewerViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+            var detailHomeTabViewModel = vm.RegionView.DataContext as PdfDetailHomeTabViewModel;
+            var pdfRegion = (sender as Grid).DataContext as PdfRegion;
+            detailHomeTabViewModel.Goto(pdfRegion.PageLocation);
+
+
         }
 
         private void DeleteButton_OnPointerExited(object sender, PointerRoutedEventArgs e)
@@ -82,18 +92,6 @@ namespace NuSysApp
             vm.CurrentElementController.AddRegion(region);
         }
 
-        private void DeleteRegion_Clicked(object sender, RoutedEventArgs e)
-        {
-            var vm = DetailViewerView.DataContext as DetailViewerViewModel;
-            if (vm == null)
-            {
-                return;
-            }
-            var button = sender as Button;
-            var region = button.DataContext as Region;
 
-            vm.CurrentElementController.RemoveRegion(region);
-
-        }
     }
 }

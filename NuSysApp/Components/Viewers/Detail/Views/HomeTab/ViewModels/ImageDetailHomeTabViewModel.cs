@@ -30,12 +30,13 @@ namespace NuSysApp
 
         public override void AddRegion(object sender, RegionController regionController)
         {
-            var imageRegion = regionController.Model as RectangleRegion;
+            var rectRegionController = regionController as RectangleRegionController;
+            var imageRegion = rectRegionController.Model as RectangleRegion;
             if (imageRegion == null)
             {
                 return;
             }
-            var vm = new ImageRegionViewModel(imageRegion, LibraryElementController, regionController, this);
+            var vm = new ImageRegionViewModel(imageRegion, LibraryElementController, rectRegionController, this);
             if (!Editable)
                 vm.Editable = false;
             var view = new ImageRegionView(vm);
@@ -111,19 +112,18 @@ namespace NuSysApp
                 {
                     return;
                 }
-                RegionController regionController;
+                RectangleRegionController regionController;
                 if (SessionController.Instance.RegionsController.GetRegionController(imageRegion.Id) == null)
                 {
                     var factory = new RegionControllerFactory();
-                    regionController = factory.CreateFromSendable(regionModel);
-                    SessionController.Instance.RegionsController.Add(regionController);
+                    regionController = factory.CreateFromSendable(regionModel, LibraryElementController.LibraryElementModel.LibraryElementId) as RectangleRegionController;
                 }
                 else {
-                    regionController = SessionController.Instance.RegionsController.GetRegionController(imageRegion.Id);
+                    regionController = SessionController.Instance.RegionsController.GetRegionController(imageRegion.Id) as RectangleRegionController;
                 }
 
 
-                //var regionController = new RegionController(imageRegion);
+                //var regionController = new RegionController(imageRengion);
                 var vm = new ImageRegionViewModel(imageRegion, LibraryElementController, regionController, this);
                 if (!Editable)
                     vm.Editable = false;

@@ -13,6 +13,9 @@
         <Grid.RenderTransform>
             <CompositeTransform x:Name="GridTranform"></CompositeTransform>
         </Grid.RenderTransform>
+        
+        <TextBox x:Name="xNameTextBox" Height="15" Text="{Binding Name, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,-30,0,0"></TextBox>
+
         <Rectangle x:Name="xMainRectangle"  PointerPressed="xMainRectangle_PointerPressed" Fill="Transparent" ManipulationStarted="RectangleRegionView_ManipulationStarted" 
                    Width="{Binding Width}" Height="{Binding Height}" ManipulationDelta="RectangleRegionView_ManipulationDelta" GotFocus="XMainRectangle_OnGotFocus"
                     LostFocus="XMainRectangle_OnLostFocus" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" MaxHeight="{Binding ContainerHeight}" MaxWidth="{Binding ContainerWidth}">
@@ -29,5 +32,8 @@
                 </CompositeTransform>
             </Path.RenderTransform>
         </Path>
+
+        <Image x:Name="xDelete" Width="25" Height="25" Margin="0,5,5,0" PointerPressed="xDelete_PointerPressed"  HorizontalAlignment="Right"  VerticalAlignment="Top" Stretch="Uniform" Source="ms-appx:///Assets/icon_delete_color.png"></Image>
+
     </Grid>
 </UserControl>

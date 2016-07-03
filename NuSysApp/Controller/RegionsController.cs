@@ -21,7 +21,7 @@ namespace NuSysApp
             return _regionControllers.ContainsKey(id) ? _regionControllers[id] : null;
         }
 
-        public string Add(RegionController regionController)
+        public string Add(RegionController regionController, string contentId)
         {
             if (regionController == null)
             {
