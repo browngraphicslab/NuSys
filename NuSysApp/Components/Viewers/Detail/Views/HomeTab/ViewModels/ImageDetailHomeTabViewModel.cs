@@ -116,8 +116,7 @@ namespace NuSysApp
                 if (SessionController.Instance.RegionsController.GetRegionController(imageRegion.Id) == null)
                 {
                     var factory = new RegionControllerFactory();
-                    regionController = factory.CreateFromSendable(regionModel) as RectangleRegionController;
-                    SessionController.Instance.RegionsController.Add(regionController);
+                    regionController = factory.CreateFromSendable(regionModel, LibraryElementController.LibraryElementModel.LibraryElementId) as RectangleRegionController;
                 }
                 else {
                     regionController = SessionController.Instance.RegionsController.GetRegionController(imageRegion.Id) as RectangleRegionController;

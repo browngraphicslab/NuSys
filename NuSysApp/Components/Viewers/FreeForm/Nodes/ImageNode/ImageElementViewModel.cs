@@ -69,8 +69,7 @@ namespace NuSysApp
                 if (SessionController.Instance.RegionsController.GetRegionController(model.Id) == null)
                 {
                     var factory = new RegionControllerFactory();
-                    regionController = factory.CreateFromSendable(model) as RectangleRegionController;
-                    SessionController.Instance.RegionsController.Add(regionController);
+                    regionController = factory.CreateFromSendable(model, ContentId) as RectangleRegionController;
                 }
                 else {
                     regionController = SessionController.Instance.RegionsController.GetRegionController(model.Id) as RectangleRegionController;

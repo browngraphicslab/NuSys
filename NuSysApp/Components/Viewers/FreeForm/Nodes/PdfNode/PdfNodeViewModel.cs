@@ -106,8 +106,7 @@ namespace NuSysApp
                 if (SessionController.Instance.RegionsController.GetRegionController(pdfRegion.Id) == null)
                 {
                     var factory = new RegionControllerFactory();
-                    regionController = factory.CreateFromSendable(pdfRegion) as PdfRegionController;
-                    SessionController.Instance.RegionsController.Add(regionController);
+                    regionController = factory.CreateFromSendable(pdfRegion, ContentId) as PdfRegionController;
                 }
                 else {
                     regionController = SessionController.Instance.RegionsController.GetRegionController(pdfRegion.Id) as PdfRegionController;

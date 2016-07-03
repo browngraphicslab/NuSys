@@ -229,8 +229,6 @@ namespace NuSysApp
             if (regions == null) return;
             foreach (var regionModel in regions)
             {
-
-
                 var pdfRegion = regionModel as PdfRegion;
                 if (pdfRegion == null)
                 {
@@ -240,8 +238,7 @@ namespace NuSysApp
                 if (SessionController.Instance.RegionsController.GetRegionController(pdfRegion.Id) == null)
                 {
                     var factory = new RegionControllerFactory();
-                    regionController = factory.CreateFromSendable(pdfRegion) as PdfRegionController;
-                    SessionController.Instance.RegionsController.Add(regionController);
+                    regionController = factory.CreateFromSendable(pdfRegion, Controller.Id) as PdfRegionController;
                 }
                 else {
                     regionController = SessionController.Instance.RegionsController.GetRegionController(pdfRegion.Id) as PdfRegionController;
