@@ -35,7 +35,18 @@ namespace NuSysApp
         private Point _topLeftPoint;
         private bool _editable;
         private double _intervalRegionTranslateY;
+        private SolidColorBrush _boxColor;
         #endregion PrivateVariables
+
+        public SolidColorBrush BoxColor
+        {
+            get { return _boxColor; }
+            set
+            {
+                _boxColor = value;
+                RaisePropertyChanged("BoxColor");
+            }
+        }
         public bool Editable {
             get { return _editable; }
             set
@@ -134,7 +145,7 @@ namespace NuSysApp
             _intervalEnd = model.End;
             _intervalRegionWidth = _intervalEnd - _intervalStart;
             _intervalRegionTranslateY = 1;
-
+            BoxColor = new SolidColorBrush(Colors.LightCyan);
             Editable = true;
         }
 
@@ -192,6 +203,11 @@ namespace NuSysApp
         {
             var controller = RegionController as VideoRegionController;
             controller?.SetLocation(new Point(topLeft.X / ContainerViewModel.GetWidth(), topLeft.Y / ContainerViewModel.GetHeight()));
+        }
+
+        public override void HighlightFromDetailView()
+        {
+            BoxColor=new SolidColorBrush(Colors.Gold);   
         }
     }
 

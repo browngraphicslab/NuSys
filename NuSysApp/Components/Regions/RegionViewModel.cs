@@ -33,5 +33,10 @@ namespace NuSysApp
         {
             ContainerSizeChanged?.Invoke(sender,width,height);
         }
+
+        public virtual void HighlightFromDetailView()
+        {
+            
+        }
     }
 }

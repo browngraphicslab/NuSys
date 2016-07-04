@@ -357,7 +357,6 @@ namespace NuSysApp
                                     var region = element as ImageRegionView;
                                     var regiondc = region.DataContext as ImageRegionViewModel;
                                     SessionController.Instance.LinkController.RequestLink(regiondc.RegionController.Id, vm.Controller.LibraryElementController.Id);
-                                    vm.Controller.RequestVisualLinkTo();
                                 }
                             }
                             
@@ -407,7 +406,6 @@ namespace NuSysApp
                             {
                                 SessionController.Instance.LinkController.RequestLink(new LinkId(dc.ContentId),new LinkId( vm.ContentId));
                             }
-                            vm.Controller.RequestVisualLinkTo();
                         }
                         if (_currenDragMode == DragMode.PresentationLink)
                         {

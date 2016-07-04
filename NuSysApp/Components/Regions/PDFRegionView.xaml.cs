@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Navigation;
 using Windows.Foundation;
 using System.ComponentModel;
 using System.Diagnostics;
+using Windows.UI;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -319,8 +320,10 @@ namespace NuSysApp
 
         public void Deselect()
         {
+            var vm = DataContext as PdfRegionViewModel;
             xMainRectangle.StrokeThickness = 3;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
+            if (vm.BoxColor.Color != Colors.Gold)
+                xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
             xResizingTriangle.Visibility = Visibility.Collapsed;
             xDelete.Visibility = Visibility.Collapsed;
             xNameTextBox.Visibility = Visibility.Collapsed;
@@ -330,8 +333,10 @@ namespace NuSysApp
 
         public void Select()
         {
+            var vm = DataContext as PdfRegionViewModel;
             xMainRectangle.StrokeThickness = 6;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
+            if (vm.BoxColor.Color != Colors.Gold)
+                xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
             xResizingTriangle.Visibility = Visibility.Visible;
             xDelete.Visibility = Visibility.Visible;
             xNameTextBox.Visibility = Visibility.Visible;

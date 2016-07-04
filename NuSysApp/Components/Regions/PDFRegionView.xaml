@@ -17,7 +17,7 @@
         <TextBox x:Name="xNameTextBox" Height="15" Text="{Binding Name, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,-30,0,0"></TextBox>
 
         <Rectangle x:Name="xMainRectangle"  PointerPressed="xMainRectangle_PointerPressed" Fill="Transparent" ManipulationStarted="RectangleRegionView_ManipulationStarted" 
-                   Width="{Binding Width}" Height="{Binding Height}" ManipulationDelta="RectangleRegionView_ManipulationDelta" GotFocus="XMainRectangle_OnGotFocus"
+                   Width="{Binding Width}" Height="{Binding Height}" ManipulationDelta="RectangleRegionView_ManipulationDelta" GotFocus="XMainRectangle_OnGotFocus" Stroke ="{Binding BoxColor}"
                     LostFocus="XMainRectangle_OnLostFocus" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" MaxHeight="{Binding ContainerHeight}" MaxWidth="{Binding ContainerWidth}">
             <Rectangle.RenderTransform>
                 <CompositeTransform x:Name="RectangleTranform"></CompositeTransform>

@@ -214,11 +214,11 @@ namespace NuSysApp
 
         public virtual async Task RequestLinkTo(LinkId otherId, RectangleView rectangle = null, UserControl regionView = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
         {
-            var contentId = SessionController.Instance.GenerateId();
-            var libraryElementRequest = new CreateNewLibraryElementRequest(contentId,null,ElementType.Link, "NEW LINK");
-            var request = new NewLinkRequest(new LinkId(Model.Id), otherId, Model.ParentCollectionId,contentId, regionView, rectangle, inFGDictionary, outFGDictionary);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+           // var contentId = SessionController.Instance.GenerateId();
+         //   var libraryElementRequest = new CreateNewLibraryElementRequest(contentId,null,ElementType.Link, "NEW LINK");
+        //    var request = new NewLinkRequest(new LinkId(Model.Id), otherId, Model.ParentCollectionId,contentId, regionView, rectangle, inFGDictionary, outFGDictionary);
+       //     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
+     //       await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }
 
         public void RequestVisualLinkTo()

@@ -104,12 +104,13 @@ namespace NuSysApp
             }
         }
 
-        public virtual async Task RequestLink(LinkId otherId, LinkId anotherId, RectangleView rectangle = null, UserControl regionView = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
+        public virtual async Task RequestLink(LinkId otherId, LinkId anotherId, Dictionary<string,MetadataEntry> metadata = null, RectangleView rectangle = null, UserControl regionView = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
         {
             var contentId = SessionController.Instance.GenerateId();
             var request = new NewLinkRequest(anotherId, otherId, SessionController.Instance.ContentController.GetContent(anotherId.LibraryElementId)?.Creator, 
-                contentId, regionView, rectangle, inFGDictionary, outFGDictionary);
+                contentId, metadata,regionView, rectangle, inFGDictionary, outFGDictionary);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            SessionController.Instance.ActiveFreeFormViewer.AllContent.First().Controller.RequestVisualLinkTo();
         }
 
         public void ChangeLinkTitle(string linkLibraryElementId, string title)

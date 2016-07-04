@@ -13,7 +13,7 @@
     <Grid.RenderTransform>
         <CompositeTransform TranslateY="10"></CompositeTransform>
     </Grid.RenderTransform>
-        <Rectangle x:Name="Rect" Width="{Binding Path=RegionWidth}" Fill="LightCyan" Height="100"  Opacity=".2" HorizontalAlignment="Left" VerticalAlignment="Top" >
+        <Rectangle x:Name="Rect" Width="{Binding Path=RegionWidth}" Fill="{Binding BoxColor}" Height="100"  Opacity=".2" HorizontalAlignment="Left" VerticalAlignment="Top" >
             <Rectangle.RenderTransform>
                 <CompositeTransform TranslateX="{Binding LeftHandleX}"/>
             </Rectangle.RenderTransform>

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -289,8 +290,10 @@ namespace NuSysApp
 
         public void Deselect()
         {
+            var vm = DataContext as ImageRegionViewModel;
             xMainRectangle.StrokeThickness = 3;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Blue);
+            if (vm.BoxColor.Color != Colors.Gold)
+                vm.BoxColor = new SolidColorBrush(Windows.UI.Colors.Blue);
             xResizingTriangle.Visibility = Visibility.Collapsed;
             xDelete.Visibility = Visibility.Collapsed;
             xNameTextBox.Visibility = Visibility.Collapsed;
@@ -301,8 +304,10 @@ namespace NuSysApp
 
         public void Select()
         {
+            var vm = DataContext as ImageRegionViewModel;
             xMainRectangle.StrokeThickness = 6;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Blue);
+            if (vm.BoxColor.Color != Colors.Gold)
+             vm.BoxColor = new SolidColorBrush(Windows.UI.Colors.Blue);
             xResizingTriangle.Visibility = Visibility.Visible;
             xDelete.Visibility = Visibility.Visible;
             xNameTextBox.Visibility = Visibility.Visible;

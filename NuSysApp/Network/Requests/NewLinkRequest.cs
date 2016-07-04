@@ -19,7 +19,7 @@ namespace NuSysApp
     public class NewLinkRequest : Request
     {
         public NewLinkRequest(Message m) : base(RequestType.NewLinkRequest,m){}
-        public NewLinkRequest(LinkId id1, LinkId id2, string creator, string contentId, UserControl regionView, RectangleView rectangle, Dictionary<string, object> inFineGrainDictionary, Dictionary<string, object> outFineGrainDictionary, string id = null, bool IsPresentationLink = false) : base(RequestType.NewLinkRequest)
+        public NewLinkRequest(LinkId id1, LinkId id2, string creator, string contentId, Dictionary<string,MetadataEntry> metadata ,UserControl regionView, RectangleView rectangle, Dictionary<string, object> inFineGrainDictionary, Dictionary<string, object> outFineGrainDictionary, string id = null, bool IsPresentationLink = false) : base(RequestType.NewLinkRequest)
         {
             _message["id1"] = JsonConvert.SerializeObject(id1);
             _message["id2"] = JsonConvert.SerializeObject(id2);
@@ -28,6 +28,10 @@ namespace NuSysApp
             _message["contentId"] = contentId;
             _message["isPresentationLink"] = IsPresentationLink;
 
+            if (metadata != null)
+            {
+                _message["metadata"] = metadata;
+            }
             if (inFineGrainDictionary != null)
             {
                 _message["inFGDictionary"] = inFineGrainDictionary;

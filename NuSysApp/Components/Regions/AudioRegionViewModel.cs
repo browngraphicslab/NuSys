@@ -24,7 +24,17 @@ namespace NuSysApp
         public event DoubleChanged WidthChanged;
         public event DoubleChanged Bound1Changed;
         public event DoubleChanged Bound2Changed;
+        private SolidColorBrush _boxColor;
 
+        public SolidColorBrush BoxColor
+        {
+            get { return _boxColor; }
+            set
+            {
+                _boxColor = value;
+                RaisePropertyChanged("BoxColor");
+            }
+        }
         public double LeftHandleX
         {
             get
@@ -59,6 +69,7 @@ namespace NuSysApp
             LefthandleY2 = 110; //+ contentView.ActualHeight;
             RightHandleY1 = 10;
             RightHandleY2 = 110; //+ contentView.ActualHeight;
+            BoxColor = new SolidColorBrush(Colors.LightCyan);
         }
         private void BaseSizeChanged(object sender, double width, double height)
         {
@@ -89,6 +100,11 @@ namespace NuSysApp
             RaisePropertyChanged("LeftHandleX");
             RaisePropertyChanged("RightHandleX");
             RaisePropertyChanged("RegionWidth");
+        }
+
+        public override void HighlightFromDetailView()
+        {
+            BoxColor = new SolidColorBrush(Colors.Gold);
         }
 
         //private int _startTime;
@@ -315,6 +331,8 @@ namespace NuSysApp
 
         //    ((Line)sender).CapturePointer(e.Pointer);
         //}
+
+
     }
 
 }

@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.UI;
+using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
@@ -16,7 +18,17 @@ namespace NuSysApp
         public double ContainerWidth { get; set; }
         private double _height;
         private double _width;
+        private SolidColorBrush _boxColor;
 
+        public SolidColorBrush BoxColor
+        {
+            get { return _boxColor; }
+            set
+            {
+                _boxColor = value;
+                RaisePropertyChanged("BoxColor");
+            }
+        }
         public double Height
         {
             get { return _height; }
@@ -60,7 +72,7 @@ namespace NuSysApp
             Height = model.Height * ContainerHeight;
             Width = model.Width * ContainerWidth;
             //RegionController.RegionUpdated += RegionUpdated;
-
+            BoxColor = new SolidColorBrush(Colors.Blue);
 
             regionController.SizeChanged += RegionController_SizeChanged;
             regionController.LocationChanged += RegionController_LocationChanged;
@@ -225,5 +237,9 @@ namespace NuSysApp
             (RegionController as PdfRegionController).SetSize(normalWidth, normalHeight);
         }
 
+        public override void HighlightFromDetailView()
+        {
+            BoxColor= new SolidColorBrush(Colors.Gold);
+        }
     }
 }
