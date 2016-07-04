@@ -42,6 +42,7 @@ namespace NuSysApp
                 return;
             }
             var vm = new VideoRegionViewModel(videoRegion, Controller, videoRegionController, this);
+            vm.Editable = this.Editable;
             var view = new VideoRegionView(vm);
             RegionViews.Add(view);
             RaisePropertyChanged("RegionViews");
@@ -108,6 +109,7 @@ namespace NuSysApp
                 var regionController = SessionController.Instance.RegionsController.GetRegionController(regionModel.Id);
                 Debug.Assert(regionController is VideoRegionController);
                 var vm = new VideoRegionViewModel(videoRegion, Controller, regionController as VideoRegionController, this);
+                vm.Editable = this.Editable;
                 var view = new VideoRegionView(vm);
                 RegionViews.Add(view);
 
