@@ -225,6 +225,7 @@ namespace NuSysApp
 
         private void VmOnSelectionChanged(object source)
         {
+
             var vm = (FreeFormViewerViewModel) DataContext;
             if (vm.Selections.Count == 0)
             {

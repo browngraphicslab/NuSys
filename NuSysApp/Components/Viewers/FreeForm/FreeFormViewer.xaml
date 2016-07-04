@@ -21,7 +21,7 @@
 
         <Canvas x:Name="xWrapper">
 
-            <Canvas x:Name="xAtomCanvas" HorizontalAlignment="Left" Width="100000" Height="100000" RenderTransform="{Binding CompositeTransform}">
+            <Canvas x:Name="xAtomCanvas" HorizontalAlignment="Left" Width="100000" Height="100000" RenderTransform="{Binding CompositeTransform}" Background="Transparent">
                 <ItemsControl x:Name="IC"  ItemsSource="{Binding AtomViewList}" >
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>

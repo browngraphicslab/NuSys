@@ -22,6 +22,7 @@ using Windows.Graphics.Display;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using NuSysApp.Viewers;
+using System.Threading.Tasks;
 
 // The Templated Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234235
 
@@ -482,7 +483,7 @@ namespace NuSysApp
             e.Handled = true;
         }
 
-        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private async void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             var vm = (ElementViewModel)this.DataContext;
             if (e.PropertyName == "Height")
@@ -508,6 +509,7 @@ namespace NuSysApp
                     highlight.Background = new SolidColorBrush(Colors.Transparent);
                     bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 197, 158, 156));
                     bg.BorderThickness = new Thickness(2);
+                    await Task.Delay(200);
                     hitArea.Visibility = Visibility.Collapsed;
                 }
                 if (!(vm.IsEditing || vm.IsSelected))
