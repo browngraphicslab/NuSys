@@ -184,7 +184,7 @@ namespace NuSysApp
                 return;
             }
             var pdfRegionController = regionController as PdfRegionController;
-            pdfRegionController?.SetPageLocation(_pageNumber);
+            //pdfRegionController?.SetPageLocation(_pageNumber);
             var vm = new PdfRegionViewModel(pdfRegion, Controller, pdfRegionController, this);
             if (!Editable)
                 vm.Editable = false;
