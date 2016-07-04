@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Shapes;
 using SharpDX.Direct3D11;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -27,6 +28,7 @@ namespace NuSysApp
             this.DataContext = vm;
         }
 
+        public Grid RegionRectangle { get { return xGrid; } }
         private void Bound1_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var composite = IntervalRectangle.RenderTransform as CompositeTransform;
@@ -64,7 +66,7 @@ namespace NuSysApp
                 }
                 if (Double.IsNaN(newEnd))
                 {
-                    
+                    return;
                 }
                 vm.SetIntervalEnd(newEnd);
             }

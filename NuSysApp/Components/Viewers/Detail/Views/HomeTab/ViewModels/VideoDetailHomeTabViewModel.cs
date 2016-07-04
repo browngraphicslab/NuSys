@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls.Primitives;
 
 namespace NuSysApp
 {
@@ -45,6 +46,25 @@ namespace NuSysApp
             RegionViews.Add(view);
             RaisePropertyChanged("RegionViews");
         }
+        public void ScrubBarOnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            double position = e.NewValue / VideoDuration;
+            foreach (var regionview in RegionViews)
+            {
+                if (((regionview.DataContext as VideoRegionViewModel).Model as VideoRegionModel).Start <= position &&
+                    ((regionview.DataContext as VideoRegionViewModel).Model as VideoRegionModel).End >= position)
+                {
+                    regionview.RegionRectangle.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    regionview.RegionRectangle.Visibility = Visibility.Collapsed;
+
+                }
+            }
+        }
+
+        public double VideoDuration { get; set; }
 
         public override void RemoveRegion(object sender, Region displayedRegion)
         {

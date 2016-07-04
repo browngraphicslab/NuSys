@@ -68,7 +68,7 @@ namespace NuSysApp
         {
             get
             {
-                return (_intervalEnd - _intervalStart) * ContainerViewModel.GetWidth();
+                return (_intervalEnd - _intervalStart) * (ContainerViewModel.GetWidth()-20);
             }
             set
             {
@@ -80,7 +80,7 @@ namespace NuSysApp
         {
             get
             {
-                return _intervalRegionTranslateY * ContainerViewModel.GetHeight();
+                return _intervalRegionTranslateY * ContainerViewModel.GetHeight() + 10;
             }
             set
             {
@@ -90,22 +90,24 @@ namespace NuSysApp
         }
         public double IntervalStart
         {
-            get { return _intervalStart * ContainerViewModel.GetWidth(); }
+            get { return _intervalStart * (ContainerViewModel.GetWidth()-20) + 10; }
             set
             {
                 Debug.Assert(!Double.IsNaN(value));
-                _intervalStart = value; 
+                _intervalStart = value;
                 RaisePropertyChanged("IntervalStart");
+                RaisePropertyChanged("IntervalRegionWidth");
             }
         }
         public double IntervalEnd
         {
-            get { return _intervalEnd * ContainerViewModel.GetWidth(); }
+            get { return _intervalEnd * (ContainerViewModel.GetWidth()-20)+10; }
             set
             {
                 _intervalEnd = value;
                 RaisePropertyChanged("IntervalEnd");
-            } 
+                RaisePropertyChanged("IntervalRegionWidth");
+            }
         }
         public Point TopLeft 
         {

@@ -33,7 +33,7 @@
         <Grid.RenderTransform>
             <CompositeTransform TranslateY="{Binding IntervalRegionTranslateY}"></CompositeTransform>
         </Grid.RenderTransform>
-            <Rectangle x:Name="IntervalRectangle" Width="{Binding IntervalRegionwidth}" Fill="DarkBlue" Height="25"  Opacity=".2" HorizontalAlignment="Left" VerticalAlignment="Top" >
+            <Rectangle x:Name="IntervalRectangle" Width="{Binding IntervalRegionWidth}" Fill="DarkBlue" Height="25"  Opacity=".2" HorizontalAlignment="Left" VerticalAlignment="Top" >
                 <Rectangle.RenderTransform>
                     <CompositeTransform TranslateX="{Binding IntervalStart}"/>
                 </Rectangle.RenderTransform>
