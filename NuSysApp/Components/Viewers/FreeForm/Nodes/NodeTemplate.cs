@@ -302,29 +302,62 @@ namespace NuSysApp
                         {
                             if (element is AudioRegionView)
                             {
-
+                                if (_currenDragMode == DragMode.PresentationLink)
+                                {
+                                    // vm.Controller.RequestPresentationLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
+                                }
+                                else
+                                {
+                                    var region = element as AudioRegionView;
+                                    var regiondc = region.DataContext as AudioRegionViewModel;
+                                    SessionController.Instance.LinkController.RequestLink(regiondc.RegionController.Id, vm.Controller.LibraryElementController.Id);
+                                    vm.Controller.RequestVisualLinkTo();
+                                }
                             }
 
                             if (element is VideoRegionView)
                             {
-
+                                if (_currenDragMode == DragMode.PresentationLink)
+                                {
+                                    // vm.Controller.RequestPresentationLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
+                                }
+                                else
+                                {
+                                    var region = element as VideoRegionView;
+                                    var regiondc = region.DataContext as VideoRegionViewModel;
+                                    SessionController.Instance.LinkController.RequestLink(regiondc.RegionController.Id, vm.Controller.LibraryElementController.Id);
+                                    vm.Controller.RequestVisualLinkTo();
+                                }
                             }
 
                             if (element is PDFRegionView)
                             {
-
+                                if (_currenDragMode == DragMode.PresentationLink)
+                                {
+                                    // vm.Controller.RequestPresentationLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
+                                }
+                                else
+                                {
+                                    var region = element as PDFRegionView;
+                                    var regiondc = region.DataContext as PdfRegionViewModel;
+                                    SessionController.Instance.LinkController.RequestLink(regiondc.RegionController.Id, vm.Controller.LibraryElementController.Id);
+                                    vm.Controller.RequestVisualLinkTo();
+                                }
                             }
                             if (element is ImageRegionView)
                             {
-                                Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100, 100, 200);
-                                Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100, 100, 100);
+                             //   Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100, 100, 200);
+                               // Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100, 100, 100);
                                 if (_currenDragMode == DragMode.PresentationLink)
                                 {
                                    // vm.Controller.RequestPresentationLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
                                 }
                                 else
                                 {
-                                    SessionController.Instance.LinkController.RequestLink(new LinkId(dc.ContentId), new LinkId(vm.ContentId));
+                                    var region = element as ImageRegionView;
+                                    var regiondc = region.DataContext as ImageRegionViewModel;
+                                    SessionController.Instance.LinkController.RequestLink(regiondc.RegionController.Id, vm.Controller.LibraryElementController.Id);
+                                    vm.Controller.RequestVisualLinkTo();
                                 }
                             }
                             
