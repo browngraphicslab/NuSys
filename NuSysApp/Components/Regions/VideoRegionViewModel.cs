@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Nodes.AudioNode;
+using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 {
@@ -172,20 +173,23 @@ namespace NuSysApp
 
         public void SetIntervalStart(double start)
         {
+            var newstart = Math.Max(0, start);
             var controller = RegionController as VideoRegionController;
-            controller?.SetStartTime(start / ContainerViewModel.GetWidth());
+            controller?.SetStartTime(newstart / ContainerViewModel.GetWidth());
         }
         public void SetIntervalEnd(double end)
         {
+            var newEnd = Math.Max(0, end);
             var controller = RegionController as VideoRegionController;
-            controller?.SetEndTime(end / ContainerViewModel.GetWidth());
+            controller?.SetEndTime(newEnd / ContainerViewModel.GetWidth());
         }
         
         public void SetRegionSize(double width, double height)
         {
-            var h = height;
+            var h = Math.Max(0,height);
+            var w = Math.Max(0, width);
             var controller = RegionController as VideoRegionController;
-            controller?.SetSize(width / ContainerViewModel.GetWidth(), height / ContainerViewModel.GetHeight());
+            controller?.SetSize(w / ContainerViewModel.GetWidth(), h / ContainerViewModel.GetHeight());
         }
 
         public void SetRegionLocation(Point topLeft)
