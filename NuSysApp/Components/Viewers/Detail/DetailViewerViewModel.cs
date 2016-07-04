@@ -46,8 +46,8 @@ namespace NuSysApp
         public ObservableCollection<FrameworkElement> Tags { get; set; }
 
         // Tabs keeps track of which tabs are open in the DV
-        private ObservableCollection<IMetadatable> _tabs;
-        public ObservableCollection<IMetadatable> Tabs
+        private ObservableCollection<IDetailViewable> _tabs;
+        public ObservableCollection<IDetailViewable> Tabs
         {
             get { return _tabs; }
             set
@@ -106,7 +106,7 @@ namespace NuSysApp
             Tags = new ObservableCollection<FrameworkElement>();
             Metadata = new ObservableCollection<StackPanel>();
             RegionCollection = new ObservableCollection<Region>();
-            Tabs = new ObservableCollection<IMetadatable>();
+            Tabs = new ObservableCollection<IDetailViewable>();
           //  TabVisibility = Visibility.Collapsed;
             
         }
@@ -134,15 +134,14 @@ namespace NuSysApp
             //Create non-libraryelementcontroller tabs
             return true;
         }
-        public async Task<bool> ShowElement(IMetadatable metadatable)
+
+
+        public async Task<bool> ShowElement(IDetailViewable viewable)
         {
-            if (metadatable.MetadatableType() == MetadatableType.Content)
+            if (viewable is LibraryElementController)
             {
-                var controller = metadatable as LibraryElementController;
-                if (controller == null)
-                {
-                    return false;
-                }
+                var controller = viewable as LibraryElementController;
+                
                 if (!controller.IsLoaded)
                 {
                     await
@@ -224,15 +223,11 @@ namespace NuSysApp
                 RaisePropertyChanged("RegionView");
                 RaisePropertyChanged("View");
 
-                AddTab(metadatable);
+                AddTab(viewable);
                 return true;
-            } else if (metadatable.MetadatableType() == MetadatableType.Region)
+            } else if (viewable is RegionController)
             {
-                var controller = metadatable as RegionController;
-                if (controller == null)
-                {
-                    return false;
-                }
+                var controller = viewable as RegionController;
                 var regionModel = controller.Model;
                 View = await _viewHomeTabViewFactory.CreateFromSendable(CurrentElementController);
                 if (View == null)
@@ -253,19 +248,9 @@ namespace NuSysApp
 
                 RaisePropertyChanged("View");
                 
-                //regionView.Loaded += delegate
-                //{
-
-                //    _regionableRegionTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
-
-                //};
                 SizeChanged += (sender, left, width, height) => _regionableHomeTabViewModel.SizeChanged(sender, width, height);
                 
                 Title = regionModel.Name;
-                //this.ChangeTitle(this, regionModel.Name);
-                
-                //var tempvm = (DetailHomeTabViewModel)View.DataContext;
-                //tempvm.TitleChanged += ControllerTitleChanged;
                 
                 RaisePropertyChanged("Title");
                 RaisePropertyChanged("View");
@@ -274,7 +259,7 @@ namespace NuSysApp
                 RaisePropertyChanged("RegionView");
                 RaisePropertyChanged("View");
 
-                AddTab(metadatable);
+                AddTab(viewable);
                 return true;
             } else
             {
@@ -283,20 +268,20 @@ namespace NuSysApp
             
         }
 
-        public void AddTab(IMetadatable metadatable)
+        public void AddTab(IDetailViewable viewable)
         {
-            if (_tabs.Contains(metadatable))
+            if (_tabs.Contains(viewable))
             {
                 return;
             }
             if (_tabs.Count < 6)
             {
-                _tabs.Add(metadatable);
+                _tabs.Add(viewable);
             }
             else
             {
                 _tabs.RemoveAt(0);
-                _tabs.Add(metadatable);
+                _tabs.Add(viewable);
             }
             TabVisibility = Visibility.Visible;
 

@@ -544,9 +544,18 @@ namespace NuSysApp
             }
         }
 
-        public async void ShowDetailView(IMetadatable metadatable)
+        public async void ShowDetailView(IDetailViewable viewable)
         {
-            await xDetailViewer.ShowElement(metadatable);
+            if (viewable is RegionController)
+            {
+                await xDetailViewer.ShowElement(viewable as RegionController);
+
+            }
+            else if (viewable is LibraryElementController)
+            {
+                await xDetailViewer.ShowElement(viewable as LibraryElementController);
+            }
+          
         }
 
         public async void OpenFile(ElementViewModel vm)

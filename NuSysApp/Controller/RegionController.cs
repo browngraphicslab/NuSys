@@ -7,7 +7,7 @@ using Windows.Foundation;
 
 namespace NuSysApp
 {
-    public class RegionController : IMetadatable, ILinkable
+    public class RegionController : IMetadatable, ILinkable, IDetailViewable
     {
         public Region Model;
 
