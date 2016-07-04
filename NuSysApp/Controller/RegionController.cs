@@ -12,9 +12,9 @@ namespace NuSysApp
         public Region Model;
         public string Title { get; set; }
 
-        public string Id
+        public LinkId Id
         {
-            get { return this.Model.Id; }
+            get { return new LinkId(SessionController.Instance.RegionsController.GetLibraryElementModelId(this.Model.Id),this.Model.Id); }
         }
 
         public delegate void TitleChangedEventHandler(object source, string title);
@@ -108,15 +108,15 @@ namespace NuSysApp
         }
 
         #region Linking methods
-        public void AddNewLink(string idToLinkTo)
+        public void AddNewLink(LinkId idToLinkTo)
         {
-            SessionController.Instance.LinkController.RequestLink(this.Model.Id, idToLinkTo);
+            SessionController.Instance.LinkController.RequestLink(new LinkId( SessionController.Instance.RegionsController.GetLibraryElementModelId(this.Model.Id),this.Model.Id), idToLinkTo);
         }
 
-        public void RemoveLink(string linkLibraryElementID)
+        public void RemoveLink(LinkId linkLibraryElementID)
         {
-            var controller = SessionController.Instance.ContentController.GetLibraryElementController(linkLibraryElementID) as LinkLibraryElementController;
-            SessionController.Instance.LinkController.RemoveLink(controller.Id);
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(linkLibraryElementID.LibraryElementId) as LinkLibraryElementController;
+            SessionController.Instance.LinkController.RemoveLink(controller.Id.LibraryElementId);
         }
         public void ChangeLinkTitle(string linkLibraryElementID, string title)
         {

@@ -21,7 +21,7 @@ namespace NuSysApp
             }
         }
 
-        public LinkTemplate(LinkLibraryElementController controller, string id)
+        public LinkTemplate(LinkLibraryElementController controller, LinkId id)
         {
             Title = "Unnamed Link";
             if (controller.Title != null)
@@ -33,13 +33,13 @@ namespace NuSysApp
             var linkModel = controller.LinkLibraryElementModel;
             if (linkModel.InAtomId == id)
             {
-                var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.OutAtomId);
+                var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.OutAtomId.LibraryElementId);
                 LinkedTo = libraryElementModel.Title;
 
             }
             else
             {
-                var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.InAtomId);
+                var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.InAtomId.LibraryElementId);
                 LinkedTo = libraryElementModel.Title;
             }
         }

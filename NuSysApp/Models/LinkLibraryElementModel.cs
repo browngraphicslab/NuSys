@@ -28,11 +28,25 @@ namespace NuSysApp
         {
             if (message.ContainsKey("id1"))
             {
-                InAtomId = JsonConvert.DeserializeObject<LinkId>((string)message["id1"]);
+                if ((message["id1"] as string).Length == 32)
+                {
+                    InAtomId = new LinkId(message["id1"] as string);
+                }
+                else
+                {
+                    InAtomId = JsonConvert.DeserializeObject<LinkId>((string)message["id1"]);
+                }
             }
             if (message.ContainsKey("id2"))
             {
-                OutAtomId = JsonConvert.DeserializeObject<LinkId>((string)message["id2"]);
+                if ((message["id2"] as string)?.Length == 32)
+                {
+                    OutAtomId = new LinkId(message["id2"] as string);
+                }
+                else
+                {
+                    OutAtomId = JsonConvert.DeserializeObject<LinkId>((string)message["id2"]);
+                }
             }
             if (message.ContainsKey("color"))
             {

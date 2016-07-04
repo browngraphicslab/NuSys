@@ -97,13 +97,13 @@ namespace NuSysApp
 
         public override async Task ExecuteRequestFunction()
         {
-            var id1 = _message.GetString("id1");
-            var id2 = _message.GetString("id2");
+            var id1 = JsonConvert.DeserializeObject<LinkId>((string)_message["id1"]);
+            var id2 = JsonConvert.DeserializeObject<LinkId>((string)_message["id1"]);
             var id = _message.GetString("id");
             var creator = _message.GetString("creator");
             //var contentId = _message.GetString("contentId");
-            if (SessionController.Instance.ContentController.ContainsAndLoaded(id1) &&
-                SessionController.Instance.ContentController.ContainsAndLoaded(id2))
+            if (SessionController.Instance.ContentController.ContainsAndLoaded(id1.LibraryElementId) &&
+                SessionController.Instance.ContentController.ContainsAndLoaded(id2.LibraryElementId))
             {
                 string hexColor = _message.GetString("color");
                 byte a = byte.Parse(hexColor.Substring(1, 2), NumberStyles.HexNumber);

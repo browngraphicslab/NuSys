@@ -293,7 +293,7 @@ namespace NuSysApp
                                 }
                                 else
                                 {
-                                    SessionController.Instance.LinkController.RequestLink(dc.ContentId, vm.ContentId);
+                                    SessionController.Instance.LinkController.RequestLink(new LinkId(dc.ContentId), new LinkId(vm.ContentId));
                                 }
                             }
                         }
@@ -324,7 +324,7 @@ namespace NuSysApp
                                 }
                                 else
                                 {
-                                    SessionController.Instance.LinkController.RequestLink(dc.ContentId, vm.ContentId);
+                                    SessionController.Instance.LinkController.RequestLink(new LinkId(dc.ContentId), new LinkId(vm.ContentId));
                                 }
                             }
                             
@@ -366,7 +366,14 @@ namespace NuSysApp
 
                         if (_currenDragMode == DragMode.Link)
                         {
-                          SessionController.Instance.LinkController.RequestLink(dc.ContentId, vm.ContentId); 
+                            if (dc is RegionViewModel)
+                            {
+
+                            }
+                            else
+                            {
+                                SessionController.Instance.LinkController.RequestLink(new LinkId(dc.ContentId),new LinkId( vm.ContentId));
+                            }
                             vm.Controller.RequestVisualLinkTo();
                         }
                         if (_currenDragMode == DragMode.PresentationLink)
