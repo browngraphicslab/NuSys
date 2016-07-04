@@ -32,7 +32,7 @@ namespace NuSysApp
         }
         public void SetEndTime(double endTime)
         {
-            VideoRegionModel.Start = endTime;
+            VideoRegionModel.End = endTime;
             IntervalChanged?.Invoke(this, VideoRegionModel.Start, VideoRegionModel.End);
             UpdateServer();
         }

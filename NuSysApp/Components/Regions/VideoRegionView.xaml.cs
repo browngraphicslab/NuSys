@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Shapes;
 using SharpDX.Direct3D11;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -27,6 +28,7 @@ namespace NuSysApp
             this.DataContext = vm;
         }
 
+        public Grid RegionRectangle { get { return xGrid; } }
         private void Bound1_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var composite = IntervalRectangle.RenderTransform as CompositeTransform;
@@ -54,9 +56,9 @@ namespace NuSysApp
             if (composite != null &&  vm != null)
             {
                 var newEnd = composite.TranslateX + IntervalRectangle.Width + e.Delta.Translation.X;
-                if (newEnd > vm.ContainerViewModel.GetWidth())
+                if (newEnd > vm.ContainerViewModel.GetWidth()-10)
                 {
-                    newEnd = vm.ContainerViewModel.GetWidth();
+                    newEnd = vm.ContainerViewModel.GetWidth()-10;
                 }
                 if (newEnd < vm.IntervalStart)
                 {
@@ -64,7 +66,7 @@ namespace NuSysApp
                 }
                 if (Double.IsNaN(newEnd))
                 {
-                    
+                    return;
                 }
                 vm.SetIntervalEnd(newEnd);
             }
@@ -129,6 +131,12 @@ namespace NuSysApp
         private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             
+        }
+
+        private void IntervalRectangle_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            Bound1_OnManipulationDelta(sender,e);
+            Bound2_OnManipulationDelta2(sender, e);
         }
     }
 }

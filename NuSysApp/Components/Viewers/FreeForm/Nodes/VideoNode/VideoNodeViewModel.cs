@@ -6,7 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media;
 using NuSysApp.Nodes.AudioNode;
 
@@ -52,6 +54,7 @@ namespace NuSysApp
 
             }
         }
+        public double VideoDuration { get; set; }
 
         public VideoNodeViewModel(ElementController controller) : base(controller)
         {
@@ -87,7 +90,23 @@ namespace NuSysApp
             Controller.LibraryElementController.Loaded -= LibraryElementModelOnOnLoaded;
             base.Dispose();
         }
+        public void ScrubBarOnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            double position = e.NewValue/VideoDuration;
+            foreach (var regionview in _regionViews)
+            {
+                if (((regionview.DataContext as VideoRegionViewModel).Model as VideoRegionModel).Start <= position &&
+                    ((regionview.DataContext as VideoRegionViewModel).Model as VideoRegionModel).End >= position)
+                {
+                    regionview.RegionRectangle.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    regionview.RegionRectangle.Visibility = Visibility.Collapsed;
 
+                }
+            }
+        }
         public override async Task Init()
         {
             if (Controller.LibraryElementController.IsLoaded)

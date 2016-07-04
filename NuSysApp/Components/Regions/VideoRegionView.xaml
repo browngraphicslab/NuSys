@@ -33,19 +33,19 @@
         <Grid.RenderTransform>
             <CompositeTransform TranslateY="{Binding IntervalRegionTranslateY}"></CompositeTransform>
         </Grid.RenderTransform>
-            <Rectangle x:Name="IntervalRectangle" Width="{Binding IntervalRegionwidth}" Fill="DarkBlue" Height="25"  Opacity=".2" HorizontalAlignment="Left" VerticalAlignment="Top" >
+            <Rectangle x:Name="IntervalRectangle" Width="{Binding IntervalRegionWidth}" Fill="LightCyan" Height="25"  Opacity=".2" HorizontalAlignment="Left" VerticalAlignment="Top" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" ManipulationDelta="IntervalRectangle_OnManipulationDelta" >
                 <Rectangle.RenderTransform>
                     <CompositeTransform TranslateX="{Binding IntervalStart}"/>
                 </Rectangle.RenderTransform>
             </Rectangle>
-            <local:AudioRegionBound x:Name="Bound1" ManipulationMode="All"
-                                ManipulationDelta="Bound1_OnManipulationDelta" ManipulationCompleted="OnManipulationCompleted">
+            <local:AudioRegionBound x:Name="Bound1"  ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}"
+                                ManipulationDelta="Bound1_OnManipulationDelta" ManipulationCompleted="OnManipulationCompleted" Y1="0" Y2="30">
                 <local:AudioRegionBound.RenderTransform>
                     <CompositeTransform TranslateX="{Binding IntervalStart}"/>
                 </local:AudioRegionBound.RenderTransform>
             </local:AudioRegionBound>
-            <local:AudioRegionBound x:Name="Bound2" ManipulationMode="All"
-                                 ManipulationDelta="Bound2_OnManipulationDelta2" ManipulationCompleted="OnManipulationCompleted" >
+            <local:AudioRegionBound x:Name="Bound2" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}"
+                                 ManipulationDelta="Bound2_OnManipulationDelta2" ManipulationCompleted="OnManipulationCompleted" Y1="0" Y2="30">
                 <local:AudioRegionBound.RenderTransform>
                     <CompositeTransform TranslateX="{Binding IntervalEnd}"/>
                 </local:AudioRegionBound.RenderTransform>
