@@ -182,7 +182,7 @@ namespace NuSysApp
                 Width = model.Width * detailVM.GetWidth();
                 ContainerHeight = height;
                 ContainerWidth = detailVM.GetWidth();
-                topLeft = new Point(model.TopLeftPoint.X * ContainerWidth + diff / 2, model.TopLeftPoint.Y * height);
+                topLeft = new Point(model.TopLeftPoint.X * ContainerWidth, model.TopLeftPoint.Y * height);
 
             }
             else {
@@ -241,11 +241,11 @@ namespace NuSysApp
             var normalTopLeftX = topLeft.X / ContainerViewModel.GetWidth();
             var normalTopLeftY = topLeft.Y / ContainerViewModel.GetHeight();
 
-            model.TopLeftPoint = new Point(normalTopLeftX, normalTopLeftY);
+            var tlp = new Point(normalTopLeftX, normalTopLeftY);
             //model.BottomRightPoint = new Point(normalBottomRightX, normalBottomRightY);
 
 
-            (RegionController as RectangleRegionController).SetLocation(model.TopLeftPoint);
+            (RegionController as RectangleRegionController).SetLocation(tlp);
         }
 
         public void SetNewSize(double width, double height)
@@ -258,7 +258,7 @@ namespace NuSysApp
             var normalWidth = width / ContainerViewModel.GetWidth();
             var normalHeight = height / ContainerViewModel.GetHeight();
 
-
+            
 
             (RegionController as RectangleRegionController).SetSize(normalWidth, normalHeight);
         }

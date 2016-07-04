@@ -17,6 +17,20 @@ namespace NuSysApp
         public LibraryElementModel Model { get; }
         public ObservableCollection<ImageRegionView> RegionViews { set; get; }
         public Uri Image { get; }
+        public double ImageWidth {
+            set
+            {
+                _imageWidth = value;
+                RaisePropertyChanged("ImageWidth");
+            }
+            get
+            {
+                return _imageWidth;
+            }
+        }
+
+        private double _imageWidth;
+        
         //public Boolean Editable { get; set; }
         public ImageDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
@@ -26,6 +40,7 @@ namespace NuSysApp
             Image = controller.GetSource();
             RegionViews = new ObservableCollection<ImageRegionView>();
             Editable = true;
+            
         }
 
         public override void AddRegion(object sender, RegionController regionController)

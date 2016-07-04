@@ -47,6 +47,8 @@ namespace NuSysApp
                 vm.PropertyChanged += PropertyChanged;
                 vm.View = this;
 
+ 
+
             }
 
 
@@ -149,6 +151,7 @@ namespace NuSysApp
         {
             var vm = (ImageDetailHomeTabViewModel)DataContext;
             vm.SetExistingRegions(vm.LibraryElementController.LibraryElementModel.Regions);
+
         }
     }
 }
