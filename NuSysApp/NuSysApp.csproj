@@ -102,6 +102,7 @@
     </Content>
     <Content Include="Assets\collection icon bluegreen.png" />
     <Content Include="Assets\filter.png" />
+    <Content Include="Assets\add from file.png" />
     <Content Include="Assets\icon_chat.png" />
     <Content Include="Assets\icon_collapse.png" />
     <Content Include="Assets\icon_delete_color.png" />

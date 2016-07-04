@@ -41,8 +41,12 @@ namespace NuSysApp
         public delegate void LockRemovedEventHandler(object sender, string id);
         public event LockRemovedEventHandler OnLockRemoved;
 
+        public delegate void OnContentUpdatedEventHandler(object sender, LibraryElementController controller,Message message);
+        public event OnContentUpdatedEventHandler OnContentUpdated;
+
         public static HashSet<string> NeededLibraryDataIDs = new HashSet<string>();
         public string ServerBaseURI { get; private set; }
+        
 
         public ServerClient()//Server name: http://nurepo6916.azurewebsites.net/api/values/1
         {
@@ -122,6 +126,15 @@ namespace NuSysApp
                                     id = (string) dict["region_id"];
                                     Region region = GetRegionFromString(dict["region_string"] as string);
                                     OnRegionUpdated?.Invoke(id, region);
+                                    break;
+                                case "content_update":
+                                    id = dict["id"] as string;
+                                    dict.Remove("id");
+                                    dict.Remove("notification_type");
+                                    if (SessionController.Instance.ContentController.GetLibraryElementController(id) != null)
+                                    {
+                                        OnContentUpdated?.Invoke(this, SessionController.Instance.ContentController.GetLibraryElementController(id),new Message(dict));
+                                    }
                                     break;
                             }
                         }

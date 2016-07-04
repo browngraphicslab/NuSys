@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace NuSysApp
 {
@@ -17,14 +18,23 @@ namespace NuSysApp
         private LibraryElementModel _libraryElementModel;
         private bool _loading = false;
         private RegionControllerFactory _regionControllerFactory = new RegionControllerFactory();
-        public string Title { get; set; }
+        public string Title {
+            get
+            {
+                return LibraryElementModel?.Title;
+            }
+            set
+            {
+                LibraryElementModel.Title = value;
+            } 
+        }
         
 
         #region Events
         public delegate void ContentChangedEventHandler(object source, string contentData);
         public delegate void RegionAddedEventHandler(object source, RegionController regionController);
         public delegate void RegionRemovedEventHandler(object source, Region region);
-        public delegate void MetadataChangedEvenetHandler(object source);
+        public delegate void MetadataChangedEventHandler(object source);
         public delegate void DisposeEventHandler(object source);
         public delegate void TitleChangedEventHandler(object sender, string title);
         public delegate void FavoritedEventHandler(object sender, bool favorited);
@@ -35,7 +45,7 @@ namespace NuSysApp
         public event ContentChangedEventHandler ContentChanged;
         public event RegionAddedEventHandler RegionAdded;
         public event RegionRemovedEventHandler RegionRemoved;
-        public event MetadataChangedEvenetHandler MetadataChanged;
+        public event MetadataChangedEventHandler MetadataChanged;
         public event DisposeEventHandler Disposed;
         public event TitleChangedEventHandler TitleChanged;
         public event FavoritedEventHandler Favorited;
@@ -147,9 +157,9 @@ namespace NuSysApp
         /// </summary>
         private void ChangeMetadata(Dictionary<string,MetadataEntry> metadata)
         {
-            _libraryElementModel.Metadata = metadata;
+            LibraryElementModel.SetMetadata(metadata);
             MetadataChanged?.Invoke(this);
-            _debouncingDictionary.Add("metadata", metadata);
+            _debouncingDictionary.Add("metadata", LibraryElementModel.Metadata);
         }
 
         /// <summary>
@@ -316,6 +326,19 @@ namespace NuSysApp
                 }
             }
         }
+
+        public virtual void UnPack(Message message)
+        {
+            if (message.ContainsKey("metadata"))
+            {
+                var metadata = message.GetDict<string, MetadataEntry>("metadata");
+                if (metadata != null)
+                {
+                    ChangeMetadata(metadata);
+                }
+            }
+        }
+
         public Uri SmallIconUri
         {
             get

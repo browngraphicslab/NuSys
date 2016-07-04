@@ -54,9 +54,9 @@ namespace NuSysApp
             _serverClient.OnContentAvailable += ContentAvailable;
             _serverClient.OnClientJoined += AddNetworkUser;
             _serverClient.OnRegionUpdated += RegionUpdated;
+            _serverClient.OnContentUpdated += ContentUpdated;
             LockController = new LockController(_serverClient);
         }
-
 
         #region Requests
 
@@ -299,6 +299,10 @@ namespace NuSysApp
             await request.ExecuteSystemRequestFunction(this, _serverClient);
         }
         #endregion Requests
+        private void ContentUpdated(object sender, LibraryElementController controller, Message message)
+        {
+            controller.UnPack(message);
+        }
         private void RegionUpdated(string id, Region region)
         {
             UITask.Run(delegate

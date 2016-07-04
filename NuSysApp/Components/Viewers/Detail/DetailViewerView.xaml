@@ -99,7 +99,7 @@
                 </ListView.ItemTemplate>
             </ListView>-->
         </Grid>
-        <Grid x:Name="xContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource color2}" Padding="25,10,25,10">
+        <Grid x:Name="xContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource color1}" Padding="25,10,25,10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
@@ -115,22 +115,22 @@
                 <TextBlock Text="x" Foreground="White" FontSize="24"/>
             </Border>
 
-            <Border Grid.Row="0" x:Name="exitButton2" HorizontalAlignment="Left" VerticalAlignment="Top" Tapped="closeDV_OnTapped"  Padding="5,0,5,0">
-                <TextBlock Text="X" Foreground="White" FontSize="32"/>
+            <Border Grid.Row="0" x:Name="exitButton2" HorizontalAlignment="Right" VerticalAlignment="Top" Tapped="closeDV_OnTapped" Height="20" Padding="0,5,0,0">
+                <Image Source="ms-appx:///Assets/icon_whitex.png"></Image>
             </Border>
 
             <StackPanel Grid.Row="1" Canvas.ZIndex="100" x:Name="TitleEnter" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,20">
                 <!--<TextBlock Text="{Binding Title}" Foreground="White" FontSize="30" CharacterSpacing="45" HorizontalAlignment="Stretch"/>-->
-                <local:TextInputBlock  x:Name ="TitleBox" FontWeight="SemiBold" FontSize="40" Foreground="{StaticResource darkforeground}" BubbleTop="False" LeftJustified="False" SetHeight="40" HorizontalAlignment="Stretch" TextChanged="TitleBox_OnTextChanged"/>
-                <Rectangle HorizontalAlignment="Stretch" Fill="{StaticResource darkforeground}" Height="2"/>
+                <local:TextInputBlock  x:Name ="TitleBox" FontWeight="SemiBold" LeftJustified="True"  FontSize="40" BubbleTop="False" SetHeight="40" HorizontalAlignment="Stretch" TextChanged="TitleBox_OnTextChanged"/>
+                <!--<Rectangle HorizontalAlignment="Stretch" Fill="White" Height="2"/>-->
             </StackPanel>
 
-            <Pivot x:Name="xRootPivot" Grid.Row="2">
+            <Pivot x:Name="xRootPivot" Grid.Row="2" Margin="0,10,0,-40" Grid.RowSpan="5">
                 <PivotItem Header="Home">
                     <!--Pivot content goes here-->
                     <ContentPresenter Grid.Row="2" x:Name ="nodeContent" Content="{Binding View}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></ContentPresenter>
                 </PivotItem>
-                <PivotItem Header="Metadata Editor">
+                <PivotItem Header="Metadata">
                     <!--Pivot content goes here-->
                     <Grid>
                         <Grid.RowDefinitions>

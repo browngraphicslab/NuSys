@@ -240,33 +240,30 @@
 
 
     <Grid x:Name="Container" Width="450" Height="500" BorderBrush="{StaticResource color3}">
-        <Grid x:Name="Pivot" Background="{StaticResource color2}" BorderBrush="{StaticResource color3}" BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid x:Name="Pivot" Background="{StaticResource color1}" BorderBrush="{StaticResource color3}" BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
-                <RowDefinition Height="65"></RowDefinition>
+                <RowDefinition Height="42"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="42"></RowDefinition>
             </Grid.RowDefinitions>
-            <Grid x:Name="xHeaderRow" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                </Grid.RowDefinitions>
-                
-                <Border Grid.Row="0"  HorizontalAlignment="Right" Background="Transparent"  x:Name="xSearchExportButton" ManipulationMode="TranslateX,TranslateY" ManipulationStarted="XSearchExportButton_OnManipulationStarted" ManipulationDelta="XSearchExportButton_OnManipulationDelta" ManipulationCompleted="XSearchExportButton_OnManipulationCompleted" PointerPressed="XSearchExportButton_OnPointerPressed">
-                    <TextBlock Text="&#xE8AD;" FontFamily="Segoe MDL2 Assets" Margin="10" Foreground="White"></TextBlock>
-                </Border>
-                
-                <StackPanel  Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
-                    <StackPanel.RenderTransform>
+            <Grid x:Name="xHeaderRow" Grid.Row="0" HorizontalAlignment="Stretch"  Background="Transparent">
+                <Grid>
+                    <TextBlock Text="Library" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Foreground="{StaticResource color3}" FontSize="24" Margin="5,5,5,5"></TextBlock>
+                    <Button HorizontalAlignment="Right" Margin="0,0,0,3"  Height="40" Width="50"  Tapped="Folder_Tapped" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Bottom">
+                        <Image Source="ms-appx:/Assets/add from file.png"></Image>
+                    </Button>
+                </Grid>
+                <!--<StackPanel  Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">-->
+                    <!--<StackPanel.RenderTransform>
                         <TranslateTransform Y="3"></TranslateTransform>
-                    </StackPanel.RenderTransform>
-                <Button x:Name="btnAll"  Tapped="Favorites_OnTapped" VerticalAlignment="Top" Width="72" Height="36"  Background="White"  Foreground="{StaticResource color3}" BorderBrush="{StaticResource color3}" BorderThickness="2,2,2,0" Margin="-230,0,0,0">
+                    </StackPanel.RenderTransform>-->
+                <!--<Button x:Name="btnAll"  Tapped="Favorites_OnTapped" VerticalAlignment="Top" Width="72" Height="36"  Background="White"  Foreground="{StaticResource color3}" BorderBrush="{StaticResource color3}" BorderThickness="2,2,2,0" Margin="-230,0,0,0">
                     <TextBlock Text="All" Margin="0,0,0,0" Foreground="{StaticResource color3}" FontSize="18" FontWeight="Bold"  FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
                 </Button>
                     <Button x:Name="btnFav" Tapped="Favorites_OnTapped"  VerticalAlignment="Top" HorizontalAlignment="Left" Height ="36" Width="72" Background="White" Foreground="{StaticResource color3}" BorderBrush="{StaticResource color3}" BorderThickness="2,2,2,0" Margin="-160,0,0,0">
                     <TextBlock Text="Fav" Margin="0,0,0,0" Foreground="{StaticResource color3}" FontSize="18" FontWeight="Bold" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
-                </Button>
-                </StackPanel>
+                </Button>-->
+                <!--</StackPanel>-->
             </Grid>
 
             <Grid x:Name="ListContainer" Grid.Row="1" Background="{StaticResource color6}">
@@ -274,31 +271,14 @@
             </Grid>
 
             <Grid Grid.Row="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                    <ColumnDefinition Width="50"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <!--<TextBox x:Name="Searchfield" Style="{StaticResource SearchBoxStyle}"  TextChanging="TextBox_OnTextChanging"  PlaceholderText="SEARCH" FontSize="16" BorderThickness="1" BorderBrush="#9cc5c2"  Background="White"  Foreground="White" VerticalAlignment="Bottom" Height="38" Width="400" HorizontalAlignment="Left"></TextBox>-->
-                <Canvas Grid.Column="0" Width="400" Height="38" Background="Transparent" VerticalAlignment="Bottom" >
-                    <local:TextInputBlock x:Name ="Searchfield"  Width="400"  BubbleTop="True" TextChanged="TextBox_OnTextChanging"  LeftJustified="False" SetHeight="34" HorizontalAlignment="Stretch" Height="34" ></local:TextInputBlock>
+                <Canvas Width="400" Height="38" Background="Transparent" VerticalAlignment="Bottom" Margin="-40,0,0,0">
+                    <local:TextInputBlock x:Name ="Searchfield"  Width="400"  BubbleTop="False" TextChanged="TextBox_OnTextChanging"  LeftJustified="True" Height="34" ></local:TextInputBlock>
                 </Canvas>
-               
+                <Border  HorizontalAlignment="Right" Background="Transparent"  x:Name="xSearchExportButton" ManipulationMode="TranslateX,TranslateY" ManipulationStarted="XSearchExportButton_OnManipulationStarted" ManipulationDelta="XSearchExportButton_OnManipulationDelta" ManipulationCompleted="XSearchExportButton_OnManipulationCompleted" PointerPressed="XSearchExportButton_OnPointerPressed">
+                    <TextBlock Text="&#xE8AD;" FontFamily="Segoe MDL2 Assets" Margin="10,15,10,10" Foreground="{StaticResource color3}"></TextBlock>
+                </Border>
 
-                <!--<Image Tapped="Folder_Tapped" Source ="ms-appx:///Assets/icon_upload.png" Margin="320,542,13,506" Height="30" VerticalAlignment="Bottom"></Image>-->
-                <!--<Image Source="ms-appx:///Assets/icon_search.png" Height="20"  Margin="320,512,0,0"/>-->
-                <Button Grid.Column="1"  Height="40" Width="50"  Tapped="Folder_Tapped" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Bottom">
-                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path5260" Fill="White" Data="M 13 16 16 8 3 8 0 16 Z M 2 7 0 16 0 3 l 4.5 0 2 2 6.5 0 0 2 z">
-                        <Path.RenderTransform>
-                            <CompositeTransform TranslateY="-5" ScaleX="1.5" ScaleY="1.5"></CompositeTransform>
-                        </Path.RenderTransform>
-                    </Path>
-                </Button>
             </Grid>
-
-
-            <!--
-                <PivotItem x:Name="WorkspacePivot" Background="{StaticResource color6}" Margin="0,8,0,37" Width="450" BorderBrush="{StaticResource color2}" BorderThickness="1">
- -->
         </Grid>
 
 

@@ -90,34 +90,44 @@ namespace NuSysApp
             {
                 PDFStrings.Add(LibraryElementId);
             }*/
+            AddDefaultMetadata();
+        }
 
+        private void AddDefaultMetadata()
+        {
             //ADD IMMUTABLE DATA TO METADATA, so they can show up in md editor
             if (!Metadata.ContainsKey("Timestamp"))
             {
-                Metadata.Add("Timestamp", new MetadataEntry("Timestamp", new List<string> {Timestamp}, MetadataMutability.IMMUTABLE));
+                Metadata.Add("Timestamp", new MetadataEntry("Timestamp", new List<string> { Timestamp }, MetadataMutability.IMMUTABLE));
             }
             if (!Metadata.ContainsKey("Creator"))
             {
-                Metadata.Add("Creator", new MetadataEntry("Creator", new List<string> {Creator}, MetadataMutability.IMMUTABLE));
+                Metadata.Add("Creator", new MetadataEntry("Creator", new List<string> { Creator }, MetadataMutability.IMMUTABLE));
             }
             if (!Metadata.ContainsKey("Title"))
             {
-                Metadata.Add("Title", new MetadataEntry("Title", new List<string> {Title}, MetadataMutability.IMMUTABLE));
+                Metadata.Add("Title", new MetadataEntry("Title", new List<string> { Title }, MetadataMutability.IMMUTABLE));
             }
             if (!Metadata.ContainsKey("Type"))
             {
-                Metadata.Add("Type", new MetadataEntry("Type", new List<string> {Type.ToString()}, MetadataMutability.IMMUTABLE));
+                Metadata.Add("Type", new MetadataEntry("Type", new List<string> { Type.ToString() }, MetadataMutability.IMMUTABLE));
             }
         }
         protected virtual void OnSessionControllerEnterNewCollection()
         {
             Data = null;
         }
+
+        public void SetMetadata(Dictionary<string, MetadataEntry> metadata)
+        {
+            Metadata = metadata;
+            AddDefaultMetadata();
+        }
         /*
-         * Trent, Help ME.!!!!! He's talking about bio. What did I do to deserve this. 
-         * Help me. He just won't stop. Dear god what have I done. Sahil save me.
-         * This is my life now. I will suffer every day. Is there no way to escape this hell?
-         * 
-         */
+* Trent, Help ME.!!!!! He's talking about bio. What did I do to deserve this. 
+* Help me. He just won't stop. Dear god what have I done. Sahil save me.
+* This is my life now. I will suffer every day. Is there no way to escape this hell?
+* 
+*/
     }
 }
