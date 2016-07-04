@@ -12,7 +12,7 @@ namespace NuSysApp
 { 
     public class LinkController
     {
-        private ConcurrentDictionary<string, HashSet<string>> _links = new ConcurrentDictionary<string, HashSet<string>>();
+        private ConcurrentDictionary<LinkId, HashSet<string>> _links = new ConcurrentDictionary<LinkId, HashSet<string>>();
  //       private ConcurrentDictionary<string, Color> _colors = new ConcurrentDictionary<string, Color>();
         public delegate void NewLinkEventHandler(LinkLibraryElementController link);
         public event NewLinkEventHandler OnNewLink;
@@ -20,7 +20,7 @@ namespace NuSysApp
         public delegate void RemoveLinkEventHandler(LinkLibraryElementController link);
         public event RemoveLinkEventHandler OnLinkRemoved;
 
-        public HashSet<string> GetLinkedIds(string id)
+        public HashSet<string> GetLinkedIds(LinkId id)
         {
             if (_links.ContainsKey(id))
             {
@@ -68,7 +68,7 @@ namespace NuSysApp
             return controller as LinkLibraryElementController;
         }
 
-        public HashSet<LibraryElementController> GetOppositeLibraryElementControllers(LibraryElementController controller)
+      /*  public HashSet<LibraryElementController> GetOppositeLibraryElementControllers(LibraryElementController controller)
         {
             var libraryElementId = controller.LibraryElementModel.LibraryElementId;
             if (!_links.ContainsKey(libraryElementId))
@@ -87,7 +87,7 @@ namespace NuSysApp
                 controllersToReturn.Add(SessionController.Instance.ContentController.GetLibraryElementController(linkModel.InAtomId));
             }
             return controllersToReturn;
-        }
+        }*/
 
             
 
@@ -96,18 +96,18 @@ namespace NuSysApp
             var link = SessionController.Instance.ContentController.GetContent(id) as LinkLibraryElementModel;
             if (_links.ContainsKey(link.InAtomId))
             {
-                _links[link.InAtomId].Remove(link.InAtomId);
+                _links[link.InAtomId].Remove(id);
             }
             if (_links.ContainsKey(link.OutAtomId))
             {
-                _links[link.OutAtomId].Remove(link.OutAtomId);
+                _links[link.OutAtomId].Remove(id);
             }
         }
 
-        public virtual async Task RequestLink(string otherId, string anotherId, RectangleView rectangle = null, UserControl regionView = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
+        public virtual async Task RequestLink(LinkId otherId, LinkId anotherId, RectangleView rectangle = null, UserControl regionView = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
         {
             var contentId = SessionController.Instance.GenerateId();
-            var request = new NewLinkRequest(anotherId, otherId, SessionController.Instance.ContentController.GetContent(anotherId)?.Creator, 
+            var request = new NewLinkRequest(anotherId, otherId, SessionController.Instance.ContentController.GetContent(anotherId.LibraryElementId)?.Creator, 
                 contentId, regionView, rectangle, inFGDictionary, outFGDictionary);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }

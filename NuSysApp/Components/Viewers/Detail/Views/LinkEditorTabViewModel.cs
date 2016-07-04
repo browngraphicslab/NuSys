@@ -111,7 +111,7 @@ namespace NuSysApp
 
         }
 
-        public void CreateLink(string Id)
+        public void CreateLink(LinkId Id)
         {
             if (_linkable == null)
             {

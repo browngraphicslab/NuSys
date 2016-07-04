@@ -101,7 +101,8 @@
                                 </Canvas>
                             </Canvas>
                             <Canvas Grid.Row="2">
-                                <ItemsControl VerticalAlignment="Bottom" ItemsSource="{Binding CircleLinks}">
+                                <StackPanel>
+                                    <ItemsControl VerticalAlignment="Bottom" ItemsSource="{Binding CircleLinks}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <local:WrapPanel Width="{Binding Width}" Background="Transparent">
@@ -123,6 +124,7 @@
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
                                 </ItemsControl>
+                                    </StackPanel>
                             </Canvas>
                         </Grid>
                     </Canvas>

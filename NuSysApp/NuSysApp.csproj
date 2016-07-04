@@ -645,6 +645,7 @@
     <Compile Include="Util\LibraryTab.cs" />
     <Compile Include="Util\LineEquation.cs" />
     <Compile Include="Util\LineSegment.cs" />
+    <Compile Include="Util\LinkId.cs" />
     <Compile Include="Util\MathUtil.cs" />
     <Compile Include="Util\MediaUtil.cs" />
     <Compile Include="Util\MetadatableType.cs" />

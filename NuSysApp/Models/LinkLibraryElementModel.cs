@@ -6,15 +6,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using Newtonsoft.Json;
 
 namespace NuSysApp
 {
     public class LinkLibraryElementModel: LibraryElementModel
     {
-        public string InAtomId { get; set; }
-        public string OutAtomId { get; set; }
+        public LinkId InAtomId { get; set; }
+        public LinkId OutAtomId { get; set; }
         public Color Color { get; set; }
-        public LinkLibraryElementModel(string id1, string id2, string id, Color c, ElementType elementType = ElementType.Link, Dictionary<string, MetadataEntry> metadata = null, string contentName = null, bool favorited = false): base(id, elementType, metadata, contentName, favorited)
+        public LinkLibraryElementModel(LinkId id1, LinkId id2, string id, Color c, ElementType elementType = ElementType.Link, Dictionary<string, MetadataEntry> metadata = null, string contentName = null, bool favorited = false): base(id, elementType, metadata, contentName, favorited)
 
         {
             InAtomId = id1;
@@ -27,11 +28,25 @@ namespace NuSysApp
         {
             if (message.ContainsKey("id1"))
             {
-                InAtomId = message.GetString("id1");
+                if ((message["id1"] as string).Length == 32)
+                {
+                    InAtomId = new LinkId(message["id1"] as string);
+                }
+                else
+                {
+                    InAtomId = JsonConvert.DeserializeObject<LinkId>((string)message["id1"]);
+                }
             }
             if (message.ContainsKey("id2"))
             {
-                OutAtomId = message.GetString("id2");
+                if ((message["id2"] as string)?.Length == 32)
+                {
+                    OutAtomId = new LinkId(message["id2"] as string);
+                }
+                else
+                {
+                    OutAtomId = JsonConvert.DeserializeObject<LinkId>((string)message["id2"]);
+                }
             }
             if (message.ContainsKey("color"))
             {

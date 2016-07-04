@@ -12,9 +12,9 @@ namespace NuSysApp
         public Region Model;
         public string Title { get; set; }
 
-        public string Id
+        public LinkId Id
         {
-            get { return this.Model.Id; }
+            get { return new LinkId(SessionController.Instance.RegionsController.GetLibraryElementModelId(this.Model.Id),this.Model.Id); }
         }
 
         public delegate void TitleChangedEventHandler(object source, string title);
@@ -114,21 +114,21 @@ namespace NuSysApp
             LinkAdded?.Invoke(this, linkController);
         }
 
-        public void RemoveLink(LinkLibraryElementController linkController)
+     /*   public void RemoveLink(LinkLibraryElementController linkController)
         {
             LinkRemoved?.Invoke(this, linkController.Id);
-        }
+        }*/
 
         #region Linking methods
-        public void RequestAddNewLink(string idToLinkTo)
+        public void RequestAddNewLink(LinkId idToLinkTo)
         {
-            SessionController.Instance.LinkController.RequestLink(this.Model.Id, idToLinkTo);
+            SessionController.Instance.LinkController.RequestLink(new LinkId( SessionController.Instance.RegionsController.GetLibraryElementModelId(this.Model.Id),this.Model.Id), idToLinkTo);
         }
 
-        public void RequestRemoveLink(string linkLibraryElementID)
+        public void RequestRemoveLink(LinkId linkLibraryElementID)
         {
-            var controller = SessionController.Instance.ContentController.GetLibraryElementController(linkLibraryElementID) as LinkLibraryElementController;
-            SessionController.Instance.LinkController.RemoveLink(controller.Id);
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(linkLibraryElementID.LibraryElementId) as LinkLibraryElementController;
+            SessionController.Instance.LinkController.RemoveLink(controller.Id.LibraryElementId);
         }
         public void ChangeLinkTitle(string linkLibraryElementID, string title)
         {

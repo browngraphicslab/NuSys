@@ -11,7 +11,8 @@ namespace NuSysApp
     public class RegionsController
     {
         private ConcurrentDictionary<string, RegionController> _regionControllers = new ConcurrentDictionary<string, RegionController>();
-        
+        private ConcurrentDictionary<string, string> _regionLibraryElementModels = new ConcurrentDictionary<string, string>();
+
         public RegionController GetRegionController(string id)
         {
             if (id == null)
@@ -21,12 +22,18 @@ namespace NuSysApp
             return _regionControllers.ContainsKey(id) ? _regionControllers[id] : null;
         }
 
+        public string GetLibraryElementModelId(string id)
+        {
+            return _regionLibraryElementModels[id];
+        }
+
         public string Add(RegionController regionController, string contentId)
         {
             if (regionController == null)
             {
                 return null;
             }
+            _regionLibraryElementModels[regionController.Model.Id] = contentId;
             var regionModel = regionController.Model;
             if (!_regionControllers.ContainsKey(regionModel.Id))
             {

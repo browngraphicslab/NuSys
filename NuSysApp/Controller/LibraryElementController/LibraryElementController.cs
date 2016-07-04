@@ -100,7 +100,7 @@ namespace NuSysApp
             _libraryElementModel.Regions.Add(region);
 
             var factory = new RegionControllerFactory();
-            var regionController = factory.CreateFromSendable(region, Id);
+            var regionController = factory.CreateFromSendable(region, this.LibraryElementModel.LibraryElementId);
             RegionAdded?.Invoke(this, regionController);
             SessionController.Instance.NuSysNetworkSession.AddRegionToContent(LibraryElementModel.LibraryElementId, region);
         }
@@ -392,9 +392,9 @@ namespace NuSysApp
             get { return _loading || IsLoaded; }
         }
 
-        public string Id
+        public LinkId Id
         {
-            get { return this.LibraryElementModel.LibraryElementId; }
+            get { return new LinkId(this.LibraryElementModel.LibraryElementId); }
         }
 
         public void SetNetworkUser(NetworkUser user)
@@ -412,20 +412,21 @@ namespace NuSysApp
             LinkAdded?.Invoke(this, linkController);
         }
 
-        public void RemoveLink(LinkLibraryElementController linkController)
+    /*    public void RemoveLink(LinkLibraryElementController linkController)
         {
             LinkRemoved?.Invoke(this, linkController.Id);
-        }
+        }*/
 
         #region Linking methods
-        public  void RequestAddNewLink(string idToLinkTo)
+        public  void RequestAddNewLink(LinkId idToLinkTo)
         {
-            SessionController.Instance.LinkController.RequestLink(this.LibraryElementModel.LibraryElementId, idToLinkTo);
+            SessionController.Instance.LinkController.RequestLink(
+                new LinkId(this.LibraryElementModel.LibraryElementId), idToLinkTo);
         }
 
-        public void RequestRemoveLink(string linkLibraryElementID)
+        public void RequestRemoveLink(LinkId linkLibraryElementID)
         {
-            SessionController.Instance.LinkController.RemoveLink(linkLibraryElementID);
+            SessionController.Instance.LinkController.RemoveLink(linkLibraryElementID.LibraryElementId);
         }
 
         public void ChangeLinkTitle(string linkLibraryElementID, string title)
@@ -440,7 +441,7 @@ namespace NuSysApp
 
         public HashSet<LinkLibraryElementController> GetAllLinks()
         {
-            var linkedIds = SessionController.Instance.LinkController.GetLinkedIds(Id);
+            var linkedIds = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(this.LibraryElementModel.LibraryElementId));
             var controllers = linkedIds.Select(id =>SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
             return new HashSet<LinkLibraryElementController>(controllers);
         }

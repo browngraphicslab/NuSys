@@ -41,7 +41,7 @@ namespace NuSysApp
         {
             var content = LinkToBox.SelectedItem as LibraryItemTemplate;
             var vm = DataContext as LinkEditorTabViewModel;
-            vm?.CreateLink(content?.ContentID);
+            vm?.CreateLink(new LinkId(content?.ContentID));
         }
 
         private void SortLinkedTo_OnClick(object sender, RoutedEventArgs e)
