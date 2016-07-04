@@ -10,7 +10,12 @@ namespace NuSysApp
     public class RegionController : IMetadatable, ILinkable
     {
         public Region Model;
-        public string Title { get; set; }
+
+        public string Title
+        {
+            get { return Model?.Name; }
+            set { SetTitle(value);}
+        }
 
         public LinkId Id
         {
@@ -29,15 +34,14 @@ namespace NuSysApp
         public event EventHandler<string> LinkRemoved;
 
         private bool _selected;
+        private bool _blockServerUpdates;
         public RegionController(Region model)
         {
             Model = model;
-            Title = model.Name;
         }
         public void SetTitle(string title)
         {
             Model.Name = title;
-            Title = title;
             TitleChanged?.Invoke(this, title);
             UpdateServer();
         }
@@ -85,7 +89,15 @@ namespace NuSysApp
 
         protected void UpdateServer()
         {
-            SessionController.Instance.NuSysNetworkSession.UpdateRegion(Model);
+            if (!_blockServerUpdates)
+            {
+                SessionController.Instance.NuSysNetworkSession.UpdateRegion(Model);
+            }
+        }
+
+        protected void SetBlockServerBoolean(bool blockServerUpdates)
+        {
+            _blockServerUpdates = blockServerUpdates;
         }
         public MetadatableType MetadatableType()
         {
@@ -152,11 +164,13 @@ namespace NuSysApp
         /// </summary>
         /// <param name="region"></param>
         public virtual void UnPack(Region region)
-        {
+        { 
+            SetBlockServerBoolean(true);//this is a must otherwise infinite loops will occur
             if (Model.Name != region.Name)
             {
                 SetTitle(region.Name);
             }
+            SetBlockServerBoolean(false);//THIS is a must otherwise changes wont be saved
         }
         #endregion
 

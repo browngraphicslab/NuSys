@@ -35,7 +35,7 @@ namespace NuSysApp
             Canvas.SetZIndex(xButtonStack, 20);
         }
 
-            private void AddRegion_Clicked(object sender, RoutedEventArgs e)
+        private void AddRegion_Clicked(object sender, RoutedEventArgs e)
         {
             var vm = DetailViewerView.DataContext as DetailViewerViewModel;
             if (vm == null)

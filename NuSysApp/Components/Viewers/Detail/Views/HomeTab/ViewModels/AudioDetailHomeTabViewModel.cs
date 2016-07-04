@@ -92,5 +92,15 @@ namespace NuSysApp
             var region = new TimeRegionModel("name", 0, 1);
             return region;
         }
+
+        public double GetViewWidth()
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetViewHeight()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

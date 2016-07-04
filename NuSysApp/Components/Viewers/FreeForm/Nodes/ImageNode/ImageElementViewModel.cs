@@ -62,9 +62,6 @@ namespace NuSysApp
             foreach (var model in regionHashSet)
             {
 
-                //var regionController = new RegionController(model as RectangleRegion);
-                //var regionController = SessionController.Instance.RegionControllersController.GetRegionController(model.Id);
-
                 RectangleRegionController regionController;
                 if (SessionController.Instance.RegionsController.GetRegionController(model.Id) == null)
                 {
@@ -133,9 +130,9 @@ namespace NuSysApp
 
         }
 
-        private void LibraryElementModelOnOnLoaded(object sender)
+        private async void LibraryElementModelOnOnLoaded(object sender)
         {
-            DisplayImage();
+            await DisplayImage();
             this.CreateRegionViews();
 
         }
@@ -182,6 +179,16 @@ namespace NuSysApp
         public double GetHeight()
         {
             return Height;
+        }
+
+        public double GetViewWidth()
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetViewHeight()
+        {
+            throw new NotImplementedException();
         }
     }
 }

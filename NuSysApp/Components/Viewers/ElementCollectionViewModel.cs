@@ -113,9 +113,10 @@ namespace NuSysApp
                 var link = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
                 toLinkIds.Add(link.InAtomId.LibraryElementId == controller.LibraryElementModel.LibraryElementId ? link.OutAtomId : link.InAtomId);
             }
+            var selected = toLinkIds.Select(id => id.IsRegion ? id.RegionId : id.LibraryElementId);
             foreach (var atom in AtomViewList)
             {
-                if (toLinkIds.Select(id => id.IsRegion?id.RegionId:id.LibraryElementId).Contains((atom.DataContext as ElementViewModel).ContentId))
+                if (selected.Contains((atom.DataContext as ElementViewModel).ContentId))
                 {
                     AtomViewList.Remove(atom);
                 }

@@ -49,5 +49,17 @@ namespace NuSysApp
             LocationChanged?.Invoke(this, Model.TopLeftPoint);
             UpdateServer();
         }
+
+        public override void UnPack(Region region)
+        {
+            SetBlockServerBoolean(true);
+            var r = region as PdfRegion;
+            if (r != null)
+            {
+                SetPageLocation(r.PageLocation);
+            }
+            base.UnPack(region);
+            SetBlockServerBoolean(false);
+        }
     }
 }

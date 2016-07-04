@@ -27,15 +27,20 @@ namespace NuSysApp
         private double _tx;
         private double _ty;
 
+        //useless for now
         public delegate void RegionSelectedEventHandler(object sender, bool selected);
         public event RegionSelectedEventHandler OnSelected;
+
+        public bool Selected {private set; get; }
+
+
 
         public PDFRegionView(PdfRegionViewModel regionVM)
         {
             
             this.InitializeComponent();
             this.DataContext = regionVM;
-            this.Selected();
+            this.Deselect();
 
             //regionVM.RegionChanged += RegionVM_RegionChanged;
             OnSelected?.Invoke(this, true);
@@ -56,8 +61,21 @@ namespace NuSysApp
             var parentHeight = regionVM.ContainerViewModel.GetHeight();
             composite.TranslateX = model.TopLeftPoint.X * parentWidth;
             composite.TranslateY = model.TopLeftPoint.Y * parentHeight;
+      
+
+            //If in detail view, adjust to the right to account for difference between view and actual image.
+            if (regionVM.ContainerViewModel is PdfDetailHomeTabViewModel)
+            {
+                var ivm = regionVM.ContainerViewModel as PdfDetailHomeTabViewModel;
+                var diff = ivm.GetViewWidth() - ivm.GetWidth();
+                composite.TranslateX += diff / 2;
+            }
+
+
             _tx = composite.TranslateX;
             _ty = composite.TranslateY;
+
+
             regionVM.Width = (model.Width) * parentWidth;
             regionVM.Height = (model.Height) * parentHeight;
         }
@@ -75,6 +93,14 @@ namespace NuSysApp
             }
             composite.TranslateX = topLeft.X;
             composite.TranslateY = topLeft.Y;
+
+            //If in detail view, adjust to the right to account for difference between view and actual image.
+            if (vm.ContainerViewModel is PdfDetailHomeTabViewModel)
+            {
+                var ivm = vm.ContainerViewModel as PdfDetailHomeTabViewModel;
+                var diff = ivm.GetViewWidth() - ivm.GetWidth();
+                composite.TranslateX += diff / 2;
+            }
         }
 
         private void ChangeSize(object sender, double width, double height)
@@ -129,27 +155,9 @@ namespace NuSysApp
             vm.SetNewPoints(topLeft, bottomRight);
         }
 
-        private void XResizingRectangle_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        private void XResizingTriangle_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            //var vm = DataContext as PdfRegionViewModel;
-            //if (vm == null)
-            //{
-            //    return;
-            //}
-            ////if (e.Position.X < 5 || e.Position.X > vm.ContainerWidth - vm.OriginalWidth)
-            ////{
-                
-            ////}
-            ////xMainRectangle.Width += e.Delta.Translation.X;
-            ////xMainRectangle.Height += e.Delta.Translation.Y;
-            //RectangleTranform.CenterX += e.Delta.Translation.X;
-            //RectangleTranform.CenterY += e.Delta.Translation.Y;
-            //xGrid.Width += e.Delta.Translation.X;
-            //xGrid.Height += e.Delta.Translation.Y;
-            //GridTranform.CenterX += e.Delta.Translation.X;
-            //GridTranform.CenterY += e.Delta.Translation.Y;
-            
-            //UpdateViewModel();
+
             var vm = DataContext as PdfRegionViewModel;
             if (vm == null)
             {
@@ -160,6 +168,30 @@ namespace NuSysApp
             {
                 return;
             }
+
+            var ivm = vm.ContainerViewModel as PdfDetailHomeTabViewModel;
+            var diff = ivm.GetViewWidth() - vm.ContainerViewModel.GetWidth();
+
+            var leftXBound = diff / 2;
+            var rightXBound = diff / 2 + ivm.GetWidth();
+
+
+            if (xMainRectangle.Width + rt.TranslateX + e.Delta.Translation.X <= rightXBound)
+            {
+                xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
+                vm.Width = xMainRectangle.Width;
+
+
+            }
+
+            if (xMainRectangle.Height + rt.TranslateY + e.Delta.Translation.Y <= vm.ContainerHeight)
+            {
+                xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
+                vm.Height = xMainRectangle.Height;
+
+            }
+            /*
+
             if (xMainRectangle.Width >= vm.ContainerWidth - rt.TranslateX && xMainRectangle.Height >= vm.ContainerHeight - rt.TranslateY)
             {
                 return;
@@ -181,6 +213,7 @@ namespace NuSysApp
                 vm.Width = xMainRectangle.Width;
                 vm.Height = xMainRectangle.Height;
             }
+            */
 
             vm.SetNewSize(xMainRectangle.Width, xMainRectangle.Height);
         }
@@ -201,9 +234,9 @@ namespace NuSysApp
             }
         }
 
-        private void XResizingRectangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        private void XResizingTriangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            OnSelected?.Invoke(this, true);
+            this.Select();
             e.Handled = true;
         }
 
@@ -220,28 +253,30 @@ namespace NuSysApp
             {
                 return;
             }
+            var ivm = vm.ContainerViewModel as PdfDetailHomeTabViewModel;
+            var diff = ivm.GetViewWidth() - vm.ContainerViewModel.GetWidth();
+
+            var leftXBound = diff / 2;
+            var rightXBound = diff / 2 + ivm.GetWidth() - vm.Width;
+
 
             _tx += e.Delta.Translation.X;
             _ty += e.Delta.Translation.Y;
 
-            if (_tx < 0)
+            //Translating X
+            if (_tx < leftXBound)
             {
-                //Debug.WriteLine(vm.OriginalWidth);
-                //Debug.WriteLine(_tx);
-                //Debug.WriteLine("-------");
-
-                //vm.Width = vm.OriginalWidth + _tx;
-                rt.TranslateX = 0;
-            } else if (_tx > vm.ContainerWidth - vm.OriginalWidth)
+                rt.TranslateX = leftXBound;
+            } else if (_tx > rightXBound)
             {
-                rt.TranslateX = vm.ContainerWidth - vm.OriginalWidth;
+                rt.TranslateX = rightXBound;
             }
             else
             {
                 rt.TranslateX = _tx;
-                vm.Width = vm.OriginalWidth;
             }
 
+            //Translating Y
             if (_ty < 0)
             {
                 rt.TranslateY = 0;
@@ -253,11 +288,10 @@ namespace NuSysApp
             else
             {
                 rt.TranslateY = _ty;
-                vm.Height = vm.OriginalHeight;
             }
 
             var composite = RenderTransform as CompositeTransform;
-            var topLeft = new Point(composite.TranslateX, composite.TranslateY);
+            var topLeft = new Point(composite.TranslateX - leftXBound, composite.TranslateY);
             vm.SetNewLocation(topLeft);
             e.Handled = true; 
         }
@@ -279,38 +313,55 @@ namespace NuSysApp
 
             vm.OriginalHeight = vm.Height;
             vm.OriginalWidth = vm.Width;
-            OnSelected?.Invoke(this, true);
+            this.Select();
             e.Handled = true;
         }
 
-        public void Deselected()
+        public void Deselect()
         {
             xMainRectangle.StrokeThickness = 3;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Aquamarine);
+            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
             xResizingTriangle.Visibility = Visibility.Collapsed;
+            xDelete.Visibility = Visibility.Collapsed;
+            xNameTextBox.Visibility = Visibility.Collapsed;
+            Selected = false;
+
         }
 
-        public void Selected()
+        public void Select()
         {
             xMainRectangle.StrokeThickness = 6;
             xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
             xResizingTriangle.Visibility = Visibility.Visible;
+            xDelete.Visibility = Visibility.Visible;
+            xNameTextBox.Visibility = Visibility.Visible;
+            Selected = true;
+
 
         }
         private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            OnSelected?.Invoke(this, true);
+            
+                var vm = DataContext as PdfRegionViewModel;
+
+                if (!vm.Editable)
+                    return;
+
+                if (Selected)
+                    this.Deselect();
+                else
+                    this.Select();
         }
 
 
         private void XMainRectangle_OnGotFocus(object sender, RoutedEventArgs e)
         {
-            Selected();
+            Select();
         }
 
         private void XMainRectangle_OnLostFocus(object sender, RoutedEventArgs e)
         {
-            Deselected();
+            Deselect();
         }
 
         private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)

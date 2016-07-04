@@ -64,8 +64,6 @@ namespace NuSysApp
                 RaisePropertyChanged("RectangleWidth");
             }
         }
-
-
         public double IntervalRegionWidth
         {
             get
@@ -96,10 +94,6 @@ namespace NuSysApp
             set
             {
                 Debug.Assert(!Double.IsNaN(value));
-                if (double.IsNaN(value))
-                {
-                    
-                }
                 _intervalStart = value; 
                 RaisePropertyChanged("IntervalStart");
             }

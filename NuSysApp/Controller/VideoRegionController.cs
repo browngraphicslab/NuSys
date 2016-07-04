@@ -36,5 +36,18 @@ namespace NuSysApp
             IntervalChanged?.Invoke(this, VideoRegionModel.Start, VideoRegionModel.End);
             UpdateServer();
         }
+
+        public override void UnPack(Region region)
+        {
+            SetBlockServerBoolean(true);
+            var r = region as VideoRegionModel;
+            if (r != null)
+            {
+                SetStartTime(r.Start);
+                SetEndTime(r.End);
+            }
+            base.UnPack(region);
+            SetBlockServerBoolean(false);
+        }
     }
 }

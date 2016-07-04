@@ -20,9 +20,9 @@
         <StackPanel  VerticalAlignment="Top" Orientation="Horizontal" Background="#565F6D" Visibility="Collapsed">
             <Button Name="SourceBttn" Foreground="{StaticResource foreground6}" Click="OnGoToSource">GO TO SOURCE</Button>
         </StackPanel>
-        <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Border x:Name="xBorder"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid x:Name="xWrapper" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Image x:Name="xImg" Margin="3,3,3,3" Source="{Binding ImageSource}" Stretch="Uniform">
+                <Image x:Name="xImg" PointerPressed="xImg_PointerPressed" Source="{Binding ImageSource}" Stretch="Uniform">
                     <Image.RenderTransform>
                         <CompositeTransform></CompositeTransform>
                     </Image.RenderTransform>

@@ -38,16 +38,23 @@ namespace NuSysApp
         }
         public override int GetHashCode()
         {
-            if (RegionId == null) return LibraryElementId.GetHashCode();
+            if (RegionId == null)
+            {
+                return LibraryElementId.GetHashCode();
+            }
             return RegionId.GetHashCode();
         }
         public override bool Equals(object obj)
         {
             LinkId other = obj as LinkId;
-            if (IsRegion ^ other.IsRegion)//XOR
-                return false; 
+            if (IsRegion ^ other.IsRegion) //XOR
+            {
+                return false;
+            }
             if (IsRegion)
+            {
                 return other.LibraryElementId == this.LibraryElementId && other.RegionId == this.RegionId;
+            }
             return other.LibraryElementId == this.LibraryElementId;
             
         }

@@ -39,6 +39,7 @@ namespace NuSysApp
 
         public override void UnPack(Region region)
         {
+            SetBlockServerBoolean(true);
             var r = region as RectangleRegion;
             if (r != null)
             {
@@ -46,6 +47,7 @@ namespace NuSysApp
                 SetSize(r.Width,r.Height);
             }
             base.UnPack(region);
+            SetBlockServerBoolean(false);
         }
     }
 }

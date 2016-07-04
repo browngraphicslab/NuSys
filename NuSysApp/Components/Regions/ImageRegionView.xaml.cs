@@ -32,7 +32,7 @@ namespace NuSysApp
         public delegate void RegionSelectedEventHandler(object sender, bool selected);
         public event RegionSelectedEventHandler OnSelected;
 
-        public bool Selected { set; get; }
+        public bool Selected {private set; get; }
 
         public ImageRegionView(ImageRegionViewModel vm)
         {
@@ -53,12 +53,21 @@ namespace NuSysApp
                 return;
             }
 
-            //vm.RegionChanged += RegionVM_RegionChanged;
-
             var parentWidth = vm.ContainerViewModel.GetWidth();
             var parentHeight = vm.ContainerViewModel.GetHeight();
+            
             composite.TranslateX = model.TopLeftPoint.X * parentWidth;
             composite.TranslateY = model.TopLeftPoint.Y * parentHeight;
+
+            //If in detail view, adjust to the right to account for difference between view and actual image.
+            if (vm.ContainerViewModel is ImageDetailHomeTabViewModel)
+            {
+                var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
+                var diff = ivm.GetViewWidth() - parentWidth;
+                composite.TranslateX += diff / 2;
+            }
+
+
 
             _tx = composite.TranslateX;
             _ty = composite.TranslateY;
@@ -79,8 +88,17 @@ namespace NuSysApp
             {
                 return;
             }
+
             composite.TranslateX = topLeft.X;
             composite.TranslateY = topLeft.Y;
+
+            //If in detail view, adjust to the right to account for difference between view and actual image.
+            if (vm.ContainerViewModel is ImageDetailHomeTabViewModel)
+            {
+                var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
+                var diff = ivm.GetViewWidth() - ivm.GetWidth();
+                composite.TranslateX += diff / 2;
+            }
         }
 
         private void ChangeSize(object sender, double width, double height)
@@ -135,33 +153,34 @@ namespace NuSysApp
             {
                 return;
             }
-            if (xMainRectangle.Width >= vm.ContainerWidth - rt.TranslateX && xMainRectangle.Height >= vm.ContainerHeight - rt.TranslateY)
+
+
+            var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
+            var diff = ivm.GetViewWidth() - vm.ContainerViewModel.GetWidth();
+
+            var leftXBound = diff / 2;
+            var rightXBound = diff / 2 + ivm.GetWidth();
+
+
+            //CHANGE IN X
+            if (xMainRectangle.Width + rt.TranslateX + e.Delta.Translation.X <= rightXBound)
             {
-                return;
+                xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
+                vm.Width = xMainRectangle.Width;
+
+
             }
-            else if (xMainRectangle.Width >= vm.ContainerWidth - rt.TranslateX && xMainRectangle.Height < vm.ContainerHeight - rt.TranslateY)
+            
+            if (xMainRectangle.Height + rt.TranslateY + e.Delta.Translation.Y <= vm.ContainerHeight)
             {
                 xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
                 vm.Height = xMainRectangle.Height;
 
-            }   
-            else if (xMainRectangle.Width < vm.ContainerWidth - rt.TranslateX &&
-                     xMainRectangle.Height >= vm.ContainerHeight - rt.TranslateY)
-            {
-                xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
-                vm.Width = xMainRectangle.Width;
-            }
-            else
-            {
-                xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
-                xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
-                vm.Width = xMainRectangle.Width;
-                vm.Height = xMainRectangle.Height;
             }
 
-            //UpdateViewModel();
             vm.SetNewSize(xMainRectangle.Width, xMainRectangle.Height);
 
+    
         }
 
         private void xResizingTriangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -188,23 +207,32 @@ namespace NuSysApp
                 return;
             }
 
+            var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
+            var diff = ivm.GetViewWidth() - vm.ContainerViewModel.GetWidth();
+
+            var leftXBound = diff / 2;
+            var rightXBound = diff / 2 + ivm.GetWidth() - vm.Width;
+
+
+
             _tx += e.Delta.Translation.X;
             _ty += e.Delta.Translation.Y;
 
-            if (_tx < 0)
+            //Translating X
+            if (_tx < leftXBound)
             {
-                rt.TranslateX = 0;
+                rt.TranslateX = leftXBound;
             }
-            else if (_tx > vm.ContainerWidth - vm.OriginalWidth)
+            else if(_tx > rightXBound)
             {
-                rt.TranslateX = vm.ContainerWidth - vm.OriginalWidth;
+                rt.TranslateX = rightXBound;
             }
             else
             {
                 rt.TranslateX = _tx;
-                vm.Width = vm.OriginalWidth;
             }
 
+            //Translating Y
             if (_ty < 0)
             {
                 rt.TranslateY = 0;
@@ -216,13 +244,11 @@ namespace NuSysApp
             else
             {
                 rt.TranslateY = _ty;
-                vm.Height = vm.OriginalHeight;
             }
 
-            //UpdateViewModel();
             var composite = RenderTransform as CompositeTransform;
-            var topLeft = new Point(composite.TranslateX, composite.TranslateY);
-            vm.SetNewLocation(topLeft);
+            var topLeft = new Point(composite.TranslateX - leftXBound, composite.TranslateY);
+            vm.SetNewLocation(topLeft); 
             e.Handled = true;
         }
 
@@ -256,7 +282,6 @@ namespace NuSysApp
 
             vm.OriginalHeight = vm.Height;
             vm.OriginalWidth = vm.Width;
-            //OnSelected?.Invoke(this, true);
             this.Select();
             e.Handled = true;
 
@@ -277,7 +302,7 @@ namespace NuSysApp
         public void Select()
         {
             xMainRectangle.StrokeThickness = 6;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Red);
+            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Blue);
             xResizingTriangle.Visibility = Visibility.Visible;
             xDelete.Visibility = Visibility.Visible;
             xNameTextBox.Visibility = Visibility.Visible;

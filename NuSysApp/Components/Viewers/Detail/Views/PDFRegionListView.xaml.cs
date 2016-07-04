@@ -32,7 +32,7 @@ namespace NuSysApp
         }
 
 
-        private void RegionListViewItem_PointerPressed(object sender, PointerRoutedEventArgs e)
+        private async void RegionListViewItem_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             //((ImageFullScreenView)(((DetailViewerViewModel)DetailViewerView.DataContext).RegionView)).SelectedRegion(test);
 
@@ -43,7 +43,7 @@ namespace NuSysApp
             }
             var detailHomeTabViewModel = vm.RegionView.DataContext as PdfDetailHomeTabViewModel;
             var pdfRegion = (sender as Grid).DataContext as PdfRegion;
-            detailHomeTabViewModel.Goto(pdfRegion.PageLocation);
+            await detailHomeTabViewModel.Goto(pdfRegion.PageLocation);
 
 
         }

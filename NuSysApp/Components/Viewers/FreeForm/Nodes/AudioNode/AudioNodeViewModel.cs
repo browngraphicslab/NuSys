@@ -263,5 +263,15 @@ namespace NuSysApp
         {
             return Height;
         }
+
+        public double GetViewWidth()
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetViewHeight()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

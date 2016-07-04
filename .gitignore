@@ -201,3 +201,4 @@ FakesAssemblies/
 
 # Visual C++ cache files
 *.VC.db
+*.db

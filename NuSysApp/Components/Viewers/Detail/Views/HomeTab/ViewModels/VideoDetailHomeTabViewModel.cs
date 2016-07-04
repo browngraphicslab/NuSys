@@ -100,5 +100,15 @@ namespace NuSysApp
             var region = new VideoRegionModel(new Point(.25,.25), new Point(.75, .75) );
             return region;
         }
+
+        public double GetViewWidth()
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetViewHeight()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

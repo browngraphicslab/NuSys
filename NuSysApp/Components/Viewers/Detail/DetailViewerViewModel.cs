@@ -152,6 +152,8 @@ namespace NuSysApp
                 if (CurrentElementController != null)
                 {
                     CurrentElementController.KeywordsChanged -= KeywordsChanged;
+                    CurrentElementController.RegionAdded -= AddRegionToList;
+                    CurrentElementController.RegionRemoved -= RemoveRegionFromList;
                 }
                 CurrentElementController = controller;
                 CurrentElementController.KeywordsChanged += KeywordsChanged;
