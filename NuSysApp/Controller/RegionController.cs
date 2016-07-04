@@ -25,6 +25,8 @@ namespace NuSysApp
         public event SelectHandler OnSelect;
         public delegate void DeselectHandler(RegionController regionController);
         public event DeselectHandler OnDeselect;
+        public event EventHandler<LinkLibraryElementController> LinkAdded;
+        public event EventHandler<string> LinkRemoved;
 
         private bool _selected;
         public RegionController(Region model)
@@ -107,13 +109,23 @@ namespace NuSysApp
             OnDeselect?.Invoke(this);
         }
 
+        public void AddLink(LinkLibraryElementController linkController)
+        {
+            LinkAdded?.Invoke(this, linkController);
+        }
+
+     /*   public void RemoveLink(LinkLibraryElementController linkController)
+        {
+            LinkRemoved?.Invoke(this, linkController.Id);
+        }*/
+
         #region Linking methods
-        public void AddNewLink(LinkId idToLinkTo)
+        public void RequestAddNewLink(LinkId idToLinkTo)
         {
             SessionController.Instance.LinkController.RequestLink(new LinkId( SessionController.Instance.RegionsController.GetLibraryElementModelId(this.Model.Id),this.Model.Id), idToLinkTo);
         }
 
-        public void RemoveLink(LinkId linkLibraryElementID)
+        public void RequestRemoveLink(LinkId linkLibraryElementID)
         {
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(linkLibraryElementID.LibraryElementId) as LinkLibraryElementController;
             SessionController.Instance.LinkController.RemoveLink(controller.Id.LibraryElementId);
