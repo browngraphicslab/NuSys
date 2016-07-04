@@ -88,8 +88,12 @@ namespace NuSysApp
                 toLinkIds.Add(link.InAtomId.LibraryElementId == controller.LibraryElementModel.LibraryElementId ? link.OutAtomId : link.InAtomId);
             }
             var toAddAtoms = new HashSet<FrameworkElement>();
-            foreach ( var atom in AtomViewList.Where(r => !(r.DataContext is LinkViewModel)).Select(e => e.DataContext as ElementViewModel))
+            foreach ( var atom in AtomViewList.Where(r => !(r.DataContext is LinkViewModel) && r.DataContext != null).Select(e => e.DataContext as ElementViewModel))
             {
+                if (atom == null)
+                {
+                    continue;
+                }
                 if (toLinkIds.Select(id=>id.LibraryElementId).Contains(atom.ContentId))
 
                 {

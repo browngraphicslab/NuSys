@@ -39,6 +39,10 @@ namespace NuSysApp
                     
                 }
             }
+            if (_dict == null)
+            {
+                _dict = new ConcurrentDictionary<string, object>();
+            }
         }
 
         public Message(Dictionary<string, string> dict)

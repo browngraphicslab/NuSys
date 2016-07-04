@@ -33,10 +33,20 @@ namespace NuSysApp
                 UpdateControlPoints();
             };
 
+            vm.InToolController.Disposed += Tool_Disposed;
+            vm.OutToolController.Disposed += Tool_Disposed;
 
 
 
+        }
 
+        public void Tool_Disposed(string id)
+        {
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            wvm.AtomViewList.Remove(this);
+            (DataContext as ToolLinkViewModel).Dispose();
+            (DataContext as ToolLinkViewModel).InToolController.Disposed -= Tool_Disposed;
+            (DataContext as ToolLinkViewModel).OutToolController.Disposed -= Tool_Disposed;
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
