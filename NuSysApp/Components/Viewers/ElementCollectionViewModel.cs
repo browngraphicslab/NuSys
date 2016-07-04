@@ -90,7 +90,7 @@ namespace NuSysApp
             var toAddAtoms = new HashSet<FrameworkElement>();
             foreach ( var atom in AtomViewList.Where(r => !(r.DataContext is LinkViewModel)).Select(e => e.DataContext as ElementViewModel))
             {
-                if (toLinkIds.Select(id=>id.IsRegion?id.RegionId:id.LibraryElementId).Contains(atom.ContentId))
+                if (toLinkIds.Select(id=>id.LibraryElementId).Contains(atom.ContentId))
 
                 {
                     var lm = new LinkModel(SessionController.Instance.GenerateId());
@@ -115,7 +115,7 @@ namespace NuSysApp
             }
             foreach (var atom in AtomViewList)
             {
-                if (toLinkIds.Select(id => id.IsRegion?id.RegionId:id.LibraryElementId).Contains((atom.DataContext as ElementViewModel).ContentId))
+                if (toLinkIds.Select(id => id.LibraryElementId).Contains((atom.DataContext as ElementViewModel).ContentId))
                 {
                     AtomViewList.Remove(atom);
                 }
