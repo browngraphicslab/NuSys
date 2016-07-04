@@ -31,9 +31,19 @@ namespace NuSysApp
         {
             var composite = IntervalRectangle.RenderTransform as CompositeTransform;
             var vm = DataContext as VideoRegionViewModel;
-            if (composite != null && composite.TranslateX > 0  && vm != null)
+
+            if (composite != null &&  vm != null)
             {
-                vm.SetIntervalStart(composite.TranslateX);
+                var newStart = composite.TranslateX + e.Delta.Translation.X;
+                if (newStart < 0)
+                {
+                    newStart = 0;
+                }
+                if (newStart > vm.IntervalEnd)
+                {
+                    newStart = vm.IntervalEnd;
+                }
+                vm.SetIntervalStart(newStart);
             }
         }
 
@@ -41,9 +51,22 @@ namespace NuSysApp
         {
             var composite = IntervalRectangle.RenderTransform as CompositeTransform;
             var vm = DataContext as VideoRegionViewModel;
-            if (composite != null && composite.TranslateX > 0 &&  vm != null)
+            if (composite != null &&  vm != null)
             {
-                vm.SetIntervalEnd(composite.TranslateX + IntervalRectangle.Width);
+                var newEnd = composite.TranslateX + IntervalRectangle.Width + e.Delta.Translation.X;
+                if (newEnd > vm.ContainerViewModel.GetWidth())
+                {
+                    newEnd = vm.ContainerViewModel.GetWidth();
+                }
+                if (newEnd < vm.IntervalStart)
+                {
+                    newEnd = vm.IntervalStart;
+                }
+                if (Double.IsNaN(newEnd))
+                {
+                    
+                }
+                vm.SetIntervalEnd(newEnd);
             }
         }
 
@@ -90,11 +113,11 @@ namespace NuSysApp
                 return;
             }
             
-            GridTransform.TranslateX += e.Delta.Translation.X;
-            GridTransform.TranslateY += e.Delta.Translation.Y;
+            //GridTransform.TranslateX += e.Delta.Translation.X;
+            //GridTransform.TranslateY += e.Delta.Translation.Y;
             
 
-            vm.SetRegionLocation(new Point(GridTransform.TranslateX, GridTransform.TranslateY));
+            vm.SetRegionLocation(new Point(GridTransform.TranslateX + e.Delta.Translation.X, GridTransform.TranslateY + e.Delta.Translation.Y));
             e.Handled = true;
         }
 

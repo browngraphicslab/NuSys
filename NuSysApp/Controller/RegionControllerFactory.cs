@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,7 +27,8 @@ namespace NuSysApp
                     controller = new RegionController(regionModel);
                     break;
                 case Region.RegionType.Video:
-                    controller = new RegionController(regionModel);
+                    Debug.Assert(regionModel is VideoRegionModel);
+                    controller = new VideoRegionController(regionModel as VideoRegionModel);
                     break;
             }
             if (controller == null)

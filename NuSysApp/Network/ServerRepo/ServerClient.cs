@@ -22,6 +22,10 @@ namespace NuSysApp
         public delegate void MessageRecievedEventHandler(Message message);
         public event MessageRecievedEventHandler OnMessageRecieved;
 
+        public delegate void RegionUpdatedEventHandler(string id, Region region);
+        public event RegionUpdatedEventHandler OnRegionUpdated;
+
+
         public delegate void ClientDroppedEventHandler(string id);
         public event ClientDroppedEventHandler OnClientDrop;//todo add this in, and onclientconnection event
 
@@ -113,6 +117,11 @@ namespace NuSysApp
                                 case "remove_user":
                                     id = (string)dict["user_id"];
                                     OnClientDrop?.Invoke(id);
+                                    break;
+                                case "region_update":
+                                    id = (string) dict["region_id"];
+                                    Region region = GetRegionFromString(dict["region_string"] as string);
+                                    OnRegionUpdated?.Invoke(id, region);
                                     break;
                             }
                         }
@@ -333,25 +342,7 @@ namespace NuSysApp
             var regions = new HashSet<Region>();
             foreach (var rs in regionStrings)
             {
-                var region = JsonConvert.DeserializeObject<RegionIntermediate>(rs);
-                switch (region.Type)
-                {
-                    case Region.RegionType.Rectangle:
-                        regions.Add(JsonConvert.DeserializeObject<RectangleRegion>(rs, settings));
-                        break;
-                    case Region.RegionType.Compound:
-                        regions.Add(JsonConvert.DeserializeObject<CompoundRegion>(rs, settings));
-                        break;
-                    case Region.RegionType.Time:
-                        regions.Add(JsonConvert.DeserializeObject<TimeRegionModel>(rs, settings));
-                        break;
-                    case Region.RegionType.Pdf:
-                        regions.Add(JsonConvert.DeserializeObject<PdfRegion>(rs, settings));
-                        break;
-                    case Region.RegionType.Video:
-                        regions.Add(JsonConvert.DeserializeObject<VideoRegionModel>(rs, settings));
-                        break;
-                }
+                regions.Add(GetRegionFromString(rs, id));
             }
 
             var inks = dict.ContainsKey("inks") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["inks"].ToString()) : null;
@@ -416,6 +407,40 @@ namespace NuSysApp
                 var args = new LoadContentEventArgs(contentData, regions, inks);
                 SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId).Load(args);
             });
+        }
+
+        private Region GetRegionFromString(string regionString, string contentId = null)
+        {
+            if (regionString == null)
+            {
+                return null;
+            }
+            JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+            var regionintermediate = JsonConvert.DeserializeObject<RegionIntermediate>(regionString);
+            Region region = null;
+            switch (regionintermediate.Type)
+            {
+                case Region.RegionType.Rectangle:
+                    region = JsonConvert.DeserializeObject<RectangleRegion>(regionString, settings);
+                    break;
+                case Region.RegionType.Compound:
+                    region = JsonConvert.DeserializeObject<CompoundRegion>(regionString, settings);
+                    break;
+                case Region.RegionType.Time:
+                    region = JsonConvert.DeserializeObject<TimeRegionModel>(regionString, settings);
+                    break;
+                case Region.RegionType.Pdf:
+                    region = JsonConvert.DeserializeObject<PdfRegion>(regionString, settings);
+                    break;
+                case Region.RegionType.Video:
+                    region = JsonConvert.DeserializeObject<VideoRegionModel>(regionString, settings);
+                    break;
+            }
+            if (contentId != null)
+            {
+                var controller = new RegionControllerFactory().CreateFromSendable(region, contentId);
+            }
+            return region;
         }
         public async Task SendDictionaryToServer(Dictionary<string, string> dict)
         {

@@ -53,8 +53,11 @@ namespace NuSysApp
             _serverClient.OnClientDrop += ClientDrop;
             _serverClient.OnContentAvailable += ContentAvailable;
             _serverClient.OnClientJoined += AddNetworkUser;
+            _serverClient.OnRegionUpdated += RegionUpdated;
             LockController = new LockController(_serverClient);
         }
+
+
         #region Requests
 
         public async Task ExecuteRequestLocally(Request request)
@@ -124,7 +127,7 @@ namespace NuSysApp
                         controller.SetTitle(title);//TODO make sure no other variables, like timestamp, need to be set here
                     }
                     else
-                    {
+                    {/*
                         if (type == ElementType.Collection)
                         {
                             SessionController.Instance.ContentController.Add(
@@ -134,7 +137,9 @@ namespace NuSysApp
                         {
                             SessionController.Instance.ContentController.Add(
                                 new LibraryElementModel(id, type, metadata, title));
-                        }
+                        }*/
+                        var request = new CreateNewLibraryElementRequest(new Message(dict));
+                        await ExecuteRequestLocally(request);
                     }
                     if (ServerClient.NeededLibraryDataIDs.Contains(id))
                     {
@@ -294,7 +299,14 @@ namespace NuSysApp
             await request.ExecuteSystemRequestFunction(this, _serverClient);
         }
         #endregion Requests
-
+        private void RegionUpdated(string id, Region region)
+        {
+            UITask.Run(delegate
+            {
+                var controller = SessionController.Instance.RegionsController.GetRegionController(id);
+                controller?.UnPack(region);
+            });
+        }
         public async Task<List<Message>> GetCollectionAsElementMessages(string id)
         {
             return await _serverClient.GetWorkspaceAsElementMessages(id);
@@ -382,7 +394,7 @@ namespace NuSysApp
                 return;
             }
             _regionUpdateDebounceList.Add(region.Id);
-            await Task.Delay(1000);
+            await Task.Delay(300);
             _regionUpdateDebounceList.Remove(region.Id);
             await _serverClient.UpdateRegion(region);
         }

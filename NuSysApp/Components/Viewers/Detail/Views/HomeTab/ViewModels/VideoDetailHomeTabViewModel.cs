@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -84,8 +85,9 @@ namespace NuSysApp
                 {
                     return;
                 }
-                var regionController = new VideoRegionController(videoRegion);
-                var vm = new VideoRegionViewModel(videoRegion, Controller, regionController, this);
+                var regionController = SessionController.Instance.RegionsController.GetRegionController(regionModel.Id);
+                Debug.Assert(regionController is VideoRegionController);
+                var vm = new VideoRegionViewModel(videoRegion, Controller, regionController as VideoRegionController, this);
                 var view = new VideoRegionView(vm);
                 RegionViews.Add(view);
 

@@ -40,9 +40,10 @@ namespace NuSysApp
                     {
                         return _regionViews;
                     }
-                    var regionController = new VideoRegionController(videoRegionModel);
+                    var regionController = SessionController.Instance.RegionsController.GetRegionController(model.Id);
+                    Debug.Assert(regionController is VideoRegionController);
                     regionController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
-                    var viewmodel = new VideoRegionViewModel(videoRegionModel, elementController, regionController, this);
+                    var viewmodel = new VideoRegionViewModel(videoRegionModel, elementController, regionController as VideoRegionController, this);
                     viewmodel.Editable = false;
                     var view = new VideoRegionView(viewmodel);
                     _regionViews.Add(view);

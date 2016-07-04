@@ -36,5 +36,16 @@ namespace NuSysApp
             LocationChanged?.Invoke(this, Model.TopLeftPoint);
             UpdateServer();
         }
+
+        public override void UnPack(Region region)
+        {
+            var r = region as RectangleRegion;
+            if (r != null)
+            {
+                SetLocation(r.TopLeftPoint);
+                SetSize(r.Width,r.Height);
+            }
+            base.UnPack(region);
+        }
     }
 }

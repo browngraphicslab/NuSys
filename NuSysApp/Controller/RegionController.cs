@@ -133,7 +133,20 @@ namespace NuSysApp
             throw new NotImplementedException();
             //return SessionController.Instance.LinkController.GetLinkLibraryElementControllers(this);
         }
-        #endregion 
+
+        /// <summary>
+        /// This mehtod should only be called from the server upon other updates.  It will pass in a region
+        /// you should extract the region's properties and call the update methods in the controllers
+        /// </summary>
+        /// <param name="region"></param>
+        public virtual void UnPack(Region region)
+        {
+            if (Model.Name != region.Name)
+            {
+                SetTitle(region.Name);
+            }
+        }
+        #endregion
 
     }
 }

@@ -33,6 +33,11 @@ namespace NuSysApp
                 _regionControllers.TryAdd(regionModel.Id, regionController);
                 return regionModel.Id;
             }
+            else
+            {
+                //THIS IS THE CAUSE OF HALF OUR REGIONS PROBLEMS
+                throw new Exception("TRIED TO ADD A SECOND REGION CONTROLLER");
+            }
             return null;
         }
     }

@@ -33,8 +33,6 @@ namespace NuSysApp
         private double _intervalEnd;
         private Point _topLeftPoint;
         private bool _editable;
-        private double containerViewWidth;
-        private double containerViewHeight;
         private double _intervalRegionTranslateY;
         #endregion PrivateVariables
         public bool Editable {
@@ -49,7 +47,7 @@ namespace NuSysApp
         public double RectangleHeight {
             get
             {
-                return _height;
+                return _height * ContainerViewModel.GetHeight();
             }
             set
             {
@@ -58,7 +56,7 @@ namespace NuSysApp
             }
         }
         public double RectangleWidth {
-            get { return _width; }
+            get { return _width*ContainerViewModel.GetWidth(); }
             set
             {
                 _width = value;
@@ -71,7 +69,7 @@ namespace NuSysApp
         {
             get
             {
-                return _intervalRegionWidth;
+                return (_intervalEnd - _intervalStart) * ContainerViewModel.GetWidth();
             }
             set
             {
@@ -83,7 +81,7 @@ namespace NuSysApp
         {
             get
             {
-                return _intervalRegionTranslateY;
+                return _intervalRegionTranslateY * ContainerViewModel.GetHeight();
             }
             set
             {
@@ -93,16 +91,21 @@ namespace NuSysApp
         }
         public double IntervalStart
         {
-            get { return _intervalStart; }
+            get { return _intervalStart * ContainerViewModel.GetWidth(); }
             set
             {
+                Debug.Assert(!Double.IsNaN(value));
+                if (double.IsNaN(value))
+                {
+                    
+                }
                 _intervalStart = value; 
                 RaisePropertyChanged("IntervalStart");
             }
         }
         public double IntervalEnd
         {
-            get { return _intervalEnd; }
+            get { return _intervalEnd * ContainerViewModel.GetWidth(); }
             set
             {
                 _intervalEnd = value;
@@ -113,7 +116,7 @@ namespace NuSysApp
         {
             get
             {
-                return new Point(_topLeftPoint.X, _topLeftPoint.Y); 
+                return new Point(_topLeftPoint.X * ContainerViewModel.GetWidth(), _topLeftPoint.Y * ContainerViewModel.GetHeight()); 
             }
             set
             {
@@ -127,50 +130,36 @@ namespace NuSysApp
             regionController.SizeChanged += SizeChanged;
             regionController.LocationChanged += LocationChanged;
             regionController.IntervalChanged += IntervalChanged;
-            _height = (model.Height) * ContainerViewModel.GetHeight();
-            _width = (model.Width) * ContainerViewModel.GetWidth();
-            _topLeftPoint = new Point(model.TopLeftPoint.X * ContainerViewModel.GetWidth(), model.TopLeftPoint.Y * ContainerViewModel.GetHeight());
-            _intervalStart = model.Start * ContainerViewModel.GetWidth();
-            _intervalEnd = model.End * ContainerViewModel.GetWidth();
+            _height = (model.Height);
+            _width = (model.Width);
+            _topLeftPoint = new Point(model.TopLeftPoint.X , model.TopLeftPoint.Y );
+            _intervalStart = model.Start;
+            _intervalEnd = model.End;
             _intervalRegionWidth = _intervalEnd - _intervalStart;
-            _intervalRegionTranslateY = ContainerViewModel.GetHeight();
-
-            containerViewHeight = ContainerViewModel.GetHeight();
-            containerViewWidth = ContainerViewModel.GetWidth();
+            _intervalRegionTranslateY = 1;
 
             Editable = true;
         }
 
         private void LocationChanged(object sender, Point topLeft)
         {
-            TopLeft = new Point(topLeft.X * ContainerViewModel.GetWidth(), topLeft.Y * ContainerViewModel.GetHeight());
+            TopLeft = new Point(topLeft.X, topLeft.Y);
         }
 
         private void IntervalChanged(object sender, double start, double end)
         {
-            IntervalStart = start*ContainerViewModel.GetWidth();
-            IntervalEnd = end*ContainerViewModel.GetWidth();
+            IntervalStart = start;
+            IntervalEnd = end;
         }
 
         private void SizeChanged(object sender, double width, double height)
         {
-            RectangleWidth = width * ContainerViewModel.GetWidth();
-            RectangleHeight = height * ContainerViewModel.GetHeight();
+            RectangleWidth = width;
+            RectangleHeight = height;
         }
 
         private void BaseSizeChanged(object sender, double width, double height)
         {
-            // set the different sizes based on the new width and height of the container view model
-            RectangleWidth *= width/containerViewWidth;
-            RectangleHeight *= height / containerViewHeight;
-            IntervalStart *= width/containerViewWidth;
-            IntervalEnd *= width/containerViewWidth;
-            IntervalRegionWidth *= width/containerViewWidth;
-            TopLeft = new Point(width/containerViewWidth * TopLeft.X, height/containerViewHeight * TopLeft.Y);
-            containerViewWidth = width;
-            containerViewHeight = height;
-            IntervalRegionTranslateY = height;
-
             RaisePropertyChanged("RectangleWidth");
             RaisePropertyChanged("RectangleHeight");
             RaisePropertyChanged("IntervalRegionWidth");
@@ -178,6 +167,7 @@ namespace NuSysApp
             RaisePropertyChanged("IntervalEnd");
             RaisePropertyChanged("TopLeft");
             RaisePropertyChanged("BottomRight");
+            RaisePropertyChanged("IntervalRegionTranslateY");
         }
 
         public void SetIntervalStart(double start)
