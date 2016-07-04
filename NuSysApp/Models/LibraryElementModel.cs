@@ -44,13 +44,8 @@ namespace NuSysApp
             Keywords = new HashSet<Keyword>();
             Metadata = metadata ?? new Dictionary<string, MetadataEntry>();
             Regions = new HashSet<Region>();
-            if (Type == ElementType.Link && !(this is LinkLibraryElementModel))
-            {
-                
-            }
+            Debug.Assert(!(Type == ElementType.Link && !(this is LinkLibraryElementModel)));
             SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
-            
-
         }
         //FOR PDF DOWNLOADING  --HACKY AF
         //public static List<string> PDFStrings = new List<string>();
@@ -80,6 +75,14 @@ namespace NuSysApp
             if (message.GetString("creator_user_id") != null)
             {
                 Creator = message.GetString("creator_user_id");
+            }
+            if (message.GetString("library_element_creation_timestamp") != null)
+            {
+                Timestamp = message.GetString("library_element_creation_timestamp");
+            }
+            if (message.GetString("server_url") != null)
+            {
+                ServerUrl = message.GetString("server_url");
             }
             //TO DOWNLOAD PDFS
             /*

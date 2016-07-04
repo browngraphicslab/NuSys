@@ -353,6 +353,7 @@
     <Compile Include="Converters\BoolToManipulationModeConverter.cs" />
     <Compile Include="Converters\ListToStringConverter.cs" />
     <Compile Include="Converters\MutabilityToBrushConverter.cs" />
+    <Compile Include="Models\LibraryElementModelFactory.cs" />
     <Compile Include="Models\LinkLibraryElementModel.cs" />
     <Compile Include="Models\Regions\PDFRegion.cs" />
     <Compile Include="Models\Regions\TimeRegionModel.cs" />

@@ -15,13 +15,12 @@ namespace NuSysApp
         public LinkId InAtomId { get; set; }
         public LinkId OutAtomId { get; set; }
         public Color Color { get; set; }
-        public LinkLibraryElementModel(LinkId id1, LinkId id2, string id, Color c, ElementType elementType = ElementType.Link, Dictionary<string, MetadataEntry> metadata = null, string contentName = null, bool favorited = false): base(id, elementType, metadata, contentName, favorited)
+        public LinkLibraryElementModel(LinkId id1, LinkId id2, string id, Dictionary<string, MetadataEntry> metadata = null, string contentName = null, bool favorited = false): base(id, ElementType.Link, metadata, contentName, favorited)
 
         {
             InAtomId = id1;
             OutAtomId = id2;
-
-            Color = c;
+            Color = Colors.DarkGoldenrod;
         }
 
         public override async Task UnPack(Message message)
@@ -56,7 +55,6 @@ namespace NuSysApp
                 byte r = byte.Parse(hexColor.Substring(3, 2), NumberStyles.HexNumber);
                 byte g = byte.Parse(hexColor.Substring(5, 2), NumberStyles.HexNumber);
                 byte b = byte.Parse(hexColor.Substring(7, 2), NumberStyles.HexNumber);
-
                 Color = Color.FromArgb(a, r, g, b);
                 //Color = Color.FromArgb(message.GetString("color"));
             }

@@ -83,8 +83,9 @@ namespace NuSysApp
             _message["color"] = c.ToString();
             ElementType type = (ElementType) Enum.Parse(typeof (ElementType), (string) _message["type"], true);
 
-            var libraryElement = new LinkLibraryElementModel(JsonConvert.DeserializeObject<LinkId>((string)_message["id1"]), JsonConvert.DeserializeObject<LinkId>((string)_message["id2"]), (string) _message["id"], c, type);
-            SessionController.Instance.ContentController.Add(libraryElement);
+
+            var libraryElement = LibraryElementModelFactory.CreateFromMessage(_message);
+
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElement.LibraryElementId);
             libraryElement.Timestamp = time;
             var loadEventArgs = new LoadContentEventArgs(_message["data"]?.ToString());
@@ -95,43 +96,36 @@ namespace NuSysApp
             libraryElement.ServerUrl = url;
             SessionController.Instance.LinkController.AddLink(_message.GetString("id"));
 
-            var controller1 = SessionController.Instance.ContentController.GetLibraryElementController(JsonConvert.DeserializeObject<LinkId>((string)_message["id1"]).LibraryElementId);
-            var controller2 = SessionController.Instance.ContentController.GetLibraryElementController(JsonConvert.DeserializeObject<LinkId>((string)_message["id2"]).LibraryElementId);
-            var linkController = SessionController.Instance.ContentController.GetLibraryElementController(_message.GetString("id"));
-            Debug.Assert(controller1 != null && controller2 != null && linkController != null && linkController is LinkLibraryElementController);
-            controller1.AddLink(linkController as LinkLibraryElementController);
-            controller2.AddLink(linkController as LinkLibraryElementController);
+            AddLinks(JsonConvert.DeserializeObject<LinkId>((string) _message["id1"]),
+                JsonConvert.DeserializeObject<LinkId>((string) _message["id2"]),
+                _message.GetString("id"));
         }
 
         public override async Task ExecuteRequestFunction()
         {
             var id1 = JsonConvert.DeserializeObject<LinkId>((string)_message["id1"]);
-            var id2 = JsonConvert.DeserializeObject<LinkId>((string)_message["id1"]);
+            var id2 = JsonConvert.DeserializeObject<LinkId>((string)_message["id2"]);
             var id = _message.GetString("id");
             var creator = _message.GetString("creator");
             //var contentId = _message.GetString("contentId");
 
-            string hexColor = _message.GetString("color");
-            byte a = byte.Parse(hexColor.Substring(1, 2), NumberStyles.HexNumber);
-            byte r = byte.Parse(hexColor.Substring(3, 2), NumberStyles.HexNumber);
-            byte g = byte.Parse(hexColor.Substring(5, 2), NumberStyles.HexNumber);
-            byte b = byte.Parse(hexColor.Substring(7, 2), NumberStyles.HexNumber);
-
-            var c = Color.FromArgb(a, r, g, b);
-            var link = new LinkLibraryElementModel(id1, id2, id, c);
-            await link.UnPack(_message);
-
+            var link = LibraryElementModelFactory.CreateFromMessage(_message);
 
             var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(creator);
             parentCollectionLibraryElement.AddChild(id);
             
+            AddLinks(id1,id2,id);
+
+        }
+
+        private void AddLinks(LinkId id1, LinkId id2, string contentId)
+        {
             var controller1 = SessionController.Instance.ContentController.GetLibraryElementController(id1.LibraryElementId);
             var controller2 = SessionController.Instance.ContentController.GetLibraryElementController(id2.LibraryElementId);
-            var linkController = SessionController.Instance.ContentController.GetLibraryElementController(id);
+            var linkController = SessionController.Instance.ContentController.GetLibraryElementController(contentId);
             Debug.Assert(controller1 != null && controller2 != null && linkController != null && linkController is LinkLibraryElementController);
             controller1.AddLink(linkController as LinkLibraryElementController);
             controller2.AddLink(linkController as LinkLibraryElementController);
-
         }
     }
 }

@@ -344,138 +344,14 @@ namespace NuSysApp
                             var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
                             foreach (var kvp in dictionaries)
                             {
-                                var id = (string)kvp.Value["id"];
-                                //var element = new LibraryElementModel(kvp.Value);
-
-                                bool favorited = false;
-                                var metadata = new Dictionary<string, MetadataEntry>();
-                                var dict = kvp.Value;
-                                var message = new Message(dict);
-                                string title = null;
-                                ElementType type = ElementType.Text;
-                                string timestamp = "";
-                                string creator = null;
-                                string serverUrl = null;
-                                if (dict.ContainsKey("library_element_creation_timestamp"))
+                                try
                                 {
-                                    timestamp = dict["library_element_creation_timestamp"].ToString();
+                                    LibraryElementModelFactory.CreateFromMessage(new Message(kvp.Value));
                                 }
-                                if (dict.ContainsKey("favorited") && bool.Parse(dict["favorited"].ToString()) == true)
+                                catch (NullReferenceException e)
                                 {
-                                    favorited = true;
+                                    
                                 }
-                                if (dict.ContainsKey("metadata"))
-                                {
-
-                                    if (dict["metadata"] != null)
-                                    {
-                                        metadata = JsonConvert.DeserializeObject<Dictionary<string, MetadataEntry>>(dict["metadata"].ToString());
-                                    }
-
-                                }
-
-                                if (dict.ContainsKey("creator_user_id"))
-                                {
-                                    creator = dict["creator_user_id"].ToString();
-                                }
-                                if (dict.ContainsKey("title"))
-                                {
-                                    title = (string)dict["title"]; // title
-                                }
-                                if (dict.ContainsKey("server_url"))
-                                {
-                                    serverUrl = dict["server_url"].ToString();
-                                }
-                                if (dict.ContainsKey("type"))
-                                {
-                                    try
-                                    {
-                                        type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        continue;
-                                    }
-                                }
-
-                                LibraryElementModel element;
-                                if (type == ElementType.Collection)
-                                {
-                                    element = new CollectionLibraryElementModel(id, metadata, title, favorited);
-                                }
-                                else if (type == ElementType.Link)
-                                {
-                                    Color color;
-                                    if (dict.ContainsKey("color"))
-                                    {
-                                        string hexColor = dict["color"] as string;
-                                        byte a = byte.Parse(hexColor.Substring(1, 2), NumberStyles.HexNumber);
-                                        byte r = byte.Parse(hexColor.Substring(3, 2), NumberStyles.HexNumber);
-                                        byte g = byte.Parse(hexColor.Substring(5, 2), NumberStyles.HexNumber);
-                                        byte b = byte.Parse(hexColor.Substring(7, 2), NumberStyles.HexNumber);
-                                        Color.FromArgb(a, r, g, b);
-                                    }
-                                    color = Colors.Tomato;
-                                    if (dict.ContainsKey("id1") && dict.ContainsKey("id2"))
-                                    {
-                                        //TODO DELETE THIS ASAP
-                                        if ((dict["id1"] as string).Length == 32)
-                                        {
-                                            element =
-                                               new LinkLibraryElementModel(
-                                                    new LinkId(dict["id1"] as string), 
-                                                    new LinkId(dict["id2"] as string), id,
-                                                    color, type, metadata, title, favorited);
-
-                                        }
-                                        else
-                                        {
-                                            element =
-                                                new LinkLibraryElementModel(
-                                                    JsonConvert.DeserializeObject<LinkId>(dict["id1"] as string),
-                                                    JsonConvert.DeserializeObject<LinkId>(dict["id2"] as string), id,
-                                                    color, type, metadata, title, favorited);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        element = null;
-                                    }
-                                }
-                                else
-                                {
-                                    element = new LibraryElementModel(id, type, metadata, title, favorited);
-                                }
-                                if (element != null)
-                                {
-                                    element.UnPack(message);
-                                    element.Creator = creator;
-                                    element.Timestamp = timestamp;
-                                    element.ServerUrl = serverUrl;
-                                    if (SessionController.Instance.ContentController.GetContent(id) == null)
-                                    {
-                                        SessionController.Instance.ContentController.Add(element);
-                                    }
-                                    if (type == ElementType.Link)
-                                    {
-                                        SessionController.Instance.LinkController.AddLink(id);
-                                    }
-                                }
-                                /*
-                                if (element.Regions != null && element.Regions.Count > 0)
-                                {
-                                    foreach (var region in element.Regions)
-                                    {
-                                        if (SessionController.Instance.RegionControllersController.GetRegionController(region.Id) == null)
-                                        {
-                                            SessionController.Instance.RegionControllersController.Add(region);
-                                        }
-                                    }
-                                }
-
-                                */
-
-
                             }
                             _isLoaded = true;
                             if (_loggedIn)

@@ -333,11 +333,7 @@ namespace NuSysApp
             var contentData = (string)dict["data"] ?? "";
 
             var id = (string)dict["id"];
-            var type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
-            var title = dict.ContainsKey("title") ? (string)dict["title"] : null;
-            var timestamp = dict.ContainsKey("library_element_creation_timestamp")
-                ? (string)dict["library_element_creation_timestamp"].ToString()
-                : null;
+
             var regionStrings = dict.ContainsKey("regions") ? JsonConvert.DeserializeObject<List<string>>(dict["regions"].ToString(), settings) : new List<string>();
             var regions = new HashSet<Region>();
             foreach (var rs in regionStrings)
@@ -346,8 +342,6 @@ namespace NuSysApp
             }
 
             var inks = dict.ContainsKey("inks") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["inks"].ToString()) : null;
-            var metadata = dict.ContainsKey("metadata") ? JsonConvert.DeserializeObject<Dictionary<string, MetadataEntry>>(dict["metadata"].ToString()) : null;
-
 
             if (NeededLibraryDataIDs.Contains(id))
             {
@@ -391,17 +385,8 @@ namespace NuSysApp
             LibraryElementModel content = SessionController.Instance.ContentController.GetContent(libraryId);
             if (content == null)
             {
-                if (type == ElementType.Collection)
-                {
-                    content = new CollectionLibraryElementModel(id, metadata, title);
-                }
-                else
-                {
-                    content = new LibraryElementModel(id, type, metadata, title);
-                }
-                SessionController.Instance.ContentController.Add(content);
+                content = LibraryElementModelFactory.CreateFromMessage(new Message(dict));
             }
-            content.Timestamp = timestamp;
             await UITask.Run(async delegate
             {
                 var args = new LoadContentEventArgs(contentData, regions, inks);

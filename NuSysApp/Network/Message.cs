@@ -129,6 +129,12 @@ namespace NuSysApp
             var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             return ContainsKey(key) ? JsonConvert.DeserializeObject<List<T>>(Get(key), settings) : def;
         }
+        public HashSet<T> GetHashSet<T>(string key, HashSet<T> def = null)
+        {
+            var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+            return ContainsKey(key) ? JsonConvert.DeserializeObject<HashSet<T>>(Get(key), settings) : def;
+        }
+
 
         public Dictionary<T, K> GetDict<T, K>(string key)
         {
