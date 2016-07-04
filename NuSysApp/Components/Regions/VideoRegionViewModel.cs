@@ -169,15 +169,15 @@ namespace NuSysApp
 
         public void SetIntervalStart(double start)
         {
-            var newstart = Math.Max(0, start);
+            var newstart = Math.Max(0, start-10);
             var controller = RegionController as VideoRegionController;
-            controller?.SetStartTime(newstart / ContainerViewModel.GetWidth());
+            controller?.SetStartTime(newstart / (ContainerViewModel.GetWidth()-20));
         }
         public void SetIntervalEnd(double end)
         {
-            var newEnd = Math.Max(0, end);
+            var newEnd = Math.Max(0, end-10);
             var controller = RegionController as VideoRegionController;
-            controller?.SetEndTime(newEnd / ContainerViewModel.GetWidth());
+            controller?.SetEndTime(newEnd / (ContainerViewModel.GetWidth()-20));
         }
         
         public void SetRegionSize(double width, double height)

@@ -56,9 +56,9 @@ namespace NuSysApp
             if (composite != null &&  vm != null)
             {
                 var newEnd = composite.TranslateX + IntervalRectangle.Width + e.Delta.Translation.X;
-                if (newEnd > vm.ContainerViewModel.GetWidth())
+                if (newEnd > vm.ContainerViewModel.GetWidth()-10)
                 {
-                    newEnd = vm.ContainerViewModel.GetWidth();
+                    newEnd = vm.ContainerViewModel.GetWidth()-10;
                 }
                 if (newEnd < vm.IntervalStart)
                 {
@@ -131,6 +131,12 @@ namespace NuSysApp
         private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             
+        }
+
+        private void IntervalRectangle_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            Bound1_OnManipulationDelta(sender,e);
+            Bound2_OnManipulationDelta2(sender, e);
         }
     }
 }
