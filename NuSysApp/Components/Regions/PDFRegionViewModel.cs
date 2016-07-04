@@ -140,13 +140,12 @@ namespace NuSysApp
                 var diff = detailVM.GetViewWidth() - detailVM.GetWidth();
 
 
+
+                Height = model.Height * height;
+                Width = model.Width * detailVM.GetWidth();
                 ContainerHeight = height;
                 ContainerWidth = detailVM.GetWidth();
-                Height = model.Height * ContainerHeight;
-                Width = model.Width * ContainerWidth;
-
-                topLeft = new Point(model.TopLeftPoint.X * ContainerWidth + diff / 2, model.TopLeftPoint.Y * height);
-
+                topLeft = new Point(model.TopLeftPoint.X * ContainerWidth, model.TopLeftPoint.Y * height);
             }
             else {
 

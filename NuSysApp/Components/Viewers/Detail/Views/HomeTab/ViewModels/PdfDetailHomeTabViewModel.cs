@@ -40,6 +40,7 @@ namespace NuSysApp
         {
             Controller = controller;
             RegionViews = new ObservableCollection<PDFRegionView>();
+            Editable = true;
             
         }
         public override async Task Init()
@@ -185,9 +186,23 @@ namespace NuSysApp
             var pdfRegionController = regionController as PdfRegionController;
             pdfRegionController?.SetPageLocation(_pageNumber);
             var vm = new PdfRegionViewModel(pdfRegion, Controller, pdfRegionController, this);
+            if (!Editable)
+                vm.Editable = false;
+
             var view = new PDFRegionView(vm);
             
             RegionViews.Add(view);
+
+
+            if (pdfRegion.PageLocation != _pageNumber)
+            {
+                view.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                view.Visibility = Visibility.Visible;
+            }
+
             RaisePropertyChanged("RegionViews");
         }
 
@@ -285,6 +300,9 @@ namespace NuSysApp
                 {
                     view.Visibility = Visibility.Collapsed;
                 }
+                if (!Editable)
+                    vm.Editable = false;
+
                 RegionViews.Add(view);
                 
             }

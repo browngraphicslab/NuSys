@@ -32,7 +32,7 @@ namespace NuSysApp
         public delegate void RegionSelectedEventHandler(object sender, bool selected);
         public event RegionSelectedEventHandler OnSelected;
 
-        public bool Selected { set; get; }
+        public bool Selected {private set; get; }
 
         public ImageRegionView(ImageRegionViewModel vm)
         {
@@ -163,7 +163,7 @@ namespace NuSysApp
 
 
             //CHANGE IN X
-            if (xMainRectangle.Width + rt.TranslateX + leftXBound <= rightXBound)
+            if (xMainRectangle.Width + rt.TranslateX + e.Delta.Translation.X <= rightXBound)
             {
                 xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
                 vm.Width = xMainRectangle.Width;
@@ -171,7 +171,7 @@ namespace NuSysApp
 
             }
             
-            if (xMainRectangle.Height + rt.TranslateY <= vm.ContainerHeight)
+            if (xMainRectangle.Height + rt.TranslateY + e.Delta.Translation.Y <= vm.ContainerHeight)
             {
                 xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
                 vm.Height = xMainRectangle.Height;
@@ -180,37 +180,7 @@ namespace NuSysApp
 
             vm.SetNewSize(xMainRectangle.Width, xMainRectangle.Height);
 
-            //CHANGE IN Y
-
-
-            /*
-            if (xMainRectangle.Width >= vm.ContainerWidth - rt.TranslateX && xMainRectangle.Height >= vm.ContainerHeight - rt.TranslateY)
-            {
-                return;
-            }
-            else if (xMainRectangle.Width >= vm.ContainerWidth - rt.TranslateX && xMainRectangle.Height < vm.ContainerHeight - rt.TranslateY)
-            {
-                xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
-                vm.Height = xMainRectangle.Height;
-
-            }   
-            else if (xMainRectangle.Width < vm.ContainerWidth - rt.TranslateX &&
-                     xMainRectangle.Height >= vm.ContainerHeight - rt.TranslateY)
-            {
-                xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
-                vm.Width = xMainRectangle.Width;
-            }
-            else
-            {
-                xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
-                xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
-                vm.Width = xMainRectangle.Width;
-                vm.Height = xMainRectangle.Height;
-            }
-
-            vm.SetNewSize(xMainRectangle.Width, xMainRectangle.Height);
-            */
-
+    
         }
 
         private void xResizingTriangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -237,8 +207,6 @@ namespace NuSysApp
                 return;
             }
 
-
-
             var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
             var diff = ivm.GetViewWidth() - vm.ContainerViewModel.GetWidth();
 
@@ -250,6 +218,7 @@ namespace NuSysApp
             _tx += e.Delta.Translation.X;
             _ty += e.Delta.Translation.Y;
 
+            //Translating X
             if (_tx < leftXBound)
             {
                 rt.TranslateX = leftXBound;
@@ -261,9 +230,9 @@ namespace NuSysApp
             else
             {
                 rt.TranslateX = _tx;
-                vm.Width = vm.OriginalWidth;
-
             }
+
+            //Translating Y
             if (_ty < 0)
             {
                 rt.TranslateY = 0;
@@ -275,7 +244,6 @@ namespace NuSysApp
             else
             {
                 rt.TranslateY = _ty;
-                vm.Height = vm.OriginalHeight;
             }
 
             var composite = RenderTransform as CompositeTransform;
@@ -314,7 +282,6 @@ namespace NuSysApp
 
             vm.OriginalHeight = vm.Height;
             vm.OriginalWidth = vm.Width;
-            //OnSelected?.Invoke(this, true);
             this.Select();
             e.Handled = true;
 

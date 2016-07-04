@@ -158,26 +158,6 @@ namespace NuSysApp
             return region;
         }
 
-        public double GetImageWidth()
-        {
-            var view = (View as ImageDetailHomeTabView);
-            if (view == null)
-            {
-                return 0;
-            }
-            //return view.ActualHeight;
-            return view.GetImgWidth();
-        }
-        public double GetImageHeight()
-        {
-            var view = (View as ImageDetailHomeTabView);
-            if (view == null)
-            {
-                return 0;
-            }
-            //return view.ActualHeight;
-            return view.GetImgHeight();
-        }
 
         public double GetViewWidth()
         {
