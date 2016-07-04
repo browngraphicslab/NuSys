@@ -21,7 +21,6 @@ namespace NuSysApp
     public sealed partial class ToolFilterView : AnimatableUserControl
     {
 
-        private const int ListBoxHeightOffset = 100;
 
         ObservableCollection<ToolModel.ToolFilterTypeTitle> Filters;
         private ToolViewModel _parentToolViewModel;
@@ -56,7 +55,7 @@ namespace NuSysApp
         {
             Height = height;
             Width = width;
-            xFilterList.Height = height - ListBoxHeightOffset;
+            xFilterList.Height = height;
             xCanvas.Height = height;
             xGrid.Height = height;
             Grid1.Height = height;
@@ -77,7 +76,7 @@ namespace NuSysApp
             this.InitializeComponent();
             _parentToolViewModel = parentToolViewModel;
             this.RenderTransform = new CompositeTransform();
-            SetSize(300,500);
+            SetSize(300,400);
             _links = new List<ToolFilterLinkView>();
             SetLocation(x, y);
             Filters = new ObservableCollection<ToolModel.ToolFilterTypeTitle>()

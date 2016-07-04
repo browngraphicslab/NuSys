@@ -25,7 +25,7 @@ namespace NuSysApp
 
         public event FilterChangedEventHandler FilterChanged;
         public event SelectionChangedEventHandler SelectionChanged;
-        
+
 
         public override Func<string, bool> GetFunc()
         {
@@ -83,19 +83,25 @@ namespace NuSysApp
             FireLibraryIdsChanged();
         }
 
-        public Dictionary<string, HashSet<string>> GetAllMetadata()
+        public Dictionary<string, HashSet<ToolItemTemplate>> GetAllMetadata()
         {
             var libraryElementControllers = GetUpdatedDataList().Select(id => SessionController.Instance.ContentController.GetLibraryElementController(id));
-            var allMetadata = new Dictionary<string, HashSet<string>>();
+            var allMetadata = new Dictionary<string, HashSet<ToolItemTemplate>>();
+            var allMetadataTemp = new Dictionary<string, HashSet<string>>();
             foreach (var controller in libraryElementControllers)
             {
                 foreach (var kvp in GetMetadata(controller.LibraryElementModel.LibraryElementId))
                 {
                     if (!allMetadata.ContainsKey(kvp.Key))
                     {
-                        allMetadata.Add(kvp.Key, new HashSet<string>());
+                        allMetadata.Add(kvp.Key, new HashSet<ToolItemTemplate>());
+                        allMetadataTemp.Add(kvp.Key, new HashSet<string>());
                     }
-                    allMetadata[kvp.Key].Add(kvp.Value);
+                    if (!allMetadataTemp[kvp.Key].Contains(kvp.Value))
+                    {
+                        allMetadata[kvp.Key].Add(new ToolItemTemplate(kvp.Value));
+                        allMetadataTemp[kvp.Key].Add(kvp.Value);
+                    }
                 }
             }
             return allMetadata;

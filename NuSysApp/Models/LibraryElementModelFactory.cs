@@ -29,6 +29,7 @@ namespace NuSysApp
                     break;
                 case ElementType.Link:
                     Debug.Assert(message.ContainsKey("id1") && message.ContainsKey("id2"));
+                    //TODO dont have this length check and just use linkIds
                     var id1 = message.Get("id1").Length == 32 ? new LinkId(message.GetString("id1")) : JsonConvert.DeserializeObject<LinkId>(message.GetString("id1"));
                     var id2 = message.Get("id2").Length == 32 ? new LinkId(message.GetString("id2")) : JsonConvert.DeserializeObject<LinkId>(message.GetString("id2"));
 
