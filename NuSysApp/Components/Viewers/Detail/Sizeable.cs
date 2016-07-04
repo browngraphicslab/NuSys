@@ -10,5 +10,8 @@ namespace NuSysApp
     {
          double GetWidth();
          double GetHeight();
+
+        double GetViewWidth();
+        double GetViewHeight();
     }
 }

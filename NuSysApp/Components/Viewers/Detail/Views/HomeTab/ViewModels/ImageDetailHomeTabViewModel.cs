@@ -82,7 +82,7 @@ namespace NuSysApp
                 return 0;
             }
             //return view.ActualHeight;
-            return view.ActualHeight;
+            return view.GetImgHeight();
         }
 
 
@@ -94,7 +94,7 @@ namespace NuSysApp
                 return 0;
             }
            //return view.ActualWidth;
-            return view.ActualWidth;
+            return view.GetImgWidth();
         }
         public override void SetExistingRegions(HashSet<Region> regions)
         {
@@ -162,6 +162,26 @@ namespace NuSysApp
             }
             //return view.ActualHeight;
             return view.GetImgHeight();
+        }
+
+        public double GetViewWidth()
+        {
+            var view = (View as ImageDetailHomeTabView);
+            if (view == null)
+            {
+                return 0;
+            }
+            return view.ActualWidth;
+        }
+
+        public double GetViewHeight()
+        {
+            var view = (View as ImageDetailHomeTabView);
+            if (view == null)
+            {
+                return 0;
+            }
+            return view.ActualHeight;
         }
     }
 }

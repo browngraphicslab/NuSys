@@ -63,7 +63,7 @@ namespace NuSysApp
 
         private async void OnChildAdded(object source, ElementController elementController)
         {
-            await CreateChild(elementController);
+            //await CreateChild(elementController);
         }
 
         private async Task CreateChild(ElementController controller)

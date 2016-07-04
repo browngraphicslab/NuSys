@@ -79,6 +79,24 @@ namespace NuSysApp
             image.Invalidate();
             ImageSource = image;
             RaisePropertyChanged("ImageSource");
+
+
+            foreach (var regionView in RegionViews)
+            {
+                var model = (regionView.DataContext as PdfRegionViewModel)?.Model;
+                if ((model as PdfRegion).PageLocation != _pageNumber)
+                {
+                    regionView.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    regionView.Visibility = Visibility.Visible;
+                }
+            }
+
+
+
+
         }
         public async Task FlipLeft()
         {
@@ -176,7 +194,19 @@ namespace NuSysApp
 
         public override void RemoveRegion(object sender, Region displayedRegion)
         {
-            Controller.RemoveRegion(displayedRegion);
+            var imageRegion = displayedRegion as PdfRegion;
+            if (imageRegion == null)
+            {
+                return;
+            }
+
+            foreach (var regionView in RegionViews.ToList<PDFRegionView>())
+            {
+                if ((regionView.DataContext as PdfRegionViewModel).Model == imageRegion)
+                    RegionViews.Remove(regionView);
+            }
+
+            RaisePropertyChanged("RegionViews");
         }
 
         public override void SizeChanged(object sender, double width, double height)
@@ -265,6 +295,11 @@ namespace NuSysApp
         {
             var region = new PdfRegion(new Point(.25, .25), new Point(.75, .75), _pageNumber);
             return region;
+        }
+
+        public double GetViewHeight()
+        {
+            throw new NotImplementedException();
         }
     }
 }

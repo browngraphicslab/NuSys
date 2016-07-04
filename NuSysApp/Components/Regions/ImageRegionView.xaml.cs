@@ -57,6 +57,15 @@ namespace NuSysApp
 
             var parentWidth = vm.ContainerViewModel.GetWidth();
             var parentHeight = vm.ContainerViewModel.GetHeight();
+            /*
+            if (vm.ContainerViewModel is ImageDetailHomeTabViewModel)
+            {
+                var htvm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
+                parentWidth = htvm.GetWidth();
+                parentHeight = htvm.GetHeight();
+            }
+            */
+
             composite.TranslateX = model.TopLeftPoint.X * parentWidth;
             composite.TranslateY = model.TopLeftPoint.Y * parentHeight;
 

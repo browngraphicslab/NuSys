@@ -43,7 +43,7 @@ namespace NuSysApp
             CurrentPageNumber = model.CurrentPageNumber;
 
             RegionViews = new ObservableCollection<PDFRegionView>();
-            RegionViews = this.CreatePdfRegionViews();
+            this.CreatePdfRegionViews();
             
             Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
             Controller.LibraryElementController.RegionRemoved += LibraryElementController_RegionRemoved; 
@@ -52,7 +52,16 @@ namespace NuSysApp
 
         private void LibraryElementController_RegionRemoved(object source, Region region)
         {
-            RegionViews = this.CreatePdfRegionViews();
+            var pdfRegion = region as PdfRegion;
+            if (pdfRegion == null)
+            {
+                return;
+            }
+            foreach (var regionView in RegionViews.ToList<PDFRegionView>())
+            {
+                if ((regionView.DataContext as PdfRegionViewModel).Model == pdfRegion)
+                    RegionViews.Remove(regionView);
+            }
             RaisePropertyChanged("RegionViews");
         }
 
@@ -67,7 +76,7 @@ namespace NuSysApp
             var vm = new PdfRegionViewModel(pdfRegion, Controller.LibraryElementController, pdfRegionController, this);
             vm.Editable = false;
             var view = new PDFRegionView(vm);
-            pdfRegionController.PageLocationChanged += PdfRegionControllerOnPageLocationChanged;
+            //pdfRegionController.PageLocationChanged += PdfRegionControllerOnPageLocationChanged;
 
             if (pdfRegion.PageLocation != CurrentPageNumber)
             {
@@ -90,16 +99,18 @@ namespace NuSysApp
             //}
         }
 
-        public ObservableCollection<PDFRegionView> CreatePdfRegionViews()
+        public void CreatePdfRegionViews()
         {
-            var regionViewCollection = new ObservableCollection<PDFRegionView>();
+            var elementController = Controller.LibraryElementController;
+
+
             if (Controller.LibraryElementModel.Regions == null)
             {
-                return regionViewCollection;
+                return;
             }
+            RegionViews.Clear();
             foreach (var regionModel in Controller.LibraryElementModel.Regions)
             {
-
 
                 var pdfRegion = regionModel as PdfRegion;
                 PdfRegionController regionController;
@@ -113,20 +124,21 @@ namespace NuSysApp
                     regionController = SessionController.Instance.RegionsController.GetRegionController(pdfRegion.Id) as PdfRegionController;
                 }
 
-                var vm = new PdfRegionViewModel(pdfRegion, Controller.LibraryElementController, regionController, this);
+                var vm = new PdfRegionViewModel(pdfRegion, elementController, regionController, this);
                 vm.Editable = false;
                 var view = new PDFRegionView(vm);
                 if (pdfRegion.PageLocation != CurrentPageNumber)
                 {
                     view.Visibility = Visibility.Collapsed;
                 }
-                regionViewCollection.Add(view);
+                RegionViews.Add(view);
 
             }
-            return regionViewCollection;
-            
-        } 
-            
+            RaisePropertyChanged("RegionViews");
+
+
+        }
+
         public override void Dispose()
         {
             var model = (PdfNodeModel)Controller.Model;
@@ -151,6 +163,8 @@ namespace NuSysApp
         private async void LibraryElementModelOnOnLoaded(object sender)
         {
             await DisplayPdf();
+            this.CreatePdfRegionViews();
+
         }
 
 
@@ -175,35 +189,13 @@ namespace NuSysApp
         public async Task FlipRight()
         {
             await Goto(CurrentPageNumber + 1);
-            foreach (var regionView in RegionViews)
-            {
-                var model = (regionView.DataContext as PdfRegionViewModel)?.Model;
-                if ((model as PdfRegion).PageLocation != CurrentPageNumber)
-                {
-                    regionView.Visibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    regionView.Visibility = Visibility.Visible;
-                }
-            }
+
         }
 
         public async Task FlipLeft()
         {
             await Goto(CurrentPageNumber - 1);
-            foreach (var regionView in RegionViews)
-            {
-                var model = (regionView.DataContext as PdfRegionViewModel)?.Model;
-                if ((model as PdfRegion).PageLocation != CurrentPageNumber)
-                {
-                    regionView.Visibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    regionView.Visibility = Visibility.Visible;
-                }
-            }
+
         }
 
         public async Task Goto(int pageNumber)
@@ -214,7 +206,22 @@ namespace NuSysApp
             if (pageNumber >= (_document.PageCount)) return;
             CurrentPageNumber = pageNumber;
             ((PdfNodeModel)Model).CurrentPageNumber = CurrentPageNumber;
-            
+
+
+            foreach (var regionView in RegionViews)
+            {
+                var model = (regionView.DataContext as PdfRegionViewModel)?.Model;
+                if ((model as PdfRegion).PageLocation != CurrentPageNumber)
+                {
+                    regionView.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    regionView.Visibility = Visibility.Visible;
+                }
+            }
+
+
         }
 
         private async Task RenderPage(int pageNumber)
@@ -235,6 +242,8 @@ namespace NuSysApp
             image.Invalidate();
             ImageSource = image;
             RaisePropertyChanged("ImageSource");
+
+
         }
 
 
@@ -396,5 +405,14 @@ namespace NuSysApp
             }
         }
 
+        public double GetViewWidth()
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetViewHeight()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
