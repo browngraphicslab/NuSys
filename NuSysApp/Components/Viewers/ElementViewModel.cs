@@ -161,8 +161,17 @@ namespace NuSysApp
             foreach (var circle in circleList)
             {
                 //sorry about this - should also be in frontend and not in viewmodel
-                var circlelink = new LinkCircle(circle);
                 var link = SessionController.Instance.ContentController.GetContent(circle) as LinkLibraryElementModel;
+                string cid = "";
+                if (this.ContentId == link.InAtomId)
+                {
+                    cid = link.OutAtomId;
+                }
+                else if (this.ContentId == link.OutAtomId)
+                {
+                    cid = link.InAtomId;
+                }
+                var circlelink = new LinkCircle(circle, cid);
                 Color color = link.Color;
                 circlelink.Circle.Fill = new SolidColorBrush(color);
 
