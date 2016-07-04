@@ -25,14 +25,35 @@ namespace NuSysApp
             InitializeComponent();
             
         }
-        private void SortButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         private void LibraryListItem_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            // Do nothing for now
+        }
+
+        private void XSortButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var vm = DataContext as LinkEditorTabViewModel;
+            vm?.SortByTitle();
+        }
+
+        private void CreateLinkButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var content = LinkToBox.SelectedItem as LibraryItemTemplate;
+            var vm = DataContext as LinkEditorTabViewModel;
+            vm?.CreateLink(content?.ContentID);
+        }
+
+        private void SortLinkedTo_OnClick(object sender, RoutedEventArgs e)
+        {
+            var vm = DataContext as LinkEditorTabViewModel;
+            vm?.SortByLinkedTo();
+        }
+
+        private void SortTitle_OnClick(object sender, RoutedEventArgs e)
+        {
+            var vm = DataContext as LinkEditorTabViewModel;
+            vm?.SortByTitle();
         }
     }
 }
