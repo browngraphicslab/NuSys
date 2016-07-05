@@ -118,8 +118,9 @@ namespace NuSysApp
                 toLinkIds.Add(link.InAtomId.LibraryElementId == controller.LibraryElementModel.LibraryElementId ? link.OutAtomId : link.InAtomId);
             }
             var selected = toLinkIds.Select(id => id.LibraryElementId);
-            foreach (var atom in AtomViewList)
+            for (int i = 0; i < AtomViewList.Count; i++)
             {
+                var atom = AtomViewList[i];
                 if (selected.Contains((atom.DataContext as ElementViewModel).ContentId))
                 {
                     AtomViewList.Remove(atom);
