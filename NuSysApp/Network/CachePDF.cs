@@ -9,6 +9,12 @@ namespace NuSysApp
     {
         public static async void createWriteFile(string fileName, string content)
         {
+            if (content == null)
+            {
+                Debug.WriteLine("Content shouldn't be null, caching pdfs");
+                return;
+            }
+
             string file = fileName + ".txt";
             Windows.Storage.StorageFolder storageFolder =
                 Windows.Storage.ApplicationData.Current.LocalFolder;
