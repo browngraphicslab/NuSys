@@ -144,7 +144,7 @@ namespace NuSysApp
                 {
                     var vm = dc as ElementViewModel;
 
-                    if (vm.ElementType == ElementType.Word || vm.ElementType == ElementType.Powerpoint)
+                    if (vm.ElementType == ElementType.Powerpoint)
                     {
                         SessionController.Instance.SessionView.OpenFile(vm);
                     }

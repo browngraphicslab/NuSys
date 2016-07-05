@@ -30,7 +30,7 @@ namespace NuSysApp
         public void VideoMediaPlayer_Loaded(object sender, RoutedEventArgs e)
         {
             RegionViews.Clear();
-            SetExistingRegions(Controller.LibraryElementModel.Regions);
+            SetExistingRegions(Controller.LibraryElementModel.Regions ?? new HashSet<Region>());
         }
 
         public override void AddRegion(object sender, RegionController controller)

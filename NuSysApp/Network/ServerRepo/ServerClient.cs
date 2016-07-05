@@ -76,9 +76,11 @@ namespace NuSysApp
             return new Uri(firstpart + ServerBaseURI + additionToBase);
         }
 
+
+
         private void SocketClosed(IWebSocket sender, WebSocketClosedEventArgs args)
         {
-            //TODO add in closing handler 
+            throw new Exception("Server client failed from web socket closing!");
         }
 
         private async void MessageRecieved(MessageWebSocket sender, MessageWebSocketMessageReceivedEventArgs args)
@@ -546,6 +548,23 @@ namespace NuSysApp
                 final[kvp.Key] = dict;
             }
             return final;
+        }
+        /// <summary>
+        /// Returns the byte array that should be written directly into a file for docx saving and loading
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<byte[]> GetDocxBytes(string id)
+        {
+            var url = GetUri("getworddoc/" + id);
+            HttpClient client = new HttpClient();
+            var response = await client.GetAsync(url);
+            byte[] data;
+            using (var content = response.Content)
+            {
+                data = await content.ReadAsByteArrayAsync();
+            }
+            return data;
         }
 
         public async Task<List<Message>> GetWorkspaceAsElementMessages(string id)

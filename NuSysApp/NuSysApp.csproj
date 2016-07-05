@@ -330,6 +330,10 @@
     <Compile Include="Components\Viewers\Detail\ILinkable.cs" />
     <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
     <Compile Include="Components\Viewers\Detail\Sizeable.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\WordDetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml.cs">
+      <DependentUpon>WordDetailHomeTabView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Viewers\Detail\Views\LinkEditorTab.xaml.cs">
       <DependentUpon>LinkEditorTab.xaml</DependentUpon>
     </Compile>
@@ -458,9 +462,6 @@
     </Compile>
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\TextDetailHomeTabView.xaml.cs">
       <DependentUpon>TextDetailHomeTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml.cs">
-      <DependentUpon>WordDetailHomeTabView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\GroupChat\ChatPopupView.xaml.cs">
       <DependentUpon>ChatPopupView.xaml</DependentUpon>
@@ -942,6 +943,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Viewers\Detail\Views\LinkEditorTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1019,10 +1024,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\TextDetailHomeTabView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

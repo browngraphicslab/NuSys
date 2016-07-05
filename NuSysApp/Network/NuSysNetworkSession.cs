@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.Connectivity;
 using Windows.Networking.Sockets;
+using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.System.Threading;
 using Windows.UI;
@@ -370,6 +371,33 @@ namespace NuSysApp
             return await _serverClient.DuplicateLibraryElement(libraryElementId);
         }
 
+        /// <summary>
+        /// Downloads a docx for the specified library ID and returns the temporary docx file path,
+        /// null if an error occurred like the document doesn't exist;
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<string> DownloadDocx(string id)
+        {
+            var bytes = await _serverClient.GetDocxBytes(id);
+            if (bytes == null)
+            {
+                return null;
+            }
+            var path = NuSysStorages.SaveFolder.Path + "/" + id + ".docx";
+            try
+            {
+                using (var stream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite))
+                {
+                    await stream.WriteAsync(bytes, 0, bytes.Length);
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception("couldn't write to file because "+e.Message);
+            }
+            return path;
+        }
         public async Task<Dictionary<string, Dictionary<string, object>>> GetAllLibraryElements()
         {
             return await _serverClient.GetRepo();

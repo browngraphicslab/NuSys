@@ -197,7 +197,7 @@ namespace NuSysApp
 
                 View.Loaded += delegate
                 {
-                    _regionableHomeTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
+                    _regionableHomeTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions ?? new HashSet<Region>());
 
                 };
 
@@ -205,7 +205,7 @@ namespace NuSysApp
                 regionView.Loaded += delegate
                 {
 
-                    _regionableRegionTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
+                    _regionableRegionTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions ?? new HashSet<Region>());
 
                 };
                 SizeChanged += (sender, left, width, height) => _regionableRegionTabViewModel.SizeChanged(sender, width, height);
