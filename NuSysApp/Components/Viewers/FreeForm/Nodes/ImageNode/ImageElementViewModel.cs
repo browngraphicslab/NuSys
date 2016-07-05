@@ -29,6 +29,7 @@ namespace NuSysApp
             Controller.LibraryElementController.RegionRemoved += LibraryElementControllerOnRegionRemoved;
 
 
+
         }
 
         private void LibraryElementControllerOnRegionRemoved(object source, Region region)
@@ -49,8 +50,7 @@ namespace NuSysApp
             RaisePropertyChanged("Regions");
         }
 
-        private void CreateRegionViews()
-        {
+        public void CreateRegionViews(){
             var elementController = Controller.LibraryElementController;
             var regionHashSet = elementController.LibraryElementModel.Regions;
 
@@ -61,18 +61,18 @@ namespace NuSysApp
 
             foreach (var model in regionHashSet)
             {
-
+                var imageModel = model as RectangleRegion;
                 RectangleRegionController regionController;
-                if (SessionController.Instance.RegionsController.GetRegionController(model.Id) == null)
+                if (SessionController.Instance.RegionsController.GetRegionController(imageModel.Id) == null)
                 {
                     var factory = new RegionControllerFactory();
-                    regionController = factory.CreateFromSendable(model, ContentId) as RectangleRegionController;
+                    regionController = factory.CreateFromSendable(imageModel, ContentId) as RectangleRegionController;
                 }
                 else {
-                    regionController = SessionController.Instance.RegionsController.GetRegionController(model.Id) as RectangleRegionController;
+                    regionController = SessionController.Instance.RegionsController.GetRegionController(imageModel.Id) as RectangleRegionController;
                 }
 
-                var viewmodel = new ImageRegionViewModel(model as RectangleRegion, elementController, regionController, this);
+                var viewmodel = new ImageRegionViewModel(imageModel, elementController, regionController, this);
                 viewmodel.Editable = false;
                 var view = new ImageRegionView(viewmodel);
                 Regions.Add(view);
@@ -135,6 +135,7 @@ namespace NuSysApp
             await DisplayImage();
             this.CreateRegionViews();
 
+
         }
 
         private async Task DisplayImage()
@@ -144,6 +145,7 @@ namespace NuSysApp
             Image.UriSource = url;
             Image.ImageOpened += UpdateSizeFromModel;
             RaisePropertyChanged("Image");
+
         }
         private void UpdateSizeFromModel(object sender, object args)
         {
@@ -174,11 +176,13 @@ namespace NuSysApp
         public double GetWidth()
         {
             return Width;
+
         }
 
         public double GetHeight()
         {
             return Height;
+
         }
 
         public double GetViewWidth()

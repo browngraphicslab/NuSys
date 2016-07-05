@@ -50,23 +50,18 @@ namespace NuSysApp
             // vm.Controller.SizeChanged += Controller_SizeChanged;
            // vm.Controller.ContainerSizeChanged += Controller_SizeChanged;
     
-            vm.PropertyChanged +=VmOnPropertyChanged; 
+            vm.PropertyChanged +=VmOnPropertyChanged;
 
-            Loaded += delegate(object sender, RoutedEventArgs args)
-            {
-                //nodeTpl.inkCanvas.ViewModel.CanvasSize = new Size(vm.Width, vm.Height);
-
-                //vm.Init();
-                //lets see if this 2 way binding works
-                //nodeTpl.inkCanvas.ViewModel.CanvasSize = new Size(vm.Width, vm.Height);
-                //nodeTpl.inkCanvas.Width = vm.Width;
-                //nodeTpl.inkCanvas.Height = vm.Height;
-
-            };
+            Loaded += ViewLoaded;
             //XamlRenderingBackgroundTask x = new RenderTask(this.xImage);
 
             vm.Controller.Disposed += ControllerOnDisposed;
             SizeChanged += ImageNodeView_SizeChanged;
+        }
+
+        private void ViewLoaded(object sender, RoutedEventArgs e)
+        {
+            _vm.CreateRegionViews();
         }
 
         private void ImageNodeView_SizeChanged(object sender, SizeChangedEventArgs e)
