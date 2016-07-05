@@ -12,6 +12,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using MyToolkit.UI;
 
 namespace NuSysApp
 {
@@ -46,8 +47,8 @@ namespace NuSysApp
         public ObservableCollection<FrameworkElement> Tags { get; set; }
 
         // Tabs keeps track of which tabs are open in the DV
-        private ObservableCollection<IMetadatable> _tabs;
-        public ObservableCollection<IMetadatable> Tabs
+        private ObservableCollection<IDetailViewable> _tabs;
+        public ObservableCollection<IDetailViewable> Tabs
         {
             get { return _tabs; }
             set
@@ -82,8 +83,10 @@ namespace NuSysApp
             {
                 _tabHeight = value; 
                 RaisePropertyChanged("TabHeight");
+                RaisePropertyChanged("TextHeight");
             }
         }
+        public double TextHeight { get { return _tabHeight - 25; } }
 
         public ObservableCollection<StackPanel> Metadata { get; set; }
 
@@ -106,7 +109,7 @@ namespace NuSysApp
             Tags = new ObservableCollection<FrameworkElement>();
             Metadata = new ObservableCollection<StackPanel>();
             RegionCollection = new ObservableCollection<Region>();
-            Tabs = new ObservableCollection<IMetadatable>();
+            Tabs = new ObservableCollection<IDetailViewable>();
           //  TabVisibility = Visibility.Collapsed;
             
         }
@@ -134,15 +137,14 @@ namespace NuSysApp
             //Create non-libraryelementcontroller tabs
             return true;
         }
-        public async Task<bool> ShowElement(IMetadatable metadatable)
+
+
+        public async Task<bool> ShowElement(IDetailViewable viewable)
         {
-            if (metadatable.MetadatableType() == MetadatableType.Content)
+            if (viewable is LibraryElementController)
             {
-                var controller = metadatable as LibraryElementController;
-                if (controller == null)
-                {
-                    return false;
-                }
+                var controller = viewable as LibraryElementController;
+                
                 if (!controller.IsLoaded)
                 {
                     await
@@ -224,15 +226,11 @@ namespace NuSysApp
                 RaisePropertyChanged("RegionView");
                 RaisePropertyChanged("View");
 
-                AddTab(metadatable);
+                AddTab(viewable);
                 return true;
-            } else if (metadatable.MetadatableType() == MetadatableType.Region)
+            } else if (viewable is RegionController)
             {
-                var controller = metadatable as RegionController;
-                if (controller == null)
-                {
-                    return false;
-                }
+                var controller = viewable as RegionController;
                 var regionModel = controller.Model;
                 View = await _viewHomeTabViewFactory.CreateFromSendable(CurrentElementController);
                 if (View == null)
@@ -242,6 +240,7 @@ namespace NuSysApp
 
                 var regionSet = new HashSet<Region>();
                 regionSet.Add(regionModel);
+                
                 View.Loaded += delegate
                 {
                     _regionableHomeTabViewModel.SetExistingRegions(regionSet);
@@ -253,19 +252,9 @@ namespace NuSysApp
 
                 RaisePropertyChanged("View");
                 
-                //regionView.Loaded += delegate
-                //{
-
-                //    _regionableRegionTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions);
-
-                //};
                 SizeChanged += (sender, left, width, height) => _regionableHomeTabViewModel.SizeChanged(sender, width, height);
                 
                 Title = regionModel.Name;
-                //this.ChangeTitle(this, regionModel.Name);
-                
-                //var tempvm = (DetailHomeTabViewModel)View.DataContext;
-                //tempvm.TitleChanged += ControllerTitleChanged;
                 
                 RaisePropertyChanged("Title");
                 RaisePropertyChanged("View");
@@ -274,7 +263,7 @@ namespace NuSysApp
                 RaisePropertyChanged("RegionView");
                 RaisePropertyChanged("View");
 
-                AddTab(metadatable);
+                AddTab(viewable);
                 return true;
             } else
             {
@@ -283,20 +272,20 @@ namespace NuSysApp
             
         }
 
-        public void AddTab(IMetadatable metadatable)
+        public void AddTab(IDetailViewable viewable)
         {
-            if (_tabs.Contains(metadatable))
+            if (_tabs.Contains(viewable))
             {
                 return;
             }
             if (_tabs.Count < 6)
             {
-                _tabs.Add(metadatable);
+                _tabs.Add(viewable);
             }
             else
             {
                 _tabs.RemoveAt(0);
-                _tabs.Add(metadatable);
+                _tabs.Add(viewable);
             }
             TabVisibility = Visibility.Visible;
 
@@ -402,7 +391,7 @@ namespace NuSysApp
             tagBlock.Foreground = new SolidColorBrush(Constants.foreground6);
             tagBlock.Margin = new Thickness(5, 2, 2, 5);///
             tagBlock.FontStyle = FontStyle.Italic;
-           
+           // tagBlock.IsHitTestVisible = false;
             return tagBlock;
         }
 
@@ -419,6 +408,17 @@ namespace NuSysApp
             CurrentElementController.TitleChanged -= ControllerTitleChanged;
             CurrentElementController.SetTitle(title);
             CurrentElementController.TitleChanged += ControllerTitleChanged;
+   
+            /*
+            // TODO make the exploration mode related list box show up
+            var button = sender as Button;
+            var panel = button.Content as StackPanel;
+            //var block = panel.FindVisualChild("tagContent") as TextBlock;
+           // var tag = block.Text;
+           // Debug.WriteLine(tag);
+           */
+
+
         }
 
     }

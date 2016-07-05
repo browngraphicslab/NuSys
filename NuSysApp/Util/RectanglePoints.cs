@@ -2,7 +2,7 @@
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 
-namespace NuSysApp.Util
+namespace NuSysApp
 {
     public class RectanglePoints
     {

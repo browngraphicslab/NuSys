@@ -11,16 +11,17 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using MyToolkit.Utilities;
 using Windows.UI;
+using Windows.UI.Xaml.Controls;
+using NuSysApp.Util;
 
 namespace NuSysApp
 {
     /// <summary>
-    /// Implements a prezi-like presentation mode.
+    /// Implements a prezi-like exploration mode.
     /// </summary>
-    class PresentationMode : IDisposable, IModable
+    class ExplorationMode : IDisposable, IModable
     {
-        private ElementViewModel _previousNode = null;
-        private ElementViewModel _nextNode = null;
+      
         private ElementViewModel _currentNode;
         private CompositeTransform _originalTransform;
         private DispatcherTimer _timer;
@@ -28,60 +29,31 @@ namespace NuSysApp
         private SolidColorBrush _backwardColor = Application.Current.Resources["lighterredcolor"] as SolidColorBrush;
         private SolidColorBrush _forwardColor = Application.Current.Resources["color4"] as SolidColorBrush;
         private HashSet<LinkElementController> _linksUsed = new HashSet<LinkElementController>();
-        public ModeType Mode { get { return ModeType.PRESENTATION;} }
+        public ElementViewModel CurrentNode { get { return _currentNode; } }
+        private RelatedListBox _relatedListBox;
+        private Stack<ElementViewModel> _explorationHistory;
+        private Stack<ElementViewModel> _explorationFuture;
 
-        public PresentationMode(ElementViewModel start)
+        public ModeType Mode { get { return ModeType.EXPLORATION;} }
+
+        public ExplorationMode(ElementViewModel start)
         {
 
             if (start == null)
             {
                 return;
             }
-
+            
+          
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromMilliseconds(1);
             _timer.Tick += OnTick;
             _storyboard = new Storyboard();
             _currentNode = start;
             _originalTransform = MakeShallowCopy(SessionController.Instance.ActiveFreeFormViewer.CompositeTransform);
-            Load();
-            FullScreen();
-
-            
-            UITask.Run(async delegate
-            {
-                var curr = start;
-                var previous = curr;
-                LinkElementController linkController = null;
-                while (previous != null)
-                {
-                    var list = new List<LinkElementController>(previous.LinkList);
-                    var model = previous.Model;
-                    previous = null;
-                    foreach (LinkElementController link in list)
-                    {
-                        var linkModel = (LinkModel)link.Model;
-                        if (!linkModel.IsPresentationLink)
-                            continue;
-
-                        if (link.OutElement.Model.Equals(model))
-                        {
-                            var l = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => ((ElementViewModel)item.DataContext).Model.Id == link.InElement.Model.Id);
-                            previous = l?.First()?.DataContext as ElementViewModel;
-                            linkController = link;
-                            break;
-                        }
-                    }
-                    if (linkController == null)
-                        continue;
-                    if (linkController != null && _linksUsed.Contains(linkController))
-                    {
-                        break;
-                    }
-                    _linksUsed.Add(linkController);
-                    linkController.SetColor(_backwardColor);
-                }
-            });
+            _explorationHistory = new Stack<ElementViewModel>();
+            _explorationHistory.Push(start);
+            FullScreen();    
         }
 
 
@@ -90,40 +62,7 @@ namespace NuSysApp
         {
             SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Redraw();
 
-        }
-
-        /// <summary>
-        /// Checks if there is a valid next node and stores it
-        /// </summary>
-        /// <returns></returns>
-        private void Load()
-        {
-            var next = GetNextOrPrevNode(_currentNode, false);
-            if (next == null)
-            {
-                _nextNode = null;
-            }
-            else
-            {
-                var nextVMList = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
-                    item => ((ElementViewModel)item.DataContext).Model.Id == next.Id);
-
-                _nextNode = (ElementViewModel)nextVMList.Single().DataContext;
-            }
-
-            var prev = GetNextOrPrevNode(_currentNode, true);
-            if (prev == null)
-            {
-                _previousNode = null;
-            }
-            else
-            {
-                var prevVMList = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
-                item => ((ElementViewModel)item.DataContext).Model.Id == prev.Id);
-
-                _previousNode = (ElementViewModel)prevVMList.Single().DataContext;
-            }
-        }
+        }  
 
         public void GoToCurrent()
         {
@@ -132,7 +71,11 @@ namespace NuSysApp
 
         public bool Next()
         {
-            return (_nextNode != null);
+            if (_explorationFuture == null || _explorationFuture.Count == 0)
+            { 
+                return false;
+            }
+            return true;
         }
 
         /// <summary>
@@ -140,32 +83,29 @@ namespace NuSysApp
         /// </summary>
         public void MoveToNext()
         {
-            SetColor(GetLinkBetweenNode(_nextNode), false);
-            _currentNode = _nextNode;
-            Load();
-            FullScreen();
+            if (Next())
+            {
+                _explorationHistory.Push(_currentNode);
+                _currentNode.IsSelected = false;
+                _currentNode = _explorationFuture.Pop();
+                _currentNode.IsSelected = true;
+                FullScreen();
+            }
         }
-     
-        /// <summary>
-        /// Sets the color of the passing links
-        /// </summary>
-        /// <param name="controller"></param>
-        /// <param name="reverse"></param>
-        private void SetColor(LinkElementController controller, bool reverse)
+
+        public void MoveTo(ElementViewModel evm)
         {
-            if (controller == null)
+            // push the current node if it isn't null
+            if (_currentNode != null)
             {
-                return;
+                _explorationHistory.Push(CurrentNode);
+                _currentNode.IsSelected = false;
             }
-            if (reverse)
-            {
-                controller.SetColor(_forwardColor);
-            }
-            else
-            {
-                controller.SetColor(_backwardColor);
-            }
-            _linksUsed.Add(controller);
+            // reset the exploration future
+            _explorationFuture = null;
+            _currentNode = evm;
+            _currentNode.IsSelected = true;
+            FullScreen();
         }
 
         /// <summary>
@@ -174,7 +114,7 @@ namespace NuSysApp
         /// <returns></returns>
         public bool Previous()
         {
-            return (_previousNode != null);
+            return _explorationHistory.Count > 1;
         }
 
         /// <summary>
@@ -182,10 +122,25 @@ namespace NuSysApp
         /// </summary>
         public void MoveToPrevious()
         {
-            SetColor(GetLinkBetweenNode(_previousNode), true);
-            _currentNode = _previousNode;
-            Load();
-            FullScreen();
+            if (Previous())
+            {
+
+                if (_explorationFuture == null)
+                {
+                    _explorationFuture = new Stack<ElementViewModel>();
+                }
+
+                _explorationFuture.Push(_currentNode);
+                _currentNode.IsSelected = false;
+
+                _currentNode = _explorationHistory.Pop();
+                _currentNode.IsSelected = true;
+                FullScreen();
+
+                
+
+                
+            }
         }
 
         /// <summary>
@@ -201,55 +156,16 @@ namespace NuSysApp
                 }
             }
             AnimatePresentation(_originalTransform.ScaleX, _originalTransform.CenterX, _originalTransform.CenterY, _originalTransform.TranslateX, _originalTransform.TranslateY);
-        }
-
-        private LinkElementController GetLinkBetweenNode(ElementViewModel model)
-        {
-            if (model == null)
-            {
-                return null;
-            }
-            var links = _currentNode.LinkList;
-            foreach (var link in links)
-            {
-
-                if (link.InElement.Model.Id == model.Model.Id || link.OutElement.Model.Id == model.Model.Id)
-                {
-                    return link;
-                }
-            }
-            return null;
+           this.HideRelatedListBox();
         }
 
         /// <summary>
-        /// Finds previous node for presentation if reverse is true, next node otherwise.
+        /// Hides the related list box by removing it from the sessionview
         /// </summary>
-        /// <param name="vm"></param>
-        /// <returns></returns>
-        private ElementModel GetNextOrPrevNode(ElementViewModel vm, bool reverse)
+        public void HideRelatedListBox()
         {
-            if (vm?.LinkList == null)
-            {
-                return null;
-            }
-            foreach (LinkElementController link in vm.LinkList)
-            {
-                var linkModel = (LinkModel)link.Model;
-                if (!linkModel.IsPresentationLink)
-                    continue;
-
-                if (link.OutElement.Model.Equals(vm.Model) && reverse)
-                {
-                    return link.InElement.Model;
-                }
-
-                if (link.InElement.Model.Equals(vm.Model) && !reverse)
-                {
-                    return link.OutElement.Model;
-                }
-
-            }
-            return null;
+            SessionController.Instance.SessionView.MainCanvas.Children.Remove(_relatedListBox);
+            _relatedListBox = null;
         }
 
         /// <summary>
@@ -325,6 +241,27 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Shows the box with elements related--that is, elements with the same tag
+        /// </summary>
+        /// <param name="tag"></param>
+        internal void ShowRelatedElements(string tag)
+        {
+            // Box not on session view, so instatiate a new one and add it
+            if (_relatedListBox == null)
+            {
+                _relatedListBox = new RelatedListBox(tag);
+                SessionController.Instance.SessionView.MainCanvas.Children.Add(_relatedListBox);
+                Canvas.SetTop(_relatedListBox, 300);
+                Canvas.SetLeft(_relatedListBox,200);
+            }
+            // Box already on session view, so update the contents
+            else
+            {
+                _relatedListBox.UpdateTag(tag);
+            }
+        }
+
+        /// <summary>
         /// Animates the presentation by creating various DoubleAnimations, adding then to the storyboard,
         /// and finally starting the story board
         /// </summary>
@@ -375,6 +312,60 @@ namespace NuSysApp
             // Begin the animation.
             _storyboard.Begin();
 
+        }
+
+        /// <summary>
+        /// Explore a link by going to the other side. Using the current node being explored (which is stored as CurrentNode), we can find the node opposite the link.
+        /// </summary>
+        /// <param name="vm"></param>
+        internal void ExploreLink(LinkViewModel vm)
+        {
+            // We will use the in atom or the out atom ID to decide which side of the link to go to
+            string id = vm.LinkModel.InAtomId;
+            if (vm.LinkModel.InAtomId.Equals(_currentNode.Id))
+            {
+                id = vm.LinkModel.OutAtomId;
+            }
+
+            // Find a list of element view models that have that id
+            var vms =
+                    SessionController.Instance.ActiveFreeFormViewer.AllContent.Where(
+                        item => (item.Id == id));
+
+            // Use a helper method to the view model that is connected to this link
+            var opposite = vms.FirstOrDefault(item => this.EvmInLink(item, vm.LinkModel.Id));
+            Debug.Assert(opposite != null);
+            // Move to the found element view model 
+            this.MoveTo(opposite);
+
+            // Make sure the link is deselected
+            vm.IsSelected = false;
+        
+            vm.Color = Application.Current.Resources["color2"] as SolidColorBrush;
+            if (vm.LinkModel.IsPresentationLink)
+            {
+                vm.Color = Application.Current.Resources["color4"] as SolidColorBrush;
+            }
+        }
+
+        /// <summary>
+        /// Returns if the passed in element view model is connected to the link, using the passed in ID
+        /// </summary>
+        /// <param name="evm"></param>
+        /// <param name="linkId"></param>
+        /// <returns></returns>
+        private bool EvmInLink(ElementViewModel evm, string linkId)
+        {
+            // Look thru the evm's links
+            foreach (var link in evm.LinkList)
+            {
+                // Return true if there is a link id match
+                if (link.Model.Id == linkId)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -430,8 +421,7 @@ namespace NuSysApp
         /// </summary>
         public void Dispose()
         {
-            _previousNode = null;
-            _nextNode = null;
+           
             _currentNode = null;
             _originalTransform = null;
             _timer = null;
@@ -441,4 +431,12 @@ namespace NuSysApp
             _linksUsed = null;
         }
     }
+
+    public enum ModeType
+    {
+        EXPLORATION,PRESENTATION
+    }
+
+  
+
 }

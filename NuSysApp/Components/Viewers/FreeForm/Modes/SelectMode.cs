@@ -93,7 +93,12 @@ namespace NuSysApp
             if (dc == null)
                 return;
 
-            
+            // try to explore to the ElementViewModel
+            if (!(dc is LinkViewModel))
+            {
+                SessionController.Instance.SessionView.Explore(dc);
+            }
+
             var viwerVm =_view.DataContext as FreeFormViewerViewModel;
             var isCtrlDown =  (CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Control) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
 
@@ -142,7 +147,7 @@ namespace NuSysApp
             {
                 if (dc is ElementViewModel)
                 {
-                    var vm = dc as ElementViewModel;
+                    var vm = dc as ElementViewModel;              
 
                     if (vm.ElementType == ElementType.Powerpoint)
                     {

@@ -26,11 +26,40 @@ namespace NuSysApp
             foreach (var id in idList)
             {
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(id);
-                var libraryElementTemplate = new LibraryItemTemplate(controller);
-                LibraryElements.Add(libraryElementTemplate);
+                if (controller.LibraryElementModel.Type != ElementType.Collection)
+                {
+                    var libraryElementTemplate = new LibraryItemTemplate(controller);
+                    LibraryElements.Add(libraryElementTemplate);
+                }
+                
             }
+            SessionController.Instance.ContentController.OnNewContent += ContentController_OnNewContent;
+            SessionController.Instance.ContentController.OnElementDelete += ContentController_OnElementDelete;
             SessionController.Instance.LinkController.OnLinkRemoved += LinkController_OnLinkRemoved;
             SessionController.Instance.LinkController.OnNewLink += LinkController_OnNewLink;
+        }
+
+        private void ContentController_OnElementDelete(LibraryElementModel element)
+        {
+            foreach (var item in LibraryElements)
+            {
+                if (item.ContentID == element.LibraryElementId)
+                {
+                    LibraryElements.Remove(item);
+                }
+            }
+        }
+
+        private void ContentController_OnNewContent(LibraryElementModel element)
+        {
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId);
+            if (controller.LibraryElementModel.Type != ElementType.Collection)
+            {
+                var libraryElementTemplate = new LibraryItemTemplate(controller);
+                UITask.Run(delegate {
+                    LibraryElements.Add(libraryElementTemplate);
+                });
+            }
         }
 
         private void LinkController_OnNewLink(LinkLibraryElementController link)
@@ -43,7 +72,9 @@ namespace NuSysApp
                 _linkable.Id == link.LinkLibraryElementModel.OutAtomId)
             {
                 var template = new LinkTemplate(link, _linkable.Id);
-                LinkTemplates.Add(template);
+                UITask.Run(async delegate {
+                    LinkTemplates.Add(template);
+                });
             }
         }
 
@@ -91,7 +122,9 @@ namespace NuSysApp
                 return;
             }
             var template = new LinkTemplate(controller, _linkable.Id);
-            LinkTemplates.Add(template);
+            UITask.Run(delegate {
+                LinkTemplates.Add(template);
+            });
         }
 
         public void SortByTitle()
