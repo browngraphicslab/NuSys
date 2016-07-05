@@ -239,6 +239,7 @@ namespace NuSysApp
 
                 var regionSet = new HashSet<Region>();
                 regionSet.Add(regionModel);
+                
                 View.Loaded += delegate
                 {
                     _regionableHomeTabViewModel.SetExistingRegions(regionSet);
