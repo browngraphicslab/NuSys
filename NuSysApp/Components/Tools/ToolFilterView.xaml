@@ -16,34 +16,41 @@
     IsDoubleTapEnabled="True">
 
     <Canvas x:Name="xCanvas">
-        <Grid Name="Grid1"  MinHeight="100" MinWidth="100" BorderBrush="CadetBlue" Background="White"  BorderThickness="1">
-            <Grid x:Name ="xGrid" >
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <Button x:Name="xDeleteButton" Click ="Delete_Click" VerticalAlignment="Top">
+                <Image Source="ms-appx:///Assets/icon_delete_color.png" Height="20" Width="20"></Image>
+            </Button>
+            <Grid Name="Grid1"  MinHeight="100" MinWidth="100" BorderBrush="CadetBlue" Background="White"  BorderThickness="1">
+                <Grid x:Name ="xGrid" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
-                <TextBlock x:Name="xTitle" Text="Filter:" TextAlignment="Center" Height="35" Width="Auto" Grid.Row="0" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta"/>
+                    <TextBlock x:Name="xTitle" Text="Filter:" TextAlignment="Center" Height="35" Width="Auto" Grid.Row="0" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta"/>
 
-                <ListBox x:Name="xFilterList" SelectionChanged="XFilterList_OnSelectionChanged" Height="500" Grid.Row="1" Width="300" Background="White"  ItemsSource="{x:Bind Filters}" SelectionMode="Single" ManipulationMode="All" ManipulationStarted="xFilterList_ManipulationStarted" ManipulationDelta="xFilterList_ManipulationDelta" ManipulationCompleted="xFilterList_ManipulationCompleted">
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock  HorizontalAlignment="Center" TextAlignment="Center" Text="{Binding}" Margin="10"/>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                    <ListBox x:Name="xFilterList" SelectionChanged="XFilterList_OnSelectionChanged" Height="500" Grid.Row="1" Width="300" Background="White"  ItemsSource="{x:Bind Filters}" SelectionMode="Single" ManipulationMode="All" ManipulationStarted="xFilterList_ManipulationStarted" ManipulationDelta="xFilterList_ManipulationDelta" ManipulationCompleted="xFilterList_ManipulationCompleted">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock  HorizontalAlignment="Center" TextAlignment="Center" Text="{Binding}" Margin="10"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
 
-            </Grid>
-            <Path x:Name="xResizer" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
+                </Grid>
+                <Path x:Name="xResizer" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
                       Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
                       Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" ManipulationDelta="Resizer_OnManipulationDelta"/>
 
-        </Grid>
+            </Grid>
+        </StackPanel>
+        
+            
 
     </Canvas>
 </local:AnimatableUserControl>

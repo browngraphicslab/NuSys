@@ -21,8 +21,8 @@ namespace NuSysApp
         public BasicToolViewModel(BasicToolController toolController) : base(toolController)
         {
             
-            PropertiesToDisplay = new ObservableCollection<string>();
-            PropertiesToDisplayUnique = new ObservableCollection<ToolItemTemplate>();
+            //PropertiesToDisplay = new ObservableCollection<string>();
+            PropertiesToDisplayUnique = new ObservableCollection<string>();
             PropertiesToDisplayPieChart = new ObservableCollection<ChartSlice>();
             
         }
@@ -42,18 +42,18 @@ namespace NuSysApp
             }
 
             PieChartDictionary = new Dictionary<string, int>();
-            PropertiesToDisplay.Clear();
+            //PropertiesToDisplay.Clear();
             PropertiesToDisplayUnique.Clear();
             PropertiesToDisplayPieChart = new ObservableCollection<ChartSlice>();
             foreach (var item in temp)
             {
                 if (item != null)
                 {
-                    PropertiesToDisplay.Add(item);
+                    //PropertiesToDisplay.Add(item);
                     if (!PieChartDictionary.ContainsKey(item))
                     {
                         PieChartDictionary.Add(item, 1);
-                        PropertiesToDisplayUnique.Add(new ToolItemTemplate(item));
+                        PropertiesToDisplayUnique.Add(item);
                     }
                     else
                     {
@@ -75,9 +75,9 @@ namespace NuSysApp
 
         public Dictionary<string, int> PieChartDictionary { get; set; }
 
-        public ObservableCollection<string> PropertiesToDisplay { get; set; }
+        //public ObservableCollection<string> PropertiesToDisplay { get; set; }
 
-        public ObservableCollection<ToolItemTemplate> PropertiesToDisplayUnique { get; set; }
+        public ObservableCollection<string> PropertiesToDisplayUnique { get; set; }
 
         public ObservableCollection<ChartSlice> PropertiesToDisplayPieChart { get; set; } 
 

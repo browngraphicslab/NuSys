@@ -29,6 +29,14 @@
 
         }
 
+        public void Dispose()
+        {
+            InToolController.LocationChanged -= InToolController_LocationChanged; ;
+            OutTool.LocationChanged -= OutToolController_LocationChanged; ;
+            InToolController.SizeChanged -= OutElementControllerOnSizeChanged;
+            OutTool.SizeChanged -= OutElementControllerOnSizeChanged;
+        }
+
         private void OutToolController_LocationChanged(object sender, double x, double y)
         {
             RaisePropertyChanged("Anchor");

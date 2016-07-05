@@ -23,13 +23,17 @@ namespace NuSysApp
 
 
         ObservableCollection<ToolModel.ToolFilterTypeTitle> Filters;
-        private ToolViewModel _parentToolViewModel;
+        private HashSet<ToolViewModel> _parentToolViewModels;
 
         public delegate void LocationChangedEventHandler(object sender, double x, double y);
         public delegate void SizeChangedEventHandler(object sender, double width, double height);
+        public delegate void DisposedEventHandler(string id);
+
 
         public event LocationChangedEventHandler LocationChanged;
         public event SizeChangedEventHandler SizeChanged;
+        public event DisposedEventHandler Disposed;
+
 
         private const double MinWidth = 100;
         private const double MinHeight = 300;
@@ -67,20 +71,43 @@ namespace NuSysApp
             SizeChanged?.Invoke(this, height, width);
         }
 
-        
+        public void Dispose()
+        {
+            Disposed?.Invoke("ToolFilterView");
+        }
 
+        public void AddParentTool(ToolViewModel parentToolViewModel)
+        {
+            if (parentToolViewModel != null)
+            {
+                _parentToolViewModels.Add(parentToolViewModel);
+            }
+        }
+
+        public void RemoveParentTool(ToolViewModel parentToolViewModel)
+        {
+            _parentToolViewModels.Remove(parentToolViewModel);
+        }
+
+        private void Delete_Click(object sender, RoutedEventArgs e)
+        {
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            wvm.AtomViewList.Remove(this);
+            this.Dispose();
+        }
 
 
         public ToolFilterView(double x, double y, ToolViewModel parentToolViewModel = null)
         {
             this.InitializeComponent();
-            _parentToolViewModel = parentToolViewModel;
+            _parentToolViewModels = new HashSet<ToolViewModel>();
+            AddParentTool(parentToolViewModel);
             this.RenderTransform = new CompositeTransform();
             SetSize(300,400);
             _links = new List<ToolFilterLinkView>();
             SetLocation(x, y);
             Filters = new ObservableCollection<ToolModel.ToolFilterTypeTitle>()
-            { ToolModel.ToolFilterTypeTitle.Type, ToolModel.ToolFilterTypeTitle.Title,  ToolModel.ToolFilterTypeTitle.Creator,  ToolModel.ToolFilterTypeTitle.Date,  ToolModel.ToolFilterTypeTitle.AllMetadata};
+            { ToolModel.ToolFilterTypeTitle.Type, ToolModel.ToolFilterTypeTitle.Title,  ToolModel.ToolFilterTypeTitle.Creator,  ToolModel.ToolFilterTypeTitle.Date, ToolModel.ToolFilterTypeTitle.MetadataKeys, ToolModel.ToolFilterTypeTitle.AllMetadata};
 
         }
 
@@ -136,13 +163,18 @@ namespace NuSysApp
                     viewmodel.Filter = ToolModel.ToolFilterTypeTitle.AllMetadata;
                     MetadataToolView view = new MetadataToolView(viewmodel, (RenderTransform as CompositeTransform).TranslateX, (RenderTransform as CompositeTransform).TranslateY);
 
-                    if (_parentToolViewModel != null)
+                    if (_parentToolViewModels.Count != 0)
                     {
-                        _parentToolViewModel.AddChildFilter(controller);
-                        var linkviewmodel = new ToolLinkViewModel(_parentToolViewModel, view.DataContext as ToolViewModel);
-                        var link = new ToolLinkView(linkviewmodel);
-                        Canvas.SetZIndex(link, Canvas.GetZIndex(this) - 1);
-                        wvm.AtomViewList.Add(link);
+                        foreach (var tool in _parentToolViewModels)
+                        {
+                            controller.AddParent(tool.Controller);
+                            var linkviewmodel = new ToolLinkViewModel(tool, view.DataContext as ToolViewModel);
+                            var link = new ToolLinkView(linkviewmodel);
+                            Canvas.SetZIndex(link, Canvas.GetZIndex(this) - 1);
+                            wvm.AtomViewList.Add(link);
+                        }
+                        
+                        
                        
                     }
                     wvm.AtomViewList.Add(view);
@@ -155,13 +187,17 @@ namespace NuSysApp
                     viewmodel.Filter = selection;
                     TemporaryToolView view = new TemporaryToolView(viewmodel, (RenderTransform as CompositeTransform).TranslateX, (RenderTransform as CompositeTransform).TranslateY);
 
-                    if (_parentToolViewModel != null)
+                    if (_parentToolViewModels.Count != 0)
                     {
-                        _parentToolViewModel.AddChildFilter(controller);
-                        var linkviewmodel = new ToolLinkViewModel(_parentToolViewModel, view.DataContext as ToolViewModel);
-                        var link = new ToolLinkView(linkviewmodel);
-                        Canvas.SetZIndex(link, Canvas.GetZIndex(this) - 1);
-                        wvm.AtomViewList.Add(link);
+                        foreach (var tool in _parentToolViewModels)
+                        {
+                            controller.AddParent(tool.Controller);
+                            var linkviewmodel = new ToolLinkViewModel(tool, view.DataContext as ToolViewModel);
+                            var link = new ToolLinkView(linkviewmodel);
+                            Canvas.SetZIndex(link, Canvas.GetZIndex(this) - 1);
+                            wvm.AtomViewList.Add(link);
+                        }
+                        
                     }
                     wvm.AtomViewList.Add(view);
                 }
