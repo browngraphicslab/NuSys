@@ -138,5 +138,12 @@ namespace NuSysApp
             Bound1_OnManipulationDelta(sender,e);
             Bound2_OnManipulationDelta2(sender, e);
         }
+
+        private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            var vm = DataContext as RegionViewModel;
+            var regionController = vm?.RegionController;
+            SessionController.Instance.SessionView.ShowDetailView(regionController);
+        }
     }
 }

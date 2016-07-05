@@ -74,5 +74,12 @@ namespace NuSysApp
                 var vm = this.DataContext as AudioRegionViewModel; 
                 vm.SetNewPoints(d1,d2); 
         }
+
+        private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            var vm = DataContext as RegionViewModel;
+            var regionController = vm?.RegionController;
+            SessionController.Instance.SessionView.ShowDetailView(regionController);
+        }
     }
 }
