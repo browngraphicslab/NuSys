@@ -76,6 +76,7 @@ namespace NuSysApp
                 if (template.ID == id)
                 {
                     LinkTemplates.Remove(template);
+                    break;
                 }
             }
 
