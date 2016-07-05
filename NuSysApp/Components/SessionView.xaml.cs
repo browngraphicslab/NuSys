@@ -647,7 +647,7 @@ namespace NuSysApp
             }
         }
 
-        public async void ShowDetailView(IMetadatable metadatable)
+        public async void ShowDetailView(IDetailViewable viewable)
         {
             // don't edit if we are in exploration or presentation mode
             if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
@@ -655,9 +655,15 @@ namespace NuSysApp
             {
                 return;
             }
+            if (viewable is RegionController)
+            {
+                await xDetailViewer.ShowElement(viewable as RegionController);
 
-
-            await xDetailViewer.ShowElement(metadatable);
+            }
+            else if (viewable is LibraryElementController)
+            {
+                await xDetailViewer.ShowElement(viewable as LibraryElementController);
+            }
         }
 
         public async void OpenFile(ElementViewModel vm)

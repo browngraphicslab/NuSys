@@ -262,15 +262,6 @@ namespace NuSysApp
         {
             return xRenderedPdf.ActualHeight;
         }
-
-        public double GetViewWidth()
-        {
-            throw new NotImplementedException();
-        }
-
-        public double GetViewHeight()
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }
