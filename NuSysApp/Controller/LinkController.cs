@@ -114,6 +114,10 @@ namespace NuSysApp
         public void RemoveLink(string id)
         {
             var link = SessionController.Instance.ContentController.GetContent(id) as LinkLibraryElementModel;
+            if (link == null)
+            {
+                return;
+            }
             if (_links.ContainsKey(link.InAtomId))
             {
                 _links[link.InAtomId].Remove(id);
