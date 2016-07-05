@@ -78,6 +78,7 @@ namespace NuSysApp
                     LinkTemplates.Remove(template);
                 }
             }
+
         }
 
         private void LinkController_OnNewLink(LinkLibraryElementController link)
