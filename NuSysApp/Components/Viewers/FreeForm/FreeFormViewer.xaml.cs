@@ -39,6 +39,11 @@ namespace NuSysApp
         private AbstractWorkspaceViewMode _prevMode;
         private NuSysInqCanvas _inqCanvas;
 
+        public Brush CanvasColor
+        {
+            get { return xInqCanvasContainer.Background; }
+            set { xInqCanvasContainer.Background = value; }
+        }
 
         public FreeFormViewer(FreeFormViewerViewModel vm)
         {

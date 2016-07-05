@@ -37,7 +37,7 @@ namespace NuSysApp
 
             // extra info fields
             this.Keywords = parseKeyWordsToCommaSeparatedList(model.Keywords);
-            this.Metadata = parseMetaDataToHyphenBulletList(model.Metadata);
+            this.Metadata = parseMetaDataToHyphenBulletList(new Dictionary<string, MetadataEntry>(model.Metadata));
 
             // unused
             this.Id = model.LibraryElementId;
