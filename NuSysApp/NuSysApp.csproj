@@ -384,36 +384,6 @@
     <Compile Include="Components\Viewers\Detail\Views\RegionEditorTabView.xaml.cs">
       <DependentUpon>RegionEditorTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\Region\AudioDetailRegionTabView.xaml.cs">
-      <DependentUpon>AudioDetailRegionTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\Region\ElementCollectionDetailRegionTabView.xaml.cs">
-      <DependentUpon>ElementCollectionDetailRegionTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\Region\GroupDetailRegionTabView.xaml.cs">
-      <DependentUpon>GroupDetailRegionTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\Region\LinkDetailRegionTabView.xaml.cs">
-      <DependentUpon>LinkDetailRegionTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\Region\PDFDetailRegionTabView.xaml.cs">
-      <DependentUpon>PDFDetailRegionTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\Region\PowerPointDetailRegionTabView.xaml.cs">
-      <DependentUpon>PowerPointDetailRegionTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\Region\TextDetailRegionTabView.xaml.cs">
-      <DependentUpon>TextDetailRegionTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\Region\VideoDetailRegionTabView.xaml.cs">
-      <DependentUpon>VideoDetailRegionTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\Region\WebDetailRegionTabView.xaml.cs">
-      <DependentUpon>WebDetailRegionTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\Region\WordDetailRegionTabView.xaml.cs">
-      <DependentUpon>WordDetailRegionTabView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\Viewers\FreeForm\InkStorage.cs" />
     <Compile Include="Components\Viewers\FreeForm\InkWrapper.cs" />
     <Compile Include="Components\Viewers\FreeForm\LibraryDragElement.xaml.cs">
@@ -971,46 +941,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\Detail\Views\RegionEditorTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\Region\AudioDetailRegionTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\Region\ElementCollectionDetailRegionTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\Region\GroupDetailRegionTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\Region\LinkDetailRegionTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\Region\PDFDetailRegionTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\Region\PowerPointDetailRegionTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\Region\TextDetailRegionTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\Region\VideoDetailRegionTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\Region\WebDetailRegionTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\Region\WordDetailRegionTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

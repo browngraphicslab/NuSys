@@ -104,7 +104,7 @@ namespace NuSysApp
         {
             if (_libraryElementModel.Regions == null)
             {
-                return;
+                _libraryElementModel.Regions = new HashSet<Region>();
             }
 
 
