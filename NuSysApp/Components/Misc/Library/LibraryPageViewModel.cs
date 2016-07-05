@@ -53,7 +53,17 @@ namespace NuSysApp
                 var controller =
                     SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId);
                 _controllerList.Remove(controller);
-                ItemList.Remove(new LibraryItemTemplate(controller));
+                if (controller == null)
+                {
+                    foreach (var item in ItemList)
+                    {
+                        if (item.ContentID == content.LibraryElementId)
+                        {
+                            ItemList.Remove(item);
+                        }
+                    }
+                }
+                //ItemList.Remove(new LibraryItemTemplate(controller));
             });
         }
         public async Task Sort(string s, bool reverse = false)

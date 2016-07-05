@@ -152,6 +152,7 @@ namespace NuSysApp
 
             //Calls the view model's ShowElement method which loads regions, etc.
             var vm = (DetailViewerViewModel)DataContext;
+            
             if (await vm.ShowElement(controller))
             {
                 Visibility = Visibility.Visible;
@@ -191,8 +192,17 @@ namespace NuSysApp
             {
                 var pivotItem = _regionEditorPivotItem as PivotItem;
                 xRootPivot.Items.Add(pivotItem);
-
             }
+
+            if (controller.LibraryElementModel.Type == ElementType.Text ||
+                controller.LibraryElementModel.Type == ElementType.Collection)
+            {
+                if (xRootPivot?.Items?.Count == 4)
+                {
+                    _regionEditorPivotItem = xRootPivot.Items[3];
+                    xRootPivot.Items.RemoveAt(3);
+                }
+            } 
             
         }
         public async Task ShowElement(RegionController controller)
