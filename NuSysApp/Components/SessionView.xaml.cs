@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 
 using NuSysApp.Util;
@@ -32,9 +33,12 @@ namespace NuSysApp
         private FreeFormViewer _activeFreeFormViewer;
         private Options _prevOptions = Options.SelectNode;
 
-        private PresentationMode _presentationModeInstance = null;
+        private IModable _modeInstance = null;
+        public IModable ModeInstance => _modeInstance;
+
 
         private ContentImporter _contentImporter = new ContentImporter();
+
 
         public bool IsPenMode { get; private set; }
 
@@ -169,70 +173,156 @@ namespace NuSysApp
                 FloatingMenu.ActivatePenMode(false);
             }
 
-            if (_presentationModeInstance != null && (args.VirtualKey == VirtualKey.Right || args.VirtualKey == VirtualKey.Up))
+            if (_modeInstance != null && (args.VirtualKey == VirtualKey.Right || args.VirtualKey == VirtualKey.Up))
             {
-                if (_presentationModeInstance.Next())
+                if (_modeInstance.Next())
                 {
-                    _presentationModeInstance.MoveToNext();
-                    SetPresentationButtons();
+                    _modeInstance.MoveToNext();
+                    SetModeButtons();
                 }
             }
 
-            if (_presentationModeInstance != null && (args.VirtualKey == VirtualKey.Left || args.VirtualKey == VirtualKey.Down))
+            if (_modeInstance != null && (args.VirtualKey == VirtualKey.Left || args.VirtualKey == VirtualKey.Down))
             {
-                if (_presentationModeInstance.Previous())
+                if (_modeInstance.Previous())
                 {
-                    _presentationModeInstance.MoveToPrevious();
-                    SetPresentationButtons();
+                    _modeInstance.MoveToPrevious();
+                    SetModeButtons();
                 }
 
             }
 
-            if (_presentationModeInstance != null && args.VirtualKey == VirtualKey.Space)
+            if (_modeInstance != null && args.VirtualKey == VirtualKey.Space)
             {
-                _presentationModeInstance.GoToCurrent();
+                _modeInstance.GoToCurrent();
             }
 
-            if (_presentationModeInstance != null && args.VirtualKey == VirtualKey.Escape)
+            if (_modeInstance != null && args.VirtualKey == VirtualKey.Escape)
             {
-                ExitPresentationMode();
+                ExitMode();
+            }
+        }
+
+        /// <summary>
+        /// Shows the box with elements that have the passed in tag
+        /// </summary>
+        /// <param name="text"></param>
+        public void ShowRelatedElements(string tag)
+        {
+            if ((_modeInstance != null) && (_modeInstance.Mode == ModeType.EXPLORATION))
+            {
+                var exp = _modeInstance as ExplorationMode;
+                exp.ShowRelatedElements(tag);
             }
         }
 
         public void EnterPresentationMode(ElementViewModel em)
         {
-            _presentationModeInstance = new PresentationMode(em);
+            _modeInstance = new PresentationMode(em);
 
-            NextNode.Visibility = Visibility.Visible;
-            PreviousNode.Visibility = Visibility.Visible;
-            CurrentNode.Visibility = Visibility.Visible;
+            // change the proper visibilities
+            xFloatingMenu.Visibility = Visibility.Collapsed;
+            this.xDetailViewer.Visibility = Visibility.Collapsed;
 
-            xPresentation.Visibility = Visibility.Visible;
-            SetPresentationButtons();
+
+            // center the buttons, make them visibile
+            var buttonMargin = 10;
+            var top = mainCanvas.ActualHeight - PreviousNode.Height - buttonMargin;
+            var buttonWidth = PreviousNode.Width;
+            var left = (mainCanvas.ActualWidth - buttonMargin) / 2.0 - (2 * buttonWidth) - buttonMargin;
+            var buttonDiff = buttonWidth + buttonMargin;
+            foreach (var button in new List<Button> { PreviousNode, NextNode, CurrentNode, xPresentation })
+            {
+                Canvas.SetLeft(button, left);
+                Canvas.SetTop(button, top);
+                left += buttonDiff;
+                button.Visibility = Visibility.Visible;
+            }
+
+            // set the buttons
+            SetModeButtons();
         }
 
-        public void ExitPresentationMode()
+        public void EnterExplorationMode(ElementViewModel em)
         {
-            _presentationModeInstance.ExitMode();
-            _presentationModeInstance = null;
+            _modeInstance = new ExplorationMode(em);
+
+            /* uncomment this and go into exploration mode for a good time :)
+            var myCanvasPic = new ImageBrush() {ImageSource = new BitmapImage(new Uri("ms-appx:///Assets/tedCruzCanvasBackdrop.jpg"))};
+            FreeFormViewer.CanvasColor = myCanvasPic;
+            */
+
+            // change the proper visibilities
+            xFloatingMenu.Visibility = Visibility.Collapsed;
+            this.xDetailViewer.Visibility = Visibility.Collapsed;
+
+            // center the buttons, make them visibile
+            var buttonMargin = 10;
+            var top = mainCanvas.ActualHeight - PreviousNode.Height - buttonMargin;
+            var buttonWidth = PreviousNode.Width;
+            var left = (mainCanvas.ActualWidth - buttonMargin) / 2.0 - (2 * buttonWidth) - buttonMargin;
+            var buttonDiff = buttonWidth + buttonMargin;
+            foreach (var button in new List<Button> { PreviousNode, NextNode, CurrentNode, xPresentation })
+            {
+                Canvas.SetLeft(button, left);
+                Canvas.SetTop(button, top);
+                left += buttonDiff;
+                button.Visibility = Visibility.Visible;
+            }
+
+            // set the buttons
+            SetModeButtons();
+        }
+
+        /// <summary>
+        /// Explores (aka zooms in on) the passed in element view model
+        /// </summary>
+        /// <param name="em"></param>
+        public void Explore(ElementViewModel elementViewModel)
+        {
+            if (_modeInstance == null || _modeInstance.Mode != ModeType.EXPLORATION) return;
+            var exp = _modeInstance as ExplorationMode;
+            var linkViewModel = elementViewModel as LinkViewModel;
+            if (linkViewModel != null)
+            {
+                exp?.ExploreLink(linkViewModel);
+            }
+            else
+            {
+                exp?.MoveTo(elementViewModel);
+            }
+            SetModeButtons();
+        }
+
+        public void ExitMode()
+        {
+           
+            _modeInstance.ExitMode();
+            _modeInstance = null;
             NextNode.Visibility = Visibility.Collapsed;
             PreviousNode.Visibility = Visibility.Collapsed;
             CurrentNode.Visibility = Visibility.Collapsed;
             xPresentation.Visibility = Visibility.Collapsed;
+            xFloatingMenu.Visibility = Visibility.Visible;
+
+            //FreeFormViewer.CanvasColor = new SolidColorBrush(Colors.White);
+
         }
+
+
 
         private void Presentation_OnClick(object sender, RoutedEventArgs e)
         {
             if (sender == xPresentation)
             {
-                ExitPresentationMode();
+                ExitMode();
                 return;
             }
 
             if (sender == NextNode)
             {
 
-                _presentationModeInstance.MoveToNext();
+                _modeInstance.MoveToNext();
             }
 
             /*
@@ -247,21 +337,23 @@ namespace NuSysApp
 
             if (sender == PreviousNode)
             {
-                _presentationModeInstance.MoveToPrevious();
+                _modeInstance.MoveToPrevious();
             }
 
             if (sender == CurrentNode)
             {
-                _presentationModeInstance.GoToCurrent();
+                _modeInstance.GoToCurrent();
             }
 
             // only show next and prev buttons if next and prev nodes exist
-            SetPresentationButtons();
+            SetModeButtons();
+            
         }
-
-        private void SetPresentationButtons()
+       
+        private void SetModeButtons()
         {
-            if (_presentationModeInstance.Next())
+         
+            if (_modeInstance.Next())
             {
                 NextNode.Opacity = 1;
                 NextNode.Click -= Presentation_OnClick;
@@ -272,7 +364,7 @@ namespace NuSysApp
                 NextNode.Opacity = 0.6;
                 NextNode.Click -= Presentation_OnClick;
             }
-            if (_presentationModeInstance.Previous())
+            if (_modeInstance.Previous())
             {
                 PreviousNode.Opacity = 1;
                 PreviousNode.Click -= Presentation_OnClick;
@@ -284,6 +376,9 @@ namespace NuSysApp
                 PreviousNode.Click -= Presentation_OnClick;
             }
         }
+
+        
+           
 
         public async Task LoadWorkspaceFromServer(IEnumerable<Message> nodeMessages, string collectionId)
         {
@@ -554,6 +649,14 @@ namespace NuSysApp
 
         public async void ShowDetailView(IMetadatable metadatable)
         {
+            // don't edit if we are in exploration or presentation mode
+            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
+                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
+            {
+                return;
+            }
+
+
             await xDetailViewer.ShowElement(metadatable);
         }
 
@@ -680,7 +783,6 @@ namespace NuSysApp
         {
             await StaticServerCalls.CreateSnapshot();
         }
-
         private void CurrentCollectionDV_OnClick(object sender, RoutedEventArgs e)
         {
             xDetailViewer.ShowElement(SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController);
@@ -690,6 +792,17 @@ namespace NuSysApp
         {
             get { return xSearchViewer; }
         }
-
+        /// <summary>
+        /// Removes the related list box from the sv
+        /// </summary>
+        public void RemoveRelatedListBox()
+        {
+            if (_modeInstance != null && _modeInstance.Mode == ModeType.EXPLORATION)
+            {
+                var exp = _modeInstance as ExplorationMode;
+                exp.HideRelatedListBox();
+            }
+            
+        }
     }
 }

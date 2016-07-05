@@ -43,7 +43,9 @@ namespace NuSysApp
                 _linkable.Id == link.LinkLibraryElementModel.OutAtomId)
             {
                 var template = new LinkTemplate(link, _linkable.Id);
-                LinkTemplates.Add(template);
+                UITask.Run(async delegate {
+                    LinkTemplates.Add(template);
+                });
             }
         }
 
@@ -91,7 +93,9 @@ namespace NuSysApp
                 return;
             }
             var template = new LinkTemplate(controller, _linkable.Id);
-            LinkTemplates.Add(template);
+            UITask.Run(delegate {
+                LinkTemplates.Add(template);
+            });
         }
 
         public void SortByTitle()

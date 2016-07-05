@@ -12,6 +12,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using MyToolkit.UI;
 
 namespace NuSysApp
 {
@@ -402,7 +403,7 @@ namespace NuSysApp
             tagBlock.Foreground = new SolidColorBrush(Constants.foreground6);
             tagBlock.Margin = new Thickness(5, 2, 2, 5);///
             tagBlock.FontStyle = FontStyle.Italic;
-           
+           // tagBlock.IsHitTestVisible = false;
             return tagBlock;
         }
 
@@ -419,6 +420,17 @@ namespace NuSysApp
             CurrentElementController.TitleChanged -= ControllerTitleChanged;
             CurrentElementController.SetTitle(title);
             CurrentElementController.TitleChanged += ControllerTitleChanged;
+   
+            /*
+            // TODO make the exploration mode related list box show up
+            var button = sender as Button;
+            var panel = button.Content as StackPanel;
+            //var block = panel.FindVisualChild("tagContent") as TextBlock;
+           // var tag = block.Text;
+           // Debug.WriteLine(tag);
+           */
+
+
         }
 
     }
