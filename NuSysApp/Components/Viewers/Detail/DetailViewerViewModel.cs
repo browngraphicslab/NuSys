@@ -91,6 +91,29 @@ namespace NuSysApp
         public ObservableCollection<StackPanel> Metadata { get; set; }
 
         public ObservableCollection<Region> RegionCollection { set; get; }
+
+        public ObservableCollection<Region> OrderedRegionCollection
+        {
+            get
+            {
+                if (CurrentElementController.LibraryElementModel.Type == ElementType.PDF)
+                {
+                    var list = RegionCollection.ToList<Region>();
+                    var orderedList = (list.OrderBy(a => (a as PdfRegion).PageLocation)).ToList<Region>();
+                    var collection = new ObservableCollection<Region>();
+                    foreach (var region in orderedList)
+                    {
+                        //(region as PdfRegion).PageLocation += 1;
+                        collection.Add(region);
+                    }
+                    return collection;
+                }
+                else
+                {
+                    return new ObservableCollection<Region>();
+                }
+            }
+        }
         private DetailHomeTabViewModel _regionableRegionTabViewModel;
         private DetailHomeTabViewModel _regionableHomeTabViewModel;
 
@@ -118,6 +141,8 @@ namespace NuSysApp
         {
             RegionCollection.Add(regionController.Model);
             regionController.TitleChanged += UpdateCollection;
+            RaisePropertyChanged("OrderedRegionCollection");
+
         }
 
         public void Dispose()
@@ -175,7 +200,8 @@ namespace NuSysApp
                         var regionController = SessionController.Instance.RegionsController.GetRegionController(region.Id);
                     }
                 }
-                
+                RaisePropertyChanged("OrderedRegionCollection");
+
                 View = await _viewHomeTabViewFactory.CreateFromSendable(controller);
                 if (View == null)
                 {
@@ -314,6 +340,8 @@ namespace NuSysApp
         {
             if (RegionCollection.Contains(region))
                 RegionCollection.Remove(region);
+            RaisePropertyChanged("OrderedRegionCollection");
+
         }
 
         private void KeywordsChanged(object sender, HashSet<Keyword> keywords)
