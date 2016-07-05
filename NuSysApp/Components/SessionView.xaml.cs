@@ -325,7 +325,10 @@ namespace NuSysApp
                 msg["creator"] = collectionId;
                 var libraryId = msg.GetString("contentId");
                 var id = msg.GetString("id");
-
+                if (id == null || libraryId == null)
+                {
+                    continue;
+                }
                 var libraryModel = SessionController.Instance.ContentController.GetContent(libraryId);
                 if (libraryModel == null)
                 {

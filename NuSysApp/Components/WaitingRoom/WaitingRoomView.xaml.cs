@@ -203,12 +203,15 @@ namespace NuSysApp
 
         private async void AutoLogin()
         {
-            UITask.Run(async delegate
+            Task.Run(async delegate
             {
                 if (File.Exists(LoginCredentialsFilePath))
                 {
-                    Tuple<string, string> creds = this.GetLoginCredentials();
-                    Login(creds.Item1, creds.Item2, false);
+                    UITask.Run(delegate
+                    {
+                        Tuple<string, string> creds = this.GetLoginCredentials();
+                        Login(creds.Item1, creds.Item2, false);
+                    });
                 }
             });
         }

@@ -34,6 +34,7 @@ namespace NuSysApp
         }
         public LibraryElementModel GetContent(string id)
         {
+            Debug.Assert(id != null);
             return _contents.ContainsKey(id) ? _contents[id] : null;
         }
         public LibraryElementController GetLibraryElementController(string id)
