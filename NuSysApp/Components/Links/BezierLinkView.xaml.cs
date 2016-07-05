@@ -101,6 +101,7 @@ namespace NuSysApp
             
             this.UpdateControlPoints();
 
+            Canvas.SetZIndex(this, -10);
 
             var vm = (LinkViewModel)DataContext;
 
@@ -111,7 +112,6 @@ namespace NuSysApp
                     this.Annotation.Activate();
                     AnnotationContainer.Visibility = Visibility.Visible;
                     Delete.Visibility = Visibility.Visible;
-
                     if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
                     {
 
