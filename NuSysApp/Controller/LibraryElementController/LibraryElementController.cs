@@ -293,8 +293,14 @@ namespace NuSysApp
         /// </summary>
         public void Load(LoadContentEventArgs e)
         {
-            _libraryElementModel.Data = e.Data;
-            _libraryElementModel.Regions = e.RegionStrings;
+            if (e.Data != null)
+            {
+                _libraryElementModel.Data = e.Data;
+            }
+            if (e.RegionStrings != null)
+            {
+                _libraryElementModel.Regions = e.RegionStrings;
+            }
             //_libraryElementModel.InkLinkes = e.InkStrings;
 
             IsLoaded = true;

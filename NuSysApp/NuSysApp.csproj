@@ -605,6 +605,7 @@
     <Compile Include="Models\VideoNodeModel.cs" />
     <Compile Include="Models\WordNodeModel.cs" />
     <Compile Include="Models\WorkSpaceModel.cs" />
+    <Compile Include="Network\CachePDF.cs" />
     <Compile Include="Network\ClientHandler.cs" />
     <Compile Include="Network\Message.cs" />
     <Compile Include="Network\NetworkClient.cs" />
