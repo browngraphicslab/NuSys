@@ -109,7 +109,9 @@ namespace NuSysApp
             {
                 return;
             }
-            RegionViews.Clear();
+            UITask.Run(delegate {
+                RegionViews.Clear();
+            });
             foreach (var regionModel in Controller.LibraryElementModel.Regions)
             {
 
@@ -182,7 +184,7 @@ namespace NuSysApp
         private async void OnPageChange(int page)
         {
             CurrentPageNumber = page;
-            await RenderPage(page);
+            await UITask.Run(async delegate { await RenderPage(page); });
 
         }
 
