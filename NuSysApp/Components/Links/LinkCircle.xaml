@@ -10,13 +10,15 @@
     d:DesignWidth="400">
 
     <Grid>
+        <Ellipse x:Name ="xPinHighlight" Height="32" Width="32" Fill="DimGray">
+        </Ellipse>
         <Ellipse x:Name ="linkButton" Height="30" Width="30"  PointerPressed ="circlePointerPressedHandler" PointerEntered="circlePointerEnteredHandler" PointerExited="circlePointerExitedHandler" Opacity =".5" Fill="Blue"></Ellipse>
         <Canvas>
             <Border x:Name ="border" BorderThickness="1" BorderBrush="#FF000000" VerticalAlignment="Top">
                 <Border.RenderTransform>
                     <CompositeTransform/>
                 </Border.RenderTransform>
-                <Image x:Name ="thumbnail" Visibility ="Collapsed" Width="50"/>
+                <Image x:Name ="thumbnail" Visibility ="Collapsed" Width="50" PointerPressed="Thumbnail_OnPointerPressed"/>
             </Border>
         </Canvas>
     </Grid>

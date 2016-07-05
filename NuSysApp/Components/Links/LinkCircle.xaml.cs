@@ -25,7 +25,17 @@ namespace NuSysApp
         public string lID;
         //content id the link is linked to
         public string cID;
-        private bool pinned;
+        private bool _pinned;
+
+        protected bool Pinned
+        {
+            get { return _pinned; }
+            set
+            {
+                _pinned = value;
+                xPinHighlight.Visibility = _pinned == true ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
         private Thickness _collapsedThickness;
         private Thickness _visibleThickness;
         private bool _firstTimeOpened;
@@ -44,7 +54,7 @@ namespace NuSysApp
             //border starts off invisible
             border.BorderThickness = _collapsedThickness;
             //thumbnail is not pinned to begin with
-            pinned = false;
+            Pinned = false;
             _bmp = new BitmapImage(SessionController.Instance.ContentController.GetLibraryElementController(cID).SmallIconUri);
             thumbnail.ImageOpened += Thumbnail_ImageOpened;
             //centering the thumbnail
@@ -68,8 +78,8 @@ namespace NuSysApp
         //pins or unpins the thumbnail
         private async void circlePointerPressedHandler(object sender, RoutedEventArgs e)
         {
-            pinned = !pinned;
-            if (pinned)
+            Pinned = !Pinned;
+            if (Pinned)
             {
                 thumbnail.Visibility = Visibility.Visible;
                 border.BorderThickness = _visibleThickness;
@@ -91,7 +101,7 @@ namespace NuSysApp
         //makes thumbnail invisible if it is not pinned when the pointer leaves the circle
         private async void circlePointerExitedHandler(object sender, RoutedEventArgs e)
         {
-            if (!pinned)
+            if (!Pinned)
             {
                 border.BorderThickness = _collapsedThickness;
                 thumbnail.Visibility = Visibility.Collapsed;
@@ -101,6 +111,17 @@ namespace NuSysApp
         public Ellipse Circle
         {
             get { return linkButton; }
+        }
+
+        private void Thumbnail_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            if (Pinned)
+            {
+                thumbnail.Visibility = Visibility.Collapsed;
+                border.BorderThickness = _collapsedThickness;
+                Pinned = !Pinned;
+            }
+
         }
     }
 }
