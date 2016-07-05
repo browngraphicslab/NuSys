@@ -46,7 +46,7 @@
                                     </TextBlock.RenderTransform>
                                 </TextBlock>
                             </Border>
-                            <Border x:Name="Tab" Tapped="TabList_OnTapped">
+                            <Border x:Name="Tab" Tapped="TabList_OnTapped" MaxWidth="{Binding ElementName=TabList, Path=DataContext.TextHeight}">
                                 <Border.RenderTransform>
                                     <TranslateTransform Y="15"></TranslateTransform>
                                 </Border.RenderTransform>

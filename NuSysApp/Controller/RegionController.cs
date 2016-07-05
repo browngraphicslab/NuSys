@@ -154,8 +154,9 @@ namespace NuSysApp
         
         public HashSet<LinkLibraryElementController> GetAllLinks()
         {
-            throw new NotImplementedException();
-            //return SessionController.Instance.LinkController.GetLinkLibraryElementControllers(this);
+            var linkedIds = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(this.Model.Id));
+            var controllers = linkedIds.Select(id => SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
+            return new HashSet<LinkLibraryElementController>(controllers);
         }
 
         /// <summary>

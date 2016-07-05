@@ -82,8 +82,10 @@ namespace NuSysApp
             {
                 _tabHeight = value; 
                 RaisePropertyChanged("TabHeight");
+                RaisePropertyChanged("TextHeight");
             }
         }
+        public double TextHeight { get { return _tabHeight - 25; } }
 
         public ObservableCollection<StackPanel> Metadata { get; set; }
 
