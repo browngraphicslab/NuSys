@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -106,10 +107,13 @@ namespace NuSysApp
                 }
             }
             foreach (var toAdd in toAddAtoms)
-            AtomViewList.Add(toAdd);
+            {
+                AtomViewList.Add(toAdd);
+            }
         }
         private void RemoveVisualLinks(ElementController controller)
         {
+<<<<<<< HEAD
             var contentLinks = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(controller.LibraryElementModel.LibraryElementId));
             var toLinkIds = new HashSet<LinkId>();
             foreach (var linkId in contentLinks)
@@ -122,8 +126,25 @@ namespace NuSysApp
             {
                 var atom = AtomViewList[i];
                 if (selected.Contains((atom.DataContext as ElementViewModel).ContentId))
+=======
+            foreach (var atom in new HashSet<FrameworkElement>(AtomViewList))
+            {
+                Debug.Assert(atom.DataContext is ElementViewModel);
+                var vm = (atom.DataContext as ElementViewModel);
+                if (vm.Controller == controller)
+>>>>>>> origin/dev
                 {
                     AtomViewList.Remove(atom);
+                }
+                else if(vm.ElementType == ElementType.Link)
+                {
+                    Debug.Assert(vm is LinkViewModel);
+                    var linkVm = vm as LinkViewModel;
+                    var linkModel = linkVm.LinkModel;
+                    if (linkModel.InAtomId == controller.Model.Id || linkModel.OutAtomId == controller.Model.Id)
+                    {
+                        AtomViewList.Remove(atom);
+                    }
                 }
             }
         }

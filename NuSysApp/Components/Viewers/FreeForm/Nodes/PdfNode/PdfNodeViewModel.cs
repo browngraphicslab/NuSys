@@ -384,12 +384,12 @@ namespace NuSysApp
 
         public double GetWidth()
         {
-            return View.GetWidth();
+            return View?.GetWidth() ?? 0;
         }
 
         public double GetHeight()
         {
-            return View.GetHeight();
+            return View?.GetHeight() ?? 0 ;
         }
 
        public void SizeChanged(object sender, double width, double height)

@@ -50,42 +50,6 @@ namespace NuSysApp
             {
                 UpdateControlPoints();
             };
-
-            object value;
-            if (vm.LinkModel.InFGDictionary != null)
-            {
-                switch (SessionController.Instance.IdToControllers[vm.LinkModel.InAtomId].Model.ElementType)
-                {
-                    case ElementType.Image:
-                        Debug.WriteLine("This links from a image with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
-
-                        break;
-                    case ElementType.Text:
-                        Debug.WriteLine("This links from a text with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
-                        break;
-                    case ElementType.Audio:
-                        Debug.WriteLine("This links from a text with values " + vm.LinkModel.InFGDictionary.TryGetValue("start", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("end", out value));
-                        break;
-                }
-            }
-
-            if (vm.LinkModel.OutFGDictionary != null)
-            {
-                switch (SessionController.Instance.IdToControllers[vm.LinkModel.OutAtomId].Model.ElementType)
-                {
-                    case ElementType.Image:
-                        Debug.Write("to a image with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
-
-                        break;
-                    case ElementType.Text:
-                        Debug.Write("to a text with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
-
-                        break;
-                    case ElementType.Audio:
-                        Debug.Write("to a media with values " + vm.LinkModel.InFGDictionary.TryGetValue("start", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("end", out value));
-                        break;
-                }
-            }
         }
 
         private void LinkControllerOnAnnotationChanged(string text)
