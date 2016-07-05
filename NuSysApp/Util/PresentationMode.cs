@@ -12,12 +12,12 @@ using Windows.UI.Xaml.Media.Animation;
 using MyToolkit.Utilities;
 using Windows.UI;
 
-namespace NuSysApp.Util
+namespace NuSysApp
 {
     /// <summary>
     /// Implements a prezi-like presentation mode.
     /// </summary>
-    class PresentationMode : IDisposable
+    class PresentationMode : IDisposable, IModable
     {
         private ElementViewModel _previousNode = null;
         private ElementViewModel _nextNode = null;
@@ -28,6 +28,7 @@ namespace NuSysApp.Util
         private SolidColorBrush _backwardColor = Application.Current.Resources["lighterredcolor"] as SolidColorBrush;
         private SolidColorBrush _forwardColor = Application.Current.Resources["color4"] as SolidColorBrush;
         private HashSet<LinkElementController> _linksUsed = new HashSet<LinkElementController>();
+        public ModeType Mode { get { return ModeType.PRESENTATION;} }
 
         public PresentationMode(ElementViewModel start)
         {
@@ -45,6 +46,8 @@ namespace NuSysApp.Util
             _originalTransform = MakeShallowCopy(SessionController.Instance.ActiveFreeFormViewer.CompositeTransform);
             Load();
             FullScreen();
+
+            
             UITask.Run(async delegate
             {
                 var curr = start;

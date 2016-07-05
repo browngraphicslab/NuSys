@@ -8,6 +8,7 @@ using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Components.Viewers.FreeForm;
@@ -110,6 +111,15 @@ namespace NuSysApp
 
         protected virtual void OnPositionChanged(object source, double x, double y, double dx, double dy)
         {
+
+            // don't move if we are in exploration or presentation mode
+            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
+                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
+            {
+                return;
+            }
+
+
             Transform.TranslateX = x;
             Transform.TranslateY = y;
             UpdateAnchor();
@@ -118,6 +128,14 @@ namespace NuSysApp
 
         protected virtual void OnSizeChanged(object source, double width, double height)
         {
+
+            // don't scale if we are in exploration or presentation mode
+            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
+                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
+            {
+                return;
+            }
+
             _width = width;
             _height = height;
 
@@ -201,13 +219,29 @@ namespace NuSysApp
                 tagBlock.Foreground = new SolidColorBrush(Constants.foreground6);
                 tagBlock.Margin = new Thickness(2, 2, 2, 2);///
                 tagBlock.FontStyle = FontStyle.Italic;
-                tagBlock.IsHitTestVisible = false;
-
+                tagBlock.IsHitTestVisible = true;     
+                tagBlock.Tapped += OnTagBlockTapped;
                 Tags.Add(tagBlock);
             }
             
             RaisePropertyChanged("Tags");
         }
+
+    
+        /// <summary>
+        /// When a tag block is tapped, it should signal the session view to show a box
+        /// with related elements (elements with the same tag)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnTagBlockTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var text = button.Content.ToString();
+            SessionController.Instance.SessionView.ShowRelatedElements(text); 
+        }
+
+      
 
         #region Atom Manipulations
 
@@ -418,11 +452,10 @@ namespace NuSysApp
                 RaisePropertyChanged("IsVisible");
             }
         }
-
         public string Title { get; set; }
-        //public string Tags { get; set; }
         public ObservableCollection<Button> Tags { get; set; }
         public ObservableCollection<LinkCircle> CircleLinks { get; set; }
+
         public ElementController Controller
         {
             get { return _controller; }
@@ -437,6 +470,13 @@ namespace NuSysApp
                 {
                     return;
                 }
+                // don't edit if we are in exploration or presentation mode
+                if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
+                    SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
+                {
+                    return;
+                }
+
                 _isEditing = value;
                 RaisePropertyChanged("IsEditing");
             }

@@ -188,6 +188,7 @@
     <Content Include="Assets\menububblebtm.png" />
     <Content Include="Assets\menu_bubble.png" />
     <Content Include="Assets\node icons\delete.png" />
+    <Content Include="Assets\node icons\icon_exploration.png" />
     <Content Include="Assets\node icons\icon_duplicate.png" />
     <Content Include="Assets\node icons\icon_enter.png" />
     <Content Include="Assets\node icons\icon_freeform.png" />
@@ -329,6 +330,7 @@
     <Compile Include="Components\Viewers\Detail\ILinkable.cs" />
     <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
     <Compile Include="Components\Viewers\Detail\Sizeable.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\IDetailViewable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\WordDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml.cs">
       <DependentUpon>WordDetailHomeTabView.xaml</DependentUpon>
@@ -573,6 +575,7 @@
     <Compile Include="Models\VideoNodeModel.cs" />
     <Compile Include="Models\WordNodeModel.cs" />
     <Compile Include="Models\WorkSpaceModel.cs" />
+    <Compile Include="Network\CachePDF.cs" />
     <Compile Include="Network\ClientHandler.cs" />
     <Compile Include="Network\Message.cs" />
     <Compile Include="Network\NetworkClient.cs" />
@@ -614,10 +617,12 @@
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Util\EventUtil.cs" />
+    <Compile Include="Util\ExplorationMode.cs" />
     <Compile Include="Util\ExtensionMethods.cs" />
     <Compile Include="Util\GestureRecognizer.cs" />
     <Compile Include="Util\GestureType.cs" />
     <Compile Include="Util\LibraryTab.cs" />
+    <Compile Include="Util\IModable.cs" />
     <Compile Include="Util\LineEquation.cs" />
     <Compile Include="Util\LineSegment.cs" />
     <Compile Include="Util\LinkId.cs" />
@@ -627,6 +632,9 @@
     <Compile Include="Util\Point2d.cs" />
     <Compile Include="Util\PresentationMode.cs" />
     <Compile Include="Util\RectanglePoints.cs" />
+    <Compile Include="Util\RelatedListBox.xaml.cs">
+      <DependentUpon>RelatedListBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\Statistics.cs" />
     <Compile Include="Util\Telemetry.cs" />
@@ -1156,6 +1164,10 @@
     <Page Include="Util\TemporaryToolView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+	  </Page>
+    <Page Include="Util\RelatedListBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

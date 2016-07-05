@@ -9,6 +9,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using NuSysApp.Controller;
+using NuSysApp.Util;
 using NuSysApp.Viewers;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -101,6 +102,7 @@ namespace NuSysApp
             
             this.UpdateControlPoints();
 
+            Canvas.SetZIndex(this, -10);
 
             var vm = (LinkViewModel)DataContext;
 
@@ -111,7 +113,6 @@ namespace NuSysApp
                     this.Annotation.Activate();
                     AnnotationContainer.Visibility = Visibility.Visible;
                     Delete.Visibility = Visibility.Visible;
-
                     if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
                     {
 
@@ -172,7 +173,9 @@ namespace NuSysApp
 
                         ((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.Model.Select();
                         */
-
+                    }
+                    // Handles exploration mode
+                    SessionController.Instance.SessionView.Explore(vm);
                 }
                 else
                 {
@@ -193,7 +196,7 @@ namespace NuSysApp
                     }
                 }
             }
-        }
+        
 
         private void JumpToLinkedTime()
         {
@@ -251,6 +254,13 @@ namespace NuSysApp
         /// </summary>
         private void UpdateControlPoints()
         {
+            // don't edit if we are in exploration or presentation mode
+            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
+                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
+            {
+                return;
+            }
+
             this.UpdateEndPoints();
 
             var vm = (LinkViewModel)this.DataContext;

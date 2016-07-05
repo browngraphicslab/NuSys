@@ -13,7 +13,7 @@ namespace NuSysApp
     /// Takes care of all the modifying and events invoking for the library element model
     /// Should manage keeping the library element model up to date as well as updating the server
     /// </summary>
-    public class LibraryElementController : IMetadatable, ILinkable
+    public class LibraryElementController : IMetadatable, ILinkable, IDetailViewable
     {
         protected DebouncingDictionary _debouncingDictionary;
         private LibraryElementModel _libraryElementModel;
@@ -104,7 +104,7 @@ namespace NuSysApp
         {
             if (_libraryElementModel.Regions == null)
             {
-                return;
+                _libraryElementModel.Regions = new HashSet<Region>();
             }
 
 
@@ -293,8 +293,14 @@ namespace NuSysApp
         /// </summary>
         public void Load(LoadContentEventArgs e)
         {
-            _libraryElementModel.Data = e.Data;
-            _libraryElementModel.Regions = e.RegionStrings;
+            if (e.Data != null)
+            {
+                _libraryElementModel.Data = e.Data;
+            }
+            if (e.RegionStrings != null)
+            {
+                _libraryElementModel.Regions = e.RegionStrings;
+            }
             //_libraryElementModel.InkLinkes = e.InkStrings;
 
             IsLoaded = true;

@@ -140,62 +140,86 @@ namespace NuSysApp
             });
         }
 
-        public async Task ShowElement(IMetadatable metadatable)
+        /// <summary>
+        /// Shows the element passed in, in the detail viewer.
+        /// </summary>
+        /// <param name="LibraryElementController"></param>
+        /// <returns></returns>
+        public async Task ShowElement(LibraryElementController controller)
         {
+            Debug.Assert(controller != null);
+
+            //Calls the view model's ShowElement method which loads regions, etc.
             var vm = (DetailViewerViewModel)DataContext;
-            
-            if (await vm.ShowElement(metadatable))
+            if (await vm.ShowElement(controller))
             {
                 Visibility = Visibility.Visible;
             }
-                
 
-
-            //if (controller.Model is TextElementModel || controller.Model is PdfNodeModel)
-            if (metadatable.MetadatableType() == MetadatableType.Content)
+            //If the element is a PDF, the button to autogenerate tags is made visible.
+            if (controller.LibraryElementModel.Type == ElementType.PDF)
             {
-                var controller = metadatable as LibraryElementController;
-                if (controller == null)
-                {
-                    return;
-                }
-                if (controller.LibraryElementModel.Type == ElementType.PDF)
-                {
-                    SuggestButton.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    SuggestButton.Visibility = Visibility.Collapsed;
-                }
+                SuggestButton.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                SuggestButton.Visibility = Visibility.Collapsed;
+            }
 
-                if (controller.LibraryElementModel.Type == ElementType.PDF)
-                {
-                    xRegionEditorView.ShowListView(true, ElementType.PDF);
-                   
-                }
-                else
-                {
-                    xRegionEditorView.ShowListView(false, controller.LibraryElementModel.Type);
-                }
+            //Also, for PDFs the list view of the regions is shown in the Region Editor tab. 
+            if (controller.LibraryElementModel.Type == ElementType.PDF)
+            {
+                xRegionEditorView.ShowListView(true, ElementType.PDF);
 
-                var linkEditorViewModel = xLinkEditorView.DataContext as LinkEditorTabViewModel;
-                linkEditorViewModel?.ChangeLinkTemplates(controller);
+            }
+            else
+            {
+                xRegionEditorView.ShowListView(false, controller.LibraryElementModel.Type);
+            }
 
-                xMetadataEditorView.Metadatable = vm.CurrentElementController;
-                xMetadataEditorView.Update();
-                if (xRootPivot.Items.Count == 3)
-                {
-                    var pivotItem = _regionEditorPivotItem as PivotItem;
-                    xRootPivot.Items.Add(pivotItem);
+            // Update the list of links in the Link Editor
+            var linkEditorViewModel = xLinkEditorView.DataContext as LinkEditorTabViewModel;
+            linkEditorViewModel?.ChangeLinkTemplates(controller);
 
-                }
-            } else if (metadatable.MetadatableType() == MetadatableType.Region)
+            //Update the metadata tab.
+            xMetadataEditorView.Metadatable = vm.CurrentElementController;
+            xMetadataEditorView.Update();
+
+            //If a region was previously loaded in the detail view, the region viewer should be added back.
+            if (xRootPivot.Items.Count == 3)
+            {
+                var pivotItem = _regionEditorPivotItem as PivotItem;
+                xRootPivot.Items.Add(pivotItem);
+
+            }
+            
+        }
+        public async Task ShowElement(RegionController controller)
+        {
+            Debug.Assert(controller != null);
+
+            //Calls the view model's ShowElement method which loads regions, etc.
+            var vm = (DetailViewerViewModel)DataContext;
+            if (await vm.ShowElement(controller))
+            {
+                Visibility = Visibility.Visible;
+            }
+
+            // Update the list of links in the Link Editor
+            var linkEditorViewModel = xLinkEditorView.DataContext as LinkEditorTabViewModel;
+            linkEditorViewModel?.ChangeLinkTemplates(controller);
+
+            //Make the region editor invisible
+            if (xRootPivot?.Items?.Count == 4)
             {
                 _regionEditorPivotItem = xRootPivot.Items[3];
                 xRootPivot.Items.RemoveAt(3);
-                xMetadataEditorView.Metadatable = metadatable;
-                xMetadataEditorView.Update();
             }
+            
+            //Update metadata editor
+            xMetadataEditorView.Metadatable = controller;
+            xMetadataEditorView.Update();
+            
             
         }
 
@@ -357,21 +381,28 @@ namespace NuSysApp
 
         private void TabList_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            var metadatable = (IMetadatable)(sender as FrameworkElement).DataContext;
-            ShowElement(metadatable);
+            var viewable = (sender as FrameworkElement)?.DataContext;
+            if (viewable is RegionController)
+            {
+                ShowElement(viewable as RegionController);
+
+            } else if (viewable is LibraryElementController)
+            {
+                ShowElement(viewable as LibraryElementController);
+            }
             e.Handled = true;
         }
 
         private void ExitTab_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            var metadatable = (IMetadatable) (sender as FrameworkElement).DataContext; 
+            var viewableToClose = (sender as FrameworkElement)?.DataContext as IDetailViewable;
             var vm = DataContext as DetailViewerViewModel;
             if (vm == null)
             {
                 return;
             }
             var tabs = vm?.Tabs;
-            tabs?.Remove(metadatable);
+            tabs?.Remove(viewableToClose);
             if (tabs?.Count < 2)
             {
                 vm.TabVisibility = Visibility.Collapsed;
@@ -379,7 +410,16 @@ namespace NuSysApp
             vm.Tabs = tabs;
             if (tabs?.Count > 0)
             {
-                this.ShowElement(vm.Tabs?[tabs.Count - 1]);
+                var viewable = vm.Tabs?[tabs.Count - 1];
+                if (viewable is RegionController)
+                {
+                    ShowElement(viewable as RegionController);
+
+                }
+                else if (viewable is LibraryElementController)
+                {
+                    ShowElement(viewable as LibraryElementController);
+                }
             }
             vm.TabHeight = vm.TabPaneHeight/vm.Tabs.Count;
             e.Handled = true;

@@ -21,6 +21,7 @@ using Windows.UI.Xaml;
 using NuSysApp.Components.Viewers.FreeForm;
 using System.Net;
 using Newtonsoft.Json;
+using NuSysApp.Util;
 
 namespace NuSysApp
 {
@@ -108,7 +109,9 @@ namespace NuSysApp
             {
                 return;
             }
-            RegionViews.Clear();
+            UITask.Run(delegate {
+                RegionViews.Clear();
+            });
             foreach (var regionModel in Controller.LibraryElementModel.Regions)
             {
 
@@ -181,7 +184,7 @@ namespace NuSysApp
         private async void OnPageChange(int page)
         {
             CurrentPageNumber = page;
-            await RenderPage(page);
+            await UITask.Run(async delegate { await RenderPage(page); });
 
         }
 
@@ -265,6 +268,13 @@ namespace NuSysApp
 
         protected override void OnSizeChanged(object source, double width, double height)
         {
+            // don't edit if we are in exploration or presentation mode
+            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
+                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
+            {
+                return;
+            }
+
             SetSize(width, height);
         }
 
