@@ -10,7 +10,7 @@
     d:DesignWidth="400">
 
     <Grid>
-        <Ellipse x:Name ="xPinHighlight" Height="32" Width="32" Fill="DimGray">
+        <Ellipse x:Name ="xPinHighlight" Height="30" Width="30" Fill="DimGray">
         </Ellipse>
         <Ellipse x:Name ="linkButton" Height="30" Width="30"  PointerPressed ="circlePointerPressedHandler" PointerEntered="circlePointerEnteredHandler" PointerExited="circlePointerExitedHandler" Opacity =".5" Fill="Blue"></Ellipse>
         <Canvas>
