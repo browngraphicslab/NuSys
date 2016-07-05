@@ -117,6 +117,7 @@ namespace NuSysApp
         private void AddRegionToList(object source, RegionController regionController)
         {
             RegionCollection.Add(regionController.Model);
+            regionController.TitleChanged += UpdateCollection;
         }
 
         public void Dispose()
@@ -171,6 +172,7 @@ namespace NuSysApp
                     foreach (var region in CurrentElementController.LibraryElementModel.Regions)
                     {
                         RegionCollection.Add(region);
+                        var regionController = SessionController.Instance.RegionsController.GetRegionController(region.Id);
                     }
                 }
                 
@@ -270,6 +272,12 @@ namespace NuSysApp
                 return false;
             }
             
+        }
+
+        public void UpdateCollection(object sender, string title)
+        {
+
+            RaisePropertyChanged("RegionCollection");
         }
 
         public void AddTab(IDetailViewable viewable)
