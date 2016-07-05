@@ -47,7 +47,22 @@ namespace NuSysApp
             SetSize(400,500);
             vm.PropertiesToDisplayChanged += Vm_PropertiesToDisplayChanged;
             //xMetadataKeysList.ItemsSource = (DataContext as MetadataToolViewModel).AllMetadataDictionary.Keys;
-            xMetadataKeysList.ItemsSource = (DataContext as MetadataToolViewModel).AllMetadataDictionary;
+            xMetadataKeysList.ItemsSource = (DataContext as MetadataToolViewModel).AllMetadataDictionary.Keys;
+
+        }
+
+        private void Delete_Click(object sender, RoutedEventArgs e)
+        {
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            wvm.AtomViewList.Remove(this);
+            (DataContext as ToolViewModel).Dispose();
+            this.Dispose();
+
+        }
+
+        public void Dispose()
+        {
+            (DataContext as MetadataToolViewModel).PropertiesToDisplayChanged -= Vm_PropertiesToDisplayChanged;
 
         }
 
@@ -56,8 +71,9 @@ namespace NuSysApp
             if (xMetadataKeysList.SelectedItems.Count == 1)
             {
                 var x = xMetadataKeysList.SelectedItems[0];
-                xMetadataValuesList.ItemsSource = (xMetadataKeysList.SelectedItems[0] is KeyValuePair<string, HashSet<ToolItemTemplate>> ? (KeyValuePair<string, HashSet<ToolItemTemplate>>)xMetadataKeysList.SelectedItems[0] : new KeyValuePair<string, HashSet<ToolItemTemplate>>()).Value;
-                (DataContext as MetadataToolViewModel).Selection = new Tuple<string, string>((xMetadataKeysList.SelectedItems[0] is KeyValuePair<string, HashSet<ToolItemTemplate>> ? (KeyValuePair<string, HashSet<ToolItemTemplate>>)xMetadataKeysList.SelectedItems[0] : new KeyValuePair<string, HashSet<ToolItemTemplate>>()).Key, null);
+                xMetadataValuesList.ItemsSource =
+                    (DataContext as MetadataToolViewModel).AllMetadataDictionary[(string)xMetadataKeysList.SelectedItems[0]];// (xMetadataKeysList.SelectedItems[0] is KeyValuePair<string, HashSet<string>> ? (KeyValuePair<string, HashSet<string>>)xMetadataKeysList.SelectedItems[0] : new KeyValuePair<string, HashSet<ToolItemTemplate>>()).Value;
+                (DataContext as MetadataToolViewModel).Selection = new Tuple<string, string>((string)xMetadataKeysList.SelectedItems[0], null);
             }
 
         }
@@ -66,30 +82,27 @@ namespace NuSysApp
         {
             if (xMetadataValuesList.SelectedItems.Count == 1 && xMetadataKeysList.SelectedItems.Count == 1)
             {
-                var x = (xMetadataValuesList.SelectedItems[0] as ToolItemTemplate);
-                var y = x.Value;
-
-                (DataContext as MetadataToolViewModel).Selection = new Tuple<string, string>((xMetadataKeysList.SelectedItems[0] is KeyValuePair<string, HashSet<ToolItemTemplate>> ? (KeyValuePair<string, HashSet<ToolItemTemplate>>)xMetadataKeysList.SelectedItems[0] : new KeyValuePair<string, HashSet<ToolItemTemplate>>()).Key, y);
+                (DataContext as MetadataToolViewModel).Selection = new Tuple<string, string>((DataContext as MetadataToolViewModel).Selection.Item1, (string)xMetadataValuesList.SelectedItems[0]);
             }
         }
 
         private void Vm_PropertiesToDisplayChanged()
         {
             //xMetadataKeysList.ItemsSource = (DataContext as MetadataToolViewModel).AllMetadataDictionary.Keys;
-            xMetadataKeysList.ItemsSource = (DataContext as MetadataToolViewModel).AllMetadataDictionary;
+            xMetadataKeysList.ItemsSource = (DataContext as MetadataToolViewModel).AllMetadataDictionary.Keys;
             if ((DataContext as MetadataToolViewModel).Selection != null &&
                 ((DataContext as MetadataToolViewModel).Controller as MetadataToolController).Model.Selected &&
                 (DataContext as MetadataToolViewModel).Selection.Item1 != null)
             {
                 xMetadataKeysList.SelectionChanged -= XMetadataKeysList_OnSelectionChanged;
                 //xMetadataKeysList.SelectedItem = GetKeyListItem((DataContext as MetadataToolViewModel).Selection.Item1).Key;
-                SetKeyListSelection((DataContext as MetadataToolViewModel).Selection.Item1);
+                xMetadataKeysList.SelectedItem = (DataContext as MetadataToolViewModel).Selection.Item1;
                 //xMetadataKeysList.SelectedItem = xMetadataKeysList.Items[0];
                 xMetadataKeysList.SelectionChanged += XMetadataKeysList_OnSelectionChanged;
                 if ((DataContext as MetadataToolViewModel).Selection.Item2 != null)
                 {
                     xMetadataValuesList.SelectionChanged -= XMetadataValuesList_OnSelectionChanged;
-                    SetValueListSelection((DataContext as MetadataToolViewModel).Selection.Item2);
+                    xMetadataValuesList.SelectedItem = (DataContext as MetadataToolViewModel).Selection.Item2;
                     xMetadataValuesList.SelectionChanged += XMetadataValuesList_OnSelectionChanged;
                 }
                 else
@@ -394,14 +407,14 @@ namespace NuSysApp
             {
                 //xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
                 xMetadataKeysList.SelectionChanged -= XMetadataKeysList_OnSelectionChanged;
-                SetKeyListSelection(((sender as Grid).Children[0] as TextBlock).Text);
+                xMetadataKeysList.SelectedItem = ((sender as Grid).Children[0] as TextBlock).Text;
                 xMetadataKeysList.SelectionChanged += XMetadataKeysList_OnSelectionChanged;
             }
             else if (_currentDragMode == DragMode.Value)
             {
                 //xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
                 xMetadataValuesList.SelectionChanged -= XMetadataValuesList_OnSelectionChanged;
-                SetValueListSelection(((sender as Grid).Children[0] as TextBlock).Text);
+                xMetadataValuesList.SelectedItem = ((sender as Grid).Children[0] as TextBlock).Text;
                 xMetadataValuesList.SelectionChanged += XMetadataValuesList_OnSelectionChanged;
             }
 
@@ -528,31 +541,6 @@ namespace NuSysApp
 
         }
 
-        private void SetKeyListSelection(string key)
-        {
-            var i = 0;
-            foreach (KeyValuePair<string, HashSet<ToolItemTemplate>> item in xMetadataKeysList.Items)
-            {
-                if (item.Key.Equals(key))
-                {
-                    xMetadataKeysList.SelectedItem = xMetadataKeysList.Items[i];
-                }
-                i++;
-            }
-        }
-
-        private void SetValueListSelection(string value)
-        {
-            var i = 0;
-            foreach (ToolItemTemplate item in xMetadataValuesList.Items)
-            {
-                if (value.Equals(item.Value))
-                {
-                    xMetadataValuesList.SelectedItem = xMetadataValuesList.Items[i];
-                }
-                i++;
-            }
-        }
 
         private void XList_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {

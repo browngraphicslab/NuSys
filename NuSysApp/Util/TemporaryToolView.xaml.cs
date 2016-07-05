@@ -80,19 +80,18 @@ namespace NuSysApp
             if ((DataContext as BasicToolViewModel).Selection != null && ((DataContext as BasicToolViewModel).Controller as BasicToolController).Model.Selected && xPropertiesList.SelectedItems.Count == 0)
             {
                 xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
-                xPropertiesList.SelectedItem = GetListItem((DataContext as BasicToolViewModel).Selection);
+                //xPropertiesList.SelectedItem = GetListItem((DataContext as BasicToolViewModel).Selection);
+                xPropertiesList.SelectedItem = ((DataContext as BasicToolViewModel).Selection);
                 xPropertiesList.SelectionChanged += XPropertiesList_OnSelectionChanged;
             }
-
+            
             (PieChart.Series[0] as PieSeries).ItemsSource = (DataContext as BasicToolViewModel).PieChartDictionary;
 
         }
 
         public void Dispose()
         {
-            xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
             (DataContext as BasicToolViewModel).PropertiesToDisplayChanged -= Vm_PropertiesToDisplayChanged;
-            xResizer.ManipulationDelta -= Resizer_OnManipulationDelta;
         }
 
 
@@ -206,6 +205,7 @@ namespace NuSysApp
         {
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
             wvm.AtomViewList.Remove(this);
+            (DataContext as ToolViewModel).Dispose();
             this.Dispose();
 
         }
@@ -250,17 +250,6 @@ namespace NuSysApp
             _y = e.GetCurrentPoint(xCanvas).Position.Y - 25;
         }
 
-        public ToolItemTemplate GetListItem(string selectionText)
-        {
-            foreach (ToolItemTemplate item in xPropertiesList.Items)
-            {
-                if (item.Value.Equals(selectionText))
-                {
-                    return item;
-                }
-            }
-            return null;
-        }
 
         private async void xList_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
@@ -272,7 +261,7 @@ namespace NuSysApp
 
             xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
             xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
-            xPropertiesList.SelectedItem = GetListItem(((sender as Grid).Children[0] as TextBlock).Text);
+            xPropertiesList.SelectedItem = ((sender as Grid).Children[0] as TextBlock).Text;
             xPropertiesList.SelectionChanged += XPropertiesList_OnSelectionChanged;
 
 
@@ -312,15 +301,21 @@ namespace NuSysApp
             if (_currentDragMode == DragMode.Filter)
             {
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
-                var hitsStartList = hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList();
-                if (!hitsStartList.Any())
+                if (hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList().Any())
                 {
-                    hitsStartList = hitsStart.Where(uiElem => (uiElem is MetadataToolView)).ToList();
-                }
-                if (hitsStartList.Any())
-                {
+                    var hitsStartList = hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList();
                     AddFilterToExistingTool(hitsStartList, wvm);
+                }
 
+                else if (hitsStart.Where(uiElem => (uiElem is MetadataToolView)).ToList().Any())
+                {
+                    var hitsStartList = hitsStart.Where(uiElem => (uiElem is MetadataToolView)).ToList();
+                    AddFilterToExistingTool(hitsStartList, wvm);
+                }
+                else if (hitsStart.Where(uiElem => (uiElem is ToolFilterView)).ToList().Any())
+                {
+                    var hitsStartList = hitsStart.Where(uiElem => (uiElem is ToolFilterView)).ToList();
+                    AddFilterToFilterToolView(hitsStartList, wvm);
                 }
                 else
                 {
@@ -328,6 +323,16 @@ namespace NuSysApp
                 }
 
             }
+        }
+
+        private void AddFilterToFilterToolView(List<UIElement> hitsStartList, FreeFormViewerViewModel wvm)
+        {
+            ToolFilterLinkViewModel linkViewModel = new ToolFilterLinkViewModel(DataContext as ToolViewModel, (hitsStartList.First() as ToolFilterView));
+            ToolFilterLinkView linkView = new ToolFilterLinkView(linkViewModel);
+            Canvas.SetZIndex(linkView, Canvas.GetZIndex(this) - 1);
+            (hitsStartList.First() as ToolFilterView).AddLink(linkView);
+            (hitsStartList.First() as ToolFilterView).AddParentTool(DataContext as ToolViewModel);
+            wvm.AtomViewList.Add(linkView);
         }
 
         public void AddNewFilterTool(double x, double y, FreeFormViewerViewModel wvm)
@@ -435,43 +440,9 @@ namespace NuSysApp
         {
             if (xPropertiesList.SelectedItems.Count == 1)
             {
-                (DataContext as BasicToolViewModel).Selection = (((ToolItemTemplate)(xPropertiesList.SelectedItems[0])).Value);
+                (DataContext as BasicToolViewModel).Selection = (((string)(xPropertiesList.SelectedItems[0])));
             }
         }
-
-        private void XUniqueButton_OnChecked(object sender, RoutedEventArgs e)
-        {
-            //PropertiesToDisplay = (DataContext as BasicToolViewModel).PropertiesToDisplay;
-            Binding b = new Binding();
-            b.Path = new PropertyPath("PropertiesToDisplayUnique");
-            xPropertiesList.SetBinding(ListBox.ItemsSourceProperty, b);
-
-            if ((DataContext as BasicToolViewModel).Selection != null && xPropertiesList.SelectedItems.Count == 0)
-            {
-                xPropertiesList.SelectedItem = GetListItem((DataContext as BasicToolViewModel).Selection);
-            }
-
-            PieChart.Visibility = Visibility.Collapsed;
-            xPropertiesList.Visibility = Visibility.Visible;
-        }
-
-        private void XUniqueButton_OnUnchecked(object sender, RoutedEventArgs e)
-        {
-            Binding b = new Binding();
-            b.Path = new PropertyPath("PropertiesToDisplayUnique");
-            xPropertiesList.SetBinding(ListBox.ItemsSourceProperty, b);
-
-
-            if ((DataContext as BasicToolViewModel).Selection != null && xPropertiesList.SelectedItems.Count == 0)
-            {
-                xPropertiesList.SelectedItem = GetListItem((DataContext as BasicToolViewModel).Selection);
-            }
-
-            PieChart.Visibility = Visibility.Visible;
-            xPropertiesList.Visibility = Visibility.Collapsed;
-        }
-
-
 
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
@@ -504,12 +475,7 @@ namespace NuSysApp
                 PieChart.Width = resizeX;
             }
         }
-
-        private void xFilterList_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
-        {
-            //keep this method.
-            e.Handled = true;
-        }
+        
 
 
         private void DataPointSeries_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -531,7 +497,7 @@ namespace NuSysApp
 
                 if ((DataContext as BasicToolViewModel).Selection != null && xPropertiesList.SelectedItems.Count == 0)
                 {
-                    xPropertiesList.SelectedItem = GetListItem((DataContext as BasicToolViewModel).Selection);
+                    xPropertiesList.SelectedItem = (DataContext as BasicToolViewModel).Selection;
                 }
 
                 PieChart.Visibility = Visibility.Visible;
@@ -550,7 +516,7 @@ namespace NuSysApp
 
                 if ((DataContext as BasicToolViewModel).Selection != null && xPropertiesList.SelectedItems.Count == 0)
                 {
-                    xPropertiesList.SelectedItem = GetListItem((DataContext as BasicToolViewModel).Selection);
+                    xPropertiesList.SelectedItem = (DataContext as BasicToolViewModel).Selection;
                 }
 
                 PieChart.Visibility = Visibility.Collapsed;

@@ -26,7 +26,7 @@ namespace NuSysApp
                     view = new ImageDetailHomeTabView(new ImageDetailHomeTabViewModel(controller));
                     break;
                 case ElementType.Word:
-                    //view = new WordDetailView(new WordNodeViewModel(controller));
+                    view = new WordDetailHomeTabView(new WordDetailHomeTabViewModel(controller));
                     break;
                 case ElementType.Powerpoint:
                     //view = new PowerpointDetailView(new PowerpointNodeViewModel(controller));

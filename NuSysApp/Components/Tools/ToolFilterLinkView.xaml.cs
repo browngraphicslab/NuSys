@@ -28,8 +28,22 @@ namespace NuSysApp
             {
                 UpdateControlPoints();
             };
-            
+            vm.InToolController.Disposed += Tool_Disposed;
+            vm.OutTool.Disposed += Tool_Disposed;
 
+        }
+
+        public void Tool_Disposed(string id)
+        {
+            if (id != "ToolFilterView")
+            {
+                (DataContext as ToolFilterLinkViewModel).OutTool.RemoveParentTool((DataContext as ToolFilterLinkViewModel).InTool);
+            }
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            wvm.AtomViewList.Remove(this);
+            (DataContext as ToolFilterLinkViewModel).Dispose();
+            (DataContext as ToolFilterLinkViewModel).InToolController.Disposed -= Tool_Disposed;
+            (DataContext as ToolFilterLinkViewModel).OutTool.Disposed -= Tool_Disposed;
         }
 
         private void OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
