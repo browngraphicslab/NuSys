@@ -1,14 +1,11 @@
-﻿using GemBox.Document;
-using Microsoft.Office.Interop.PowerPoint;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
+using System.Windows;
 using Office = Microsoft.Office.Core;
 
 // TODO:  Follow these steps to enable the Ribbon (XML) item:
@@ -36,11 +33,8 @@ namespace PowerPointAddIn
     public class NuSysRibbon : Office.IRibbonExtensibility
     {
         private Office.IRibbonUI ribbon;
-        public event SelectionAddedHandler SelectionAdded;
         public delegate void SelectionAddedHandler();
-        public event SendHandler BtnSend;
         public delegate void SendHandler();
-
 
         public NuSysRibbon()
         {
@@ -65,17 +59,21 @@ namespace PowerPointAddIn
 
         public void OnBtnClick(Office.IRibbonControl control)
         {
-            if (SelectionAdded != null)
-                SelectionAdded();            
+            try {
+                string docExt = Path.GetExtension(Globals.ThisAddIn.Application.ActivePresentation.FullName);
+
+                if (docExt != ".pptx" || String.IsNullOrEmpty(docExt))
+                {
+                    MessageBox.Show("Please be advised that the NuSys plugin works best with .pptx file types");
+                }
+
+                Globals.ThisAddIn.BuildSidebar();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Please enable editing before opening the NuSys sidebar");
+            }
         }
-
-        public void OnBtnSendClick(Office.IRibbonControl control)
-        {
-            if (BtnSend != null)
-                BtnSend();
-        }
-
-
 
         #endregion
 

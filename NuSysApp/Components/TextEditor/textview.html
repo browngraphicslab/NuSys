@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="app.css" type="text/css" />
+    <script src="app.js"></script>
+</head>
+<body>
+    <script type="text/javascript" language="javascript">
+        // Updates text in text node as it is added/edited in Text Editor
+
+    function InsertText(text) {
+        document.getElementById("editor").innerHTML = text;
+    }
+
+    function Blur() {
+        document.getElementById("editor").blur();
+        document.getElementById("editor").innerHTML+="";
+    }
+
+    this.addEventListener("keyup", function() {
+        window.external.notify(document.getElementById("editor").innerHTML);
+    });
+
+    </script>
+    <div id="editor" class="view" spellcheck="false">
+    </div>
+    <div id="preview"></div>
+</body>
+</html>

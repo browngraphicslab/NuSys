@@ -1,23 +1,45 @@
-console.log("ADDED");
-
-
 chrome.storage.local.get(null, function (data) {
     console.log(data);
     allData = data;
     delete allData["curr"];
-
-    console.info(data);
-    console.log();
     //	setData(data);
     //showInsertion(data);
-    sortByTime(data);
+    if (allData["selections"] != null) {
+        sortByTime(allData);
+    }   
 });
+
+$('#filter').change(function () {
+    switch ($("#filter").val()) {
+        case "chrono":
+            alert("chrono");
+            break;
+        case "key":
+            
+            break;
+        case "comment":
+            break;
+    }
+});
+
+$('#submit').click(function () {
+    changeFilter();
+
+});
+
+function changeFilter() {
+    switch ($("#filter").val()) {
+        case "comment":
+            alert($("#searchInput").val());
+            break;
+    }
+}
+
+
 function sortByTime(obj){
     var json = JSON.stringify(obj);
-    console.log(json);
-    var sortedJson = sortResults(obj['selections'], "urlGroup", true);
+    var sortedJson = sortResults(obj['selections'], "urlGroup", false);
     var newJson = {};
-    console.log(sortedJson);
     var hash = {};
     $(sortedJson).each(function (indx, value) {
         var groupId = value["urlGroup"];
@@ -30,30 +52,24 @@ function sortByTime(obj){
         }
         
     });
-    console.log(hash);
-
     showInsertion(hash);
-
 }
 
 function sortResults(json, prop, asc) {
   
-    json = json.sort(function (a, b) {
+    sortedJson = json.sort(function (a, b) {
         if (asc) return (a[prop] > b[prop]) ? 1 : ((a[prop] < b[prop]) ? -1 : 0);
         else return (b[prop] > a[prop]) ? 1 : ((b[prop] < a[prop]) ? -1 : 0);
     });
-
-    return json;
+    return sortedJson;
 }
 function injectScript(tab) {
     console.log("injectin!!!!!");
     chrome.tabs.executeScript({ file: 'jquery.js' });
-    
     chrome.tabs.executeScript({ file: 'NuSysChromeExtension.js' });
 }
 
 $("#reset").click(function () {
-    console.log("DDDdd")
     chrome.storage.local.clear();
     $("#container").empty();
 });
@@ -61,10 +77,6 @@ $("#reset").click(function () {
 function sendMessage(key) {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, { pastPage: key }, function (response) {
-            // console.log(response.farewell);\
-            console.log("MESSAGE SENT!!!!");
-            console.log(tabs);
-            console.log(response);
             if (!response) {
                 sendMessage(key);
             }
@@ -76,6 +88,7 @@ function sendMessage(key) {
 }
 
 function showInsertion(data) {
+    console.log(data);
     $.each(data, function (index, val) {
         console.log(val);
 
@@ -85,8 +98,7 @@ function showInsertion(data) {
         $(title).append("<span class='url'>" + val[0]["url"] + "</span>");
         $(title).append("<button class='toRemove button' type='button'>Remove</button>");
         $(title).append("<button class='pastPage button' type='button'>Open</button>");
-        // $(title).append("<span>" + data[val]["date"] + "</span>");
-
+       
         $(title).find(".pastPage").click(function () {
             chrome.tabs.create({ 'url': val[0]["url"] }, injectScript);
             sendMessage(val);
@@ -94,7 +106,6 @@ function showInsertion(data) {
 
         var selections = document.createElement("div");
         $.each(val, function (indx, v) {
-            console.log(v);
             var content = v["_content"];
             var res = content.split('//');
             var newVal = "";
@@ -106,17 +117,25 @@ function showInsertion(data) {
             }
             $(selections).append("<div style = 'clear:both'>" + newVal + "</div>");
         });
-    //    $("#container").append(date);
         $("#container").append(title);
         $("#container").append(selections);
 
-        //$(title).find(".toRemove").click(function () {
-        //    $(title).remove();
-        //    $(selections).remove();
-        //    delete data[val];
-        //    console.log(data);
-        //    chrome.storage.local.remove(val);
-        //});
+        $(title).find(".toRemove").click(function () {
+            $(title).remove();
+            $(selections).remove();
+            chrome.storage.local.get(null, (data) =>{
+                console.log(data);
+                var newSelections = [];
+                $(data["selections"]).each((indx, elem) =>{
+                    console.log(val[0]["urlGroup"] == elem["urlGroup"]);
+                    if (val[0]["urlGroup"]!= elem["urlGroup"]) {
+                        newSelections.push(elem);
+                    }
+                });
+                data["selections"] = newSelections;
+                chrome.storage.local.set(data);
+            });
+        });
     });
 
     $("#container").accordion({active: false,  collapsible: true});
@@ -125,14 +144,14 @@ function showInsertion(data) {
 
 function setData(data) {
 
-    $.each(allUrls, function (index, url) {
+    $.each(allUrls, function(index, url) {
         console.log(url);
         var div = document.createElement("div");
         div.setAttribute("id", index);
         document.body.appendChild(div);
         $("#" + index).append("<p style='font-size:160%' >" + url + "</p>");
         console.log(allData[url]);
-        $.each(allData[url], function (indx, val) {
+        $.each(allData[url], function(indx, val) {
             var res = val.split('//');
             var newVal = "";
             for (var i = 0; i < res.length; i++) {
@@ -147,5 +166,5 @@ function setData(data) {
         $("#" + index).append("<hr>");
         document.getElementById("container").appendChild(div);
 
-    })
+    });
 }

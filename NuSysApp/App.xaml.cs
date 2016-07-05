@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Media.SpeechRecognition;
@@ -9,6 +10,13 @@ using Windows.UI.Xaml.Navigation;
 using Microsoft.ApplicationInsights;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using Newtonsoft.Json.Linq;
+using System.IO;
+using NuSysApp.Util;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=402347&clcid=0x409
 
@@ -35,6 +43,13 @@ namespace NuSysApp
 
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+
+            Application.Current.UnhandledException += CurrentOnUnhandledException;
+        }
+
+        private void CurrentOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
+        {
+            Debug.WriteLine("Unhandled Exception");
         }
 
         /// <summary>
@@ -44,15 +59,6 @@ namespace NuSysApp
         /// <param name="e">Details about the launch request and process.</param>
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
-#if DEBUG
-            if (Debugger.IsAttached)
-            {
-                this.DebugSettings.EnableFrameRateCounter = true;
-            }
-#endif
-
-            await SetupDirectories();
-
             Frame rootFrame = Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content,
@@ -82,26 +88,30 @@ namespace NuSysApp
             }
             // Ensure the current window is active
             Window.Current.Activate();
+
+            await SetupDirectories();
+            //await AccessList.ReadFileTokens();
         }
 
         private static async Task<bool> SetupDirectories()
         {
-            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
-            NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
+            //StorageFolder workspaceFolder = await AccessList.GetWorkspaceFolder();
+            //StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
 
-            NuSysStorages.NuSysTempFolder =
-                await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
-            NuSysStorages.ChromeTransferFolder =
-                await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
+            NuSysStorages.NuSysTempFolder = await StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp);
+            NuSysStorages.SaveFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderSave);
+            NuSysStorages.Thumbs = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.SaveFolder, Constants.FolderThumbs);
+            NuSysStorages.ChromeTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderChromeTransferName);
+            NuSysStorages.OpenDocParamsFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderOpenDocParams);
             NuSysStorages.WordTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderWordTransferName);
             NuSysStorages.PowerPointTransferFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderPowerpointTransferName);
             NuSysStorages.Media = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderMediaName);
-            NuSysStorages.OfficeToPdfFolder =
-                await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderOfficeToPdf);
+            NuSysStorages.OfficeToPdfFolder = await StorageUtil.CreateFolderIfNotExists(NuSysStorages.NuSysTempFolder, Constants.FolderOfficeToPdf);
 
+            NuSysStorages.FirstTimeWord = await StorageUtil.CreateFileIfNotExists(NuSysStorages.OpenDocParamsFolder, Constants.FirstTimeWord);
+            NuSysStorages.FirstTimePowerpoint = await StorageUtil.CreateFileIfNotExists(NuSysStorages.OpenDocParamsFolder, Constants.FirstTimePowerpoint);
             return true;
         }
-
 
         /// <summary>
         /// Invoked when Navigation to a certain page fails
@@ -122,10 +132,10 @@ namespace NuSysApp
         /// <param name="e">Details about the suspend request.</param>
         private async void OnSuspending(object sender, SuspendingEventArgs e)
         {
-            await NetworkConnector.Instance.Disconnect();
-
-            var deferral = e.SuspendingOperation.GetDeferral();            
+            var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
+            //await AccessList.SaveFileTokens();
+
             deferral.Complete();
         }
     }

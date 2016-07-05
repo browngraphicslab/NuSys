@@ -1,69 +1,65 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Windows.System;
+using Newtonsoft.Json;
 
 namespace NuSysApp
 {
-    public abstract class Sendable : BaseINPC
+    // TODO: remove BASEINPC
+    public abstract class Sendable
     {
-        public enum EditStatus
+
+        public delegate void UnPackedEventHandler(object source);
+        
+
+        public event UnPackedEventHandler UnPacked;
+
+
+
+        protected Sendable(string id)
         {
-            Yes,
-            No,
-            Maybe
+            Id = id;
         }
-        private EditStatus _editStatus;
-        public delegate void CanEditChangedEventHandler(object source, CanEditChangedEventArg e);
-        public event CanEditChangedEventHandler OnCanEditChanged;
-        public Sendable(string id) : base()
+
+        public bool IsUnpacked { get; private set; }
+
+        public string Id { get; set; }
+
+
+        
+        public virtual async Task<Dictionary<string, object>> Pack()
         {
-            ID = id;
-            _editStatus = EditStatus.Maybe;
-            Children = new List<Sendable>();
-        }
-        public async virtual Task<Dictionary<string, string>> Pack()
-        {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-            dict.Add("id", ID);
+            var dict = new Dictionary<string, object>();
+            dict.Add("id", Id);
             return dict;
         }
-        public async virtual Task UnPack(Dictionary<string, string> props) { }
-        public string ID { get;}
-        public EditStatus CanEdit
-        {
-            get
-            {
-                return _editStatus;
-            }
-            set
-            {
-                if (_editStatus == value)
-                {
-                    return;
-                }
-                _editStatus = value;
-                OnCanEditChanged?.Invoke(this, new CanEditChangedEventArg("Can edit changed", CanEdit));
-            }
-        } //Network locks
 
-        public abstract void Delete();
-        public List<Sendable> Children { set; get; }
+        public virtual async Task UnPack(Message props)
+        {
+            IsUnpacked = true;
+            
+            UnPacked?.Invoke(this);
+        }
+
         public virtual async Task<string> Stringify()
         {
-            Dictionary<string, string> props = await Pack();
-            Dictionary<string, string> childs = new Dictionary<string, string>();//YES, i know childs is bad grammars but I already used Children
-            if (Children.Count > 0)
+            var props = await Pack();
+
+            // TODO: Remove
+            /*
+            var childs = new Dictionary<string, string>();
+
+            if (Children.Count == 0)
+                return JsonConvert.SerializeObject(props);
+            
+            foreach (var child in Children)
             {
-                foreach (Sendable child in Children)
-                {
-                    childs.Add(child.ID, await child.Stringify());
-                }
-                props["children"] = Newtonsoft.Json.JsonConvert.SerializeObject(childs);
+                childs.Add(child.Value.ID, await child.Value.Stringify());
             }
-            return Newtonsoft.Json.JsonConvert.SerializeObject(props);
+            props["children"] = JsonConvert.SerializeObject(childs);
+            */
+            var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+
+            return JsonConvert.SerializeObject(props, settings);
         }
     }
 }

@@ -6,81 +6,135 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     xmlns:local="using:NuSysApp">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
     <converters:SelectionToColorConverter x:Key="sConverter" />
     <converters:BoolToVisibilityConverter x:Key="vConverter" />
-    <converters:EnumToBoolConverter x:Key="eConverter" />
     <Style TargetType="local:NodeTemplate">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:NodeTemplate" >
-                    <Grid Visibility="{Binding IsVisible, Converter={StaticResource vConverter}}" Name="bg" Background="{TemplateBinding Background}"
-                          IsHitTestVisible="{Binding CanEdit, Converter={StaticResource eConverter}, Mode=TwoWay}">
-                        <Grid.Resources>
-                            <Storyboard x:Key="slideout" x:Name="slideout">
-                                <DoubleAnimation Duration="0:0:0.2" To="1.25" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateX)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
-                                <DoubleAnimation Duration="0:0:0.2" To="-73" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="SubMenu" d:IsOptimized="True">
-                                    <DoubleAnimation.EasingFunction>
-                                        <CubicEase  EasingMode="EaseOut" />
-                                    </DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                                <DoubleAnimation Duration="0:0:0.2" To=".75" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
-                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenu">
-                                    <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
-                                        <DiscreteObjectKeyFrame.Value>
-                                            <x:Boolean>True</x:Boolean>
-                                        </DiscreteObjectKeyFrame.Value>
-                                    </DiscreteObjectKeyFrame>
-                                </ObjectAnimationUsingKeyFrames>
-                            </Storyboard>
-                            <Storyboard x:Key="slidein" x:Name="slidein">
-                                <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="SubMenu" d:IsOptimized="True"/>
-                                <DoubleAnimation Duration="0:0:0.2" To="10" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="SubMenu" d:IsOptimized="True">
-                                    <DoubleAnimation.EasingFunction>
-                                        <CubicEase  EasingMode="EaseIn" />
-                                    </DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.IsHitTestVisible)" Storyboard.TargetName="SubMenu">
-                                    <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
-                                        <DiscreteObjectKeyFrame.Value>
-                                            <x:Boolean>False</x:Boolean>
-                                        </DiscreteObjectKeyFrame.Value>
-                                    </DiscreteObjectKeyFrame>
-                                </ObjectAnimationUsingKeyFrames>
-                            </Storyboard>
-                        </Grid.Resources>
-                        <Rectangle Height="{Binding Height}" Width="{Binding Width}" Stroke="Blue" StrokeThickness="3" Opacity=".8"
-                   Visibility="{Binding IsSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" />
-                        <Rectangle Height="{Binding Height}" Width="{Binding Width}" Stroke="Blue" StrokeThickness="3" Opacity=".8"
-                   Visibility="{Binding IsMultiSelected, ConverterParameter=false, Converter={StaticResource vConverter}}" />
-                        <StackPanel x:Name="SubMenu" RenderTransformOrigin="0.5,0.5"
-            Orientation="Horizontal" Height="75" VerticalAlignment="Top" Opacity="0" Margin="0,0,0,0" IsHitTestVisible="False">
-                            <StackPanel.RenderTransform>
-                                <CompositeTransform/>
-                            </StackPanel.RenderTransform>
-                            
-                            <ContentControl Content="{TemplateBinding SubMenu}" />
-                            
-                        </StackPanel>                       
+                    <Canvas>
+                        <Grid x:Name="xContainer" Width="{Binding Width}" Height="{Binding Height}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Canvas x:Name="xCanvas" Grid.Row="0" Width="{Binding Width}" Height="{Binding Height}">
+                                <Grid x:Name="xTitleContainer" VerticalAlignment="Top" Width="{Binding Width}" >
+                                    <Border x:Name="Rect" Background="{StaticResource color6}" BorderBrush="{StaticResource color3}" BorderThickness="1" Width="{Binding Width}"  />
+                                    <TextBox Padding="10,5,10,10" Margin="0,0" x:Name="xTitle" IsTabStop="{Binding IsSelected}" Width="{Binding Width}"  IsHitTestVisible="{Binding IsSelected}" TextWrapping="NoWrap"  Text="{Binding Title, Mode=TwoWay}" MaxHeight="80" FontSize="20" FontWeight="Bold" BorderBrush="Transparent" Background="Transparent" TextAlignment="Center" VerticalAlignment="Center" BorderThickness="0">
+                                        <TextBox.Resources>
+                                            <Style TargetType="ContentControl">
+                                                <Setter Property="Foreground" Value="Black"></Setter>
+                                            </Style>
+                                        </TextBox.Resources>
+                                    </TextBox>
+                                    <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
+                                    <Button x:Name="isSearched" Visibility="Collapsed" Background="IndianRed">O</Button>
+                                </Grid>
 
-                        <ContentControl Content="{TemplateBinding Inner}" x:Name="innerControl"  />
+                                <Grid Visibility="{Binding IsVisible, Converter={StaticResource vConverter}}" Name="bg" BorderBrush="{StaticResource color3}" BorderThickness="1"  Background="{StaticResource color6}"
+                                  IsHitTestVisible="True"  Width="{Binding Width}"  Height="{Binding Height}">
 
-                        <local:InqCanvasView x:Name="inkCanvas" Height="{Binding 
-              RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.Height}" Width="{Binding  
-              RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.Width}" Background="Transparent" IsHitTestVisible="{Binding 
-              RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.IsEditingInk}" />
-                        
-                        <Button x:Name="btnDelete" Height="50" Width="50" VerticalAlignment="Top" Margin="10,10,0,0" Click="delete_Click"
-                Background="#00000000" IsHitTestVisible="False">
-                            <!--<Button.Content>
-                                <Image Source="ms-appx:///Assets/icon_x2.png" />
-                            </Button.Content>-->
-                        </Button>
-                        <Path x:Name="Resizer" Fill="White" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
-              Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
-              Opacity=".5"  Canvas.ZIndex="20" ManipulationMode="All" />
-                    </Grid>
+                                    <Rectangle Height="{Binding Height}" Width="{Binding Width}" Margin="-2,-2"  />
+                                    <Canvas x:Name="SubMenu" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" Margin="0,0,0,0" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}">
+                                        <Canvas.RenderTransform>
+                                            <TranslateTransform X="-65"></TranslateTransform>
+                                        </Canvas.RenderTransform>
+                                        <ContentControl Content="{TemplateBinding SubMenu}" />
+                                    </Canvas>
+                                    <Canvas x:Name="SubMenuRight" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,0,0" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}">
+                                        <Canvas.RenderTransform>
+                                            <TranslateTransform X="15"></TranslateTransform>
+                                        </Canvas.RenderTransform>
+                                        <Button x:Name="DuplicateElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}">
+                                            <StackPanel>
+                                                <Image Source="ms-appx:///Assets/icon_duplicate.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                                                <TextBlock Text="Duplicate" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button x:Name="Link" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,70,0,0">
+                                            <StackPanel>
+                                                <Image Source="ms-appx:///Assets/icon_link.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                                                <TextBlock Text="Link" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button x:Name="PresentationLink" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,140,0,0">
+                                            <StackPanel>
+                                                <Image Source="ms-appx:///Assets/icon_presentation_link.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                                                <TextBlock Text="Trail" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button x:Name="PresentationMode" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,210,0,0">
+                                            <StackPanel>
+                                                <Image Source="ms-appx:///Assets/powerpointIcon.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                                                <TextBlock Text="Present" TextAlignment="Center" Foreground="#9CC5C2" FontSize="12"></TextBlock>
+                                            </StackPanel>
+                                        </Button>
+
+                                    </Canvas>
+
+                                    <ContentControl Content="{TemplateBinding Inner}" x:Name="innerControl"  />
+                                    <Rectangle x:Name="HitArea" Height="{Binding Height}" Width="{Binding Width}" Fill="Transparent" Stroke="Transparent" />
+
+                                    <!-- TODO: Readd <local:InqCanvasView x:Name="inkCanvas" Height="{Binding 
+                      RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.Height}" Width="{Binding  
+                      RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.Width}" Background="Transparent" IsHitTestVisible="{Binding 
+                      RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.IsEditingInk}" /> -->
+
+
+                                    <Path x:Name="Resizer" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
+                      Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
+                      Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" />
+                                    <!--<TextBlock x:Name="Tags" VerticalAlignment="Bottom" FontSize="18" Text="{Binding Tags}"></TextBlock>-->
+
+                                </Grid>
+                                <Canvas>
+                                    <Border x:Name="xHighlight" Width="{Binding Width}" BorderThickness="4" CornerRadius="5,5,0,0" Visibility="Collapsed" />
+                                </Canvas>
+                                <Canvas>
+                                    <TextBlock x:Name="xUserName"  Text="" Margin="0,-67.5,0,0" FontSize="22.5"></TextBlock>
+                                </Canvas>
+                            </Canvas>
+                            <Canvas Grid.Row="2">
+                                <StackPanel VerticalAlignment ="Bottom">
+                                    <Grid>
+                                        <ItemsControl VerticalAlignment="Bottom" ItemsSource="{Binding CircleLinks}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <local:WrapPanel Width="{Binding Width}" Background="Transparent">
+                                                        <local:WrapPanel.RenderTransform>
+                                                            <TranslateTransform Y="5"></TranslateTransform>
+                                                        </local:WrapPanel.RenderTransform>
+                                                    </local:WrapPanel>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                        </ItemsControl>
+                                    </Grid>
+                                    <Grid>
+                                        <ItemsControl x:Name="Tags" VerticalAlignment="Bottom" ItemsSource="{Binding Tags}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <local:WrapPanel Width="{Binding Width}" Background="Transparent">
+                                                        <local:WrapPanel.RenderTransform>
+                                                            <TranslateTransform Y="5"></TranslateTransform>
+                                                        </local:WrapPanel.RenderTransform>
+                                                    </local:WrapPanel>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                        </ItemsControl>
+                                    </Grid>
+                                </StackPanel>
+                            </Canvas>
+                        </Grid>
+                    </Canvas>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 </ResourceDictionary>
+

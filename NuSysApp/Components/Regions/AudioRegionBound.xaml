@@ -1,0 +1,38 @@
+﻿<UserControl
+    x:Class="NuSysApp.AudioRegionBound"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="50"
+    d:DesignWidth="30">
+
+    <Canvas x:Name="xCanvas">
+        <Border Width="20" Background="Transparent">
+            <Border.RenderTransform>
+                <CompositeTransform TranslateX="-10"/>
+            </Border.RenderTransform>
+            <StackPanel Orientation="Vertical">
+
+                <Ellipse x:Name="Bulb" Width="10" Height="10" Fill="Azure" >
+                    <Ellipse.RenderTransform>
+                        <CompositeTransform TranslateY="-8" TranslateX="-3.5"/>
+                    </Ellipse.RenderTransform>
+                </Ellipse>
+                <Line x:Name="Handle" Y1="{Binding Y1}" Y2="{Binding Y2}"  X1="{Binding X1}" X2 ="{Binding X1}" StrokeThickness="4" Stroke="Azure" Width="7" Height="{Binding Y2}">
+                    <Line.RenderTransform>
+                        <CompositeTransform TranslateY="-10"/>
+                    </Line.RenderTransform>
+                </Line>
+                <Ellipse x:Name="Bulb2" Width="10" Height="10" Fill="Azure">
+                    <Ellipse.RenderTransform>
+                        <CompositeTransform TranslateY="-13" TranslateX="-3.5"/>
+                    </Ellipse.RenderTransform>
+                </Ellipse>
+        </StackPanel>
+        </Border>
+
+    </Canvas>
+</UserControl>

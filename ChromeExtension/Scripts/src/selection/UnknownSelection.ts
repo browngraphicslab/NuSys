@@ -8,16 +8,18 @@
 /// <reference path="../util/DomUtil.ts"/>
 
 
-class UnknownSelection implements ISelection {
+class UnknownSelection extends AbstractSelection {
     
     _brushStroke:BrushStroke;
     _inkCanvas:InkCanvas;
 
-    constructor(inkCanvas: InkCanvas, fromActiveStroke:boolean = false) {
+    constructor(inkCanvas: InkCanvas, fromActiveStroke: boolean = false) {
+        super("UnknownSelection");
         this._brushStroke = null;
         this._inkCanvas = inkCanvas;
 
         if (fromActiveStroke) {
+
             inkCanvas.setBrush(new LineBrush());
         }
     }

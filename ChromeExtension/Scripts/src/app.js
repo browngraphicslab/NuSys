@@ -1,3 +1,1 @@
-window.onload = function () {
-    var greeter = new Main();
-};
+var greeter = new Main();
