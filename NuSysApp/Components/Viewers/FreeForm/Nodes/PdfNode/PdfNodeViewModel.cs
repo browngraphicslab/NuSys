@@ -161,7 +161,7 @@ namespace NuSysApp
         private async void OnPageChange(int page)
         {
             CurrentPageNumber = page;
-            await RenderPage(page);
+            await UITask.Run(async delegate { await RenderPage(page); });
 
         }
 

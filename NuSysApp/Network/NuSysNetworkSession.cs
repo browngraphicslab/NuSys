@@ -324,7 +324,28 @@ namespace NuSysApp
 
         public async Task FetchLibraryElementData(string id)
         {
-            await _serverClient.FetchLibraryElementData(id);
+            if (SessionController.Instance.ContentController.GetContent(id).Type == ElementType.PDF)
+            {
+                bool fileExists = await CachePDF.isFilePresent(id);
+
+                if (fileExists) // exists in cache
+                {
+                    var cacheData = await CachePDF.readFile(id);
+                    SessionController.Instance.ContentController.GetLibraryElementController(id).Load(new LoadContentEventArgs(cacheData));
+                }
+                else
+                {
+                    await _serverClient.FetchLibraryElementData(id);
+                    var data = SessionController.Instance.ContentController.GetContent(id).Data;
+
+                    CachePDF.createWriteFile(id, data); //save the data
+                }
+            }
+            else
+            {
+                await _serverClient.FetchLibraryElementData(id);
+            }
+
         }
         public async Task<HashSet<string>> SearchOverLibraryElements(string searchText)
         {
