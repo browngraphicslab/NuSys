@@ -26,11 +26,38 @@ namespace NuSysApp
             foreach (var id in idList)
             {
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(id);
+                if (controller.LibraryElementModel.Type != ElementType.Collection)
+                {
+                    var libraryElementTemplate = new LibraryItemTemplate(controller);
+                    LibraryElements.Add(libraryElementTemplate);
+                }
+                
+            }
+            SessionController.Instance.ContentController.OnNewContent += ContentController_OnNewContent;
+            SessionController.Instance.ContentController.OnElementDelete += ContentController_OnElementDelete;
+            SessionController.Instance.LinkController.OnLinkRemoved += LinkController_OnLinkRemoved;
+            SessionController.Instance.LinkController.OnNewLink += LinkController_OnNewLink;
+        }
+
+        private void ContentController_OnElementDelete(LibraryElementModel element)
+        {
+            foreach (var item in LibraryElements)
+            {
+                if (item.ContentID == element.LibraryElementId)
+                {
+                    LibraryElements.Remove(item);
+                }
+            }
+        }
+
+        private void ContentController_OnNewContent(LibraryElementModel element)
+        {
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId);
+            if (controller.LibraryElementModel.Type != ElementType.Collection)
+            {
                 var libraryElementTemplate = new LibraryItemTemplate(controller);
                 LibraryElements.Add(libraryElementTemplate);
             }
-            SessionController.Instance.LinkController.OnLinkRemoved += LinkController_OnLinkRemoved;
-            SessionController.Instance.LinkController.OnNewLink += LinkController_OnNewLink;
         }
 
         private void LinkController_OnNewLink(LinkLibraryElementController link)
