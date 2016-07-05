@@ -203,7 +203,7 @@ namespace NuSysApp
 
         private async void AutoLogin()
         {
-<<<<<<< HEAD
+//<<<<<<< HEAD
             Debug.WriteLine("fix this");
             /*
             if (File.Exists(LoginCredentialsFilePath))

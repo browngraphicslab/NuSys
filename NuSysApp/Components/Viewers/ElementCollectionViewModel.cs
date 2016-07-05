@@ -113,26 +113,11 @@ namespace NuSysApp
         }
         private void RemoveVisualLinks(ElementController controller)
         {
-<<<<<<< HEAD
-            var contentLinks = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(controller.LibraryElementModel.LibraryElementId));
-            var toLinkIds = new HashSet<LinkId>();
-            foreach (var linkId in contentLinks)
-            {
-                var link = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
-                toLinkIds.Add(link.InAtomId.LibraryElementId == controller.LibraryElementModel.LibraryElementId ? link.OutAtomId : link.InAtomId);
-            }
-            var selected = toLinkIds.Select(id => id.LibraryElementId);
-            for (int i = 0; i < AtomViewList.Count; i++)
-            {
-                var atom = AtomViewList[i];
-                if (selected.Contains((atom.DataContext as ElementViewModel).ContentId))
-=======
             foreach (var atom in new HashSet<FrameworkElement>(AtomViewList))
             {
                 Debug.Assert(atom.DataContext is ElementViewModel);
                 var vm = (atom.DataContext as ElementViewModel);
                 if (vm.Controller == controller)
->>>>>>> origin/dev
                 {
                     AtomViewList.Remove(atom);
                 }
