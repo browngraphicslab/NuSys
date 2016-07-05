@@ -130,7 +130,7 @@ namespace NuSysApp
                         foreach (var id in vm.Controller.GetUpdatedDataList())
                         {
                             var lem = SessionController.Instance.ContentController.GetContent(id);
-                            if (lem == null)
+                            if (lem == null || lem.Type == ElementType.Link)
                             {
                                 continue;
                             }

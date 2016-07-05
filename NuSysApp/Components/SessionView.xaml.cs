@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using Windows.Devices.Input;
 using Windows.Foundation;
@@ -435,6 +437,7 @@ namespace NuSysApp
                     }
                     break;
                 case ElementType.Link:
+                    break;/*
                     var id1 = message.GetString("id1");
                     var id2 = message.GetString("id2");
                     if (made.Contains(id1) && made.Contains(id2))//both have been made
@@ -443,6 +446,7 @@ namespace NuSysApp
                     }
                     else if (!made.Contains(id1) && !made.Contains(id2))//neither have been made
                     {
+                        Debug.Assert(id1 != null && id2 != null);
                         if (messagesLeft.ContainsKey(id1) && messagesLeft.ContainsKey(id2))
                         {
                             await MakeElement(made, messagesLeft, messagesLeft[id1], loadCollections, levelsLeft);
@@ -474,6 +478,7 @@ namespace NuSysApp
                         }
                     }
                     break;
+                    */
                 default:
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(message));
                     break;

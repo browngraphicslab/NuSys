@@ -168,8 +168,7 @@ namespace NuSysApp
 
         public string GetSerialized()
         {
-            var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-            var r = JsonConvert.SerializeObject(_dict, settings);
+            var r = JsonConvert.SerializeObject(_dict, new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii });
             return r;
         }
     }
