@@ -331,7 +331,7 @@ namespace NuSysApp
         public void Select()
         {
             xMainRectangle.StrokeThickness = 6;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
+            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
             xResizingTriangle.Visibility = Visibility.Visible;
             xDelete.Visibility = Visibility.Visible;
             xNameTextBox.Visibility = Visibility.Visible;
