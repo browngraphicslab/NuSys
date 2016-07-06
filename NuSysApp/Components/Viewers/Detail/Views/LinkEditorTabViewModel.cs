@@ -164,17 +164,18 @@ namespace NuSysApp
 
         }
 
-        public void CreateLink(LinkId Id, string title)
+        public async void CreateLink(LinkId idToLinkTo, string title)
         {
             if (_linkable == null)
             {
                 return;
             }
-
-            _linkable.RequestAddNewLink(Id);
-            var linkId = SessionController.Instance.LinkController.GetLinkIdBetween(_linkable.Id, Id);
+            _linkable.LinkAdded -= _linkable_LinkAdded;
+            await _linkable.RequestAddNewLink(idToLinkTo);
+            var linkId = SessionController.Instance.LinkController.GetLinkIdBetween(_linkable.Id, idToLinkTo);
             var linkController = SessionController.Instance.ContentController.GetLibraryElementController(linkId) as LinkLibraryElementController;
             linkController?.SetTitle(title);
+            _linkable.LinkAdded += _linkable_LinkAdded;
         }
         public void SortByLinkedTo()
         {

@@ -51,13 +51,20 @@ namespace NuSysApp
                     return;
                 }
             }
-            _links[inAtomId].Add(id);
+            if (!_links[inAtomId].Contains(id))
+            {
+                _links[inAtomId].Add(id);
+            }
 
             if (!_links.ContainsKey(outAtomId))
             {
                 _links[outAtomId] = new HashSet<string>();
             }
-            _links[outAtomId].Add(id);
+            if (!_links[outAtomId].Contains(id))
+            {
+                _links[outAtomId].Add(id);
+            }
+
             AddToEndPointsToLink(inAtomId, outAtomId, id);
             OnNewLink?.Invoke(SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
         }
@@ -74,7 +81,12 @@ namespace NuSysApp
         {
             string id1 = inAtomId.RegionId == null ? inAtomId.LibraryElementId : inAtomId.RegionId;
             string id2 = outAtomId.RegionId == null ? outAtomId.LibraryElementId : outAtomId.RegionId;
-            return _endPointsToLinks[id1 + id2];
+            if (_endPointsToLinks.ContainsKey(id1 + id2) &&
+                _endPointsToLinks.ContainsKey(id1 + id2) != null)
+            {
+                return _endPointsToLinks[id1 + id2];
+            }
+            throw new ArgumentException("end points have no link associated with them");
         }
 
         public HashSet<LinkLibraryElementController> IdHashSetToControllers(IEnumerable<string> ids) { 
@@ -86,30 +98,7 @@ namespace NuSysApp
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(id);
             Debug.Assert(controller is LinkLibraryElementController);
             return controller as LinkLibraryElementController;
-        }
-
-      /*  public HashSet<LibraryElementController> GetOppositeLibraryElementControllers(LibraryElementController controller)
-        {
-            var libraryElementId = controller.LibraryElementModel.LibraryElementId;
-            if (!_links.ContainsKey(libraryElementId))
-            {
-                return new HashSet<LibraryElementController>();
-            }
-            var controllersToReturn = new HashSet<LibraryElementController>();
-            foreach (var linkId in _links[libraryElementId])
-            {
-                var linkModel = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
-                if (linkModel.InAtomId == controller.LibraryElementModel.LibraryElementId)
-                {
-                    controllersToReturn.Add(SessionController.Instance.ContentController.GetLibraryElementController(linkModel.OutAtomId));
-                    continue;
-                }
-                controllersToReturn.Add(SessionController.Instance.ContentController.GetLibraryElementController(linkModel.InAtomId));
-            }
-            return controllersToReturn;
-        }*/
-
-            
+        }   
 
         public void RemoveLink(string id)
         {
@@ -125,6 +114,21 @@ namespace NuSysApp
             if (_links.ContainsKey(link.OutAtomId))
             {
                 _links[link.OutAtomId].Remove(id);
+            }
+            RemoveFromEndPointsToLink(link.InAtomId, link.OutAtomId);
+        }
+        //removes a link from endPointsToLink
+        private void RemoveFromEndPointsToLink(LinkId inAtomId, LinkId outAtomId)
+        {
+            string id1 = inAtomId.RegionId == null ? inAtomId.LibraryElementId : inAtomId.RegionId;
+            string id2 = outAtomId.RegionId == null ? outAtomId.LibraryElementId : outAtomId.RegionId;
+            if (_endPointsToLinks.ContainsKey(id1 + id2))
+            {
+                _endPointsToLinks[id1 + id2] = null;
+            }
+            if (_endPointsToLinks.ContainsKey(id2 + id1))
+            {
+                _endPointsToLinks[id2 + id1] = null;
             }
         }
 

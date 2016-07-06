@@ -9,7 +9,7 @@ namespace NuSysApp
     public interface ILinkable
     {
 
-        void RequestAddNewLink(LinkId idToLinkTo);
+        Task RequestAddNewLink(LinkId idToLinkTo);
         void RequestRemoveLink(LinkId linkID);
         void ChangeLinkTitle(string linkLibraryElementID, string title);
         void ChangeLinkTags(string linkLibraryElementID, HashSet<String> tags);

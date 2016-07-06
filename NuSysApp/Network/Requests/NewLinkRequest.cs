@@ -94,7 +94,7 @@ namespace NuSysApp
                 controller.Load(loadEventArgs);
             }
             libraryElement.ServerUrl = url;
-            SessionController.Instance.LinkController.AddLink(_message.GetString("id"));
+            //SessionController.Instance.LinkController.AddLink(_message.GetString("id"));
 
             AddLinks(JsonConvert.DeserializeObject<LinkId>((string) _message["id1"]),
                 JsonConvert.DeserializeObject<LinkId>((string) _message["id2"]),
