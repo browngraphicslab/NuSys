@@ -215,6 +215,7 @@
     <Content Include="Assets\node icons\text.png" />
     <Content Include="Assets\logos\icon_pano.png" />
     <Content Include="Assets\logos\icon_upload.png" />
+    <Content Include="Assets\openclose icon.png" />
     <Content Include="Assets\Orator-Std-Medium_34151.ttf" />
     <Content Include="Assets\fonts\FiraSans-Book.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
