@@ -15,6 +15,7 @@ namespace NuSysApp
         {
             Controller = controller;
             Model = controller.LibraryElementModel;
+            
         }
 
         public override void AddRegion(object sender, RegionController controller)

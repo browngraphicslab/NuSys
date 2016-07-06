@@ -89,8 +89,7 @@ namespace NuSysApp
             return _endPointsToLinks[id1 + id2];
         }
 
-        public HashSet<LinkLibraryElementController> IdHashSetToControllers(IEnumerable<string> ids)
-        {
+        public HashSet<LinkLibraryElementController> IdHashSetToControllers(IEnumerable<string> ids) { 
             return new HashSet<LinkLibraryElementController>(ids.Select(item => GetLinkLibraryElementController(item)));
         }
 
@@ -101,32 +100,14 @@ namespace NuSysApp
             return controller as LinkLibraryElementController;
         }
 
-        /*  public HashSet<LibraryElementController> GetOppositeLibraryElementControllers(LibraryElementController controller)
-          {
-              var libraryElementId = controller.LibraryElementModel.LibraryElementId;
-              if (!_links.ContainsKey(libraryElementId))
-              {
-                  return new HashSet<LibraryElementController>();
-              }
-              var controllersToReturn = new HashSet<LibraryElementController>();
-              foreach (var linkId in _links[libraryElementId])
-              {
-                  var linkModel = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
-                  if (linkModel.InAtomId == controller.LibraryElementModel.LibraryElementId)
-                  {
-                      controllersToReturn.Add(SessionController.Instance.ContentController.GetLibraryElementController(linkModel.OutAtomId));
-                      continue;
-                  }
-                  controllersToReturn.Add(SessionController.Instance.ContentController.GetLibraryElementController(linkModel.InAtomId));
-              }
-              return controllersToReturn;
-          }*/
-
-
 
         public void RemoveLink(string id)
         {
             var link = SessionController.Instance.ContentController.GetContent(id) as LinkLibraryElementModel;
+            if (link == null)
+            {
+                return;
+            }
             if (_links.ContainsKey(link.InAtomId))
             {
                 _links[link.InAtomId].Remove(id);
@@ -143,6 +124,7 @@ namespace NuSysApp
             var request = new NewLinkRequest(anotherId, otherId, SessionController.Instance.ContentController.GetContent(anotherId.LibraryElementId)?.Creator,
                 contentId, regionView, rectangle, inFGDictionary, outFGDictionary);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            SessionController.Instance.ActiveFreeFormViewer.AllContent.First().Controller.RequestVisualLinkTo();
         }
 
         public void ChangeLinkTitle(string linkLibraryElementId, string title)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,8 @@ namespace NuSysApp
             }
         }
 
+        public string ID { get; set; }
+
         public LinkTemplate(LinkLibraryElementController controller, LinkId id)
         {
             Title = "Unnamed Link";
@@ -34,14 +37,17 @@ namespace NuSysApp
             if (linkModel.InAtomId == id)
             {
                 var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.OutAtomId.LibraryElementId);
+                Debug.Assert(libraryElementModel != null);
                 LinkedTo = libraryElementModel.Title;
 
             }
             else
             {
                 var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.InAtomId.LibraryElementId);
+                Debug.Assert(libraryElementModel != null);
                 LinkedTo = libraryElementModel.Title;
             }
+            ID = controller.LinkLibraryElementModel.LibraryElementId;
         }
 
         private void Controller_TitleChanged(object sender, string title)

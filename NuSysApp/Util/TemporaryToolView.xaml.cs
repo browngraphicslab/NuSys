@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -62,18 +63,21 @@ namespace NuSysApp
             vm.PropertiesToDisplayChanged += Vm_PropertiesToDisplayChanged;
             xTitle.Text = vm.Filter.ToString();
             xPropertiesList.Height = vm.Height - 175;
-            PieChart.Height = vm.Height - 175;
-            PieChart.Width = vm.Width;
+            xPieChart.Height = vm.Height - 175;
+            xPieChart.Width = vm.Width;
 
 
-            Binding b = new Binding();
-            b.Path = new PropertyPath("PropertiesToDisplayUnique");
-            xPropertiesList.SetBinding(ListBox.ItemsSourceProperty, b);
-            (PieChart.Series[0] as PieSeries).ItemsSource =
-                    (DataContext as BasicToolViewModel).PieChartDictionary;
+            //Binding b = new Binding();
+            //b.Path = new PropertyPath("PropertiesToDisplayUnique");
+            //xPropertiesList.SetBinding(ListBox.ItemsSourceProperty, b);
 
+            Binding bb = new Binding();
+            bb.Path = new PropertyPath("PieChartDictionary");
+            xPieSeries.SetBinding(PieSeries.ItemsSourceProperty, bb);
+            //(PieChart.Series[0] as PieSeries).ItemsSource = (DataContext as BasicToolViewModel).PieChartDictionary;
 
         }
+
 
         private void Vm_PropertiesToDisplayChanged()
         {
@@ -84,8 +88,10 @@ namespace NuSysApp
                 xPropertiesList.SelectedItem = ((DataContext as BasicToolViewModel).Selection);
                 xPropertiesList.SelectionChanged += XPropertiesList_OnSelectionChanged;
             }
-            
-            (PieChart.Series[0] as PieSeries).ItemsSource = (DataContext as BasicToolViewModel).PieChartDictionary;
+            Binding bb = new Binding();
+            bb.Path = new PropertyPath("PieChartDictionary");
+            xPieSeries.SetBinding(PieSeries.ItemsSourceProperty, bb);
+            //(PieChart.Series[0] as PieSeries).ItemsSource = (DataContext as BasicToolViewModel).PieChartDictionary;
 
         }
 
@@ -259,10 +265,13 @@ namespace NuSysApp
             if (xCanvas.Children.Contains(_dragItem))
                 xCanvas.Children.Remove(_dragItem);
 
-            xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
-            xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
-            xPropertiesList.SelectedItem = ((sender as Grid).Children[0] as TextBlock).Text;
-            xPropertiesList.SelectionChanged += XPropertiesList_OnSelectionChanged;
+            if (_currentViewMode == ViewMode.List)
+            {
+                xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
+                xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
+                xPropertiesList.SelectedItem = ((sender as Grid).Children[0] as TextBlock).Text;
+                xPropertiesList.SelectionChanged += XPropertiesList_OnSelectionChanged;
+            }
 
 
             _currentDragMode = DragMode.Filter;
@@ -291,7 +300,10 @@ namespace NuSysApp
 
         private async void xList_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            (DataContext as BasicToolViewModel).Selection = (((Grid)sender).Children[0] as TextBlock).Text;
+            if (_currentViewMode == ViewMode.List)
+            {
+                (DataContext as BasicToolViewModel).Selection = (((Grid)sender).Children[0] as TextBlock).Text;
+            }
             xCanvas.Children.Remove(_dragItem);
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
             var el = (FrameworkElement)sender;
@@ -459,21 +471,26 @@ namespace NuSysApp
             {
                 vm.Controller.SetSize(resizeX, resizeY);
                 xPropertiesList.Height = resizeY - ListBoxHeightOffset;
-                PieChart.Height = resizeY - 175;
-                PieChart.Width = resizeX;
+                xPieChart.Height = resizeY - 175;
+                xPieChart.Width = resizeX;
 
             }
             else if (resizeX > MinWidth)
             {
-                vm.Controller.SetSize(resizeX, vm.Height);
+                SetSize(resizeX, vm.Height);
             }
             else if (resizeY > MinHeight)
             {
-                vm.Controller.SetSize(vm.Width, resizeY);
-                xPropertiesList.Height = resizeY - ListBoxHeightOffset;
-                PieChart.Height = resizeY - 175;
-                PieChart.Width = resizeX;
+                SetSize(vm.Width, resizeY);
             }
+        }
+
+        public void SetSize(double x, double y)
+        {
+            (DataContext as BasicToolViewModel).Controller.SetSize(x, y);
+            xPropertiesList.Height = y - ListBoxHeightOffset;
+            xPieChart.Height = y - 175;
+            xPieChart.Width = x;
         }
         
 
@@ -482,8 +499,7 @@ namespace NuSysApp
         {
             if ((sender as PieSeries).SelectedItem != null)
             {
-                var selected = (sender as PieSeries).SelectedItem is KeyValuePair<string, int> ? (KeyValuePair<string, int>)(sender as PieSeries).SelectedItem : new KeyValuePair<string, int>();
-                (DataContext as BasicToolViewModel).Selection = selected.Key;
+                
             }
         }
 
@@ -500,9 +516,10 @@ namespace NuSysApp
                     xPropertiesList.SelectedItem = (DataContext as BasicToolViewModel).Selection;
                 }
 
-                PieChart.Visibility = Visibility.Visible;
+                xPieChart.Visibility = Visibility.Visible;
                 xPropertiesList.Visibility = Visibility.Collapsed;
                 _currentViewMode = ViewMode.PieChart;
+                SetSize(400, this.Height);
             }
         }
 
@@ -519,11 +536,21 @@ namespace NuSysApp
                     xPropertiesList.SelectedItem = (DataContext as BasicToolViewModel).Selection;
                 }
 
-                PieChart.Visibility = Visibility.Collapsed;
+                xPieChart.Visibility = Visibility.Collapsed;
                 xPropertiesList.Visibility = Visibility.Visible;
                 _currentViewMode = ViewMode.List;
             }
         }
+
+
+        private void XPieSeries_OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            var selected = (sender as PieSeries).SelectedItem is KeyValuePair<string, int> ? (KeyValuePair<string, int>)(sender as PieSeries).SelectedItem : new KeyValuePair<string, int>();
+            (DataContext as BasicToolViewModel).Selection = selected.Key;
+            xPieSeries.ReleasePointerCapture(e.Pointer);
+        }
+
+        
     }
 
 }

@@ -344,7 +344,7 @@ namespace NuSysApp
         }
         public async Task FetchLibraryElementData(string id)
         {
-            if (SessionController.Instance.ContentController.GetContent(id).Type == ElementType.PDF && false)
+            if (SessionController.Instance.ContentController.GetContent(id)?.Type == ElementType.PDF && SessionController.Instance.ContentController.GetLibraryElementController(id) != null && !SessionController.Instance.ContentController.GetLibraryElementController(id).IsLoaded)
             {
                 bool fileExists = await CachePDF.isFilePresent(id);
 
@@ -354,9 +354,11 @@ namespace NuSysApp
                     await UITask.Run(
                         async delegate
                         {
-                            SessionController.Instance.ContentController.GetLibraryElementController(id).Load(new LoadContentEventArgs(cacheData));
-                            await SessionController.Instance.NuSysNetworkSession.FetchLibraryElementWithoutData(id);
-                        });
+                            var args = await _serverClient.GetContentWithoutData(id);
+                            args.Data = cacheData;
+                            SessionController.Instance.ContentController.GetLibraryElementController(id).Load(args);
+                        }
+                     );
                 }
                 else
                 {
@@ -382,16 +384,6 @@ namespace NuSysApp
             return await _serverClient.AdvancedSearchOverLibraryElements(searchQuery);
         }
 
-        /// <summary>
-        /// Basically just to Fetch regions so we dont have to get the entire data
-        /// </summary>
-        /// <param name="contentIds"></param>
-        /// <returns></returns>
-        public async Task FetchLibraryElementWithoutData(string contentId)
-        {
-            await _serverClient.GetContentWithoutData(contentId);
-        }
-
         public async Task<string> DuplicateLibraryElement(string libraryElementId)
         {
             return await _serverClient.DuplicateLibraryElement(libraryElementId);
@@ -410,13 +402,17 @@ namespace NuSysApp
             {
                 return null;
             }
-            var path = NuSysStorages.SaveFolder.Path + "/" + id + ".docx";
+            var path = NuSysStorages.SaveFolder.Path + "\\" + id + ".docx";
             try
             {
                 using (var stream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite))
                 {
                     await stream.WriteAsync(bytes, 0, bytes.Length);
                 }
+            }
+            catch (UnauthorizedAccessException unAuth)
+            {
+                throw new UnauthorizedAccessException("Couldn't write to file most likely because it is already open");
             }
             catch (Exception e)
             {

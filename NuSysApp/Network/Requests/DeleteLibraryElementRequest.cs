@@ -38,6 +38,11 @@ namespace NuSysApp
             if (libraryElementController == null)
                 return;
             libraryElementController.Delete();
+            if (libraryElementController is LinkLibraryElementController)
+            {
+                var llec = libraryElementController as LinkLibraryElementController;
+                llec.DeleteLink();
+            }
         }
     }
 }

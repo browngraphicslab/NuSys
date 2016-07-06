@@ -112,7 +112,7 @@ namespace NuSysApp
                 {
                     this.Annotation.Activate();
                     AnnotationContainer.Visibility = Visibility.Visible;
-                    Delete.Visibility = Visibility.Visible;
+
                     if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
                     {
 
@@ -183,7 +183,7 @@ namespace NuSysApp
                     {
                         AnnotationContainer.Visibility = Visibility.Collapsed;
                     }
-                    Delete.Visibility = Visibility.Collapsed;
+
                     this.Annotation.DeActivate();
                     if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
                     {
@@ -277,9 +277,6 @@ namespace NuSysApp
             curveInner.Point2 = new Point(anchor1.X - distanceX / 2, anchor2.Y);
             curveInner.Point1 = new Point(anchor2.X + distanceX / 2, anchor1.Y);
 
-            Canvas.SetLeft(btnDelete, anchor1.X - distanceX / 2 - Rect.ActualWidth / 2);
-            Canvas.SetTop(btnDelete, anchor1.Y - distanceY / 2);
-
             Canvas.SetLeft(AnnotationContainer, anchor1.X - distanceX / 2 - Rect.ActualWidth / 2);
             Canvas.SetTop(AnnotationContainer, anchor1.Y - distanceY / 2 - Rect.ActualHeight * 1.5);
 
@@ -297,13 +294,6 @@ namespace NuSysApp
 
             pathfigureInner.StartPoint = anchor1;
             curveInner.Point3 = anchor2;
-        }
-
-        private async void Delete_OnClick(object sender, RoutedEventArgs e)
-        {
-            var vm = (LinkViewModel)this.DataContext;
-            var controller = (LinkElementController)vm.Controller;
-            await controller.RequestDelete();
         }
 
         private void Annotation_Loaded(object sender, RoutedEventArgs e)

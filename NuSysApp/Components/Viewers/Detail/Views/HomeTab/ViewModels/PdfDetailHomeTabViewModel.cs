@@ -42,8 +42,8 @@ namespace NuSysApp
             Controller = controller;
             RegionViews = new ObservableCollection<PDFRegionView>();
             Editable = true;
-            
         }
+
         public override async Task Init()
         {
             await Task.Run(async delegate {

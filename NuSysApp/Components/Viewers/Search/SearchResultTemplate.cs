@@ -26,7 +26,7 @@ namespace NuSysApp
         {
             // return if library element model doesn't exist or if result parameter is null
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(result?.ContentID);
-            var model = controller.LibraryElementModel;
+            var model = controller?.LibraryElementModel;
             if (model == null) return;
 
             // default fields

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -47,7 +48,7 @@ namespace NuSysApp
             SetSize(400,500);
             vm.PropertiesToDisplayChanged += Vm_PropertiesToDisplayChanged;
             //xMetadataKeysList.ItemsSource = (DataContext as MetadataToolViewModel).AllMetadataDictionary.Keys;
-            xMetadataKeysList.ItemsSource = (DataContext as MetadataToolViewModel).AllMetadataDictionary.Keys;
+            xMetadataKeysList.ItemsSource = (DataContext as MetadataToolViewModel)?.AllMetadataDictionary.Keys;
 
         }
 
@@ -55,7 +56,7 @@ namespace NuSysApp
         {
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
             wvm.AtomViewList.Remove(this);
-            (DataContext as ToolViewModel).Dispose();
+            (DataContext as ToolViewModel)?.Dispose();
             this.Dispose();
 
         }
@@ -68,46 +69,52 @@ namespace NuSysApp
 
         private void XMetadataKeysList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            var vm = DataContext as MetadataToolViewModel;
+            Debug.Assert(vm != null);
             if (xMetadataKeysList.SelectedItems.Count == 1)
             {
                 var x = xMetadataKeysList.SelectedItems[0];
                 xMetadataValuesList.ItemsSource =
-                    (DataContext as MetadataToolViewModel).AllMetadataDictionary[(string)xMetadataKeysList.SelectedItems[0]];// (xMetadataKeysList.SelectedItems[0] is KeyValuePair<string, HashSet<string>> ? (KeyValuePair<string, HashSet<string>>)xMetadataKeysList.SelectedItems[0] : new KeyValuePair<string, HashSet<ToolItemTemplate>>()).Value;
-                (DataContext as MetadataToolViewModel).Selection = new Tuple<string, string>((string)xMetadataKeysList.SelectedItems[0], null);
+                    vm.AllMetadataDictionary[(string)xMetadataKeysList.SelectedItems[0]];// (xMetadataKeysList.SelectedItems[0] is KeyValuePair<string, HashSet<string>> ? (KeyValuePair<string, HashSet<string>>)xMetadataKeysList.SelectedItems[0] : new KeyValuePair<string, HashSet<ToolItemTemplate>>()).Value;
+                vm.Selection = new Tuple<string, string>((string)xMetadataKeysList.SelectedItems[0], null);
             }
 
         }
 
         private void XMetadataValuesList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            var vm = DataContext as MetadataToolViewModel;
+            Debug.Assert(vm != null);
             if (xMetadataValuesList.SelectedItems.Count == 1 && xMetadataKeysList.SelectedItems.Count == 1)
             {
-                (DataContext as MetadataToolViewModel).Selection = new Tuple<string, string>((DataContext as MetadataToolViewModel).Selection.Item1, (string)xMetadataValuesList.SelectedItems[0]);
+                vm.Selection = new Tuple<string, string>(vm.Selection.Item1, (string)xMetadataValuesList.SelectedItems[0]);
             }
         }
 
         private void Vm_PropertiesToDisplayChanged()
         {
+            var vm = DataContext as MetadataToolViewModel;
+            Debug.Assert(vm != null);
             //xMetadataKeysList.ItemsSource = (DataContext as MetadataToolViewModel).AllMetadataDictionary.Keys;
-            xMetadataKeysList.ItemsSource = (DataContext as MetadataToolViewModel).AllMetadataDictionary.Keys;
-            if ((DataContext as MetadataToolViewModel).Selection != null &&
-                ((DataContext as MetadataToolViewModel).Controller as MetadataToolController).Model.Selected &&
-                (DataContext as MetadataToolViewModel).Selection.Item1 != null)
+            xMetadataKeysList.ItemsSource = vm.AllMetadataDictionary.Keys;
+            if (vm.Selection != null &&
+                (vm.Controller as MetadataToolController).Model.Selected &&
+                vm.Selection.Item1 != null)
             {
                 xMetadataKeysList.SelectionChanged -= XMetadataKeysList_OnSelectionChanged;
                 //xMetadataKeysList.SelectedItem = GetKeyListItem((DataContext as MetadataToolViewModel).Selection.Item1).Key;
-                xMetadataKeysList.SelectedItem = (DataContext as MetadataToolViewModel).Selection.Item1;
+                xMetadataKeysList.SelectedItem = vm.Selection.Item1;
                 //xMetadataKeysList.SelectedItem = xMetadataKeysList.Items[0];
                 xMetadataKeysList.SelectionChanged += XMetadataKeysList_OnSelectionChanged;
-                if ((DataContext as MetadataToolViewModel).Selection.Item2 != null)
+                if (vm.Selection.Item2 != null)
                 {
                     xMetadataValuesList.SelectionChanged -= XMetadataValuesList_OnSelectionChanged;
-                    xMetadataValuesList.SelectedItem = (DataContext as MetadataToolViewModel).Selection.Item2;
+                    xMetadataValuesList.SelectedItem = vm.Selection.Item2;
                     xMetadataValuesList.SelectionChanged += XMetadataValuesList_OnSelectionChanged;
                 }
                 else
                 {
-                    xMetadataValuesList.ItemsSource = (DataContext as MetadataToolViewModel).AllMetadataDictionary[(DataContext as MetadataToolViewModel).Selection.Item1];
+                    xMetadataValuesList.ItemsSource = vm.AllMetadataDictionary[vm.Selection.Item1];
                 }
             }
             else
@@ -138,14 +145,15 @@ namespace NuSysApp
                 if (hitsStartList.Any())
                 {
 
+                    var tempView = hitsStartList.First() as TemporaryToolView;
                     ToolViewModel toolViewModel;
-                    if ((hitsStartList.First() as TemporaryToolView) != null)
+                    if (tempView != null)
                     {
-                        toolViewModel = (hitsStartList.First() as TemporaryToolView).DataContext as ToolViewModel;
+                        toolViewModel = tempView.DataContext as ToolViewModel;
                     }
                     else
                     {
-                        toolViewModel = (hitsStartList.First() as MetadataToolView).DataContext as ToolViewModel;
+                        toolViewModel = tempView.DataContext as ToolViewModel;
                     }
                     if (true) //(first != this)
                     {
@@ -223,7 +231,7 @@ namespace NuSysApp
                         foreach (var id in vm.Controller.Model.LibraryIds)
                         {
                             var lem = SessionController.Instance.ContentController.GetContent(id);
-                            if (lem == null)
+                            if (lem == null || lem.Type == ElementType.Link)
                             {
                                 continue;
                             }
@@ -495,14 +503,16 @@ namespace NuSysApp
 
         public void AddFilterToExistingTool(List<UIElement> hitsStartList, FreeFormViewerViewModel wvm)
         {
+            var tempToolView = hitsStartList.First() as TemporaryToolView;
+            Debug.Assert(tempToolView != null);
             ToolViewModel toolViewModel;
             if ((hitsStartList.First() as TemporaryToolView) != null)
             {
-                toolViewModel = (hitsStartList.First() as TemporaryToolView).DataContext as ToolViewModel;
+                toolViewModel = tempToolView.DataContext as ToolViewModel;
             }
             else
             {
-                toolViewModel = (hitsStartList.First() as MetadataToolView).DataContext as ToolViewModel;
+                toolViewModel = tempToolView.DataContext as ToolViewModel;
             }
             if (toolViewModel != DataContext as ToolViewModel)
             {

@@ -76,9 +76,12 @@ namespace NuSysApp
         {
             var vm = (ElementViewModel)this.DataContext;
             vm.PropertyChanged -= OnPropertyChanged;
-            vm.Controller.LibraryElementController.UserChanged -= ControllerOnUserChanged;
-            vm.Controller.LibraryElementController.TitleChanged -= LibraryElementModelOnOnTitleChanged;
 
+            if (vm.Controller.LibraryElementController != null)
+            {
+                vm.Controller.LibraryElementController.UserChanged -= ControllerOnUserChanged;
+                vm.Controller.LibraryElementController.TitleChanged -= LibraryElementModelOnOnTitleChanged;
+            }
             if (title != null)
                 title.TextChanged -= TitleOnTextChanged;
 
@@ -424,7 +427,7 @@ namespace NuSysApp
                             {
                                 SessionController.Instance.LinkController.RequestLink(new LinkId(dc.ContentId),new LinkId( vm.ContentId));
                             }
-                            vm.Controller.RequestVisualLinkTo();
+                         //   vm.Controller.RequestVisualLinkTo();
                         }
                         if (_currenDragMode == DragMode.PresentationLink)
                         {

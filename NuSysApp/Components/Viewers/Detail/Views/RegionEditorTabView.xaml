@@ -75,7 +75,7 @@
         
         <ContentPresenter Grid.Column="1" Content="{Binding RegionView}" x:Name ="xContentPresenter" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"  VerticalAlignment="Stretch" Margin="0,0,10,0" ></ContentPresenter>
 
-        <ContentPresenter Grid.Column="2" x:Name="xListViewPresenter"></ContentPresenter>
+        <ContentPresenter Grid.Column="2" x:Name="xListViewPresenter" VerticalAlignment="Stretch"></ContentPresenter>
         
 
 

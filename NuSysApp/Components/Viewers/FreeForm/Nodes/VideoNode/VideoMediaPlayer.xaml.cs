@@ -91,14 +91,14 @@ namespace NuSysApp
 
         private void OnStop_Click(object sender, TappedRoutedEventArgs e)
         {
-            playbackElement.Stop();
-            scrubBar.Value = 0;
-            e.Handled = true;
+            playbackElement.Pause();
+
         }
 
 
         private async void OnPlay_Click(object sender, RoutedEventArgs e)
         {
+
             Binding b = new Binding();
             b.ElementName = "playbackElement";
             b.Path = new PropertyPath("Position.TotalMilliseconds");
@@ -108,7 +108,9 @@ namespace NuSysApp
 
         private void OnPause_Click(object sender, RoutedEventArgs e)
         {
-            playbackElement.Pause();
+            playbackElement.Stop();
+            scrubBar.Value = 0;
+           // e.Handled = true;
         }
         private void MediaEnded(object sender, RoutedEventArgs e)
         {

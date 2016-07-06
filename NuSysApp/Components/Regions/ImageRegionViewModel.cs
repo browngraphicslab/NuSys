@@ -25,7 +25,7 @@ namespace NuSysApp
             {
                 _name = value;
                 Model.Name = _name;
-                RegionController.UpdateRegion(Model);
+                RegionController.SetTitle(_name);
                 RaisePropertyChanged("Name");
             }
         }
