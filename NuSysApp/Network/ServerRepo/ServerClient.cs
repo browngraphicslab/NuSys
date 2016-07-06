@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -180,6 +181,78 @@ namespace NuSysApp
                 return data;
             });
         }
+
+        public async Task<HashSet<PresentationLink>> GetPresentationLinks(string collectionContentId)
+        {
+            return await Task.Run(async delegate
+            {
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    StringEscapeHandling = StringEscapeHandling.EscapeNonAscii
+                };
+                var client =
+                    new HttpClient(new HttpClientHandler {ClientCertificateOptions = ClientCertificateOption.Automatic});
+                var response = await client.GetAsync(GetUri("getcontentwithoutdata/" + collectionContentId));
+
+                string data;
+                using (var content = response.Content)
+                {
+                    data = await content.ReadAsStringAsync();
+                }
+                try
+                {
+                    var list = JsonConvert.DeserializeObject<List<Tuple<string, string>>>(data, settings);
+                    var returnSet = list.Select(tup => new PresentationLink() {Id1 = tup.Item1, Id2 = tup.Item2});
+                    return new HashSet<PresentationLink>(returnSet);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("error parsing presentation links returned from server for presentationlink fetching");
+                    return null;
+                }
+            });
+        }
+        public async Task<bool> RemovePresentationLink(string id1, string id2)
+        {
+            return await Task.Run(async delegate
+            {
+                var dict = new Dictionary<string, object>();
+                dict["id1"] = id1;
+                dict["id2"] = id2;
+                var data = await SendDictionaryToServer("removepresentationlink", dict);
+                try
+                {
+                    var success = bool.Parse(data);
+                    return success;
+                }
+                catch (Exception boolParsException)
+                {
+                    Debug.WriteLine("error parsing bool returned from server for presentationlink removing");
+                }
+                return false;
+            });
+        }
+        public async Task<bool> AddPresentationLink(string contentId, string id1, string id2)
+        {
+            return await Task.Run(async delegate
+            {
+                var dict = new Dictionary<string, object>();
+                dict["id1"] = id1;
+                dict["id2"] = id2;
+                dict["contentId"] = contentId;
+                var data = await SendDictionaryToServer("addpresentationlink", dict);
+                try
+                {
+                    var success = bool.Parse(data);
+                    return success;
+                }
+                catch (Exception boolParsException)
+                {
+                    Debug.WriteLine("error parsing bool returned from server for presentationlink removing");
+                }
+                return false;
+            });
+        }
         public async Task<bool> AddRegionToContent(string contentId, Region region)
         {
             return await Task.Run(async delegate
@@ -264,15 +337,15 @@ namespace NuSysApp
             }
             return data;
         }
-        public async Task GetContentWithoutData(string contentId)
+        public async Task<LoadContentEventArgs> GetContentWithoutData(string contentId)
         {
             try
             {
-                await Task.Run(async delegate
+                return await Task.Run(async delegate
                 {
                     JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                     var client = new HttpClient(new HttpClientHandler { ClientCertificateOptions = ClientCertificateOption.Automatic });
-                    var response = await client.PostAsync(GetUri("getcontent/"), new StringContent(contentId, Encoding.UTF8, "application/xml"));
+                    var response = await client.GetAsync(GetUri("getcontentwithoutdata/"+contentId));
 
                     string data;
                     using (var content = response.Content)
@@ -281,23 +354,30 @@ namespace NuSysApp
                     }
                     try
                     {
-                        XmlDocument doc = new XmlDocument();
-                        doc.LoadXml(data);
-                        var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(doc.ChildNodes[0].InnerText, settings);
-                        await ParseFetchedLibraryElement(dict, contentId);
+                        var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(data, settings);
+
+                        var regionStrings = dict.ContainsKey("regions") ? JsonConvert.DeserializeObject<List<string>>(dict["regions"].ToString(), settings) : new List<string>();
+                        var regions = new HashSet<Region>();
+                        foreach (var rs in regionStrings)
+                        {
+                            regions.Add(GetRegionFromString(rs, contentId));
+                        }
+                        var inks = dict.ContainsKey("inks") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["inks"].ToString()) : null;
+                        var args = new LoadContentEventArgs(null,regions,inks);
+                        return args;
                     }
                     catch (Exception boolParsException)
                     {
                         Debug.WriteLine("error parsing bool and serverSessionId returned from server");
                     }
-                    return;
+                    return null;
                 });
 
             }
             catch (Exception e)
             {
                 //throw new Exception("couldn't connect to the server and get content info");
-                return;
+                return null;
             }
         }
         public async Task FetchLibraryElementData(string libraryId, int tries = 0)
@@ -447,7 +527,7 @@ namespace NuSysApp
                     region = JsonConvert.DeserializeObject<VideoRegionModel>(regionString, settings);
                     break;
             }
-            if (contentId != null)
+            if (contentId != null && SessionController.Instance.RegionsController.GetRegionController(region?.Id) == null)
             {
                 var controller = new RegionControllerFactory().CreateFromSendable(region, contentId);
             }
@@ -530,7 +610,7 @@ namespace NuSysApp
             }
             catch (Exception e)
             {
-                throw new Exception("Exception caught during writing to server data writer");
+                throw new Exception("Exception caught during writing to server data writer.  Reason: "+e.Message);
             }
         }
         public async Task<Dictionary<string, Dictionary<string, object>>> GetRepo()

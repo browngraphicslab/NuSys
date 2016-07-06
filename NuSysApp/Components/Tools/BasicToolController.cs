@@ -46,6 +46,10 @@ namespace NuSysApp
             {
                 return false;
             }
+            if (BasicToolModel.Selection == null)
+            {
+                return false;
+            }
             switch (BasicToolModel.Filter)
             {
                 case ToolModel.ToolFilterTypeTitle.Title:
@@ -93,7 +97,7 @@ namespace NuSysApp
                     {
                         allMetadata.Add(kvp.Key, new List<string>());
                     }
-                    allMetadata[kvp.Key].Add(kvp.Value);
+                    allMetadata[kvp.Key].AddRange(kvp.Value);
                 }
             }
             switch (BasicToolModel.Filter)

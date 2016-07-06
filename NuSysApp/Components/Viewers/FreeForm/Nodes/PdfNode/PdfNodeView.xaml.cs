@@ -41,7 +41,6 @@ namespace NuSysApp
             TempRegion.StrokeThickness = 2;
             TempRegion.Stroke = new SolidColorBrush(Colors.Red);
 
-            //vm.Controller.ContainerSizeChanged += Controller_SizeChanged;
             vm.PropertyChanged += VmOnPropertyChanged;
 
             vm.Controller.Disposed += ControllerOnDisposed;

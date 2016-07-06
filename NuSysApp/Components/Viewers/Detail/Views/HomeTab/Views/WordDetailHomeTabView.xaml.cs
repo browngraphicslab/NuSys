@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -11,6 +10,8 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.System;
+using Windows.UI.Popups;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -30,8 +31,6 @@ namespace NuSysApp
         public WordDetailHomeTabView(WordDetailHomeTabViewModel vm)
         {
             InitializeComponent();
-
-            Canvas.SetZIndex(ItemsControl, 0);
             vm.Controller.Disposed += ControllerOnDisposed;
             vm.PropertyChanged += PropertyChanged;
             vm.View = this;
@@ -105,8 +104,19 @@ namespace NuSysApp
                 {
                     //probably didn't have a docx file on the server for the given id
                 }
-                var storageFile = await StorageFile.GetFileFromPathAsync(path);
-                await Launcher.LaunchFileAsync(storageFile);
+                StorageFile storageFile = null;
+                var launcherOptions = new LauncherOptions() { UI = { PreferredPlacement = Placement.Right,InvocationPoint = new Point(SessionController.Instance.SessionView.ActualWidth/2,0.0)} };
+                launcherOptions.TreatAsUntrusted = false;
+                launcherOptions.PreferredApplicationDisplayName = "NUSYS";
+                launcherOptions.PreferredApplicationPackageFamilyName = "NuSys";
+                launcherOptions.DesiredRemainingView = ViewSizePreference.UseHalf;
+                await Task.Run(async delegate
+                {
+                    storageFile = await StorageFile.GetFileFromPathAsync(path);
+                    File.SetAttributes(path, System.IO.FileAttributes.Normal);
+                });
+                await Launcher.LaunchFileAsync(storageFile, launcherOptions);
+                
 
                 //doc.
                 //doc.LoadFromFile(path);

@@ -176,13 +176,12 @@ namespace NuSysApp
                 var detailVM = ContainerViewModel as ImageDetailHomeTabViewModel;
                 var diff = detailVM.GetViewWidth() - detailVM.GetWidth();
 
-
-
-                Height = model.Height * height;
-                Width = model.Width * detailVM.GetWidth();
-                ContainerHeight = height;
+                ContainerHeight = detailVM.GetHeight();
                 ContainerWidth = detailVM.GetWidth();
-                topLeft = new Point(model.TopLeftPoint.X * ContainerWidth, model.TopLeftPoint.Y * height);
+
+                Height = model.Height * ContainerHeight;
+                Width = model.Width * ContainerWidth;
+                topLeft = new Point(model.TopLeftPoint.X * ContainerWidth, model.TopLeftPoint.Y * ContainerHeight);
 
             }
             else {
