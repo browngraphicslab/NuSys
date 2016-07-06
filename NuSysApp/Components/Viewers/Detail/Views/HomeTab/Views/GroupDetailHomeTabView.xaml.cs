@@ -47,8 +47,8 @@ namespace NuSysApp
                 SetHeight(SessionController.Instance.SessionView.ActualHeight / 2);
             };
 
-            MyWebView.NavigationCompleted += MyWebViewOnNavigationCompleted;
-            MyWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
+            //MyWebView.NavigationCompleted += MyWebViewOnNavigationCompleted;
+            //MyWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
 
             //   _views = new ObservableCollection<FrameworkElement>();
 
@@ -66,7 +66,7 @@ namespace NuSysApp
             //    xGrid.Height = xGrid.ActualHeight / ratio;
             //};
 
-            MyWebView.ScriptNotify += wvBrowser_ScriptNotify;
+            //MyWebView.ScriptNotify += wvBrowser_ScriptNotify;
 
 
             vm.Controller.Disposed += ControllerOnDisposed;
@@ -105,21 +105,21 @@ namespace NuSysApp
             {
                 String[] myString = { str };
                 IEnumerable<String> s = myString;
-                MyWebView.InvokeScriptAsync("InsertText", s);
+                //MyWebView.InvokeScriptAsync("InsertText", s);
             }
         }
 
         public void SetHeight(double parentHeight)
         {
-            MyWebView.Height = parentHeight;
+            //MyWebView.Height = parentHeight;
         }
 
 
         private void ControllerOnDisposed(object source)
         {
             var vm = (GroupDetailHomeTabViewModel)DataContext;
-            MyWebView.NavigationCompleted -= MyWebViewOnNavigationCompleted;
-            MyWebView.ScriptNotify -= wvBrowser_ScriptNotify;
+            //MyWebView.NavigationCompleted -= MyWebViewOnNavigationCompleted;
+            //MyWebView.ScriptNotify -= wvBrowser_ScriptNotify;
             vm.Controller.Disposed -= ControllerOnDisposed;
             DataContext = null;
         }

@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignHeight="550"
+    d:DesignHeight="500"
     d:DesignWidth="450">
 
     <UserControl.Resources>
@@ -271,9 +271,7 @@
             </Grid>
 
             <Grid Grid.Row="2">
-                <Canvas Width="400" Height="38" Background="Transparent" VerticalAlignment="Bottom" Margin="-40,0,0,0">
-                    <local:TextInputBlock x:Name ="Searchfield"  Width="400"  BubbleTop="False" TextChanged="TextBox_OnTextChanging"  LeftJustified="True" Height="34" ></local:TextInputBlock>
-                </Canvas>
+                <local:TextInputBlock x:Name ="Searchfield"  Width="400"  BubbleTop="False" TextChanged="TextBox_OnTextChanging"  LeftJustified="True" Margin="-40,2,0,2"></local:TextInputBlock>
                 <Border  HorizontalAlignment="Right" Background="Transparent"  x:Name="xSearchExportButton" ManipulationMode="TranslateX,TranslateY" ManipulationStarted="XSearchExportButton_OnManipulationStarted" ManipulationDelta="XSearchExportButton_OnManipulationDelta" ManipulationCompleted="XSearchExportButton_OnManipulationCompleted" PointerPressed="XSearchExportButton_OnPointerPressed">
                     <TextBlock Text="&#xE8AD;" FontFamily="Segoe MDL2 Assets" Margin="10,15,10,10" Foreground="{StaticResource color3}"></TextBlock>
                 </Border>
