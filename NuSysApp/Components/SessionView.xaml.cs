@@ -625,8 +625,8 @@ namespace NuSysApp
             Canvas.SetTop(ChatButton, mainCanvas.ActualHeight - 70);
             Canvas.SetLeft(ChatNotifs, 37);
             Canvas.SetTop(ChatNotifs, mainCanvas.ActualHeight - 67);
-            Canvas.SetLeft(SnapshotButton, MainCanvas.ActualWidth - 65);
-            Canvas.SetTop(SnapshotButton, MainCanvas.ActualHeight - 65);
+            //Canvas.SetLeft(SnapshotButton, MainCanvas.ActualWidth - 65);
+            //Canvas.SetTop(SnapshotButton, MainCanvas.ActualHeight - 65);
         }
         private void UpdateTitle(object sender, object args)
         {
