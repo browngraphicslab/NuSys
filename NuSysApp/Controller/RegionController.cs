@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,6 +33,9 @@ namespace NuSysApp
         public event DeselectHandler OnDeselect;
         public event EventHandler<LinkLibraryElementController> LinkAdded;
         public event EventHandler<string> LinkRemoved;
+        public delegate void MetadataChangedEventHandler(object source);
+
+        public event MetadataChangedEventHandler MetadataChanged;
 
         private bool _selected;
         private bool _blockServerUpdates;
@@ -47,35 +51,64 @@ namespace NuSysApp
         }
         public Dictionary<string, MetadataEntry> GetMetadata()
         {
-            if (Model.Metadata == null)
-            {
-                Model.Metadata = new Dictionary<string, MetadataEntry>();
-            }
-            return Model.Metadata;
+            return new Dictionary<string, MetadataEntry>(Model?.Metadata);
         }
 
+        //public bool AddMetadata(MetadataEntry entry)
+        //{
+        //    if (entry.Values==null || string.IsNullOrEmpty(entry.Key) || string.IsNullOrWhiteSpace(entry.Key))
+        //        return false;
+        //    if (Model.Metadata.ContainsKey(entry.Key))
+        //    {
+        //        if (entry.Mutability==MetadataMutability.IMMUTABLE)//weird syntax in case we want to change mutability to an enum eventually
+        //        {
+        //            return false;
+        //        }
+        //        Model.Metadata.Remove(entry.Key);
+        //    }
+        //    Model.Metadata.Add(entry.Key,entry);
+        //    return true;
+        //}
         public bool AddMetadata(MetadataEntry entry)
         {
-            if (entry.Values==null || string.IsNullOrEmpty(entry.Key) || string.IsNullOrWhiteSpace(entry.Key))
+            //Keys should be unique; values obviously don't have to be.
+            if (entry.Values == null || string.IsNullOrEmpty(entry.Key) ||
+                string.IsNullOrWhiteSpace(entry.Key))
+            {
                 return false;
+            }
+            if (Model.Metadata == null)
+            {
+                Model.Metadata = new ConcurrentDictionary<string, MetadataEntry>();
+                return false;
+            }
+
             if (Model.Metadata.ContainsKey(entry.Key))
             {
-                if (entry.Mutability==MetadataMutability.IMMUTABLE)//weird syntax in case we want to change mutability to an enum eventually
+                if (Model.Metadata[entry.Key].Mutability == MetadataMutability.IMMUTABLE)//weird syntax in case we want to change mutability to an enum eventually
                 {
                     return false;
                 }
-                Model.Metadata.Remove(entry.Key);
+                MetadataEntry outobj;
+                Model.Metadata.TryRemove(entry.Key, out outobj);
             }
-            Model.Metadata.Add(entry.Key,entry);
+            Model.Metadata.TryAdd(entry.Key, entry);
+            ChangeMetadata(new Dictionary<string, MetadataEntry>(Model.Metadata));
             return true;
         }
 
+        private void ChangeMetadata(Dictionary<string, MetadataEntry> metadata)
+        {
+            Model.SetMetadata(metadata);
+            MetadataChanged?.Invoke(this);
+            //_debouncingDictionary.Add("metadata", Model.Metadata);
+        }
         public bool RemoveMetadata(string key)
         {
             if (string.IsNullOrEmpty(key) || !Model.Metadata.ContainsKey(key) || string.IsNullOrWhiteSpace(key))
                 return false;
-
-            Model.Metadata.Remove(key);
+            var value = Model.Metadata[key];
+            Model.Metadata.TryRemove(key, out value);
             return true;
         }
         public List<string> GetMetadata(string key)

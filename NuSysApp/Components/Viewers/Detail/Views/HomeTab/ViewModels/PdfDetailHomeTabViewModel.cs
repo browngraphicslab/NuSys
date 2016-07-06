@@ -37,11 +37,13 @@ namespace NuSysApp
         
         private int _pageNumber = 0;
         private MuPDFWinRT.Document _document;
-        public PdfDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
+        
+        public PdfDetailHomeTabViewModel(LibraryElementController controller, HashSet<Region> regionsToLoad) : base(controller, regionsToLoad)
         {
             Controller = controller;
             RegionViews = new ObservableCollection<PDFRegionView>();
             Editable = true;
+           
         }
 
         public override async Task Init()
@@ -270,10 +272,13 @@ namespace NuSysApp
             return view.ActualWidth;
         }
 
-        public override void SetExistingRegions(HashSet<Region> regions)
+        public override void SetExistingRegions()
         {
-            if (regions == null) regions=new HashSet<Region>();
-            foreach (var regionModel in regions)
+            if (_regionsToLoad == null)
+            {
+                _regionsToLoad = new HashSet<Region>();
+            }
+            foreach (var regionModel in _regionsToLoad)
             {
                 var pdfRegion = regionModel as PdfRegion;
                 if (pdfRegion == null)
