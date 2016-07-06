@@ -32,7 +32,18 @@
             </Canvas>
           
             <local:MultiSelectMenuView x:Name="multiMenu" Visibility="Collapsed" Canvas.Top="30" Canvas.Left="300"/>
-            
+            <Canvas x:Name="SubMenuLeft" RenderTransformOrigin="0.5,0.5">
+                <Canvas.RenderTransform>
+                    <TranslateTransform X="-65"></TranslateTransform>
+                </Canvas.RenderTransform>
+            </Canvas>
+
+            <local:NodeMenuRight x:Name="SubMenuRight" Visibility="Collapsed">
+                <local:NodeMenuRight.RenderTransform>
+                    <TranslateTransform></TranslateTransform>
+                </local:NodeMenuRight.RenderTransform>
+            </local:NodeMenuRight>
+
 
         </Canvas>
     </Canvas>

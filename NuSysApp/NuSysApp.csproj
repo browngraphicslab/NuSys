@@ -334,6 +334,9 @@
     <Compile Include="Components\Viewers\Detail\Views\PDFRegionListView.xaml.cs">
       <DependentUpon>PDFRegionListView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Viewers\FreeForm\NodeMenuRight.xaml.cs">
+      <DependentUpon>NodeMenuRight.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">
       <DependentUpon>AudioMediaPlayer.xaml</DependentUpon>
     </Compile>
@@ -1072,6 +1075,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\FreeForm\LibraryDragElement.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\NodeMenuRight.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

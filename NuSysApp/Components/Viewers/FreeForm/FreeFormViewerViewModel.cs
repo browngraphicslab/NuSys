@@ -39,8 +39,8 @@ namespace NuSysApp
                 TranslateY = -Constants.MaxCanvasSize / 2.0,
                 CenterX = Constants.MaxCanvasSize / 2.0,
                 CenterY = Constants.MaxCanvasSize / 2.0,
-                ScaleX = 0.85,
-                ScaleY = 0.85
+                ScaleX = 1.0,
+                ScaleY = 1.0
             };
 
 

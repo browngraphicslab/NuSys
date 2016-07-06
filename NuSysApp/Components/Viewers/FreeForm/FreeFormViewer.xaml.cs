@@ -38,6 +38,7 @@ namespace NuSysApp
         private GlobalInkMode _globalInkMode;
         private AbstractWorkspaceViewMode _prevMode;
         private NuSysInqCanvas _inqCanvas;
+        private Tuple<FrameworkElement, ContentControl> _nodeMenu;
 
 
         public FreeFormViewer(FreeFormViewerViewModel vm)
@@ -93,7 +94,7 @@ namespace NuSysApp
                 _linkMode = new LinkMode(this);
 
                 _mainMode = new MultiMode(this, _panZoomMode, _selectMode, _nodeManipulationMode, _gestureMode, _createGroupMode, _floatingMenuMode);
-                _simpleEditMode = new MultiMode(this, _panZoomMode, _selectMode, _nodeManipulationMode, _floatingMenuMode);
+                _simpleEditMode = new MultiMode(this, _selectMode, _nodeManipulationMode, _floatingMenuMode);
                 _simpleEditGroupMode = new MultiMode(this,  _panZoomMode, _selectMode, _floatingMenuMode);
 
                 SwitchMode(Options.SelectNode, false);
@@ -225,11 +226,12 @@ namespace NuSysApp
 
         private void VmOnSelectionChanged(object source)
         {
-
             var vm = (FreeFormViewerViewModel) DataContext;
             if (vm.Selections.Count == 0)
             {
                 SetViewMode(_mainMode);
+                SubMenuLeft.Visibility = Visibility.Collapsed;
+                SubMenuRight.Visibility = Visibility.Collapsed;
             }
             else if (vm.Selections.Count == 1)
             {
@@ -237,11 +239,64 @@ namespace NuSysApp
                     SetViewMode(_simpleEditGroupMode);
                 else
                     SetViewMode(_simpleEditMode);
+
+                UpdateNodeMenu();
+                SubMenuLeft.Visibility = Visibility.Visible;
+                SubMenuRight.Visibility = Visibility.Visible;
             }
             else
             {
                 SetViewMode(_mainMode);
             }
+
+            
+        }
+
+        public void UpdateNodePosition()
+        {
+            var vm = (FreeFormViewerViewModel)DataContext;
+            if (vm.Selections.Count == 0)
+                return;
+            var selection = vm.Selections[0];
+            var targetLeft = vm.CompositeTransform.TransformPoint(new Point(selection.Transform.TranslateX, selection.Transform.TranslateY));
+            var targetRight = vm.CompositeTransform.TransformPoint(new Point(selection.Transform.TranslateX + selection.Width, selection.Transform.TranslateY));
+
+            var menuRightTransform = (TranslateTransform)SubMenuRight.RenderTransform;
+            menuRightTransform.X = targetRight.X;
+            menuRightTransform.Y = targetRight.Y;
+
+            var menuLeftTransform = (TranslateTransform)SubMenuLeft.RenderTransform;
+            menuLeftTransform.X = targetLeft.X - 60;
+            menuLeftTransform.Y = targetLeft.Y;            
+        }
+
+        private void UpdateNodeMenu()
+        {
+            var vm = (FreeFormViewerViewModel)DataContext;
+            var selection = vm.Selections[0];
+            UpdateNodePosition();
+
+            var nodeView = vm.AtomViewList.Where(a => a.DataContext == selection).First();
+
+            SubMenuLeft.Children.Clear();
+            if (_nodeMenu != null)
+            {
+                _nodeMenu.Item1.Opacity = 0;
+                _nodeMenu.Item2.Content = _nodeMenu.Item1;
+            }
+
+
+            var nodeTpl = nodeView.FindName("nodeTpl") as NodeTemplate;
+            var submenu = nodeTpl.SubMenu as FrameworkElement;
+            submenu.Opacity = 1;
+            var cc = submenu.Parent as ContentControl;
+
+            if (cc == null)
+                cc = _nodeMenu.Item2;
+
+            _nodeMenu = new Tuple<FrameworkElement, ContentControl>(submenu, cc);
+            cc.Content = null;
+            SubMenuLeft.Children.Add(submenu);
         }
 
         public void Dispose()
