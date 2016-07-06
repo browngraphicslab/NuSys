@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -69,9 +70,9 @@ namespace NuSysApp
 
         private async Task CreateChild(ElementController controller)
         {
-            AddVisualLinks(controller);
             var view = await _nodeViewFactory.CreateFromSendable(controller);
             AtomViewList.Add(view);
+            AddVisualLinks(controller);
             controller.Deleted += OnChildDeleted;
         }
 
@@ -86,7 +87,10 @@ namespace NuSysApp
             foreach (var linkId in contentLinks)
             {
                 var link = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
-                toLinkIds.Add(link.InAtomId.LibraryElementId == controller.LibraryElementModel.LibraryElementId ? link.OutAtomId : link.InAtomId);
+                if (link != null)
+                {
+                    toLinkIds.Add(link.InAtomId.LibraryElementId == controller.LibraryElementModel.LibraryElementId ? link.OutAtomId : link.InAtomId);
+                }
             }
             var toAddAtoms = new HashSet<FrameworkElement>();
             foreach ( var atom in AtomViewList.Where(r => !(r.DataContext is LinkViewModel) && r.DataContext != null).Select(e => e.DataContext as ElementViewModel))

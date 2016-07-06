@@ -99,7 +99,11 @@ namespace NuSysApp
            //     return;
             
             var s = (UserControl) sender;
-            var vm = (ElementViewModel)s.DataContext;
+            var vm = s.DataContext as ElementViewModel;
+            if (vm == null)
+            {
+                return;
+            }
 
             var dx = e.Delta.Translation.X / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
             var dy = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;

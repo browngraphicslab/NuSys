@@ -40,8 +40,15 @@ namespace NuSysApp
         private void CreateLinkButton_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             var content = LinkToBox.SelectedItem as LibraryItemTemplate;
+            if (content == null)
+            {
+                createLinkButton.IsEnabled = false;
+                return;
+            }
             var vm = DataContext as LinkEditorTabViewModel;
-            vm?.CreateLink(new LinkId(content?.ContentID));
+            var title = linkTitle.Text;
+            vm?.CreateLink(new LinkId(content?.ContentID), title);
+            
         }
 
         private void SortLinkedTo_OnClick(object sender, RoutedEventArgs e)
@@ -54,6 +61,18 @@ namespace NuSysApp
         {
             var vm = DataContext as LinkEditorTabViewModel;
             vm?.SortByTitle();
+        }
+
+        private void LinkToBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            createLinkButton.IsEnabled = true;
+        }
+
+        private void X_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var id = (sender as Image)?.DataContext as string;
+            var vm = DataContext as LinkEditorTabViewModel;
+            vm?.DeleteLink(id);
         }
     }
 }

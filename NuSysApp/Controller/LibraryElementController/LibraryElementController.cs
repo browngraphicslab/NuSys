@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace NuSysApp
     /// Takes care of all the modifying and events invoking for the library element model
     /// Should manage keeping the library element model up to date as well as updating the server
     /// </summary>
-    public class LibraryElementController : IMetadatable, ILinkable
+    public class LibraryElementController : IMetadatable, ILinkable, IDetailViewable
     {
         protected DebouncingDictionary _debouncingDictionary;
         private LibraryElementModel _libraryElementModel;
@@ -103,7 +104,7 @@ namespace NuSysApp
         {
             if (_libraryElementModel.Regions == null)
             {
-                return;
+                _libraryElementModel.Regions = new HashSet<Region>();
             }
 
 
@@ -163,6 +164,15 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// overloads the other change metadata function
+        /// </summary>
+        /// <param name="metadata"></param>
+        private void ChangeMetadata(ConcurrentDictionary<string, MetadataEntry> metadata)
+        {
+            ChangeMetadata(new Dictionary<string, MetadataEntry>(metadata));
+        }
+
+        /// <summary>
         /// Checks if entry is valid, then adds its data to the Metadata dictionary and sends the updated dictionary to the server.
         /// </summary>
         /// <param name="entry"></param>
@@ -176,7 +186,7 @@ namespace NuSysApp
             }
             if (_libraryElementModel.Metadata == null)
             {
-                _libraryElementModel.Metadata = new Dictionary<string, MetadataEntry>();
+                _libraryElementModel.Metadata = new ConcurrentDictionary<string, MetadataEntry>();
                 return false;
             }
 
@@ -186,9 +196,10 @@ namespace NuSysApp
                 {
                     return false;
                 }
-                _libraryElementModel.Metadata.Remove(entry.Key);
+                MetadataEntry outobj;
+                _libraryElementModel.Metadata.TryRemove(entry.Key, out outobj);
             }
-            _libraryElementModel.Metadata.Add(entry.Key,entry);
+            _libraryElementModel.Metadata.TryAdd(entry.Key,entry);
             ChangeMetadata(_libraryElementModel.Metadata);
             return true;
         }
@@ -199,10 +210,13 @@ namespace NuSysApp
         /// <param name="k"></param>
         public bool RemoveMetadata(string key)
         {
-            if (string.IsNullOrEmpty(key) || !_libraryElementModel.Metadata.ContainsKey(key) || string.IsNullOrWhiteSpace(key))
+            if (string.IsNullOrEmpty(key) || !_libraryElementModel.Metadata.ContainsKey(key) ||
+                string.IsNullOrWhiteSpace(key))
+            {
                 return false;
-
-            _libraryElementModel.Metadata.Remove(key);
+            }
+            MetadataEntry outobj;
+            _libraryElementModel.Metadata.TryRemove(key, out outobj);
             ChangeMetadata(_libraryElementModel.Metadata);
             return true;
         }
@@ -279,8 +293,15 @@ namespace NuSysApp
         /// </summary>
         public void Load(LoadContentEventArgs e)
         {
-            _libraryElementModel.Data = e.Data;
-            _libraryElementModel.Regions = e.RegionStrings;
+            if (e.Data != null)
+            {
+                _libraryElementModel.Data = e.Data;
+                ContentChanged?.Invoke(this,e.Data);
+            }
+            if (e.RegionStrings != null)
+            {
+                _libraryElementModel.Regions = e.RegionStrings;
+            }
             //_libraryElementModel.InkLinkes = e.InkStrings;
 
             IsLoaded = true;
@@ -370,7 +391,7 @@ namespace NuSysApp
         }
         public Dictionary<string, MetadataEntry> GetMetadata()
         {
-            return _libraryElementModel?.Metadata;
+            return new Dictionary<string,MetadataEntry>(_libraryElementModel?.Metadata);
         }
         public Uri GetSource()
         {

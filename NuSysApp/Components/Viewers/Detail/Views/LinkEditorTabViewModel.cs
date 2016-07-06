@@ -26,11 +26,60 @@ namespace NuSysApp
             foreach (var id in idList)
             {
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(id);
-                var libraryElementTemplate = new LibraryItemTemplate(controller);
-                LibraryElements.Add(libraryElementTemplate);
+                if (controller.LibraryElementModel.Type != ElementType.Collection)
+                {
+                    var libraryElementTemplate = new LibraryItemTemplate(controller);
+                    LibraryElements.Add(libraryElementTemplate);
+                }
+                
             }
+            SessionController.Instance.ContentController.OnNewContent += ContentController_OnNewContent;
+            SessionController.Instance.ContentController.OnElementDelete += ContentController_OnElementDelete;
             SessionController.Instance.LinkController.OnLinkRemoved += LinkController_OnLinkRemoved;
             SessionController.Instance.LinkController.OnNewLink += LinkController_OnNewLink;
+        }
+
+        private void ContentController_OnElementDelete(LibraryElementModel element)
+        {
+            foreach (var item in new HashSet<LibraryItemTemplate>(LibraryElements))
+            {
+                if (item.ContentID == element.LibraryElementId)
+                {
+                    LibraryElements.Remove(item);
+                }
+            }
+        }
+
+        private void ContentController_OnNewContent(LibraryElementModel element)
+        {
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId);
+            if (controller.LibraryElementModel.Type != ElementType.Collection)
+            {
+                var libraryElementTemplate = new LibraryItemTemplate(controller);
+                UITask.Run(delegate {
+                    LibraryElements.Add(libraryElementTemplate);
+                });
+            }
+        }
+
+        internal void DeleteLink(string id)
+        {
+            SessionController.Instance.LinkController.RemoveLink(id);
+            Task.Run(async delegate
+            {
+                var request = new DeleteLibraryElementRequest(id);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            });
+
+            foreach (var template in LinkTemplates)
+            {
+                if (template.ID == id)
+                {
+                    LinkTemplates.Remove(template);
+                    break;
+                }
+            }
+
         }
 
         private void LinkController_OnNewLink(LinkLibraryElementController link)
@@ -43,7 +92,9 @@ namespace NuSysApp
                 _linkable.Id == link.LinkLibraryElementModel.OutAtomId)
             {
                 var template = new LinkTemplate(link, _linkable.Id);
-                LinkTemplates.Add(template);
+                UITask.Run(async delegate {
+                    LinkTemplates.Add(template);
+                });
             }
         }
 
@@ -91,7 +142,9 @@ namespace NuSysApp
                 return;
             }
             var template = new LinkTemplate(controller, _linkable.Id);
-            LinkTemplates.Add(template);
+            UITask.Run(delegate {
+                LinkTemplates.Add(template);
+            });
         }
 
         public void SortByTitle()
@@ -111,7 +164,7 @@ namespace NuSysApp
 
         }
 
-        public void CreateLink(LinkId Id)
+        public void CreateLink(LinkId Id, string title)
         {
             if (_linkable == null)
             {
@@ -119,6 +172,9 @@ namespace NuSysApp
             }
 
             _linkable.RequestAddNewLink(Id);
+            var linkId = SessionController.Instance.LinkController.GetLinkIdBetween(_linkable.Id, Id);
+            var linkController = SessionController.Instance.ContentController.GetLibraryElementController(linkId) as LinkLibraryElementController;
+            linkController?.SetTitle(title);
         }
         public void SortByLinkedTo()
         {

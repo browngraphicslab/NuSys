@@ -10,8 +10,7 @@
     xmlns:dataVisualization="using:WinRTXamlToolkit.Controls.DataVisualization"
     xmlns:controls="using:WinRTXamlToolkit.Controls"
     mc:Ignorable="d"
-    d:DesignHeight="300"
-    d:DesignWidth="400"
+
     Width="{Binding Width}"
     Height="{Binding Height}"
     RenderTransform="{Binding Transform}"
@@ -27,16 +26,16 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <Grid x:Name ="xGrid" Grid.Row ="0" BorderBrush="CadetBlue" BorderThickness="1" Background="White">
+                <Grid x:Name ="xGrid" Grid.Row ="0" BorderBrush="{StaticResource color2}" BorderThickness="1" Background="White">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <TextBlock x:Name="xTitle" TextAlignment="Center" Foreground="DarkSlateGray"  Text="Filter Type" Height="35" Grid.Row="0" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta"/>
+                    <TextBlock x:Name="xTitle" TextAlignment="Center" Foreground="{StaticResource color3}"  Text="Filter Type" Height="35" Grid.Row="0" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta"/>
                     <Charting:Chart Visibility="Collapsed" Grid.Row="1" x:Name="xPieChart" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0" Width="Auto" Height="Auto">
-                        <Charting:PieSeries Name="xPieSeries"  ManipulationMode="All" PointerMoved="xList_PointerPressed"  ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted" SelectionChanged="DataPointSeries_OnSelectionChanged" PointerReleased="XPieSeries_OnPointerReleased" Margin="0" IndependentValuePath="Key" DependentValuePath="Value" IsSelectionEnabled="True"/>
+                        <Charting:PieSeries x:Name="xPieSeries"  ManipulationMode="All" PointerPressed="xList_PointerPressed" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted" SelectionChanged="DataPointSeries_OnSelectionChanged" PointerReleased="XPieSeries_OnPointerReleased" Margin="0" IndependentValuePath="Key" DependentValuePath="Value" IsSelectionEnabled="True"/>
                         <Charting:Chart.LegendStyle>
                             <Style TargetType="dataVisualization:Legend">
                                 <Setter Property="VerticalAlignment" Value="Stretch" />
@@ -53,7 +52,7 @@
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="Charting:LegendItem">
-                                                        <Border MinWidth="200" BorderThickness="3" Margin="20,10" CornerRadius="10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="CadetBlue">
+                                                        <Border MinWidth="200" BorderThickness="3" Margin="20,10" CornerRadius="10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{StaticResource color2}">
                                                             <dataVisualization:Title HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="60" FontWeight="Bold" Content="Fuck everyone" />
                                                         </Border>
                                                     </ControlTemplate>
@@ -94,14 +93,14 @@
                         </ListView.ItemContainerStyle>
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <Grid x:Name="xGridListItem" PointerPressed="xList_PointerPressed"  Width="Auto" Margin="0,0,75,0"  ManipulationMode="All" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted">
+                                <Grid x:Name="xGridListItem" PointerPressed="xList_PointerPressed"  Width="Auto" ManipulationMode="All" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted">
                                     <!--ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted">-->
-                                    <TextBlock Text="{Binding}" Foreground="DarkSlateGray" Width="Auto" />
+                                    <TextBlock Text="{Binding}" Foreground="{StaticResource color3}" Width="Auto" />
                                 </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
-                    <StackPanel Name ="xbottompanel" BorderBrush="CadetBlue"  BorderThickness="0.3" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta">
+                    <StackPanel Name ="xbottompanel" BorderBrush="{StaticResource color2}"  BorderThickness="0.3" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta">
 
                         <Button x:Name="xPieChartButton" Click="XPieChartButton_OnClick"  Margin="20,0,0,0" Background="Transparent">
                             <Image Source="ms-appx:///Assets/piegraph bluegreen.png" Height="20" Width="20"></Image>

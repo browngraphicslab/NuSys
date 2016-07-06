@@ -118,10 +118,10 @@ namespace NuSysApp
                 m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Model.LibraryId;
                 var collRequest = new NewElementRequest(m);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(collRequest);
-                foreach (var id in Controller.GetUpdatedDataList())
+                foreach (var id in Controller.Model.LibraryIds)
                 {
                     var lem = SessionController.Instance.ContentController.GetContent(id);
-                    if (lem == null)
+                    if (lem == null || lem.Type == ElementType.Link)
                     {
                         continue;
                     }

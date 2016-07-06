@@ -20,7 +20,7 @@
     <PackageCertificateKeyFile>NuSysApp_TemporaryKey.pfx</PackageCertificateKeyFile>
     <PackageCertificateThumbprint>974C917A8A98617A1A9C87ED850936A08B851273</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-    <AppxPackageDir>S:\deploy\</AppxPackageDir>
+    <AppxPackageDir>C:\Users\graphics_lab\Desktop\</AppxPackageDir>
     <AppxBundlePlatforms>x86</AppxBundlePlatforms>
     <AppxBundle>Always</AppxBundle>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
@@ -188,6 +188,7 @@
     <Content Include="Assets\menububblebtm.png" />
     <Content Include="Assets\menu_bubble.png" />
     <Content Include="Assets\node icons\delete.png" />
+    <Content Include="Assets\node icons\icon_exploration.png" />
     <Content Include="Assets\node icons\icon_duplicate.png" />
     <Content Include="Assets\node icons\icon_enter.png" />
     <Content Include="Assets\node icons\icon_freeform.png" />
@@ -329,6 +330,7 @@
     <Compile Include="Components\Viewers\Detail\ILinkable.cs" />
     <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
     <Compile Include="Components\Viewers\Detail\Sizeable.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\IDetailViewable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\WordDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml.cs">
       <DependentUpon>WordDetailHomeTabView.xaml</DependentUpon>
@@ -381,36 +383,6 @@
     </Compile>
     <Compile Include="Components\Viewers\Detail\Views\RegionEditorTabView.xaml.cs">
       <DependentUpon>RegionEditorTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\Region\AudioDetailRegionTabView.xaml.cs">
-      <DependentUpon>AudioDetailRegionTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\Region\ElementCollectionDetailRegionTabView.xaml.cs">
-      <DependentUpon>ElementCollectionDetailRegionTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\Region\GroupDetailRegionTabView.xaml.cs">
-      <DependentUpon>GroupDetailRegionTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\Region\LinkDetailRegionTabView.xaml.cs">
-      <DependentUpon>LinkDetailRegionTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\Region\PDFDetailRegionTabView.xaml.cs">
-      <DependentUpon>PDFDetailRegionTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\Region\PowerPointDetailRegionTabView.xaml.cs">
-      <DependentUpon>PowerPointDetailRegionTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\Region\TextDetailRegionTabView.xaml.cs">
-      <DependentUpon>TextDetailRegionTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\Region\VideoDetailRegionTabView.xaml.cs">
-      <DependentUpon>VideoDetailRegionTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\Region\WebDetailRegionTabView.xaml.cs">
-      <DependentUpon>WebDetailRegionTabView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\Detail\Views\Region\WordDetailRegionTabView.xaml.cs">
-      <DependentUpon>WordDetailRegionTabView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\InkStorage.cs" />
     <Compile Include="Components\Viewers\FreeForm\InkWrapper.cs" />
@@ -603,6 +575,7 @@
     <Compile Include="Models\VideoNodeModel.cs" />
     <Compile Include="Models\WordNodeModel.cs" />
     <Compile Include="Models\WorkSpaceModel.cs" />
+    <Compile Include="Network\CachePDF.cs" />
     <Compile Include="Network\ClientHandler.cs" />
     <Compile Include="Network\Message.cs" />
     <Compile Include="Network\NetworkClient.cs" />
@@ -644,10 +617,12 @@
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Util\EventUtil.cs" />
+    <Compile Include="Util\ExplorationMode.cs" />
     <Compile Include="Util\ExtensionMethods.cs" />
     <Compile Include="Util\GestureRecognizer.cs" />
     <Compile Include="Util\GestureType.cs" />
     <Compile Include="Util\LibraryTab.cs" />
+    <Compile Include="Util\IModable.cs" />
     <Compile Include="Util\LineEquation.cs" />
     <Compile Include="Util\LineSegment.cs" />
     <Compile Include="Util\LinkId.cs" />
@@ -657,6 +632,9 @@
     <Compile Include="Util\Point2d.cs" />
     <Compile Include="Util\PresentationMode.cs" />
     <Compile Include="Util\RectanglePoints.cs" />
+    <Compile Include="Util\RelatedListBox.xaml.cs">
+      <DependentUpon>RelatedListBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\Statistics.cs" />
     <Compile Include="Util\Telemetry.cs" />
@@ -966,46 +944,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\Detail\Views\Region\AudioDetailRegionTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\Region\ElementCollectionDetailRegionTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\Region\GroupDetailRegionTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\Region\LinkDetailRegionTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\Region\PDFDetailRegionTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\Region\PowerPointDetailRegionTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\Region\TextDetailRegionTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\Region\VideoDetailRegionTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\Region\WebDetailRegionTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\Region\WordDetailRegionTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\VideoDetailHomeTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1227,6 +1165,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Util\RelatedListBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <SDKReference Include="Microsoft.VCLibs, Version=14.0">
@@ -1244,6 +1186,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Office.Interop.Word, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="Microsoft.Vbe.Interop">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio 14.0\Visual Studio Tools for Office\PIA\Office15\Microsoft.Vbe.Interop.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>

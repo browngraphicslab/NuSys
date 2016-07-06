@@ -8,6 +8,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -34,7 +35,7 @@ namespace NuSysApp
         private Image _dragItem;
 
 
-        private enum DragMode { Filter, Collection };
+        private enum DragMode { Filter, Collection, Scroll };
         private enum ViewMode { PieChart, List }
 
         private ViewMode _currentViewMode;
@@ -63,6 +64,8 @@ namespace NuSysApp
 
             xCollectionElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             xCollectionElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
+            //xPropertiesList.Loaded += (s, e) => Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+            //    () => xPropertiesList.ScrollIntoView(xPropertiesList.SelectedItem));
 
             //Binding b = new Binding();
             //b.Path = new PropertyPath("PropertiesToDisplayUnique");
@@ -84,6 +87,7 @@ namespace NuSysApp
                 //xPropertiesList.SelectedItem = GetListItem((DataContext as BasicToolViewModel).Selection);
                 xPropertiesList.SelectedItem = ((DataContext as BasicToolViewModel).Selection);
                 xPropertiesList.SelectionChanged += XPropertiesList_OnSelectionChanged;
+                xPropertiesList.ScrollIntoView(xPropertiesList.SelectedItem);
             }
             Binding bb = new Binding();
             bb.Path = new PropertyPath("PieChartDictionary");
@@ -216,19 +220,13 @@ namespace NuSysApp
 
         private async void xList_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-
+            
             //var x = e.OriginalSource as ListBox;
             //var y = x.SelectedItems;
             if (xCanvas.Children.Contains(_dragItem))
                 xCanvas.Children.Remove(_dragItem);
 
-            if (_currentViewMode == ViewMode.List)
-            {
-                xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
-                xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
-                xPropertiesList.SelectedItem = ((sender as Grid).Children[0] as TextBlock).Text;
-                xPropertiesList.SelectionChanged += XPropertiesList_OnSelectionChanged;
-            }
+            
 
 
             _currentDragMode = DragMode.Filter;
@@ -243,6 +241,29 @@ namespace NuSysApp
 
         private void xList_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+            var el = (FrameworkElement)sender;
+            var sp = el.TransformToVisual(xPropertiesList).TransformPoint(e.Position);
+
+            if (sp.X < Width && sp.X > 0 && sp.Y > 0 && sp.Y < xGrid.ActualHeight)
+            {
+                Border border = (Border) VisualTreeHelper.GetChild(xPropertiesList, 0);
+                ScrollViewer scrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
+                if (scrollViewer != null)
+                {
+                    scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta.Translation.Y);
+                }
+                if (_currentDragMode == DragMode.Filter)
+                {
+                    _dragItem.Visibility = Visibility.Collapsed;
+                    _currentDragMode = DragMode.Scroll;
+                }
+                
+            }
+            else if(_currentDragMode == DragMode.Scroll && !e.IsInertial)
+            {
+                _dragItem.Visibility = Visibility.Visible;
+                _currentDragMode = DragMode.Filter;
+            }
             if ((_dragItem.RenderTransform as CompositeTransform) != null)
             {
 
@@ -257,10 +278,8 @@ namespace NuSysApp
 
         private async void xList_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            if (_currentViewMode == ViewMode.List)
-            {
-                (DataContext as BasicToolViewModel).Selection = (((Grid)sender).Children[0] as TextBlock).Text;
-            }
+            
+            
             xCanvas.Children.Remove(_dragItem);
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
             var el = (FrameworkElement)sender;
@@ -269,6 +288,17 @@ namespace NuSysApp
 
             if (_currentDragMode == DragMode.Filter)
             {
+                if (_currentViewMode == ViewMode.List)
+                {
+                    //xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
+                    //xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
+                    //xPropertiesList.SelectedItem = ((sender as Grid).Children[0] as TextBlock).Text;
+                    //xPropertiesList.SelectionChanged += XPropertiesList_OnSelectionChanged;
+                    (DataContext as BasicToolViewModel).Selection = (((Grid)sender).Children[0] as TextBlock).Text;
+                    
+
+                }
+
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
                 if (hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList().Any())
                 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -41,8 +42,8 @@ namespace NuSysApp
             Controller = controller;
             RegionViews = new ObservableCollection<PDFRegionView>();
             Editable = true;
-            
         }
+
         public override async Task Init()
         {
             await Task.Run(async delegate {
@@ -271,7 +272,7 @@ namespace NuSysApp
 
         public override void SetExistingRegions(HashSet<Region> regions)
         {
-            if (regions == null) return;
+            if (regions == null) regions=new HashSet<Region>();
             foreach (var regionModel in regions)
             {
                 var pdfRegion = regionModel as PdfRegion;

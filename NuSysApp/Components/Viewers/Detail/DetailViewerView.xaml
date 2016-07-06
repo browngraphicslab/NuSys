@@ -46,7 +46,7 @@
                                     </TextBlock.RenderTransform>
                                 </TextBlock>
                             </Border>
-                            <Border x:Name="Tab" Tapped="TabList_OnTapped">
+                            <Border x:Name="Tab" Tapped="TabList_OnTapped" MaxWidth="{Binding ElementName=TabList, Path=DataContext.TextHeight}">
                                 <Border.RenderTransform>
                                     <TranslateTransform Y="15"></TranslateTransform>
                                 </Border.RenderTransform>
@@ -177,7 +177,7 @@
                     </Grid>
                 </PivotItem>
                 <PivotItem Header="Link Editor">
-                    <local:LinkEditorTab x:Name="xLinkEditorView" Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"/>
+                    <local:LinkEditorTab x:Name="xLinkEditorView" Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Top" />
                 </PivotItem>
                 <PivotItem Header="Region Editor">
                     <local:RegionEditorTabView x:Name="xRegionEditorView"  Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></local:RegionEditorTabView>

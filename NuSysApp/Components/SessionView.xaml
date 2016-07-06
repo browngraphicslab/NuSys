@@ -65,7 +65,6 @@
             <Image Name="DraggingGraphImage" Source="ms-appx:///Assets/icon_new_workspace.png" Width="0" Height="0"></Image>
             <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5,0,0,50"></local:ChatPopupView >
 
-
             <Button x:Name="PreviousNode" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="{StaticResource color3}" Width="50" Height="50" Margin="50,40,0,10" Visibility="Collapsed">
                 <Image Source="/Assets/presentation_backward.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,5,0"></Image>
             </Button>

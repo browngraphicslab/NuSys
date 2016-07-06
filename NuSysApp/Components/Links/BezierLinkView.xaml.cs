@@ -9,6 +9,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using NuSysApp.Controller;
+using NuSysApp.Util;
 using NuSysApp.Viewers;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -101,6 +102,7 @@ namespace NuSysApp
             
             this.UpdateControlPoints();
 
+            Canvas.SetZIndex(this, -10);
 
             var vm = (LinkViewModel)DataContext;
 
@@ -110,7 +112,6 @@ namespace NuSysApp
                 {
                     this.Annotation.Activate();
                     AnnotationContainer.Visibility = Visibility.Visible;
-                    Delete.Visibility = Visibility.Visible;
 
                     if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
                     {
@@ -172,7 +173,9 @@ namespace NuSysApp
 
                         ((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.Model.Select();
                         */
-
+                    }
+                    // Handles exploration mode
+                    SessionController.Instance.SessionView.Explore(vm);
                 }
                 else
                 {
@@ -180,7 +183,7 @@ namespace NuSysApp
                     {
                         AnnotationContainer.Visibility = Visibility.Collapsed;
                     }
-                    Delete.Visibility = Visibility.Collapsed;
+
                     this.Annotation.DeActivate();
                     if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
                     {
@@ -193,7 +196,7 @@ namespace NuSysApp
                     }
                 }
             }
-        }
+        
 
         private void JumpToLinkedTime()
         {
@@ -251,6 +254,13 @@ namespace NuSysApp
         /// </summary>
         private void UpdateControlPoints()
         {
+            // don't edit if we are in exploration or presentation mode
+            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
+                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
+            {
+                return;
+            }
+
             this.UpdateEndPoints();
 
             var vm = (LinkViewModel)this.DataContext;
@@ -266,9 +276,6 @@ namespace NuSysApp
             curve.Point1 = new Point(anchor2.X + distanceX / 2, anchor1.Y);
             curveInner.Point2 = new Point(anchor1.X - distanceX / 2, anchor2.Y);
             curveInner.Point1 = new Point(anchor2.X + distanceX / 2, anchor1.Y);
-
-            Canvas.SetLeft(btnDelete, anchor1.X - distanceX / 2 - Rect.ActualWidth / 2);
-            Canvas.SetTop(btnDelete, anchor1.Y - distanceY / 2);
 
             Canvas.SetLeft(AnnotationContainer, anchor1.X - distanceX / 2 - Rect.ActualWidth / 2);
             Canvas.SetTop(AnnotationContainer, anchor1.Y - distanceY / 2 - Rect.ActualHeight * 1.5);
@@ -287,13 +294,6 @@ namespace NuSysApp
 
             pathfigureInner.StartPoint = anchor1;
             curveInner.Point3 = anchor2;
-        }
-
-        private async void Delete_OnClick(object sender, RoutedEventArgs e)
-        {
-            var vm = (LinkViewModel)this.DataContext;
-            var controller = (LinkElementController)vm.Controller;
-            await controller.RequestDelete();
         }
 
         private void Annotation_Loaded(object sender, RoutedEventArgs e)

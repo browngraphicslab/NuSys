@@ -26,7 +26,7 @@ namespace NuSysApp
         {
             // return if library element model doesn't exist or if result parameter is null
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(result?.ContentID);
-            var model = controller.LibraryElementModel;
+            var model = controller?.LibraryElementModel;
             if (model == null) return;
 
             // default fields
@@ -37,7 +37,7 @@ namespace NuSysApp
 
             // extra info fields
             this.Keywords = parseKeyWordsToCommaSeparatedList(model.Keywords);
-            this.Metadata = parseMetaDataToHyphenBulletList(model.Metadata);
+            this.Metadata = parseMetaDataToHyphenBulletList(new Dictionary<string, MetadataEntry>(model.Metadata));
 
             // unused
             this.Id = model.LibraryElementId;

@@ -27,7 +27,6 @@ namespace NuSysApp
 
         private ObservableCollection<FrameworkElement> _views;
         private FreeFormNodeViewFactory _factory;
-        
         private int _count = 0;
 
         public GroupDetailHomeTabView(GroupDetailHomeTabViewModel vm)
@@ -207,7 +206,12 @@ namespace NuSysApp
                         await SessionController.Instance.SessionView.LoadWorkspaceFromServer(messages, id);
                     }
                 });
+
+
             }
+
+            SessionController.Instance.SessionView.DetailViewerView.Visibility = Visibility.Collapsed;
+
         }
         }
  }

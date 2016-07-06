@@ -26,22 +26,21 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <Grid x:Name ="xGrid" Grid.Row ="0" BorderBrush="CadetBlue" BorderThickness="1" Background="White">
+                <Grid x:Name ="xGrid" Grid.Row ="0" BorderBrush="{StaticResource color2}" BorderThickness="1" Background="White">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <TextBlock x:Name="xTitle" Text="Metadata" TextAlignment="Center" Height="35" Foreground="DarkSlateGray" Grid.Row="0" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta"/>
+                    <TextBlock x:Name="xTitle" Text="Metadata" TextAlignment="Center" Height="35" Foreground="{StaticResource color3}" Grid.Row="0" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta"/>
 
                     <StackPanel x:Name="xMetadataStackPanel" Grid.Row="1" Orientation="Horizontal">
                         <StackPanel Orientation="Vertical">
-                            <Border BorderBrush="CadetBlue" BorderThickness="1">
-                                <TextBlock Text="KEYS" TextAlignment="Center"  Foreground="DarkSlateGray"/>
+                            <Border BorderBrush="{StaticResource color2}" BorderThickness="1">
+                                <TextBlock Text="KEYS" TextAlignment="Center"  Foreground="{StaticResource color3}"/>
                             </Border>
-                            <!--<ListBox x:Name="xMetadataKeysList" Height="200" Width="200"  SelectionChanged="XMetadataKeysList_OnSelectionChanged"  Background="AliceBlue" BorderBrush="CadetBlue" BorderThickness="1"/>-->
-                            <ListView x:Name="xMetadataKeysList" BorderBrush="CadetBlue" BorderThickness="1"  ManipulationMode="All" ManipulationStarted="XList_OnManipulationStarted" Height="200" Width="200" CanDrag="True" SelectionChanged="XMetadataKeysList_OnSelectionChanged"  Background="AliceBlue" SelectionMode="Single" >
+                            <ListView x:Name="xMetadataKeysList" BorderBrush="{StaticResource color2}" BorderThickness="1"  ManipulationMode="All" ManipulationStarted="XList_OnManipulationStarted" Height="200" Width="200" CanDrag="True" SelectionChanged="XMetadataKeysList_OnSelectionChanged"  Background="{StaticResource color1}" SelectionMode="Single" >
                                 <ListView.ItemContainerStyle>
                                     <Style TargetType="ListViewItem">
                                         <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
@@ -51,19 +50,18 @@
                                 </ListView.ItemContainerStyle>
                                 <ListView.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid PointerPressed="xList_PointerPressed" ManipulationMode="TranslateX, TranslateY" Margin="0,0,75,0" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
-                                            <TextBlock Text="{Binding}" Foreground="DarkSlateGray"/>
+                                        <Grid PointerPressed="xList_PointerPressed" ManipulationMode="TranslateX, TranslateY" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
+                                            <TextBlock Text="{Binding}" Foreground="{StaticResource color3}"/>
                                         </Grid>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
                             </ListView>
                         </StackPanel>
                         <StackPanel Orientation="Vertical">
-                            <Border BorderBrush="CadetBlue" BorderThickness="1">
-                                <TextBlock Text="VALUES" TextAlignment="Center" Foreground="DarkSlateGray" />
+                            <Border BorderBrush="{StaticResource color2}" BorderThickness="1">
+                                <TextBlock Text="VALUES" TextAlignment="Center" Foreground="{StaticResource color3}" />
                             </Border>
-                            <!--<ListBox x:Name ="xMetadataValuesList" Height="200" Width="200" SelectionChanged="XMetadataValuesList_OnSelectionChanged" Background="AliceBlue" BorderBrush="CadetBlue" BorderThickness="1"/>-->
-                            <ListView x:Name="xMetadataValuesList" BorderBrush="CadetBlue" BorderThickness="1" ManipulationMode="All" ManipulationStarted ="XList_OnManipulationStarted" Height="200" Width="200" CanDrag="True" SelectionChanged="XMetadataValuesList_OnSelectionChanged"  Background="AliceBlue" SelectionMode="Single" >
+                            <ListView x:Name="xMetadataValuesList" BorderBrush="{StaticResource color2}" BorderThickness="1" ManipulationMode="All" ManipulationStarted ="XList_OnManipulationStarted" Height="200" Width="200" CanDrag="True" SelectionChanged="XMetadataValuesList_OnSelectionChanged"  Background="{StaticResource color1}" SelectionMode="Single" >
                                 <ListView.ItemContainerStyle>
                                     <Style TargetType="ListViewItem">
                                         <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
@@ -73,8 +71,8 @@
                                 </ListView.ItemContainerStyle>
                                 <ListView.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid PointerPressed="xList_PointerPressed" ManipulationMode="TranslateX, TranslateY" Margin="0,0,75,0" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
-                                            <TextBlock Text="{Binding}" Foreground="DarkSlateGray"/>
+                                        <Grid PointerPressed="xList_PointerPressed" ManipulationMode="TranslateX, TranslateY" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
+                                            <TextBlock Text="{Binding}" Foreground="{StaticResource color3}"/>
                                         </Grid>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
