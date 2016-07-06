@@ -116,6 +116,7 @@ namespace NuSysApp
                 _links[link.OutAtomId].Remove(id);
             }
             RemoveFromEndPointsToLink(link.InAtomId, link.OutAtomId);
+            OnLinkRemoved?.Invoke(SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
         }
         //removes a link from endPointsToLink
         private void RemoveFromEndPointsToLink(LinkId inAtomId, LinkId outAtomId)

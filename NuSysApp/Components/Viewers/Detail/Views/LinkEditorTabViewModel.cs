@@ -104,7 +104,7 @@ namespace NuSysApp
             {
                 return;
             }
-            foreach (var template in LinkTemplates)
+            foreach (var template in new HashSet<LinkTemplate>(LinkTemplates))
             {
                 if (template.Title == link.LinkLibraryElementModel.Title)
                 {

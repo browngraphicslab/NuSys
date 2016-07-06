@@ -61,7 +61,7 @@ namespace NuSysApp
 
             RegionsListTest = new ObservableCollection<RectangleView>();
             SessionController.Instance.LinkController.OnNewLink += UpdateLinks;
-            
+            SessionController.Instance.LinkController.OnLinkRemoved += UpdateLinks;
             if (ElementType == ElementType.Image)
             {
                 foreach (var element in Model.RegionsModel)
@@ -76,7 +76,7 @@ namespace NuSysApp
             CreateTags();
         }
 
-        private void UpdateLinks(LinkLibraryElementController model)
+        public void UpdateLinks(LinkLibraryElementController model)
         {
             UITask.Run(async delegate { CreateCircleLinks(); });    
         }
