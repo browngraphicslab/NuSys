@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -28,7 +29,7 @@ namespace NuSysApp
         public string LargeIconUrl { get; private set; }
         public string MediumIconUrl { get; private set; }
         public string SmallIconUrl { get; private set; }
-        public Dictionary<string, MetadataEntry> Metadata { get; set; }
+        public ConcurrentDictionary<string, MetadataEntry> Metadata { get; set; }
         public string Creator { set; get; }
         public string Timestamp { get; set; }//TODO maybe put in a timestamp, maybe remove the field from the library
 
@@ -42,15 +43,10 @@ namespace NuSysApp
             Type = elementType;
             Favorited = favorited;
             Keywords = new HashSet<Keyword>();
-            Metadata = metadata ?? new Dictionary<string, MetadataEntry>();
+            Metadata = new ConcurrentDictionary<string, MetadataEntry>(metadata ?? new Dictionary<string, MetadataEntry>());
             Regions = new HashSet<Region>();
-            if (Type == ElementType.Link)
-            {
-                
-            }
+            Debug.Assert(!(Type == ElementType.Link && !(this is LinkLibraryElementModel)));
             SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
-            
-
         }
         //FOR PDF DOWNLOADING  --HACKY AF
         //public static List<string> PDFStrings = new List<string>();
@@ -81,40 +77,58 @@ namespace NuSysApp
             {
                 Creator = message.GetString("creator_user_id");
             }
+            if (message.GetString("library_element_creation_timestamp") != null)
+            {
+                Timestamp = message.GetString("library_element_creation_timestamp");
+            }
+            if (message.GetString("server_url") != null)
+            {
+                ServerUrl = message.GetString("server_url");
+            }
             //TO DOWNLOAD PDFS
             /*
             if (Type == ElementType.PDF)
             {
                 PDFStrings.Add(LibraryElementId);
             }*/
+            AddDefaultMetadata();
+        }
 
+        private void AddDefaultMetadata()
+        {
             //ADD IMMUTABLE DATA TO METADATA, so they can show up in md editor
             if (!Metadata.ContainsKey("Timestamp"))
             {
-                Metadata.Add("Timestamp", new MetadataEntry("Timestamp", new List<string> {Timestamp}, MetadataMutability.IMMUTABLE));
+                Metadata.TryAdd("Timestamp", new MetadataEntry("Timestamp", new List<string> { Timestamp }, MetadataMutability.IMMUTABLE));
             }
             if (!Metadata.ContainsKey("Creator"))
             {
-                Metadata.Add("Creator", new MetadataEntry("Creator", new List<string> {Creator}, MetadataMutability.IMMUTABLE));
+                Metadata.TryAdd("Creator", new MetadataEntry("Creator", new List<string> { Creator }, MetadataMutability.IMMUTABLE));
             }
             if (!Metadata.ContainsKey("Title"))
             {
-                Metadata.Add("Title", new MetadataEntry("Title", new List<string> {Title}, MetadataMutability.IMMUTABLE));
+                Metadata.TryAdd("Title", new MetadataEntry("Title", new List<string> { Title }, MetadataMutability.IMMUTABLE));
             }
             if (!Metadata.ContainsKey("Type"))
             {
-                Metadata.Add("Type", new MetadataEntry("Type", new List<string> {Type.ToString()}, MetadataMutability.IMMUTABLE));
+                Metadata.TryAdd("Type", new MetadataEntry("Type", new List<string> { Type.ToString() }, MetadataMutability.IMMUTABLE));
             }
         }
         protected virtual void OnSessionControllerEnterNewCollection()
         {
             Data = null;
         }
+
+        public void SetMetadata(Dictionary<string, MetadataEntry> metadata)
+        {
+            Metadata = new ConcurrentDictionary<string, MetadataEntry>(metadata);
+            AddDefaultMetadata();
+        }
         /*
-         * Trent, Help ME.!!!!! He's talking about bio. What did I do to deserve this. 
-         * Help me. He just won't stop. Dear god what have I done. Sahil save me.
-         * This is my life now. I will suffer every day. Is there no way to escape this hell?
-         * 
-         */
+* Trent, Help ME.!!!!! He's talking about bio. What did I do to deserve this. 
+* Help me. He just won't stop. Dear god what have I done. Sahil save me.
+* This is my life now. I will suffer every day. Is there no way to escape this hell?
+* 
+*/
     }
 }

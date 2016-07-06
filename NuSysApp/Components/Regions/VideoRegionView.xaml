@@ -9,26 +9,21 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid x:Name="Canvas" >
+    <Grid x:Name="Canvas" DoubleTapped="XGrid_OnDoubleTapped">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Grid x:Name ="xGrid" Height="{Binding RectSize.Y}" Width="{Binding RectSize.X}" HorizontalAlignment="Left" VerticalAlignment="Top">
+        <Grid x:Name ="xGrid" Height="{Binding RectangleHeight}" Width="{Binding RectangleWidth}" HorizontalAlignment="Left" VerticalAlignment="Top">
             <Grid.RenderTransform>
-                <CompositeTransform x:Name="GridTranform" TranslateX="{Binding TopLeft.X}" TranslateY="{Binding TopLeft.Y}"></CompositeTransform>
+                <CompositeTransform x:Name="GridTransform" TranslateX="{Binding TopLeft.X}" TranslateY="{Binding TopLeft.Y}"></CompositeTransform>
             </Grid.RenderTransform>
-            <Rectangle  x:Name="xMainRectangle"  Width="{Binding RectSize.X}" Height="{Binding RectSize.Y}"  PointerPressed="xMainRectangle_PointerPressed" Fill="Transparent" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" ManipulationStarted="RectangleRegionView_ManipulationStarted" ManipulationDelta="RectangleRegionView_ManipulationDelta" StrokeThickness="3" Stroke="Blue" HorizontalAlignment="Left" VerticalAlignment="Top">
-                <Rectangle.RenderTransform>
-                    <CompositeTransform x:Name="RectangleTranform" >
-                    </CompositeTransform>
-                </Rectangle.RenderTransform>
-            </Rectangle>
+            <Rectangle  x:Name="xMainRectangle"  Height="{Binding RectangleHeight}" Width="{Binding RectangleWidth}"  PointerPressed="xMainRectangle_PointerPressed" Fill="Transparent" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" ManipulationStarted="RectangleRegionView_ManipulationStarted" ManipulationDelta="RectangleRegionView_ManipulationDelta" StrokeThickness="3" Stroke="Blue" HorizontalAlignment="Left" VerticalAlignment="Top"/>
             <Path x:Name="xResizingTriangle" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Left" VerticalAlignment="Top"                
                   Height="25" Stretch="Fill" Margin="-28,-28,0,0" UseLayoutRounding="False" Width="25"
                       Opacity=".35"  Canvas.ZIndex="20" Visibility="{Binding Editable,Converter={StaticResource vConverter}}"  ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" ManipulationStarted="xResizingTriangle_ManipulationStarted" ManipulationDelta="xResizingTriangle_ManipulationDelta" ManipulationCompleted="xResizingTriangle_ManipulationCompleted">
                 <Path.RenderTransform>
-                    <CompositeTransform TranslateX="{Binding RectSize.X}" TranslateY="{Binding RectSize.Y}">
+                    <CompositeTransform TranslateY="{Binding RectangleHeight}" TranslateX="{Binding RectangleWidth}">
                     </CompositeTransform>
                 </Path.RenderTransform>
             </Path>
@@ -36,23 +31,23 @@
         </Grid>
         <Grid>
         <Grid.RenderTransform>
-            <CompositeTransform TranslateY="{Binding AudioRegionHeight}"></CompositeTransform>
+            <CompositeTransform TranslateY="{Binding IntervalRegionTranslateY}"></CompositeTransform>
         </Grid.RenderTransform>
-            <Rectangle x:Name="Rect" Width="{Binding Path=AudioRegionWidth}" Fill="YellowGreen" Height="25"  Opacity=".2" HorizontalAlignment="Left" VerticalAlignment="Top" >
+            <Rectangle x:Name="IntervalRectangle" PointerPressed="xMainRectangle_PointerPressed" Width="{Binding IntervalRegionWidth}" Fill="LightCyan" Height="25"  Opacity=".2" HorizontalAlignment="Left" VerticalAlignment="Top" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" ManipulationDelta="IntervalRectangle_OnManipulationDelta" >
                 <Rectangle.RenderTransform>
-                    <CompositeTransform TranslateX="{Binding LeftHandleX}"/>
+                    <CompositeTransform TranslateX="{Binding IntervalStart}"/>
                 </Rectangle.RenderTransform>
             </Rectangle>
-            <local:AudioRegionBound x:Name="Bound1"  X1="{Binding Path=LeftHandleX}" X2="{Binding Path=LeftHandleX}" Y1="{Binding Path=LefthandleY1}" Y2="{Binding Path=LefthandleY2}"  ManipulationMode="All"
-                                PointerPressed="Handle_OnPointerPressed" ManipulationDelta="Bound1_OnManipulationDelta" PointerReleased="Handle_OnPointerReleased" ManipulationCompleted="OnManipulationCompleted">
+            <local:AudioRegionBound x:Name="Bound1"  ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}"
+                                ManipulationDelta="Bound1_OnManipulationDelta" ManipulationCompleted="OnManipulationCompleted" Y1="0" Y2="30">
                 <local:AudioRegionBound.RenderTransform>
-                    <CompositeTransform TranslateX="{Binding LeftHandleX}"/>
+                    <CompositeTransform TranslateX="{Binding IntervalStart}"/>
                 </local:AudioRegionBound.RenderTransform>
             </local:AudioRegionBound>
-            <local:AudioRegionBound x:Name="Bound2" X1="{Binding Path=RightHandleX}" X2="{Binding Path=RightHandleX}" Y1="{Binding Path=RightHandleY1}" Y2="{Binding Path=RightHandleY2}" ManipulationMode="All"
-                                PointerPressed="Handle_OnPointerPressed" ManipulationDelta="Handle_OnManipulationDelta2" PointerReleased="Handle_OnPointerReleased"  ManipulationCompleted="OnManipulationCompleted" >
+            <local:AudioRegionBound x:Name="Bound2" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}"
+                                 ManipulationDelta="Bound2_OnManipulationDelta2" ManipulationCompleted="OnManipulationCompleted" Y1="0" Y2="30">
                 <local:AudioRegionBound.RenderTransform>
-                    <CompositeTransform TranslateX="{Binding RightHandleX}"/>
+                    <CompositeTransform TranslateX="{Binding IntervalEnd}"/>
                 </local:AudioRegionBound.RenderTransform>
             </local:AudioRegionBound>
         </Grid>

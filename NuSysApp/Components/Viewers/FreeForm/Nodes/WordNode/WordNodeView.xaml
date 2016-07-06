@@ -37,6 +37,7 @@
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
             <Grid>
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Aquamarine" Opacity=".5" Visibility="{Binding IsLocked, Converter={StaticResource vConverter}}"></Grid>
                 <Grid>
                     <Image x:Name="xRenderedPdf"  Margin="3,3,3,3" Source="{Binding ImageSource}" Stretch="Uniform" Height="{Binding Height}" Width="{Binding Width}"/>
                     <Canvas x:Name="Canvas" VerticalAlignment ="Top" HorizontalAlignment="Left" ManipulationMode="None" >

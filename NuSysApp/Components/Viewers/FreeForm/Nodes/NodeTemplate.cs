@@ -21,6 +21,7 @@ using Windows.Graphics.Imaging;
 using Windows.Graphics.Display;
 using Windows.Storage;
 using Windows.Storage.Pickers;
+using MyToolkit.UI;
 using NuSysApp.Viewers;
 
 // The Templated Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234235
@@ -53,6 +54,7 @@ namespace NuSysApp
         public Button Link = null;
         public Button PresentationLink = null;
         public Button PresentationMode = null;
+        public Button ExplorationMode = null;
 
         public Button isSearched = null;
 
@@ -131,6 +133,11 @@ namespace NuSysApp
             PresentationMode = (Button) GetTemplateChild("PresentationMode");
             PresentationMode.Click += OnPresentationClick;
 
+            ExplorationMode = (Button) GetTemplateChild("ExplorationMode");
+            ExplorationMode.Click += OnExplorationClick;
+
+            
+
             btnDelete = (Button)GetTemplateChild("btnDelete");
             btnDelete.Click += OnBtnDeleteClick;
 
@@ -145,6 +152,8 @@ namespace NuSysApp
             //tags.RenderTransform = t;
 
             tags = (ItemsControl)GetTemplateChild("Tags");
+          
+
 
             title = (TextBox)GetTemplateChild("xTitle");
             title.KeyUp += TitleOnTextChanged;
@@ -170,7 +179,14 @@ namespace NuSysApp
             base.OnApplyTemplate();
             OnTemplateReady?.Invoke();
         }
-        
+
+        private void OnTagTemplateTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var panel = sender as WrapPanel;
+            var text = panel.Children;
+        }
+
+
         private void TitleOnTextChanged(object sender, object args)
         {
             var vm = (ElementViewModel)this.DataContext;
@@ -216,6 +232,7 @@ namespace NuSysApp
         {
             isSearched.Visibility = searched ? Visibility.Visible : Visibility.Collapsed;
         }
+
         private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)
         {
             xCanvas.Children.Remove(_dragItem);
@@ -293,7 +310,7 @@ namespace NuSysApp
                                 }
                                 else
                                 {
-                                    SessionController.Instance.LinkController.RequestLink(dc.ContentId, vm.ContentId);
+                                    SessionController.Instance.LinkController.RequestLink(new LinkId(dc.ContentId), new LinkId(vm.ContentId));
                                 }
                             }
                         }
@@ -302,29 +319,62 @@ namespace NuSysApp
                         {
                             if (element is AudioRegionView)
                             {
-
+                                if (_currenDragMode == DragMode.PresentationLink)
+                                {
+                                    // vm.Controller.RequestPresentationLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
+                                }
+                                else
+                                {
+                                    var region = element as AudioRegionView;
+                                    var regiondc = region.DataContext as AudioRegionViewModel;
+                                    SessionController.Instance.LinkController.RequestLink(regiondc.RegionController.Id, vm.Controller.LibraryElementController.Id);
+                                    vm.Controller.RequestVisualLinkTo();
+                                }
                             }
 
                             if (element is VideoRegionView)
                             {
-
+                                if (_currenDragMode == DragMode.PresentationLink)
+                                {
+                                    // vm.Controller.RequestPresentationLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
+                                }
+                                else
+                                {
+                                    var region = element as VideoRegionView;
+                                    var regiondc = region.DataContext as VideoRegionViewModel;
+                                    SessionController.Instance.LinkController.RequestLink(regiondc.RegionController.Id, vm.Controller.LibraryElementController.Id);
+                                    vm.Controller.RequestVisualLinkTo();
+                                }
                             }
 
                             if (element is PDFRegionView)
                             {
-
+                                if (_currenDragMode == DragMode.PresentationLink)
+                                {
+                                    // vm.Controller.RequestPresentationLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
+                                }
+                                else
+                                {
+                                    var region = element as PDFRegionView;
+                                    var regiondc = region.DataContext as PdfRegionViewModel;
+                                    SessionController.Instance.LinkController.RequestLink(regiondc.RegionController.Id, vm.Controller.LibraryElementController.Id);
+                                    vm.Controller.RequestVisualLinkTo();
+                                }
                             }
                             if (element is ImageRegionView)
                             {
-                                Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100, 100, 200);
-                                Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100, 100, 100);
+                             //   Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100, 100, 200);
+                               // Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100, 100, 100);
                                 if (_currenDragMode == DragMode.PresentationLink)
                                 {
                                    // vm.Controller.RequestPresentationLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
                                 }
                                 else
                                 {
-                                    SessionController.Instance.LinkController.RequestLink(dc.ContentId, vm.ContentId);
+                                    var region = element as ImageRegionView;
+                                    var regiondc = region.DataContext as ImageRegionViewModel;
+                                    SessionController.Instance.LinkController.RequestLink(regiondc.RegionController.Id, vm.Controller.LibraryElementController.Id);
+                                    vm.Controller.RequestVisualLinkTo();
                                 }
                             }
                             
@@ -366,8 +416,15 @@ namespace NuSysApp
 
                         if (_currenDragMode == DragMode.Link)
                         {
-                          SessionController.Instance.LinkController.RequestLink(dc.ContentId, vm.ContentId); 
-                            vm.Controller.RequestVisualLinkTo();
+                            if (dc is RegionViewModel)
+                            {
+
+                            }
+                            else
+                            {
+                                SessionController.Instance.LinkController.RequestLink(new LinkId(dc.ContentId),new LinkId( vm.ContentId));
+                            }
+                         //   vm.Controller.RequestVisualLinkTo();
                         }
                         if (_currenDragMode == DragMode.PresentationLink)
                         {
@@ -453,6 +510,20 @@ namespace NuSysApp
             highlight.Visibility = Visibility.Collapsed;
             
             sv.EnterPresentationMode(vm);
+        }
+
+        private void OnExplorationClick(object sender, RoutedEventArgs e)
+        {
+
+            var vm = ((ElementViewModel)this.DataContext);
+            var sv = SessionController.Instance.SessionView;
+
+            // unselect start element
+            vm.IsSelected = false;
+            vm.IsEditing = false;
+            highlight.Visibility = Visibility.Collapsed;
+
+            sv.EnterExplorationMode(vm);
         }
 
         private void OnResizerManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)

@@ -75,6 +75,12 @@
                                                 <TextBlock Text="Present" TextAlignment="Center" Foreground="#9CC5C2" FontSize="12"></TextBlock>
                                             </StackPanel>
                                         </Button>
+                                        <Button x:Name ="ExplorationMode" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,280,0,0">
+                                            <StackPanel>
+                                                <Image Source="ms-appx:///Assets/node icons/icon_exploration.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                                                <TextBlock Text="Explore" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
+                                            </StackPanel>
+                                        </Button>
 
                                     </Canvas>
 
@@ -101,29 +107,35 @@
                                 </Canvas>
                             </Canvas>
                             <Canvas Grid.Row="2">
-                                <ItemsControl VerticalAlignment="Bottom" ItemsSource="{Binding CircleLinks}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <local:WrapPanel Width="{Binding Width}" Background="Transparent">
-                                                <local:WrapPanel.RenderTransform>
-                                                    <TranslateTransform Y="5"></TranslateTransform>
-                                                </local:WrapPanel.RenderTransform>
-                                            </local:WrapPanel>
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                </ItemsControl>
-                                <ItemsControl x:Name="Tags" VerticalAlignment="Bottom" ItemsSource="{Binding Tags}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <local:WrapPanel Width="{Binding Width}" Background="Transparent">
-                                                <local:WrapPanel.RenderTransform>
-                                                    <TranslateTransform Y="5"></TranslateTransform>
-                                                </local:WrapPanel.RenderTransform>
-                                            </local:WrapPanel>
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                </ItemsControl>
-                            </Canvas>
+                                <StackPanel VerticalAlignment ="Bottom">
+                                    <Grid>
+                                        <ItemsControl VerticalAlignment="Bottom" ItemsSource="{Binding CircleLinks}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <local:WrapPanel Width="{Binding Width}" Background="Transparent">
+                                                        <local:WrapPanel.RenderTransform>
+                                                            <TranslateTransform Y="5"></TranslateTransform>
+                                                        </local:WrapPanel.RenderTransform>
+                                                    </local:WrapPanel>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                        </ItemsControl>
+                                    </Grid>
+                                    <Grid>
+                                        <ItemsControl x:Name="Tags" VerticalAlignment="Bottom" ItemsSource="{Binding Tags}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <local:WrapPanel Width="{Binding Width}" Background="Transparent">
+                                                        <local:WrapPanel.RenderTransform>
+                                                            <TranslateTransform Y="5"></TranslateTransform>
+                                                        </local:WrapPanel.RenderTransform>
+                                                    </local:WrapPanel>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                        </ItemsControl>
+                                    </Grid>
+                                </StackPanel>
+                    </Canvas>
                         </Grid>
                     </Canvas>
                 </ControlTemplate>

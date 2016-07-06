@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Shapes;
 using SharpDX.Direct3D11;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -21,68 +22,59 @@ namespace NuSysApp
 {
     public sealed partial class VideoRegionView : UserControl
     {
-        private bool _toggleManipulation;
-        public delegate void RegionSelectedEventHandler(object sender, bool selected);
-        public event RegionSelectedEventHandler OnSelected;
         public VideoRegionView(VideoRegionViewModel vm)
         {
             this.InitializeComponent();
             this.DataContext = vm;
-            _toggleManipulation = false;
-            xMainRectangle.RenderTransform = new CompositeTransform();
-            vm.PropertyChanged += PropertyChanged;
-            
         }
 
-        private void PropertyChanged(object sender, PropertyChangedEventArgs e)
+        public Grid RegionRectangle
         {
-            switch (e.PropertyName)
-            {
-                case "Width":
-                case "Height":
-                    var vm = DataContext as VideoRegionViewModel;
-                    if (vm == null)
-                    {
-                        break;
-                    }
-                    xMainRectangle.Width = vm.Width;
-                    xMainRectangle.Height = vm.Height;
-                    break;
-            }
-
+            get { return xGrid; }
         }
 
-        private void HeightChanged (object sender, double e)
-        {
-            Rect.Height = e- 100;
-        }
-        private void WidthChanged (object sender, double e)
-        {
-            Rect.Width = e ;
-        }
-
-        private void Handle_OnPointerPressed(object sender, PointerRoutedEventArgs e)
-       {
-            _toggleManipulation = true;
-        }
-
+        public bool Selected { get; set; }
         private void Bound1_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            if (!(Rect.Width - e.Delta.Translation.X > 0)) return;
-            UpdateModel(e.Delta.Translation.X,0,new Point(), new Point());
-        }
-
-        private void Handle_OnManipulationDelta2(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            if (Rect.Width + e.Delta.Translation.X > 0)
+            var composite = IntervalRectangle.RenderTransform as CompositeTransform;
+            var vm = DataContext as VideoRegionViewModel;
+            Selected = false;
+            if (composite != null &&  vm != null)
             {
-                UpdateModel(0, e.Delta.Translation.X,new Point(), new Point());
+                var newStart = composite.TranslateX + e.Delta.Translation.X;
+                if (newStart < 0)
+                {
+                    newStart = 0;
+                }
+                if (newStart > vm.IntervalEnd)
+                {
+                    newStart = vm.IntervalEnd;
+                }
+                vm.SetIntervalStart(newStart);
             }
         }
 
-        private void Handle_OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        private void Bound2_OnManipulationDelta2(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            _toggleManipulation = false;
+            var composite = IntervalRectangle.RenderTransform as CompositeTransform;
+            var vm = DataContext as VideoRegionViewModel;
+            if (composite != null &&  vm != null)
+            {
+                var newEnd = composite.TranslateX + IntervalRectangle.Width + e.Delta.Translation.X;
+                if (newEnd > vm.ContainerViewModel.GetWidth()-10)
+                {
+                    newEnd = vm.ContainerViewModel.GetWidth()-10;
+                }
+                if (newEnd < vm.IntervalStart)
+                {
+                    newEnd = vm.IntervalStart;
+                }
+                if (Double.IsNaN(newEnd))
+                {
+                    return;
+                }
+                vm.SetIntervalEnd(newEnd);
+            }
         }
 
         private void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
@@ -95,21 +87,8 @@ namespace NuSysApp
             {
                 return;
             }
-            if (vm.BottomRight.X-vm.TopLeft.X +e.Delta.Translation.X < 0 || e.Delta.Translation.X + vm.TopLeft.X  + vm.RectSize.X> vm.ContainerViewModel.GetWidth())
-                return;
-            if (vm.BottomRight.Y-vm.TopLeft.Y +e.Delta.Translation.Y < 0 || e.Delta.Translation.Y + vm.TopLeft.Y  + vm.RectSize.Y> vm.ContainerViewModel.GetHeight())
-                return;
-            vm.Width = Math.Max(vm.Width + e.Delta.Translation.X, 0);
-            vm.Height = Math.Max(vm.Height + e.Delta.Translation.Y, 0);
-            if (vm.Width * vm.Height == 0)
-            {
-                return;
-            }
-            UpdateModel(0,0,new Point(), e.Delta.Translation);
-
-            //ResizerTransform.TranslateX += e.Delta.Translation.X/2;
-            //ResizerTransform.TranslateY += e.Delta.Translation.Y/2;
-
+            vm.SetRegionSize(xMainRectangle.Width + e.Delta.Translation.X, xMainRectangle.Height + e.Delta.Translation.Y);
+            e.Handled = true;
         }
         private void xResizingTriangle_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
@@ -117,53 +96,88 @@ namespace NuSysApp
 
         private void xResizingTriangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            OnSelected?.Invoke(this, true);
             e.Handled = true;
-        }
-
-        private void UpdateViewModel()
-        {
-            var composite = RenderTransform as CompositeTransform;
-            var vm = DataContext as VideoRegionViewModel;
-            if (vm == null || composite == null)
-            {
-                return;
-            }
-            var topLeft = new Point(composite.TranslateX, composite.TranslateY);
-            var bottomRight = new Point(topLeft.X + xMainRectangle.Width, topLeft.Y + xMainRectangle.Height);
-           // vm.SetNewPoints(topLeft, bottomRight);
         }
 
         private void RectangleRegionView_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = DataContext as VideoRegionViewModel;
-            if (vm == null)
+            if (vm == null || GridTransform == null)
             {
                 return;
             }
-            if (vm.TopLeft.X +e.Delta.Translation.X < 0 || e.Delta.Translation.X + vm.TopLeft.X  + vm.RectSize.X> vm.ContainerViewModel.GetWidth())
+
+            // check that manipulation delta remains in the bounds
+            if (
+                
+                vm.TopLeft.X + e.Delta.Translation.X < 0 ||
+                vm.TopLeft.X + e.Delta.Translation.X + vm.RectangleWidth >
+                vm.ContainerViewModel.GetWidth() ||
+                vm.TopLeft.Y + e.Delta.Translation.Y < 0 ||
+                vm.TopLeft.Y + e.Delta.Translation.Y + vm.RectangleHeight >
+                vm.ContainerViewModel.GetHeight())
+            {
                 return;
-            if (vm.TopLeft.Y +e.Delta.Translation.Y < 0 || e.Delta.Translation.Y + vm.TopLeft.Y  + vm.RectSize.Y> vm.ContainerViewModel.GetHeight())
-                return;
-            UpdateModel(0,0,e.Delta.Translation,e.Delta.Translation);
+            }
+            
+            //GridTransform.TranslateX += e.Delta.Translation.X;
+            //GridTransform.TranslateY += e.Delta.Translation.Y;
+            
+
+            vm.SetRegionLocation(new Point(GridTransform.TranslateX + e.Delta.Translation.X, GridTransform.TranslateY + e.Delta.Translation.Y));
             e.Handled = true;
         }
 
 
         private void RectangleRegionView_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            OnSelected?.Invoke(this, true);
             e.Handled = true;
         }
-        private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
+        public void Deselect()
         {
-            OnSelected?.Invoke(this, true);
-        }
-        private void UpdateModel(double Audd1, double Audd2,Point Imgd1, Point Imgd2)
-        {
-                var vm = this.DataContext as VideoRegionViewModel; 
-                vm.SetNewPoints(Audd1,Audd2, Imgd1,Imgd2); 
+            xMainRectangle.StrokeThickness = 3;
+            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Blue);
+            IntervalRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.LightCyan);
+            xResizingTriangle.Visibility = Visibility.Collapsed;
+            Selected = false;
+
+
         }
 
+        public void Select()
+        {
+            xMainRectangle.StrokeThickness = 6;
+            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
+            IntervalRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
+            xResizingTriangle.Visibility = Visibility.Visible;
+            Selected = true;
+
+        }
+
+        private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var vm = DataContext as VideoRegionViewModel;
+
+            if (!vm.Editable)
+                return;
+
+            if (Selected)
+                this.Deselect();
+            else
+                this.Select();
+
+        }
+        private void IntervalRectangle_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            Bound1_OnManipulationDelta(sender,e);
+            Bound2_OnManipulationDelta2(sender, e);
+        }
+
+        private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            var vm = DataContext as RegionViewModel;
+            var regionController = vm?.RegionController;
+            SessionController.Instance.SessionView.ShowDetailView(regionController);
+        }
     }
 }

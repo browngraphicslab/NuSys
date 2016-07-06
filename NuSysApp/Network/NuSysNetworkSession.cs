@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.Connectivity;
 using Windows.Networking.Sockets;
+using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.System.Threading;
 using Windows.UI;
@@ -30,7 +31,7 @@ namespace NuSysApp
 
         public delegate void NewUserEventHandler(NetworkUser user);
         public event NewUserEventHandler OnNewNetworkUser;
-
+        public LockController LockController;
         #endregion Public Members
         #region Private Members
         private HashSet<string> NetworkMemberIPs
@@ -53,7 +54,11 @@ namespace NuSysApp
             _serverClient.OnClientDrop += ClientDrop;
             _serverClient.OnContentAvailable += ContentAvailable;
             _serverClient.OnClientJoined += AddNetworkUser;
+            _serverClient.OnRegionUpdated += RegionUpdated;
+            _serverClient.OnContentUpdated += ContentUpdated;
+            LockController = new LockController(_serverClient);
         }
+
         #region Requests
 
         public async Task ExecuteRequestLocally(Request request)
@@ -123,7 +128,7 @@ namespace NuSysApp
                         controller.SetTitle(title);//TODO make sure no other variables, like timestamp, need to be set here
                     }
                     else
-                    {
+                    {/*
                         if (type == ElementType.Collection)
                         {
                             SessionController.Instance.ContentController.Add(
@@ -133,7 +138,9 @@ namespace NuSysApp
                         {
                             SessionController.Instance.ContentController.Add(
                                 new LibraryElementModel(id, type, metadata, title));
-                        }
+                        }*/
+                        var request = new CreateNewLibraryElementRequest(new Message(dict));
+                        await ExecuteRequestLocally(request);
                     }
                     if (ServerClient.NeededLibraryDataIDs.Contains(id))
                     {
@@ -293,7 +300,18 @@ namespace NuSysApp
             await request.ExecuteSystemRequestFunction(this, _serverClient);
         }
         #endregion Requests
-
+        private void ContentUpdated(object sender, LibraryElementController controller, Message message)
+        {
+            controller.UnPack(message);
+        }
+        private void RegionUpdated(string id, Region region)
+        {
+            UITask.Run(delegate
+            {
+                var controller = SessionController.Instance.RegionsController.GetRegionController(id);
+                controller?.UnPack(region);
+            });
+        }
         public async Task<List<Message>> GetCollectionAsElementMessages(string id)
         {
             return await _serverClient.GetWorkspaceAsElementMessages(id);
@@ -326,7 +344,33 @@ namespace NuSysApp
         }
         public async Task FetchLibraryElementData(string id)
         {
-            await _serverClient.FetchLibraryElementData(id);
+            if (SessionController.Instance.ContentController.GetContent(id).Type == ElementType.PDF && false)
+            {
+                bool fileExists = await CachePDF.isFilePresent(id);
+
+                if (fileExists) // exists in cache
+                {
+                    var cacheData = await CachePDF.readFile(id);
+                    await UITask.Run(
+                        async delegate
+                        {
+                            SessionController.Instance.ContentController.GetLibraryElementController(id).Load(new LoadContentEventArgs(cacheData));
+                            await SessionController.Instance.NuSysNetworkSession.FetchLibraryElementWithoutData(id);
+                        });
+                }
+                else
+                {
+                    await _serverClient.FetchLibraryElementData(id);
+                    var data = SessionController.Instance.ContentController.GetContent(id).Data;
+
+                    CachePDF.createWriteFile(id, data); //save the data
+                }
+            }
+            else
+            {
+                await _serverClient.FetchLibraryElementData(id);
+            }
+
         }
         public async Task<HashSet<string>> SearchOverLibraryElements(string searchText)
         {
@@ -353,6 +397,37 @@ namespace NuSysApp
             return await _serverClient.DuplicateLibraryElement(libraryElementId);
         }
 
+        /// <summary>
+        /// Downloads a docx for the specified library ID and returns the temporary docx file path,
+        /// null if an error occurred like the document doesn't exist;
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<string> DownloadDocx(string id)
+        {
+            var bytes = await _serverClient.GetDocxBytes(id);
+            if (bytes == null)
+            {
+                return null;
+            }
+            var path = NuSysStorages.SaveFolder.Path + "\\" + id + ".docx";
+            try
+            {
+                using (var stream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite))
+                {
+                    await stream.WriteAsync(bytes, 0, bytes.Length);
+                }
+            }
+            catch (UnauthorizedAccessException unAuth)
+            {
+                throw new UnauthorizedAccessException("Couldn't write to file most likely because it is already open");
+            }
+            catch (Exception e)
+            {
+                throw new Exception("couldn't write to file because "+e.Message);
+            }
+            return path;
+        }
         public async Task<Dictionary<string, Dictionary<string, object>>> GetAllLibraryElements()
         {
             return await _serverClient.GetRepo();
@@ -381,7 +456,7 @@ namespace NuSysApp
                 return;
             }
             _regionUpdateDebounceList.Add(region.Id);
-            await Task.Delay(1000);
+            await Task.Delay(300);
             _regionUpdateDebounceList.Remove(region.Id);
             await _serverClient.UpdateRegion(region);
         }

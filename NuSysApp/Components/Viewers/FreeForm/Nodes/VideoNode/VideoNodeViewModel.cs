@@ -6,14 +6,57 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media;
 using NuSysApp.Nodes.AudioNode;
+using NuSysApp.Util;
 
 namespace NuSysApp
 {
     public class VideoNodeViewModel : ElementViewModel, Sizeable
     {
+        private ObservableCollection<VideoRegionView> _regionViews = new ObservableCollection<VideoRegionView>();
+
+        public delegate double GetWidthEventHandler(object sender);
+        public event GetWidthEventHandler OnGetMediaPlayerWidth;
+        public delegate double GetHeightEventHandler(object sender);
+        public event GetHeightEventHandler OnGetMediaPlayerHeight;
+        public ObservableCollection<VideoRegionView> RegionViews
+        {
+            get
+            {
+                _regionViews.Clear();
+                var elementController = Controller.LibraryElementController;
+                var regionHashSet = elementController.LibraryElementModel.Regions;
+
+                if (regionHashSet == null)
+                {
+                    return _regionViews;
+                }
+
+                foreach (var model in regionHashSet)
+                {
+                    var videoRegionModel = model as VideoRegionModel;
+                    if (videoRegionModel == null)
+                    {
+                        return _regionViews;
+                    }
+                    var regionController = SessionController.Instance.RegionsController.GetRegionController(model.Id);
+                    Debug.Assert(regionController is VideoRegionController);
+                    regionController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
+                    var viewmodel = new VideoRegionViewModel(videoRegionModel, elementController, regionController as VideoRegionController, this);
+                    viewmodel.Editable = false;
+                    var view = new VideoRegionView(viewmodel);
+                    _regionViews.Add(view);
+                }
+                return _regionViews;
+
+            }
+        }
+        public double VideoDuration { get; set; }
+
         public VideoNodeViewModel(ElementController controller) : base(controller)
         {
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
@@ -48,7 +91,23 @@ namespace NuSysApp
             Controller.LibraryElementController.Loaded -= LibraryElementModelOnOnLoaded;
             base.Dispose();
         }
+        public void ScrubBarOnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            double position = e.NewValue/VideoDuration;
+            foreach (var regionview in _regionViews)
+            {
+                if (((regionview.DataContext as VideoRegionViewModel).Model as VideoRegionModel).Start <= position &&
+                    ((regionview.DataContext as VideoRegionViewModel).Model as VideoRegionModel).End >= position)
+                {
+                    regionview.RegionRectangle.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    regionview.RegionRectangle.Visibility = Visibility.Collapsed;
 
+                }
+            }
+        }
         public override async Task Init()
         {
             if (Controller.LibraryElementController.IsLoaded)
@@ -99,42 +158,43 @@ namespace NuSysApp
 
         protected override void OnSizeChanged(object source, double width, double height)
         {
+            // don't edit if we are in exploration or presentation mode
+            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
+                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
+            {
+                return;
+            }
+
             SetSize(width, height);
         }
-
-        public ObservableCollection<VideoRegionView> RegionViews
-        {
-            get
-            {
-                var collection = new ObservableCollection<VideoRegionView>();
-                var elementController = Controller.LibraryElementController;
-                var regionHashSet = elementController.LibraryElementModel.Regions;
-
-                if (regionHashSet == null)
-                    return collection;
-                
-                foreach (var model in regionHashSet)
-                {
-                    var regionController = new RegionController(model);
-                    regionController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
-                    var viewmodel = new VideoRegionViewModel(model as VideoRegionModel, elementController, regionController,this);
-                    viewmodel.Editable = false;
-                    var view = new VideoRegionView(viewmodel);
-                    collection.Add(view);
-                }
-                return collection;
-
-            }
-        }
-
         public double GetWidth()
         {
-            return Width;
+            var width = OnGetMediaPlayerWidth?.Invoke(this);
+            if (width != null)
+            {
+                return width.Value;
+            }
+            return 0;
         }
 
         public double GetHeight()
         {
-            return Height;
+            var height = OnGetMediaPlayerHeight?.Invoke(this);
+            if (height != null)
+            {
+                return height.Value;
+            }
+            return 0;
+        }
+
+        public double GetViewWidth()
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetViewHeight()
+        {
+            throw new NotImplementedException();
         }
     }
 }

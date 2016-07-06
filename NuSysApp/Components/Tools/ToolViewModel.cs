@@ -93,6 +93,14 @@ namespace NuSysApp
             Width = 260;
         }
 
+        public void Dispose()
+        {
+            _controller.LibraryIdsChanged -= ControllerOnLibraryIdsChanged;
+            Controller.SizeChanged -= OnSizeChanged;
+            Controller.LocationChanged -= OnLocationChanged;
+            Controller.Dispose();
+        }
+
         public void AddChildFilter(ToolController controller)
         {
             controller.AddParent(_controller);

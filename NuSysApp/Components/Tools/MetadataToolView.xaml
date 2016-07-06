@@ -16,55 +16,91 @@
     IsDoubleTapEnabled="True">
 
     <Canvas x:Name="xCanvas">
-        <Grid Height="{Binding Height}" Width="{Binding Width}" MinHeight="100">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid x:Name ="xGrid" Grid.Row ="0" Background="LightCyan">
+
+        <StackPanel Orientation="Horizontal">
+            <Button x:Name="xDeleteButton" Click ="Delete_Click" VerticalAlignment="Top">
+                <Image Source="ms-appx:///Assets/icon_delete_color.png" Height="20" Width="20"></Image>
+            </Button>
+            <Grid Height="{Binding Height}" Width="{Binding Width}" MinHeight="100">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
+                <Grid x:Name ="xGrid" Grid.Row ="0" BorderBrush="CadetBlue" BorderThickness="1" Background="White">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
-                <TextBlock x:Name="xTitle" Text="Filter Type" Height="35" Grid.Row="0" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta"/>
+                    <TextBlock x:Name="xTitle" Text="Metadata" TextAlignment="Center" Height="35" Foreground="DarkSlateGray" Grid.Row="0" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta"/>
 
-                <StackPanel x:Name="xMetadataStackPanel" Grid.Row="1" Orientation="Horizontal">
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock Text="Keys"/>
-                        <ListBox x:Name="xMetadataKeysList" Height="200" Width="200"  SelectionChanged="XMetadataKeysList_OnSelectionChanged"  Background="AliceBlue" BorderBrush="CadetBlue" BorderThickness="1"/>
+                    <StackPanel x:Name="xMetadataStackPanel" Grid.Row="1" Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical">
+                            <Border BorderBrush="CadetBlue" BorderThickness="1">
+                                <TextBlock Text="KEYS" TextAlignment="Center"  Foreground="DarkSlateGray"/>
+                            </Border>
+                            <!--<ListBox x:Name="xMetadataKeysList" Height="200" Width="200"  SelectionChanged="XMetadataKeysList_OnSelectionChanged"  Background="AliceBlue" BorderBrush="CadetBlue" BorderThickness="1"/>-->
+                            <ListView x:Name="xMetadataKeysList" BorderBrush="CadetBlue" BorderThickness="1"  ManipulationMode="All" ManipulationStarted="XList_OnManipulationStarted" Height="200" Width="200" CanDrag="True" SelectionChanged="XMetadataKeysList_OnSelectionChanged"  Background="AliceBlue" SelectionMode="Single" >
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
+                                        <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
+                                        <Setter Property="Padding" Value="5,5,5,5"/>
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid PointerPressed="xList_PointerPressed" ManipulationMode="TranslateX, TranslateY" Margin="0,0,75,0" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
+                                            <TextBlock Text="{Binding}" Foreground="DarkSlateGray"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical">
+                            <Border BorderBrush="CadetBlue" BorderThickness="1">
+                                <TextBlock Text="VALUES" TextAlignment="Center" Foreground="DarkSlateGray" />
+                            </Border>
+                            <!--<ListBox x:Name ="xMetadataValuesList" Height="200" Width="200" SelectionChanged="XMetadataValuesList_OnSelectionChanged" Background="AliceBlue" BorderBrush="CadetBlue" BorderThickness="1"/>-->
+                            <ListView x:Name="xMetadataValuesList" BorderBrush="CadetBlue" BorderThickness="1" ManipulationMode="All" ManipulationStarted ="XList_OnManipulationStarted" Height="200" Width="200" CanDrag="True" SelectionChanged="XMetadataValuesList_OnSelectionChanged"  Background="AliceBlue" SelectionMode="Single" >
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
+                                        <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
+                                        <Setter Property="Padding" Value="5,5,5,5"/>
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid PointerPressed="xList_PointerPressed" ManipulationMode="TranslateX, TranslateY" Margin="0,0,75,0" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
+                                            <TextBlock Text="{Binding}" Foreground="DarkSlateGray"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
                     </StackPanel>
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock Text="Values"/>
-                        <ListBox x:Name ="xMetadataValuesList" Height="200" Width="200" SelectionChanged="XMetadataValuesList_OnSelectionChanged" Background="AliceBlue" BorderBrush="CadetBlue" BorderThickness="1"/>
+                    <StackPanel Name ="xbottompanel" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta">
+
+                        <TextBlock x:Name="xUniqueText" Visibility ="Collapsed" Text="Unique" Margin="10,0,0,0"/>
+                        <ToggleButton Visibility ="Collapsed" x:Name="xUniqueButton" Checked="XUniqueButton_OnChecked" Unchecked="XUniqueButton_OnUnchecked" Margin="20,0,0,0"/>
                     </StackPanel>
+                </Grid>
+                <StackPanel Grid.Row="2" Orientation="Horizontal">
+                    <Button x:Name="xCollectionElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Center" ManipulationDelta="XFilterElement_OnManipulationDelta">
+                        <StackPanel>
+                            <Image Source="ms-appx:///Assets/collection icon bluegreen.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                            <TextBlock Text="Collection" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="11"></TextBlock>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
-                <StackPanel Name ="xbottompanel" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta">
-
-                    <TextBlock x:Name="xUniqueText" Visibility ="Collapsed" Text="Unique" Margin="10,0,0,0"/>
-                    <ToggleButton Visibility ="Collapsed" x:Name="xUniqueButton" Checked="XUniqueButton_OnChecked" Unchecked="XUniqueButton_OnUnchecked" Margin="20,0,0,0"/>
-                </StackPanel>
-            </Grid>
-            <StackPanel Grid.Row="2" Orientation="Horizontal">
-                <Button x:Name="xFilterElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Center" ManipulationDelta="XFilterElement_OnManipulationDelta">
-                    <StackPanel>
-                        <Image Source="ms-appx:///Assets/icon_duplicate.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                        <TextBlock Text="Filter" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
-                    </StackPanel>
-                </Button>
-                <Button x:Name="xCollectionElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Center" ManipulationDelta="XFilterElement_OnManipulationDelta">
-                    <StackPanel>
-                        <Image Source="ms-appx:///Assets/icon_duplicate.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                        <TextBlock Text="Collection" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
-                    </StackPanel>
-                </Button>
-            </StackPanel>
-            <Path x:Name="xResizer" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
+                <Path x:Name="xResizer" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
                       Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
                       Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" ManipulationDelta="Resizer_OnManipulationDelta"/>
 
-        </Grid>
+            </Grid>
+        </StackPanel>
 
     </Canvas>
 </local:AnimatableUserControl>

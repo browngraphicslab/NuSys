@@ -73,7 +73,7 @@
     </UserControl.Resources>
     
     
-    <Grid x:Name="rootGrid">
+    <Grid x:Name="rootGrid" VerticalAlignment="Top">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -86,19 +86,28 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <Grid Padding="20,10,2.5,5" Grid.Row="0" Grid.Column="0">
+        <Grid Padding="20,10,2.5,10" Grid.Row="0" Grid.Column="0" VerticalAlignment="Top">
             <TextBox x:Name="linkTitle" PlaceholderText="link title..." HorizontalAlignment="Stretch" ></TextBox>
         </Grid>
-        <Grid Padding="2.5,10,20,5"  Grid.Row="0" Grid.Column="1">
-            <TextBox x:Name="linkTo" PlaceholderText="linked to..." HorizontalAlignment="Stretch" ></TextBox>
+        <Grid Padding="2.5,10,20,10"  Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+            <ComboBox x:Name="LinkToBox" ItemsSource="{Binding LibraryElements}" PlaceholderText="linked to..." SelectionChanged="LinkToBox_OnSelectionChanged">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Title}"></TextBlock>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <!--<TextBox x:Name="linkTo" PlaceholderText="linked to..." HorizontalAlignment="Stretch" ></TextBox>-->
         </Grid>
-        <Grid Padding="20,0,20,5" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+        <Grid Padding="20,0,20,10" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top">
             <TextBox x:Name="tags" PlaceholderText="tags - separate with commas"  HorizontalAlignment="Stretch"></TextBox>
         </Grid>
-        <Button x:Name="createLinkButton" Content="create link" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center"></Button>
+        <Grid VerticalAlignment="Top" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+            <Button x:Name="createLinkButton" Content="create link" Tapped="CreateLinkButton_OnTapped"  HorizontalAlignment="Center" IsEnabled="False"></Button>
+        </Grid>
 
-        <Grid Padding="20,5,20,10" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
-            <ListView x:Name="linkList" ItemsSource="{Binding LinkList}" HorizontalAlignment="Stretch">
+        <Grid Padding="20,10,20,10" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Stretch">
+            <ListView x:Name="linkList" ItemsSource="{Binding LinkTemplates}" HorizontalAlignment="Stretch" Background="LightSteelBlue"   BorderBrush="Black" BorderThickness="1.0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" MinHeight="400">
                 <ListView.Header>
                     <Grid VerticalAlignment="Center" Background="{StaticResource color6}">
                         <Grid.ColumnDefinitions>
@@ -107,10 +116,11 @@
                             <ColumnDefinition Width="3*" />
                         </Grid.ColumnDefinitions>
 
-                        <Button Style="{StaticResource SortButton}"  HorizontalAlignment="Left" Grid.Column="1" Click="SortButton_OnClick" Background="Transparent"  Foreground="{StaticResource color2}"  FontSize="15" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                        <Image x:Name="SortButton"  Source ="ms-appx:///Assets/icon_metadata_sort.png"  Tapped="XSortButton_OnTapped" VerticalAlignment="Center" HorizontalAlignment="Center" Height="20" Width="20"/>
+                        <Button x:Name="SortTitle" Style="{StaticResource SortButton}"  HorizontalAlignment="Left" Grid.Column="1" Click="SortTitle_OnClick" Background="Transparent"  Foreground="{StaticResource color2}"  FontSize="15" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
                             Title
                         </Button>
-                        <Button Style="{StaticResource SortButton}" HorizontalAlignment="Left" Grid.Column="2" Click="SortButton_OnClick" Foreground="{StaticResource color2}" Background="Transparent"  FontSize="15" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
+                        <Button x:Name="SortLinkedTo" Style="{StaticResource SortButton}" HorizontalAlignment="Left" Grid.Column="2" Click="SortLinkedTo_OnClick" Foreground="{StaticResource color2}" Background="Transparent"  FontSize="15" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
                             Linked to:
                         </Button>
                     </Grid>
@@ -118,28 +128,30 @@
 
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
-                        <Setter Property= "VerticalContentAlignment" Value="Stretch" />
-                        <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
-                        <Setter Property="Padding" Value="5,5,5,5"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="Padding" Value="0"/>
                     </Style>
                 </ListView.ItemContainerStyle>
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <Grid x:Name="LibraryListItem" Tapped="LibraryListItem_OnTapped" VerticalAlignment="Center" Padding="0" Margin="0" Background="#ECECEA"  >
+                        <Grid x:Name="LibraryListItem" Tapped="LibraryListItem_OnTapped" VerticalAlignment="Center" Padding="0" Margin="0" Background="#ECECEA" MinHeight="5" >
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="3*" />
                                 <ColumnDefinition Width="3*" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Source="ms-appx:///Assets/icon_node_x.png" Grid.Column="0" Grid.Row="0" Stretch="Uniform"></Image>
-                            <Image Source="ms-appx:///Assets/icon_node_ink.png" Grid.Column="0"></Image>
+                            <Image Source="ms-appx:///Assets/icon_node_x.png" Grid.Column="0" Grid.Row="0" Height="22" Width="22" Tapped="X_OnTapped" DataContext="{Binding ID}"></Image>
+                            <!--<Image Source="ms-appx:///Assets/icon_node_ink.png" Grid.Column="0"></Image>-->
                             <TextBlock  Grid.Column="1" Text="{Binding Title}" FontSize="14" />
                             <TextBlock  Grid.Column="2" Text="{Binding LinkedTo}" FontSize="14"/>
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
+        
         </Grid>
        
     </Grid>

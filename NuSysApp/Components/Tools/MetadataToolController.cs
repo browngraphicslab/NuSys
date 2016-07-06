@@ -25,7 +25,7 @@ namespace NuSysApp
 
         public event FilterChangedEventHandler FilterChanged;
         public event SelectionChangedEventHandler SelectionChanged;
-        
+
 
         public override Func<string, bool> GetFunc()
         {
@@ -94,8 +94,12 @@ namespace NuSysApp
                     if (!allMetadata.ContainsKey(kvp.Key))
                     {
                         allMetadata.Add(kvp.Key, new HashSet<string>());
+                        allMetadata[kvp.Key].Add(kvp.Value);
                     }
-                    allMetadata[kvp.Key].Add(kvp.Value);
+                    else
+                    {
+                        allMetadata[kvp.Key].Add(kvp.Value);
+                    }
                 }
             }
             return allMetadata;

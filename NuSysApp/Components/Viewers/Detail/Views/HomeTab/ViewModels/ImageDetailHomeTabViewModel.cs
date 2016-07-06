@@ -17,6 +17,20 @@ namespace NuSysApp
         public LibraryElementModel Model { get; }
         public ObservableCollection<ImageRegionView> RegionViews { set; get; }
         public Uri Image { get; }
+        public double ImageWidth {
+            set
+            {
+                _imageWidth = value;
+                RaisePropertyChanged("ImageWidth");
+            }
+            get
+            {
+                return _imageWidth;
+            }
+        }
+
+        private double _imageWidth;
+        
         //public Boolean Editable { get; set; }
         public ImageDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
@@ -26,16 +40,18 @@ namespace NuSysApp
             Image = controller.GetSource();
             RegionViews = new ObservableCollection<ImageRegionView>();
             Editable = true;
+            
         }
 
         public override void AddRegion(object sender, RegionController regionController)
         {
-            var imageRegion = regionController.Model as RectangleRegion;
+            var rectRegionController = regionController as RectangleRegionController;
+            var imageRegion = rectRegionController.Model as RectangleRegion;
             if (imageRegion == null)
             {
                 return;
             }
-            var vm = new ImageRegionViewModel(imageRegion, LibraryElementController, regionController, this);
+            var vm = new ImageRegionViewModel(imageRegion, LibraryElementController, rectRegionController, this);
             if (!Editable)
                 vm.Editable = false;
             var view = new ImageRegionView(vm);
@@ -81,7 +97,7 @@ namespace NuSysApp
                 return 0;
             }
             //return view.ActualHeight;
-            return view.ActualHeight;
+            return view.GetImgHeight();
         }
 
 
@@ -93,7 +109,7 @@ namespace NuSysApp
                 return 0;
             }
            //return view.ActualWidth;
-            return view.ActualWidth;
+            return view.GetImgWidth();
         }
         public override void SetExistingRegions(HashSet<Region> regions)
         {
@@ -111,19 +127,18 @@ namespace NuSysApp
                 {
                     return;
                 }
-                RegionController regionController;
+                RectangleRegionController regionController;
                 if (SessionController.Instance.RegionsController.GetRegionController(imageRegion.Id) == null)
                 {
                     var factory = new RegionControllerFactory();
-                    regionController = factory.CreateFromSendable(regionModel);
-                    SessionController.Instance.RegionsController.Add(regionController);
+                    regionController = factory.CreateFromSendable(regionModel, LibraryElementController.LibraryElementModel.LibraryElementId) as RectangleRegionController;
                 }
                 else {
-                    regionController = SessionController.Instance.RegionsController.GetRegionController(imageRegion.Id);
+                    regionController = SessionController.Instance.RegionsController.GetRegionController(imageRegion.Id) as RectangleRegionController;
                 }
 
 
-                //var regionController = new RegionController(imageRegion);
+                //var regionController = new RegionController(imageRengion);
                 var vm = new ImageRegionViewModel(imageRegion, LibraryElementController, regionController, this);
                 if (!Editable)
                     vm.Editable = false;
@@ -142,25 +157,25 @@ namespace NuSysApp
             return region;
         }
 
-        public double GetImageWidth()
+
+        public double GetViewWidth()
         {
             var view = (View as ImageDetailHomeTabView);
             if (view == null)
             {
                 return 0;
             }
-            //return view.ActualHeight;
-            return view.GetImgWidth();
+            return view.ActualWidth;
         }
-        public double GetImageHeight()
+
+        public double GetViewHeight()
         {
             var view = (View as ImageDetailHomeTabView);
             if (view == null)
             {
                 return 0;
             }
-            //return view.ActualHeight;
-            return view.GetImgHeight();
+            return view.ActualHeight;
         }
     }
 }

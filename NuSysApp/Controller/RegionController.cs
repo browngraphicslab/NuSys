@@ -7,32 +7,43 @@ using Windows.Foundation;
 
 namespace NuSysApp
 {
-    public class RegionController : IMetadatable, ILinkable
+    public class RegionController : IMetadatable, ILinkable, IDetailViewable
     {
         public Region Model;
 
+        public string Title
+        {
+            get { return Model?.Name; }
+            set { SetTitle(value);}
+        }
+
+        public LinkId Id
+        {
+            get { return new LinkId(SessionController.Instance.RegionsController.GetLibraryElementModelId(this.Model.Id),this.Model.Id); }
+        }
+
         public delegate void TitleChangedEventHandler(object source, string title);
         public event TitleChangedEventHandler TitleChanged;
-
-        public string Title { get; set; }
-
         public delegate void RegionUpdatedEventHandler(object source, Region region);
         public event RegionUpdatedEventHandler RegionUpdated;
+        public delegate void SelectHandler(RegionController regionController);
+        public event SelectHandler OnSelect;
+        public delegate void DeselectHandler(RegionController regionController);
+        public event DeselectHandler OnDeselect;
+        public event EventHandler<LinkLibraryElementController> LinkAdded;
+        public event EventHandler<string> LinkRemoved;
+
+        private bool _selected;
+        private bool _blockServerUpdates;
         public RegionController(Region model)
         {
             Model = model;
-            Title = model.Name;
-            SessionController.Instance.RegionsController.Add(this);
         }
-
         public void SetTitle(string title)
         {
             Model.Name = title;
-            Title = title;
             TitleChanged?.Invoke(this, title);
-            SessionController.Instance.NuSysNetworkSession.UpdateRegion(Model);
-            
-            
+            UpdateServer();
         }
         public Dictionary<string, MetadataEntry> GetMetadata()
         {
@@ -76,6 +87,18 @@ namespace NuSysApp
             return Model.Metadata[key].Values;
         }
 
+        protected void UpdateServer()
+        {
+            if (!_blockServerUpdates)
+            {
+                SessionController.Instance.NuSysNetworkSession.UpdateRegion(Model);
+            }
+        }
+
+        protected void SetBlockServerBoolean(bool blockServerUpdates)
+        {
+            _blockServerUpdates = blockServerUpdates;
+        }
         public MetadatableType MetadatableType()
         {
             return NuSysApp.MetadatableType.Region;
@@ -83,19 +106,42 @@ namespace NuSysApp
         public void UpdateRegion(Region region)
         {
             RegionUpdated?.Invoke(this, region);
-            SessionController.Instance.NuSysNetworkSession.UpdateRegion(region);
+            UpdateServer();
         }
 
-        public void AddNewLink(string idToLinkTo)
+        public void Select()
         {
-             SessionController.Instance.LinkController.RequestLink(this.Model.Id, idToLinkTo);
+            _selected = true;
+            OnSelect?.Invoke(this);
         }
 
-        public void RemoveLink(string linkID)
+        public void Deselect()
         {
-            SessionController.Instance.LinkController.RemoveLink(linkID);
+            _selected = false;
+            OnDeselect?.Invoke(this);
         }
 
+        public void AddLink(LinkLibraryElementController linkController)
+        {
+            LinkAdded?.Invoke(this, linkController);
+        }
+
+     /*   public void RemoveLink(LinkLibraryElementController linkController)
+        {
+            LinkRemoved?.Invoke(this, linkController.Id);
+        }*/
+
+        #region Linking methods
+        public void RequestAddNewLink(LinkId idToLinkTo)
+        {
+            SessionController.Instance.LinkController.RequestLink(new LinkId( SessionController.Instance.RegionsController.GetLibraryElementModelId(this.Model.Id),this.Model.Id), idToLinkTo);
+        }
+
+        public void RequestRemoveLink(LinkId linkLibraryElementID)
+        {
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(linkLibraryElementID.LibraryElementId) as LinkLibraryElementController;
+            SessionController.Instance.LinkController.RemoveLink(controller.Id.LibraryElementId);
+        }
         public void ChangeLinkTitle(string linkLibraryElementID, string title)
         {
             SessionController.Instance.LinkController.ChangeLinkTitle(linkLibraryElementID, title);
@@ -105,30 +151,29 @@ namespace NuSysApp
         {
             SessionController.Instance.LinkController.ChangeLinkTags(linkLibraryElementID, tags);
         }
-
-        void ILinkable.AddNewLink(string idToLinkTo)
+        
+        public HashSet<LinkLibraryElementController> GetAllLinks()
         {
-            throw new NotImplementedException();
+            var linkedIds = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(this.Model.Id));
+            var controllers = linkedIds.Select(id => SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
+            return new HashSet<LinkLibraryElementController>(controllers);
         }
 
-        void ILinkable.RemoveLink(string linkID)
-        {
-            throw new NotImplementedException();
+        /// <summary>
+        /// This mehtod should only be called from the server upon other updates.  It will pass in a region
+        /// you should extract the region's properties and call the update methods in the controllers
+        /// </summary>
+        /// <param name="region"></param>
+        public virtual void UnPack(Region region)
+        { 
+            SetBlockServerBoolean(true);//this is a must otherwise infinite loops will occur
+            if (Model.Name != region.Name)
+            {
+                SetTitle(region.Name);
+            }
+            SetBlockServerBoolean(false);//THIS is a must otherwise changes wont be saved
         }
+        #endregion
 
-        void ILinkable.ChangeLinkTitle()
-        {
-            throw new NotImplementedException();
-        }
-
-        void ILinkable.ChangeLinkTags()
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<string> GetAllLinks()
-        {
-            return new List<string>();
-        }
     }
 }

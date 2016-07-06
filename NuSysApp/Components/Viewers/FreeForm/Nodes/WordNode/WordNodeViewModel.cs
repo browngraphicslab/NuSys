@@ -24,14 +24,42 @@ namespace NuSysApp
         public int CurrentPageNumber { get; private set; }
         public MuPDFWinRT.Document _document;
 
+        private bool _isLocked;
+
+        public bool IsLocked
+        {
+            get
+            {
+                return _isLocked;
+            }
+            set
+            {
+                _isLocked = value;
+                RaisePropertyChanged("Islocked");
+            }
+        }
         public WordNodeViewModel(ElementController controller) : base(controller)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
+            Debug.Assert(controller?.LibraryElementController is WordNodeLibraryElementController);
+            var wnlec = controller?.LibraryElementController as WordNodeLibraryElementController;
+            wnlec.Locked += LibraryElementController_Locked;
+            wnlec.UnLocked += LibraryElementController_UnLocked;
+        }
+
+        private void LibraryElementController_UnLocked(object sender)
+        {
+            IsLocked = false;
+        }
+
+        private void LibraryElementController_Locked(object sender, NetworkUser user)
+        {
+            IsLocked = true;
         }
 
         public override void Dispose()
         {
-            var model = (PdfNodeModel)Controller.Model;
+            var model = (WordNodeModel)Controller.Model;
             if (_document != null)
             {
                 _document.Dispose();
@@ -53,7 +81,9 @@ namespace NuSysApp
 
         private async void LibraryElementModelOnOnLoaded(object sender)
         {
-            await DisplayPdf();
+            UITask.Run(async delegate {
+                await DisplayPdf();
+            });
         }
 
         private async Task DisplayPdf()

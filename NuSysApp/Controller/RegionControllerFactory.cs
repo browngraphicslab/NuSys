@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,14 +9,15 @@ namespace NuSysApp
 {
     public class RegionControllerFactory
     {
-        public RegionController CreateFromSendable(Region regionModel)
+        public RegionController CreateFromSendable(Region regionModel, string contentId)
         {
             RegionController controller = null;
 
             switch (regionModel.Type)
             {
                 case Region.RegionType.Rectangle:
-                    controller = new RegionController(regionModel);
+                    var imageModel = regionModel as RectangleRegion;
+                    controller = new RectangleRegionController(imageModel);
                     break;
                 case Region.RegionType.Pdf:
                     var pdfModel = regionModel as PdfRegion;
@@ -25,12 +27,16 @@ namespace NuSysApp
                     controller = new RegionController(regionModel);
                     break;
                 case Region.RegionType.Video:
-                    controller = new RegionController(regionModel);
+                    Debug.Assert(regionModel is VideoRegionModel);
+                    controller = new VideoRegionController(regionModel as VideoRegionModel);
                     break;
             }
-
             if (controller == null)
+            {
                 return null;
+            }
+
+            SessionController.Instance.RegionsController.Add(controller, contentId);
             return controller;
         }
     }

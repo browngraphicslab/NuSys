@@ -49,6 +49,8 @@ namespace NuSysApp
             
             vm.Controller.Disposed += ControllerOnDisposed;
             vm.View = this;
+            VideoMediaPlayer.MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
+            VideoMediaPlayer.ScrubBar.ValueChanged += vm.ScrubBarOnValueChanged;
             //Loaded += delegate (object sender, RoutedEventArgs args)
             //{
             //    var sw = SessionController.Instance.SessionView.ActualWidth / 2;
@@ -60,7 +62,11 @@ namespace NuSysApp
             //};
         }
 
-
+        private void MediaPlayer_MediaOpened(object sender, RoutedEventArgs e)
+        {
+            var vm = DataContext as VideoDetailHomeTabViewModel;
+            vm.VideoDuration = VideoMediaPlayer.MediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
+        }
 
         public void Dispose()
         {
@@ -71,8 +77,15 @@ namespace NuSysApp
             var vm = (VideoNodeViewModel)DataContext;
             vm.Controller.Disposed -= ControllerOnDisposed;
         }
-
-        public double VideoWidth => VideoMediaPlayer.ActualWidth;
-        public double VideoHeight => VideoMediaPlayer.ActualHeight;
+        private void MediaPlayer_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var vm = DataContext as VideoDetailHomeTabViewModel;
+            foreach (var regionView in vm.RegionViews)
+            {
+                regionView.Deselect();
+            }
+        }
+        public double VideoWidth => VideoMediaPlayer.MediaPlayer.ActualWidth;
+        public double VideoHeight => VideoMediaPlayer.MediaPlayer.ActualHeight;
     }
 }

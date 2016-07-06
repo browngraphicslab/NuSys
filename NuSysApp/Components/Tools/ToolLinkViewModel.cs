@@ -13,9 +13,6 @@ namespace NuSysApp
         public ToolController InToolController;
         public ToolController OutToolController;
 
-        public ElementController InToolElementController;
-        public ElementController OutToolElementController;
-
         public ToolViewModel InTool;
         public ToolViewModel OutTool;
 
@@ -38,6 +35,16 @@ namespace NuSysApp
             InToolController.SizeChanged += OutElementControllerOnSizeChanged;
             OutToolController.SizeChanged += OutElementControllerOnSizeChanged;
 
+            
+
+        }
+
+        public void Dispose()
+        {
+            InToolController.LocationChanged -= InToolController_LocationChanged; ;
+            OutToolController.LocationChanged -= OutToolController_LocationChanged; ;
+            InToolController.SizeChanged -= OutElementControllerOnSizeChanged;
+            OutToolController.SizeChanged -= OutElementControllerOnSizeChanged;
         }
 
         private void OutToolController_LocationChanged(object sender, double x, double y)

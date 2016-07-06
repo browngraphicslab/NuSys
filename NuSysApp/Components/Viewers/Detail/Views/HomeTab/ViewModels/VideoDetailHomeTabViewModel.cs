@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls.Primitives;
 
 namespace NuSysApp
 {
@@ -18,6 +20,7 @@ namespace NuSysApp
             Controller = controller;
             RegionViews = new ObservableCollection<VideoRegionView>();
             Controller.Loaded += Controller_Loaded;
+            
         }
 
         private void Controller_Loaded(object sender)
@@ -27,21 +30,42 @@ namespace NuSysApp
         public void VideoMediaPlayer_Loaded(object sender, RoutedEventArgs e)
         {
             RegionViews.Clear();
-            SetExistingRegions(Controller.LibraryElementModel.Regions);
+            SetExistingRegions(Controller.LibraryElementModel.Regions ?? new HashSet<Region>());
         }
 
         public override void AddRegion(object sender, RegionController controller)
         {
             var videoRegion = controller?.Model as VideoRegionModel;
-            if (videoRegion == null)
+            var videoRegionController = controller as VideoRegionController;
+            if (videoRegion == null || videoRegionController == null)
             {
                 return;
             }
-            var vm = new VideoRegionViewModel(videoRegion, Controller, controller, this);
+            var vm = new VideoRegionViewModel(videoRegion, Controller, videoRegionController, this);
+            vm.Editable = this.Editable;
             var view = new VideoRegionView(vm);
             RegionViews.Add(view);
             RaisePropertyChanged("RegionViews");
         }
+        public void ScrubBarOnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            double position = e.NewValue / VideoDuration;
+            foreach (var regionview in RegionViews)
+            {
+                if (((regionview.DataContext as VideoRegionViewModel).Model as VideoRegionModel).Start <= position &&
+                    ((regionview.DataContext as VideoRegionViewModel).Model as VideoRegionModel).End >= position)
+                {
+                    regionview.RegionRectangle.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    regionview.RegionRectangle.Visibility = Visibility.Collapsed;
+
+                }
+            }
+        }
+
+        public double VideoDuration { get; set; }
 
         public override void RemoveRegion(object sender, Region displayedRegion)
         {
@@ -61,12 +85,12 @@ namespace NuSysApp
 
         public double GetWidth()
         {
-            return View.ActualWidth;
+            return (View as VideoDetailHomeTabView).VideoWidth;
         }
 
         public double GetHeight()
         {
-            return View.ActualHeight;
+            return (View as VideoDetailHomeTabView).VideoHeight;
         }
         public void MediaPlayerOnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
@@ -77,13 +101,15 @@ namespace NuSysApp
         {
             foreach (var regionModel in regions)
             {
-                var VideoRegion = regionModel as VideoRegionModel;
-                if (VideoRegion == null)
+                var videoRegion = regionModel as VideoRegionModel;
+                if (videoRegion == null)
                 {
                     return;
                 }
-                var regionController = new RegionController(regionModel);
-                var vm = new VideoRegionViewModel(VideoRegion, Controller, regionController, this);
+                var regionController = SessionController.Instance.RegionsController.GetRegionController(regionModel.Id);
+                Debug.Assert(regionController is VideoRegionController);
+                var vm = new VideoRegionViewModel(videoRegion, Controller, regionController as VideoRegionController, this);
+                vm.Editable = this.Editable;
                 var view = new VideoRegionView(vm);
                 RegionViews.Add(view);
 
@@ -93,8 +119,18 @@ namespace NuSysApp
 
         public override Region GetNewRegion()
         {
-            var region = new VideoRegionModel(new Point(0.25, 0.25), new Point(0.75, 0.75), .25, .75);
+            var region = new VideoRegionModel(new Point(.25,.25), new Point(.75, .75) );
             return region;
+        }
+
+        public double GetViewWidth()
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetViewHeight()
+        {
+            throw new NotImplementedException();
         }
     }
 }

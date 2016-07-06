@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NuSysApp
 {
-    public class MetadataToolViewModel:ToolViewModel
+    public class MetadataToolViewModel : ToolViewModel
     {
         public MetadataToolViewModel(ToolController toolController) : base(toolController)
         {
@@ -21,7 +21,7 @@ namespace NuSysApp
 
         protected override void ReloadPropertiesToDisplay()
         {
-            
+
             AllMetadataDictionary = (_controller as MetadataToolController).GetAllMetadata();
             if ((_controller as MetadataToolController).MetadataToolModel.Selection != null && (_controller as MetadataToolController).MetadataToolModel.Selected == true)
             {
@@ -31,13 +31,13 @@ namespace NuSysApp
                     (_controller as MetadataToolController).UnSelect();
                     //AllMetadataDictionary = (_controller as MetadataToolController).GetAllMetadata();
                 }
-                else if(Selection.Item2 != null && !AllMetadataDictionary[Selection.Item1].Contains(Selection.Item2))
+                else if (Selection.Item2 != null && !AllMetadataDictionary[Selection.Item1].Contains(Selection.Item2))
                 {
                     Selection = new Tuple<string, string>(Selection.Item1, null);
                 }
             }
             InvokePropertiesToDisplayChanged();
-
         }
+
     }
 }

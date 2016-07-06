@@ -1,2 +1,6 @@
 #TargetFrameworkVersion=:PlatformToolSet=v120:EnableManagedIncrementalBuild=false:VCToolArchitecture=Native32Bit
+<<<<<<< HEAD
 Debug|Win32|C:\Users\miran_000\Documents\NuSys\|
+=======
+Debug|Win32|C:\Users\nico\Documents\Nu_Nusys_repo\nusys\|
+>>>>>>> 4b60243dea88dd16ab12fa7117b6690641efd1d4

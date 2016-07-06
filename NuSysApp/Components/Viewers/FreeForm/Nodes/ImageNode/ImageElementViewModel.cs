@@ -9,6 +9,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using Newtonsoft.Json;
 using Windows.UI.Xaml.Media;
+using NuSysApp.Util;
 
 namespace NuSysApp
 {
@@ -27,6 +28,7 @@ namespace NuSysApp
 
             Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
             Controller.LibraryElementController.RegionRemoved += LibraryElementControllerOnRegionRemoved;
+
 
 
         }
@@ -49,8 +51,7 @@ namespace NuSysApp
             RaisePropertyChanged("Regions");
         }
 
-        private void CreateRegionViews()
-        {
+        public void CreateRegionViews(){
             var elementController = Controller.LibraryElementController;
             var regionHashSet = elementController.LibraryElementModel.Regions;
 
@@ -61,22 +62,18 @@ namespace NuSysApp
 
             foreach (var model in regionHashSet)
             {
-
-                //var regionController = new RegionController(model as RectangleRegion);
-                //var regionController = SessionController.Instance.RegionControllersController.GetRegionController(model.Id);
-
-                RegionController regionController;
-                if (SessionController.Instance.RegionsController.GetRegionController(model.Id) == null)
+                var imageModel = model as RectangleRegion;
+                RectangleRegionController regionController;
+                if (SessionController.Instance.RegionsController.GetRegionController(imageModel.Id) == null)
                 {
                     var factory = new RegionControllerFactory();
-                    regionController = factory.CreateFromSendable(model);
-                    SessionController.Instance.RegionsController.Add(regionController);
+                    regionController = factory.CreateFromSendable(imageModel, ContentId) as RectangleRegionController;
                 }
                 else {
-                    regionController = SessionController.Instance.RegionsController.GetRegionController(model.Id);
+                    regionController = SessionController.Instance.RegionsController.GetRegionController(imageModel.Id) as RectangleRegionController;
                 }
 
-                var viewmodel = new ImageRegionViewModel(model as RectangleRegion, elementController, regionController, this);
+                var viewmodel = new ImageRegionViewModel(imageModel, elementController, regionController, this);
                 viewmodel.Editable = false;
                 var view = new ImageRegionView(viewmodel);
                 Regions.Add(view);
@@ -97,12 +94,13 @@ namespace NuSysApp
 
         private void LibraryElementControllerOnRegionAdded(object source, RegionController regionController)
         {
-            var imageRegion = regionController?.Model as RectangleRegion;
+            var rectRegionController = regionController as RectangleRegionController;
+            var imageRegion = rectRegionController?.Model as RectangleRegion;
             if (imageRegion == null)
             {
                 return;
             }
-            var vm = new ImageRegionViewModel(imageRegion, Controller.LibraryElementController, regionController, this);
+            var vm = new ImageRegionViewModel(imageRegion, Controller.LibraryElementController, rectRegionController, this);
             var view = new ImageRegionView(vm);
             vm.Editable = false;
             Regions.Add(view);
@@ -133,10 +131,11 @@ namespace NuSysApp
 
         }
 
-        private void LibraryElementModelOnOnLoaded(object sender)
+        private async void LibraryElementModelOnOnLoaded(object sender)
         {
-            DisplayImage();
+            await DisplayImage();
             this.CreateRegionViews();
+
 
         }
 
@@ -147,6 +146,7 @@ namespace NuSysApp
             Image.UriSource = url;
             Image.ImageOpened += UpdateSizeFromModel;
             RaisePropertyChanged("Image");
+
         }
         private void UpdateSizeFromModel(object sender, object args)
         {
@@ -170,6 +170,13 @@ namespace NuSysApp
         }
         protected override void OnSizeChanged(object source, double width, double height)
         {
+            // don't edit if we are in exploration or presentation mode
+            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
+                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
+            {
+                return;
+            }
+
             SetSize(width,height);
 
         }
@@ -177,11 +184,23 @@ namespace NuSysApp
         public double GetWidth()
         {
             return Width;
+
         }
 
         public double GetHeight()
         {
             return Height;
+
+        }
+
+        public double GetViewWidth()
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetViewHeight()
+        {
+            throw new NotImplementedException();
         }
     }
 }

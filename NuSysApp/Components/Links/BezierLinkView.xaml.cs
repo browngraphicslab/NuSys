@@ -9,6 +9,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using NuSysApp.Controller;
+using NuSysApp.Util;
 using NuSysApp.Viewers;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -50,42 +51,6 @@ namespace NuSysApp
             {
                 UpdateControlPoints();
             };
-
-            object value;
-            if (vm.LinkModel.InFGDictionary != null)
-            {
-                switch (SessionController.Instance.IdToControllers[vm.LinkModel.InAtomId].Model.ElementType)
-                {
-                    case ElementType.Image:
-                        Debug.WriteLine("This links from a image with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
-
-                        break;
-                    case ElementType.Text:
-                        Debug.WriteLine("This links from a text with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
-                        break;
-                    case ElementType.Audio:
-                        Debug.WriteLine("This links from a text with values " + vm.LinkModel.InFGDictionary.TryGetValue("start", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("end", out value));
-                        break;
-                }
-            }
-
-            if (vm.LinkModel.OutFGDictionary != null)
-            {
-                switch (SessionController.Instance.IdToControllers[vm.LinkModel.OutAtomId].Model.ElementType)
-                {
-                    case ElementType.Image:
-                        Debug.Write("to a image with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
-
-                        break;
-                    case ElementType.Text:
-                        Debug.Write("to a text with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
-
-                        break;
-                    case ElementType.Audio:
-                        Debug.Write("to a media with values " + vm.LinkModel.InFGDictionary.TryGetValue("start", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("end", out value));
-                        break;
-                }
-            }
         }
 
         private void LinkControllerOnAnnotationChanged(string text)
@@ -137,6 +102,7 @@ namespace NuSysApp
             
             this.UpdateControlPoints();
 
+            Canvas.SetZIndex(this, -10);
 
             var vm = (LinkViewModel)DataContext;
 
@@ -146,7 +112,8 @@ namespace NuSysApp
                 {
                     this.Annotation.Activate();
                     AnnotationContainer.Visibility = Visibility.Visible;
-                    Delete.Visibility = Visibility.Visible;
+
+                    //Delete.Visibility = Visibility.Visible;
 
                     if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
                     {
@@ -208,7 +175,9 @@ namespace NuSysApp
 
                         ((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.Model.Select();
                         */
-
+                    }
+                    // Handles exploration mode
+                    SessionController.Instance.SessionView.Explore(vm);
                 }
                 else
                 {
@@ -216,7 +185,7 @@ namespace NuSysApp
                     {
                         AnnotationContainer.Visibility = Visibility.Collapsed;
                     }
-                    Delete.Visibility = Visibility.Collapsed;
+                    //Delete.Visibility = Visibility.Collapsed;
                     this.Annotation.DeActivate();
                     if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
                     {
@@ -229,7 +198,7 @@ namespace NuSysApp
                     }
                 }
             }
-        }
+        
 
         private void JumpToLinkedTime()
         {
@@ -287,6 +256,13 @@ namespace NuSysApp
         /// </summary>
         private void UpdateControlPoints()
         {
+            // don't edit if we are in exploration or presentation mode
+            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
+                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
+            {
+                return;
+            }
+
             this.UpdateEndPoints();
 
             var vm = (LinkViewModel)this.DataContext;
@@ -303,8 +279,8 @@ namespace NuSysApp
             curveInner.Point2 = new Point(anchor1.X - distanceX / 2, anchor2.Y);
             curveInner.Point1 = new Point(anchor2.X + distanceX / 2, anchor1.Y);
 
-            Canvas.SetLeft(btnDelete, anchor1.X - distanceX / 2 - Rect.ActualWidth / 2);
-            Canvas.SetTop(btnDelete, anchor1.Y - distanceY / 2);
+            //Canvas.SetLeft(btnDelete, anchor1.X - distanceX / 2 - Rect.ActualWidth / 2);
+            //Canvas.SetTop(btnDelete, anchor1.Y - distanceY / 2);
 
             Canvas.SetLeft(AnnotationContainer, anchor1.X - distanceX / 2 - Rect.ActualWidth / 2);
             Canvas.SetTop(AnnotationContainer, anchor1.Y - distanceY / 2 - Rect.ActualHeight * 1.5);

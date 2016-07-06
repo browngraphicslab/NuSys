@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace NuSysApp
 {
@@ -11,20 +13,29 @@ namespace NuSysApp
     /// Takes care of all the modifying and events invoking for the library element model
     /// Should manage keeping the library element model up to date as well as updating the server
     /// </summary>
-    public class LibraryElementController : IMetadatable, ILinkable
+    public class LibraryElementController : IMetadatable, ILinkable, IDetailViewable
     {
         protected DebouncingDictionary _debouncingDictionary;
         private LibraryElementModel _libraryElementModel;
         private bool _loading = false;
         private RegionControllerFactory _regionControllerFactory = new RegionControllerFactory();
-        public string Title { get; set; }
+        public string Title {
+            get
+            {
+                return LibraryElementModel?.Title;
+            }
+            set
+            {
+                LibraryElementModel.Title = value;
+            } 
+        }
         
 
         #region Events
         public delegate void ContentChangedEventHandler(object source, string contentData);
         public delegate void RegionAddedEventHandler(object source, RegionController regionController);
         public delegate void RegionRemovedEventHandler(object source, Region region);
-        public delegate void MetadataChangedEvenetHandler(object source);
+        public delegate void MetadataChangedEventHandler(object source);
         public delegate void DisposeEventHandler(object source);
         public delegate void TitleChangedEventHandler(object sender, string title);
         public delegate void FavoritedEventHandler(object sender, bool favorited);
@@ -35,13 +46,15 @@ namespace NuSysApp
         public event ContentChangedEventHandler ContentChanged;
         public event RegionAddedEventHandler RegionAdded;
         public event RegionRemovedEventHandler RegionRemoved;
-        public event MetadataChangedEvenetHandler MetadataChanged;
+        public event MetadataChangedEventHandler MetadataChanged;
         public event DisposeEventHandler Disposed;
         public event TitleChangedEventHandler TitleChanged;
         public event FavoritedEventHandler Favorited;
         public event DeletedEventHandler Deleted;
         public event KeywordsChangedEventHandler KeywordsChanged;
         public event NetworkUserChangedEventHandler UserChanged;
+        public event EventHandler<LinkLibraryElementController> LinkAdded;
+        public event EventHandler<string> LinkRemoved;
         public event LoadedEventHandler Loaded
         {
             add
@@ -89,11 +102,18 @@ namespace NuSysApp
         /// </summary>
         public void AddRegion(Region region)
         {
+            if (_libraryElementModel.Regions == null)
+            {
+                _libraryElementModel.Regions = new HashSet<Region>();
+            }
+
+
             _libraryElementModel.Regions.Add(region);
 
+
             var factory = new RegionControllerFactory();
-            var regionController = factory.CreateFromSendable(region);
-            SessionController.Instance.RegionsController.Add(regionController);
+            var regionController = factory.CreateFromSendable(region, this.LibraryElementModel.LibraryElementId);
+
             RegionAdded?.Invoke(this, regionController);
             SessionController.Instance.NuSysNetworkSession.AddRegionToContent(LibraryElementModel.LibraryElementId, region);
         }
@@ -138,9 +158,18 @@ namespace NuSysApp
         /// </summary>
         private void ChangeMetadata(Dictionary<string,MetadataEntry> metadata)
         {
-            _libraryElementModel.Metadata = metadata;
+            LibraryElementModel.SetMetadata(metadata);
             MetadataChanged?.Invoke(this);
-            _debouncingDictionary.Add("metadata", metadata);
+            _debouncingDictionary.Add("metadata", LibraryElementModel.Metadata);
+        }
+
+        /// <summary>
+        /// overloads the other change metadata function
+        /// </summary>
+        /// <param name="metadata"></param>
+        private void ChangeMetadata(ConcurrentDictionary<string, MetadataEntry> metadata)
+        {
+            ChangeMetadata(new Dictionary<string, MetadataEntry>(metadata));
         }
 
         /// <summary>
@@ -157,7 +186,7 @@ namespace NuSysApp
             }
             if (_libraryElementModel.Metadata == null)
             {
-                _libraryElementModel.Metadata = new Dictionary<string, MetadataEntry>();
+                _libraryElementModel.Metadata = new ConcurrentDictionary<string, MetadataEntry>();
                 return false;
             }
 
@@ -167,9 +196,10 @@ namespace NuSysApp
                 {
                     return false;
                 }
-                _libraryElementModel.Metadata.Remove(entry.Key);
+                MetadataEntry outobj;
+                _libraryElementModel.Metadata.TryRemove(entry.Key, out outobj);
             }
-            _libraryElementModel.Metadata.Add(entry.Key,entry);
+            _libraryElementModel.Metadata.TryAdd(entry.Key,entry);
             ChangeMetadata(_libraryElementModel.Metadata);
             return true;
         }
@@ -180,10 +210,13 @@ namespace NuSysApp
         /// <param name="k"></param>
         public bool RemoveMetadata(string key)
         {
-            if (string.IsNullOrEmpty(key) || !_libraryElementModel.Metadata.ContainsKey(key) || string.IsNullOrWhiteSpace(key))
+            if (string.IsNullOrEmpty(key) || !_libraryElementModel.Metadata.ContainsKey(key) ||
+                string.IsNullOrWhiteSpace(key))
+            {
                 return false;
-
-            _libraryElementModel.Metadata.Remove(key);
+            }
+            MetadataEntry outobj;
+            _libraryElementModel.Metadata.TryRemove(key, out outobj);
             ChangeMetadata(_libraryElementModel.Metadata);
             return true;
         }
@@ -260,8 +293,15 @@ namespace NuSysApp
         /// </summary>
         public void Load(LoadContentEventArgs e)
         {
-            _libraryElementModel.Data = e.Data;
-            _libraryElementModel.Regions = e.RegionStrings;
+            if (e.Data != null)
+            {
+                _libraryElementModel.Data = e.Data;
+                ContentChanged?.Invoke(this,e.Data);
+            }
+            if (e.RegionStrings != null)
+            {
+                _libraryElementModel.Regions = e.RegionStrings;
+            }
             //_libraryElementModel.InkLinkes = e.InkStrings;
 
             IsLoaded = true;
@@ -307,6 +347,19 @@ namespace NuSysApp
                 }
             }
         }
+
+        public virtual void UnPack(Message message)
+        {
+            if (message.ContainsKey("metadata"))
+            {
+                var metadata = message.GetDict<string, MetadataEntry>("metadata");
+                if (metadata != null)
+                {
+                    ChangeMetadata(metadata);
+                }
+            }
+        }
+
         public Uri SmallIconUri
         {
             get
@@ -338,7 +391,7 @@ namespace NuSysApp
         }
         public Dictionary<string, MetadataEntry> GetMetadata()
         {
-            return _libraryElementModel?.Metadata;
+            return new Dictionary<string,MetadataEntry>(_libraryElementModel?.Metadata);
         }
         public Uri GetSource()
         {
@@ -385,6 +438,11 @@ namespace NuSysApp
             get { return _loading || IsLoaded; }
         }
 
+        public LinkId Id
+        {
+            get { return new LinkId(this.LibraryElementModel.LibraryElementId); }
+        }
+
         public void SetNetworkUser(NetworkUser user)
         {
             UserChanged?.Invoke(this, user);
@@ -395,14 +453,26 @@ namespace NuSysApp
             return NuSysApp.MetadatableType.Content;
         }
 
-        public void AddNewLink(string idToLinkTo)
+        public void AddLink(LinkLibraryElementController linkController)
         {
-            SessionController.Instance.LinkController.RequestLink(this.LibraryElementModel.LibraryElementId, idToLinkTo);
+            LinkAdded?.Invoke(this, linkController);
         }
 
-        public void RemoveLink(string linkLibraryElementID)
+    /*    public void RemoveLink(LinkLibraryElementController linkController)
         {
-            SessionController.Instance.LinkController.RemoveLink(linkLibraryElementID);
+            LinkRemoved?.Invoke(this, linkController.Id);
+        }*/
+
+        #region Linking methods
+        public  void RequestAddNewLink(LinkId idToLinkTo)
+        {
+            SessionController.Instance.LinkController.RequestLink(
+                new LinkId(this.LibraryElementModel.LibraryElementId), idToLinkTo);
+        }
+
+        public void RequestRemoveLink(LinkId linkLibraryElementID)
+        {
+            SessionController.Instance.LinkController.RemoveLink(linkLibraryElementID.LibraryElementId);
         }
 
         public void ChangeLinkTitle(string linkLibraryElementID, string title)
@@ -415,21 +485,13 @@ namespace NuSysApp
             SessionController.Instance.LinkController.ChangeLinkTags(linkLibraryElementID, tags);
         }
 
-        public List<string> GetAllLinks()
+        public HashSet<LinkLibraryElementController> GetAllLinks()
         {
-            return
-                new List<string>(
-                    SessionController.Instance.LinkController.GetLinkedIds(LibraryElementModel.LibraryElementId));
+            var linkedIds = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(this.LibraryElementModel.LibraryElementId));
+            var controllers = linkedIds.Select(id =>SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
+            return new HashSet<LinkLibraryElementController>(controllers);
         }
+        #endregion
 
-        public void ChangeLinkTitle()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ChangeLinkTags()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

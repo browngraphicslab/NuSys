@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -68,9 +70,9 @@ namespace NuSysApp
 
         private async Task CreateChild(ElementController controller)
         {
-            AddVisualLinks(controller);
             var view = await _nodeViewFactory.CreateFromSendable(controller);
             AtomViewList.Add(view);
+            AddVisualLinks(controller);
             controller.Deleted += OnChildDeleted;
         }
 
@@ -80,17 +82,22 @@ namespace NuSysApp
             {
                 return;
             }
-            var contentLinks = SessionController.Instance.LinkController.GetLinkedIds(controller.LibraryElementModel.LibraryElementId);
-            var toLinkIds = new HashSet<string>();
+            var contentLinks = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(controller.LibraryElementModel.LibraryElementId));
+            var toLinkIds = new HashSet<LinkId>();
             foreach (var linkId in contentLinks)
             {
                 var link = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
-                toLinkIds.Add(link.InAtomId == controller.LibraryElementModel.LibraryElementId ? link.OutAtomId : link.InAtomId);
+                toLinkIds.Add(link.InAtomId.LibraryElementId == controller.LibraryElementModel.LibraryElementId ? link.OutAtomId : link.InAtomId);
             }
             var toAddAtoms = new HashSet<FrameworkElement>();
-            foreach ( var atom in AtomViewList.Where(r => !(r.DataContext is LinkViewModel)).Select(e => e.DataContext as ElementViewModel))
+            foreach ( var atom in AtomViewList.Where(r => !(r.DataContext is LinkViewModel) && r.DataContext != null).Select(e => e.DataContext as ElementViewModel))
             {
-                if (toLinkIds.Contains(atom.ContentId))
+                if (atom == null)
+                {
+                    continue;
+                }
+                if (toLinkIds.Select(id=>id.LibraryElementId).Contains(atom.ContentId))
+
                 {
                     var lm = new LinkModel(SessionController.Instance.GenerateId());
                     lm.InAtomId = controller.Model.Id;
@@ -101,22 +108,29 @@ namespace NuSysApp
                 }
             }
             foreach (var toAdd in toAddAtoms)
-            AtomViewList.Add(toAdd);
+            {
+                AtomViewList.Add(toAdd);
+            }
         }
         private void RemoveVisualLinks(ElementController controller)
         {
-            var contentLinks = SessionController.Instance.LinkController.GetLinkedIds(controller.LibraryElementModel.LibraryElementId);
-            var toLinkIds = new HashSet<string>();
-            foreach (var linkId in contentLinks)
+            foreach (var atom in new HashSet<FrameworkElement>(AtomViewList))
             {
-                var link = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
-                toLinkIds.Add(link.InAtomId == controller.LibraryElementModel.LibraryElementId ? link.OutAtomId : link.InAtomId);
-            }
-            foreach (var atom in AtomViewList)
-            {
-                if (toLinkIds.Contains((atom.DataContext as ElementViewModel).ContentId))
+                Debug.Assert(atom.DataContext is ElementViewModel);
+                var vm = (atom.DataContext as ElementViewModel);
+                if (vm.Controller == controller)
                 {
                     AtomViewList.Remove(atom);
+                }
+                else if(vm.ElementType == ElementType.Link)
+                {
+                    Debug.Assert(vm is LinkViewModel);
+                    var linkVm = vm as LinkViewModel;
+                    var linkModel = linkVm.LinkModel;
+                    if (linkModel.InAtomId == controller.Model.Id || linkModel.OutAtomId == controller.Model.Id)
+                    {
+                        AtomViewList.Remove(atom);
+                    }
                 }
             }
         }

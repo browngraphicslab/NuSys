@@ -21,45 +21,89 @@ namespace NuSysApp
 {
     public sealed partial class LinkCircle : UserControl
     {
+        //link id
+        public string lID;
+        //content id the link is linked to
         public string cID;
-        private bool pinned;
-        public LinkCircle(string cID)
+        private bool _pinned;
+
+        protected bool Pinned
         {
+            get { return _pinned; }
+            set
+            {
+                _pinned = value;
+                xPinHighlight.Visibility = _pinned == true ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+        private Thickness _collapsedThickness;
+        private Thickness _visibleThickness;
+        private bool _firstTimeOpened;
+        private BitmapImage _bmp;
+        public LinkCircle(string lID, string cID)
+        {
+            this.lID = lID;
             this.cID = cID;
+            //represents if the image has been loaded before
+            _firstTimeOpened = false;
+            //thickness to make border visible/invisible
+            _collapsedThickness = new Thickness(0);
+            _visibleThickness = new Thickness(1);
+
             this.InitializeComponent();
-            pinned = false;
-            //this.thumbnail = SessionController.Instance.ContentController.GetContent(cID).T
-            var s = SessionController.Instance.ContentController.GetLibraryElementController(cID);
-            var bmp = new BitmapImage(SessionController.Instance.ContentController.GetLibraryElementController(cID).LargeIconUri);
-            thumbnail.Source = bmp;
-            (thumbnail.RenderTransform as CompositeTransform).TranslateY = -bmp.DecodePixelHeight - 20;
-            
+            //border starts off invisible
+            border.BorderThickness = _collapsedThickness;
+            //thumbnail is not pinned to begin with
+            Pinned = false;
+            _bmp = new BitmapImage(SessionController.Instance.ContentController.GetLibraryElementController(cID).SmallIconUri);
+            thumbnail.ImageOpened += Thumbnail_ImageOpened;
+            //centering the thumbnail
+            (border.RenderTransform as CompositeTransform).TranslateX -= 10;
+            thumbnail.Source = _bmp;
+            //this is sort of a bandaid rather than a fix
+            Canvas.SetZIndex(thumbnail, 50);
         }
 
+        private void Thumbnail_ImageOpened(object sender, RoutedEventArgs e)
+        {
+            if (!_firstTimeOpened)
+            {
+                _firstTimeOpened = true;
+                double toTransY = (50 * _bmp.PixelHeight / _bmp.PixelWidth) + 5;
+                (border.RenderTransform as CompositeTransform).TranslateY -= toTransY;
+
+            }
+        }
+
+        //pins or unpins the thumbnail
         private async void circlePointerPressedHandler(object sender, RoutedEventArgs e)
         {
-            pinned = !pinned;
-            if (pinned)
+            Pinned = !Pinned;
+            if (Pinned)
             {
                 thumbnail.Visibility = Visibility.Visible;
-                //positiion thumbnail
+                border.BorderThickness = _visibleThickness;
             }
             else
             {
+                border.BorderThickness = _collapsedThickness;
                 thumbnail.Visibility = Visibility.Collapsed;
             }
         }
 
+        //makes thumbnail visible while pointer is hovering over the circle
         private async void circlePointerEnteredHandler(object sender, RoutedEventArgs e)
         {
             thumbnail.Visibility = Visibility.Visible;
-            //position thumbnail
+            border.BorderThickness = _visibleThickness;
         }
 
+        //makes thumbnail invisible if it is not pinned when the pointer leaves the circle
         private async void circlePointerExitedHandler(object sender, RoutedEventArgs e)
         {
-            if (!pinned)
+            if (!Pinned)
             {
+                border.BorderThickness = _collapsedThickness;
                 thumbnail.Visibility = Visibility.Collapsed;
             }
         }
@@ -67,6 +111,17 @@ namespace NuSysApp
         public Ellipse Circle
         {
             get { return linkButton; }
+        }
+
+        private void Thumbnail_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            if (Pinned)
+            {
+                thumbnail.Visibility = Visibility.Collapsed;
+                border.BorderThickness = _collapsedThickness;
+                Pinned = !Pinned;
+            }
+
         }
     }
 }

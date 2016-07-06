@@ -22,8 +22,7 @@ namespace NuSysApp
             try
             {
                 var settings = new JsonSerializerSettings {StringEscapeHandling = StringEscapeHandling.EscapeNonAscii};
-                _dict = JsonConvert.DeserializeObject<ConcurrentDictionary<string, object>>(m, settings);
-
+                _dict = new ConcurrentDictionary<string, object>(JsonConvert.DeserializeObject<Dictionary<string, object>>(m, settings));
             }
             catch (Exception e)
             {
@@ -38,6 +37,10 @@ namespace NuSysApp
                 {
                     
                 }
+            }
+            if (_dict == null)
+            {
+                _dict = new ConcurrentDictionary<string, object>();
             }
         }
 
@@ -129,6 +132,12 @@ namespace NuSysApp
             var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             return ContainsKey(key) ? JsonConvert.DeserializeObject<List<T>>(Get(key), settings) : def;
         }
+        public HashSet<T> GetHashSet<T>(string key, HashSet<T> def = null)
+        {
+            var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+            return ContainsKey(key) ? JsonConvert.DeserializeObject<HashSet<T>>(Get(key), settings) : def;
+        }
+
 
         public Dictionary<T, K> GetDict<T, K>(string key)
         {
@@ -158,8 +167,7 @@ namespace NuSysApp
 
         public string GetSerialized()
         {
-            var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-            var r = JsonConvert.SerializeObject(_dict, settings);
+            var r = JsonConvert.SerializeObject(_dict, new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii });
             return r;
         }
     }

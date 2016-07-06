@@ -41,11 +41,18 @@ namespace NuSysApp
             TempRegion.StrokeThickness = 2;
             TempRegion.Stroke = new SolidColorBrush(Colors.Red);
 
-            //vm.Controller.ContainerSizeChanged += Controller_SizeChanged;
             vm.PropertyChanged += VmOnPropertyChanged;
 
             vm.Controller.Disposed += ControllerOnDisposed;
             SizeChanged += PdfNodeView_SizeChanged;
+
+            Loaded += PdfNodeView_Loaded;
+        }
+
+        private void PdfNodeView_Loaded(object sender, RoutedEventArgs e)
+        {
+            var vm = DataContext as PdfNodeViewModel;
+            vm.CreatePdfRegionViews();
         }
 
         private void PdfNodeView_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -262,5 +269,6 @@ namespace NuSysApp
         {
             return xRenderedPdf.ActualHeight;
         }
+        
     }
 }

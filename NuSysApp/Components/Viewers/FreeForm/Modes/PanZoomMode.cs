@@ -28,6 +28,8 @@ namespace NuSysApp
     
         public void UpdateTempTransform( CompositeTransform compositeTransform )
         {
+
+            Debug.WriteLine(compositeTransform.TranslateX);
             _tempTransform = new CompositeTransform
             {
                 TranslateX = compositeTransform.TranslateX,
@@ -89,7 +91,7 @@ namespace NuSysApp
         public override async Task Activate()
         {
             var vm = (FreeFormViewerViewModel)_view.DataContext;
-            UpdateTempTransform(vm.CompositeTransform);
+            //UpdateTempTransform(vm.CompositeTransform);
             _view.ManipulationMode = ManipulationModes.All;
             _view.ManipulationStarted += OnManipulationStarted;
             _view.PointerWheelChanged += OnPointerWheelChanged;

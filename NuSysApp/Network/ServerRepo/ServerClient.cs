@@ -1,22 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
-using Windows.UI.Xaml;
 using Newtonsoft.Json;
-using NuSysApp.Network.Requests.SystemRequests;
 using Windows.UI.Input.Inking;
-using System.Numerics;
-using System.Reflection;
 
 namespace NuSysApp
 {
@@ -30,6 +22,10 @@ namespace NuSysApp
         public delegate void MessageRecievedEventHandler(Message message);
         public event MessageRecievedEventHandler OnMessageRecieved;
 
+        public delegate void RegionUpdatedEventHandler(string id, Region region);
+        public event RegionUpdatedEventHandler OnRegionUpdated;
+
+
         public delegate void ClientDroppedEventHandler(string id);
         public event ClientDroppedEventHandler OnClientDrop;//todo add this in, and onclientconnection event
 
@@ -39,8 +35,18 @@ namespace NuSysApp
         public delegate void ClientJoinedEventHandler(NetworkUser user);
         public event ClientJoinedEventHandler OnClientJoined;
 
+        public delegate void LockAddedEventHandler(object sender, string id, string userId);
+        public event LockAddedEventHandler OnLockAdded;
+
+        public delegate void LockRemovedEventHandler(object sender, string id);
+        public event LockRemovedEventHandler OnLockRemoved;
+
+        public delegate void OnContentUpdatedEventHandler(object sender, LibraryElementController controller,Message message);
+        public event OnContentUpdatedEventHandler OnContentUpdated;
+
         public static HashSet<string> NeededLibraryDataIDs = new HashSet<string>();
         public string ServerBaseURI { get; private set; }
+        
 
         public ServerClient()//Server name: http://nurepo6916.azurewebsites.net/api/values/1
         {
@@ -70,9 +76,11 @@ namespace NuSysApp
             return new Uri(firstpart + ServerBaseURI + additionToBase);
         }
 
+
+
         private void SocketClosed(IWebSocket sender, WebSocketClosedEventArgs args)
         {
-            //TODO add in closing handler 
+            throw new Exception("Server client failed from web socket closing!");
         }
 
         private async void MessageRecieved(MessageWebSocket sender, MessageWebSocketMessageReceivedEventArgs args)
@@ -115,6 +123,31 @@ namespace NuSysApp
                                 case "remove_user":
                                     id = (string)dict["user_id"];
                                     OnClientDrop?.Invoke(id);
+                                    break;
+                                case "region_update":
+                                    id = (string) dict["region_id"];
+                                    Region region = GetRegionFromString(dict["region_string"] as string);
+                                    OnRegionUpdated?.Invoke(id, region);
+                                    break;
+                                case "content_update":
+                                    id = dict["id"] as string;
+                                    dict.Remove("id");
+                                    dict.Remove("notification_type");
+                                    if (SessionController.Instance.ContentController.GetLibraryElementController(id) != null)
+                                    {
+                                        OnContentUpdated?.Invoke(this, SessionController.Instance.ContentController.GetLibraryElementController(id),new Message(dict));
+                                    }
+                                    break;
+                                case "content_data_update":
+                                    id = dict["id"] as string;
+                                    if (SessionController.Instance.ContentController.GetLibraryElementController(id) != null)
+                                    {
+                                        var controller =
+                                            SessionController.Instance.ContentController.GetLibraryElementController(id);
+                                        var loadArgs = new LoadContentEventArgs();
+                                        loadArgs.Data = dict["data"] as string;
+                                        controller.Load(loadArgs);
+                                    }
                                     break;
                             }
                         }
@@ -326,38 +359,15 @@ namespace NuSysApp
             var contentData = (string)dict["data"] ?? "";
 
             var id = (string)dict["id"];
-            var type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
-            var title = dict.ContainsKey("title") ? (string)dict["title"] : null;
-            var timestamp = dict.ContainsKey("library_element_creation_timestamp")
-                ? (string)dict["library_element_creation_timestamp"].ToString()
-                : null;
+
             var regionStrings = dict.ContainsKey("regions") ? JsonConvert.DeserializeObject<List<string>>(dict["regions"].ToString(), settings) : new List<string>();
             var regions = new HashSet<Region>();
             foreach (var rs in regionStrings)
             {
-                var region = JsonConvert.DeserializeObject<RegionIntermediate>(rs);
-                switch (region.Type)
-                {
-                    case Region.RegionType.Rectangle:
-                        regions.Add(JsonConvert.DeserializeObject<RectangleRegion>(rs, settings));
-                        break;
-                    case Region.RegionType.Compound:
-                        regions.Add(JsonConvert.DeserializeObject<CompoundRegion>(rs, settings));
-                        break;
-                    case Region.RegionType.Time:
-                        regions.Add(JsonConvert.DeserializeObject<TimeRegionModel>(rs, settings));
-                        break;
-                    case Region.RegionType.Pdf:
-                        regions.Add(JsonConvert.DeserializeObject<PdfRegion>(rs, settings));
-                        break;
-                    case Region.RegionType.Video:
-                        regions.Add(JsonConvert.DeserializeObject<VideoRegionModel>(rs, settings));
-                        break;
-                }
+                regions.Add(GetRegionFromString(rs, id));
             }
-            var inks = dict.ContainsKey("inks") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["inks"].ToString()) : null;
-            var metadata = dict.ContainsKey("metadata") ? JsonConvert.DeserializeObject<Dictionary<string, MetadataEntry>>(dict["metadata"].ToString()) : null;
 
+            var inks = dict.ContainsKey("inks") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["inks"].ToString()) : null;
 
             if (NeededLibraryDataIDs.Contains(id))
             {
@@ -401,22 +411,47 @@ namespace NuSysApp
             LibraryElementModel content = SessionController.Instance.ContentController.GetContent(libraryId);
             if (content == null)
             {
-                if (type == ElementType.Collection)
-                {
-                    content = new CollectionLibraryElementModel(id, metadata, title);
-                }
-                else
-                {
-                    content = new LibraryElementModel(id, type, metadata, title);
-                }
-                SessionController.Instance.ContentController.Add(content);
+                content = LibraryElementModelFactory.CreateFromMessage(new Message(dict));
             }
-            content.Timestamp = timestamp;
             await UITask.Run(async delegate
             {
                 var args = new LoadContentEventArgs(contentData, regions, inks);
                 SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId).Load(args);
             });
+        }
+
+        private Region GetRegionFromString(string regionString, string contentId = null)
+        {
+            if (regionString == null)
+            {
+                return null;
+            }
+            JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+            var regionintermediate = JsonConvert.DeserializeObject<RegionIntermediate>(regionString);
+            Region region = null;
+            switch (regionintermediate.Type)
+            {
+                case Region.RegionType.Rectangle:
+                    region = JsonConvert.DeserializeObject<RectangleRegion>(regionString, settings);
+                    break;
+                case Region.RegionType.Compound:
+                    region = JsonConvert.DeserializeObject<CompoundRegion>(regionString, settings);
+                    break;
+                case Region.RegionType.Time:
+                    region = JsonConvert.DeserializeObject<TimeRegionModel>(regionString, settings);
+                    break;
+                case Region.RegionType.Pdf:
+                    region = JsonConvert.DeserializeObject<PdfRegion>(regionString, settings);
+                    break;
+                case Region.RegionType.Video:
+                    region = JsonConvert.DeserializeObject<VideoRegionModel>(regionString, settings);
+                    break;
+            }
+            if (contentId != null)
+            {
+                var controller = new RegionControllerFactory().CreateFromSendable(region, contentId);
+            }
+            return region;
         }
         public async Task SendDictionaryToServer(Dictionary<string, string> dict)
         {
@@ -524,6 +559,25 @@ namespace NuSysApp
                 final[kvp.Key] = dict;
             }
             return final;
+        }
+        /// <summary>
+        /// Returns the byte array that should be written directly into a file for docx saving and loading
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<byte[]> GetDocxBytes(string id)
+        {
+            var url = GetUri("getworddoc/" + id);
+            HttpClient client = new HttpClient();
+            var response = await client.GetAsync(url);
+            string data;
+            using (var content = response.Content)
+            {
+                data = await content.ReadAsStringAsync();
+            }
+            var list = JsonConvert.DeserializeObject<List<string>>(data);
+            var converted = Convert.FromBase64String(list[0]);
+            return converted;
         }
 
         public async Task<List<Message>> GetWorkspaceAsElementMessages(string id)

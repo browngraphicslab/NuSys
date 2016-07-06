@@ -36,13 +36,8 @@ namespace NuSysApp
             get { return playbackElement.Position; }
         }
 
-        public MediaElement MediaPlayer
-        {
-            get
-            {
-                return this.playbackElement;
-            }
-        }
+        public MediaElement MediaPlayer => this.playbackElement;
+        public ProgressBar ScrubBar => this.scrubBar;
 
         private void PlaybackElement_Onloaded(object sender, RoutedEventArgs e)
         {
@@ -63,7 +58,7 @@ namespace NuSysApp
             double height = this.ActualHeight;
             vm.Controller.SetSize(width, height);
             playbackElement.Position = new TimeSpan(0);
-
+            
         }
         public int AspectHeight { get { return playbackElement.AspectRatioHeight; } }
         public int AspectWidth { get { return playbackElement.AspectRatioWidth; } }
@@ -96,14 +91,14 @@ namespace NuSysApp
 
         private void OnStop_Click(object sender, TappedRoutedEventArgs e)
         {
-            playbackElement.Stop();
-            scrubBar.Value = 0;
-            e.Handled = true;
+            playbackElement.Pause();
+
         }
 
 
         private async void OnPlay_Click(object sender, RoutedEventArgs e)
         {
+
             Binding b = new Binding();
             b.ElementName = "playbackElement";
             b.Path = new PropertyPath("Position.TotalMilliseconds");
@@ -113,7 +108,9 @@ namespace NuSysApp
 
         private void OnPause_Click(object sender, RoutedEventArgs e)
         {
-            playbackElement.Pause();
+            playbackElement.Stop();
+            scrubBar.Value = 0;
+           // e.Handled = true;
         }
         private void MediaEnded(object sender, RoutedEventArgs e)
         {
@@ -163,7 +160,6 @@ namespace NuSysApp
                 b.ElementName = "playbackElement";
                 b.Path = new PropertyPath("Position.TotalMilliseconds");
                 scrubBar.SetBinding(ProgressBar.ValueProperty, b);
-
                 //playbackElement.Play();
             }
 

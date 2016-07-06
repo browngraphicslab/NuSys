@@ -14,7 +14,6 @@ namespace NuSysApp
 {
     public class ContentController
     {
-
         private ConcurrentDictionary<string, LibraryElementModel> _contents = new ConcurrentDictionary<string, LibraryElementModel>();
         private ConcurrentDictionary<string, LibraryElementController> _contentControllers = new ConcurrentDictionary<string, LibraryElementController>();
         //private Dictionary<string, ManualResetEvent> _waitingNodeCreations = new Dictionary<string, ManualResetEvent>(); 
@@ -35,6 +34,7 @@ namespace NuSysApp
         }
         public LibraryElementModel GetContent(string id)
         {
+            Debug.Assert(id != null);
             return _contents.ContainsKey(id) ? _contents[id] : null;
         }
         public LibraryElementController GetLibraryElementController(string id)
@@ -51,14 +51,14 @@ namespace NuSysApp
         } 
         public bool ContainsAndLoaded(string id)
         {
-            return _contentControllers.ContainsKey(id) ? _contentControllers[id].IsLoaded : false;
+            return _contentControllers.ContainsKey(id) && _contentControllers[id].IsLoaded;
         }
         public string Add(LibraryElementModel model)
         {
             if (!String.IsNullOrEmpty(model.LibraryElementId) && !_contents.ContainsKey(model.LibraryElementId))
             {
                 _contents.TryAdd(model.LibraryElementId, model);
-                var controller = new LibraryElementController(model);
+                var controller = LibraryElementControllerFactory.CreateFromModel(model);
                 _contentControllers.TryAdd(model.LibraryElementId, controller);
                 Debug.WriteLine("content directly added with ID: " + model.LibraryElementId);
                 OnNewContent?.Invoke(model);
@@ -86,7 +86,7 @@ namespace NuSysApp
             if (!String.IsNullOrEmpty(model.LibraryElementId))
             {
                 _contents[model.LibraryElementId] = model;
-                _contentControllers[model.LibraryElementId] = new LibraryElementController(model);
+                _contentControllers[model.LibraryElementId] = LibraryElementControllerFactory.CreateFromModel(model);
                 return model.LibraryElementId;
             }
             return null;

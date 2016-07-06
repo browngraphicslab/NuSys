@@ -18,11 +18,14 @@ namespace NuSysApp
         public delegate void LibraryIdsChangedEventHandler(object sender, HashSet<string> libraryIds);
         public delegate void LocationChangedEventHandler(object sender, double x, double y);
         public delegate void SizeChangedEventHandler(object sender, double width, double height);
+        public delegate void DisposedEventHandler(string parentid);
 
 
         public event LibraryIdsChangedEventHandler LibraryIdsChanged;
         public event LocationChangedEventHandler LocationChanged;
         public event SizeChangedEventHandler SizeChanged;
+        public event DisposedEventHandler Disposed;
+
 
 
         public ToolModel Model { get;}
@@ -99,27 +102,40 @@ namespace NuSysApp
                     parentController.LibraryIdsChanged += ParentLibraryIdsChanged;
                     Model.SetLibraryIds(GetUpdatedDataList());
                     LibraryIdsChanged?.Invoke(this, Model.LibraryIds);
+                    parentController.Disposed += OnParentDisposed;
                 }
             }
         }
 
-        public void RemoveParent(ToolController parentController)
+        public void OnParentDisposed(string parentid)
+        {
+            ToolControllers[parentid].LibraryIdsChanged -= ParentLibraryIdsChanged;
+            Model.ParentIds.Remove(parentid);
+            Model.SetLibraryIds(GetUpdatedDataList());
+            LibraryIdsChanged.Invoke(this, Model.LibraryIds);
+            ToolControllers[parentid].Disposed -= OnParentDisposed;
+            ToolControllers.Remove(parentid);
+        }
+
+        public virtual void RemoveParent(ToolController parentController)
         {
             if (Model.RemoveParentId(parentController?.Model?.Id))
             {
                 if (parentController != null)
                 {
                     parentController.LibraryIdsChanged -= ParentLibraryIdsChanged;
+
                 }
             }
         }
 
         public virtual void Dispose()
         {
-            foreach(var parentController in Model.ParentIds.Select(id => ToolControllers.ContainsKey(id) ? ToolControllers[id] : null))
+            foreach(var parentController in new List<ToolController>(Model.ParentIds.Select(id => ToolControllers.ContainsKey(id) ? ToolControllers[id] : null)))
             {
                 RemoveParent(parentController);
             }
+            Disposed?.Invoke(Model.Id);
         }
 
         protected HashSet<string> Filter(HashSet<string> ids)
@@ -176,7 +192,7 @@ namespace NuSysApp
         }
         
         //Returns all the library ids of everything in the previous filter
-        protected HashSet<string> GetUpdatedDataList()
+        public HashSet<string> GetUpdatedDataList()
         {
             var controllers = Model.ParentIds.Select(item => ToolControllers.ContainsKey(item) ? ToolControllers[item] : null);
             var list = new List<string>();

@@ -9,14 +9,19 @@ namespace NuSysApp
 {
     public class RectangleRegion : Region
     {
-        public RectangleRegion(Point p1, Point p2, string name = "Untitled Rectangle") : base(name)
+        public RectangleRegion(Point topLeft, Point bottomRight, string name = "Untitled Rectangle") : base(name)
         {
-            TopLeftPoint = p1;
-            BottomRightPoint = p2;
+            TopLeftPoint = topLeft;
+            //BottomRightPoint = bottomRight;
+            Width = bottomRight.X - topLeft.X;
+            Height = bottomRight.Y - topLeft.Y;
+
             Type = RegionType.Rectangle;
         }
 
         public Point TopLeftPoint { set; get; }
-        public Point BottomRightPoint { set; get; }
+        public double Width { set; get; }
+        public double Height { set; get; }
+
     }
 }
