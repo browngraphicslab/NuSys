@@ -232,6 +232,7 @@ namespace NuSysApp
                 Visibility = Visibility.Visible;
             }
 
+
             // Update the list of links in the Link Editor
             var linkEditorViewModel = xLinkEditorView.DataContext as LinkEditorTabViewModel;
             linkEditorViewModel?.ChangeLinkTemplates(controller);
