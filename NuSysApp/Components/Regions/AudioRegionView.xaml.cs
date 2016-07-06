@@ -39,7 +39,7 @@ namespace NuSysApp
         private void Bound1_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = this.DataContext as AudioRegionViewModel;
-            if (Rect.Width + e.Delta.Translation.X > 0 && vm.LeftHandleX + e.Delta.Translation.X > 0)
+            if (Rect.Width + e.Delta.Translation.X > 0 && vm.LeftHandleX + e.Delta.Translation.X > 0 && vm.LeftHandleX + e.Delta.Translation.X < vm.RightHandleX)
             {
                 //          (Bound1.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
                 //          Bound1.X1 += e.Delta.Translation.X;

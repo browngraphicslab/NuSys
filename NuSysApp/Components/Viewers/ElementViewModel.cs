@@ -180,20 +180,24 @@ namespace NuSysApp
             {
                 //sorry about this - should also be in frontend and not in viewmodel
                 var link = SessionController.Instance.ContentController.GetContent(circle) as LinkLibraryElementModel;
-                string cid = "";
-                if (this.ContentId == link.InAtomId.LibraryElementId)
+                if (link != null)
                 {
-                    cid = link.OutAtomId.LibraryElementId;
-                }
-                else if (this.ContentId == link.OutAtomId.LibraryElementId)
-                {
-                    cid = link.InAtomId.LibraryElementId;
-                }
-                var circlelink = new LinkCircle(circle, cid);
-                Color color = link.Color;
-                circlelink.Circle.Fill = new SolidColorBrush(color);
+                    string cid = "";
+                    if (this.ContentId == link.InAtomId.LibraryElementId)
+                    {
+                        cid = link.OutAtomId.LibraryElementId;
+                    }
+                    else if (this.ContentId == link.OutAtomId.LibraryElementId)
+                    {
+                        cid = link.InAtomId.LibraryElementId;
+                    }
+                    var circlelink = new LinkCircle(circle, cid);
+                    Color color = link.Color;
+                    circlelink.Circle.Fill = new SolidColorBrush(color);
 
-                CircleLinks.Add(circlelink);
+                    CircleLinks.Add(circlelink);
+                }
+                
             }
             
             RaisePropertyChanged("CircleLinks");
