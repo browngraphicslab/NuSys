@@ -19,6 +19,8 @@ namespace NuSysApp
         private CompositeTransform _tempTransform;
 
         private List<UIElement> _allElements = new List<UIElement>();
+        public delegate void UpdateHandler(CompositeTransform transform);
+        public event UpdateHandler Update;
 
         public PanZoomMode(FrameworkElement view) : base(view)
         {
@@ -51,6 +53,8 @@ namespace NuSysApp
             compositeTransform.ScaleY = _tempTransform.ScaleY;
             compositeTransform.CenterX = _tempTransform.CenterX;
             compositeTransform.CenterY = _tempTransform.CenterY;
+
+
 
             if (_cview != null) { 
                 CullScreen();
@@ -182,6 +186,9 @@ namespace NuSysApp
                 _cview.InqCanvas.Transform = compositeTransform;
                 _cview.InqCanvas.Redraw();
             }
+
+            _cview?.UpdateNodePosition();
+            Update?.Invoke(compositeTransform);
             e.Handled = true;
         }
 
@@ -228,7 +235,8 @@ namespace NuSysApp
             compositeTransform.ScaleY *= e.Delta.Scale;
 
             compositeTransform.CenterX = center.X;
-            compositeTransform.CenterY = center.Y;
+            compositeTransform.CenterY = center.Y;         
+
 
             //And consider a translational shift
 
@@ -243,6 +251,8 @@ namespace NuSysApp
                 _cview.InqCanvas.Redraw();
             }
 
+            _cview?.UpdateNodePosition();
+            Update?.Invoke(compositeTransform);
 
             e.Handled = true;
 

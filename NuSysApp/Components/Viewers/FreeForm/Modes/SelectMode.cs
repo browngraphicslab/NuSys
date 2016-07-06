@@ -18,9 +18,10 @@ namespace NuSysApp
     public class SelectMode : AbstractWorkspaceViewMode
     {
 
+        private bool _active;
         private bool _released;
         private bool _doubleTapped;
-        private PointerEventHandler _pointerPressedHandler;
+        private TappedEventHandler _pointerPressedHandler;
         private PointerEventHandler _pointerReleasedHandler;
         private DoubleTappedEventHandler _doubleTappedHandler;
 
@@ -29,6 +30,12 @@ namespace NuSysApp
             _pointerPressedHandler = OnPointerPressed;
             _pointerReleasedHandler = OnPointerReleased;
             _doubleTappedHandler = OnDoubleTapped;
+
+
+            _view.IsDoubleTapEnabled = true;
+
+            _view.Tapped += OnPointerPressed;
+            _view.DoubleTapped += OnDoubleTapped;
         }
 
         public SelectMode(AreaNodeView view) : base(view)
@@ -36,34 +43,26 @@ namespace NuSysApp
             _pointerPressedHandler = OnPointerPressed;
             _pointerReleasedHandler = OnPointerReleased;
             _doubleTappedHandler = OnDoubleTapped;
+
+            _view.IsDoubleTapEnabled = true;
+
+            _view.Tapped += OnPointerPressed;
+            _view.DoubleTapped += OnDoubleTapped;
         }
         public override async Task Activate()
         {
-            _view.IsDoubleTapEnabled = true;
-
-            _view.ManipulationMode = ManipulationModes.All;
-
-            _view.AddHandler(UIElement.PointerPressedEvent, _pointerPressedHandler, false );
-            _view.AddHandler(UIElement.PointerReleasedEvent, _pointerReleasedHandler, false );
-            _view.AddHandler(UIElement.DoubleTappedEvent, _doubleTappedHandler, false );
+            _active = true;
         }
 
         public override async Task Deactivate()
         {
-            _view.IsDoubleTapEnabled = false;
-
-            _view.RemoveHandler(UIElement.PointerPressedEvent, _pointerPressedHandler);
-            _view.RemoveHandler(UIElement.PointerReleasedEvent, _pointerReleasedHandler);
-            _view.RemoveHandler(UIElement.DoubleTappedEvent, _doubleTappedHandler);
-
-            _view.ManipulationMode = ManipulationModes.None;
-  
-        //    var vm = _view.DataContext as FreeFormViewerViewModel;
-        //    vm.ClearSelection();
+            _active = false;
         }
 
-        private async void OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        private async void OnPointerPressed(object sender, TappedRoutedEventArgs e)
         {
+            if (!_active)
+                return;
             foreach (var atom in SessionController.Instance.ActiveFreeFormViewer.AtomViewList)
             {
                 if (atom is PdfNodeView)
@@ -77,17 +76,6 @@ namespace NuSysApp
             if (SessionController.Instance.SessionView.FreeFormViewer.MultiMenu.Visibility == Visibility.Visible)
                 return;
 
-            _released = false;
-            await Task.Delay(200);
-            if (!_released)
-                return;
-
-            await Task.Delay(50);
-            if (_doubleTapped)
-            {
-                _doubleTapped = false;
-                return;
-            }
 
             var dc = ((FrameworkElement)e.OriginalSource).DataContext as ElementViewModel;
             if (dc == null)
@@ -136,11 +124,12 @@ namespace NuSysApp
         private async void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
             _released = true;
-       //     e.Handled = true;
         }
 
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
+            if (!_active)
+                return;
             _doubleTapped = true;
             var dc = (e.OriginalSource as FrameworkElement)?.DataContext;
             if ((dc is ElementViewModel || dc is LinkViewModel) && !(dc is FreeFormViewerViewModel) )

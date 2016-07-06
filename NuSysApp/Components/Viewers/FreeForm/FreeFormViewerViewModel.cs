@@ -39,8 +39,8 @@ namespace NuSysApp
                 TranslateY = -Constants.MaxCanvasSize / 2.0,
                 CenterX = Constants.MaxCanvasSize / 2.0,
                 CenterY = Constants.MaxCanvasSize / 2.0,
-                ScaleX = 0.85,
-                ScaleY = 0.85
+                ScaleX = 1.0,
+                ScaleY = 1.0
             };
 
 
@@ -181,11 +181,12 @@ namespace NuSysApp
         /// <param name="selected"></param>
         public void AddSelection(ElementViewModel selected)
         {
-            selected.IsSelected = true;
           
+            selected.IsSelected = true;
+  
             if (!_selections.Contains(selected))
                 _selections.Add(selected);
-   
+           
             var selectedElements = AtomViewList.Where(a => a.DataContext == selected);
             if (!selectedElements.Any())
                 return;
@@ -194,7 +195,6 @@ namespace NuSysApp
 
             if (libElemModel?.Type != ElementType.Link)
                 Canvas.SetZIndex(selectedElements.First(), NodeManipulationMode._zIndexCounter++);
-         
 
             SelectionChanged?.Invoke(this);
         }
@@ -217,7 +217,7 @@ namespace NuSysApp
             }
             _selections.Clear();
             SelectionChanged?.Invoke(this);
-            FocusManager.TryMoveFocus(FocusNavigationDirection.Next);
+          //  FocusManager.TryMoveFocus(FocusNavigationDirection.Next);
         }
         
 

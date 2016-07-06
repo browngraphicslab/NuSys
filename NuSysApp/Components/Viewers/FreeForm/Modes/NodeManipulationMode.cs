@@ -18,6 +18,8 @@ namespace NuSysApp
         public static int _zIndexCounter = 10000;
         private bool _isPinAnimating;
         private bool _isFreeForm;
+
+        private FreeFormViewer _cview;
         public List<UserControl> ActiveNodes { get; private set; }
 
         public NodeManipulationMode(FrameworkElement view) : base(view) { }
@@ -26,6 +28,7 @@ namespace NuSysApp
         public NodeManipulationMode(FrameworkElement view, bool isFreeFormCollection) : base(view)
         {
             _isFreeForm = isFreeFormCollection;
+            _cview = view as FreeFormViewer;
 
         }
 
@@ -108,12 +111,16 @@ namespace NuSysApp
             var dx = e.Delta.Translation.X / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
             var dy = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
 
+            _cview?.UpdateNodePosition();
+
             if (_isFreeForm)
             {
                 var areaView = (AreaNodeView) _view;
                 var areaViewVM = (AreaNodeViewModel)areaView.DataContext;
                 dx = dx/areaViewVM.CompositeTransform.ScaleX;
                 dy = dy / areaViewVM.CompositeTransform.ScaleX;
+               
+                
             }
                 if (SessionController.Instance.ActiveFreeFormViewer.Selections.Contains(vm))
             {
@@ -122,6 +129,7 @@ namespace NuSysApp
                     var cview = (FreeFormViewer) _view;
                     Canvas.SetLeft(cview.MultiMenu, Canvas.GetLeft(cview.MultiMenu) + e.Delta.Translation.X);
                     Canvas.SetTop(cview.MultiMenu, Canvas.GetTop(cview.MultiMenu) + e.Delta.Translation.Y);
+                    
                 }
 
                 //move all selected content if a selected node is moved
