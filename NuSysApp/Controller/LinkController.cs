@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -9,11 +10,12 @@ using NuSysApp;
 using NuSysApp.Components.Viewers.FreeForm;
 
 namespace NuSysApp
-{ 
+{
     public class LinkController
     {
         private ConcurrentDictionary<LinkId, HashSet<string>> _links = new ConcurrentDictionary<LinkId, HashSet<string>>();
- //       private ConcurrentDictionary<string, Color> _colors = new ConcurrentDictionary<string, Color>();
+        private ConcurrentDictionary<string, string> _endPointsToLinks = new ConcurrentDictionary<string, string>();
+
         public delegate void NewLinkEventHandler(LinkLibraryElementController link);
         public event NewLinkEventHandler OnNewLink;
 
@@ -29,35 +31,66 @@ namespace NuSysApp
             _links[id] = new HashSet<string>();
             return _links[id];
         }
-
+        //id is the id of a LinkLibraryElementModel
         public void AddLink(string id)
         {
             var link = SessionController.Instance.ContentController.GetContent(id) as LinkLibraryElementModel;
-            if (!_links.ContainsKey(link.InAtomId))
+            LinkId inAtomId = link.InAtomId;
+            LinkId outAtomId = link.OutAtomId;
+
+            if (!_links.ContainsKey(inAtomId))
             {
-                _links[link.InAtomId] = new HashSet<string>();
+                _links[inAtomId] = new HashSet<string>();
             }
-            foreach (var l in _links[link.InAtomId])
+            foreach (var l in _links[inAtomId])
             {
                 var temp = SessionController.Instance.ContentController.GetContent(l) as LinkLibraryElementModel;
-                if ((temp.InAtomId == link.InAtomId && temp.OutAtomId == link.OutAtomId) ||
-                    (temp.InAtomId == link.OutAtomId && temp.OutAtomId == link.InAtomId))
+                if ((temp.InAtomId == inAtomId && temp.OutAtomId == outAtomId) ||
+                    (temp.InAtomId == outAtomId && temp.OutAtomId == inAtomId))
                 {
                     return;
                 }
             }
+            _links[inAtomId].Add(id);
 
-            _links[link.InAtomId].Add(id);
-
-            if (!_links.ContainsKey(link.OutAtomId))
+            if (!_links.ContainsKey(outAtomId))
             {
-                _links[link.OutAtomId] = new HashSet<string>();
+                _links[outAtomId] = new HashSet<string>();
             }
-            _links[link.OutAtomId].Add(id);
+            Debug.Assert(!inAtomId.Equals(outAtomId));
+            _links[outAtomId].Add(id);
+            AddToEndPointsToLink(inAtomId, outAtomId, id);
             OnNewLink?.Invoke(SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
-
         }
-        public HashSet<LinkLibraryElementController> IdHashSetToControllers(IEnumerable<string> ids) { 
+
+        private void AddToEndPointsToLink(LinkId inAtomId, LinkId outAtomId, string idOfLink)
+        {
+            Debug.Assert(inAtomId.RegionId != null || inAtomId.LibraryElementId != null);
+            Debug.Assert(outAtomId.RegionId != null || outAtomId.LibraryElementId != null);
+
+            string id1 = inAtomId.RegionId;
+            if (id1 == null)
+            {
+                id1 = inAtomId.LibraryElementId;
+            }
+            string id2 = outAtomId.RegionId;
+            if (id2 == null)
+            {
+                id2 = outAtomId.LibraryElementId;
+            }
+            _endPointsToLinks[id1 + id2] = idOfLink;
+            _endPointsToLinks[id2 + id1] = idOfLink;
+        }
+
+        public string GetLinkIdBetween(LinkId inAtomId, LinkId outAtomId)
+        {
+            string id1 = inAtomId.RegionId == null ? inAtomId.LibraryElementId : inAtomId.RegionId;
+            string id2 = outAtomId.RegionId == null ? outAtomId.LibraryElementId : outAtomId.RegionId;
+            return _endPointsToLinks[id1 + id2];
+        }
+
+        public HashSet<LinkLibraryElementController> IdHashSetToControllers(IEnumerable<string> ids)
+        {
             return new HashSet<LinkLibraryElementController>(ids.Select(item => GetLinkLibraryElementController(item)));
         }
 
@@ -68,28 +101,28 @@ namespace NuSysApp
             return controller as LinkLibraryElementController;
         }
 
-      /*  public HashSet<LibraryElementController> GetOppositeLibraryElementControllers(LibraryElementController controller)
-        {
-            var libraryElementId = controller.LibraryElementModel.LibraryElementId;
-            if (!_links.ContainsKey(libraryElementId))
-            {
-                return new HashSet<LibraryElementController>();
-            }
-            var controllersToReturn = new HashSet<LibraryElementController>();
-            foreach (var linkId in _links[libraryElementId])
-            {
-                var linkModel = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
-                if (linkModel.InAtomId == controller.LibraryElementModel.LibraryElementId)
-                {
-                    controllersToReturn.Add(SessionController.Instance.ContentController.GetLibraryElementController(linkModel.OutAtomId));
-                    continue;
-                }
-                controllersToReturn.Add(SessionController.Instance.ContentController.GetLibraryElementController(linkModel.InAtomId));
-            }
-            return controllersToReturn;
-        }*/
+        /*  public HashSet<LibraryElementController> GetOppositeLibraryElementControllers(LibraryElementController controller)
+          {
+              var libraryElementId = controller.LibraryElementModel.LibraryElementId;
+              if (!_links.ContainsKey(libraryElementId))
+              {
+                  return new HashSet<LibraryElementController>();
+              }
+              var controllersToReturn = new HashSet<LibraryElementController>();
+              foreach (var linkId in _links[libraryElementId])
+              {
+                  var linkModel = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
+                  if (linkModel.InAtomId == controller.LibraryElementModel.LibraryElementId)
+                  {
+                      controllersToReturn.Add(SessionController.Instance.ContentController.GetLibraryElementController(linkModel.OutAtomId));
+                      continue;
+                  }
+                  controllersToReturn.Add(SessionController.Instance.ContentController.GetLibraryElementController(linkModel.InAtomId));
+              }
+              return controllersToReturn;
+          }*/
 
-            
+
 
         public void RemoveLink(string id)
         {
@@ -107,7 +140,7 @@ namespace NuSysApp
         public virtual async Task RequestLink(LinkId otherId, LinkId anotherId, RectangleView rectangle = null, UserControl regionView = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
         {
             var contentId = SessionController.Instance.GenerateId();
-            var request = new NewLinkRequest(anotherId, otherId, SessionController.Instance.ContentController.GetContent(anotherId.LibraryElementId)?.Creator, 
+            var request = new NewLinkRequest(anotherId, otherId, SessionController.Instance.ContentController.GetContent(anotherId.LibraryElementId)?.Creator,
                 contentId, regionView, rectangle, inFGDictionary, outFGDictionary);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }
@@ -129,7 +162,7 @@ namespace NuSysApp
                     controller.AddKeyword(new Keyword(tag));
                 }
             }
-            
+
         }
     }
 }
