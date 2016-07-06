@@ -225,7 +225,7 @@
                 <Image Source="ms-appx:///Assets/icon_whitex.png"></Image>
             </Border>
 
-            <StackPanel Grid.Row="1" Canvas.ZIndex="100" x:Name="TitleEnter" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,20">
+            <StackPanel Grid.Row="1" Canvas.ZIndex="100" x:Name="TitleEnter" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,20" BorderBrush="White" BorderThickness="0,0,0,1">
                 <!--<TextBlock Text="{Binding Title}" Foreground="White" FontSize="30" CharacterSpacing="45" HorizontalAlignment="Stretch"/>-->
                 <local:TextInputBlock  x:Name ="TitleBox" HasBackground="False"  TextColor="White"  FontWeight="Thin"  LeftJustified="True"  FontSize="40" BubbleTop="False" SetHeight="40" HorizontalAlignment="Stretch" TextChanged="TitleBox_OnTextChanged"/>
                 <!--<Rectangle HorizontalAlignment="Stretch" Fill="White" Height="2"/>-->
