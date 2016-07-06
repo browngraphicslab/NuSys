@@ -21,6 +21,8 @@ namespace NuSysApp
             }
         }
 
+        public string ID { get; set; }
+
         public LinkTemplate(LinkLibraryElementController controller, LinkId id)
         {
             Title = "Unnamed Link";
@@ -42,6 +44,7 @@ namespace NuSysApp
                 var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.InAtomId.LibraryElementId);
                 LinkedTo = libraryElementModel.Title;
             }
+            ID = controller.LinkLibraryElementModel.LibraryElementId;
         }
 
         private void Controller_TitleChanged(object sender, string title)

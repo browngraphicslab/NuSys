@@ -662,6 +662,11 @@ namespace NuSysApp
             }
             else if (viewable is LibraryElementController)
             {
+                var controller = viewable as LibraryElementController;
+                if (!controller.IsLoaded)
+                {
+                    return;
+                }
                 await xDetailViewer.ShowElement(viewable as LibraryElementController);
             }
         }
@@ -728,6 +733,11 @@ namespace NuSysApp
         public Canvas MainCanvas
         {
             get { return mainCanvas; }
+        }
+
+        public DetailViewerView DetailViewerView
+        {
+            get { return xDetailViewer; }
         }
 
         private async void OnRecordClick(object sender, RoutedEventArgs e)

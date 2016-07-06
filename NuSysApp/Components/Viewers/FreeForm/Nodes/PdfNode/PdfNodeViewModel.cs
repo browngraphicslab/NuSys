@@ -100,6 +100,7 @@ namespace NuSysApp
             //}
         }
 
+        
         public void CreatePdfRegionViews()
         {
             var elementController = Controller.LibraryElementController;
@@ -109,9 +110,7 @@ namespace NuSysApp
             {
                 return;
             }
-            UITask.Run(delegate {
-                RegionViews.Clear();
-            });
+            RegionViews.Clear();
             foreach (var regionModel in Controller.LibraryElementModel.Regions)
             {
 
@@ -140,6 +139,7 @@ namespace NuSysApp
 
 
         }
+        
 
         public override void Dispose()
         {

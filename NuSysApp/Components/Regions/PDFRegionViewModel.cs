@@ -37,6 +37,19 @@ namespace NuSysApp
             }
         }
 
+        private string _name;
+
+        public string Name
+        {
+            get { return _name; }
+            set
+            {
+                _name = value;
+                Model.Name = _name;
+                RegionController.SetTitle(_name);
+                RaisePropertyChanged("Name");
+            }
+        }
         public bool Editable { get; set; }
         public double OriginalHeight { get; set; }
         public double OriginalWidth { get; set; }
@@ -66,10 +79,12 @@ namespace NuSysApp
             regionController.LocationChanged += RegionController_LocationChanged;
 
 
+            Name = Model.Name;
 
             Editable = true;
 
         }
+
 
         private void RegionController_LocationChanged(object sender, Point topLeft)
         {

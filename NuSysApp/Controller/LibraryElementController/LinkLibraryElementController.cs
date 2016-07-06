@@ -15,5 +15,12 @@ namespace NuSysApp
             Debug.Assert(model != null);
             LinkLibraryElementModel = model;
         }
+
+        public void DeleteLink()
+        {
+            SessionController.Instance.LinkController.RemoveLink(this.LinkLibraryElementModel.LibraryElementId);
+            SessionController.Instance.ActiveFreeFormViewer.AllContent.First().Controller.RequestVisualLinkTo();
+            Dispose();
+        }
     }
 }
