@@ -5,11 +5,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
@@ -25,22 +27,26 @@ namespace NuSysApp
     {
         private DispatcherTimer _timer;
         private PointerEventHandler _releaseHandler;
+        private GroupNodeDataGridViewModel _viewModel;
 
         public GroupNodeDataGridView(GroupNodeDataGridViewModel viewModel)
         {
            DataContext = viewModel;
+            _viewModel = viewModel;
            this.InitializeComponent();
 
-            _releaseHandler = new PointerEventHandler(OnPointerReleased);
-            DataGrid.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true );
-            DataGrid.AddHandler(UIElement.ManipulationDeltaEvent, new ManipulationDeltaEventHandler(OnManipulationDelta), true);
-            DataGrid.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
             DataGrid.ManipulationMode = ManipulationModes.All;
+            _releaseHandler = new PointerEventHandler(OnPointerReleased);
+            DataGrid.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true ); 
+            DataGrid.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
+            DataGrid.AddHandler(UIElement.ManipulationDeltaEvent, new ManipulationDeltaEventHandler(OnManipulationDelta), true);
             SessionController.Instance.SessionView.MainCanvas.AddHandler(UIElement.PointerReleasedEvent, _releaseHandler, true);
             DataGrid.AddHandler(UIElement.DoubleTappedEvent, new DoubleTappedEventHandler(OnDoubleTapped), true);
             DataGrid.SelectedItem = null;
             DataGrid.SelectionChanged += DataGridOnSelectionChanged;
             viewModel.Controller.Disposed += ControllerOnDisposed;
+
+            
         }
 
         private void DataGridOnSelectionChanged(object sender, SelectionChangedEventArgs selectionChangedEventArgs)
@@ -59,11 +65,17 @@ namespace NuSysApp
 
         private Image _drag;
         private String _id;
-        private void OnPointerPressed(object source, PointerRoutedEventArgs args)
+        private async void OnPointerPressed(object source, PointerRoutedEventArgs args)
         {
+
             var src = (FrameworkElement) args.OriginalSource;
             if (src.DataContext is GroupNodeDataGridInfo)
             {
+                
+                src.ManipulationMode = ManipulationModes.All; // touch dragging out doesn't work w/o this line
+                
+                var info = (GroupNodeDataGridInfo)src.DataContext;
+                _id = info.Id;
                 
                 _drag = new Image();//TODO temporary
                 BitmapImage textimage = new BitmapImage(new Uri("ms-appx:///Assets/icon_new_workspace.png", UriKind.Absolute));
@@ -73,10 +85,6 @@ namespace NuSysApp
                 Canvas.SetLeft(_drag, point.X);
                 Canvas.SetTop(_drag, point.Y);
                 SessionController.Instance.SessionView.MainCanvas.Children.Add(_drag);
-               
-                
-                var info = (GroupNodeDataGridInfo) src.DataContext;
-                _id = info.Id;
             }
         }
 
@@ -98,7 +106,6 @@ namespace NuSysApp
             
         }
    
-
         private bool IsPointerInGroup(Point point)
         {
             var hits = VisualTreeHelper.FindElementsInHostCoordinates(point, SessionController.Instance.SessionView);
@@ -110,7 +117,6 @@ namespace NuSysApp
 
         private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs args)
         {
-
             if (_drag != null)
             {
                 var x = Canvas.GetLeft(_drag);
@@ -147,6 +153,5 @@ namespace NuSysApp
                 
             }
         }
-
     }
 }
