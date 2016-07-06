@@ -55,7 +55,8 @@
                             Margin="10,0"
                             Visibility="{Binding NoResultsFound}"
                             />
-                   
+
+                
 
                 <!-- The search results -->
                 <ListView x:Name="ListView" ItemsSource="{Binding PageElements}" Grid.Row="1" Width="{Binding ResultWidth}" HorizontalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollMode="Enabled" IsDoubleTapEnabled="True" DoubleTapped="ListView_OnDoubleTapped" Visibility="{Binding SearchResultsListVisibility}">
@@ -110,13 +111,18 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-                <Button Grid.Row="1" x:Name="ShowHelpButton" Content="Show Help" Foreground="{StaticResource color2}" HorizontalAlignment="Center" Background="White"  VerticalAlignment="Bottom" Margin="10,0,10,5" Visibility="Collapsed" Tapped="ShowHelpButton_OnTapped"/>
+                <Grid Grid.Row="1" VerticalAlignment="Bottom" Height="Auto" Background="{StaticResource color2}">
+                    <Button  x:Name="ShowHelpButton" Content="Show Help" Foreground="White" HorizontalAlignment="Center" Background="{StaticResource color2}" Margin="10,0,10,5" Visibility="Collapsed" Tapped="ShowHelpButton_OnTapped"/>
+                <Border  HorizontalAlignment="Right" Visibility="{Binding SearchExportButtonVisibility}"  Background="Transparent" x:Name="xSearchExportButton" ManipulationMode="TranslateX,TranslateY" ManipulationStarted="XSearchExportButton_OnManipulationStarted" ManipulationDelta="XSearchExportButton_OnManipulationDelta" ManipulationCompleted="XSearchExportButton_OnManipulationCompleted" PointerPressed="XSearchExportButton_OnPointerPressed">
+                    <TextBlock Text="&#xE8AD;" FontFamily="Segoe MDL2 Assets" Margin="10,15,10,10" Foreground="{StaticResource color3}"></TextBlock>
+                </Border>
+                </Grid>
             </Grid>
 
             <TextBlock Grid.Row="2" x:Name="HelperText" Visibility="{Binding SearchViewHelperTextVisibility}" FontFamily="FiraSans" FontSize="16" Foreground="{StaticResource color2}" VerticalAlignment="Top" HorizontalAlignment="Center" TextAlignment="Center" Margin="30,10" TextWrapping="Wrap"
                        Text="The advanced search textbox is not setup right now but if it were the tutorial text would go here. It would be full of very helpful information."/>
 
-
+            
 
         </Grid>
     </Grid>
