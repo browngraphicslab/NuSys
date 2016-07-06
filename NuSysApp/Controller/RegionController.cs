@@ -12,6 +12,7 @@ namespace NuSysApp
     {
         public Region Model;
 
+
         public string Title
         {
             get { return Model?.Name; }
@@ -22,6 +23,7 @@ namespace NuSysApp
         {
             get { return new LinkId(SessionController.Instance.RegionsController.GetLibraryElementModelId(this.Model.Id),this.Model.Id); }
         }
+
 
         public delegate void TitleChangedEventHandler(object source, string title);
         public event TitleChangedEventHandler TitleChanged;
@@ -34,14 +36,15 @@ namespace NuSysApp
         public event EventHandler<LinkLibraryElementController> LinkAdded;
         public event EventHandler<string> LinkRemoved;
         public delegate void MetadataChangedEventHandler(object source);
-
         public event MetadataChangedEventHandler MetadataChanged;
+
 
         private bool _selected;
         private bool _blockServerUpdates;
         public RegionController(Region model)
         {
             Model = model;
+
         }
         public void SetTitle(string title)
         {
@@ -101,7 +104,7 @@ namespace NuSysApp
         {
             Model.SetMetadata(metadata);
             MetadataChanged?.Invoke(this);
-            //_debouncingDictionary.Add("metadata", Model.Metadata);
+            UpdateServer();
         }
         public bool RemoveMetadata(string key)
         {
