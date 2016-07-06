@@ -27,13 +27,19 @@ namespace NuSysApp
             controller.ChildAdded += OnChildAdded;
             controller.ChildRemoved += OnChildRemoved;
             (controller.LibraryElementModel as CollectionLibraryElementModel).OnLinkAdded += OnOnLinkAdded;
+            (controller.LibraryElementModel as CollectionLibraryElementModel).OnLinkRemoved += ElementCollectionViewModel_OnLinkRemoved;
             Text = controller.LibraryElementModel?.Data;
 
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
             AtomViewList = new ObservableCollection<FrameworkElement>();
         }
 
-        private void OnOnLinkAdded()
+        private void ElementCollectionViewModel_OnLinkRemoved(string id)
+        {
+            RemoveVisualLink(id);
+        }
+
+        private void OnOnLinkAdded(string id)
         {
             var atoms = new HashSet<FrameworkElement>();
             foreach (var atom in AtomViewList)
@@ -41,7 +47,7 @@ namespace NuSysApp
                 atoms.Add(atom);
             }
             foreach (var atom in atoms){
-                AddVisualLinks((atom.DataContext as ElementViewModel).Controller);
+                AddVisualLinks((atom.DataContext as ElementViewModel).Controller,id);
             }
         }
 
@@ -72,11 +78,16 @@ namespace NuSysApp
         {
             var view = await _nodeViewFactory.CreateFromSendable(controller);
             AtomViewList.Add(view);
-            AddVisualLinks(controller);
+            var contentLinks = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(controller.LibraryElementModel.LibraryElementId));
+            foreach (var linkId in contentLinks)
+            {
+                var link = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
+                AddVisualLinks(controller,link.LibraryElementId);
+            }
             controller.Deleted += OnChildDeleted;
         }
 
-        private void AddVisualLinks(ElementController controller)
+        private void AddVisualLinks(ElementController controller,string id)
         {
             if (controller is LinkElementController)
             {
@@ -96,12 +107,13 @@ namespace NuSysApp
                 {
                     continue;
                 }
-                if (toLinkIds.Select(id=>id.LibraryElementId).Contains(atom.ContentId))
+                if (toLinkIds.Select(Id=>Id.LibraryElementId).Contains(atom.ContentId))
 
                 {
                     var lm = new LinkModel(SessionController.Instance.GenerateId());
                     lm.InAtomId = controller.Model.Id;
                     lm.OutAtomId = atom.Controller.Model.Id;
+                    lm.ContentId = id;
                     var lc = new LinkElementController(lm);
                     var view = new BezierLinkView(new LinkViewModel(lc));
                     toAddAtoms.Add(view);
@@ -131,6 +143,18 @@ namespace NuSysApp
                     {
                         AtomViewList.Remove(atom);
                     }
+                }
+            }
+        }
+
+        public void RemoveVisualLink(string id)
+        {
+            var link = SessionController.Instance.LinkController.GetLinkLibraryElementController(id);
+            foreach (var atom in new HashSet<FrameworkElement>(AtomViewList.Where(e=> e.DataContext is LinkViewModel)))
+            {
+                if (((atom.DataContext as LinkViewModel).Model as LinkModel).ContentId == id)
+                {
+                    AtomViewList.Remove(atom);
                 }
             }
         }

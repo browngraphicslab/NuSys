@@ -64,6 +64,7 @@ namespace NuSysApp
 
         internal void DeleteLink(string id)
         {
+            SessionController.Instance.ActiveFreeFormViewer.AllContent.First().Controller.RequestDeleteVisualLink(id);
             SessionController.Instance.LinkController.RemoveLink(id);
             Task.Run(async delegate
             {
@@ -79,7 +80,6 @@ namespace NuSysApp
                     break;
                 }
             }
-
         }
 
         private void LinkController_OnNewLink(LinkLibraryElementController link)

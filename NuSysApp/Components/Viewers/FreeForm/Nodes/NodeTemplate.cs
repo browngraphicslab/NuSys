@@ -331,7 +331,7 @@ namespace NuSysApp
                                     var region = element as AudioRegionView;
                                     var regiondc = region.DataContext as AudioRegionViewModel;
                                     SessionController.Instance.LinkController.RequestLink(regiondc.RegionController.Id, vm.Controller.LibraryElementController.Id);
-                                    vm.Controller.RequestVisualLinkTo();
+                               //     vm.Controller.RequestVisualLinkTo();
                                 }
                             }
 
@@ -346,7 +346,7 @@ namespace NuSysApp
                                     var region = element as VideoRegionView;
                                     var regiondc = region.DataContext as VideoRegionViewModel;
                                     SessionController.Instance.LinkController.RequestLink(regiondc.RegionController.Id, vm.Controller.LibraryElementController.Id);
-                                    vm.Controller.RequestVisualLinkTo();
+                             //       vm.Controller.RequestVisualLinkTo();
                                 }
                             }
 
@@ -361,7 +361,7 @@ namespace NuSysApp
                                     var region = element as PDFRegionView;
                                     var regiondc = region.DataContext as PdfRegionViewModel;
                                     SessionController.Instance.LinkController.RequestLink(regiondc.RegionController.Id, vm.Controller.LibraryElementController.Id);
-                                    vm.Controller.RequestVisualLinkTo();
+                               //     vm.Controller.RequestVisualLinkTo();
                                 }
                             }
                             if (element is ImageRegionView)
@@ -377,7 +377,7 @@ namespace NuSysApp
                                     var region = element as ImageRegionView;
                                     var regiondc = region.DataContext as ImageRegionViewModel;
                                     SessionController.Instance.LinkController.RequestLink(regiondc.RegionController.Id, vm.Controller.LibraryElementController.Id);
-                                    vm.Controller.RequestVisualLinkTo();
+                          ////          vm.Controller.RequestVisualLinkTo();
                                 }
                             }
                             
