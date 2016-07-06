@@ -1,0 +1,5 @@
+MainPackage=C:\Users\graphics_lab\Documents\Trent_Nusys\nusys_harsh_test\nusys\NuSysApp\bin\x86\Release\NuSysApp_1.0.60.0_x86.appx
+ResourcePack=C:\Users\graphics_lab\Documents\Trent_Nusys\nusys_harsh_test\nusys\NuSysApp\bin\x86\Release\NuSysApp_1.0.60.0_scale-100.appx
+ResourcePack=C:\Users\graphics_lab\Documents\Trent_Nusys\nusys_harsh_test\nusys\NuSysApp\bin\x86\Release\NuSysApp_1.0.60.0_scale-125.appx
+ResourcePack=C:\Users\graphics_lab\Documents\Trent_Nusys\nusys_harsh_test\nusys\NuSysApp\bin\x86\Release\NuSysApp_1.0.60.0_scale-150.appx
+ResourcePack=C:\Users\graphics_lab\Documents\Trent_Nusys\nusys_harsh_test\nusys\NuSysApp\bin\x86\Release\NuSysApp_1.0.60.0_scale-400.appx

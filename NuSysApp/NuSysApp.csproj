@@ -18,10 +18,12 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>NuSysApp_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>81B6B30B934A1D53478C22381925FDE21CF7F329</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>974C917A8A98617A1A9C87ED850936A08B851273</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-    <AppxPackageDir>C:\Users\phili_n4ua7ts\Desktop\</AppxPackageDir>
-    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
+    <AppxPackageDir>C:\Users\graphics_lab\Desktop\</AppxPackageDir>
+    <AppxBundlePlatforms>x86</AppxBundlePlatforms>
+    <AppxBundle>Always</AppxBundle>
+    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -98,40 +100,145 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\bold.png" />
-    <Content Include="Assets\bullets.png" />
-    <Content Include="Assets\fast_forward.png" />
-    <Content Include="Assets\font size.png" />
-    <Content Include="Assets\icon_add_annotation.png" />
+    <Content Include="Assets\collection icon bluegreen.png" />
+    <Content Include="Assets\filter.png" />
+    <Content Include="Assets\add from file.png" />
+    <Content Include="Assets\icon_chat.png" />
     <Content Include="Assets\icon_collapse.png" />
-    <Content Include="Assets\icon_eraser.png" />
-    <Content Include="Assets\icon_export.png" />
+    <Content Include="Assets\icon_delete_color.png" />
+    <Content Include="Assets\icon_duplicate.png" />
+    <Content Include="Assets\icon_favorited.png" />
+    <Content Include="Assets\icon_folder.png" />
+    <Content Include="Assets\icon_image.png" />
+    <Content Include="Assets\icon_ink.png" />
+    <Content Include="Assets\icon_library.png" />
+    <Content Include="Assets\icon_link.png" />
+    <Content Include="Assets\icon_mainmenu_search.png" />
+    <Content Include="Assets\icon_new_workspace.png" />
+    <Content Include="Assets\icon_node.png" />
+    <Content Include="Assets\icon_pano.png" />
+    <Content Include="Assets\icon_pdf.png" />
+    <Content Include="Assets\icon_plus.png" />
+    <Content Include="Assets\icon_plus2.png" />
+    <Content Include="Assets\icon_presentation_link.png" />
+    <Content Include="Assets\icon_record.png" />
+    <Content Include="Assets\icon_recording.png" />
+    <Content Include="Assets\icon_tag.png" />
+    <Content Include="Assets\icon_text.png" />
+    <Content Include="Assets\icon_refresh.png" />
+    <Content Include="Assets\icon_search.png" />
+    <Content Include="Assets\icon_unfavorited.png" />
+    <Content Include="Assets\icon_upload.png" />
+    <Content Include="Assets\icon_webnode.png" />
+    <Content Include="Assets\icon_web_color.png" />
+    <Content Include="Assets\icon_whitex.png" />
+    <Content Include="Assets\ink.png" />
+    <Content Include="Assets\listview bluegreen.png" />
+    <Content Include="Assets\LockScreenLogo.scale-200.png" />
+    <Content Include="Assets\logos\150x150.png" />
+    <Content Include="Assets\logos\150x150.scale-100.png" />
+    <Content Include="Assets\logos\150x150.scale-200.png" />
+    <Content Include="Assets\logos\310x150.png" />
+    <Content Include="Assets\logos\310x310.png" />
+    <Content Include="Assets\logos\44x44.png" />
+    <Content Include="Assets\logos\50x50.png" />
+    <Content Include="Assets\logos\620x300.png" />
+    <Content Include="Assets\logos\630x300.png" />
+    <Content Include="Assets\logos\71x71.png" />
+    <Content Include="Assets\icon.scale-125.png" />
+    <Content Include="Assets\icon.scale-150.png" />
+    <Content Include="Assets\icon_audionode_fast_forward.png" />
+    <Content Include="Assets\icon_mainmenu_collapse.png" />
+    <Content Include="Assets\icon_mainmenu_eraser.png" />
+    <Content Include="Assets\icon_mainmenu_export.png" />
     <Content Include="Assets\icon_group_freeform.png" />
     <Content Include="Assets\icon_group_grid.png" />
-    <Content Include="Assets\icon_highlight.png" />
-    <Content Include="Assets\icon_media.png" />
-    <Content Include="Assets\icon_node.png" />
-    <Content Include="Assets\icon_record_node.png" />
-    <Content Include="Assets\icon_scribble.png" />
-    <Content Include="Assets\icon_select.png" />
-    <Content Include="Assets\icon_text.png" />
-    <Content Include="Assets\image.png" />
-    <Content Include="Assets\link.png" />
-    <Content Include="Assets\icon_additional.png" />
-    <Content Include="Assets\icon_add_node.png" />
-    <Content Include="Assets\icon_global_ink.png" />
-    <Content Include="Assets\icon_multiselect.png" />
-    <Content Include="Assets\icon_bucket.png" />
-    <Content Include="Assets\icon_record.png" />
-    <Content Include="Assets\open icon.png" />
-    <Content Include="Assets\pause.png" />
-    <Content Include="Assets\pin icon.png" />
-    <Content Include="Assets\pin.png" />
-    <Content Include="Assets\play.png" />
-    <Content Include="Assets\record.png" />
-    <Content Include="Assets\rewind.png" />
-    <Content Include="Assets\stop.png" />
+    <Content Include="Assets\icon_mainmenu_highlight.png" />
+    <Content Include="Assets\icon_mainmenu_media.png" />
+    <Content Include="Assets\icon_mainmenu_node.png" />
+    <Content Include="Assets\icon_mainmenu_audionode.png" />
+    <Content Include="Assets\icon_mainmenu_select.png" />
+    <Content Include="Assets\icon_node_text.png" />
+    <Content Include="Assets\icon_mainmenu_additional.png" />
+    <Content Include="Assets\icon_mainmenu_add_node.png" />
+    <Content Include="Assets\icon_mainmenu_global_ink.png" />
+    <Content Include="Assets\icon_mainmenu_multiselect.png" />
+    <Content Include="Assets\icon_mainmenu_bucket.png" />
+    <Content Include="Assets\icon_mainmenu_open icon.png" />
+    <Content Include="Assets\icon_audionode_pause.png" />
+    <Content Include="Assets\icon_mainmenu_pin.png" />
+    <Content Include="Assets\icon_audionode_play.png" />
+    <Content Include="Assets\icon_audionode_record.png" />
+    <Content Include="Assets\icon_audionode_rewind.png" />
+    <Content Include="Assets\icon_audionode_stop.png" />
+    <Content Include="Assets\icon_users.png" />
+    <Content Include="Assets\logos\SplashScreen.scale-200.png" />
+    <Content Include="Assets\logos\SplashScreen.scale-400.jpg" />
+    <Content Include="Assets\logos\SplashScreen.scale-400.png" />
+    <Content Include="Assets\logos\Square150x150Logo.png" />
+    <Content Include="Assets\logos\Square150x150Logo.scale-100.png" />
+    <Content Include="Assets\logos\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\logos\Square300x300Logo.png" />
+    <Content Include="Assets\logos\Square44x44Logo.png" />
+    <Content Include="Assets\logos\StoreLogo.png" />
+    <Content Include="Assets\logos\Wide310x150Logo.png" />
+    <Content Include="Assets\logos\Wide310x150Logo.scale-100.png" />
+    <Content Include="Assets\menububble.png" />
+    <Content Include="Assets\menububble2.png" />
+    <Content Include="Assets\menububblebtm.png" />
+    <Content Include="Assets\menu_bubble.png" />
+    <Content Include="Assets\node icons\delete.png" />
+    <Content Include="Assets\node icons\icon_exploration.png" />
+    <Content Include="Assets\node icons\icon_duplicate.png" />
+    <Content Include="Assets\node icons\icon_enter.png" />
+    <Content Include="Assets\node icons\icon_freeform.png" />
+    <Content Include="Assets\node icons\icon_grid.png" />
+    <Content Include="Assets\node icons\icon_line.png" />
+    <Content Include="Assets\node icons\icon_link.png" />
+    <Content Include="Assets\node icons\icon_list.png" />
+    <Content Include="Assets\icon_metadata_edit.png" />
+    <Content Include="Assets\icon_metadata_plus.png" />
+    <Content Include="Assets\icon_metadata_sort.png" />
+    <Content Include="Assets\icon_metadata_x.png" />
+    <Content Include="Assets\node icons\icon_new_collection.png" />
+    <Content Include="Assets\node icons\icon_pause.png" />
+    <Content Include="Assets\node icons\icon_pause_dark.png" />
+    <Content Include="Assets\node icons\icon_play.png" />
+    <Content Include="Assets\node icons\icon_play_dark.png" />
+    <Content Include="Assets\node icons\icon_stop.png" />
+    <Content Include="Assets\node icons\icon_stop_dark.png" />
+    <Content Include="Assets\node icons\icon_video.png" />
+    <Content Include="Assets\node icons\pen.png" />
+    <Content Include="Assets\node icons\record.png" />
+    <Content Include="Assets\node icons\search_icon.png" />
+    <Content Include="Assets\node icons\text.png" />
+    <Content Include="Assets\logos\icon_pano.png" />
+    <Content Include="Assets\logos\icon_upload.png" />
     <Content Include="Assets\Orator-Std-Medium_34151.ttf" />
+    <Content Include="Assets\fonts\FiraSans-Book.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\fonts\FiraSans-BookItalic.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\fonts\FiraSans-Light.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\fonts\FiraSans-LightItalic.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\fonts\FiraSans-Thin.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\fonts\FiraSans-ThinItalic.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\fonts\FiraSans-UltraLight.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\fonts\FiraSans-UltraLightItalic.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Assets\paragraph.nusys" />
     <None Include="NuSysApp_TemporaryKey.pfx" />
     <None Include="packages.config" />
@@ -141,44 +248,414 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Classas.cs" />
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
-    <Compile Include="Database\Serializer.cs" />
-    <Compile Include="EventArgs\DeleteInqLineEventArgs.cs" />
-    <Compile Include="EventArgs\CreatePinEventArgs.cs" />
+    <Compile Include="Components\InqCanvas2\PhilInqCanvas.xaml.cs">
+      <DependentUpon>PhilInqCanvas.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\InqCanvas\NuSysInqCanvas.cs" />
+    <Compile Include="Components\InqCanvas\WetDryInkCanvas.cs" />
+    <Compile Include="Components\ISelectable.cs" />
+    <Compile Include="Components\Keywords\Keyword.cs" />
+    <Compile Include="Components\Links\LinkCircle.xaml.cs">
+      <DependentUpon>LinkCircle.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Links\PresentationLinkView.xaml.cs">
+      <DependentUpon>PresentationLinkView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\LoadingScreen.xaml.cs">
+      <DependentUpon>LoadingScreen.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\Library\LibraryFavorites.xaml.cs">
+      <DependentUpon>LibraryFavorites.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\Library\LibraryFavoritesViewModel.cs" />
+    <Compile Include="Components\Misc\Library\LibraryItemTemplate.cs" />
+    <Compile Include="Components\Misc\SpeechToTextUI\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Components\Misc\SpeechToTextUI\CorrectionSuggester.cs" />
+    <Compile Include="Components\Misc\SpeechToTextUI\HtmlRemoval.cs" />
+    <Compile Include="Components\Misc\SpeechToTextUI\ISpeakable.cs" />
+    <Compile Include="Components\Misc\SpeechToTextUI\SpeechToTextBox.xaml.cs">
+      <DependentUpon>SpeechToTextBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\SpeechToTextUI\SpeechToTextViewModel.cs" />
+    <Compile Include="Components\Misc\SpeechToTextUI\WordAlternates.cs" />
+    <Compile Include="Components\Misc\TextInputBlock.xaml.cs">
+      <DependentUpon>TextInputBlock.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\TextInputBlockViewModel.cs" />
+    <Compile Include="Components\Regions\VideoRegionView.xaml.cs">
+      <DependentUpon>VideoRegionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Regions\VideoRegionViewModel.cs" />
+    <Compile Include="Components\Regions\ImageRegionView.xaml.cs">
+      <DependentUpon>ImageRegionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Regions\ImageRegionViewModel.cs" />
+    <Compile Include="Components\Regions\AudioRegionBound.xaml.cs">
+      <DependentUpon>AudioRegionBound.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Regions\AudioRegionView.xaml.cs">
+      <DependentUpon>AudioRegionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Regions\AudioRegionViewModel.cs" />
+    <Compile Include="Components\Regions\PDFRegionView.xaml.cs">
+      <DependentUpon>PDFRegionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Regions\PDFRegionViewModel.cs" />
+    <Compile Include="Components\Regions\RegionViewModel.cs" />
+    <Compile Include="Components\Tools\BasicToolController.cs" />
+    <Compile Include="Components\Tools\BasicToolModel.cs" />
+    <Compile Include="Components\Tools\MetadataToolController.cs" />
+    <Compile Include="Components\Tools\MetadataToolModel.cs" />
+    <Compile Include="Components\Tools\MetadataToolView.xaml.cs">
+      <DependentUpon>MetadataToolView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Tools\MetadataToolViewModel.cs" />
+    <Compile Include="Components\Tools\ToolController.cs" />
+    <Compile Include="Components\Tools\ToolFilterLinkView.xaml.cs">
+      <DependentUpon>ToolFilterLinkView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Tools\ToolFilterLinkViewModel.cs" />
+    <Compile Include="Components\Tools\ToolFilterView.xaml.cs">
+      <DependentUpon>ToolFilterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Tools\ToolLinkView.xaml.cs">
+      <DependentUpon>ToolLinkView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Tools\ToolLinkViewModel.cs" />
+    <Compile Include="Components\Tools\ToolModel.cs" />
+    <Compile Include="Components\Tools\BasicToolViewModel.cs" />
+    <Compile Include="Components\Tools\ToolViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\ILinkable.cs" />
+    <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
+    <Compile Include="Components\Viewers\Detail\Sizeable.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\IDetailViewable.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\WordDetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml.cs">
+      <DependentUpon>WordDetailHomeTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\LinkEditorTab.xaml.cs">
+      <DependentUpon>LinkEditorTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\LinkEditorTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\LinkTemplate.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\PDFRegionListView.xaml.cs">
+      <DependentUpon>PDFRegionListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">
+      <DependentUpon>AudioMediaPlayer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoMediaPlayer.xaml.cs">
+      <DependentUpon>VideoMediaPlayer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controller\LibraryElementController\LibraryElementControllerFactory.cs" />
+    <Compile Include="Controller\LibraryElementController\LinkLibraryElementController.cs" />
+    <Compile Include="Controller\LibraryElementController\WordNodeLibraryElementController.cs" />
+    <Compile Include="Controller\LinkController.cs" />
+    <Compile Include="Controller\RectangleRegionController.cs" />
+    <Compile Include="Controller\PdfRegionController.cs" />
+    <Compile Include="Controller\RegionController.cs" />
+    <Compile Include="Controller\RegionControllerFactory.cs" />
+    <Compile Include="Controller\RegionsController.cs" />
+    <Compile Include="Controller\VideoRegionController.cs" />
+    <Compile Include="Converters\BoolToManipulationModeConverter.cs" />
+    <Compile Include="Converters\ListToStringConverter.cs" />
+    <Compile Include="Converters\MutabilityToBrushConverter.cs" />
+    <Compile Include="Models\LibraryElementModelFactory.cs" />
+    <Compile Include="Models\LinkLibraryElementModel.cs" />
+    <Compile Include="Models\Regions\PDFRegion.cs" />
+    <Compile Include="Models\Regions\TimeRegionModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Regionable.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\AudioDetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\DetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\GroupDetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\ImageDetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\PdfDetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\TextDetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\VideoDetailHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\MetadataEntry.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\ElementCollectionDetailHomeTabView.xaml.cs">
+      <DependentUpon>ElementCollectionDetailHomeTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\MetadataEditorTabView.xaml.cs">
+      <DependentUpon>MetadataEditorTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\RegionEditorTabView.xaml.cs">
+      <DependentUpon>RegionEditorTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\InkStorage.cs" />
+    <Compile Include="Components\Viewers\FreeForm\InkWrapper.cs" />
+    <Compile Include="Components\Viewers\FreeForm\LibraryDragElement.xaml.cs">
+      <DependentUpon>LibraryDragElement.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\RectangleModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\RectangleView.xaml.cs">
+      <DependentUpon>RectangleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\RectangleViewModel.cs" />
+    <Compile Include="Components\Viewers\Search\Query.cs" />
+    <Compile Include="Components\Viewers\Search\SearchResult.cs" />
+    <Compile Include="Components\Viewers\Search\SearchResultTemplate.cs" />
+    <Compile Include="Components\Viewers\Search\SearchView.xaml.cs">
+      <DependentUpon>SearchView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Search\SearchViewModel.cs" />
+    <Compile Include="Components\WaitingRoom\SelectionHull.cs" />
+    <Compile Include="Components\Viewers\Detail\DetailViewHomeTabViewFactory.cs" />
+    <Compile Include="Components\Viewers\Detail\DetailViewerView.xaml.cs">
+      <DependentUpon>DetailViewerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\DetailViewerViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\AudioDetailHomeTabView.xaml.cs">
+      <DependentUpon>AudioDetailHomeTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\GroupDetailHomeTabView.xaml.cs">
+      <DependentUpon>GroupDetailHomeTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\LinkDetailHomeTabView.xaml.cs">
+      <DependentUpon>LinkDetailHomeTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\PowerpointDetailHomeTabView.xaml.cs">
+      <DependentUpon>PowerpointDetailHomeTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\VideoDetailHomeTabView.xaml.cs">
+      <DependentUpon>VideoDetailHomeTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\WebDetailHomeTabView.xaml.cs">
+      <DependentUpon>WebDetailHomeTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\PdfDetailHomeTabView.xaml.cs">
+      <DependentUpon>PdfDetailHomeTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\ImageDetailHomeTabView.xaml.cs">
+      <DependentUpon>ImageDetailHomeTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\TextDetailHomeTabView.xaml.cs">
+      <DependentUpon>TextDetailHomeTabView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\GroupChat\ChatPopupView.xaml.cs">
+      <DependentUpon>ChatPopupView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\GroupChat\DialogBlock.xaml.cs">
+      <DependentUpon>DialogBlock.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\InqCanvas\Gestures\Gesturizer.cs" />
+    <Compile Include="Components\InqCanvas\Gestures\IGesture.cs" />
+    <Compile Include="Components\InqCanvas\Gestures\ScribbleGesture.cs" />
+    <Compile Include="Components\InqCanvas\InqCanvasView.xaml.cs">
+      <DependentUpon>InqCanvasView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Links\BezierLinkView.xaml.cs">
+      <DependentUpon>BezierLinkView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Links\LineLinkView.xaml.cs">
+      <DependentUpon>LineLinkView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\Library\LibraryBucketViewModel.cs" />
+    <Compile Include="Components\Misc\Library\LibraryElementPropertiesWindow.xaml.cs">
+      <DependentUpon>LibraryElementPropertiesWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\Library\LibraryGrid.xaml.cs">
+      <DependentUpon>LibraryGrid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\Library\LibraryList.xaml.cs">
+      <DependentUpon>LibraryList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\Library\LibraryView.xaml.cs">
+      <DependentUpon>LibraryView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\Library\LibraryViewable.cs" />
+    <Compile Include="Components\Misc\Library\LibraryPageViewModel.cs" />
+    <Compile Include="Components\Misc\LoadingBar.xaml.cs">
+      <DependentUpon>LoadingBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\MediaRecorderView.xaml.cs">
+      <DependentUpon>MediaRecorderView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\UserLabel.xaml.cs">
+      <DependentUpon>UserLabel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\SearchButton.xaml.cs">
+      <DependentUpon>SearchButton.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\SearchWindowViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\TimelineNodeViewFactory.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Modes\DragOutMode.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlock.xaml.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlockModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlockViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\MediaFoundationReaderUniversal.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeView.xaml.cs">
+      <DependentUpon>AreaNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\ImageNode\ImageElementInstanceController.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\IThumbnailable.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupCircleView.xaml.cs">
+      <DependentUpon>GroupCircleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupItemViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupItemThumbFactory.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeDataGridInfo.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeDataGridView.xaml.cs">
+      <DependentUpon>GroupNodeDataGridView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeDataGridViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeExpandedView.xaml.cs">
+      <DependentUpon>GroupNodeExpandedView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeTimelineView.xaml.cs">
+      <DependentUpon>GroupNodeTimelineView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeTimelineViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeView.xaml.cs">
+      <DependentUpon>GroupNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\TimelineItemView.xaml.cs">
+      <DependentUpon>TimelineItemView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Nodes\LoadNode\LoadNodeView.xaml.cs">
+      <DependentUpon>LoadNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Nodes\LoadNode\LoadNodeViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\PowerpointNode\PowerpointNodeView.xaml.cs">
+      <DependentUpon>PowerpointNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Nodes\PowerpointNode\PowerpointNodeViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\RecordingNode\RecordingNodeView.xaml.cs">
+      <DependentUpon>RecordingNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Nodes\WebNode\WebNodeView.xaml.cs">
+      <DependentUpon>WebNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Nodes\WebNode\WebNodeViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\TagNode\LabelNodeViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\ImageNode\ImageNodeView.xaml.cs">
+      <DependentUpon>ImageNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Nodes\ImageNode\ImageElementViewModel.cs" />
+    <Compile Include="Components\ContextMenuView.xaml.cs">
+      <DependentUpon>ContextMenuView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Nodes\WordNode\WordNodeView.xaml.cs">
+      <DependentUpon>WordNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Nodes\WordNode\WordNodeViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Modes\CreateGroupMode.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Modes\GestureMode.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Modes\LinkMode.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Modes\NodeManipulationMode.cs" />
+    <Compile Include="Controller\ContentController.cs" />
+    <Compile Include="Controller\ElementCollectionController.cs" />
+    <Compile Include="Controller\ElementController.cs" />
+    <Compile Include="Controller\LibraryElementController\LibraryElementController.cs" />
+    <Compile Include="Controller\LibraryElementController\LoadContentEventArgs.cs" />
+    <Compile Include="Controller\LinkElementController.cs" />
+    <Compile Include="Controller\LockDictionary.cs" />
+    <Compile Include="Controller\MediaController.cs" />
+    <Compile Include="Controller\SessionController.cs" />
+    <Compile Include="Controller\TextNodeController.cs" />
+    <Compile Include="Converters\PositionToStringConverter.cs" />
+    <Compile Include="Effects\Anim.cs" />
+    <Compile Include="Effects\AnimatableUserControl.cs" />
+    <Compile Include="Effects\AnimatableNodeView.cs" />
+    <Compile Include="Models\AreaModel.cs" />
+    <Compile Include="Models\CollectionLibraryElementModel.cs" />
+    <Compile Include="Models\CollectionElementModel.cs" />
+    <Compile Include="Models\PowerpointNodeModel.cs" />
+    <Compile Include="Models\Regions\CompoundRegion.cs" />
+    <Compile Include="Models\Regions\RectangleRegion.cs" />
+    <Compile Include="Models\Regions\Region.cs" />
+    <Compile Include="Models\Regions\VideoRegionModel.cs" />
+    <Compile Include="Models\TagNodeModel.cs" />
+    <Compile Include="Models\WebNodeModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
+    <Compile Include="Models\VideoNodeModel.cs" />
+    <Compile Include="Models\WordNodeModel.cs" />
+    <Compile Include="Models\WorkSpaceModel.cs" />
+    <Compile Include="Network\CachePDF.cs" />
+    <Compile Include="Network\ClientHandler.cs" />
+    <Compile Include="Network\Message.cs" />
+    <Compile Include="Network\NetworkClient.cs" />
+    <Compile Include="Network\NetworkSession.cs" />
+    <Compile Include="Network\NetworkUser.cs" />
+    <Compile Include="Network\NuSysNetworkSession.cs" />
+    <Compile Include="Network\Requests\NewPresentationLinkRequest.cs" />
+    <Compile Include="Network\Requests\RemoveInkRequest.cs" />
+    <Compile Include="Network\Requests\ChangeContentRequest.cs" />
+    <Compile Include="Network\Requests\ChatDialogRequest.cs" />
+    <Compile Include="Network\Requests\CreateNewLibraryElementRequest.cs" />
+    <Compile Include="Network\Requests\DeleteLibraryElementRequest.cs" />
+    <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
+    <Compile Include="Network\Requests\DuplicateNodeRequest.cs" />
+    <Compile Include="Network\Requests\AddInkRequest.cs" />
+    <Compile Include="Network\Requests\NewLinkRequest.cs" />
+    <Compile Include="Network\Requests\FinalizeInkRequest.cs" />
+    <Compile Include="Network\Requests\NewElementRequest.cs" />
+    <Compile Include="Network\Requests\Request.cs" />
+    <Compile Include="Network\Requests\SendableUpdateRequest.cs" />
+    <Compile Include="Network\Requests\SubscribeToCollectionRequest.cs" />
+    <Compile Include="Network\Requests\SystemRequests\RequestClientInfoSystemRequest.cs" />
+    <Compile Include="Network\Requests\SetTagsRequest.cs" />
+    <Compile Include="Network\Requests\SystemRequests\AddClientSystemRequest.cs" />
+    <Compile Include="Network\Requests\SystemRequests\SendClientInfoSystemRequest.cs" />
+    <Compile Include="Network\Requests\SystemRequests\RemoveClientSystemRequest.cs" />
+    <Compile Include="Network\Requests\SystemRequests\SetHostSystemRequest.cs" />
+    <Compile Include="Network\Requests\SystemRequests\SystemRequest.cs" />
+    <Compile Include="Components\Misc\SearchWindowView.xaml.cs">
+      <DependentUpon>SearchWindowView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Network\Requests\UnsubscribeFromCollectionRequest.cs" />
+    <Compile Include="Network\ServerRepo\ILockable.cs" />
+    <Compile Include="Network\ServerRepo\LockController.cs" />
+    <Compile Include="Network\ServerRepo\ServerClient.cs" />
+    <Compile Include="Network\StaticServerCalls.cs" />
+    <Compile Include="TransformHelper.cs" />
+    <Compile Include="Util\AccessList.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
+    <Compile Include="Util\EventUtil.cs" />
+    <Compile Include="Util\ExplorationMode.cs" />
+    <Compile Include="Util\ExtensionMethods.cs" />
+    <Compile Include="Util\GestureRecognizer.cs" />
+    <Compile Include="Util\GestureType.cs" />
+    <Compile Include="Util\LibraryTab.cs" />
+    <Compile Include="Util\IModable.cs" />
+    <Compile Include="Util\LineEquation.cs" />
+    <Compile Include="Util\LineSegment.cs" />
+    <Compile Include="Util\LinkId.cs" />
+    <Compile Include="Util\MathUtil.cs" />
+    <Compile Include="Util\MediaUtil.cs" />
+    <Compile Include="Util\MetadatableType.cs" />
+    <Compile Include="Util\Point2d.cs" />
+    <Compile Include="Util\PresentationMode.cs" />
+    <Compile Include="Util\RectanglePoints.cs" />
+    <Compile Include="Util\RelatedListBox.xaml.cs">
+      <DependentUpon>RelatedListBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Util\RenderTask.cs" />
+    <Compile Include="Util\Statistics.cs" />
+    <Compile Include="Util\Telemetry.cs" />
+    <Compile Include="Util\TemporaryToolView.xaml.cs">
+      <DependentUpon>TemporaryToolView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Util\UITask.cs" />
-    <Compile Include="ViewModels\InqCanvasViewModel.cs" />
-    <Compile Include="ViewModels\InqLineViewModel.cs" />
-    <Compile Include="Views\Misc\FloatingMenuButtonView.xaml.cs">
+    <Compile Include="Components\InqCanvas\InqCanvasViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoNodeViewModel.cs" />
+    <Compile Include="Components\Misc\FloatingMenuButtonView.xaml.cs">
       <DependentUpon>FloatingMenuButtonView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Misc\InqCanvas\InqLineView.xaml.cs">
-      <DependentUpon>InqLineView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Misc\InqCanvas\DrawInqMode.cs" />
-    <Compile Include="Views\Misc\InqCanvas\EraseInqMode.cs" />
-    <Compile Include="Views\Misc\InqCanvas\HighlightInqMode.cs" />
-    <Compile Include="Views\Misc\InqCanvas\IInqMode.cs" />
-    <Compile Include="Components\TextBoxExtended.cs" />
-    <Compile Include="Components\TwoFingerScrollViewer.cs" />
+    <Compile Include="Components\InqCanvas\DrawInqMode.cs" />
+    <Compile Include="Components\InqCanvas\EraseInqMode.cs" />
+    <Compile Include="Components\InqCanvas\IInqMode.cs" />
+    <Compile Include="Util\TextBoxExtended.cs" />
+    <Compile Include="Util\TwoFingerScrollViewer.cs" />
     <Compile Include="Converters\SubstractConverter.cs" />
     <Compile Include="Converters\BoolInvertConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
-    <Compile Include="Converters\EnumToBoolConverter.cs" />
     <Compile Include="Converters\SelectionToColorConverter.cs" />
-    <Compile Include="EventArgs\AddLineEventArgs.cs" />
-    <Compile Include="EventArgs\AddToGroupEventArgs.cs" />
-    <Compile Include="EventArgs\CanEditChangedEventArg.cs" />
-    <Compile Include="EventArgs\CreateEventArgs.cs" />
-    <Compile Include="EventArgs\CreateGroupEventArgs.cs" />
-    <Compile Include="EventArgs\DeleteEventArgs.cs" />
-    <Compile Include="EventArgs\LinkedEventArgs.cs" />
-    <Compile Include="EventArgs\LocationUpdateEventArgs.cs" />
-    <Compile Include="EventArgs\SuperEventArgs.cs" />
-    <Compile Include="EventArgs\TextChangedEventArgs.cs" />
-    <Compile Include="EventArgs\WidthHeightUpdateEventArgs.cs" />
     <Compile Include="Lib\MarkdownDeep\Abbreviation.cs" />
     <Compile Include="Lib\MarkdownDeep\Block.cs" />
     <Compile Include="Lib\MarkdownDeep\BlockProcessor.cs" />
@@ -234,105 +711,85 @@
     <Compile Include="Util\FileManager.cs" />
     <Compile Include="Util\FolderWatcher.cs" />
     <Compile Include="Util\Geometry.cs" />
-    <Compile Include="Views\Misc\InqCanvas\InqCanvasView.cs" />
-    <Compile Include="Util\NodeType.cs" />
+    <Compile Include="Util\ElementType.cs" />
     <Compile Include="Util\NuSysStorages.cs" />
     <Compile Include="Util\ObservableDictionary.cs" />
     <Compile Include="Util\OfficeIntermediate.cs" />
     <Compile Include="Util\PdfRenderer.cs" />
     <Compile Include="Util\StorageUtil.cs" />
-    <Compile Include="Models\AtomModel.cs" />
+    <Compile Include="Models\ElementModel.cs" />
     <Compile Include="Models\AudioNodeModel.cs" />
-    <Compile Include="Models\ContentModel.cs" />
-    <Compile Include="Models\FloatingMenuModel.cs" />
-    <Compile Include="Models\GroupNodeModel.cs" />
-    <Compile Include="Models\ImageNodeModel.cs" />
+    <Compile Include="Models\LibraryElementModel.cs" />
+    <Compile Include="Models\ImageElementModel.cs" />
     <Compile Include="Models\LinkModel.cs" />
-    <Compile Include="Models\NodeModel.cs" />
     <Compile Include="Models\PdfNodeModel.cs" />
     <Compile Include="Models\PinModel.cs" />
-    <Compile Include="Models\TextNodeModel.cs" />
-    <Compile Include="Models\WorkSpaceModel.cs" />
+    <Compile Include="Models\TextElementModel.cs" />
     <Compile Include="Util\BaseINPC.cs" />
     <Compile Include="Network\DebouncingDictionary.cs" />
     <Compile Include="Network\ModelIntermediate.cs" />
     <Compile Include="Network\NetworkConnector.cs" />
-    <Compile Include="Database\SQLiteDatabase.cs" />
-    <Compile Include="Database\XmlFileHelper.cs" />
     <Compile Include="Network\Sendable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModels\AtomViewModel.cs" />
-    <Compile Include="ViewModels\AudioNodeViewModel.cs" />
-    <Compile Include="ViewModels\FloatingMenuViewModel.cs" />
-    <Compile Include="ViewModels\MinimapViewModel.cs" />
-    <Compile Include="ViewModels\PinViewModel.cs" />
-    <Compile Include="Views\Misc\BucketWindowView.xaml.cs">
-      <DependentUpon>BucketWindowView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Misc\MinimapView.xaml.cs">
-      <DependentUpon>MinimapView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Misc\PinView.xaml.cs">
-      <DependentUpon>PinView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Misc\MultiSelectMenuView.xaml.cs">
+    <Compile Include="Components\Viewers\ElementViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioNodeViewModel.cs" />
+    <Compile Include="Components\Misc\MultiSelectMenuView.xaml.cs">
       <DependentUpon>MultiSelectMenuView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Nodes\AudioNodeView.xaml.cs">
+    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioNodeView.xaml.cs">
       <DependentUpon>AudioNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Nodes\GroupView.xaml.cs">
-      <DependentUpon>GroupView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ViewModels\ImageNodeViewModel.cs" />
-    <Compile Include="ViewModels\LinkViewModel.cs" />
-    <Compile Include="ViewModels\NodeViewModel.cs" />
-    <Compile Include="ViewModels\PdfNodeViewModel.cs" />
-    <Compile Include="ViewModels\TextNodeViewModel.cs" />
-    <Compile Include="ViewModels\WorkspaceViewModel.cs" />
-    <Compile Include="Views\Links\BezierLinkView.xaml.cs">
-      <DependentUpon>BezierLinkView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ViewModels\GroupViewModel.cs" />
-    <Compile Include="Views\Nodes\ImageNodeView.xaml.cs">
-      <DependentUpon>ImageNodeView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Links\LineLinkView.xaml.cs">
-      <DependentUpon>LineLinkView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Nodes\NodeTemplate.cs" />
-    <Compile Include="Views\Nodes\PdfNodeView.xaml.cs">
+    <Compile Include="Components\Links\LinkViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\PdfNode\PdfNodeViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\TextNode\TextNodeViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\FreeFormViewerViewModel.cs" />
+    <Compile Include="Components\Viewers\ElementCollectionViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\NodeTemplate.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\PdfNode\PdfNodeView.xaml.cs">
       <DependentUpon>PdfNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Nodes\PseudoNode.xaml.cs">
+    <Compile Include="Components\Viewers\FreeForm\Nodes\PseudoNode.xaml.cs">
       <DependentUpon>PseudoNode.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Nodes\TextNodeView.xaml.cs">
+    <Compile Include="Components\Viewers\FreeForm\FreeFormNodeViewFactory.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\TagNode\LabelNodeView.xaml.cs">
+      <DependentUpon>LabelNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\INodeViewFactory.cs" />
+    <Compile Include="Components\SessionView.xaml.cs">
+      <DependentUpon>SessionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Modes\TagNodeMode.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Modes\DuplicateNodeMode.cs" />
+    <Compile Include="Components\Viewers\FreeForm\FreeFormViewer.xaml.cs">
+      <DependentUpon>FreeFormViewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Nodes\TextNode\TextNodeView.xaml.cs">
       <DependentUpon>TextNodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Workspace\AddNodeMode.cs" />
-    <Compile Include="Views\Workspace\CortanaMode.cs" />
-    <Compile Include="Views\Workspace\FloatingMenuMode.cs" />
-    <Compile Include="Views\Misc\FloatingMenuView.xaml.cs">
+    <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoNodeView.xaml.cs">
+      <DependentUpon>VideoNodeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Modes\AddNodeMode.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Modes\CortanaMode.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Modes\FloatingMenuMode.cs" />
+    <Compile Include="Components\Misc\FloatingMenuView.xaml.cs">
       <DependentUpon>FloatingMenuView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Workspace\GlobalInkMode.cs" />
-    <Compile Include="Views\Workspace\AbstractWorkspaceViewMode.cs" />
-    <Compile Include="Views\Workspace\MultiMode.cs" />
-    <Compile Include="Views\Workspace\MultiSelectMode.cs" />
-    <Compile Include="Views\Workspace\PanZoomMode.cs" />
-    <Compile Include="Views\Workspace\PinMode.cs" />
-    <Compile Include="Views\Misc\PinWindowView.xaml.cs">
-      <DependentUpon>PinWindowView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Workspace\PromoteInkMode.cs" />
-    <Compile Include="Views\Workspace\SelectMode.cs" />
-    <Compile Include="Views\Workspace\WorkspaceView.xaml.cs">
-      <DependentUpon>WorkspaceView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\WaitingRoomView.xaml.cs">
+    <Compile Include="Components\Viewers\FreeForm\Modes\GlobalInkMode.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Modes\AbstractWorkspaceViewMode.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Modes\MultiMode.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Modes\MultiSelectMode.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Modes\PanZoomMode.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Modes\PinMode.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Modes\PromoteInkMode.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Modes\SelectMode.cs" />
+    <Compile Include="Components\WaitingRoom\WaitingRoomView.xaml.cs">
       <DependentUpon>WaitingRoomView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Util\Utils.cs" />
+    <Compile Include="Util\Vector2d.cs" />
+    <Compile Include="Util\WrapPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -340,40 +797,290 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\icon.png" />
-    <Content Include="Assets\icon_ink.png" />
-    <Content Include="Assets\icon_left.png" />
-    <Content Include="Assets\icon_right.png" />
-    <Content Include="Assets\icon_search.png" />
-    <Content Include="Assets\icon_x.png" />
-    <Content Include="Assets\icon_x2.png" />
-    <Content Include="Assets\italic.png" />
-    <Content Include="Assets\Logo.scale-100.png" />
+    <Content Include="Assets\icon_node_ink.png" />
+    <Content Include="Assets\icon_pdf_left.png" />
+    <Content Include="Assets\icon_pdf_right.png" />
+    <Content Include="Assets\icon_window_search.png" />
+    <Content Include="Assets\icon_node_x.png" />
+    <Content Include="Assets\icon_node_x2.png" />
+    <Content Include="Assets\plus_icon.png" />
+    <Content Include="Assets\piegraph bluegreen.png" />
+    <Content Include="Assets\powerpointIcon.png" />
+    <Content Include="Assets\presentation_backward.png" />
+    <Content Include="Assets\presentation_forward.png" />
+    <Content Include="Assets\record dark.png" />
+    <Content Include="Assets\resizer.png" />
     <Content Include="Assets\SmallLogo.scale-100.png" />
+    <Content Include="Assets\snapshot_icon.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
-    <Content Include="Assets\SplashScreen.scale-1001.png" />
-    <Content Include="Assets\StoreLogo.scale-100.png" />
-    <Content Include="Assets\underline.png" />
-    <Content Include="Assets\WideLogo.scale-100.png" />
-    <Content Include="Properties\Default.rd.xml" />
-    <Content Include="Assets\LockScreenLogo.scale-200.png" />
+    <Content Include="Assets\iframe.html" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
     <Content Include="Assets\Square150x150Logo.scale-200.png" />
     <Content Include="Assets\Square44x44Logo.scale-200.png" />
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\star-xxl.png" />
+    <Content Include="Assets\star_icon.png" />
     <Content Include="Assets\StoreLogo.png" />
+    <Content Include="Assets\tool_icon.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="Assets\wordIcon.png" />
+    <Content Include="Components\Misc\icon_folder.png" />
+    <Content Include="Components\TextEditor\app.css" />
+    <Content Include="Components\TextEditor\app.js" />
+    <Content Include="Components\TextEditor\texteditor.html" />
+    <Content Include="Components\TextEditor\textview.html" />
+    <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Views\Misc\FloatingMenuButtonView.xaml">
+    <Page Include="Components\InqCanvas2\PhilInqCanvas.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Links\LinkCircle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Misc\InqCanvas\InqLineView.xaml">
+    <Page Include="Components\Links\PresentationLinkView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\LoadingScreen.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Misc\Library\LibraryFavorites.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Misc\SpeechToTextUI\SpeechToTextBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Misc\TextInputBlock.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Regions\VideoRegionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Regions\ImageRegionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Regions\AudioRegionBound.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Regions\AudioRegionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Regions\PDFRegionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Tools\MetadataToolView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Tools\ToolFilterLinkView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Tools\ToolFilterView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Tools\ToolLinkView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\DetailViewerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\AudioDetailHomeTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\ElementCollectionDetailHomeTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\GroupDetailHomeTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\LinkDetailHomeTabView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\LinkEditorTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\MetadataEditorTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\PowerpointDetailHomeTabView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\PDFRegionListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\RegionEditorTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\VideoDetailHomeTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\WebDetailHomeTabView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\PdfDetailHomeTabView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\ImageDetailHomeTabView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\TextDetailHomeTabView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\GroupChat\ChatPopupView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\GroupChat\DialogBlock.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\InqCanvas\InqCanvasView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Links\BezierLinkView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Links\LineLinkView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Misc\Library\LibraryElementPropertiesWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Misc\Library\LibraryGrid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Misc\Library\LibraryList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Misc\Library\LibraryView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Misc\LoadingBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Misc\MediaRecorderView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Misc\UserLabel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Misc\SearchButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\LibraryDragElement.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlock.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupCircleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeDataGridView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeExpandedView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeTimelineView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\GroupNodeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\TimelineItemView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\LoadNode\LoadNodeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\PowerpointNode\PowerpointNodeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\RecordingNode\RecordingNodeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoMediaPlayer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\WebNode\WebNodeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\ImageNode\ImageNodeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Misc\FloatingMenuButtonView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -381,71 +1088,84 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\ContextMenuView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Misc\SearchWindowView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\WordNode\WordNodeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\RectangleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\Search\SearchView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ResourceDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Misc\BucketWindowView.xaml">
+    <Page Include="Components\Misc\MultiSelectMenuView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Misc\MinimapView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\Misc\PinView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\Misc\MultiSelectMenuView.xaml">
+    <Page Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioNodeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Nodes\AudioNodeView.xaml">
+    <Page Include="Components\Viewers\FreeForm\Nodes\PdfNode\PdfNodeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Nodes\GroupView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Links\BezierLinkView.xaml">
+    <Page Include="Components\Viewers\FreeForm\Nodes\PseudoNode.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Nodes\ImageNodeView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Links\LineLinkView.xaml">
+    <Page Include="Components\Viewers\FreeForm\Nodes\TagNode\LabelNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Nodes\PdfNodeView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Nodes\PseudoNode.xaml">
+    <Page Include="Components\SessionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Nodes\TextNodeView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Misc\FloatingMenuView.xaml">
+    <Page Include="Components\Viewers\FreeForm\FreeFormViewer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Misc\PinWindowView.xaml">
+    <Page Include="Components\Viewers\FreeForm\Nodes\TextNode\TextNodeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Workspace\WorkspaceView.xaml">
+    <Page Include="Components\Misc\FloatingMenuView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\WaitingRoomView.xaml">
+    <Page Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoNodeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\WaitingRoom\WaitingRoomView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Util\TemporaryToolView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Util\RelatedListBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -454,12 +1174,97 @@
     <SDKReference Include="Microsoft.VCLibs, Version=14.0">
       <Name>Visual C++ 2015 Runtime for Universal Windows Platform Apps</Name>
     </SDKReference>
-    <SDKReference Include="SQLite.UAP.2015, Version=3.8.11.1">
-      <Name>SQLite for Universal App Platform</Name>
-    </SDKReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LdaLibrary\LdaLibrary.csproj">
+      <Project>{70229fb2-2d64-49dc-8b44-9faad76dd4e3}</Project>
+      <Name>LdaLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MuPDFWinRT\Win8\MuPDFWinRT.vcxproj">
+      <Project>{56c66c4f-3c21-4929-baf1-2eda2ec56823}</Project>
+      <Name>MuPDFWinRT</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Office.Interop.Word, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Microsoft.Vbe.Interop">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio 14.0\Visual Studio Tools for Office\PIA\Office15\Microsoft.Vbe.Interop.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="SharpDX">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.D3DCompiler">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.D3DCompiler.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct2D1">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Direct2D1.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Direct3D11.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11.Effects">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Direct3D11.Effects.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D12">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Direct3D12.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.DXGI">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.DXGI.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Mathematics.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.MediaFoundation">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.MediaFoundation.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.XAudio2">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.XAudio2.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.XInput">
+      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.XInput.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Icons\" />
+    <Folder Include="Util\Regions\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <PropertyGroup>

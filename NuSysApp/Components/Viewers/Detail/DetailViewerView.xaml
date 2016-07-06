@@ -1,0 +1,192 @@
+﻿<local:AnimatableUserControl
+    x:Class="NuSysApp.DetailViewerView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="using:NuSysApp"
+    mc:Ignorable="d"
+    d:DesignHeight="960"
+    d:DesignWidth="500"
+    BorderBrush="DarkSlateGray"
+    BorderThickness="2"
+    
+    >
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid x:Name="resizer" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="{StaticResource color9}" Width="30"
+                    ManipulationDelta="Resizer_OnManipulationDelta" ManipulationMode="All">
+            <Grid.RenderTransform>
+                <TranslateTransform X="-30"></TranslateTransform>
+            </Grid.RenderTransform>
+            <Image x:Name="resizerImage" Source="/Assets/resizer.png" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+        </Grid>
+        <Grid x:Name="TabPanel" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="{StaticResource color7}" Width="30"
+                    ManipulationDelta="Resizer_OnManipulationDelta" ManipulationMode="All" Visibility="{Binding TabVisibility}">
+            <Grid.RenderTransform>
+                <TranslateTransform X="-60"></TranslateTransform>
+            </Grid.RenderTransform>
+
+            <ItemsControl x:Name="IC"  ItemsSource="{Binding Tabs}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel x:Name="TabList" VerticalAlignment="Top" Tapped="TabList_OnTapped" Width="30" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Canvas x:Name="TabStack" Height="{Binding ElementName=TabList, Path=DataContext.TabHeight}" Width="30">
+                            <Border x:Name="ExitTab" Tapped="ExitTab_OnTapped" >
+                                <Border.RenderTransform>
+                                    <TranslateTransform Y="-20"></TranslateTransform>
+                                </Border.RenderTransform>
+                                <TextBlock Text="X" Foreground="White" FontSize="20" VerticalAlignment="Top" RenderTransformOrigin="0,1">
+                                    <TextBlock.RenderTransform>
+                                        <RotateTransform Angle="90"></RotateTransform>
+                                    </TextBlock.RenderTransform>
+                                </TextBlock>
+                            </Border>
+                            <Border x:Name="Tab" Tapped="TabList_OnTapped" MaxWidth="{Binding ElementName=TabList, Path=DataContext.TextHeight}">
+                                <Border.RenderTransform>
+                                    <TranslateTransform Y="15"></TranslateTransform>
+                                </Border.RenderTransform>
+                                <TextBlock x:Name="TabTitle" Text="{Binding Title}" VerticalAlignment="Top" RenderTransformOrigin="0,1">
+                                    <TextBlock.RenderTransform>
+                                        <RotateTransform Angle="90"></RotateTransform>
+                                    </TextBlock.RenderTransform>
+                                </TextBlock>
+                            </Border>
+                        </Canvas>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!--<ListView x:Name="ListView"  ItemsSource="{Binding Tabs}" >
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel x:Name="TabList" VerticalAlignment="Stretch" HorizontalAlignment="Left" Tapped="TabList_OnTapped" Padding="0" Width="30" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property= "VerticalContentAlignment" Value="Stretch" />
+                        <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Padding" Value="0,0,0,0"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Canvas x:Name="TabStack" VerticalAlignment="Stretch" HorizontalAlignment="Right" Height="{Binding ElementName=TabList, Path=DataContext.TabHeight}" Width="30">
+                            <Border x:Name="ExitTab" Tapped="ExitTab_OnTapped" >
+                                <TextBlock Text="X" Foreground="White" FontSize="20" VerticalAlignment="Top">
+                                    <TextBlock.RenderTransform>
+                                        <RotateTransform CenterX="0.5" CenterY="0.5" Angle="-90"></RotateTransform>
+                                    </TextBlock.RenderTransform>
+                                </TextBlock>
+                            </Border>
+                            <Border x:Name="Tab" Tapped="TabList_OnTapped">
+                                <Border.RenderTransform>
+                                    <TranslateTransform Y ="-30"></TranslateTransform>
+                                </Border.RenderTransform>
+                                <TextBlock x:Name="TabTitle" Text="{Binding Title}" VerticalAlignment="Top">
+                                    <TextBlock.RenderTransform>
+                                        <RotateTransform CenterX="0.5" CenterY="0.5" Angle="-90"></RotateTransform>
+                                    </TextBlock.RenderTransform>
+                                </TextBlock>
+                            </Border>
+                        </Canvas>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>-->
+        </Grid>
+        <Grid x:Name="xContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource color1}" Padding="25,10,25,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+
+            </Grid.RowDefinitions>
+
+            <!-- NOT USED!!!!! -->
+            <TextBlock Visibility="Collapsed" Grid.Row="0" x:Name="metadataButton" HorizontalAlignment="Right" Text="Metadata" Foreground="{StaticResource darkforeground}" FontSize="24" Margin="0,0,25,0" Tapped="metaData_OnTapped"/>
+
+            <!-- NOT USED!!!!! -->
+            <Border Grid.Row="0" Visibility="Collapsed" x:Name="exitButton" HorizontalAlignment="Right" VerticalAlignment="Top" Tapped="closeDV_OnTapped" Padding="5,5,5,5">
+                <TextBlock Text="x" Foreground="White" FontSize="24"/>
+            </Border>
+
+            <Border Grid.Row="0" x:Name="exitButton2" HorizontalAlignment="Right" VerticalAlignment="Top" Tapped="closeDV_OnTapped" Height="20" Padding="0,5,0,0">
+                <Image Source="ms-appx:///Assets/icon_whitex.png"></Image>
+            </Border>
+
+            <StackPanel Grid.Row="1" Canvas.ZIndex="100" x:Name="TitleEnter" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,20">
+                <!--<TextBlock Text="{Binding Title}" Foreground="White" FontSize="30" CharacterSpacing="45" HorizontalAlignment="Stretch"/>-->
+                <local:TextInputBlock  x:Name ="TitleBox" FontWeight="SemiBold" LeftJustified="True"  FontSize="40" BubbleTop="False" SetHeight="40" HorizontalAlignment="Stretch" TextChanged="TitleBox_OnTextChanged"/>
+                <!--<Rectangle HorizontalAlignment="Stretch" Fill="White" Height="2"/>-->
+            </StackPanel>
+
+            <Pivot x:Name="xRootPivot" Grid.Row="2" Margin="0,10,0,-40" Grid.RowSpan="5">
+                <PivotItem Header="Home">
+                    <!--Pivot content goes here-->
+                    <ContentPresenter Grid.Row="2" x:Name ="nodeContent" Content="{Binding View}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></ContentPresenter>
+                </PivotItem>
+                <PivotItem Header="Metadata">
+                    <!--Pivot content goes here-->
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="6*"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+
+                        <local:MetadataEditorView x:Name="xMetadataEditorView"  Grid.Row="0"></local:MetadataEditorView>
+
+                        <Grid Grid.Row="1" x:Name="TagContainer"  HorizontalAlignment="Stretch" >
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Rectangle Grid.Row="0" HorizontalAlignment="Stretch" Fill="{StaticResource darkforeground}" Height="2" Margin="0,20,0,20"/>
+                            <Grid Grid.Row="1" HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="30"></ColumnDefinition>
+                                    <ColumnDefinition Width="100"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+
+
+                                <TextBlock Grid.Column="0" Text="TAGS" Foreground="{StaticResource darkforeground}" FontSize="30" CharacterSpacing="45" VerticalAlignment="Center"></TextBlock>
+                                <local:TextInputBlock Grid.Column="1" x:Name ="NewTagBox" BubbleTop ="True" LeftJustified="False" SetHeight="30"  KeyUp="NewTagBox_OnKeyUp" HorizontalAlignment="Stretch">
+
+                                </local:TextInputBlock>
+                                <Button Grid.Column="2" x:Name="AddTagButton"  Height="30" Width="30" Content="+" Foreground="{StaticResource darkforeground}" Click="AddTagButton_OnClick"  Background="{StaticResource color6}" VerticalAlignment="Center"></Button>
+                                <Button Grid.Column="3" x:Name="SuggestButton"  Height="40" Width="100" Content="Suggest" Foreground="{StaticResource darkforeground}" Click="AddTagButton_OnClick"  Background="{StaticResource color6}" VerticalAlignment="Center" Margin="10,0,0,0"></Button>
+                            </Grid>
+                        </Grid>
+
+                        <Grid Grid.Row="2" HorizontalAlignment="Stretch">
+                            <ItemsControl x:Name="Tags" ItemsSource="{Binding Tags}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <local:WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </Grid>
+                    </Grid>
+                </PivotItem>
+                <PivotItem Header="Link Editor">
+                    <local:LinkEditorTab x:Name="xLinkEditorView" Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Top" />
+                </PivotItem>
+                <PivotItem Header="Region Editor">
+                    <local:RegionEditorTabView x:Name="xRegionEditorView"  Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></local:RegionEditorTabView>
+                </PivotItem>
+                   
+            </Pivot>
+
+
+
+        </Grid>
+    </Grid>
+</local:AnimatableUserControl>

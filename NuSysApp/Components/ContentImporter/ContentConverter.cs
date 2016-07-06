@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.Foundation;
 using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
@@ -22,6 +23,16 @@ namespace NuSysApp
     public class ContentConverter
     {
         private static bool dirty = false;
+        private static string result;
+        private static WebView _wv = new WebView();
+        private static ManualResetEvent manualReset = new ManualResetEvent(false);
+        private static TypedEventHandler<WebView, WebViewNavigationCompletedEventArgs> NavigationCompleted = async delegate
+        {
+            await _wv.InvokeScriptAsync("eval", new string[] { "(function(){ var r = document.createRange(); r.selectNodeContents(document.body); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);  })();" });
+            DataPackage p = await _wv.CaptureSelectedContentToDataPackageAsync();
+            result = await p.GetView().GetRtfAsync();
+            manualReset.Set();
+        };
 
         public async static Task<string> HtmlToRtfWithImages(string htmlString)
         {
@@ -32,8 +43,9 @@ namespace NuSysApp
 
             while (true)
             {
-                var match = Regex.Match(md, @"\[!\[.*\]\((.*)\)\]", RegexOptions.IgnoreCase);
-                Regex rgx = new Regex(@"\[!\[.*\]\(.*\)\]\(.*\)");
+                //Debug.WriteLine(md);
+                var match = Regex.Match(md, @"!\[.*\]\((.*)\)", RegexOptions.IgnoreCase);
+                Regex rgx = new Regex(@"!\[.*\]\(.*\)");
                 md = rgx.Replace(md, rtfImagePlaceholder, 1);
 
                 if (match.Groups.Count <= 1)
@@ -41,7 +53,7 @@ namespace NuSysApp
                     break;
                 }
 
-                string imgUrl = "http:" + match.Groups[1].Value;
+                string imgUrl = match.Groups[1].Value;
                 var img = await DownloadImageFromWebsiteAsync(imgUrl);
 
                 imgData.Add(img);
@@ -86,24 +98,18 @@ namespace NuSysApp
             }
 
             html =  html.Replace("\n", "");
+            result = null;
 
-            string result = null;
-            var manualReset = new ManualResetEvent(false);
+            _wv.NavigationCompleted -= NavigationCompleted;            
+            _wv.NavigationCompleted += NavigationCompleted;       
+            manualReset = new ManualResetEvent(false);     
+         
 
-            var wv = new WebView();
-            wv.NavigationCompleted += async delegate
-            {
-                await wv.InvokeScriptAsync("eval", new string[] { "(function(){ var r = document.createRange(); r.selectNodeContents(document.body); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);  })();" });
-                DataPackage p = await wv.CaptureSelectedContentToDataPackageAsync();
-                result = await p.GetView().GetRtfAsync();
-                manualReset.Set();
-            };            
-            
             SynchronizationContext context = SynchronizationContext.Current;
             await Task.Run(() =>
             {
                 context.Post((a) => {
-                    wv.NavigateToString(html);
+                    _wv.NavigateToString(html);
                 }, null);
                 
                 manualReset.WaitOne();
@@ -166,6 +172,7 @@ namespace NuSysApp
             }
             catch (WebException ex)
             {
+                Debug.WriteLine("WEB EXCEPTION");
                 return null;
             }
         }

@@ -115,7 +115,7 @@ namespace NuSysApp
                 _recordStorageFile =
                     await _rootFolder.CreateFileAsync(fileName, CreationCollisionOption.GenerateUniqueName);
                 Debug.WriteLine("Created audio file successfully");
-                var recordProfile = MediaEncodingProfile.CreateM4a(AudioEncodingQuality.Auto);
+                var recordProfile = MediaEncodingProfile.CreateM4a(AudioEncodingQuality.Low);
                 await _mediaCaptureManager.StartRecordToStorageFileAsync(recordProfile, _recordStorageFile);
                 Debug.WriteLine("Start audio capture successfully");
                 _recording = true;

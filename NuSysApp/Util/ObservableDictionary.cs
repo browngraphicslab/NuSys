@@ -74,8 +74,6 @@ namespace NuSysApp
             if (removed)
                 //OnCollectionChanged(NotifyCollectionChangedAction.Remove, new KeyValuePair<TKey, TValue>(key, value));
                 OnCollectionChanged();
-
-
             return removed;
         }
 

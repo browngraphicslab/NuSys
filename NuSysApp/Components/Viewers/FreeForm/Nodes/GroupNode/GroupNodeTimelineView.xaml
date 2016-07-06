@@ -1,0 +1,55 @@
+﻿<local:AnimatableUserControl
+    x:Class="NuSysApp.GroupNodeTimelineView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400"
+>
+
+    <local:AnimatableUserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </local:AnimatableUserControl.Resources>
+    
+    <Grid>
+        <Grid x:Name="TimelineGrid" Background="{StaticResource color6}">
+            <Canvas x:Name="TimelineCanvas" Background="Transparent" RenderTransform="{Binding CompositeTransform}">
+                <Border x:Name ="TimelinePanelBorder" BorderBrush="Yellow" Height="110">
+                    <Canvas x:Name="TimelinePanel" Background="Transparent"/>
+                </Border>
+            </Canvas>
+        </Grid>
+        <StackPanel x:Name="TagPanel"  
+                            Margin="-100,0,0,0" 
+                            Orientation="Vertical" 
+                            VerticalAlignment="Bottom" 
+                            HorizontalAlignment="Left" 
+                            Background="{StaticResource color6}" 
+                            Width="100" Opacity="0" IsHitTestVisible="False" Visibility="Collapsed"/>
+        <StackPanel x:Name="ViewPanel"  
+                            Margin="0,0,-100,0" 
+                            Orientation="Vertical" 
+                            VerticalAlignment="Bottom" 
+                            HorizontalAlignment="Right" 
+                            Background="{StaticResource color6}" 
+                            Width="100" Opacity="0" IsHitTestVisible="false" Visibility="Collapsed"/>
+        <Button Name="ViewBlock" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="30"/>
+        <Button Name="TagBlock" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="30"/>
+        <AutoSuggestBox x:Name="SearchBox"
+                            QueryIcon="Find" 
+                            TextChanged="AutoSuggestBox_OnTextChanged"
+                            QuerySubmitted="AutoSuggestBox_OnQuerySubmitted"
+                            SuggestionChosen="AutoSuggestBox_OnSuggestionChosen"
+                            PlaceholderText="Search"
+                            Height="35"
+                            HorizontalAlignment="Stretch"
+                            Opacity ="1" Visibility="Collapsed"/>
+    </Grid>
+</local:AnimatableUserControl>

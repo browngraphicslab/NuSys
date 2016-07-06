@@ -1,162 +1,56 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using System.Xml;
-using Windows.Storage;
-using Windows.Storage.Streams;
-using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Shapes;
-using System.Diagnostics;
+using NuSysApp.Viewers;
 
 namespace NuSysApp
 {
-    public class PdfNodeModel : NodeModel
+    public class PdfNodeModel : ElementModel
     {
-        public delegate void PdfImagesCreatedHandler();
-        public event PdfImagesCreatedHandler OnPdfImagesCreated;
+        private int _currentPageNumber;
+        public MuPDFWinRT.Document Document { get; set; }
+        public Dictionary<int, List<RectangleViewModel>> PageRegionDict { get; set; }
 
-        private uint _currentPageNum;
-
-        public PdfNodeModel(byte[] bytes,string id) : base(id)
-        {
-            ByteArray = bytes;
-            Content = new ContentModel(ByteArray, id);
-        }
-
-        public async Task SaveFile()
-        {
-            StorageFolder folder = NuSysStorages.Media;
-            StorageFile file = await folder.CreateFileAsync(ID + ".pdf", CreationCollisionOption.ReplaceExisting);
-            await FileIO.WriteBytesAsync(file, ByteArray);
-
-            RenderedPages = await PdfRenderer.RenderPdf(file);
-            PageCount = (uint)RenderedPages.Count;
-            InqLines = new List<HashSet<InqLineModel>>();
-            InqLines.Capacity = (int) PageCount;
-            for (int i = 0; i < PageCount; i++)
+        public int CurrentPageNumber {
+            get { return _currentPageNumber; }
+            set
             {
-                InqLines.Add(new InqCanvasModel(ID).Lines);
+                _currentPageNumber = value;
+                PageChange?.Invoke(value);
             }
-            /*
-            InkContainer = new List<HashSet<InqLineView>>();
-            InkContainer.Capacity = (int) PageCount;
-            for (var i = 0; i < PageCount; i++)
-            {
-                InkContainer.Add(new HashSet<InqLineView>());
-            }
-            */
-            OnPdfImagesCreated?.Invoke();
-
         }
+        
+        public event PageChangeHandler PageChange;
+        public delegate void PageChangeHandler(int page);
 
-
-
-        public override async Task<Dictionary<string, string>> Pack()
+        public PdfNodeModel(string id) : base(id)
         {
-            Dictionary<string, string> props = await base.Pack();
-            props.Add("nodeType", NodeType.PDF.ToString());
-            props.Add("data",Convert.ToBase64String(ByteArray));
+            ElementType = ElementType.PDF;
+            PageRegionDict = new Dictionary<int, List<RectangleViewModel>>();
+        }
+        
+        public override async Task<Dictionary<string, object>> Pack()
+        {
+            var props = await base.Pack();
+            props.Add("page", CurrentPageNumber.ToString());
+            props.Add("pageRegionDict", PageRegionDict);
             return props;
         }
 
-        public override async Task UnPack(Dictionary<string, string> props)
+        public override async Task UnPack(Message props)
         {
-            base.UnPack(props);
+            if (props.ContainsKey("page"))
+            {
+                CurrentPageNumber = props.GetInt("page", 0);
+            }
+
+            if (props.ContainsKey("pageRegionDict"))
+            {
+                PageRegionDict = props.GetDict<int, List<RectangleViewModel>>("pageRegionDict");
+            }
+
+            await base.UnPack(props);
         }
-
-        public uint CurrentPageNumber
-        {
-            get { return _currentPageNum; }
-            set
-            {
-                _currentPageNum = value;
-            }
-        }
-
-        public override XmlElement WriteXML(XmlDocument doc)
-        {  
-            //XmlElement 
-            XmlElement pdfNode = doc.CreateElement(string.Empty, "Node", string.Empty); //TODO: Change how we determine node type for name
-
-            //Other attributes - id, x, y, height, width
-            List<XmlAttribute> basicXml = this.getBasicXML(doc);
-            foreach (XmlAttribute attr in basicXml)
-            {
-                pdfNode.SetAttributeNode(attr);
-            }
-
-            return pdfNode;
-        }
-        
-        public override double Width
-        {
-            get
-            {
-                return base.Width;
-            }
-
-            set
-            {
-                if (RenderedPages == null) {
-                    base.Width = value;
-                    return;
-                }
-                var RenderedPage = RenderedPages[0];
-                if (RenderedPage.PixelWidth > RenderedPage.PixelHeight)
-                {
-                    var r = RenderedPage.PixelHeight / (double)RenderedPage.PixelWidth;
-                    base.Width = value;
-                    base.Height = base.Width * r;
-                }
-                else
-                {
-                    var r = RenderedPage.PixelWidth / (double)RenderedPage.PixelHeight;
-                    base.Width = base.Height * r;
-                }
-            }
-        }
-
-        public override double Height
-        {
-            get
-            {
-                return base.Height;
-            }
-
-            set
-            {
-                var RenderedPage = RenderedPages[0];
-                if (RenderedPage == null)
-                {
-                    base.Height = value;
-                    return;
-                }
-
-                if (RenderedPage.PixelWidth > RenderedPage.PixelHeight)
-                {
-                    var r = RenderedPage.PixelHeight / (double)RenderedPage.PixelWidth;
-                    base.Height = base.Width * r;
-
-                }
-                else
-                {
-                    var r = RenderedPage.PixelWidth / (double)RenderedPage.PixelHeight;
-                    base.Height = value;
-                    base.Width = base.Height * r;
-                }
-
-            }
-        }
-        
-
-        public uint PageCount { get; set; }
-        //public List<HashSet<InqLineView>> InkContainer { get; set; }
-
-        public List<HashSet<InqLineModel>> InqLines { get; set; }
-
-        private byte[] ByteArray { set; get; }
-        public List<BitmapImage> RenderedPages { get; set; }
     }
 }

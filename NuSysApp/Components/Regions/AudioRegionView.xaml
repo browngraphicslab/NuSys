@@ -1,0 +1,34 @@
+﻿<UserControl
+    x:Class="NuSysApp.AudioRegionView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Grid x:Name="Canvas" DoubleTapped="XGrid_OnDoubleTapped">
+    <Grid.RenderTransform>
+        <CompositeTransform TranslateY="10"></CompositeTransform>
+    </Grid.RenderTransform>
+        <Rectangle x:Name="Rect" PointerPressed="Rect_PointerPressed" ManipulationDelta="Rect_OnManipulationDelta" Width="{Binding Path=RegionWidth}" Fill="LightCyan" Height="100"  Opacity=".2" HorizontalAlignment="Left" VerticalAlignment="Top" ManipulationMode="{Binding Path=Editable, Converter={StaticResource mConverter}}" >
+            <Rectangle.RenderTransform>
+                <CompositeTransform TranslateX="{Binding LeftHandleX}"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <local:AudioRegionBound x:Name="Bound1"  X1="{Binding Path=LeftHandleX}" X2="{Binding Path=LeftHandleX}" Y1="0" Y2="100"  ManipulationMode="All"
+                                PointerPressed="Handle_OnPointerPressed" ManipulationDelta="Bound1_OnManipulationDelta" PointerReleased="Handle_OnPointerReleased" ManipulationCompleted="OnManipulationCompleted">
+            <local:AudioRegionBound.RenderTransform>
+                <CompositeTransform TranslateX="{Binding LeftHandleX}"/>
+            </local:AudioRegionBound.RenderTransform>
+        </local:AudioRegionBound>
+        <local:AudioRegionBound x:Name="Bound2" X1="{Binding Path=RightHandleX}" X2="{Binding Path=RightHandleX}" Y1="0" Y2="100" ManipulationMode="All"
+                                PointerPressed="Handle_OnPointerPressed" ManipulationDelta="Handle_OnManipulationDelta2" PointerReleased="Handle_OnPointerReleased"  ManipulationCompleted="OnManipulationCompleted" >
+            <local:AudioRegionBound.RenderTransform>
+                <CompositeTransform TranslateX="{Binding RightHandleX}"/>
+            </local:AudioRegionBound.RenderTransform>
+        </local:AudioRegionBound>
+    </Grid>
+</UserControl>

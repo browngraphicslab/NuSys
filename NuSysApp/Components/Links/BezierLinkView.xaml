@@ -1,0 +1,66 @@
+﻿<converters:AnimatableUserControl
+    x:Class="NuSysApp.BezierLinkView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:local="using:NuSysApp"
+    d:DesignHeight="300"
+    d:DesignWidth="400"
+    xmlns:converters="using:NuSysApp"
+>
+    <converters:AnimatableUserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <converters:BoolToVisibilityConverter x:Key="bConverter"/>
+        </ResourceDictionary>
+    </converters:AnimatableUserControl.Resources>
+    <Canvas Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}">
+        <Path x:Name="BezierLink" Stroke="White" StrokeThickness="30">
+            <Path.Data>
+                <PathGeometry>
+                    <PathGeometry.Figures>
+                        <PathFigureCollection>
+                            <PathFigure x:Name="pathfigure">
+                                <PathFigure.Segments>
+                                    <PathSegmentCollection>
+                                         <BezierSegment x:Name="curve"/>
+                                    </PathSegmentCollection>
+                                </PathFigure.Segments>
+                            </PathFigure>
+                        </PathFigureCollection>
+                    </PathGeometry.Figures>
+                </PathGeometry>
+            </Path.Data>
+        </Path>
+        <Path x:Name="BezierLinkInner" Stroke="{Binding Color}" StrokeThickness="25" CompositeMode="MinBlend" Opacity="0.28">
+            <Path.Data>
+                <PathGeometry>
+                    <PathGeometry.Figures>
+                        <PathFigureCollection>
+                            <PathFigure x:Name="pathfigureInner">
+                                <PathFigure.Segments>
+                                    <PathSegmentCollection>
+                                        <BezierSegment x:Name="curveInner"/>
+                                    </PathSegmentCollection>
+                                </PathFigure.Segments>
+                            </PathFigure>
+                        </PathFigureCollection>
+                    </PathGeometry.Figures>
+                </PathGeometry>
+            </Path.Data>
+        </Path>
+        <StackPanel x:Name="AnnotationContainer" Orientation="Vertical" >
+            <Grid>
+                <Rectangle x:Name="Rect" Fill="LightGray" Width="260"  HorizontalAlignment="Left"/>
+                <StackPanel Orientation="Horizontal" IsHitTestVisible="{Binding IsSelected}" >
+                    <local:TextInputBlock x:Name ="Annotation" BubbleTop="True"  LeftJustified="False" SetHeight="30" HorizontalAlignment="Stretch" Loaded="Annotation_Loaded"></local:TextInputBlock>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </Canvas>
+</converters:AnimatableUserControl>

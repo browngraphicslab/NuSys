@@ -1,105 +1,95 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using Windows.Data.Xml.Dom;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using NuSysApp.Controller;
+using NuSysApp.Nodes.AudioNode;
 
 namespace NuSysApp
 {
-    public class AudioNodeModel : NodeModel
-    {
+    public class AudioNodeModel : ElementModel
+    { 
+        private ObservableCollection<LinkedTimeBlockModel> _linkedTimeModels;
+
+        private MediaController _controller;
+
         private readonly StorageFolder _rootFolder = NuSysStorages.Media;
         private StorageFile _audioFile;
-        public AudioNodeModel(byte[] byteArray, string id) : base(id)
+        public delegate void JumpEventHandler(TimeSpan time);
+        public event JumpEventHandler OnJump;
+        public AudioNodeModel(string id) : base(id)
         {
-            Content = new ContentModel(byteArray, id);
-            ByteArray = byteArray;
-            ID = id;
-            MakeAudio(byteArray);
-            //FileName = "nusysAudioCapture" + DateTime.Now + ".mp3";
+            ElementType = ElementType.Audio;
+            // _linkedTimeBlocks = new ObservableCollection<LinkedTimeBlockViewModel>();
+            _linkedTimeModels = new ObservableCollection<LinkedTimeBlockModel>();
+
         }
 
-        public byte[] ByteArray
+        public void Jump(TimeSpan time)
         {
-            get {return Content.Data;}
-            set {Content.Data = value;}
+            OnJump?.Invoke(time);
         }
 
-        public StorageFile AudioFile {
-            get
-            {
-                return _audioFile;
-            }
-            set
-            {
-                if (_audioFile == value) return;
-                _audioFile = value;
-            }
-        }
-        public string FileName { get;
-            set; }
+        public string FileName { get; set; }
 
-        public override async Task<Dictionary<string, string>> Pack()
+        public ObservableCollection<LinkedTimeBlockModel> LinkedTimeModels
         {
-            Dictionary<string, string> props = await base.Pack();
-            if (ByteArray != null)
-            {
-                props.Add("audio", Convert.ToBase64String(ByteArray));
-            }
-            props.Add("nodeType", NodeType.Audio.ToString());
+            get { return _linkedTimeModels; }
+        }
+
+        public MediaController Controller
+        {
+            get { return _controller; }
+            set { _controller = value; }
+        }
+
+        public override async Task<Dictionary<string, object>> Pack()
+        {
+            var props = await base.Pack();
+            props["fileName"] = FileName;
+            //Dictionary<string, object> linkedTimeBlockDic = new Dictionary<string, object>();
+            //for (int i = 0; i < _linkedTimeModels.Count; i++)
+            //{
+            //    Dictionary<string, TimeSpan> d = new Dictionary<string, TimeSpan>();
+            //    d.Add("start", _linkedTimeModels[i].Start);
+            //    d.Add("end", _linkedTimeModels[i].End);
+            //    linkedTimeBlockDic.Add("timeblock" + i, d);
+            //}
+            //if (_linkedTimeModels.Count != 0)
+            //{
+            //    props["linkedTimeModels"] = linkedTimeBlockDic;
+            //}
+
             return props;
         }
 
-        public override async Task UnPack(Dictionary<string, string> props)
+        public override async Task UnPack(Message props)
         {
-            if (props.ContainsKey("audio"))
+            if (props.ContainsKey("fileName"))
             {
-                ByteArray = Convert.FromBase64String(props["audio"]);
-                MakeAudio(ByteArray);
+                FileName = props.GetString("fileName");
             }
-            base.UnPack(props);
-        } 
-        public async Task<byte[]> ConvertAudioToByte(StorageFile file)
-        {
-            byte[] fileBytes = null;
-            using (IRandomAccessStreamWithContentType stream = await file.OpenReadAsync())
-            {
-                fileBytes = new byte[stream.Size];
-                using (DataReader reader = new DataReader(stream))
-                {
-                    await reader.LoadAsync((uint)stream.Size);
-                    reader.ReadBytes(fileBytes);
-                }
-            }
-            return fileBytes;
-        }
 
-        public async Task MakeAudio(byte[] byteArray)
-        {
-            if (byteArray == null) return;
-            AudioFile = await this.ConvertByteToAudio(byteArray);
-        }
-        public async Task SendNetworkUpdate()
-        {
-            byte[] bytes = await ConvertAudioToByte(AudioFile);
-            if (!NetworkConnector.Instance.ModelIntermediate.IsSendableLocked(ID))
+            if (props.ContainsKey("linkedTimeModels"))
             {
-                Debug.WriteLine("add to debounce dict called");
-                DebounceDict.MakeNextMessageTCP();
-                DebounceDict.Add("audio", Convert.ToBase64String(bytes));
-                DebounceDict.MakeNextMessageTCP();
+                _linkedTimeModels = new ObservableCollection<LinkedTimeBlockModel>(props.GetList<LinkedTimeBlockModel>("linkedTimeModels"));
+                //Dictionary<string, Dictionary<string, TimeSpan>> linkedTimeBlockDic = props.GetDict<string, Dictionary<string, TimeSpan>>("linkedTimeModels");
+                //for (int i = 0; i < linkedTimeBlockDic.Count; i++)
+                //{
+                //    _linkedTimeModels.Add(new LinkedTimeBlockModel(linkedTimeBlockDic["timeblock" + i]["start"], linkedTimeBlockDic["timeblock" + i]["end"]));
+                //}
             }
-        }
-        public async Task<StorageFile> ConvertByteToAudio(byte[] byteArray)
-        {
-            StorageFile _recordStorageFile = await _rootFolder.CreateFileAsync(ID + ".mp3", CreationCollisionOption.GenerateUniqueName);
-            await FileIO.WriteBytesAsync(_recordStorageFile, byteArray);
-            return _recordStorageFile;
+
+            base.UnPack(props);
         }
     }
 }
+

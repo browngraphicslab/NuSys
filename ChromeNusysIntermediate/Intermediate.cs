@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,10 +11,12 @@ using System.Net.Mime;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Windows.Controls;
 using System.Xml;
 using ChromeNusysIntermediate.Properties;
 using SautinSoft;
 using Newtonsoft.Json.Linq;
+using Image = System.Drawing.Image;
 
 namespace ChromeNusysIntermediate
 {
@@ -22,15 +24,21 @@ namespace ChromeNusysIntermediate
     {
 
         static Stream stdin = Console.OpenStandardInput();
-
+        [STAThread]
         static void Main(string[] args)
         {
             var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\NuSys\\ChromeTransfer";
             var fileDir = dir + "\\selectionX.nusys";
 
             string input = OpenStandardStreamIn();
+            var selections = new ArrayList();
+            
             while (input != null && input != "")
             {
+                var b = input.Remove(0, 1);
+                b = b.Remove(b.Length - 1, 1);
+                File.WriteAllText(fileDir, b);
+                /*
                 var b = input.Remove(0, 1);
                 b = b.Remove(b.Length - 1, 1);
                 var a = JArray.Parse(b);
@@ -43,56 +51,18 @@ namespace ChromeNusysIntermediate
                     fileDir = fileDir.Remove(fileDir.Length - 7, 7);
                     fileDir += count.ToString() + ".nusys";
                     input = el.ToString();
-                    string imgSrc = "http:" +
-                                    Regex.Match(input, "<img.+?src=[\"'](.+?)[\"'].+?>", RegexOptions.IgnoreCase).Groups[1]
-                                        .Value;
-                    string pattern = @"<img[^>]+\>";
-                    Regex rgx = new Regex(pattern);
-                    // input = rgx.Replace(input, "---IMAGE---");
-
-                    string imageRtf = string.Empty;
-                    if (!imgSrc.Equals("http:"))
+                    string imgSrc = Regex.Match(input, "<img.+?src=[\"'](.+?)[\"'].+?>", RegexOptions.IgnoreCase).Groups[1].Value;
+                    if (imgSrc != "" && !imgSrc.Contains("http"))
                     {
-                        var imgPath = dir + "\\image.png";
-                        using (WebClient webClient = new WebClient())
-                        {
-                            webClient.DownloadFile(imgSrc, imgPath);
-                        }
-
-
-                        var img = Image.FromFile(imgPath);
-
-                        var imgW = img.Width;
-                        var imgH = img.Height;
-                        img.Dispose();
-                        var imgGoalW = imgW * 15;
-                        var imgGoalH = imgH * 15;
-                        var imgData = BitConverter.ToString(File.ReadAllBytes(imgPath)).Replace("-", "");
-
-                        File.Delete(imgPath);
-
-                        imageRtf = Resources.image.ToString();
-                        imageRtf = imageRtf.Replace("---IMG_W---", imgW.ToString());
-                        imageRtf = imageRtf.Replace("---IMG_H---", imgH.ToString());
-                        imageRtf = imageRtf.Replace("---IMG_GOAL_W---", imgGoalW.ToString());
-                        imageRtf = imageRtf.Replace("---IMG_GOAL_H---", imgGoalH.ToString());
-                        imageRtf = imageRtf.Replace("---IMG_DATA---", imgData);
+                        imgSrc = "http://" + imgSrc;
                     }
 
-                    //input = HtmlToRichText(input, "");
-                    var i = input.IndexOf("________________________________________________________");
-                    // input = input.Remove(i, input.Length - i) + "}";
 
-                    if (!imgSrc.Equals("http:"))
-                    {
-                        //  input = input.Replace("---IMAGE---", imageRtf);
-                    }
-
-                    string[] line = { input };
-                    File.WriteAllLines(fileDir, line);
-                    System.IO.File.SetLastWriteTimeUtc(fileDir, DateTime.UtcNow);
-                    File.Move(fileDir, fileDir);
-                }
+                    selections.Add(\
+                    File.WriteAllText(fileDir, input);
+                   // System.IO.File.SetLastWriteTimeUtc(fileDir, DateTime.UtcNow);
+                    //File.Move(fileDir, fileDir);
+                }*/
 
                 input = OpenStandardStreamIn();
             }
@@ -108,6 +78,7 @@ namespace ChromeNusysIntermediate
             var reuslt = h.ConvertString(html, imgList);
 
             return reuslt;
+            
         }
 
         private static string OpenStandardStreamIn()

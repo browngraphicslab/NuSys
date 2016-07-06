@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using Windows.Data.Pdf;
 using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace NuSysApp
@@ -13,6 +15,7 @@ namespace NuSysApp
     {
         private static PdfDocument _pdfDocument;
         public static BitmapImage Image;
+        public static string pageStreams;
 
         /// <summary>
         /// Takes in a StorageFile, an image file in this case, and returns the BitmapImage stored in the file.
@@ -44,6 +47,7 @@ namespace NuSysApp
 
         public static async Task<List<BitmapImage>> RenderPdf(StorageFile pdfStorageFile, double zoomFactor = 1.0)
         {
+            pageStreams = string.Empty;
             try
             {
                 _pdfDocument = await PdfDocument.LoadFromFileAsync(pdfStorageFile);
@@ -56,30 +60,38 @@ namespace NuSysApp
                         // Get PDF page
                         var pdfPage = _pdfDocument.GetPage(pageNum);
                         if (pdfPage == null) throw new NullReferenceException("Couldn't read all pages");
-                        // generate a bitmap of the page
-                        //var tempStorageFolder = ApplicationData.Current.TemporaryFolder;
-
-                        var tempStorageFolder = NuSysStorages.Media;
-                        var pngStorageFile =
-                            await
-                                tempStorageFolder.CreateFileAsync(Guid.NewGuid() + ".png",
-                                    CreationCollisionOption.ReplaceExisting);
-                        if (pngStorageFile == null) throw new NullReferenceException("Couldn't read all pages");
-                        var randomAccessStream = await pngStorageFile.OpenAsync(FileAccessMode.ReadWrite);
                         var pdfPageRenderOptions = new PdfPageRenderOptions();
-                        // set zoom level
                         var pdfPageSize = pdfPage.Size;
-                        pdfPageRenderOptions.DestinationHeight = (uint)(pdfPageSize.Height*zoomFactor);
-                        await pdfPage.RenderToStreamAsync(randomAccessStream, pdfPageRenderOptions);
-                        await randomAccessStream.FlushAsync();
-                        randomAccessStream.Dispose();
-                        pdfPage.Dispose();
-                        pages.Add(await GetBitmapImageAsync(pngStorageFile));
+                        var ms = new InMemoryRandomAccessStream();
+                        pdfPageRenderOptions.DestinationHeight = (uint)(pdfPageSize.Height*0.4);
+                        await pdfPage.RenderToStreamAsync(ms, pdfPageRenderOptions);
+                        await ms.FlushAsync();
+                       
+                        BitmapImage bitmapImage = new BitmapImage();
+                        bitmapImage.SetSourceAsync(ms);
+                        pages.Add(bitmapImage);
+                        
+
+                        var fileBytes = new byte[ms.Size];
+                        using (DataReader reader = new DataReader(ms))
+                        {
+                            ms.Seek(0);
+                            await reader.LoadAsync((uint)ms.Size);
+                            reader.ReadBytes(fileBytes);
+                        }
+
+                        pageStreams += Convert.ToBase64String(fileBytes) + "#-#-#-#-#-#_#_#_#";
+
+
+                       // ms.Dispose();
+                     //   pdfPage.Dispose();
+
+
                     }
                     return pages;
                 }
             }
-            catch
+            catch(Exception ex)
             {
                 Debug.WriteLine("PDF rendering error caught D:");
                 return null;

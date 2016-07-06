@@ -69,6 +69,11 @@ class InkCanvas {
         this._brushStrokes.push(this._activeStroke);  
     }
 
+    addBrushStroke(brushStroke):void {
+        if (this._brushStrokes.indexOf(brushStroke) == -1)
+            this._brushStrokes.push(brushStroke);
+    }
+
     removeBrushStroke(brushStroke):boolean {
         var index = this._brushStrokes.indexOf(brushStroke);
         if (index > -1) {
@@ -76,7 +81,7 @@ class InkCanvas {
             return true;
         }
         return false;
-        console.log("couldn't remove element");
+        //console.log("couldn't remove element");
     }
 
     update():void {
