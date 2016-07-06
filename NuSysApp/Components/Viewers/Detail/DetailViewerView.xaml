@@ -21,7 +21,7 @@
             <Setter Property="FontWeight" Value="Thin" />
             <Setter Property="CharacterSpacing" Value="{ThemeResource PivotHeaderItemCharacterSpacing}" />
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Foreground" Value="{StaticResource color3}" />
             <!-- original value {ThemeResource SystemControlForegroundBaseMediumBrush} -->
             <Setter Property="Padding" Value="{ThemeResource PivotHeaderItemMargin}" />
             <Setter Property="Height" Value="48" />
@@ -120,20 +120,20 @@
     </local:AnimatableUserControl.Resources>
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <Grid x:Name="resizer" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="{StaticResource color9}" Width="30"
+        <Grid x:Name="resizer" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="{StaticResource color1}" Width="30"
                     ManipulationDelta="Resizer_OnManipulationDelta" ManipulationMode="All">
             <Grid.RenderTransform>
                 <TranslateTransform X="-30"></TranslateTransform>
             </Grid.RenderTransform>
             <Image x:Name="resizerImage" Source="/Assets/resizer.png" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Grid>
-        <Grid x:Name="TabPanel" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="{StaticResource color7}" Width="30"
+        <!--<Grid x:Name="TabPanel" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="{StaticResource color7}" Width="30"
                     ManipulationDelta="Resizer_OnManipulationDelta" ManipulationMode="All" Visibility="{Binding TabVisibility}">
             <Grid.RenderTransform>
                 <TranslateTransform X="-60"></TranslateTransform>
-            </Grid.RenderTransform>
+            </Grid.RenderTransform>-->
 
-            <ItemsControl x:Name="IC"  ItemsSource="{Binding Tabs}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <!--<ItemsControl x:Name="IC"  ItemsSource="{Binding Tabs}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel x:Name="TabList" VerticalAlignment="Top" Tapped="TabList_OnTapped" Width="30" />
@@ -165,7 +165,7 @@
                         </Canvas>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            </ItemsControl>-->
 
             <!--<ListView x:Name="ListView"  ItemsSource="{Binding Tabs}" >
                 <ListView.ItemsPanel>
@@ -204,8 +204,8 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>-->
-        </Grid>
-        <Grid x:Name="xContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource color2}" Padding="25,10,25,10">
+        <!--</Grid>-->
+        <Grid x:Name="xContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource color1}" Padding="25,10,25,10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
@@ -225,13 +225,13 @@
                 <Image Source="ms-appx:///Assets/icon_whitex.png"></Image>
             </Border>
 
-            <StackPanel Grid.Row="1" Canvas.ZIndex="100" x:Name="TitleEnter" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,20" BorderBrush="White" BorderThickness="0,0,0,1">
+            <StackPanel Grid.Row="1" Canvas.ZIndex="100" x:Name="TitleEnter" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,20" BorderBrush="DarkSlateGray" BorderThickness="0,0,0,1">
                 <!--<TextBlock Text="{Binding Title}" Foreground="White" FontSize="30" CharacterSpacing="45" HorizontalAlignment="Stretch"/>-->
-                <local:TextInputBlock  x:Name ="TitleBox" HasBackground="False"  TextColor="White"  FontWeight="Thin"  LeftJustified="True"  FontSize="40" BubbleTop="False" SetHeight="40" HorizontalAlignment="Stretch" TextChanged="TitleBox_OnTextChanged"/>
+                <local:TextInputBlock  x:Name ="TitleBox" HasBackground="False"  TextColor="DarkSlateGray"  FontWeight="Thin"  LeftJustified="True"  FontSize="40" BubbleTop="False" SetHeight="40" HorizontalAlignment="Stretch" TextChanged="TitleBox_OnTextChanged"/>
                 <!--<Rectangle HorizontalAlignment="Stretch" Fill="White" Height="2"/>-->
             </StackPanel>
 
-            <Pivot x:Name="xRootPivot" Grid.Row="2" Margin="0,10,0,0" Grid.RowSpan="5">
+            <Pivot x:Name="xRootPivot" Grid.Row="2" Margin="0,0,0,0"  Grid.RowSpan="5">
                 <PivotItem Header="Home">
                     
                     <!--Pivot content goes here-->
@@ -283,17 +283,11 @@
                         </Grid>
                     </Grid>
                 </PivotItem>
-<<<<<<< HEAD
-                <!--<PivotItem Header="Link Editor">
-                    <local:LinkEditorTab x:Name="LinkEditorTab" Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"/>
-                </PivotItem>-->
-                <PivotItem Header="Regions">
-=======
+
                 <PivotItem Header="Link Editor">
                     <local:LinkEditorTab x:Name="xLinkEditorView" Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Top" />
                 </PivotItem>
                 <PivotItem Header="Region Editor">
->>>>>>> 4b60243dea88dd16ab12fa7117b6690641efd1d4
                     <local:RegionEditorTabView x:Name="xRegionEditorView"  Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></local:RegionEditorTabView>
                 </PivotItem>
                    
