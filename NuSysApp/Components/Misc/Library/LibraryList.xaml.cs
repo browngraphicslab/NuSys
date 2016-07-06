@@ -41,7 +41,9 @@ namespace NuSysApp
         private LibraryView _library;
         private Dictionary<string, bool> _reverseTable = new Dictionary<string, bool>();
 
-        private bool _singleTap; 
+        // used to check if library list items are single tapped or double tapped
+        private bool _singleTap;
+
         public LibraryList(LibraryView library, LibraryPageViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
         {
             this.DataContext = vm;
@@ -133,6 +135,8 @@ namespace NuSysApp
         {
             LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
             LibraryElementModel element = SessionController.Instance.ContentController.GetContent(itemTemplate.ContentID);
+
+
             if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element.LibraryElementId) || (element.Type == ElementType.Link))
             {
                 e.Handled = true;
@@ -166,16 +170,33 @@ namespace NuSysApp
 
             LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
             LibraryElementModel element = SessionController.Instance.ContentController.GetContent(itemTemplate.ContentID);
+
+            #region library scrolling code
+            // get the pointer point position, and upper left corner of the libary in relation to the sessionview
+            var el = (FrameworkElement)sender;
+            var pointerPoint = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
+            var upperLeftPoint = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(new Point(0, 0));
+
+            // if the pointer point is in the library scroll the library
+            if (pointerPoint.X > upperLeftPoint.X && pointerPoint.X < upperLeftPoint.X + this.ActualWidth &&
+                pointerPoint.Y > upperLeftPoint.Y && pointerPoint.Y < upperLeftPoint.Y + this.ActualHeight)
+            {
+                Border border = (Border)VisualTreeHelper.GetChild(ListView, 0);
+                ScrollViewer scrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
+                scrollViewer?.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta.Translation.Y);
+            }
+            #endregion library scrolling code
+
             if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
             {
                 e.Handled = true;
                 return;
             }
 
-            var el = (FrameworkElement) sender;
-            var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
             
-            var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(sp, null).Where( i => i is LibraryView);
+
+
+            var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(pointerPoint, null).Where( i => i is LibraryView);
             if (itemsBelow.Any())
             {
                 SessionController.Instance.SessionView.LibraryDraggingRectangle.Hide();

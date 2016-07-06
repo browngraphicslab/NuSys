@@ -120,8 +120,8 @@ namespace NuSysApp
             foreach (var atom in new HashSet<FrameworkElement>(AtomViewList))
             {
                 Debug.Assert(atom.DataContext is ElementViewModel);
-                var vm = (atom.DataContext as ElementViewModel);
-                if (vm.Controller == controller)
+                var vm = atom.DataContext as ElementViewModel;
+                if (vm?.Controller == controller)
                 {
                     AtomViewList.Remove(atom);
                 }
