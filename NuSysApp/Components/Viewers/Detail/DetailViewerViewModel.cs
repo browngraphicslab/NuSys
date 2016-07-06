@@ -224,6 +224,7 @@ namespace NuSysApp
                 
                 Title = controller.LibraryElementModel.Title;
                 _regionableHomeTabViewModel.RegionsToLoad = controller.LibraryElementModel.Regions; // Sets the regions that need to be loaded
+                _regionableRegionTabViewModel.RegionsToLoad = controller.LibraryElementModel.Regions;
 
                 controller.TitleChanged += ControllerTitleChanged;
                 MakeTagList();
