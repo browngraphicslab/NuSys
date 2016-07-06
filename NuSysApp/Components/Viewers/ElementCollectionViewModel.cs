@@ -70,9 +70,9 @@ namespace NuSysApp
 
         private async Task CreateChild(ElementController controller)
         {
-            AddVisualLinks(controller);
             var view = await _nodeViewFactory.CreateFromSendable(controller);
             AtomViewList.Add(view);
+            AddVisualLinks(controller);
             controller.Deleted += OnChildDeleted;
         }
 

@@ -110,6 +110,7 @@ namespace NuSysApp
             var request = new NewLinkRequest(anotherId, otherId, SessionController.Instance.ContentController.GetContent(anotherId.LibraryElementId)?.Creator, 
                 contentId, regionView, rectangle, inFGDictionary, outFGDictionary);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            SessionController.Instance.ActiveFreeFormViewer.AllContent.First().Controller.RequestVisualLinkTo();
         }
 
         public void ChangeLinkTitle(string linkLibraryElementId, string title)
