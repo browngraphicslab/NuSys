@@ -92,8 +92,18 @@ namespace NuSysApp
             UITask.Run(() =>
             {
                 //_orgList.Remove(content);
-                var controller = SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId);
-                ItemList.Remove(new LibraryItemTemplate(controller));
+                //var controller = SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId);
+                //if (controller == null)
+                //{
+                    foreach (var item in ItemList)
+                    {
+                        if (item.ContentID == content.LibraryElementId)
+                        {
+                            ItemList.Remove(item);
+                        }
+                    }
+                //}
+                //ItemList.Remove(new LibraryItemTemplate(controller));
             });
         }
 

@@ -143,8 +143,8 @@
                                 <ColumnDefinition Width="3*" />
                             </Grid.ColumnDefinitions>
 
-                            <!--<Image Source="ms-appx:///Assets/icon_node_x.png" Grid.Column="0" Grid.Row="0" Stretch="Uniform"></Image>
-                            <Image Source="ms-appx:///Assets/icon_node_ink.png" Grid.Column="0"></Image>-->
+                            <Image Source="ms-appx:///Assets/icon_node_x.png" Grid.Column="0" Grid.Row="0" Height="22" Width="22" Tapped="X_OnTapped" DataContext="{Binding ID}"></Image>
+                            <!--<Image Source="ms-appx:///Assets/icon_node_ink.png" Grid.Column="0"></Image>-->
                             <TextBlock  Grid.Column="1" Text="{Binding Title}" FontSize="14" />
                             <TextBlock  Grid.Column="2" Text="{Binding LinkedTo}" FontSize="14"/>
                         </Grid>

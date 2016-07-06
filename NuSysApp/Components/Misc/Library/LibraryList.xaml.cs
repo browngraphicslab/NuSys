@@ -288,7 +288,12 @@ namespace NuSysApp
 
             regionsPanel?.RowDefinitions.Clear();
             regionsPanel?.Children.Clear();
-            var elementTemplate = ListView.SelectedItem as LibraryItemTemplate; 
+            var elementTemplate = ListView.SelectedItem as LibraryItemTemplate;
+
+            if (elementTemplate == null) // This become true when the item is deleted from the library
+            {
+                return;
+            }
             var elementModel = SessionController.Instance.ContentController.GetContent(elementTemplate?.ContentID);
 
             if (elementModel?.Regions == null || elementModel?.Regions.Count == 0)
@@ -360,7 +365,37 @@ namespace NuSysApp
              if (panel == null) return;
              panel.Visibility = Visibility.Collapsed;
          }
-}
+
+        private async void LibraryListItem_OnRightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            var grid = sender as Grid;
+            var timestamp = grid?.FindName("TimeStampBox") as TextBlock;
+            var delete = grid?.FindName("DeleteBox") as Button;
+            timestamp.Visibility = Visibility.Collapsed;
+            delete.Visibility = Visibility.Visible;
+            delete.IsHitTestVisible = true;
+
+            await Task.Delay(4000);
+
+            timestamp.Visibility = Visibility.Visible;
+            delete.Visibility = Visibility.Collapsed;
+            delete.IsHitTestVisible = false;
+
+        }
+        
+        private void DeleteBox_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var textBlock = sender as Button;
+            var id = textBlock?.DataContext as string;
+            Task.Run(async delegate
+            {
+                var request = new DeleteLibraryElementRequest(id);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            });
+        }
+
+        
+    }
 
 }
 
