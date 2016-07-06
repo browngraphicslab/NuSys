@@ -51,21 +51,18 @@ namespace NuSysApp
         public TemporaryToolView(BasicToolViewModel vm, double x, double y)
         {
             this.InitializeComponent();
-            _dragItem = new Image();
-            _dragItem.Source = new BitmapImage(new Uri("ms-appx:///Assets/filter.png"));
-            _dragItem.Height = 50;
-            _dragItem.Width = 50;
+            _dragItem= vm.InitializeDragFilterImage();
             _currentViewMode = ViewMode.List;
             vm.Controller.SetLocation(x, y);
             this.DataContext = vm;
-            xCollectionElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
-            xCollectionElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
             vm.PropertiesToDisplayChanged += Vm_PropertiesToDisplayChanged;
             xTitle.Text = vm.Filter.ToString();
             xPropertiesList.Height = vm.Height - 175;
             xPieChart.Height = vm.Height - 175;
             xPieChart.Width = vm.Width;
 
+            xCollectionElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
+            xCollectionElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
 
             //Binding b = new Binding();
             //b.Path = new PropertyPath("PropertiesToDisplayUnique");
@@ -116,45 +113,7 @@ namespace NuSysApp
                 var vm = DataContext as ToolViewModel;
                 if (vm != null)
                 {
-                    await Task.Run(async delegate
-                    {
-                        var collectionID = SessionController.Instance.GenerateId();
-                        var request = new CreateNewLibraryElementRequest(collectionID, "", ElementType.Collection,
-                            "Tool-Generated Collection");
-                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-                        var m = new Message();
-                        m["width"] = "300";
-                        m["height"] = "300";
-                        m["nodeType"] = ElementType.Collection.ToString();
-                        m["x"] = r.X;
-                        m["y"] = r.Y;
-                        m["contentId"] = collectionID;
-                        m["autoCreate"] = true;
-                        m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Model.LibraryId;
-                        var collRequest = new NewElementRequest(m);
-                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(collRequest);
-                        foreach (var id in vm.Controller.GetUpdatedDataList())
-                        {
-                            var lem = SessionController.Instance.ContentController.GetContent(id);
-                            if (lem == null)
-                            {
-                                continue;
-                            }
-                            var dict = new Message();
-                            dict["title"] = lem.Title;
-                            dict["width"] = "300";
-                            dict["height"] = "300";
-                            dict["nodeType"] = lem.Type.ToString();
-                            dict["x"] = "50000";
-                            dict["y"] = "50000";
-                            dict["contentId"] = lem.LibraryElementId;
-                            dict["autoCreate"] = true;
-                            dict["creator"] = collectionID;
-                            var elementRequest = new NewElementRequest(dict);
-                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(elementRequest);
-                        }
-
-                    });
+                    vm.CreateCollection(r.X, r.Y);
                 }
             }
             ReleasePointerCaptures();
@@ -235,8 +194,6 @@ namespace NuSysApp
             var x = e.Delta.Translation.X / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
             var y = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
 
-
-
             if (vm != null)
             {
                 vm.Controller.SetLocation(vm.X + x, vm.Y + y);
@@ -316,95 +273,30 @@ namespace NuSysApp
                 if (hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList().Any())
                 {
                     var hitsStartList = hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList();
-                    AddFilterToExistingTool(hitsStartList, wvm);
+                    (DataContext as ToolViewModel).AddFilterToExistingTool(hitsStartList, wvm);
                 }
 
                 else if (hitsStart.Where(uiElem => (uiElem is MetadataToolView)).ToList().Any())
                 {
                     var hitsStartList = hitsStart.Where(uiElem => (uiElem is MetadataToolView)).ToList();
-                    AddFilterToExistingTool(hitsStartList, wvm);
+                    (DataContext as ToolViewModel).AddFilterToExistingTool(hitsStartList, wvm);
                 }
                 else if (hitsStart.Where(uiElem => (uiElem is ToolFilterView)).ToList().Any())
                 {
                     var hitsStartList = hitsStart.Where(uiElem => (uiElem is ToolFilterView)).ToList();
-                    AddFilterToFilterToolView(hitsStartList, wvm);
+                    (DataContext as ToolViewModel).AddFilterToFilterToolView(hitsStartList, wvm);
                 }
                 else
                 {
-                    AddNewFilterTool(r.X, r.Y, wvm);
+                    (DataContext as ToolViewModel).AddNewFilterTool(r.X, r.Y, wvm);
                 }
 
             }
         }
 
-        private void AddFilterToFilterToolView(List<UIElement> hitsStartList, FreeFormViewerViewModel wvm)
-        {
-            ToolFilterLinkViewModel linkViewModel = new ToolFilterLinkViewModel(DataContext as ToolViewModel, (hitsStartList.First() as ToolFilterView));
-            ToolFilterLinkView linkView = new ToolFilterLinkView(linkViewModel);
-            Canvas.SetZIndex(linkView, Canvas.GetZIndex(this) - 1);
-            (hitsStartList.First() as ToolFilterView).AddLink(linkView);
-            (hitsStartList.First() as ToolFilterView).AddParentTool(DataContext as ToolViewModel);
-            wvm.AtomViewList.Add(linkView);
-        }
 
-        public void AddNewFilterTool(double x, double y, FreeFormViewerViewModel wvm)
-        {
-            var toolFilter = new ToolFilterView(x, y, DataContext as ToolViewModel);
-            var toolFilterLinkViewModel = new ToolFilterLinkViewModel(DataContext as ToolViewModel, toolFilter);
-            var toolFilterLink = new ToolFilterLinkView(toolFilterLinkViewModel);
-            Canvas.SetZIndex(toolFilterLink, Canvas.GetZIndex(this) - 1);
-            toolFilter.AddLink(toolFilterLink);
-            wvm.AtomViewList.Add(toolFilter);
-            wvm.AtomViewList.Add(toolFilterLink);
-        }
+        
 
-        public void AddFilterToExistingTool(List<UIElement> hitsStartList, FreeFormViewerViewModel wvm)
-        {
-            ToolViewModel toolViewModel;
-            if ((hitsStartList.First() as TemporaryToolView) != null)
-            {
-                toolViewModel = (hitsStartList.First() as TemporaryToolView).DataContext as ToolViewModel;
-            }
-            else
-            {
-                toolViewModel = (hitsStartList.First() as MetadataToolView).DataContext as ToolViewModel;
-            }
-            if (toolViewModel != DataContext as ToolViewModel)
-            {
-                bool createsLoop = false;
-                var controllers = new List<ToolController>((DataContext as ToolViewModel).Controller.Model.ParentIds.Select(item => ToolController.ToolControllers.ContainsKey(item) ? ToolController.ToolControllers[item] : null));
-
-                while (controllers != null && controllers.Count != 0)
-                {
-                    if (controllers.Contains(toolViewModel.Controller))
-                    {
-                        createsLoop = true;
-                        break;
-                    }
-                    var tempControllers = new List<ToolController>();
-                    foreach (var controller in controllers)
-                    {
-                        tempControllers = new List<ToolController>(tempControllers.Union(new List<ToolController>(
-                                controller.Model.ParentIds.Select(
-                                    item =>
-                                        ToolController.ToolControllers.ContainsKey(item)
-                                            ? ToolController.ToolControllers[item]
-                                            : null))));
-                    }
-                    controllers = tempControllers;
-                }
-                if (createsLoop == false)
-                {
-                    var linkviewmodel = new ToolLinkViewModel(this.DataContext as ToolViewModel, toolViewModel);
-                    var link = new ToolLinkView(linkviewmodel);
-                    Canvas.SetZIndex(link, Canvas.GetZIndex(this) - 1);
-                    wvm.AtomViewList.Add(link);
-                    toolViewModel.Controller.AddParent((DataContext as ToolViewModel).Controller);
-                }
-
-            }
-
-        }
 
 
 

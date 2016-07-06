@@ -36,11 +36,10 @@
 
                     <TextBlock x:Name="xTitle" TextAlignment="Center" Foreground="DarkSlateGray"  Text="Filter Type" Height="35" Grid.Row="0" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta"/>
                     <Charting:Chart Visibility="Collapsed" Grid.Row="1" x:Name="xPieChart" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0" Width="Auto" Height="Auto">
-                        <Charting:PieSeries Name="xPieSeries"  ManipulationMode="All" PointerPressed="xList_PointerPressed" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted" SelectionChanged="DataPointSeries_OnSelectionChanged" PointerReleased="XPieSeries_OnPointerReleased" Margin="0" IndependentValuePath="Key" DependentValuePath="Value" IsSelectionEnabled="True"/>
+                        <Charting:PieSeries Name="xPieSeries"  ManipulationMode="All" PointerMoved="xList_PointerPressed"  ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted" SelectionChanged="DataPointSeries_OnSelectionChanged" PointerReleased="XPieSeries_OnPointerReleased" Margin="0" IndependentValuePath="Key" DependentValuePath="Value" IsSelectionEnabled="True"/>
                         <Charting:Chart.LegendStyle>
                             <Style TargetType="dataVisualization:Legend">
                                 <Setter Property="VerticalAlignment" Value="Stretch" />
-                                <Setter Property="Background" Value="#984" />
                                 <Setter Property="ItemsPanel">
                                     <Setter.Value>
                                         <ItemsPanelTemplate>
