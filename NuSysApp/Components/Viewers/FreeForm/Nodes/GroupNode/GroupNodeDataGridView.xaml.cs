@@ -97,7 +97,6 @@ namespace NuSysApp
             SessionController.Instance.SessionView.MainCanvas.Children.Remove(_drag);
             _drag = null;
             _id = null;
-            
         }
    
 
