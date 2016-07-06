@@ -62,22 +62,26 @@ namespace NuSysApp
             AddToEndPointsToLink(inAtomId, outAtomId, id);
             OnNewLink?.Invoke(SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
         }
-
+        //adds content/region ids to idOfLink pairs
         private void AddToEndPointsToLink(LinkId inAtomId, LinkId outAtomId, string idOfLink)
         {
             Debug.Assert(inAtomId.RegionId != null || inAtomId.LibraryElementId != null);
             Debug.Assert(outAtomId.RegionId != null || outAtomId.LibraryElementId != null);
 
             string id1 = inAtomId.RegionId;
+            //if it's a region
             if (id1 == null)
             {
                 id1 = inAtomId.LibraryElementId;
             }
             string id2 = outAtomId.RegionId;
+            //if it's a region
             if (id2 == null)
             {
                 id2 = outAtomId.LibraryElementId;
             }
+            //added twice so no matter the order of arguments of GetLinkIdBetween,
+            //the correct link is returned
             _endPointsToLinks[id1 + id2] = idOfLink;
             _endPointsToLinks[id2 + id1] = idOfLink;
         }
