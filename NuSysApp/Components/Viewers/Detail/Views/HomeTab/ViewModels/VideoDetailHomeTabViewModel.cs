@@ -15,7 +15,8 @@ namespace NuSysApp
     {
         public LibraryElementController Controller { get; }
         public ObservableCollection<VideoRegionView> RegionViews { set; get; }
-        public VideoDetailHomeTabViewModel(LibraryElementController controller) :  base(controller)
+        
+        public VideoDetailHomeTabViewModel(LibraryElementController controller, HashSet<Region> regionsToLoad) :  base(controller, regionsToLoad)
         {
             Controller = controller;
             RegionViews = new ObservableCollection<VideoRegionView>();
@@ -30,7 +31,7 @@ namespace NuSysApp
         public void VideoMediaPlayer_Loaded(object sender, RoutedEventArgs e)
         {
             RegionViews.Clear();
-            SetExistingRegions(Controller.LibraryElementModel.Regions ?? new HashSet<Region>());
+            SetExistingRegions();
         }
 
         public override void AddRegion(object sender, RegionController controller)
@@ -97,9 +98,9 @@ namespace NuSysApp
 
         }
 
-        public override void SetExistingRegions(HashSet<Region> regions)
+        public override void SetExistingRegions()
         {
-            foreach (var regionModel in regions)
+            foreach (var regionModel in _regionsToLoad)
             {
                 var videoRegion = regionModel as VideoRegionModel;
                 if (videoRegion == null)

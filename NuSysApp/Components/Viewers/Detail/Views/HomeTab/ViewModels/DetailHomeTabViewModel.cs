@@ -12,10 +12,22 @@ namespace NuSysApp
 
         public delegate void TitleChangedEventHandler(object source, string title);
         public event TitleChangedEventHandler TitleChanged;
-
+        protected HashSet<Region> _regionsToLoad; 
+        public HashSet<Region> RegionsToLoad
+        {
+            get
+            {
+                return _regionsToLoad;
+            }
+            set
+            {
+                _regionsToLoad = value;
+                SetExistingRegions();
+            }
+        }
 
         public bool Editable { set; get; }
-        public DetailHomeTabViewModel(LibraryElementController controller)
+        public DetailHomeTabViewModel(LibraryElementController controller, HashSet<Region> regionsToLoad)
         {
 
             _libraryElementController = controller;

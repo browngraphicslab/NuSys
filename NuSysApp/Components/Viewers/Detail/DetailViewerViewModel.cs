@@ -153,17 +153,7 @@ namespace NuSysApp
 
         }
 
-        public async Task<bool> ShowElement(ElementController controller)
-        {
-            if (!await ShowElement(controller.LibraryElementController))
-            {
-                return false;
-            }
-            
-            //Create non-libraryelementcontroller tabs
-            return true;
-        }
-
+       
 
         public async Task<bool> ShowElement(IDetailViewable viewable)
         {
@@ -202,13 +192,13 @@ namespace NuSysApp
                 }
                 RaisePropertyChanged("OrderedRegionCollection");
 
-                View = await _viewHomeTabViewFactory.CreateFromSendable(controller);
+                View = await _viewHomeTabViewFactory.CreateFromSendable(controller, controller.LibraryElementModel.Regions);
                 if (View == null)
                 {
                     return false;
                 }
 
-                var regionView = await _viewHomeTabViewFactory.CreateFromSendable(controller);
+                var regionView = await _viewHomeTabViewFactory.CreateFromSendable(controller, controller.LibraryElementModel.Regions);
                 if (regionView == null)
                 {
                     return false;
@@ -222,29 +212,19 @@ namespace NuSysApp
 
                 RaisePropertyChanged("View");
                 RaisePropertyChanged("RegionView");
-
-
-
-                View.Loaded += delegate
-                {
-                    _regionableHomeTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions ?? new HashSet<Region>());
-
-                };
-
-
+                
                 regionView.Loaded += delegate
                 {
 
-                    _regionableRegionTabViewModel.SetExistingRegions(controller.LibraryElementModel.Regions ?? new HashSet<Region>());
+                    _regionableRegionTabViewModel.SetExistingRegions();
 
                 };
                 SizeChanged += (sender, left, width, height) => _regionableRegionTabViewModel.SizeChanged(sender, width, height);
                 SizeChanged += (sender, left, width, height) => _regionableHomeTabViewModel.SizeChanged(sender, width, height);
-
-                //_nodeModel = controller.LibraryElementModel;
-
+                
                 Title = controller.LibraryElementModel.Title;
-                //this.ChangeTitle(this, controller.LibraryElementModel.Title);
+                _regionableHomeTabViewModel.RegionsToLoad = controller.LibraryElementModel.Regions; // Sets the regions that need to be loaded
+                _regionableRegionTabViewModel.RegionsToLoad = controller.LibraryElementModel.Regions;
 
                 controller.TitleChanged += ControllerTitleChanged;
                 MakeTagList();
@@ -260,7 +240,11 @@ namespace NuSysApp
             {
                 var controller = viewable as RegionController;
                 var regionModel = controller.Model;
-                View = await _viewHomeTabViewFactory.CreateFromSendable(CurrentElementController);
+                if (regionModel == null)
+                {
+                    return false;
+                }
+                View = await _viewHomeTabViewFactory.CreateFromSendable(CurrentElementController, CurrentElementController.LibraryElementModel.Regions);
                 if (View == null)
                 {
                     return false;
@@ -269,12 +253,6 @@ namespace NuSysApp
                 var regionSet = new HashSet<Region>();
                 regionSet.Add(regionModel);
                 
-                View.Loaded += delegate
-                {
-                    _regionableHomeTabViewModel.SetExistingRegions(regionSet);
-
-                };
-
                 _regionableHomeTabViewModel = View.DataContext as DetailHomeTabViewModel;
                 _regionableHomeTabViewModel.Editable = false;
 
@@ -283,7 +261,13 @@ namespace NuSysApp
                 SizeChanged += (sender, left, width, height) => _regionableHomeTabViewModel.SizeChanged(sender, width, height);
                 
                 Title = regionModel.Name;
-                
+                _regionableHomeTabViewModel.RegionsToLoad = regionSet; // Only one region (the one selected) will appear in the DV
+
+                if (_regionableHomeTabViewModel is PdfDetailHomeTabViewModel)
+                {
+                    (_regionableHomeTabViewModel as PdfDetailHomeTabViewModel).Goto((regionModel as PdfRegion).PageLocation);
+                }
+
                 RaisePropertyChanged("Title");
                 RaisePropertyChanged("View");
                 RaisePropertyChanged("Tags");
@@ -348,26 +332,10 @@ namespace NuSysApp
         {
             MakeTagList();
         }
-
-        /*
-        public void ChangeTitle(object sender, string title)
-        {
-            TitleChanged?.Invoke(this, title);
-            Title = title;
-        }
-        */
-
+        
         public void ChangeSize(object sender, double left, double width, double height)
         {
             SizeChanged?.Invoke(sender, left, width, height);
-        }
-
-        private void ControllerOnMetadataChange(object source, string key)
-        {
-            if (key == "tags")
-            {
-                MakeTagList();
-            }
         }
 
         private void ControllerTitleChanged(object sender, string title)

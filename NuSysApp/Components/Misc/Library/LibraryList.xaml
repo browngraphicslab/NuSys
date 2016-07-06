@@ -123,7 +123,7 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <Grid x:Name="HeaderPanel" Background="White"  Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" Height="40" Tapped="HeaderPanel_OnTapped" DoubleTapped="HeaderPanel_OnDoubleTapped">
+                        <Grid x:Name="HeaderPanel" Background="White" Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" Height="40" Tapped="HeaderPanel_OnTapped" DoubleTapped="HeaderPanel_OnDoubleTapped">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="50" />
                                 <ColumnDefinition Width="170" />
@@ -134,7 +134,7 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <Image Source="{Binding ThumbnailUri}" MaxHeight="50" MaxWidth="50" Grid.Column="0" Grid.Row="0" Stretch="Uniform" VerticalAlignment="Center"></Image>
+                            <Image Source="{Binding ThumbnailUri}" Height="35" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center"></Image>
                             <TextBlock  Grid.Column="1" Grid.Row="0"  Text="{Binding Title}" FontSize="14" Margin="4,0,4,0" VerticalAlignment="Center"/>
                             <TextBlock  Grid.Column="2" Grid.Row="0" Text="{Binding Type}" FontSize="14" Margin="4,0,4,0" VerticalAlignment="Center"/>
                             <TextBlock x:Name="TimeStampBox" Grid.Column="3" Grid.Row="0" Text="{Binding Timestamp}" FontSize="14" Margin="4,0,0,0" VerticalAlignment="Center"/>
@@ -142,7 +142,7 @@
                                        Content="Delete" FontSize="14" Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed" IsHitTestVisible="False" />
                         </Grid>
 
-                        <Grid x:Name="RegionsPanel" Grid.Row="1" Grid.ColumnSpan="4" Grid.Column="0" Visibility="Collapsed" MinHeight="50" Background="White" Tapped="RegionsPanel_OnTapped">
+                        <Grid x:Name="RegionsPanel" Grid.Row="1" Grid.ColumnSpan="4" Grid.Column="0" Visibility="Collapsed" MinHeight="50" Background="White">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                                 <ColumnDefinition Width="*"></ColumnDefinition>

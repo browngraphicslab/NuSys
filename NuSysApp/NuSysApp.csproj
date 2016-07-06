@@ -133,6 +133,12 @@
     <Content Include="Assets\icon_web_color.png" />
     <Content Include="Assets\icon_whitex.png" />
     <Content Include="Assets\ink.png" />
+    <Content Include="Assets\library_thumbnails\audio.png" />
+    <Content Include="Assets\library_thumbnails\collection_1.png" />
+    <Content Include="Assets\library_thumbnails\link.png" />
+    <Content Include="Assets\library_thumbnails\pdf.png" />
+    <Content Include="Assets\library_thumbnails\text.png" />
+    <Content Include="Assets\library_thumbnails\word.png" />
     <Content Include="Assets\listview bluegreen.png" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\logos\150x150.png" />
