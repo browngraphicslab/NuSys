@@ -288,13 +288,13 @@ namespace NuSysApp
             }
 
             //Translating Y
-            if (_ty < downYBound)
+            if (_ty < upYBound)
             {
                 rt.TranslateY = upYBound;
             }
             else if (_ty > downYBound)
             {
-                rt.TranslateY = vm.ContainerHeight - vm.OriginalHeight;
+                rt.TranslateY = downYBound;
             }
             else
             {
@@ -302,7 +302,7 @@ namespace NuSysApp
             }
 
             var composite = RenderTransform as CompositeTransform;
-            var topLeft = new Point(composite.TranslateX - leftXBound, composite.TranslateY - downYBound);
+            var topLeft = new Point(composite.TranslateX - leftXBound, composite.TranslateY - upYBound);
             vm.SetNewLocation(topLeft);
             e.Handled = true; 
         }
