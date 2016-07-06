@@ -23,6 +23,8 @@ namespace NuSysApp
         private string _tagToDelete;
         public bool DeleteOnFocus;
         private string _title;
+        public Dictionary<string, DetailViewTabType> TabDictionary = new Dictionary<string, DetailViewTabType>();
+         
         public string Title
         {
             get { return _title; }
