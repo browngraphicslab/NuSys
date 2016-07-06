@@ -235,11 +235,11 @@ namespace NuSysApp
             //Translating Y
             if (_ty < 0)
             {
-                rt.TranslateY = 0.01;
+                rt.TranslateY = 0;
             }
             else if (_ty > vm.ContainerHeight - vm.OriginalHeight)
             {
-                rt.TranslateY = vm.ContainerHeight - vm.OriginalHeight - 0.01;
+                rt.TranslateY = vm.ContainerHeight - vm.OriginalHeight;
             }
             else
             {
