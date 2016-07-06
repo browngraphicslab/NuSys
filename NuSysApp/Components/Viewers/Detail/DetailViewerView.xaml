@@ -230,7 +230,7 @@
                                 <Border.RenderTransform>
                                     <TranslateTransform Y="15"></TranslateTransform>
                                 </Border.RenderTransform>-->
-                                <TextBlock x:Name="TabTitle" Tapped="TabList_OnTapped" HorizontalAlignment="Left"  Text="{Binding Title}" Width="100"  VerticalAlignment="Center">
+                                <TextBlock x:Name="TabTitle" Tapped="TabList_OnTapped" HorizontalAlignment="Left"  Text="{Binding Title}" Width="100" Margin="5,0,0,0"  VerticalAlignment="Center">
                                     <!--<TextBlock.RenderTransform>
                                         <RotateTransform Angle="90"></RotateTransform>
                                     </TextBlock.RenderTransform>-->
