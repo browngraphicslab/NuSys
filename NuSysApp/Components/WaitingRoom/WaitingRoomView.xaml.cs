@@ -36,7 +36,7 @@ namespace NuSysApp
         //public static string Password { get; private set; }
         public static string ServerSessionID { get; private set; }
 
-        public static bool TEST_LOCAL_BOOLEAN = true;
+        public static bool TEST_LOCAL_BOOLEAN = false;
 
         public static bool IS_HUB = false;
 
@@ -203,30 +203,18 @@ namespace NuSysApp
 
         private async void AutoLogin()
         {
-//<<<<<<< HEAD
             Debug.WriteLine("fix this");
-            /*
-            if (File.Exists(LoginCredentialsFilePath))
-            {
-                UITask.Run(async delegate
-            {
-                    Tuple<string, string> creds = this.GetLoginCredentials();
-                    Login(creds.Item1, creds.Item2, false);
-=======
             Task.Run(async delegate
             {
                 if (File.Exists(LoginCredentialsFilePath))
                 {
-                    UITask.Run(delegate
+                    UITask.Run(async delegate
                     {
                         Tuple<string, string> creds = this.GetLoginCredentials();
                         Login(creds.Item1, creds.Item2, false);
                     });
                 }
->>>>>>> origin/dev
             });
-            }
-            */
         }
 
         private Tuple<string, string> GetLoginCredentials()

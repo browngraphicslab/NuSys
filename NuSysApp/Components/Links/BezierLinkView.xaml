@@ -20,7 +20,6 @@
         </ResourceDictionary>
     </converters:AnimatableUserControl.Resources>
     <Canvas Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}">
-        <!--<Button x:Name="btnDelete" Visibility="Collapsed">X</Button>-->
         <Path x:Name="BezierLink" Stroke="White" StrokeThickness="30">
             <Path.Data>
                 <PathGeometry>
@@ -62,9 +61,6 @@
                     <local:TextInputBlock x:Name ="Annotation" BubbleTop="True"  LeftJustified="False" SetHeight="30" HorizontalAlignment="Stretch" Loaded="Annotation_Loaded"></local:TextInputBlock>
                 </StackPanel>
             </Grid>
-            <!--<Button Margin="0,2,0,2" x:Name="Delete" Visibility="{Binding IsSelected, Converter={StaticResource vConverter}}" Click="Delete_OnClick" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">-->
-                <!--<Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>-->
-            <!--</Button>-->
         </StackPanel>
     </Canvas>
 </converters:AnimatableUserControl>
