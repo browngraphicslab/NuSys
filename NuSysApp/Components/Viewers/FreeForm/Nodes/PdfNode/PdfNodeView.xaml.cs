@@ -46,6 +46,14 @@ namespace NuSysApp
 
             vm.Controller.Disposed += ControllerOnDisposed;
             SizeChanged += PdfNodeView_SizeChanged;
+
+            Loaded += PdfNodeView_Loaded;
+        }
+
+        private void PdfNodeView_Loaded(object sender, RoutedEventArgs e)
+        {
+            var vm = DataContext as PdfNodeViewModel;
+            vm.CreatePdfRegionViews();
         }
 
         private void PdfNodeView_SizeChanged(object sender, SizeChangedEventArgs e)

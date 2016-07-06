@@ -735,6 +735,11 @@ namespace NuSysApp
             get { return mainCanvas; }
         }
 
+        public DetailViewerView DetailViewerView
+        {
+            get { return xDetailViewer; }
+        }
+
         private async void OnRecordClick(object sender, RoutedEventArgs e)
         {
             var session = SessionController.Instance;
