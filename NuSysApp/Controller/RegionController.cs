@@ -221,6 +221,11 @@ namespace NuSysApp
             }
             SetBlockServerBoolean(false);//THIS is a must otherwise changes wont be saved
         }
+
+        public string TabId()
+        {
+            return Model.Id;
+        }
         #endregion
 
     }

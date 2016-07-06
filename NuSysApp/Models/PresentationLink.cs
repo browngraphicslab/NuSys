@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public interface IDetailViewable
+    public class PresentationLink
     {
-        string TabId();
+        public string Id1 { get; set; }
+        public string Id2 { get; set; }
     }
 }

@@ -125,7 +125,7 @@
                 <!--<Rectangle HorizontalAlignment="Stretch" Fill="White" Height="2"/>-->
             </StackPanel>
 
-            <Pivot x:Name="xRootPivot" Grid.Row="2" Margin="0,10,0,-40" Grid.RowSpan="5">
+            <Pivot x:Name="xRootPivot" Grid.Row="2" Margin="0,10,0,-40" Grid.RowSpan="5" SelectionChanged="XRootPivot_OnSelectionChanged">
                 <PivotItem Header="Home">
                     <!--Pivot content goes here-->
                     <ContentPresenter Grid.Row="2" x:Name ="nodeContent" Content="{Binding View}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></ContentPresenter>

@@ -504,7 +504,10 @@ namespace NuSysApp
         public void AddFilterToExistingTool(List<UIElement> hitsStartList, FreeFormViewerViewModel wvm)
         {
             var tempToolView = hitsStartList.First() as TemporaryToolView;
-            Debug.Assert(tempToolView != null);
+            if (tempToolView == null)
+            {
+                return;
+            }
             ToolViewModel toolViewModel;
             if ((hitsStartList.First() as TemporaryToolView) != null)
             {

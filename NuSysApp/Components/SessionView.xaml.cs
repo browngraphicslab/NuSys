@@ -647,7 +647,7 @@ namespace NuSysApp
             }
         }
 
-        public async void ShowDetailView(IDetailViewable viewable)
+        public async void ShowDetailView(IDetailViewable viewable, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
         {
             // don't edit if we are in exploration or presentation mode
             if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
@@ -657,7 +657,7 @@ namespace NuSysApp
             }
             if (viewable is RegionController)
             {
-                await xDetailViewer.ShowElement(viewable as RegionController);
+                await xDetailViewer.ShowElement(viewable as RegionController, tabToOpenTo);
 
             }
             else if (viewable is LibraryElementController)
@@ -667,7 +667,7 @@ namespace NuSysApp
                 {
                     return;
                 }
-                await xDetailViewer.ShowElement(viewable as LibraryElementController);
+                await xDetailViewer.ShowElement(viewable as LibraryElementController, tabToOpenTo);
             }
         }
 

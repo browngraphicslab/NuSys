@@ -138,7 +138,7 @@ namespace NuSysApp
             Disposed?.Invoke(Model.Id);
         }
 
-        protected HashSet<string> Filter(HashSet<string> ids)
+        public HashSet<string> Filter(HashSet<string> ids)
         {
             if (!Model.Selected)
             {

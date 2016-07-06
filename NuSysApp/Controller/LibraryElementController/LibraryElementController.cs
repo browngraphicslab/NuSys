@@ -499,6 +499,11 @@ namespace NuSysApp
             var controllers = linkedIds.Select(id =>SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
             return new HashSet<LinkLibraryElementController>(controllers);
         }
+
+        public string TabId()
+        {
+            return LibraryElementModel.LibraryElementId;
+        }
         #endregion
 
     }

@@ -27,6 +27,7 @@ namespace NuSysApp
 
         private ElementViewModel _activeVm;
         private object _regionEditorPivotItem;
+        private IDetailViewable _currentDetailViewable;
         
         public DetailViewerView()
         {
@@ -145,10 +146,10 @@ namespace NuSysApp
         /// </summary>
         /// <param name="LibraryElementController"></param>
         /// <returns></returns>
-        public async Task ShowElement(LibraryElementController controller)
+        public async Task ShowElement(LibraryElementController controller, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
         {
             Debug.Assert(controller != null);
-
+            _currentDetailViewable = controller;
             //Calls the view model's ShowElement method which loads regions, etc.
             var vm = (DetailViewerViewModel)DataContext;
             
@@ -194,20 +195,36 @@ namespace NuSysApp
             }
 
             if (controller.LibraryElementModel.Type == ElementType.Text ||
-                controller.LibraryElementModel.Type == ElementType.Collection)
+                controller.LibraryElementModel.Type == ElementType.Collection || controller.LibraryElementModel.Type == ElementType.Word)
             {
                 if (xRootPivot?.Items?.Count == 4)
                 {
                     _regionEditorPivotItem = xRootPivot.Items[3];
                     xRootPivot.Items.RemoveAt(3);
                 }
-            } 
-            
+            }
+
+            switch (tabToOpenTo)
+            {
+                case DetailViewTabType.Metadata:
+                    xRootPivot.SelectedIndex = 1;
+                    break;
+                case DetailViewTabType.Links:
+                    xRootPivot.SelectedIndex = 2;
+                    break;
+                case DetailViewTabType.Regions:
+                    xRootPivot.SelectedIndex = 3;
+                    break;
+                default:
+                    xRootPivot.SelectedIndex = 0;
+                    return;
+
+            }
         }
-        public async Task ShowElement(RegionController controller)
+        public async Task ShowElement(RegionController controller, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
         {
             Debug.Assert(controller != null);
-
+            _currentDetailViewable = controller;
             //Calls the view model's ShowElement method which loads regions, etc.
             var vm = (DetailViewerViewModel)DataContext;
             if (await vm.ShowElement(controller))
@@ -230,8 +247,24 @@ namespace NuSysApp
             //Update metadata editor
             xMetadataEditorView.Metadatable = controller;
             xMetadataEditorView.Update();
-            
-            
+
+            switch (tabToOpenTo)
+            {
+                    case DetailViewTabType.Metadata:
+                        xRootPivot.SelectedIndex = 1;
+                        break;
+                    case DetailViewTabType.Links:
+                        xRootPivot.SelectedIndex = 2;
+                        break;
+                    case DetailViewTabType.Regions:
+                        xRootPivot.SelectedIndex = 3;
+                    break;
+                    default:
+                        xRootPivot.SelectedIndex = 0;
+                    return;
+
+            }
+
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
@@ -324,11 +357,7 @@ namespace NuSysApp
             nodeContent.Visibility = toggle ? Visibility.Visible : Visibility.Collapsed;
            // MetadataContainer.Visibility = toggle ? Visibility.Collapsed : Visibility.Visible;
         }
-
-        private void TitleEnter_OnTextChanged(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs e)
-        {
-      //      ((ElementViewModel) ((DetailViewerViewModel) DataContext).View.DataContext).Model.Title = TitleEnter.Text;
-        }
+        
         private void Resize(object sender, double left, double width, double height)
         {
             Canvas.SetLeft(this, left);
@@ -377,29 +406,26 @@ namespace NuSysApp
             }
         }
 
-        private void ClearPivot()
-        {
-            xRootPivot.Items.Clear();
-        }
-
-        private void AddToPivot()
-        {
-            var item = new PivotItem();
-            item.Header = ElementType.Text;
-            xRootPivot.ItemsSource = item;
-            xRootPivot.Items.Add(item);
-        }
-
         private void TabList_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            var viewable = (sender as FrameworkElement)?.DataContext;
+            var viewable = (sender as FrameworkElement)?.DataContext as IDetailViewable;
+            var vm = DataContext as DetailViewerViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+            DetailViewTabType tabToOpenTo = DetailViewTabType.Home;
+            if (vm.TabDictionary.ContainsKey(viewable?.TabId()))
+            {
+                tabToOpenTo = vm.TabDictionary[viewable?.TabId()];
+            }
             if (viewable is RegionController)
             {
-                ShowElement(viewable as RegionController);
+                ShowElement(viewable as RegionController, tabToOpenTo);
 
             } else if (viewable is LibraryElementController)
             {
-                ShowElement(viewable as LibraryElementController);
+                ShowElement(viewable as LibraryElementController, tabToOpenTo);
             }
             e.Handled = true;
         }
@@ -422,9 +448,14 @@ namespace NuSysApp
             if (tabs?.Count > 0)
             {
                 var viewable = vm.Tabs?[tabs.Count - 1];
+                DetailViewTabType tabToOpenTo = DetailViewTabType.Home;
+                if (vm.TabDictionary.ContainsKey(viewable?.TabId()))
+                {
+                    tabToOpenTo = vm.TabDictionary[viewable?.TabId()];
+                }
                 if (viewable is RegionController)
                 {
-                    ShowElement(viewable as RegionController);
+                    ShowElement(viewable as RegionController, tabToOpenTo);
 
                 }
                 else if (viewable is LibraryElementController)
@@ -440,6 +471,52 @@ namespace NuSysApp
         {
             var vm = (DetailViewerViewModel)DataContext;
             vm.ChangeControllersTitle(title);
+        }
+
+        private void XRootPivot_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var vm = (DetailViewerViewModel)DataContext;
+            var listView = sender as Pivot;
+            var index = listView?.SelectedIndex;
+            if (vm.TabDictionary.ContainsKey(_currentDetailViewable.TabId()))
+            {
+                switch (index.Value)
+                {
+                    case 0:
+                        vm.TabDictionary[_currentDetailViewable.TabId()] = DetailViewTabType.Home;
+                        break;
+                    case 1:
+                        vm.TabDictionary[_currentDetailViewable.TabId()] = DetailViewTabType.Metadata;
+                        break;
+                    case 2:
+                        vm.TabDictionary[_currentDetailViewable.TabId()] = DetailViewTabType.Links;
+                        break;
+                    case 3:
+                        vm.TabDictionary[_currentDetailViewable.TabId()] = DetailViewTabType.Regions;
+                        break;
+
+                }
+
+            }
+            else
+            {
+                switch (index.Value)
+                {
+                    case 0:
+                        vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Home);
+                        break;
+                    case 1:
+                        vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Metadata);
+                        break;
+                    case 2:
+                        vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Links);
+                        break;
+                    case 3:
+                        vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Regions);
+                        break;
+                }
+            }
+
         }
     }
 }

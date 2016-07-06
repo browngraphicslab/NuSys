@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public interface IDetailViewable
+    public enum DetailViewTabType
     {
-        string TabId();
+         Home, Metadata, Links, Regions
     }
 }

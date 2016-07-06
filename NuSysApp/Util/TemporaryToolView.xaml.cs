@@ -65,8 +65,6 @@ namespace NuSysApp
             xPropertiesList.Height = vm.Height - 175;
             xPieChart.Height = vm.Height - 175;
             xPieChart.Width = vm.Width;
-
-
             //Binding b = new Binding();
             //b.Path = new PropertyPath("PropertiesToDisplayUnique");
             //xPropertiesList.SetBinding(ListBox.ItemsSourceProperty, b);
@@ -77,8 +75,6 @@ namespace NuSysApp
             //(PieChart.Series[0] as PieSeries).ItemsSource = (DataContext as BasicToolViewModel).PieChartDictionary;
 
         }
-
-
         private void Vm_PropertiesToDisplayChanged()
         {
             if ((DataContext as BasicToolViewModel).Selection != null && ((DataContext as BasicToolViewModel).Controller as BasicToolController).Model.Selected && xPropertiesList.SelectedItems.Count == 0)
@@ -166,7 +162,6 @@ namespace NuSysApp
 
         private async void BtnAddOnManipulationStarting(object sender, PointerRoutedEventArgs args)
         {
-
             if (xCanvas.Children.Contains(_dragItem))
                 xCanvas.Children.Remove(_dragItem);
 
