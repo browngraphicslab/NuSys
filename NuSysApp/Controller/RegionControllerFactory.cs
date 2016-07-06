@@ -12,7 +12,7 @@ namespace NuSysApp
         public RegionController CreateFromSendable(Region regionModel, string contentId)
         {
             RegionController controller = null;
-
+            Debug.Assert(regionModel != null);
             switch (regionModel.Type)
             {
                 case Region.RegionType.Rectangle:

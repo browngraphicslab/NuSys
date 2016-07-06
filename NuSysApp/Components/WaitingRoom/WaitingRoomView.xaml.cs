@@ -38,7 +38,7 @@ namespace NuSysApp
 
         public static bool TEST_LOCAL_BOOLEAN = false;
 
-        public static bool IS_HUB = false;
+        public static bool IS_HUB = true;
 
         private static IEnumerable<Message> _firstLoadList;
         private bool _loggedIn = false;
@@ -211,7 +211,12 @@ namespace NuSysApp
                     UITask.Run(async delegate
                     {
                         Tuple<string, string> creds = this.GetLoginCredentials();
-                        Login(creds.Item1, creds.Item2, false);
+                        if (!await Login(creds.Item1, creds.Item2, false))
+                        {
+                            Task.Run(delegate {
+                                File.Delete(LoginCredentialsFilePath);
+                            });
+                        }
                     });
                 }
             });
@@ -238,7 +243,7 @@ namespace NuSysApp
             File.WriteAllText(LoginCredentialsFilePath, loginCredentials.ToString());
         }
 
-        private async void Login(string username, string password, bool createNewUser)
+        private async Task<bool> Login(string username, string password, bool createNewUser)
         {
             try
             {
@@ -303,6 +308,7 @@ namespace NuSysApp
                     Debug.WriteLine("error parsing bool and serverSessionId returned from server");
                     validCredentials = false;
                     serverSessionId = null;
+                    return false;
                 }
                 if (validCredentials)
                 {
@@ -371,10 +377,12 @@ namespace NuSysApp
                                 }
                             }
                         });
+                        return true;
                     }
                     catch (ServerClient.IncomingDataReaderException loginException)
                     {
                         loggedInText.Text = "Log in failed!";
+                        return false;
                         //     throw new Exception("Your account is probably already logged in");
                     }
                 }
@@ -385,12 +393,14 @@ namespace NuSysApp
                     if (!createNewUser) { 
                         Login(true);
                     }*/
+                    return false;
                 }
 
             }
             catch (HttpRequestException h)
             {
                 Debug.WriteLine("cannot connect to server");
+                return false;
             }
 
         }
