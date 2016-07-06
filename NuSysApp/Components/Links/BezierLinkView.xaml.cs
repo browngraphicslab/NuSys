@@ -311,6 +311,7 @@ namespace NuSysApp
                 // Handles exploration mode
                 var vm = DataContext as LinkViewModel;
                 Debug.Assert(vm != null);
+                Canvas.SetZIndex(this, -10);
                 SessionController.Instance.SessionView.Explore(vm);
             }
         }
