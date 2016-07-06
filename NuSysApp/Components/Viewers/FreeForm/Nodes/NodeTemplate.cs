@@ -33,30 +33,20 @@ namespace NuSysApp
     [TemplatePart(Name = "resizer", Type = typeof(Path))]
     public sealed class NodeTemplate : ContentControl
     {
-
         public event TemplateReady OnTemplateReady;
         public delegate void TemplateReady();
 
-        //public InqCanvasView inkCanvas = null;
-        public Polygon resizer = null;
-        public Rectangle hitArea = null;
-        //public TextBlock tags = null;
-        public Grid titleContainer = null;
-        public Grid bg = null;
-        public TextBox title = null;
-        public Border highlight = null;
-        public ItemsControl tags = null;
-        public TextBlock userName = null;
-        public Canvas xCanvas = null;
-
-        public Canvas xContent = null;
-        //public Button DuplicateElement = null;
-        // public Button Link = null;
-        // public Button PresentationLink = null;
-        //public Button PresentationMode = null;
-
-
-        public Button isSearched = null;
+        public Polygon resizer;
+        public Rectangle hitArea;
+        public Grid titleContainer;
+        public Grid bg;
+        public TextBox title;
+        public Border highlight;
+        public ItemsControl tags;
+        public TextBlock userName;
+        public Canvas xCanvas;
+        public Canvas xContent;
+        public Button isSearched;
         
         public NodeTemplate()
         {
@@ -79,55 +69,13 @@ namespace NuSysApp
                 title.TextChanged -= TitleOnTextChanged;
 
         }
-
-        public static readonly DependencyProperty SubMenuProperty = DependencyProperty.Register("SubMenu",
-            typeof(object), typeof(NodeTemplate), new PropertyMetadata(null));
-
-        public static readonly DependencyProperty InnerProperty = DependencyProperty.Register("Inner", typeof(object),
-            typeof(NodeTemplate), new PropertyMetadata(null));
-
-        public object SubMenu
-        {
-            get { return (object)GetValue(SubMenuProperty); }
-            set { SetValue(SubMenuProperty, value); }
-        }
-
-        public object Inner
-        {
-            get { return (object)GetValue(InnerProperty); }
-            set { SetValue(InnerProperty, value); }
-        }
-
+        
         protected override void OnApplyTemplate()
         {
             hitArea = (Rectangle)GetTemplateChild("HitArea");
             isSearched = (Button)GetTemplateChild("isSearched");
-
-            //inkCanvas = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(vm.Width, vm.Height)));
-
-            //(GetTemplateChild("xContainer") as Grid).Children.Add(inkCanvas);
-
-            //inkCanvas.IsEnabled = false;
-            //inkCanvas.Background = new SolidColorBrush(Colors.Aqua);
-            //Canvas.SetZIndex(inkCanvas, -5);
-
-            //DuplicateElement = (Button)GetTemplateChild("DuplicateElement");
-            // Link = (Button)GetTemplateChild("Link");
-            //PresentationLink = (Button)GetTemplateChild("PresentationLink");
+            
             xCanvas = (Canvas)GetTemplateChild("xCanvas");
-
-            /*
-            DuplicateElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
-            DuplicateElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
-            Link.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
-            Link.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
-
-            PresentationLink.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
-            PresentationLink.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
-
-            PresentationMode = (Button) GetTemplateChild("PresentationMode");
-            PresentationMode.Click += OnPresentationClick;
-            */
 
             bg = (Grid)GetTemplateChild("bg");
             resizer = (Polygon)GetTemplateChild("Resizer");
@@ -136,14 +84,8 @@ namespace NuSysApp
             userName = (TextBlock)GetTemplateChild("xUserName");
             xContent = (Canvas)GetTemplateChild("xContent");
 
-            //tags = (TextBlock)GetTemplateChild("Tags");
-            //var t = new TranslateTransform {X = 0, Y = 25};
-            //tags.RenderTransform = t;
-
             tags = (ItemsControl)GetTemplateChild("Tags");
           
-
-
             title = (TextBox)GetTemplateChild("xTitle");
             title.KeyUp += TitleOnTextChanged;
 
@@ -159,8 +101,7 @@ namespace NuSysApp
 
             title.Loaded += delegate (object sender, RoutedEventArgs args)
             {
-                highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
-                //      highlight.Height = vm.Height + title.ActualHeight - 5;
+                highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };                
             };
 
             Canvas.SetLeft(resizer, vm.Width - 60);
@@ -169,9 +110,6 @@ namespace NuSysApp
             hitArea.Width = vm.Width;
             hitArea.Height = vm.Height + 70 * SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
             var hitAreaTsfm = (TranslateTransform)hitArea.RenderTransform;
-         //  hitAreaTsfm.Y = -50;
-
-            //vm.Controller.LibraryElementController.UserChanged += ControllerOnUserChanged;
 
             vm.PropertyChanged += OnPropertyChanged;
             base.OnApplyTemplate();
@@ -183,12 +121,10 @@ namespace NuSysApp
             hitArea.Width = width;
             hitArea.Height = height + 50;
             var hitAreaTsfm = (TranslateTransform)hitArea.RenderTransform;
-           // hitAreaTsfm.Y = -50 * SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
-           // Debug.WriteLine(hitAreaTsfm.Y);
             Rearrange(SessionController.Instance.ActiveFreeFormViewer.CompositeTransform);
         }
 
-        private void Rearrange(CompositeTransform transform)
+        public void Rearrange(CompositeTransform transform)
         {
             var vm = DataContext as ElementViewModel;
             if (vm == null)
@@ -198,31 +134,34 @@ namespace NuSysApp
             var hitAreaTsfm = (TranslateTransform)hitArea.RenderTransform;
             resizerTsfm.ScaleX = resizerTsfm.ScaleY = 1 / transform.ScaleX * 97 / 72.0;
             titleTsfm.ScaleX = titleTsfm.ScaleY = 1 / transform.ScaleX * 97 / 72.0;
-            
+
+
             if (title.Text.Length > 0) { 
                 var rect = title.GetRectFromCharacterIndex(title.Text.Length - 1, true);
                 var p = title.Padding;
                 var w = rect.X + rect.Width + p.Left + p.Right + 10;
                 w = w < 1 ? 100 : w;
                 title.Width = w;
+                Canvas.SetTop(title, -GetTextBoxHeight(title)-10);
                 Canvas.SetLeft(title, (vm.Width - w) / 2);
             }
 
-            Canvas.SetLeft(resizer, vm.Width - 60);
-            Canvas.SetTop(resizer, vm.Height - 60);
+            Canvas.SetLeft(resizer, vm.Width - resizer.Width);
+            Canvas.SetTop(resizer, vm.Height - resizer.Height);
 
 
             Canvas.SetTop(hitArea, -70 * 97 / 72.0 / transform.ScaleX);
             hitArea.Width = vm.Width;
             hitArea.Height = vm.Height + 70 * 97 / 72.0 / transform.ScaleX;
+            bg.BorderThickness = new Thickness(2 / transform.ScaleX, 2 / transform.ScaleX, 2 / transform.ScaleX, 2 / transform.ScaleX);
+    
 
             // Fade out content if it occupies to little screen space
             /*                        
             var screenW = SessionController.Instance.SessionView.ActualWidth;
             var screenH = SessionController.Instance.SessionView.ActualHeight;
             var areaRatio = (Math.Sqrt(hitArea.Width * hitArea.Height) * transform.ScaleX) / Math.Sqrt(screenW * screenH);
-            bg.BorderThickness = new Thickness(2 / transform.ScaleX, 2 / transform.ScaleX, 2 / transform.ScaleX, 2 / transform.ScaleX);
-
+           
 
             if (areaRatio <= 0.1) { 
                 xContent.Opacity = Math.Pow(areaRatio / 0.1, 6);
@@ -259,7 +198,6 @@ namespace NuSysApp
                 
             }
             Rearrange(SessionController.Instance.ActiveFreeFormViewer.CompositeTransform);
-
         }
 
         private void ControllerOnUserChanged(object sender, NetworkUser user)
@@ -277,36 +215,18 @@ namespace NuSysApp
                 userName.Foreground = new SolidColorBrush(user.Color);
                 userName.Text = user?.Name ?? "";
             }
-            
-            
         }
 
         private void LibraryElementModelOnSearched(LibraryElementModel model, bool searched)
         {
             isSearched.Visibility = searched ? Visibility.Visible : Visibility.Collapsed;
         }
+
         public void ToggleInkMode()
         {
             var vm = (ElementViewModel)this.DataContext;
-            //vm.ToggleEditingInk();
-            //inkCanvas.IsEnabled = vm.IsEditingInk;
-        }
+        }        
 
-        
-
-        private void OnExplorationClick(object sender, RoutedEventArgs e)
-        {
-
-            var vm = ((ElementViewModel)this.DataContext);
-            var sv = SessionController.Instance.SessionView;
-
-            // unselect start element
-            vm.IsSelected = false;
-            vm.IsEditing = false;
-            highlight.Visibility = Visibility.Collapsed;
-
-            sv.EnterExplorationMode(vm);
-        }
 
         private void OnResizerManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
@@ -367,7 +287,38 @@ namespace NuSysApp
                     hitArea.Visibility = Visibility.Visible;
                 }
             }
-        }       
+        }
+
+        private static TextBlock dummyTextBlock = new TextBlock();
+
+
+        private static double GetTextBoxHeight(TextBox textbox)
+        {
+            dummyTextBlock.FontFamily = textbox.FontFamily;
+            dummyTextBlock.FontSize = textbox.FontSize;
+            dummyTextBlock.Text = textbox.Text;
+            dummyTextBlock.Measure(new Size(0, 0));
+            dummyTextBlock.Arrange(new Rect(0, 0, 0, 0));
+            return dummyTextBlock.ActualHeight;
+        }
+
+        public static readonly DependencyProperty SubMenuProperty = DependencyProperty.Register("SubMenu",
+         typeof(object), typeof(NodeTemplate), new PropertyMetadata(null));
+
+        public static readonly DependencyProperty InnerProperty = DependencyProperty.Register("Inner", typeof(object),
+            typeof(NodeTemplate), new PropertyMetadata(null));
+
+        public object SubMenu
+        {
+            get { return (object)GetValue(SubMenuProperty); }
+            set { SetValue(SubMenuProperty, value); }
+        }
+
+        public object Inner
+        {
+            get { return (object)GetValue(InnerProperty); }
+            set { SetValue(InnerProperty, value); }
+        }
     }
 }
 

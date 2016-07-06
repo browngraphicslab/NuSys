@@ -72,6 +72,8 @@ namespace NuSysApp
 
             DataContext = vm;
 
+            Loaded += TextNodeView_Loaded;
+
             this.SetUpInking();
 
             vm.Controller.Disposed += ControllerOnDisposed;
@@ -85,6 +87,11 @@ namespace NuSysApp
             Record.AddHandler(PointerPressedEvent, new PointerEventHandler(RecordButton_OnClick), true);
             Record.AddHandler(PointerReleasedEvent, new PointerEventHandler(RecordButton_Released), true);
 
+        }
+
+        private void TextNodeView_Loaded(object sender, RoutedEventArgs e)
+        {
+            nodeTpl.Rearrange(SessionController.Instance.ActiveFreeFormViewer.CompositeTransform);
         }
 
         private void TextNodeWebViewOnNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)

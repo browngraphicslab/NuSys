@@ -62,6 +62,18 @@ namespace NuSysApp
             sv.EnterPresentationMode(vm);
         }
 
+        private void OnExplorationClick(object sender, RoutedEventArgs e)
+        {
+            var vm = ((ElementViewModel)this.DataContext);
+            var sv = SessionController.Instance.SessionView;
+
+            // unselect start element
+            vm.IsSelected = false;
+            vm.IsEditing = false;
+
+            sv.EnterExplorationMode(vm);
+        }
+
         private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)
         {
             xCanvas.Children.Remove(_dragItem);
