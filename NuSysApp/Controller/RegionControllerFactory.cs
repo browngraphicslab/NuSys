@@ -30,6 +30,7 @@ namespace NuSysApp
                     Debug.Assert(regionModel is VideoRegionModel);
                     controller = new VideoRegionController(regionModel as VideoRegionModel);
                     break;
+                
             }
             if (controller == null)
             {

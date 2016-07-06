@@ -288,7 +288,7 @@ namespace NuSysApp
             }
 
             //Translating Y
-            if (_ty < upYBound)
+            if (_ty < downYBound)
             {
                 rt.TranslateY = upYBound;
             }

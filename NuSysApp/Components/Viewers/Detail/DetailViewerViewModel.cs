@@ -210,6 +210,10 @@ namespace NuSysApp
                 _regionableHomeTabViewModel = View.DataContext as DetailHomeTabViewModel;
                 _regionableHomeTabViewModel.Editable = false;
 
+                _regionableHomeTabViewModel.RegionsToLoad = controller.LibraryElementModel.Regions; // Sets the regions that need to be loaded
+                _regionableRegionTabViewModel.RegionsToLoad = controller.LibraryElementModel.Regions;
+
+
                 RaisePropertyChanged("View");
                 RaisePropertyChanged("RegionView");
                 
@@ -219,12 +223,17 @@ namespace NuSysApp
                     _regionableRegionTabViewModel.SetExistingRegions();
 
                 };
+
+                View.Loaded += delegate
+                {
+                    _regionableHomeTabViewModel.SetExistingRegions();
+                };
+
+
                 SizeChanged += (sender, left, width, height) => _regionableRegionTabViewModel.SizeChanged(sender, width, height);
                 SizeChanged += (sender, left, width, height) => _regionableHomeTabViewModel.SizeChanged(sender, width, height);
                 
                 Title = controller.LibraryElementModel.Title;
-                _regionableHomeTabViewModel.RegionsToLoad = controller.LibraryElementModel.Regions; // Sets the regions that need to be loaded
-                _regionableRegionTabViewModel.RegionsToLoad = controller.LibraryElementModel.Regions;
 
                 controller.TitleChanged += ControllerTitleChanged;
                 MakeTagList();
