@@ -68,6 +68,8 @@ namespace NuSysApp
             // Extract dictionary from libraryelementmodel.
             var dict = Metadatable.GetMetadata() ?? new Dictionary<string, MetadataEntry>();
 
+            
+
             // Convert dictionary entries to MetadataEntries, and add to MetadataCollection
             foreach (var key in dict.Keys)
             {

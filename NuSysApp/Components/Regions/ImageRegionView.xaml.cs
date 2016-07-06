@@ -365,7 +365,7 @@ namespace NuSysApp
         private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var vm = DataContext as RegionViewModel;
-            SessionController.Instance.SessionView.ShowDetailView(vm?.LibraryElementController);
+            //SessionController.Instance.SessionView.ShowDetailView(vm?.LibraryElementController);
             var regionController = vm?.RegionController;
             SessionController.Instance.SessionView.ShowDetailView(regionController);
         }
