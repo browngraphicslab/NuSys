@@ -170,20 +170,20 @@ namespace NuSysApp
             }
             return DateTime.Parse(libraryElementModel.Timestamp).ToStartOfDay().ToString();
         }
-        public Dictionary<string, string> GetMetadata(string libraryId)
+        public Dictionary<string, List<string>> GetMetadata(string libraryId)
         {
             var element = SessionController.Instance.ContentController.GetContent(libraryId);
             if (element != null)
             {
-                var metadata = (element?.Metadata?.ToDictionary(k=>k.Key,v=>string.Join(", ",v.Value?.Values ?? new List<string>()))) ?? new Dictionary<string, string>();
+                var metadata = (element?.Metadata?.ToDictionary(k=>k.Key,v=>v.Value?.Values ?? new List<string>()) ?? new Dictionary<string, List<string>>());
 
-                metadata["Title"] = element.Title;
-                metadata["Type"] = element.Type.ToString();
-                metadata["Date"] = GetDate(element);
-                metadata["Creator"] = element.Creator;
+                metadata["Title"] = new List<string>(){ element.Title};
+                metadata["Type"] = new List<string>() { element.Type.ToString()};
+                metadata["Date"] = new List<string>() { GetDate(element)};
+                metadata["Creator"] = new List<string>() { element.Creator};
                 return metadata;
             }
-            return new Dictionary<string, string>();
+            return new Dictionary<string, List<string>>();
         }
         private void ParentLibraryIdsChanged(object sender, HashSet<string> libraryIds)
         {
