@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Office.Interop.Word;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -8,6 +9,8 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
+using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -88,16 +91,25 @@ namespace NuSysApp
         /// <param name="e"></param>
         private async void OnGoToSource(object sender, RoutedEventArgs e)
         {
-            Task.Run(async delegate
+            UITask.Run(async delegate
             {
                 Debug.Assert(DataContext is WordDetailHomeTabViewModel);
                 var vm = DataContext as WordDetailHomeTabViewModel;
                 Debug.Assert(vm?.Controller?.LibraryElementModel?.LibraryElementId != null);
-                var path = await SessionController.Instance.NuSysNetworkSession.DownloadDocx(vm.Controller.LibraryElementModel.LibraryElementId);
+                string path = null;
+                await System.Threading.Tasks.Task.Run( async delegate{
+                        path = await SessionController.Instance.NuSysNetworkSession.DownloadDocx( vm.Controller.LibraryElementModel.LibraryElementId);
+                        
+                });
                 if (path == null)
                 {
                     //probably didn't have a docx file on the server for the given id
                 }
+                var storageFile = await StorageFile.GetFileFromPathAsync(path);
+                await Launcher.LaunchFileAsync(storageFile);
+
+                //doc.
+                //doc.LoadFromFile(path);
                 //open the path
             });
         }

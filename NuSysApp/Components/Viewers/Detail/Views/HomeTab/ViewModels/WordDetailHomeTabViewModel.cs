@@ -23,8 +23,18 @@ namespace NuSysApp
         {
             Controller = controller;
             Editable = true;
+            Controller.ContentChanged += ChangeContent;
+        }
+
+        private void ChangeContent(object source, string contentData)
+        {
+            Task.Run(async delegate {
+                _document = await MediaUtil.DataToPDF(Controller.LibraryElementModel.Data);
+                await UITask.Run(async delegate { await Goto(_pageNumber); });
+            });
 
         }
+
         public override async Task Init()
         {
             await Task.Run(async delegate {

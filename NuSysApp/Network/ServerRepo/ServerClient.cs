@@ -138,6 +138,17 @@ namespace NuSysApp
                                         OnContentUpdated?.Invoke(this, SessionController.Instance.ContentController.GetLibraryElementController(id),new Message(dict));
                                     }
                                     break;
+                                case "content_data_update":
+                                    id = dict["id"] as string;
+                                    if (SessionController.Instance.ContentController.GetLibraryElementController(id) != null)
+                                    {
+                                        var controller =
+                                            SessionController.Instance.ContentController.GetLibraryElementController(id);
+                                        var loadArgs = new LoadContentEventArgs();
+                                        loadArgs.Data = dict["data"] as string;
+                                        controller.Load(loadArgs);
+                                    }
+                                    break;
                             }
                         }
 
@@ -559,12 +570,14 @@ namespace NuSysApp
             var url = GetUri("getworddoc/" + id);
             HttpClient client = new HttpClient();
             var response = await client.GetAsync(url);
-            byte[] data;
+            string data;
             using (var content = response.Content)
             {
-                data = await content.ReadAsByteArrayAsync();
+                data = await content.ReadAsStringAsync();
             }
-            return data;
+            var list = JsonConvert.DeserializeObject<List<string>>(data);
+            var converted = Convert.FromBase64String(list[0]);
+            return converted;
         }
 
         public async Task<List<Message>> GetWorkspaceAsElementMessages(string id)

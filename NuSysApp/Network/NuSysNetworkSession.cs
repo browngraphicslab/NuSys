@@ -410,7 +410,7 @@ namespace NuSysApp
             {
                 return null;
             }
-            var path = NuSysStorages.SaveFolder.Path + "/" + id + ".docx";
+            var path = NuSysStorages.SaveFolder.Path + "\\" + id + ".docx";
             try
             {
                 using (var stream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite))

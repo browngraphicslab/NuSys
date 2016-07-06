@@ -296,6 +296,7 @@ namespace NuSysApp
             if (e.Data != null)
             {
                 _libraryElementModel.Data = e.Data;
+                ContentChanged?.Invoke(this,e.Data);
             }
             if (e.RegionStrings != null)
             {

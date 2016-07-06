@@ -41,7 +41,7 @@ namespace NuSysApp
 
         private void ContentController_OnElementDelete(LibraryElementModel element)
         {
-            foreach (var item in LibraryElements)
+            foreach (var item in new HashSet<LibraryItemTemplate>(LibraryElements))
             {
                 if (item.ContentID == element.LibraryElementId)
                 {
