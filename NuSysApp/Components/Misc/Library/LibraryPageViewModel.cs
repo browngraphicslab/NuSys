@@ -55,12 +55,18 @@ namespace NuSysApp
                 _controllerList.Remove(controller);
                 if (controller == null)
                 {
+                    var toRemove = new HashSet<LibraryItemTemplate>();
+
                     foreach (var item in ItemList)
                     {
                         if (item.ContentID == content.LibraryElementId)
                         {
-                            ItemList.Remove(item);
+                            toRemove.Add(item);
                         }
+                    }
+                    foreach (var item in toRemove)
+                    {
+                        ItemList.Remove(item);
                     }
                 }
                 //ItemList.Remove(new LibraryItemTemplate(controller));
