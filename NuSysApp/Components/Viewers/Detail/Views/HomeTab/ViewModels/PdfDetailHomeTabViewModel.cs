@@ -315,7 +315,13 @@ namespace NuSysApp
 
         public double GetViewHeight()
         {
-            throw new NotImplementedException();
+            var view = (View as PdfDetailHomeTabView);
+            if (view == null)
+            {
+                return 0;
+            }
+            //return view.ActualWidth;
+            return view.ActualHeight;
         }
     }
 }

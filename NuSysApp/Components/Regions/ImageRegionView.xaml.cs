@@ -63,8 +63,12 @@ namespace NuSysApp
             if (vm.ContainerViewModel is ImageDetailHomeTabViewModel)
             {
                 var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
-                var diff = ivm.GetViewWidth() - parentWidth;
-                composite.TranslateX += diff / 2;
+
+                var diffWidth = ivm.GetViewWidth() - parentWidth;
+                var diffHeight = ivm.GetViewHeight() - parentHeight;
+                composite.TranslateX += diffWidth / 2;
+                composite.TranslateY += diffHeight / 2;
+
             }
 
 
@@ -96,8 +100,10 @@ namespace NuSysApp
             if (vm.ContainerViewModel is ImageDetailHomeTabViewModel)
             {
                 var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
-                var diff = ivm.GetViewWidth() - ivm.GetWidth();
-                composite.TranslateX += diff / 2;
+                var diffWidth = ivm.GetViewWidth() - ivm.GetWidth();
+                var diffHeight = ivm.GetViewHeight() - ivm.GetHeight();
+                composite.TranslateX += diffWidth / 2;
+                composite.TranslateY += diffHeight / 2;
             }
         }
 
@@ -154,15 +160,19 @@ namespace NuSysApp
                 return;
             }
 
-
+            //Because editing is done only in region editor tab, this is probably safe to cast.
             var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
-            var diff = ivm.GetViewWidth() - vm.ContainerViewModel.GetWidth();
+            var diffWidth = ivm.GetViewWidth() - ivm.GetWidth();
+            var diffHeight = ivm.GetViewHeight() - ivm.GetHeight();
 
-            var leftXBound = diff / 2;
-            var rightXBound = diff / 2 + ivm.GetWidth();
+            var leftXBound = diffWidth / 2;
+            var rightXBound = diffHeight / 2 + ivm.GetWidth();
+
+            var upYBound = diffHeight / 2;
+            var downYBound = diffHeight / 2 + ivm.GetHeight();
 
 
-            //CHANGE IN X
+            //CHANGE IN WIDTH
             if (xMainRectangle.Width + rt.TranslateX + e.Delta.Translation.X <= rightXBound)
             {
                 xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
@@ -170,8 +180,9 @@ namespace NuSysApp
 
 
             }
+            //CHANGE IN HEIGHT
             
-            if (xMainRectangle.Height + rt.TranslateY + e.Delta.Translation.Y <= vm.ContainerHeight)
+            if (xMainRectangle.Height + rt.TranslateY + e.Delta.Translation.Y <= downYBound)
             {
                 xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
                 vm.Height = xMainRectangle.Height;
@@ -208,12 +219,15 @@ namespace NuSysApp
             }
 
             var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
-            var diff = ivm.GetViewWidth() - vm.ContainerViewModel.GetWidth();
+            var diffWidth = ivm.GetViewWidth() - ivm.GetWidth();
+            var diffHeight = ivm.GetViewHeight() - ivm.GetHeight();
 
-            var leftXBound = diff / 2;
-            var rightXBound = diff / 2 + ivm.GetWidth() - vm.Width;
+            var leftXBound = diffWidth / 2;
+            var rightXBound = diffWidth / 2 + ivm.GetWidth() - vm.Width;
 
 
+            var upYBound = diffHeight / 2;
+            var downYBound = diffHeight / 2 + ivm.GetHeight() - vm.Height;
 
             _tx += e.Delta.Translation.X;
             _ty += e.Delta.Translation.Y;
@@ -233,11 +247,11 @@ namespace NuSysApp
             }
 
             //Translating Y
-            if (_ty < 0)
+            if (_ty < upYBound)
             {
-                rt.TranslateY = 0;
+                rt.TranslateY = upYBound;
             }
-            else if (_ty > vm.ContainerHeight - vm.OriginalHeight)
+            else if (_ty > downYBound)
             {
                 rt.TranslateY = vm.ContainerHeight - vm.OriginalHeight;
             }
@@ -247,7 +261,7 @@ namespace NuSysApp
             }
 
             var composite = RenderTransform as CompositeTransform;
-            var topLeft = new Point(composite.TranslateX - leftXBound, composite.TranslateY);
+            var topLeft = new Point(composite.TranslateX - leftXBound, composite.TranslateY - upYBound);
             vm.SetNewLocation(topLeft); 
             e.Handled = true;
         }
