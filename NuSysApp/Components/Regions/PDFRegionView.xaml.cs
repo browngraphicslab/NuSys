@@ -303,12 +303,8 @@ namespace NuSysApp
             {
                 return;
             }
-            var tx = ((CompositeTransform) this.RenderTransform).TranslateX;
-            var ty = ((CompositeTransform) this.RenderTransform).TranslateY;
-            if (tx < 0 || tx + vm.Width > vm.ContainerWidth)
-                return;
-            if (ty < 0 || ty + vm.Height > vm.ContainerHeight)
-                return;
+            _tx = ((CompositeTransform) this.RenderTransform).TranslateX;
+            _ty = ((CompositeTransform) this.RenderTransform).TranslateY;
 
 
             vm.OriginalHeight = vm.Height;
@@ -331,7 +327,7 @@ namespace NuSysApp
         public void Select()
         {
             xMainRectangle.StrokeThickness = 6;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
+            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
             xResizingTriangle.Visibility = Visibility.Visible;
             xDelete.Visibility = Visibility.Visible;
             xNameTextBox.Visibility = Visibility.Visible;

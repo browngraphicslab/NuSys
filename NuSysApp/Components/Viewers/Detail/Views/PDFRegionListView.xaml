@@ -11,7 +11,7 @@
 
 
 
-    <Grid x:Name="xListView" Grid.Column="2" Background="{StaticResource color1}">
+    <Grid x:Name="xListView" Grid.Column="2"  VerticalAlignment="Stretch" Background="{StaticResource color1}">
         <Grid.RowDefinitions>
             <RowDefinition Height="3*"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
