@@ -183,7 +183,7 @@ namespace NuSysApp
             var upYBound = diffHeight / 2;
             var downYBound = diffHeight / 2 + ivm.GetHeight();
 
-            if (xMainRectangle.Width + rt.TranslateX + e.Delta.Translation.X <= rightXBound)
+            if (xMainRectangle.Width + rt.TranslateX + e.Delta.Translation.X - diffWidth/2 <= rightXBound)
             {
                 xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
                 vm.Width = xMainRectangle.Width;
@@ -191,7 +191,7 @@ namespace NuSysApp
 
             }
 
-            if (xMainRectangle.Height + rt.TranslateY + e.Delta.Translation.Y <= downYBound)
+            if (xMainRectangle.Height + rt.TranslateY + e.Delta.Translation.Y - diffHeight/2 <= downYBound)
             {
                 xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
                 vm.Height = xMainRectangle.Height;
