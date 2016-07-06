@@ -93,7 +93,7 @@ namespace NuSysApp
                     {
                         allMetadata.Add(kvp.Key, new List<string>());
                     }
-                    allMetadata[kvp.Key].Add(kvp.Value);
+                    allMetadata[kvp.Key].AddRange(kvp.Value);
                 }
             }
             switch (BasicToolModel.Filter)

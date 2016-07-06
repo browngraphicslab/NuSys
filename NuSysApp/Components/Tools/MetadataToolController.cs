@@ -57,8 +57,8 @@ namespace NuSysApp
                         {
                             return true;
                         }
-                        else if (metadata[MetadataToolModel.Selection.Item1] ==
-                           MetadataToolModel.Selection.Item2)
+                        else if (metadata[MetadataToolModel.Selection.Item1].Contains(
+                           MetadataToolModel.Selection.Item2))
                         {
                             return true;
                         }
@@ -94,12 +94,8 @@ namespace NuSysApp
                     if (!allMetadata.ContainsKey(kvp.Key))
                     {
                         allMetadata.Add(kvp.Key, new HashSet<string>());
-                        allMetadata[kvp.Key].Add(kvp.Value);
                     }
-                    else
-                    {
-                        allMetadata[kvp.Key].Add(kvp.Value);
-                    }
+                    allMetadata[kvp.Key] = new HashSet<string>(allMetadata[kvp.Key].Concat(kvp.Value));
                 }
             }
             return allMetadata;

@@ -344,7 +344,7 @@ namespace NuSysApp
         }
         public async Task FetchLibraryElementData(string id)
         {
-            if (SessionController.Instance.ContentController.GetContent(id).Type == ElementType.PDF && false)
+            if (SessionController.Instance.ContentController.GetContent(id)?.Type == ElementType.PDF && SessionController.Instance.ContentController.GetLibraryElementController(id) != null && !SessionController.Instance.ContentController.GetLibraryElementController(id).IsLoaded)
             {
                 bool fileExists = await CachePDF.isFilePresent(id);
 
@@ -354,9 +354,11 @@ namespace NuSysApp
                     await UITask.Run(
                         async delegate
                         {
-                            SessionController.Instance.ContentController.GetLibraryElementController(id).Load(new LoadContentEventArgs(cacheData));
-                            await SessionController.Instance.NuSysNetworkSession.FetchLibraryElementWithoutData(id);
-                        });
+                            var args = await _serverClient.GetContentWithoutData(id);
+                            args.Data = cacheData;
+                            SessionController.Instance.ContentController.GetLibraryElementController(id).Load(args);
+                        }
+                     );
                 }
                 else
                 {
@@ -380,16 +382,6 @@ namespace NuSysApp
         public async Task<List<SearchResult>> AdvancedSearchOverLibraryElements(Query searchQuery)
         {
             return await _serverClient.AdvancedSearchOverLibraryElements(searchQuery);
-        }
-
-        /// <summary>
-        /// Basically just to Fetch regions so we dont have to get the entire data
-        /// </summary>
-        /// <param name="contentIds"></param>
-        /// <returns></returns>
-        public async Task FetchLibraryElementWithoutData(string contentId)
-        {
-            await _serverClient.GetContentWithoutData(contentId);
         }
 
         public async Task<string> DuplicateLibraryElement(string libraryElementId)

@@ -31,8 +31,6 @@ namespace NuSysApp
         public WordDetailHomeTabView(WordDetailHomeTabViewModel vm)
         {
             InitializeComponent();
-
-            Canvas.SetZIndex(ItemsControl, 0);
             vm.Controller.Disposed += ControllerOnDisposed;
             vm.PropertyChanged += PropertyChanged;
             vm.View = this;

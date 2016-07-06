@@ -264,15 +264,15 @@ namespace NuSysApp
             }
             return data;
         }
-        public async Task GetContentWithoutData(string contentId)
+        public async Task<LoadContentEventArgs> GetContentWithoutData(string contentId)
         {
             try
             {
-                await Task.Run(async delegate
+                return await Task.Run(async delegate
                 {
                     JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                     var client = new HttpClient(new HttpClientHandler { ClientCertificateOptions = ClientCertificateOption.Automatic });
-                    var response = await client.PostAsync(GetUri("getcontent/"), new StringContent(contentId, Encoding.UTF8, "application/xml"));
+                    var response = await client.GetAsync(GetUri("getcontentwithoutdata/"+contentId));
 
                     string data;
                     using (var content = response.Content)
@@ -281,23 +281,30 @@ namespace NuSysApp
                     }
                     try
                     {
-                        XmlDocument doc = new XmlDocument();
-                        doc.LoadXml(data);
-                        var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(doc.ChildNodes[0].InnerText, settings);
-                        await ParseFetchedLibraryElement(dict, contentId);
+                        var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(data, settings);
+
+                        var regionStrings = dict.ContainsKey("regions") ? JsonConvert.DeserializeObject<List<string>>(dict["regions"].ToString(), settings) : new List<string>();
+                        var regions = new HashSet<Region>();
+                        foreach (var rs in regionStrings)
+                        {
+                            regions.Add(GetRegionFromString(rs, contentId));
+                        }
+                        var inks = dict.ContainsKey("inks") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["inks"].ToString()) : null;
+                        var args = new LoadContentEventArgs(null,regions,inks);
+                        return args;
                     }
                     catch (Exception boolParsException)
                     {
                         Debug.WriteLine("error parsing bool and serverSessionId returned from server");
                     }
-                    return;
+                    return null;
                 });
 
             }
             catch (Exception e)
             {
                 //throw new Exception("couldn't connect to the server and get content info");
-                return;
+                return null;
             }
         }
         public async Task FetchLibraryElementData(string libraryId, int tries = 0)
@@ -447,7 +454,7 @@ namespace NuSysApp
                     region = JsonConvert.DeserializeObject<VideoRegionModel>(regionString, settings);
                     break;
             }
-            if (contentId != null)
+            if (contentId != null && SessionController.Instance.RegionsController.GetRegionController(region?.Id) == null)
             {
                 var controller = new RegionControllerFactory().CreateFromSendable(region, contentId);
             }

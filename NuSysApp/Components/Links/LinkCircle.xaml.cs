@@ -55,7 +55,7 @@ namespace NuSysApp
             border.BorderThickness = _collapsedThickness;
             //thumbnail is not pinned to begin with
             Pinned = false;
-            _bmp = new BitmapImage(SessionController.Instance.ContentController.GetLibraryElementController(cID).SmallIconUri);
+            _bmp = new BitmapImage(SessionController.Instance.ContentController.GetLibraryElementController(cID)?.SmallIconUri ?? new Uri("ms-appx:////Assets/icon_chat.png"));
             thumbnail.ImageOpened += Thumbnail_ImageOpened;
             //centering the thumbnail
             (border.RenderTransform as CompositeTransform).TranslateX -= 10;
