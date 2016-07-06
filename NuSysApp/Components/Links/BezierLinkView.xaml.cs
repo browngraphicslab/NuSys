@@ -110,8 +110,13 @@ namespace NuSysApp
             {
                 if (vm.IsSelected)
                 {
-                    this.Annotation.Activate();
-                    AnnotationContainer.Visibility = Visibility.Visible;
+              
+                    if (SessionController.Instance.SessionView.ModeInstance?.Mode != ModeType.EXPLORATION)
+                    {
+                        this.Annotation.Activate();
+                        AnnotationContainer.Visibility = Visibility.Visible;
+                    }
+                    
 
                     if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
                     {
@@ -174,8 +179,6 @@ namespace NuSysApp
                         ((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.Model.Select();
                         */
                     }
-                    // Handles exploration mode
-                    SessionController.Instance.SessionView.Explore(vm);
                 }
                 else
                 {
@@ -299,6 +302,17 @@ namespace NuSysApp
         private void Annotation_Loaded(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void BezierLink_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION)
+            {
+                // Handles exploration mode
+                var vm = DataContext as LinkViewModel;
+                Debug.Assert(vm != null);
+                SessionController.Instance.SessionView.Explore(vm);
+            }
         }
     }
 }

@@ -41,6 +41,7 @@ namespace NuSysApp
             }
             model.UnPack(message);
             SessionController.Instance.ContentController.Add(model);
+            
             if (type == ElementType.Link)
             {
                 SessionController.Instance.LinkController.AddLink(id);
