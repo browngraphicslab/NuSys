@@ -235,11 +235,11 @@ namespace NuSysApp
             //Translating Y
             if (_ty < 0)
             {
-                rt.TranslateY = 0;
+                rt.TranslateY = 0.01;
             }
             else if (_ty > vm.ContainerHeight - vm.OriginalHeight)
             {
-                rt.TranslateY = vm.ContainerHeight - vm.OriginalHeight;
+                rt.TranslateY = vm.ContainerHeight - vm.OriginalHeight - 0.01;
             }
             else
             {
@@ -272,13 +272,19 @@ namespace NuSysApp
             {
                 return;
             }
+            /*
             var tx = ((CompositeTransform)this.RenderTransform).TranslateX;
             var ty = ((CompositeTransform)this.RenderTransform).TranslateY;
             if (tx < 0 || tx + vm.Width > vm.ContainerWidth)
                 return;
             if (ty < 0 || ty + vm.Height > vm.ContainerHeight)
                 return;
+                */
 
+
+
+            _tx = ((CompositeTransform)this.RenderTransform).TranslateX;
+            _ty = ((CompositeTransform)this.RenderTransform).TranslateY;
 
             vm.OriginalHeight = vm.Height;
             vm.OriginalWidth = vm.Width;
