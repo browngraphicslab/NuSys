@@ -90,10 +90,10 @@
             <TextBox x:Name="linkTitle" PlaceholderText="link title..." HorizontalAlignment="Stretch" ></TextBox>
         </Grid>
         <Grid Padding="2.5,10,20,10"  Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-            <ComboBox x:Name="LinkToBox" ItemsSource="{Binding LibraryElements}" PlaceholderText="linked to..." SelectionChanged="LinkToBox_OnSelectionChanged">
+            <ComboBox x:Name="LinkToBox" ItemsSource="{Binding LibraryElements}" PlaceholderText="linked to..." SelectionChanged="LinkToBox_OnSelectionChanged" HorizontalAlignment="Stretch" MaxDropDownHeight="200">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding Title}"></TextBlock>
+                        <TextBlock Text="{Binding Title}" Width="200" MaxWidth="200" MinWidth="200" HorizontalAlignment="Left"></TextBlock>
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
