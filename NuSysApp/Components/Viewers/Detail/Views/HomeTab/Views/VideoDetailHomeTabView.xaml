@@ -32,7 +32,7 @@
             </Grid.RowDefinitions>
             <CaptureElement x:Name="preview"/>
             <Grid>
-                <local:VideoMediaPlayer x:Name="VideoMediaPlayer"> </local:VideoMediaPlayer>
+                <local:VideoMediaPlayer x:Name="VideoMediaPlayer" PointerPressed="MediaPlayer_PointerPressed"> </local:VideoMediaPlayer>
                 <ItemsControl ItemsSource="{Binding RegionViews}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>

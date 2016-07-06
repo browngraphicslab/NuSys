@@ -41,7 +41,7 @@ namespace NuSysApp
 
         private void ContentController_OnElementDelete(LibraryElementModel element)
         {
-            foreach (var item in LibraryElements)
+            foreach (var item in new HashSet<LibraryItemTemplate>(LibraryElements))
             {
                 if (item.ContentID == element.LibraryElementId)
                 {
@@ -60,6 +60,26 @@ namespace NuSysApp
                     LibraryElements.Add(libraryElementTemplate);
                 });
             }
+        }
+
+        internal void DeleteLink(string id)
+        {
+            SessionController.Instance.LinkController.RemoveLink(id);
+            Task.Run(async delegate
+            {
+                var request = new DeleteLibraryElementRequest(id);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            });
+
+            foreach (var template in LinkTemplates)
+            {
+                if (template.ID == id)
+                {
+                    LinkTemplates.Remove(template);
+                    break;
+                }
+            }
+
         }
 
         private void LinkController_OnNewLink(LinkLibraryElementController link)
@@ -144,7 +164,7 @@ namespace NuSysApp
 
         }
 
-        public void CreateLink(LinkId Id)
+        public void CreateLink(LinkId Id, string title)
         {
             if (_linkable == null)
             {
@@ -152,6 +172,9 @@ namespace NuSysApp
             }
 
             _linkable.RequestAddNewLink(Id);
+            var linkId = SessionController.Instance.LinkController.GetLinkIdBetween(_linkable.Id, Id);
+            var linkController = SessionController.Instance.ContentController.GetLibraryElementController(linkId) as LinkLibraryElementController;
+            linkController?.SetTitle(title);
         }
         public void SortByLinkedTo()
         {

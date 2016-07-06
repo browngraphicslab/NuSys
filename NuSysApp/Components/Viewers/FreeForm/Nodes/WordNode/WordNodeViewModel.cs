@@ -59,7 +59,7 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            var model = (PdfNodeModel)Controller.Model;
+            var model = (WordNodeModel)Controller.Model;
             if (_document != null)
             {
                 _document.Dispose();
@@ -81,7 +81,9 @@ namespace NuSysApp
 
         private async void LibraryElementModelOnOnLoaded(object sender)
         {
-            await DisplayPdf();
+            UITask.Run(async delegate {
+                await DisplayPdf();
+            });
         }
 
         private async Task DisplayPdf()

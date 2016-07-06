@@ -7,9 +7,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:Charting="using:WinRTXamlToolkit.Controls.DataVisualization.Charting"
     xmlns:foundation="using:Windows.Foundation"
+    xmlns:dataVisualization="using:WinRTXamlToolkit.Controls.DataVisualization"
+    xmlns:controls="using:WinRTXamlToolkit.Controls"
     mc:Ignorable="d"
-    d:DesignHeight="300"
-    d:DesignWidth="400"
+
     Width="{Binding Width}"
     Height="{Binding Height}"
     RenderTransform="{Binding Transform}"
@@ -33,8 +34,54 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock x:Name="xTitle" TextAlignment="Center" Foreground="DarkSlateGray"  Text="Filter Type" Height="35" Grid.Row="0" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta"/>
-                    <Charting:Chart Visibility="Collapsed" Grid.Row="1" x:Name="PieChart" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0" Width="Auto" Height="Auto">
-                        <Charting:PieSeries  SelectionChanged="DataPointSeries_OnSelectionChanged" Margin="0" IndependentValuePath="Key" DependentValuePath="Value" IsSelectionEnabled="True"/>
+                    <Charting:Chart Visibility="Collapsed" Grid.Row="1" x:Name="xPieChart" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0" Width="Auto" Height="Auto">
+                        <Charting:PieSeries Name="xPieSeries"  ManipulationMode="All" PointerPressed="xList_PointerPressed" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted" SelectionChanged="DataPointSeries_OnSelectionChanged" PointerReleased="XPieSeries_OnPointerReleased" Margin="0" IndependentValuePath="Key" DependentValuePath="Value" IsSelectionEnabled="True"/>
+                        <Charting:Chart.LegendStyle>
+                            <Style TargetType="dataVisualization:Legend">
+                                <Setter Property="VerticalAlignment" Value="Stretch" />
+                                <Setter Property="Background" Value="#984" />
+                                <Setter Property="ItemsPanel">
+                                    <Setter.Value>
+                                        <ItemsPanelTemplate>
+                                            <controls:UniformGrid Columns="1"/>
+                                        </ItemsPanelTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="ItemContainerStyle" xmlns:series="using:WinRTXamlToolkit.Controls.DataVisualization.Charting">
+                                    <Setter.Value>
+                                        <Style TargetType="Charting:LegendItem">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="Charting:LegendItem">
+                                                        <Border MinWidth="200" BorderThickness="3" Margin="20,10" CornerRadius="10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="CadetBlue">
+                                                            <dataVisualization:Title HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="60" FontWeight="Bold" Content="Fuck everyone" />
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="dataVisualization:Legend">
+                                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="2">
+                                                <Grid ManipulationMode="All" Width ="200">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition />
+                                                    </Grid.RowDefinitions>
+                                                    <dataVisualization:Title  Grid.Row="0" x:Name="HeaderContent" Content="{TemplateBinding Header}" ContentTemplate="{TemplateBinding HeaderTemplate}" Style="{TemplateBinding TitleStyle}" />
+                                                    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Visible"  VerticalScrollBarVisibility="Visible"  BorderThickness="0" Padding="0" IsTabStop="False">
+                                                        <ItemsPresenter x:Name="Items" Margin="10,0,10,10" />
+                                                    </ScrollViewer>
+                                                </Grid>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Charting:Chart.LegendStyle>
                     </Charting:Chart>
                     <!--<ListBox x:Name="xPropertiesList" CanDrag="True" SelectionChanged="XPropertiesList_OnSelectionChanged"  Height="200" Grid.Row="1" Width="Auto" Background="AliceBlue" SelectionMode="Single" PointerPressed="xList_PointerPressed" ManipulationMode="TranslateX, TranslateY" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted"/>-->
                     <ListView x:Name="xPropertiesList" CanDrag="True" ManipulationMode="All"  SelectionChanged="XPropertiesList_OnSelectionChanged"  Height="200" Grid.Row="1" Width="Auto" Background="White" SelectionMode="Single" ItemsSource="{Binding PropertiesToDisplayUnique}" >
@@ -47,8 +94,9 @@
                         </ListView.ItemContainerStyle>
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <Grid PointerPressed="xList_PointerPressed" ManipulationMode="TranslateX, TranslateY" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted">
-                                    <TextBlock Text="{Binding}" Foreground="DarkSlateGray"/>
+                                <Grid x:Name="xGridListItem" PointerPressed="xList_PointerPressed"  Width="Auto" Margin="0,0,75,0"  ManipulationMode="All" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted">
+                                    <!--ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted">-->
+                                    <TextBlock Text="{Binding}" Foreground="DarkSlateGray" Width="Auto" />
                                 </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>
@@ -67,7 +115,7 @@
                     <Button x:Name="xCollectionElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Center" ManipulationDelta="XFilterElement_OnManipulationDelta">
                         <StackPanel>
                             <Image Source="ms-appx:///Assets/collection icon bluegreen.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                            <TextBlock Text="Collection" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
+                            <TextBlock Text="Collection" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="11"></TextBlock>
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -77,7 +125,7 @@
 
             </Grid>
         </StackPanel>
-        
+
 
     </Canvas>
 </local:AnimatableUserControl>

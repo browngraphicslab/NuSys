@@ -33,5 +33,6 @@ namespace NuSysApp
         {
             ContainerSizeChanged?.Invoke(sender,width,height);
         }
+        
     }
 }

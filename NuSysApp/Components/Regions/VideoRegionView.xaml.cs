@@ -28,12 +28,17 @@ namespace NuSysApp
             this.DataContext = vm;
         }
 
-        public Grid RegionRectangle { get { return xGrid; } }
+        public Grid RegionRectangle
+        {
+            get { return xGrid; }
+        }
+
+        public bool Selected { get; set; }
         private void Bound1_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var composite = IntervalRectangle.RenderTransform as CompositeTransform;
             var vm = DataContext as VideoRegionViewModel;
-
+            Selected = false;
             if (composite != null &&  vm != null)
             {
                 var newStart = composite.TranslateX + e.Delta.Translation.X;
@@ -128,11 +133,40 @@ namespace NuSysApp
         {
             e.Handled = true;
         }
-        private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
+        public void Deselect()
         {
-            
+            xMainRectangle.StrokeThickness = 3;
+            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Blue);
+            IntervalRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.LightCyan);
+            xResizingTriangle.Visibility = Visibility.Collapsed;
+            Selected = false;
+
+
         }
 
+        public void Select()
+        {
+            xMainRectangle.StrokeThickness = 6;
+            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
+            IntervalRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
+            xResizingTriangle.Visibility = Visibility.Visible;
+            Selected = true;
+
+        }
+
+        private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var vm = DataContext as VideoRegionViewModel;
+
+            if (!vm.Editable)
+                return;
+
+            if (Selected)
+                this.Deselect();
+            else
+                this.Select();
+
+        }
         private void IntervalRectangle_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             Bound1_OnManipulationDelta(sender,e);

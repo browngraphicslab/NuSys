@@ -85,10 +85,18 @@ namespace NuSysApp
         }
         private void DisplayedRegion_OnSelected(object sender, bool selected)
         {
-//            SelectedRegion?.Deselected();
- //           SelectedRegion = (ImageRegionView)sender;
-   //         SelectedRegion.Selected();
-           
+            //            SelectedRegion?.Deselected();
+            //           SelectedRegion = (ImageRegionView)sender;
+            //         SelectedRegion.Selected();
+
+        }
+        private void AudioPlayer_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var vm = DataContext as AudioDetailHomeTabViewModel;
+            foreach (var regionView in vm.RegionViews)
+            {
+                regionView.Deselect();
+            }
         }
         private void ControllerOnDisposed(object source)
         {

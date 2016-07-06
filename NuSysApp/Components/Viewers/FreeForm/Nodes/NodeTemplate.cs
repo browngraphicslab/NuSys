@@ -424,7 +424,7 @@ namespace NuSysApp
                             {
                                 SessionController.Instance.LinkController.RequestLink(new LinkId(dc.ContentId),new LinkId( vm.ContentId));
                             }
-                            vm.Controller.RequestVisualLinkTo();
+                         //   vm.Controller.RequestVisualLinkTo();
                         }
                         if (_currenDragMode == DragMode.PresentationLink)
                         {
