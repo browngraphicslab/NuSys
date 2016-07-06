@@ -537,7 +537,7 @@ namespace NuSysApp
             }
             catch (Exception e)
             {
-                throw new Exception("Exception caught during writing to server data writer");
+                throw new Exception("Exception caught during writing to server data writer.  Reason: "+e.Message);
             }
         }
         public async Task<Dictionary<string, Dictionary<string, object>>> GetRepo()

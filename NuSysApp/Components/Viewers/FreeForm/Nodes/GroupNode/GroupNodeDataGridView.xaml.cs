@@ -76,8 +76,10 @@ namespace NuSysApp
                
                 
                 var info = (GroupNodeDataGridInfo) src.DataContext;
+                Debug.WriteLine(info.Id);
                 _id = info.Id;
             }
+            args.Handled = true;
         }
 
         private async void OnPointerReleased(object source, PointerRoutedEventArgs args)
