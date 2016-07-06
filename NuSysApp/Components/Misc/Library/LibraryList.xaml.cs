@@ -41,7 +41,8 @@ namespace NuSysApp
         private LibraryView _library;
         private Dictionary<string, bool> _reverseTable = new Dictionary<string, bool>();
 
-        private bool _singleTap; 
+        private bool _singleTap;
+        private bool _drag;
         public LibraryList(LibraryView library, LibraryPageViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
         {
             this.DataContext = vm;
@@ -113,13 +114,6 @@ namespace NuSysApp
             _x = e.GetCurrentPoint(view).Position.X-25;
             _y = e.GetCurrentPoint(view).Position.Y-25;
         }
-        //private void ListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
-        //{
-
-        //    LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
-
-        //    SessionController.Instance.SessionView.ShowDetailView(SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId));
-        //}
         private async void Sort_Button_Click(object sender, RoutedEventArgs e)
         {
             var btnStr = ((Button) sender).Content.ToString();
@@ -163,58 +157,39 @@ namespace NuSysApp
 
         private void LibraryListItem_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            var elem = (FrameworkElement)sender;
-            var pos = elem.TransformToVisual(ListView).TransformPoint(e.Position);
-
-            if (pos.X < Width && pos.X > 0 && pos.Y > 0 && pos.Y < xGrid.ActualHeight)
+            LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
+            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(itemTemplate.ContentID);
+            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
             {
-                Border border = (Border) VisualTreeHelper.GetChild(ListView, 0);
-                ScrollViewer scrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
-                if (scrollViewer != null)
-                {
-                    scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta.Translation.Y);
-                }
+                e.Handled = true;
+                return;
+            }
 
+            var el = (FrameworkElement)sender;
+            var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
+
+            var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(sp, null).Where(i => i is LibraryView);
+            if (itemsBelow.Any())
+            {
+                SessionController.Instance.SessionView.LibraryDraggingRectangle.Hide();
             }
             else
             {
-                LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
-                LibraryElementModel element = SessionController.Instance.ContentController.GetContent(itemTemplate.ContentID);
-                if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
-                {
-                    e.Handled = true;
-                    return;
-                }
+                SessionController.Instance.SessionView.LibraryDraggingRectangle.Show();
 
-                var el = (FrameworkElement)sender;
-                var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
-
-                var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(sp, null).Where(i => i is LibraryView);
-                if (itemsBelow.Any())
-                {
-                    SessionController.Instance.SessionView.LibraryDraggingRectangle.Hide();
-                }
-                else
-                {
-                    SessionController.Instance.SessionView.LibraryDraggingRectangle.Show();
-
-                }
-                var view = SessionController.Instance.SessionView;
-                var rect = view.LibraryDraggingRectangle;
-                var t = (CompositeTransform)rect.RenderTransform;
-
-                t.TranslateX += e.Delta.Translation.X;
-                t.TranslateY += e.Delta.Translation.Y;
-
-                _x += e.Delta.Translation.X;
-                _y += e.Delta.Translation.Y;
-
-                _propertiesWindow.Visibility = Visibility.Collapsed;
             }
+            var view = SessionController.Instance.SessionView;
+            var rect = view.LibraryDraggingRectangle;
+            var t = (CompositeTransform)rect.RenderTransform;
 
+            t.TranslateX += e.Delta.Translation.X;
+            t.TranslateY += e.Delta.Translation.Y;
+
+            _x += e.Delta.Translation.X;
+            _y += e.Delta.Translation.Y;
+
+            _propertiesWindow.Visibility = Visibility.Collapsed;
             
-
-
         }
 
         private async void LibraryListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
