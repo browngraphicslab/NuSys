@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-﻿  MuPDFWinRT.vcxproj -> C:\Users\nusys\Documents\Trent_Repo_2\nusys\MuPDFWinRT\Win8\ARM\Debug\MuPDFWinRT.dll
-=======
 ﻿  Document.cpp
   LinkInfoInternal.cpp
   LinkInfoRemote.cpp
@@ -15,5 +12,4 @@ LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
 LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
   Generating code
   Finished generating code
-  MuPDFWinRT.vcxproj -> C:\Users\tiffanycitra\Documents\nusys_repo\nusys\MuPDFWinRT\Win8\ARM\Debug\MuPDFWinRT.dll
->>>>>>> origin/dev
+  MuPDFWinRT.vcxproj -> C:\Users\graphics_lab\Documents\Trent_Nusys\nusys_harsh_test\nusys\MuPDFWinRT\Win8\ARM\Debug\MuPDFWinRT.dll
