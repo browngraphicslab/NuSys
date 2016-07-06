@@ -418,6 +418,10 @@ namespace NuSysApp
                     await stream.WriteAsync(bytes, 0, bytes.Length);
                 }
             }
+            catch (UnauthorizedAccessException unAuth)
+            {
+                throw new UnauthorizedAccessException("Couldn't write to file most likely because it is already open");
+            }
             catch (Exception e)
             {
                 throw new Exception("couldn't write to file because "+e.Message);
