@@ -28,51 +28,23 @@ using Windows.Media.SpeechRecognition;
 namespace NuSysApp
 {
     
-    public sealed partial class LinkDetailView : AnimatableUserControl
+    public sealed partial class LinkDetailHomeTabView : AnimatableUserControl
     {
-        private SpeechRecognizer _recognizer;
-        private bool _isRecording;
-        private FreeFormNodeViewFactory _factory;
-
-        public LinkDetailView(LinkViewModel vm)
+        
+        public LinkDetailHomeTabView(LinkHomeTabViewModel vm)
         {
 
             InitializeComponent();
             DataContext = vm;
-
-            _factory = new FreeFormNodeViewFactory();
-
-            this.AddChildren();
-
+            
         }
 
-        public async Task AddChildren()
-        { // TODO: refactor
-            /*
-            var vm = (LinkViewModel) DataContext;
-            var atomvm1 = vm.Atom1;
-            var atomvm2 = vm.Atom2;
 
-            var atomview1 = await _factory.CreateFromSendable(atomvm1.Model, null);
-            var atomview2 = await _factory.CreateFromSendable(atomvm2.Model, null);
-            //var linkview = await _factory.CreateFromSendable(vm.Model, new List<FrameworkElement> {atomview1, atomview2});
-
-            atomview1.RenderTransform = new CompositeTransform();
-            atomview2.RenderTransform = new CompositeTransform();
-            atomview1.IsHitTestVisible = false;
-            atomview2.IsHitTestVisible = false;
-            //linkview.RenderTransform = new CompositeTransform();
-
-            //Canvas.SetLeft(atomview1, 0);
-            Canvas.SetLeft(atomview2, xCanvas.ActualWidth - atomview2.Width);
-            Canvas.SetTop(atomview2, xCanvas.ActualHeight - atomview2.Height);
-
-            xCanvas.Children.Add(atomview1);
-            xCanvas.Children.Add(atomview2);
-            //xGrid.Children.Add(linkview);
-            */
-
+        private void TextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            var vm = DataContext as LinkHomeTabViewModel;
+            var textBox = sender as TextBox;
+            vm?.UpdateAnnotation(textBox?.Text);
         }
-
     }
 }
