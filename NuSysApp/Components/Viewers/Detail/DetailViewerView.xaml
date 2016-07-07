@@ -196,10 +196,10 @@
                     </Grid>
                 </PivotItem>
 
-                <PivotItem Header="Link Editor">
+                <PivotItem Header="Links">
                     <local:LinkEditorTab x:Name="xLinkEditorView" Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Top" />
                 </PivotItem>
-                <PivotItem Header="Region Editor">
+                <PivotItem Header="Regions">
                     <local:RegionEditorTabView x:Name="xRegionEditorView"  Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></local:RegionEditorTabView>
                 </PivotItem>
                    
