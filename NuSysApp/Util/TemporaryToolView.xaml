@@ -42,7 +42,7 @@
                                 <Setter Property="ItemsPanel">
                                     <Setter.Value>
                                         <ItemsPanelTemplate>
-                                            <controls:UniformGrid Columns="1"/>
+                                            <controls:UniformGrid x:Name="xLegendGrid" Columns="1"/>
                                         </ItemsPanelTemplate>
                                     </Setter.Value>
                                 </Setter>

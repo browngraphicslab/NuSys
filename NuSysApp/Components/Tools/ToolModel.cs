@@ -14,6 +14,7 @@ namespace NuSysApp
             Type,
             Creator,
             Date,
+            LastEditedDate,
             AllMetadata,
             MetadataKeys,
             MetadataValues

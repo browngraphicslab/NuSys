@@ -8,6 +8,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -46,6 +47,8 @@ namespace NuSysApp
         private const int MinHeight = 300;
         private const int ListBoxHeightOffset = 175;
 
+        private ResourceDictionaryCollection _pieSeriesPalette;
+
         private double _x;
         private double _y;
 
@@ -76,6 +79,7 @@ namespace NuSysApp
             bb.Path = new PropertyPath("PieChartDictionary");
             xPieSeries.SetBinding(PieSeries.ItemsSourceProperty, bb);
             //(PieChart.Series[0] as PieSeries).ItemsSource = (DataContext as BasicToolViewModel).PieChartDictionary;
+            CreateColorPallete();
 
         }
         private void Vm_PropertiesToDisplayChanged()
@@ -259,6 +263,7 @@ namespace NuSysApp
             {
                 _dragItem.Visibility = Visibility.Visible;
                 _currentDragMode = DragMode.Filter;
+                
             }
             if ((_dragItem.RenderTransform as CompositeTransform) != null)
             {
@@ -271,6 +276,8 @@ namespace NuSysApp
                 t.TranslateY += e.Delta.Translation.Y / zoom;
             }
         }
+
+        
 
         private async void xListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
@@ -458,7 +465,31 @@ namespace NuSysApp
         {
             var selected = (sender as PieSeries).SelectedItem is KeyValuePair<string, int> ? (KeyValuePair<string, int>)(sender as PieSeries).SelectedItem : new KeyValuePair<string, int>();
             (DataContext as BasicToolViewModel).Selection = selected.Key;
+            var x = xPieChart;
             xPieSeries.ReleasePointerCapture(e.Pointer);
+        }
+
+        public void CreateColorPallete()
+        {
+            _pieSeriesPalette = new ResourceDictionaryCollection();
+
+            Brush currentBrush = new SolidColorBrush(Colors.Red); 
+
+            ResourceDictionary pieDataPointStyles = new ResourceDictionary();
+            Style stylePie = new Style(typeof(PieDataPoint));
+            stylePie.Setters.Add(new Setter(PieDataPoint.BackgroundProperty, currentBrush));
+            pieDataPointStyles.Add("DataPointStyle", stylePie);
+            _pieSeriesPalette.Add(pieDataPointStyles);
+
+            currentBrush = new SolidColorBrush(Colors.Blue); 
+
+            pieDataPointStyles = new ResourceDictionary();
+            stylePie = new Style(typeof(PieDataPoint));
+            stylePie.Setters.Add(new Setter(PieDataPoint.BackgroundProperty, currentBrush));
+            pieDataPointStyles.Add("DataPointStyle", stylePie);
+            _pieSeriesPalette.Add(pieDataPointStyles);
+
+            xPieChart.Palette = _pieSeriesPalette;
         }
 
 

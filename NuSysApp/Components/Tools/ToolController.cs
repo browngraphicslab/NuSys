@@ -183,6 +183,15 @@ namespace NuSysApp
             }
             return DateTime.Parse(libraryElementModel.Timestamp).ToStartOfDay().ToString();
         }
+
+        protected string GetLastEditedDate(LibraryElementModel libraryElementModel)
+        {
+            if (libraryElementModel.LastEditedTimestamp == null)
+            {
+                return DateTime.UtcNow.ToStartOfDay().ToString();
+            }
+            return DateTime.Parse(libraryElementModel.LastEditedTimestamp).ToStartOfDay().ToString();
+        }
         public Dictionary<string, List<string>> GetMetadata(string libraryId)
         {
             var element = SessionController.Instance.ContentController.GetContent(libraryId);
@@ -193,6 +202,7 @@ namespace NuSysApp
                 metadata["Title"] = new List<string>(){ element.Title};
                 metadata["Type"] = new List<string>() { element.Type.ToString()};
                 metadata["Date"] = new List<string>() { GetDate(element)};
+                metadata["LastEditedDate"] = new List<string>() { GetLastEditedDate(element) };
                 metadata["Creator"] = new List<string>() { element.Creator};
                 return metadata;
             }
