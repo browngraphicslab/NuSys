@@ -209,25 +209,21 @@ namespace NuSysApp
             e.Handled = true;
         }
 
-        private void xList_PointerPressed(object sender, PointerRoutedEventArgs e)
+        private void xListItem_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             _x = e.GetCurrentPoint(xCanvas).Position.X - 25;
             _y = e.GetCurrentPoint(xCanvas).Position.Y - 25;
+           
         }
 
 
-        private async void xList_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        private async void xListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             
             //var x = e.OriginalSource as ListBox;
             //var y = x.SelectedItems;
             if (xCanvas.Children.Contains(_dragItem))
                 xCanvas.Children.Remove(_dragItem);
-
-            
-
-
-            
             if (_currentDragMode == DragMode.Collection)
             {
                 _currentDragMode = DragMode.Filter;
@@ -241,7 +237,7 @@ namespace NuSysApp
 
         }
 
-        private void xList_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        private void xListItem_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var el = (FrameworkElement)sender;
             var sp = el.TransformToVisual(xPropertiesList).TransformPoint(e.Position);
@@ -278,7 +274,7 @@ namespace NuSysApp
             }
         }
 
-        private async void xList_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        private async void xListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             
             
@@ -474,7 +470,14 @@ namespace NuSysApp
             xPieSeries.ReleasePointerCapture(e.Pointer);
         }
 
-        
+
+        //private void xListItem_OnTapped(object sender, TappedRoutedEventArgs e)
+        //{
+        //    if (xPropertiesList.SelectedItem != null && (xPropertiesList.SelectedItem as string).Equals(((sender as Grid).Children[0] as TextBlock).Text))
+        //    {
+        //        (DataContext as ToolViewModel).Controller.UnSelect();
+        //    }
+        //}
     }
 
 }

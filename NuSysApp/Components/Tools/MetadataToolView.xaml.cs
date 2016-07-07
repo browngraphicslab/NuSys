@@ -71,7 +71,7 @@ namespace NuSysApp
             {
                 var x = xMetadataKeysList.SelectedItems[0];
                 xMetadataValuesList.ItemsSource =
-                    vm.AllMetadataDictionary[(string)xMetadataKeysList.SelectedItems[0]];// (xMetadataKeysList.SelectedItems[0] is KeyValuePair<string, HashSet<string>> ? (KeyValuePair<string, HashSet<string>>)xMetadataKeysList.SelectedItems[0] : new KeyValuePair<string, HashSet<ToolItemTemplate>>()).Value;
+                    vm.AllMetadataDictionary[(string)xMetadataKeysList.SelectedItems[0]];
                 vm.Selection = new Tuple<string, string>((string)xMetadataKeysList.SelectedItems[0], null);
             }
 
@@ -393,5 +393,21 @@ namespace NuSysApp
                 _currentDragMode = DragMode.Value;
             }
         }
+
+        //private void KeyListItem_OnTapped(object sender, TappedRoutedEventArgs e)
+        //{
+        //    if (xMetadataKeysList.SelectedItem != null && (xMetadataKeysList.SelectedItem as string).Equals(((sender as Grid).Children[0] as TextBlock).Text))
+        //    {
+        //        //(DataContext as ToolViewModel).Controller.UnSelect();
+        //    }
+        //}
+
+        //private void ValueListItem_OnTapped(object sender, TappedRoutedEventArgs e)
+        //{
+        //    if (xMetadataValuesList.SelectedItem != null && (xMetadataValuesList.SelectedItem as string).Equals(((sender as Grid).Children[0] as TextBlock).Text))
+        //    {
+        //        ((DataContext as ToolViewModel).Controller as MetadataToolController).SetSelection(new Tuple<string, string>((DataContext as MetadataToolViewModel).Selection.Item1, null));
+        //    }
+        //}
     }
 }

@@ -128,6 +128,8 @@ namespace NuSysApp
             }
         }
 
+        public abstract void UnSelect();
+
         public virtual void Dispose()
         {
             foreach(var parentController in new List<ToolController>(Model.ParentIds.Select(id => ToolControllers.ContainsKey(id) ? ToolControllers[id] : null)))
