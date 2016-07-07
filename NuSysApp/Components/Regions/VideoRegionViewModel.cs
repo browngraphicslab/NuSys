@@ -61,7 +61,7 @@ namespace NuSysApp
         public double RectangleHeight {
             get
             {
-                return _height * ContainerViewModel.GetHeight();
+                return Math.Max(0, _height * ContainerViewModel.GetHeight());
             }
             set
             {
@@ -70,7 +70,7 @@ namespace NuSysApp
             }
         }
         public double RectangleWidth {
-            get { return _width*ContainerViewModel.GetWidth(); }
+            get { return Math.Max(0, _width*ContainerViewModel.GetWidth()); }
             set
             {
                 _width = value;
@@ -81,7 +81,7 @@ namespace NuSysApp
         {
             get
             {
-                return (_intervalEnd - _intervalStart) * (ContainerViewModel.GetWidth()-20);
+                return Math.Max(0, (_intervalEnd - _intervalStart) * (ContainerViewModel.GetWidth()-20));
             }
             set
             {
@@ -93,7 +93,7 @@ namespace NuSysApp
         {
             get
             {
-                return _intervalRegionTranslateY * ContainerViewModel.GetHeight() + 10;
+                return Math.Max(0, _intervalRegionTranslateY * ContainerViewModel.GetHeight() + 10);
             }
             set
             {
@@ -103,7 +103,7 @@ namespace NuSysApp
         }
         public double IntervalStart
         {
-            get { return _intervalStart * (ContainerViewModel.GetWidth()-20) + 10; }
+            get { return Math.Max(0, _intervalStart * (ContainerViewModel.GetWidth()-20) + 10); }
             set
             {
                 Debug.Assert(!Double.IsNaN(value));
@@ -114,7 +114,7 @@ namespace NuSysApp
         }
         public double IntervalEnd
         {
-            get { return _intervalEnd * (ContainerViewModel.GetWidth()-20)+10; }
+            get { return Math.Max(0, _intervalEnd * (ContainerViewModel.GetWidth() - 20) + 10); }
             set
             {
                 _intervalEnd = value;
@@ -174,6 +174,7 @@ namespace NuSysApp
         {
             RectangleWidth = width;
             RectangleHeight = height;
+
         }
 
         private void BaseSizeChanged(object sender, double width, double height)
