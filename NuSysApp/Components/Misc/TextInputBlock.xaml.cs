@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Navigation;
 using MyToolkit.UI;
 using NuSysApp.Components.Misc.SpeechToTextUI;
 using SharpDX;
+using Color = Windows.UI.Color;
 using Point = Windows.Foundation.Point;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -42,8 +43,10 @@ namespace NuSysApp
         public static readonly DependencyProperty BubbleTopProperty = DependencyProperty.RegisterAttached("BubbleLocation", typeof(bool), typeof(TextInputBlock), null);
         public static readonly DependencyProperty HeightProperty = DependencyProperty.RegisterAttached("SetHeight", typeof(double), typeof(TextInputBlock), null);
         public static readonly DependencyProperty ButtonBgProperty = DependencyProperty.RegisterAttached("ButtonBg", typeof(Windows.UI.Color), typeof(TextInputBlock), null);
+        public static readonly DependencyProperty HasBackgroundProperty = DependencyProperty.RegisterAttached("HasBackground", typeof(bool), typeof(TextInputBlock), null);
         public static readonly DependencyProperty ButtonStrokeProperty = DependencyProperty.RegisterAttached("ButtonStroke", typeof(Windows.UI.Color), typeof(TextInputBlock), null);
         public static readonly DependencyProperty TextProperty = DependencyProperty.RegisterAttached("Text", typeof(string), typeof(TextInputBlock), null);
+        public static readonly DependencyProperty TextColorProperty = DependencyProperty.RegisterAttached("TextColor", typeof(Windows.UI.Color), typeof(TextInputBlock), null);
 
         public TextInputBlock()
         {
@@ -66,6 +69,14 @@ namespace NuSysApp
         }
         */
 
+        public bool HasBackground
+        {
+            set
+            {
+                if (!value) TextBox.Background = new SolidColorBrush(Color.FromArgb(0, 255, 255, 255));
+            }
+        }
+
         public Windows.UI.Color ButtonBg
         {
             set
@@ -84,6 +95,11 @@ namespace NuSysApp
                 RecordButton.Foreground = new SolidColorBrush(value);
                 InkButton.Foreground = new SolidColorBrush(value);
             }
+        }
+
+        public Windows.UI.Color TextColor
+        {
+            set { TextBox.Foreground = new SolidColorBrush(value); }
         }
 
         public bool LeftJustified

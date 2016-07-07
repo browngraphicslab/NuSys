@@ -71,13 +71,13 @@
                                         </Button>
                                         <Button x:Name="PresentationMode" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,210,0,0">
                                             <StackPanel>
-                                                <Image Source="ms-appx:///Assets/powerpointIcon.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                                                <TextBlock Text="Present" TextAlignment="Center" Foreground="#9CC5C2" FontSize="12"></TextBlock>
+                                                <Image Source="ms-appx:///Assets/present icon.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                                                <TextBlock Text="Present" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
                                             </StackPanel>
                                         </Button>
                                         <Button x:Name ="ExplorationMode" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,280,0,0">
                                             <StackPanel>
-                                                <Image Source="ms-appx:///Assets/node icons/icon_exploration.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                                                <Image Source="/Assets/exploration icon.png" Height="28" Width="28" Stretch="Uniform"></Image>
                                                 <TextBlock Text="Explore" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
                                             </StackPanel>
                                         </Button>
