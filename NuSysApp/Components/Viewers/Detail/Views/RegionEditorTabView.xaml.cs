@@ -56,14 +56,18 @@ namespace NuSysApp
                     region = detailHomeTabViewModel?.GetNewRegion();
                     break;
                 case ElementType.Collection:
+                    return;
 
                     break;
                 case ElementType.Text:
+                    return;
 
                     break;
                 case ElementType.PDF:
                     region = detailHomeTabViewModel?.GetNewRegion();
                     break;
+                case ElementType.Word:
+                    return;
                 default:
                     region = null;
                     break;

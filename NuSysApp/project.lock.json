@@ -13295,7 +13295,7 @@
     },
     "Microsoft.ApplicationInsights.WindowsApps/1.0.0": {
       "sha512": "fNCAjIwvbTV+G0dT14bgM5tptsqeSaKQaCrlq7QknOq1Xdm8ZmgsDYddMgXkvykyKLjWyU6fKuOpj6fsQJy+wQ==",
-      "type": "package",
+      "type": "Package",
       "files": [
         "[Content_Types].xml",
         "_rels/.rels",

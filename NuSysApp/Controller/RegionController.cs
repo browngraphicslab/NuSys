@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -54,7 +55,18 @@ namespace NuSysApp
         }
         public Dictionary<string, MetadataEntry> GetMetadata()
         {
+           if (Model == null)
+            {
+                return null;
+            }
+
+           if (Model.Metadata == null)
+            {
+                Model.Metadata = new ConcurrentDictionary<string, MetadataEntry>(new Dictionary<string, MetadataEntry>());
+                UpdateServer();
+            }
             return new Dictionary<string, MetadataEntry>(Model?.Metadata);
+
         }
 
         //public bool AddMetadata(MetadataEntry entry)
@@ -208,6 +220,11 @@ namespace NuSysApp
                 SetTitle(region.Name);
             }
             SetBlockServerBoolean(false);//THIS is a must otherwise changes wont be saved
+        }
+
+        public string TabId()
+        {
+            return Model.Id;
         }
         #endregion
 

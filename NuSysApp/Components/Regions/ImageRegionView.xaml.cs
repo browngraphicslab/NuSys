@@ -173,7 +173,7 @@ namespace NuSysApp
 
 
             //CHANGE IN WIDTH
-            if (xMainRectangle.Width + rt.TranslateX + e.Delta.Translation.X <= rightXBound)
+            if (xMainRectangle.Width + rt.TranslateX + e.Delta.Translation.X - diffWidth/2 <= rightXBound)
             {
                 xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
                 vm.Width = xMainRectangle.Width;
@@ -182,7 +182,7 @@ namespace NuSysApp
             }
             //CHANGE IN HEIGHT
             
-            if (xMainRectangle.Height + rt.TranslateY + e.Delta.Translation.Y <= downYBound)
+            if (xMainRectangle.Height + rt.TranslateY + e.Delta.Translation.Y - diffHeight/2 <= downYBound)
             {
                 xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
                 vm.Height = xMainRectangle.Height;
@@ -365,7 +365,7 @@ namespace NuSysApp
         private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var vm = DataContext as RegionViewModel;
-            SessionController.Instance.SessionView.ShowDetailView(vm?.LibraryElementController);
+            //SessionController.Instance.SessionView.ShowDetailView(vm?.LibraryElementController);
             var regionController = vm?.RegionController;
             SessionController.Instance.SessionView.ShowDetailView(regionController);
         }

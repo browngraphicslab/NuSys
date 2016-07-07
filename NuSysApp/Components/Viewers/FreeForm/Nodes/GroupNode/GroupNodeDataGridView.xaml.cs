@@ -64,7 +64,7 @@ namespace NuSysApp
             var src = (FrameworkElement) args.OriginalSource;
             if (src.DataContext is GroupNodeDataGridInfo)
             {
-                
+                src.ManipulationMode = ManipulationModes.All; // for dragging out via touch
                 _drag = new Image();//TODO temporary
                 BitmapImage textimage = new BitmapImage(new Uri("ms-appx:///Assets/icon_new_workspace.png", UriKind.Absolute));
                 _drag.Source = textimage;
@@ -97,7 +97,6 @@ namespace NuSysApp
             SessionController.Instance.SessionView.MainCanvas.Children.Remove(_drag);
             _drag = null;
             _id = null;
-            
         }
    
 
