@@ -110,7 +110,7 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid x:Name="LibraryListItem" BorderBrush="{StaticResource color1}" BorderThickness="0,0,0,1" Tapped="LibraryListItem_OnTapped" VerticalAlignment="Center" Padding="4,2,4,2" Margin="0" 
-                          Background="White" ManipulationMode="TranslateX, TranslateY" PointerPressed="LibraryListItem_OnPointerPressed" IsDoubleTapEnabled="True" 
+                          Background="White" ManipulationMode="TranslateX, TranslateY" PointerPressed="LibraryListItem_OnPointerPressed" IsDoubleTapEnabled="True"
                           ManipulationStarted="LibraryListItem_ManipulationStarted"  ManipulationDelta="LibraryListItem_ManipulationDelta" ManipulationCompleted="LibraryListItem_ManipulationCompleted" RightTapped="LibraryListItem_OnRightTapped"
                           >
                         <Grid.ColumnDefinitions>
