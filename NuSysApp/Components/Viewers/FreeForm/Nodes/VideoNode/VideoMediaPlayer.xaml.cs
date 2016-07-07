@@ -131,6 +131,13 @@ namespace NuSysApp
             }
         }
 
+        public void onSeekedTo(double time)
+        {
+            double millliseconds = playbackElement.NaturalDuration.TimeSpan.TotalMilliseconds * time;
+
+            TimeSpan timespan = new TimeSpan(0, 0, 0, 0, (int)millliseconds);
+            playbackElement.Position = timespan;
+        }
         private void ControllerOnDisposed(object source)
         {
             playbackElement.Stop();

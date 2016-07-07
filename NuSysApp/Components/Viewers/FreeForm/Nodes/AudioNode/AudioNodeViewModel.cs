@@ -31,7 +31,8 @@ namespace NuSysApp
 
         public delegate void VisualizationLoadedEventHandler();
         public event VisualizationLoadedEventHandler OnVisualizationLoaded;
-
+        public delegate void OnRegionSeekPassingHandler(double time);
+        public event OnRegionSeekPassingHandler OnRegionSeekPassing;
         public AudioNodeViewModel(ElementController controller) : base(controller)
         {
             Width = controller.Model.Width;
@@ -113,11 +114,18 @@ namespace NuSysApp
                     var viewmodel = new AudioRegionViewModel(model as TimeRegionModel, elementController, regionController,this);
                     viewmodel.Editable = false;
                     var view = new AudioRegionView(viewmodel);
+                    view.OnRegionSeek += View_OnRegionSeek;
                     collection.Add(view);
                 }   
                 return collection;
             }
         }
+
+        private void View_OnRegionSeek(double time)
+        {
+            OnRegionSeekPassing?.Invoke(time);
+        }
+
         public override async Task Init()
         {
             if (SessionController.Instance.ContentController.ContainsAndLoaded(ContentId))

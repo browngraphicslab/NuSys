@@ -33,7 +33,7 @@
         <Grid.RenderTransform>
             <CompositeTransform TranslateY="{Binding IntervalRegionTranslateY}"></CompositeTransform>
         </Grid.RenderTransform>
-            <Rectangle x:Name="IntervalRectangle" PointerPressed="xMainRectangle_PointerPressed" Width="{Binding IntervalRegionWidth}" Fill="LightCyan" Height="25"  Opacity=".2" HorizontalAlignment="Left" VerticalAlignment="Top" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" ManipulationDelta="IntervalRectangle_OnManipulationDelta" >
+            <Rectangle x:Name="IntervalRectangle" PointerPressed="xMainRectangle_PointerPressed" Width="{Binding IntervalRegionWidth}" Fill="LightCyan" Height="25"  Opacity=".2" HorizontalAlignment="Left" VerticalAlignment="Top" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" ManipulationDelta="IntervalRectangle_OnManipulationDelta" Tapped="IntervalRectangle_OnTapped">
                 <Rectangle.RenderTransform>
                     <CompositeTransform TranslateX="{Binding IntervalStart}"/>
                 </Rectangle.RenderTransform>

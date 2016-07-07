@@ -73,6 +73,7 @@ namespace NuSysApp
             vm.OnGetMediaPlayerHeight += OnGetMediaPlayerHeight;
             VideoMediaPlayer.MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
             VideoMediaPlayer.ScrubBar.ValueChanged += vm.ScrubBarOnValueChanged;
+            vm.OnRegionSeekPassing += VideoMediaPlayer.onSeekedTo;
         }
 
         private void MediaPlayer_MediaOpened(object sender, RoutedEventArgs e)

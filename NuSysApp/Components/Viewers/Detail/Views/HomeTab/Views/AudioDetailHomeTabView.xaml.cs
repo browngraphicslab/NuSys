@@ -64,6 +64,7 @@ namespace NuSysApp
             _temporaryLinkVisual.Opacity = 1;
 */
             vm.Controller.Disposed += ControllerOnDisposed;
+            vm.OnRegionSeekPassing += MediaPlayer.onSeekedTo;
             vm.View = this;
             
 
