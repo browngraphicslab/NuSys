@@ -256,16 +256,16 @@ namespace NuSysApp
             if (ImageSource == null)
                 return;
 
-            if (ImageSource.PixelWidth > ImageSource.PixelHeight)
-            {
-                var r = ImageSource.PixelHeight / (double)ImageSource.PixelWidth;
-                base.SetSize(width, width * r);
-            }
-            else
-            {
-                var r = ImageSource.PixelWidth / (double)ImageSource.PixelHeight;
-                base.SetSize(height * r, height);
-            }
+            //if (ImageSource.PixelWidth > ImageSource.PixelHeight)
+            //{
+            //    var r = ImageSource.PixelHeight / (double)ImageSource.PixelWidth;
+            //    base.SetSize(width, width * r);
+            //}
+            //else
+            //{
+            //    var r = ImageSource.PixelWidth / (double)ImageSource.PixelHeight;
+            //    base.SetSize(height * r, height);
+            //}
         }
 
         protected override void OnSizeChanged(object source, double width, double height)
@@ -277,7 +277,14 @@ namespace NuSysApp
                 return;
             }
 
-            SetSize(width, height);
+            base.SetSize(width, height);
+
+            //SetSize(width, height);
+        }
+
+        public override double GetRatio()
+        {
+            return ImageSource == null ? 1 : (double)ImageSource.PixelHeight / (double)ImageSource.PixelWidth;
         }
 
         public string GetAllText()
