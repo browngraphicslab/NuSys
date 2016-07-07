@@ -126,21 +126,17 @@ namespace NuSysApp
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             _doubleTapped = true;
-            // get the data type of the list item template
-            var groupNodeDataGridInfo = (e.OriginalSource as FrameworkElement)?.DataContext as GroupNodeDataGridInfo;
 
-            var elementContoller = SessionController.Instance.IdToControllers[groupNodeDataGridInfo?.Id];
-            var libraryElementModelId = elementContoller?.LibraryElementModel.LibraryElementId;
+            // get the item template from the sender
+            var itemTemplate = (e.OriginalSource as FrameworkElement)?.DataContext as GroupNodeDataGridInfo;
+            // get the library element model using the content id
+            var element = SessionController.Instance.ContentController.GetContent(itemTemplate?.Id);
+            // get the library element controller using the library element id
+            var controller =
+                SessionController.Instance.ContentController.GetLibraryElementController(element?.LibraryElementId);
 
-            // get the controller from the data type
-            var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-
-            // return if the controller is null
-            //Debug.Assert(controller != null);
-            if (controller == null)
-            {
-                return;
-            }
+            // make sure controller is not null
+            Debug.Assert(controller != null);
 
             // check for unsupported types
             if (controller.LibraryElementModel.Type == ElementType.Word || 
@@ -150,7 +146,7 @@ namespace NuSysApp
                 return;
             }
 
-            // open the detail viewer
+            // show the detail viewer
             SessionController.Instance.SessionView.ShowDetailView(controller);
         }
 
