@@ -180,9 +180,15 @@ namespace NuSysApp
         }*/
 
         #region Linking methods
-        public void RequestAddNewLink(LinkId idToLinkTo)
+        public async Task RequestAddNewLink(LinkId idToLinkTo, string title)
         {
-            SessionController.Instance.LinkController.RequestLink(new LinkId( SessionController.Instance.RegionsController.GetLibraryElementModelId(this.Model.Id),this.Model.Id), idToLinkTo);
+            var m = new Message();
+            var contentId = SessionController.Instance.RegionsController.GetLibraryElementModelId(this.Model.Id); // The ID of the library element this region is associated with.
+            m["id1"] = new LinkId(contentId, this.Model.Id);
+            m["id2"] = idToLinkTo;
+            m["title"] = title;
+            await SessionController.Instance.LinkController.RequestLink(m);
+            //SessionController.Instance.LinkController.RequestLink(new LinkId( SessionController.Instance.RegionsController.GetLibraryElementModelId(this.Model.Id),this.Model.Id), idToLinkTo);
         }
 
         public void RequestRemoveLink(LinkId linkLibraryElementID)

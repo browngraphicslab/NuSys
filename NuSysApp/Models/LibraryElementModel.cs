@@ -53,6 +53,10 @@ namespace NuSysApp
 
         public virtual async Task UnPack(Message message)
         {
+            if (message.GetString("title") != null)
+            {
+                Title = message.GetString("title");
+            }
             if (message.ContainsKey("keywords"))
             {
                 Keywords = new HashSet<Keyword>(message.GetList<Keyword>("keywords"));
