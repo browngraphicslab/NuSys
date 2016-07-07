@@ -363,10 +363,18 @@ namespace NuSysApp
 
         private void HeaderPanel_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
+            // set _singleTap to false to stop single tap event from occuring
             _singleTap = false;
-            LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
-            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(itemTemplate.ContentID);
-            SessionController.Instance.SessionView.ShowDetailView(SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId));
+
+            // get the item template from the sender
+            var itemTemplate = (sender as Grid)?.DataContext as LibraryItemTemplate;
+            // get the library element model using the content id
+            var element = SessionController.Instance.ContentController.GetContent(itemTemplate?.ContentID);
+            // get the library element controller using the library element id
+            var controller =
+                SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId);
+            // show the detail viewer
+            SessionController.Instance.SessionView.ShowDetailView(controller);
         }
         
         //private void RegionsPanel_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -415,7 +423,6 @@ namespace NuSysApp
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             });
         }
-        
     }
 
 }
