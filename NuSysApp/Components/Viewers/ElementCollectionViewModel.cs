@@ -121,11 +121,11 @@ namespace NuSysApp
             {
                 Debug.Assert(atom.DataContext is ElementViewModel);
                 var vm = (atom.DataContext as ElementViewModel);
-                if (vm.Controller == controller)
+                if (vm?.Controller == controller)
                 {
                     AtomViewList.Remove(atom);
                 }
-                else if(vm.ElementType == ElementType.Link)
+                else if(vm?.ElementType == ElementType.Link)
                 {
                     Debug.Assert(vm is LinkViewModel);
                     var linkVm = vm as LinkViewModel;
