@@ -122,9 +122,8 @@ namespace NuSysApp
             ToolControllers[parentid].LibraryIdsChanged -= ParentLibraryIdsChanged;
             Model.ParentIds.Remove(parentid);
             Model.SetLibraryIds(GetUpdatedDataList());
-            LibraryIdsChanged.Invoke(this, Model.LibraryIds);
+            LibraryIdsChanged?.Invoke(this, Model.LibraryIds);
             ToolControllers[parentid].Disposed -= OnParentDisposed;
-            ToolControllers.Remove(parentid);
         }
 
         public virtual void RemoveParent(ToolController parentController)
@@ -146,6 +145,8 @@ namespace NuSysApp
                 RemoveParent(parentController);
             }
             Disposed?.Invoke(Model.Id);
+            ToolControllers.Remove(Model.Id);
+
         }
 
         public HashSet<string> Filter(HashSet<string> ids)

@@ -66,6 +66,7 @@ namespace NuSysApp
             _propertiesWindow = properties;
             properties.AddedToFavorite += AddToFavorites;
             ListContainer.Children.Add(_libraryList);
+            Searchfield.SetHeight = 34;
             _menu = menu;
             this.updateTabs();
 

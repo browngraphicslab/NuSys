@@ -11,6 +11,19 @@ namespace NuSysApp
 {
     public class SearchViewModel : BaseINPC
     {
+
+        private Visibility _searchExportButtonVisibility;
+
+        public Visibility SearchExportButtonVisibility
+        {
+            get { return _searchExportButtonVisibility; }
+            set
+            {
+                _searchExportButtonVisibility = value;
+                RaisePropertyChanged("SearchExportButtonVisibility");
+            }
+        }
+
         private Visibility _noResultsFound;
 
         public Visibility NoResultsFound
@@ -81,6 +94,7 @@ namespace NuSysApp
                 {
                     NoResultsFound = Visibility.Visible;
                     SearchResultsListVisibility = Visibility.Collapsed;
+                    SearchExportButtonVisibility = Visibility.Collapsed;
                 }
                 return;
             }
@@ -117,6 +131,7 @@ namespace NuSysApp
 
 
                 SearchResultsListVisibility = Visibility.Visible;
+                SearchExportButtonVisibility = Visibility.Visible;
 
             }
             

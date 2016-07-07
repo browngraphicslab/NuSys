@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using MyToolkit.UI;
+using WinRTXamlToolkit.Controls.Extensions;
 
 namespace NuSysApp
 {
@@ -31,6 +32,7 @@ namespace NuSysApp
         private double _y;
         private bool _isSingleTap;
         private HashSet<FrameworkElement> _openInfo;
+        private Point2d _searchExportPos;
 
         public SearchView()
         {
@@ -50,6 +52,9 @@ namespace NuSysApp
                 SessionController.Instance.SessionView.SizeChanged += SessionView_SizeChanged;
 
                 SessionController.Instance.SessionView.MainCanvas.PointerPressed += MainCanvas_PointerPressed;
+
+                _vm.SearchExportButtonVisibility = Visibility.Collapsed;
+
                 // Metadata.ItemsSource = vm.Metadata;
             };
 
@@ -147,11 +152,13 @@ namespace NuSysApp
             xContainer.RowDefinitions.Add(new RowDefinition());
             Grid.SetRow(SearchBarGrid, 0);
             ShowHelpButton.Visibility = Visibility.Visible;
+            _vm.SearchExportButtonVisibility = Visibility.Visible;
         }
 
         private void ShowHelperText()
         {
             ShowHelpButton.Visibility = Visibility.Collapsed;
+            _vm.SearchExportButtonVisibility = Visibility.Collapsed;
             _vm.NoResultsFound = Visibility.Collapsed;
             _vm.PageElements.Clear();
             _vm.SearchViewHelperTextVisibility = Visibility.Visible;
@@ -278,6 +285,18 @@ namespace NuSysApp
             var el = (FrameworkElement)sender;
             var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
 
+
+            // scroll the scroll viewer if sp.X is inside the scrollviewer
+            if (sp.X < Width)
+            {
+                Border border = (Border)VisualTreeHelper.GetChild(ListView, 0);
+                ScrollViewer scrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
+                if (scrollViewer != null)
+                {
+                    scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta.Translation.Y);
+                }
+            }
+
             var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(sp, null).Where(i => i is LibraryView);
             if (itemsBelow.Any())
             {
@@ -367,7 +386,141 @@ namespace NuSysApp
             ShowHelperText();
         }
 
+        /// <summary>
+        /// Adds a library dragging rectangle to represent where the exported collection will be
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XSearchExportButton_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
 
+            // Since we are adding a collection, we should make the dragging rectangle reflect this
+            var view = SessionController.Instance.SessionView;
+            view.LibraryDraggingRectangle.SwitchType(ElementType.Collection);
+            view.LibraryDraggingRectangle.Show();
+            var rect = view.LibraryDraggingRectangle;
+            Canvas.SetZIndex(rect, 3);
+
+            // Make the rectangle movable and set its position
+            rect.RenderTransform = new CompositeTransform();
+            var t = (CompositeTransform)rect.RenderTransform;
+            t.TranslateX += _searchExportPos.X;
+            t.TranslateY += _searchExportPos.Y;
+            e.Handled = true;
+        }
+
+        /// <summary>
+        /// Moves the library dragging rectangle
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XSearchExportButton_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            // Obtain the library dragging rectangle  
+            var view = SessionController.Instance.SessionView;
+            var rect = view.LibraryDraggingRectangle;
+
+            // Update its transform
+            var t = (CompositeTransform)rect.RenderTransform;
+            t.TranslateX += e.Delta.Translation.X;
+            t.TranslateY += e.Delta.Translation.Y;
+
+            // Update the position instance variable
+            _searchExportPos.X += e.Delta.Translation.X;
+            _searchExportPos.Y += e.Delta.Translation.Y;
+
+            // Handled!
+            e.Handled = true;
+        }
+
+        /// <summary>
+        /// Creates a collection based on the search results, and places it where the cursor was left off 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void XSearchExportButton_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            // Hide the library dragging rect
+            var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
+            rect.Hide();
+
+            // Add a collection to the dropped location
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            var dropPoint = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(_searchExportPos);
+            await ExportSearchResultsToCollection(dropPoint);
+            e.Handled = true;
+
+        }
+
+        /// <summary>
+        /// When the search export button is clicked, first find the position
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XSearchExportButton_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var view = SessionController.Instance.SessionView;
+            if (_searchExportPos == null)
+            {
+                _searchExportPos = new Point2d(0,0);
+            }
+            _searchExportPos.X = e.GetCurrentPoint(view).Position.X - 25;
+            _searchExportPos.Y = e.GetCurrentPoint(view).Position.Y - 25;
+            e.Handled = true;
+        }
+
+        /// <summary>
+        /// Exports the search results to a collection, and places the new collection at the passed in point
+        /// @tdgreen, plz comment this, thx. -zkirsche 
+        /// </summary>
+        /// <param name="r"></param>
+        /// <returns></returns>
+        private async Task ExportSearchResultsToCollection(Point r)
+        {
+
+            var metadata = new Dictionary<string, object>();
+            metadata["node_creation_date"] = DateTime.Now;
+
+            // TODO: add the graph/chart
+            var contentId = SessionController.Instance.GenerateId();
+            var newCollectionId = SessionController.Instance.GenerateId();
+
+            var elementMsg = new Message();
+            elementMsg["metadata"] = metadata;
+            elementMsg["width"] = 300;
+            elementMsg["height"] = 300;
+            elementMsg["x"] = r.X;
+            elementMsg["y"] = r.Y;
+            elementMsg["contentId"] = contentId;
+            elementMsg["nodeType"] = ElementType.Collection;
+            elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            elementMsg["id"] = newCollectionId;
+
+
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Search Results for '" + SearchBox.Text + "'"));
+
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
+
+            //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
+
+            var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(r.X, r.Y, contentId, 300, 300, newCollectionId);
+            foreach (var searchResult in _vm.PageElements.ToList().GetRange(0, Math.Min(_vm.PageElements.Count, 10)))
+            {
+                var dict = new Message();
+                dict["title"] = searchResult?.Title;
+                dict["width"] = "300";
+                dict["height"] = "300";
+                dict["nodeType"] = searchResult?.Type;
+                dict["x"] = "50000";
+                dict["y"] = "50000";
+                dict["contentId"] = searchResult?.Id;
+                dict["metadata"] = metadata;
+                dict["autoCreate"] = true;
+                dict["creator"] = controller.LibraryElementModel.LibraryElementId;
+                var request = new NewElementRequest(dict);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            }
+        }
 
     }
 }
