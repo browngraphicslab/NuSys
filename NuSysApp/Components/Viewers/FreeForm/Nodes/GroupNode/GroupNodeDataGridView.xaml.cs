@@ -61,8 +61,9 @@ namespace NuSysApp
         private String _id;
         private void OnPointerPressed(object source, PointerRoutedEventArgs args)
         {
-            var src = (FrameworkElement) args.OriginalSource;
-            if (src.DataContext is GroupNodeDataGridInfo)
+            var src = args.OriginalSource as FrameworkElement;
+            var gridInfo = src?.DataContext as GroupNodeDataGridInfo;
+            if (gridInfo != null)
             {
                 src.ManipulationMode = ManipulationModes.All; // for dragging out via touch
                 _drag = new Image();//TODO temporary
@@ -75,11 +76,8 @@ namespace NuSysApp
                 SessionController.Instance.SessionView.MainCanvas.Children.Add(_drag);
                
                 
-                var info = (GroupNodeDataGridInfo) src.DataContext;
-                Debug.WriteLine(info.Id);
-                _id = info.Id;
+                _id = gridInfo.Id;
             }
-            args.Handled = true;
         }
 
         private async void OnPointerReleased(object source, PointerRoutedEventArgs args)
