@@ -395,5 +395,12 @@ namespace NuSysApp
 
 
         }
+
+        private void xNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var vm = DataContext as PdfRegionViewModel;
+            vm.Name = (sender as TextBox).Text;
+            vm.RegionController.SetTitle(vm.Name);
+        }
     }
 }

@@ -19,6 +19,7 @@ namespace NuSysApp
             Regions = new ObservableCollection<Region>();
             RegionViews = new ObservableCollection<AudioRegionView>();
             _regionsToLoad = regionsToLoad;
+            
         }
         public void RegionAdded(Region newRegion, AudioDetailHomeTabView contentview)
         {
@@ -65,7 +66,7 @@ namespace NuSysApp
 
         public double GetHeight()
         {
-            return View.ActualHeight;
+            return View.ActualWidth;
         }
 
         public override void SetExistingRegions()
