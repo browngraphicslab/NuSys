@@ -239,7 +239,7 @@ namespace NuSysApp
         /// </summary>
         public void Delete()
         {
-            SessionController.Instance.ActiveFreeFormViewer.DeselectAll();
+            SessionController.Instance.ActiveFreeFormViewer?.DeselectAll();
             SessionController.Instance.ContentController.Remove(this.LibraryElementModel);
             Deleted?.Invoke(this);
             Dispose();

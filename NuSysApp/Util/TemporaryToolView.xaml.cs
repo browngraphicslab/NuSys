@@ -82,10 +82,8 @@ namespace NuSysApp
         {
             if ((DataContext as BasicToolViewModel).Selection != null && ((DataContext as BasicToolViewModel).Controller as BasicToolController).Model.Selected && xPropertiesList.SelectedItems.Count == 0)
             {
-                xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
                 //xPropertiesList.SelectedItem = GetListItem((DataContext as BasicToolViewModel).Selection);
                 xPropertiesList.SelectedItem = ((DataContext as BasicToolViewModel).Selection);
-                xPropertiesList.SelectionChanged += XPropertiesList_OnSelectionChanged;
                 xPropertiesList.ScrollIntoView(xPropertiesList.SelectedItem);
             }
             Binding bb = new Binding();
@@ -367,14 +365,7 @@ namespace NuSysApp
 
             // TOOD: refresh library
         }
-
-        private void XPropertiesList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (xPropertiesList.SelectedItems.Count == 1)
-            {
-                (DataContext as BasicToolViewModel).Selection = (((string)(xPropertiesList.SelectedItems[0])));
-            }
-        }
+        
 
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
@@ -471,13 +462,20 @@ namespace NuSysApp
         }
 
 
-        //private void xListItem_OnTapped(object sender, TappedRoutedEventArgs e)
-        //{
-        //    if (xPropertiesList.SelectedItem != null && (xPropertiesList.SelectedItem as string).Equals(((sender as Grid).Children[0] as TextBlock).Text))
-        //    {
-        //        (DataContext as ToolViewModel).Controller.UnSelect();
-        //    }
-        //}
+        private void xListItem_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            if ((DataContext as ToolViewModel).Controller.Model.Selected && (DataContext as BasicToolViewModel).Selection.Equals(((sender as Grid).Children[0] as TextBlock).Text))
+            {
+                (DataContext as ToolViewModel).Controller.UnSelect();
+            }
+            else
+            {
+                if (xPropertiesList.SelectedItems.Count == 1)
+                {
+                    (DataContext as BasicToolViewModel).Selection = (((string)(xPropertiesList.SelectedItems[0])));
+                }
+            }
+        }
     }
 
 }

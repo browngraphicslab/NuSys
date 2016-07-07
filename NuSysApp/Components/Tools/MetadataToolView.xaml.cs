@@ -63,29 +63,6 @@ namespace NuSysApp
 
         }
 
-        private void XMetadataKeysList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var vm = DataContext as MetadataToolViewModel;
-            Debug.Assert(vm != null);
-            if (xMetadataKeysList.SelectedItems.Count == 1)
-            {
-                var x = xMetadataKeysList.SelectedItems[0];
-                xMetadataValuesList.ItemsSource =
-                    vm.AllMetadataDictionary[(string)xMetadataKeysList.SelectedItems[0]];
-                vm.Selection = new Tuple<string, string>((string)xMetadataKeysList.SelectedItems[0], null);
-            }
-
-        }
-
-        private void XMetadataValuesList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var vm = DataContext as MetadataToolViewModel;
-            Debug.Assert(vm != null);
-            if (xMetadataValuesList.SelectedItems.Count == 1 && xMetadataKeysList.SelectedItems.Count == 1)
-            {
-                vm.Selection = new Tuple<string, string>(vm.Selection.Item1, (string)xMetadataValuesList.SelectedItems[0]);
-            }
-        }
 
         private void Vm_PropertiesToDisplayChanged()
         {
@@ -96,14 +73,10 @@ namespace NuSysApp
                 (vm.Controller as MetadataToolController).Model.Selected &&
                 vm.Selection.Item1 != null)
             {
-                xMetadataKeysList.SelectionChanged -= XMetadataKeysList_OnSelectionChanged;
                 xMetadataKeysList.SelectedItem = vm.Selection.Item1;
-                xMetadataKeysList.SelectionChanged += XMetadataKeysList_OnSelectionChanged;
                 if (vm.Selection.Item2 != null)
                 {
-                    xMetadataValuesList.SelectionChanged -= XMetadataValuesList_OnSelectionChanged;
                     xMetadataValuesList.SelectedItem = vm.Selection.Item2;
-                    xMetadataValuesList.SelectionChanged += XMetadataValuesList_OnSelectionChanged;
                 }
                 else
                 {
@@ -394,20 +367,46 @@ namespace NuSysApp
             }
         }
 
-        //private void KeyListItem_OnTapped(object sender, TappedRoutedEventArgs e)
-        //{
-        //    if (xMetadataKeysList.SelectedItem != null && (xMetadataKeysList.SelectedItem as string).Equals(((sender as Grid).Children[0] as TextBlock).Text))
-        //    {
-        //        //(DataContext as ToolViewModel).Controller.UnSelect();
-        //    }
-        //}
+        private void KeyListItem_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var vm = (DataContext as MetadataToolViewModel);
+            if (vm.Controller.Model.Selected &&
+                vm.Selection.Item1.Equals(
+                    ((sender as Grid).Children[0] as TextBlock).Text))
+            {
+                vm.Controller.UnSelect();
+            }
+            else
+            {
+                Debug.Assert(vm != null);
+                if (xMetadataKeysList.SelectedItems.Count == 1)
+                {
+                    xMetadataValuesList.ItemsSource =
+                        vm.AllMetadataDictionary[(string)xMetadataKeysList.SelectedItems[0]];
+                    vm.Selection = new Tuple<string, string>((string)xMetadataKeysList.SelectedItems[0], null);
+                }
+            }
+            
 
-        //private void ValueListItem_OnTapped(object sender, TappedRoutedEventArgs e)
-        //{
-        //    if (xMetadataValuesList.SelectedItem != null && (xMetadataValuesList.SelectedItem as string).Equals(((sender as Grid).Children[0] as TextBlock).Text))
-        //    {
-        //        ((DataContext as ToolViewModel).Controller as MetadataToolController).SetSelection(new Tuple<string, string>((DataContext as MetadataToolViewModel).Selection.Item1, null));
-        //    }
-        //}
+        }
+
+        private void ValueListItem_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var vm = (DataContext as MetadataToolViewModel);
+            if (vm.Controller.Model.Selected && vm.Selection.Item2 != null &&
+                vm.Selection.Item2.Equals(
+                    ((sender as Grid).Children[0] as TextBlock).Text))
+            {
+                vm.Selection = new Tuple<string, string>(vm.Selection.Item1, null);
+            }
+            else
+            {
+                Debug.Assert(vm != null);
+                if (xMetadataValuesList.SelectedItems.Count == 1 && xMetadataKeysList.SelectedItems.Count == 1)
+                {
+                    vm.Selection = new Tuple<string, string>(vm.Selection.Item1, (string)xMetadataValuesList.SelectedItems[0]);
+                }
+            }
+        }
     }
 }

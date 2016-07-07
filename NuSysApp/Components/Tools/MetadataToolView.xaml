@@ -40,18 +40,18 @@
                             <Border BorderBrush="{StaticResource color2}" BorderThickness="1">
                                 <TextBlock Text="KEYS" TextAlignment="Center"  Foreground="{StaticResource color3}"/>
                             </Border>
-                            <ListView x:Name="xMetadataKeysList" BorderBrush="{StaticResource color2}" BorderThickness="1"  ManipulationMode="All" ManipulationStarted="XList_OnManipulationStarted" Height="200" Width="200" CanDrag="True" SelectionChanged="XMetadataKeysList_OnSelectionChanged"  Background="{StaticResource color1}" SelectionMode="Single" >
+                            <ListView x:Name="xMetadataKeysList" BorderBrush="{StaticResource color2}" BorderThickness="1"  ManipulationMode="All" ManipulationStarted="XList_OnManipulationStarted" Height="200" Width="200" CanDrag="True" Background="{StaticResource color1}" SelectionMode="Single" >
                                 <ListView.ItemContainerStyle>
                                     <Style TargetType="ListViewItem">
                                         <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
                                         <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
-                                        <Setter Property="Padding" Value="5,5,5,5"/>
+                                        <Setter Property="Padding" Value="0,0,0,0"/>
                                     </Style>
                                 </ListView.ItemContainerStyle>
                                 <ListView.ItemTemplate>
                                     <DataTemplate>
                                         <Grid PointerPressed="xList_PointerPressed" Tapped="KeyListItem_OnTapped"  ManipulationMode="TranslateX, TranslateY" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
-                                            <TextBlock Text="{Binding}" Foreground="{StaticResource color3}"/>
+                                            <TextBlock Text="{Binding}" Foreground="{StaticResource color3}" VerticalAlignment="Center"/>
                                         </Grid>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
@@ -61,18 +61,18 @@
                             <Border BorderBrush="{StaticResource color2}" BorderThickness="1">
                                 <TextBlock Text="VALUES" TextAlignment="Center" Foreground="{StaticResource color3}" />
                             </Border>
-                            <ListView x:Name="xMetadataValuesList" BorderBrush="{StaticResource color2}" BorderThickness="1" ManipulationMode="All" ManipulationStarted ="XList_OnManipulationStarted" Height="200" Width="200" CanDrag="True" SelectionChanged="XMetadataValuesList_OnSelectionChanged"  Background="{StaticResource color1}" SelectionMode="Single" >
+                            <ListView x:Name="xMetadataValuesList" BorderBrush="{StaticResource color2}" BorderThickness="1" ManipulationMode="All" ManipulationStarted ="XList_OnManipulationStarted" Height="200" Width="200" CanDrag="True" Background="{StaticResource color1}" SelectionMode="Single" >
                                 <ListView.ItemContainerStyle>
                                     <Style TargetType="ListViewItem">
                                         <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
                                         <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
-                                        <Setter Property="Padding" Value="5,5,5,5"/>
+                                        <Setter Property="Padding" Value="0,0,0,0"/>
                                     </Style>
                                 </ListView.ItemContainerStyle>
                                 <ListView.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid Tapped="ValueListItem_OnTapped" PointerPressed="xList_PointerPressed"   ManipulationMode="TranslateX, TranslateY" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
-                                            <TextBlock Text="{Binding}" Foreground="{StaticResource color3}"/>
+                                        <Grid PointerPressed="xList_PointerPressed" Tapped="ValueListItem_OnTapped"  ManipulationMode="TranslateX, TranslateY" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
+                                            <TextBlock Text="{Binding}" Foreground="{StaticResource color3}" VerticalAlignment="Center"/>
                                         </Grid>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
