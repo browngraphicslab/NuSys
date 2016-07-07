@@ -129,25 +129,29 @@ namespace NuSysApp
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             _doubleTapped = true;
-            var dc = (e.OriginalSource as FrameworkElement)?.DataContext;
-        
-            if (dc is GroupNodeDataGridInfo)
+            // get the data type of the list item template
+            var groupNodeDataGridInfo = (e.OriginalSource as FrameworkElement)?.DataContext as GroupNodeDataGridInfo;
+
+            // get the controller from the data type
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(groupNodeDataGridInfo?.Id);
+
+            // return if the controller is null
+            Debug.Assert(controller != null);
+            if (controller == null)
             {
-                var cdc = (GroupNodeDataGridInfo) dc;
-                var controller = SessionController.Instance.IdToControllers[cdc.Id];
-                var type = controller.LibraryElementModel.Type;
-
-                    if (type == ElementType.Word || type == ElementType.Powerpoint)
-                    {
-                        return;
-                    }
-                    else if (type != ElementType.Link)
-                    {
-                        SessionController.Instance.SessionView.ShowDetailView((dc as ElementViewModel).Controller.LibraryElementController);
-                    }
-
-                
+                return;
             }
+
+            // check for unsupported types
+            if (controller.LibraryElementModel.Type == ElementType.Word || 
+                controller.LibraryElementModel.Type == ElementType.Powerpoint ||
+                controller.LibraryElementModel.Type == ElementType.Link)
+            {
+                return;
+            }
+
+            // open the detail viewer
+            SessionController.Instance.SessionView.ShowDetailView(controller);
         }
 
     }
