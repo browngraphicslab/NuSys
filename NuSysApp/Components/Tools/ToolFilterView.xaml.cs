@@ -158,7 +158,7 @@ namespace NuSysApp
                     controller.AddParent(tool.Controller);
                     var linkviewmodel = new ToolLinkViewModel(tool, view.DataContext as ToolViewModel);
                     var link = new ToolLinkView(linkviewmodel);
-                    Canvas.SetZIndex(link, Canvas.GetZIndex(this) - 1);
+                    Canvas.SetZIndex(link, -1);
                     wvm.AtomViewList.Add(link);
                 }
 
@@ -183,7 +183,7 @@ namespace NuSysApp
                     controller.AddParent(tool.Controller);
                     var linkviewmodel = new ToolLinkViewModel(tool, view.DataContext as ToolViewModel);
                     var link = new ToolLinkView(linkviewmodel);
-                    Canvas.SetZIndex(link, Canvas.GetZIndex(this) - 1);
+                    Canvas.SetZIndex(link, -1);
                     wvm.AtomViewList.Add(link);
                 }
 
@@ -199,6 +199,7 @@ namespace NuSysApp
             }
             ToolModel.ToolFilterTypeTitle selection = (ToolModel.ToolFilterTypeTitle)(xFilterList.SelectedItems[0]);
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            var x = Canvas.GetZIndex(this) - 1;
 
 
             if (selection == ToolModel.ToolFilterTypeTitle.AllMetadata)            

@@ -43,9 +43,38 @@ namespace NuSysApp
             xCollectionElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             xCollectionElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
             vm.PropertiesToDisplayChanged += Vm_PropertiesToDisplayChanged;
+            (vm.Controller as MetadataToolController).SelectionChanged += On_SelectionChanged;
+            vm.ReloadPropertiesToDisplay();
             //xMetadataKeysList.ItemsSource = (DataContext as MetadataToolViewModel).AllMetadataDictionary.Keys;
             xMetadataKeysList.ItemsSource = (DataContext as MetadataToolViewModel)?.AllMetadataDictionary.Keys;
 
+        }
+
+        private void On_SelectionChanged(object sender)
+        {
+            var vm = DataContext as MetadataToolViewModel;
+            if (vm.Selection != null &&
+                (vm.Controller as MetadataToolController).Model.Selected &&
+                vm.Selection.Item1 != null)
+            {
+                xMetadataKeysList.SelectedItem = vm.Selection.Item1;
+                if (vm.Selection.Item2 != null)
+                {
+                    xMetadataValuesList.SelectedItem = vm.Selection.Item2;
+                }
+                else
+                {
+                    xMetadataValuesList.SelectedItem = null;
+                    //xMetadataValuesList.ItemsSource = vm.AllMetadataDictionary[vm.Selection.Item1];
+                }
+            }
+            else
+            {
+                xMetadataKeysList.SelectedItem = null;
+                xMetadataValuesList.ItemsSource = new List<string>();
+            }
+            xMetadataKeysList.ScrollIntoView(xMetadataKeysList.SelectedItem);
+            xMetadataValuesList.ScrollIntoView(xMetadataValuesList.SelectedItem);
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)

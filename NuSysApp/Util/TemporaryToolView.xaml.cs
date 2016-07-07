@@ -47,7 +47,6 @@ namespace NuSysApp
         private const int MinHeight = 300;
         private const int ListBoxHeightOffset = 175;
 
-        private ResourceDictionaryCollection _pieSeriesPalette;
 
         private double _x;
         private double _y;
@@ -60,6 +59,7 @@ namespace NuSysApp
             vm.Controller.SetLocation(x, y);
             this.DataContext = vm;
             vm.PropertiesToDisplayChanged += Vm_PropertiesToDisplayChanged;
+            (vm.Controller as BasicToolController).SelectionChanged += OnSelectionChanged;
             xTitle.Text = vm.Filter.ToString();
             xPropertiesList.Height = vm.Height - 175;
             xPieChart.Height = vm.Height - 175;
@@ -67,21 +67,35 @@ namespace NuSysApp
 
             xCollectionElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             xCollectionElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
-            //xPropertiesList.Loaded += (s, e) => Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-            //    () => xPropertiesList.ScrollIntoView(xPropertiesList.SelectedItem));
 
 
-            //Binding b = new Binding();
-            //b.Path = new PropertyPath("PropertiesToDisplayUnique");
-            //xPropertiesList.SetBinding(ListBox.ItemsSourceProperty, b);
+            Binding b = new Binding();
+            b.Path = new PropertyPath("PropertiesToDisplayUnique");
+            xPropertiesList.SetBinding(ListBox.ItemsSourceProperty, b);
+            vm.ReloadPropertiesToDisplay();
 
             Binding bb = new Binding();
             bb.Path = new PropertyPath("PieChartDictionary");
             xPieSeries.SetBinding(PieSeries.ItemsSourceProperty, bb);
+            RefreshColorPallete();
             //(PieChart.Series[0] as PieSeries).ItemsSource = (DataContext as BasicToolViewModel).PieChartDictionary;
-            CreateColorPallete();
+
 
         }
+
+        private void OnSelectionChanged(object sender)
+        {
+            if ((DataContext as BasicToolViewModel).Selection == null ||
+                !((DataContext as BasicToolViewModel).Controller as BasicToolController).Model.Selected)
+            {
+                xPropertiesList.SelectedItem = null;
+            }
+            else
+            {
+                xPropertiesList.SelectedItem = ((DataContext as BasicToolViewModel).Selection);
+            }
+        }
+
         private void Vm_PropertiesToDisplayChanged()
         {
             if ((DataContext as BasicToolViewModel).Selection != null && ((DataContext as BasicToolViewModel).Controller as BasicToolController).Model.Selected && xPropertiesList.SelectedItems.Count == 0)
@@ -93,6 +107,11 @@ namespace NuSysApp
             Binding bb = new Binding();
             bb.Path = new PropertyPath("PieChartDictionary");
             xPieSeries.SetBinding(PieSeries.ItemsSourceProperty, bb);
+            if (_currentViewMode == ViewMode.PieChart)
+            {
+                RefreshColorPallete();
+            }
+            //xPieChart.Palette = _pieSeriesPalette;
             //(PieChart.Series[0] as PieSeries).ItemsSource = (DataContext as BasicToolViewModel).PieChartDictionary;
 
         }
@@ -100,6 +119,7 @@ namespace NuSysApp
         public void Dispose()
         {
             (DataContext as BasicToolViewModel).PropertiesToDisplayChanged -= Vm_PropertiesToDisplayChanged;
+            ((DataContext as BasicToolViewModel).Controller as BasicToolController).SelectionChanged -= OnSelectionChanged;
         }
 
 
@@ -410,34 +430,26 @@ namespace NuSysApp
             xPieChart.Height = y - 175;
             xPieChart.Width = x;
         }
-        
 
-
-        private void DataPointSeries_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if ((sender as PieSeries).SelectedItem != null)
-            {
-                
-            }
-        }
 
         private void XPieChartButton_OnClick(object sender, RoutedEventArgs e)
         {
             if (_currentViewMode == ViewMode.List)
             {
-                Binding b = new Binding();
-                b.Path = new PropertyPath("PropertiesToDisplayUnique");
-                xPropertiesList.SetBinding(ListBox.ItemsSourceProperty, b);
+                //Binding b = new Binding();
+                //b.Path = new PropertyPath("PropertiesToDisplayUnique");
+                //xPropertiesList.SetBinding(ListBox.ItemsSourceProperty, b);
 
-                if ((DataContext as BasicToolViewModel).Selection != null && xPropertiesList.SelectedItems.Count == 0)
-                {
-                    xPropertiesList.SelectedItem = (DataContext as BasicToolViewModel).Selection;
-                }
+                //if ((DataContext as BasicToolViewModel).Selection != null && xPropertiesList.SelectedItems.Count == 0)
+                //{
+                //    xPropertiesList.SelectedItem = (DataContext as BasicToolViewModel).Selection;
+                //}
 
                 xPieChart.Visibility = Visibility.Visible;
                 xPropertiesList.Visibility = Visibility.Collapsed;
                 _currentViewMode = ViewMode.PieChart;
                 SetSize(400, this.Height);
+                RefreshColorPallete();
             }
         }
 
@@ -445,14 +457,14 @@ namespace NuSysApp
         {
             if (_currentViewMode == ViewMode.PieChart)
             {
-                Binding b = new Binding();
-                b.Path = new PropertyPath("PropertiesToDisplayUnique");
-                xPropertiesList.SetBinding(ListBox.ItemsSourceProperty, b);
+                //Binding b = new Binding();
+                //b.Path = new PropertyPath("PropertiesToDisplayUnique");
+                //xPropertiesList.SetBinding(ListBox.ItemsSourceProperty, b);
 
-                if ((DataContext as BasicToolViewModel).Selection != null && xPropertiesList.SelectedItems.Count == 0)
-                {
-                    xPropertiesList.SelectedItem = (DataContext as BasicToolViewModel).Selection;
-                }
+                //if ((DataContext as BasicToolViewModel).Selection != null && xPropertiesList.SelectedItems.Count == 0)
+                //{
+                //    xPropertiesList.SelectedItem = (DataContext as BasicToolViewModel).Selection;
+                //}
 
                 xPieChart.Visibility = Visibility.Collapsed;
                 xPropertiesList.Visibility = Visibility.Visible;
@@ -465,13 +477,12 @@ namespace NuSysApp
         {
             var selected = (sender as PieSeries).SelectedItem is KeyValuePair<string, int> ? (KeyValuePair<string, int>)(sender as PieSeries).SelectedItem : new KeyValuePair<string, int>();
             (DataContext as BasicToolViewModel).Selection = selected.Key;
-            var x = xPieChart;
             xPieSeries.ReleasePointerCapture(e.Pointer);
         }
 
-        public void CreateColorPallete()
+        public void RefreshColorPallete()
         {
-            _pieSeriesPalette = new ResourceDictionaryCollection();
+            ResourceDictionaryCollection pieSeriesPalette = new ResourceDictionaryCollection();
 
             Brush currentBrush = new SolidColorBrush(Colors.Red); 
 
@@ -479,7 +490,7 @@ namespace NuSysApp
             Style stylePie = new Style(typeof(PieDataPoint));
             stylePie.Setters.Add(new Setter(PieDataPoint.BackgroundProperty, currentBrush));
             pieDataPointStyles.Add("DataPointStyle", stylePie);
-            _pieSeriesPalette.Add(pieDataPointStyles);
+            pieSeriesPalette.Add(pieDataPointStyles);
 
             currentBrush = new SolidColorBrush(Colors.Blue); 
 
@@ -487,9 +498,17 @@ namespace NuSysApp
             stylePie = new Style(typeof(PieDataPoint));
             stylePie.Setters.Add(new Setter(PieDataPoint.BackgroundProperty, currentBrush));
             pieDataPointStyles.Add("DataPointStyle", stylePie);
-            _pieSeriesPalette.Add(pieDataPointStyles);
+            pieSeriesPalette.Add(pieDataPointStyles);
 
-            xPieChart.Palette = _pieSeriesPalette;
+            currentBrush = new SolidColorBrush(Colors.Green);
+
+            pieDataPointStyles = new ResourceDictionary();
+            stylePie = new Style(typeof(PieDataPoint));
+            stylePie.Setters.Add(new Setter(PieDataPoint.BackgroundProperty, currentBrush));
+            pieDataPointStyles.Add("DataPointStyle", stylePie);
+            pieSeriesPalette.Add(pieDataPointStyles);
+
+            xPieChart.Palette = pieSeriesPalette;
         }
 
 

@@ -92,7 +92,7 @@ namespace NuSysApp
         public ToolViewModel(ToolController toolController)
         {
             _controller = toolController;
-            _controller.LibraryIdsChanged += ControllerOnLibraryIdsChanged;
+            _controller.ParentsLibraryIdsChanged += ControllerOnParentsLibraryLibraryIdsChanged;
             Controller.SizeChanged += OnSizeChanged;
             Controller.LocationChanged += OnLocationChanged;
             Height = 400;
@@ -227,7 +227,7 @@ namespace NuSysApp
 
         public void Dispose()
         {
-            _controller.LibraryIdsChanged -= ControllerOnLibraryIdsChanged;
+            _controller.ParentsLibraryIdsChanged -= ControllerOnParentsLibraryLibraryIdsChanged;
             Controller.SizeChanged -= OnSizeChanged;
             Controller.LocationChanged -= OnLocationChanged;
             Controller.Dispose();
@@ -239,12 +239,12 @@ namespace NuSysApp
 
         }
 
-        private void ControllerOnLibraryIdsChanged(object sender, HashSet<string> libraryIds)
+        private void ControllerOnParentsLibraryLibraryIdsChanged()
         {
             ReloadPropertiesToDisplay();
         }
 
-        protected abstract void ReloadPropertiesToDisplay();
+        public abstract void ReloadPropertiesToDisplay();
 
         public void OnSizeChanged(object sender, double width, double height)
         {

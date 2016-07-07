@@ -19,12 +19,16 @@ namespace NuSysApp
         public delegate void LocationChangedEventHandler(object sender, double x, double y);
         public delegate void SizeChangedEventHandler(object sender, double width, double height);
         public delegate void DisposedEventHandler(string parentid);
+        public delegate void ParentsIdsChangedEventHandler();
+
 
 
         public event LibraryIdsChangedEventHandler LibraryIdsChanged;
         public event LocationChangedEventHandler LocationChanged;
         public event SizeChangedEventHandler SizeChanged;
         public event DisposedEventHandler Disposed;
+        public event ParentsIdsChangedEventHandler ParentsLibraryIdsChanged;
+
 
 
 
@@ -112,6 +116,7 @@ namespace NuSysApp
                     parentController.LibraryIdsChanged += ParentLibraryIdsChanged;
                     Model.SetLibraryIds(GetUpdatedDataList());
                     LibraryIdsChanged?.Invoke(this, Model.LibraryIds);
+                    ParentsLibraryIdsChanged?.Invoke();
                     parentController.Disposed += OnParentDisposed;
                 }
             }
@@ -123,6 +128,7 @@ namespace NuSysApp
             Model.ParentIds.Remove(parentid);
             Model.SetLibraryIds(GetUpdatedDataList());
             LibraryIdsChanged?.Invoke(this, Model.LibraryIds);
+            ParentsLibraryIdsChanged?.Invoke();
             ToolControllers[parentid].Disposed -= OnParentDisposed;
         }
 
@@ -212,6 +218,7 @@ namespace NuSysApp
         {
             Model.SetLibraryIds(Filter(GetUpdatedDataList()));
             LibraryIdsChanged?.Invoke(this, Model.LibraryIds);
+            ParentsLibraryIdsChanged?.Invoke();
         }
         
         //Returns all the library ids of everything in the previous filter

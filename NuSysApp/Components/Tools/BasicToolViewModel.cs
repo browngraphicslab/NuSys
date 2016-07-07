@@ -32,7 +32,7 @@ namespace NuSysApp
         public ToolModel.ToolFilterTypeTitle Filter { get { return (_controller as BasicToolController).BasicToolModel.Filter;}  set { (_controller as BasicToolController).SetFilter(value);} }
 
         
-        protected override void ReloadPropertiesToDisplay()
+        public override void ReloadPropertiesToDisplay()
         {
             var temp = new ObservableCollection<string>((_controller as BasicToolController).GetAllProperties());
             if ((_controller as BasicToolController).BasicToolModel.Selection != null && (_controller as BasicToolController).BasicToolModel.Selected == true && !temp.Contains((_controller as BasicToolController).BasicToolModel.Selection))

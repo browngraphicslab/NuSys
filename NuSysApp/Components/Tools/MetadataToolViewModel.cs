@@ -19,7 +19,7 @@ namespace NuSysApp
         public Dictionary<string, HashSet<string>> AllMetadataDictionary { get; set; }
 
 
-        protected override void ReloadPropertiesToDisplay()
+        public override void ReloadPropertiesToDisplay()
         {
 
             AllMetadataDictionary = (_controller as MetadataToolController).GetAllMetadata();
