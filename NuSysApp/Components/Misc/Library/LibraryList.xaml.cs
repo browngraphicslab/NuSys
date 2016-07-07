@@ -378,6 +378,18 @@ namespace NuSysApp
         {
             var textBlock = sender as Button;
             var id = textBlock?.DataContext as string;
+
+            // get the currWorkSpaceId
+            var currWorkSpaceId =
+                SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.LibraryElementId;
+            Debug.Assert(currWorkSpaceId != null);
+
+            // if we are deleting the currentWorkSpace, return
+            if ( currWorkSpaceId == id)
+            {
+                return;
+            }
+
             Task.Run(async delegate
             {
                 var request = new DeleteLibraryElementRequest(id);
