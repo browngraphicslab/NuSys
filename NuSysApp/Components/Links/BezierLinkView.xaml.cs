@@ -90,7 +90,7 @@ namespace NuSysApp
                 if (vm?.IsSelected ?? false)
                 {
                     Title.IsReadOnly = SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION;
-
+                    
                 }
             }
             else
