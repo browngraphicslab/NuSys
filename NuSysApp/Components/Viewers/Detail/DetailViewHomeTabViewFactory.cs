@@ -46,6 +46,9 @@ namespace NuSysApp
                 case ElementType.Collection:
                     view = new GroupDetailHomeTabView(new GroupDetailHomeTabViewModel(controller, regionsToLoad));
                     break;
+                case ElementType.Link:
+                    view = new LinkDetailHomeTabView(new LinkHomeTabViewModel(controller as LinkLibraryElementController, regionsToLoad));
+                    break;
             }
 
             if (view == null)

@@ -164,5 +164,12 @@ namespace NuSysApp
                 SessionController.Instance.SessionView.Explore(vm);
             }
         }
+
+        private void BezierLink_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            var vm = (ElementViewModel)DataContext;
+            var linkController = SessionController.Instance.LinkController.GetLinkLibraryElementController(vm.Model.LibraryId);
+            SessionController.Instance.SessionView.ShowDetailView(linkController);
+        }
     }
 }

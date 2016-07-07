@@ -15,7 +15,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch" >
+    <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch">
         <Grid>
         <local:AudioMediaPlayer x:Name="MediaPlayer" PointerPressed="AudioPlayer_PointerPressed"></local:AudioMediaPlayer>
         <ItemsControl ItemsSource="{Binding RegionViews}">

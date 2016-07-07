@@ -210,7 +210,8 @@ namespace NuSysApp
         
         public HashSet<LinkLibraryElementController> GetAllLinks()
         {
-            var linkedIds = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(this.Model.Id));
+            var libraryElementIdForRegion = SessionController.Instance.RegionsController.GetLibraryElementModelId(Model.Id);
+            var linkedIds = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(libraryElementIdForRegion, Model.Id));
             var controllers = linkedIds.Select(id => SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
             return new HashSet<LinkLibraryElementController>(controllers);
         }
