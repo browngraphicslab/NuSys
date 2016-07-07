@@ -255,7 +255,7 @@ namespace NuSysApp
                 }
                 
             }
-            else if(_currentDragMode == DragMode.Scroll && !e.IsInertial)
+            else if(_currentDragMode == DragMode.Scroll)
             {
                 _dragItem.Visibility = Visibility.Visible;
                 _currentDragMode = DragMode.Filter;

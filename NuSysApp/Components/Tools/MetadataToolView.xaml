@@ -50,7 +50,7 @@
                                 </ListView.ItemContainerStyle>
                                 <ListView.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid PointerPressed="xList_PointerPressed" Tapped="KeyListItem_OnTapped"  ManipulationMode="TranslateX, TranslateY" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
+                                        <Grid PointerPressed="xList_PointerPressed" Background="Transparent" Tapped="KeyListItem_OnTapped"  ManipulationMode="TranslateX, TranslateY" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
                                             <TextBlock Text="{Binding}" Foreground="{StaticResource color3}" VerticalAlignment="Center"/>
                                         </Grid>
                                     </DataTemplate>
@@ -71,7 +71,7 @@
                                 </ListView.ItemContainerStyle>
                                 <ListView.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid PointerPressed="xList_PointerPressed" Tapped="ValueListItem_OnTapped"  ManipulationMode="TranslateX, TranslateY" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
+                                        <Grid PointerPressed="xList_PointerPressed" Background="Transparent"  Tapped="ValueListItem_OnTapped"  ManipulationMode="TranslateX, TranslateY" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
                                             <TextBlock Text="{Binding}" Foreground="{StaticResource color3}" VerticalAlignment="Center"/>
                                         </Grid>
                                     </DataTemplate>
