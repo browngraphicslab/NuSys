@@ -52,7 +52,7 @@
         </Button>
         <StackPanel Grid.Row="1">
             <TextBlock Text="{Binding StatusText}" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"></TextBlock>
-            <TextBlock Text="This feature provides continuous, multi-sentence dictation with progressing hypothesis." FontSize="12" TextWrapping="Wrap" TextAlignment="Center"></TextBlock>
+            <TextBlock Text="Continuous, multi-sentence dictation" FontSize="12" TextWrapping="Wrap" TextAlignment="Center"></TextBlock>
         </StackPanel>
         <TextBox x:Name="DictationTextbox" Text="{Binding Text}"  Grid.Row="2" Background="White" BorderBrush="SlateGray" BorderThickness="2" AcceptsReturn="True" TextWrapping="Wrap" IsEnabled="{Binding IsTextBoxEnabled}"
                  TextChanged="DictationTextbox_OnTextChanged" ManipulationDelta="DictationTextBox_OnManipulationDelta" ManipulationMode="All" ContextMenuOpening="DictationTextBox_OnContextMenuOpening"></TextBox>

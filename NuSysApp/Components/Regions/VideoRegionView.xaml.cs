@@ -26,8 +26,12 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.DataContext = vm;
+            this.Deselect();
         }
 
+        public delegate void OnRegionSeekHandler(double time);
+
+        public event OnRegionSeekHandler OnRegionSeek;
         public Grid RegionRectangle
         {
             get { return xGrid; }
@@ -139,6 +143,7 @@ namespace NuSysApp
             xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Blue);
             IntervalRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.LightCyan);
             xResizingTriangle.Visibility = Visibility.Collapsed;
+            xNameTextBox.Visibility = Visibility.Collapsed;
             Selected = false;
 
 
@@ -150,6 +155,7 @@ namespace NuSysApp
             xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
             IntervalRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
             xResizingTriangle.Visibility = Visibility.Visible;
+            xNameTextBox.Visibility = Visibility.Visible;
             Selected = true;
 
         }
@@ -179,6 +185,18 @@ namespace NuSysApp
             SessionController.Instance.SessionView.ShowDetailView(vm?.LibraryElementController);
             var regionController = vm?.RegionController;
             SessionController.Instance.SessionView.ShowDetailView(regionController);
+        }
+
+        private void xNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var vm = DataContext as VideoRegionViewModel;
+            vm.Name = (sender as TextBox).Text;
+            vm.RegionController.SetTitle(vm.Name);
+        }
+
+        private void IntervalRectangle_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            OnRegionSeek?.Invoke(((this.DataContext as VideoRegionViewModel).RegionController.Model as VideoRegionModel).Start);
         }
     }
 }

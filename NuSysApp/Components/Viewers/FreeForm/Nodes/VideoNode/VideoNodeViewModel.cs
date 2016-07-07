@@ -23,6 +23,9 @@ namespace NuSysApp
         public event GetWidthEventHandler OnGetMediaPlayerWidth;
         public delegate double GetHeightEventHandler(object sender);
         public event GetHeightEventHandler OnGetMediaPlayerHeight;
+
+        public delegate void OnRegionSeekPassingHandler(double time);
+        public event OnRegionSeekPassingHandler OnRegionSeekPassing;
         public ObservableCollection<VideoRegionView> RegionViews
         {
             get
@@ -49,12 +52,19 @@ namespace NuSysApp
                     var viewmodel = new VideoRegionViewModel(videoRegionModel, elementController, regionController as VideoRegionController, this);
                     viewmodel.Editable = false;
                     var view = new VideoRegionView(viewmodel);
+                    view.OnRegionSeek += View_OnRegionSeek;
                     _regionViews.Add(view);
                 }
                 return _regionViews;
 
             }
         }
+
+        private void View_OnRegionSeek(double time)
+        {
+            OnRegionSeekPassing?.Invoke(time);
+        }
+
         public double VideoDuration { get; set; }
 
         public VideoNodeViewModel(ElementController controller) : base(controller)
@@ -64,6 +74,7 @@ namespace NuSysApp
             //Controller.LibraryElementController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
             Controller.SizeChanged += Controller_SizeChanged;
             Controller.LibraryElementController.Loaded += LibraryElementController_Loaded;
+
         }
 
         private void LibraryElementController_Loaded(object sender)

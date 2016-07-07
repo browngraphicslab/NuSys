@@ -108,6 +108,7 @@ namespace NuSysApp
             if (SearchViewer.Visibility == Visibility.Collapsed)
             {
                 SearchViewer.Visibility = Visibility.Visible;
+                SearchViewer.SetFocusOnSearchBox();
             }
             else
             {

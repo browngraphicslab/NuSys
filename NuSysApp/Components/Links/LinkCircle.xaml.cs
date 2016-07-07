@@ -22,9 +22,9 @@ namespace NuSysApp
     public sealed partial class LinkCircle : UserControl
     {
         //link id
-        public string lID;
+        public LinkId lID;
         //content id the link is linked to
-        public string cID;
+        public LinkId cID;
         private bool _pinned;
 
         protected bool Pinned
@@ -40,7 +40,7 @@ namespace NuSysApp
         private Thickness _visibleThickness;
         private bool _firstTimeOpened;
         private BitmapImage _bmp;
-        public LinkCircle(string lID, string cID)
+        public LinkCircle(LinkId lID, LinkId cID)
         {
             this.lID = lID;
             this.cID = cID;
@@ -55,7 +55,7 @@ namespace NuSysApp
             border.BorderThickness = _collapsedThickness;
             //thumbnail is not pinned to begin with
             Pinned = false;
-            _bmp = new BitmapImage(SessionController.Instance.ContentController.GetLibraryElementController(cID)?.SmallIconUri ?? new Uri("ms-appx:////Assets/icon_chat.png"));
+            _bmp = new BitmapImage(SessionController.Instance.ContentController.GetLibraryElementController(cID.IsRegion? cID.RegionId: cID.LibraryElementId)?.SmallIconUri ?? new Uri("ms-appx:////Assets/icon_chat.png"));
             thumbnail.ImageOpened += Thumbnail_ImageOpened;
             //centering the thumbnail
             (border.RenderTransform as CompositeTransform).TranslateX -= 10;
@@ -89,6 +89,14 @@ namespace NuSysApp
                 border.BorderThickness = _collapsedThickness;
                 thumbnail.Visibility = Visibility.Collapsed;
             }
+
+            //If links to a region....
+            var regionController = SessionController.Instance.RegionsController.GetRegionController(lID.RegionId);
+            if (regionController != null)
+            {
+                regionController.Select();
+            }
+            
         }
 
         //makes thumbnail visible while pointer is hovering over the circle

@@ -125,6 +125,7 @@ namespace NuSysApp
                     if (SessionController.Instance.ContentController.GetContent(id) != null)
                     {
                         var controller = SessionController.Instance.ContentController.GetLibraryElementController(id);
+                        //Debug.Assert(title != null);
                         controller.SetTitle(title);//TODO make sure no other variables, like timestamp, need to be set here
                     }
                     else
@@ -423,6 +424,43 @@ namespace NuSysApp
         public async Task<Dictionary<string, Dictionary<string, object>>> GetAllLibraryElements()
         {
             return await _serverClient.GetRepo();
+        }
+
+        /// <summary>
+        ///   Will add a presentation link to the server.  
+        ///   Will return true if successful, false if not
+        ///  The id1 and id2 are ElementModel ID's, not LibraryElementModelId's
+        ///  The contentId is the collection of the workspace that both of the nodes should be on
+        /// </summary>
+        /// <param name="id1"></param>
+        /// <param name="id2"></param>
+        /// <param name="contentId"></param>
+        /// <returns></returns>
+        public async Task<bool> AddPresentationLink(string id1, string id2, string contentId)
+        {
+            return await _serverClient.AddPresentationLink(contentId, id1, id2);
+        }
+        /// <summary>
+        ///  Will remove a presentation link from the server
+        ///  Will return true if successful, false if not
+        ///  The id1 and id2 are ElementModel ID's, not LibraryElementModelId's
+        /// </summary>
+        /// <param name="id1"></param>
+        /// <param name="id2"></param>
+        /// <returns></returns>
+        public async Task<bool> RemovePresentationLink(string id1, string id2)
+        {
+            return await _serverClient.RemovePresentationLink(id1, id2);
+        }
+        /// <summary>
+        /// Will fetch and return a hashset of presentation links for a given collection
+        /// the presentation links ID's will be elementModel Id's
+        /// </summary>
+        /// <param name="contentId"></param>
+        /// <returns></returns>
+        public async Task<HashSet<PresentationLink>> GetPresentationLinks(string contentId)
+        {
+            return await _serverClient.GetPresentationLinks(contentId);
         }
         public async Task<bool> AddRegionToContent(string contentId, Region region)
         {

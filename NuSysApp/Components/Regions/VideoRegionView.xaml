@@ -29,11 +29,16 @@
             </Path>
 
         </Grid>
+        <TextBox x:Name="xNameTextBox" Height="15" Text="{Binding Name}" TextChanged="xNameTextBox_TextChanged" Width="{Binding IntervalRegionWidth}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,25,0,0">
+            <TextBox.RenderTransform>
+                <CompositeTransform TranslateX="{Binding IntervalStart}" TranslateY="{Binding IntervalRegionTranslateY}"/>
+            </TextBox.RenderTransform>
+        </TextBox>
         <Grid>
         <Grid.RenderTransform>
             <CompositeTransform TranslateY="{Binding IntervalRegionTranslateY}"></CompositeTransform>
         </Grid.RenderTransform>
-            <Rectangle x:Name="IntervalRectangle" PointerPressed="xMainRectangle_PointerPressed" Width="{Binding IntervalRegionWidth}" Fill="LightCyan" Height="25"  Opacity=".2" HorizontalAlignment="Left" VerticalAlignment="Top" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" ManipulationDelta="IntervalRectangle_OnManipulationDelta" >
+            <Rectangle x:Name="IntervalRectangle" PointerPressed="xMainRectangle_PointerPressed" Width="{Binding IntervalRegionWidth}" Fill="LightCyan" Height="25"  Opacity=".2" HorizontalAlignment="Left" VerticalAlignment="Top" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" ManipulationDelta="IntervalRectangle_OnManipulationDelta" Tapped="IntervalRectangle_OnTapped">
                 <Rectangle.RenderTransform>
                     <CompositeTransform TranslateX="{Binding IntervalStart}"/>
                 </Rectangle.RenderTransform>
@@ -50,6 +55,8 @@
                     <CompositeTransform TranslateX="{Binding IntervalEnd}"/>
                 </local:AudioRegionBound.RenderTransform>
             </local:AudioRegionBound>
+
         </Grid>
+
     </Grid>
 </UserControl>

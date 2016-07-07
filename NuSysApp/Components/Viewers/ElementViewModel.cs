@@ -61,7 +61,7 @@ namespace NuSysApp
 
             RegionsListTest = new ObservableCollection<RectangleView>();
             SessionController.Instance.LinkController.OnNewLink += UpdateLinks;
-            
+            SessionController.Instance.LinkController.OnLinkRemoved += UpdateLinks;
             if (ElementType == ElementType.Image)
             {
                 foreach (var element in Model.RegionsModel)
@@ -76,7 +76,7 @@ namespace NuSysApp
             CreateTags();
         }
 
-        private void UpdateLinks(LinkLibraryElementController model)
+        public void UpdateLinks(LinkLibraryElementController model)
         {
             UITask.Run(async delegate { CreateCircleLinks(); });    
         }
@@ -169,9 +169,13 @@ namespace NuSysApp
             {
                 return;
             }
-
+            var id = this.Controller.LibraryElementModel?.LibraryElementId;
+            if (id == null)
+            {
+                return;
+            }
             CircleLinks.Clear();
-            var circleList = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(this.Controller.LibraryElementModel.LibraryElementId));
+            var circleList = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(id));
             if(circleList == null)
             {
                 return;
@@ -191,7 +195,7 @@ namespace NuSysApp
                     {
                         cid = link.InAtomId.LibraryElementId;
                     }
-                    var circlelink = new LinkCircle(circle, cid);
+                    var circlelink = new LinkCircle(new LinkId(circle), new LinkId(cid));
                     Color color = link.Color;
                     circlelink.Circle.Fill = new SolidColorBrush(color);
 

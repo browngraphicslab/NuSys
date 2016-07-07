@@ -131,7 +131,7 @@ namespace NuSysApp
                 NewNetworkUser(user);
             }
 
-
+            var presentationLinks = await SessionController.Instance.NuSysNetworkSession.GetPresentationLinks(firstId);
             // await Library.Reload();
         }
         private void NewNetworkUser(NetworkUser user)
@@ -511,6 +511,11 @@ namespace NuSysApp
             var id = message.GetString("id");
             Debug.WriteLine("making element: " + id);
             var libraryModel = SessionController.Instance.ContentController.GetContent(libraryId);
+            if (libraryModel == null)
+            {
+                messagesLeft.Remove(id);
+                return;
+            }
             var type = libraryModel.Type;
             switch (type)
             {
@@ -663,10 +668,6 @@ namespace NuSysApp
             else if (viewable is LibraryElementController)
             {
                 var controller = viewable as LibraryElementController;
-                if (!controller.IsLoaded)
-                {
-                    return;
-                }
                 await xDetailViewer.ShowElement(viewable as LibraryElementController, tabToOpenTo);
             }
         }

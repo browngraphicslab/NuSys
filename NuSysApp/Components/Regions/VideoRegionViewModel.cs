@@ -35,7 +35,20 @@ namespace NuSysApp
         private Point _topLeftPoint;
         private bool _editable;
         private double _intervalRegionTranslateY;
+        private string _name;
+        private double _progressbarMargin = 10;
         #endregion PrivateVariables
+
+        public string Name
+        {
+            get { return _name; }
+            set
+            {
+                _name = value;
+                //Model.Name = _name;
+                RaisePropertyChanged("Name");
+            }
+        }
         public bool Editable {
             get { return _editable; }
             set
@@ -48,7 +61,7 @@ namespace NuSysApp
         public double RectangleHeight {
             get
             {
-                return _height * ContainerViewModel.GetHeight();
+                return Math.Max(0, _height * ContainerViewModel.GetHeight());
             }
             set
             {
@@ -57,7 +70,7 @@ namespace NuSysApp
             }
         }
         public double RectangleWidth {
-            get { return _width*ContainerViewModel.GetWidth(); }
+            get { return Math.Max(0, _width*ContainerViewModel.GetWidth()); }
             set
             {
                 _width = value;
@@ -68,7 +81,7 @@ namespace NuSysApp
         {
             get
             {
-                return (_intervalEnd - _intervalStart) * (ContainerViewModel.GetWidth()-20);
+                return Math.Max(0, (_intervalEnd - _intervalStart) * (ContainerViewModel.GetWidth() - 2 * _progressbarMargin));
             }
             set
             {
@@ -80,7 +93,7 @@ namespace NuSysApp
         {
             get
             {
-                return _intervalRegionTranslateY * ContainerViewModel.GetHeight() + 10;
+                return Math.Max(0, _intervalRegionTranslateY * ContainerViewModel.GetHeight() + _progressbarMargin);
             }
             set
             {
@@ -90,7 +103,7 @@ namespace NuSysApp
         }
         public double IntervalStart
         {
-            get { return _intervalStart * (ContainerViewModel.GetWidth()-20) + 10; }
+            get { return Math.Max(0, _intervalStart * (ContainerViewModel.GetWidth() - 2 * _progressbarMargin) + _progressbarMargin); }
             set
             {
                 Debug.Assert(!Double.IsNaN(value));
@@ -101,7 +114,7 @@ namespace NuSysApp
         }
         public double IntervalEnd
         {
-            get { return _intervalEnd * (ContainerViewModel.GetWidth()-20)+10; }
+            get { return Math.Max(0, _intervalEnd * (ContainerViewModel.GetWidth() - 2 * _progressbarMargin) + _progressbarMargin); }
             set
             {
                 _intervalEnd = value;
@@ -127,6 +140,7 @@ namespace NuSysApp
             regionController.SizeChanged += SizeChanged;
             regionController.LocationChanged += LocationChanged;
             regionController.IntervalChanged += IntervalChanged;
+            regionController.TitleChanged += TitleChanged;
             _height = (model.Height);
             _width = (model.Width);
             _topLeftPoint = new Point(model.TopLeftPoint.X , model.TopLeftPoint.Y );
@@ -135,7 +149,14 @@ namespace NuSysApp
             _intervalRegionWidth = _intervalEnd - _intervalStart;
             _intervalRegionTranslateY = 1;
 
+            Name = Model.Name;
+
             Editable = true;
+        }
+
+        private void TitleChanged(object source, string title)
+        {
+            Name = title;
         }
 
         private void LocationChanged(object sender, Point topLeft)
@@ -153,6 +174,7 @@ namespace NuSysApp
         {
             RectangleWidth = width;
             RectangleHeight = height;
+
         }
 
         private void BaseSizeChanged(object sender, double width, double height)
@@ -169,15 +191,15 @@ namespace NuSysApp
 
         public void SetIntervalStart(double start)
         {
-            var newstart = Math.Max(0, start-10);
+            var newstart = Math.Max(0, start-_progressbarMargin);
             var controller = RegionController as VideoRegionController;
-            controller?.SetStartTime(newstart / (ContainerViewModel.GetWidth()-20));
+            controller?.SetStartTime(newstart / (ContainerViewModel.GetWidth()-2*_progressbarMargin));
         }
         public void SetIntervalEnd(double end)
         {
-            var newEnd = Math.Max(0, end-10);
+            var newEnd = Math.Max(0, end-_progressbarMargin);
             var controller = RegionController as VideoRegionController;
-            controller?.SetEndTime(newEnd / (ContainerViewModel.GetWidth()-20));
+            controller?.SetEndTime(newEnd / (ContainerViewModel.GetWidth()-2*_progressbarMargin));
         }
         
         public void SetRegionSize(double width, double height)

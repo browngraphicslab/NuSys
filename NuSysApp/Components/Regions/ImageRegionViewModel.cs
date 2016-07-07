@@ -24,8 +24,7 @@ namespace NuSysApp
             set
             {
                 _name = value;
-                Model.Name = _name;
-                RegionController.SetTitle(_name);
+                //Model.Name = _name;
                 RaisePropertyChanged("Name");
             }
         }
@@ -65,6 +64,8 @@ namespace NuSysApp
                 return _editable;
             }
         }
+        public bool Selected { set; get; }
+
 
         private bool _editable;
 
@@ -76,7 +77,6 @@ namespace NuSysApp
         public delegate void LocationChangedEventHandler(object sender, Point topLeft);
         public event LocationChangedEventHandler LocationChanged;
 
-        public bool Selected { set; get; }
 
         public ImageRegionViewModel(RectangleRegion model, LibraryElementController libraryElementController, RectangleRegionController regionController, Sizeable sizeable) : base(model,libraryElementController, regionController,sizeable)
         {
@@ -94,9 +94,26 @@ namespace NuSysApp
 
             regionController.SizeChanged += RegionController_SizeChanged;
             regionController.LocationChanged += RegionController_LocationChanged;
+            regionController.TitleChanged += RegionController_TitleChanged;
+            regionController.OnSelect += RegionController_OnSelect;
             Name = Model.Name;
             Editable = true;
+            Selected = false;
 
+
+
+        }
+
+        private void RegionController_OnSelect(RegionController regionController)
+        {
+            RaisePropertyChanged("Selected");
+            Selected = true;
+
+        }
+
+        private void RegionController_TitleChanged(object source, string title)
+        {
+            Name = title;
         }
 
         private void RegionController_LocationChanged(object sender, Point topLeft)

@@ -75,7 +75,13 @@ namespace NuSysApp
         {
             // Might be useful for resizing regions
         }
+        public void onSeekedTo(double time)
+        {
+            double millliseconds = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds * time;
 
+            TimeSpan timespan = new TimeSpan(0, 0, 0, 0, (int)millliseconds);
+            MediaElement.Position = timespan;
+        }
         private void ProgressBar_OnPointerMoved(object sender, PointerRoutedEventArgs e)
         {
             if (e.GetCurrentPoint((UIElement) sender).Properties.IsLeftButtonPressed)

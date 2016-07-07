@@ -12,13 +12,15 @@ namespace NuSysApp
         public LibraryElementController Controller { get; }
         public ObservableCollection<Region> Regions;
         public ObservableCollection<AudioRegionView> RegionViews { set; get; }
-        
+        public delegate void OnRegionSeekPassingHandler(double time);
+        public event OnRegionSeekPassingHandler OnRegionSeekPassing;
         public AudioDetailHomeTabViewModel(LibraryElementController controller, HashSet<Region> regionsToLoad) : base(controller, regionsToLoad)
         {
             Controller = controller;
             Regions = new ObservableCollection<Region>();
             RegionViews = new ObservableCollection<AudioRegionView>();
             _regionsToLoad = regionsToLoad;
+            
         }
         public void RegionAdded(Region newRegion, AudioDetailHomeTabView contentview)
         {
@@ -65,7 +67,7 @@ namespace NuSysApp
 
         public double GetHeight()
         {
-            return View.ActualHeight;
+            return View.ActualWidth;
         }
 
         public override void SetExistingRegions()
@@ -85,10 +87,16 @@ namespace NuSysApp
                 var vm = new AudioRegionViewModel(AudioRegion, Controller, regionController, this);
                 vm.Editable = this.Editable;
                 var view = new AudioRegionView(vm);
+                view.OnRegionSeek += View_OnRegionSeek;
                 RegionViews.Add(view);
 
             }
             RaisePropertyChanged("RegionViews");
+        }
+
+        private void View_OnRegionSeek(double time)
+        {
+            OnRegionSeekPassing?.Invoke(time);
         }
 
         public override Region GetNewRegion()
