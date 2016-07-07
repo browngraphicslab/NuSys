@@ -61,7 +61,7 @@ namespace NuSysApp
 
             RegionsListTest = new ObservableCollection<RectangleView>();
             SessionController.Instance.LinkController.OnNewLink += UpdateLinks;
-            
+            SessionController.Instance.LinkController.OnLinkRemoved += UpdateLinks;
             if (ElementType == ElementType.Image)
             {
                 foreach (var element in Model.RegionsModel)
@@ -76,7 +76,7 @@ namespace NuSysApp
             CreateTags();
         }
 
-        private void UpdateLinks(LinkLibraryElementController model)
+        public void UpdateLinks(LinkLibraryElementController model)
         {
             UITask.Run(async delegate { CreateCircleLinks(); });    
         }
@@ -169,9 +169,13 @@ namespace NuSysApp
             {
                 return;
             }
-
+            var id = this.Controller.LibraryElementModel?.LibraryElementId;
+            if (id == null)
+            {
+                return;
+            }
             CircleLinks.Clear();
-            var circleList = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(this.Controller.LibraryElementModel.LibraryElementId));
+            var circleList = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(id));
             if(circleList == null)
             {
                 return;
@@ -180,20 +184,24 @@ namespace NuSysApp
             {
                 //sorry about this - should also be in frontend and not in viewmodel
                 var link = SessionController.Instance.ContentController.GetContent(circle) as LinkLibraryElementModel;
-                string cid = "";
-                if (this.ContentId == link.InAtomId.LibraryElementId)
+                if (link != null)
                 {
-                    cid = link.OutAtomId.LibraryElementId;
-                }
-                else if (this.ContentId == link.OutAtomId.LibraryElementId)
-                {
-                    cid = link.InAtomId.LibraryElementId;
-                }
-                var circlelink = new LinkCircle(circle, cid);
-                Color color = link.Color;
-                circlelink.Circle.Fill = new SolidColorBrush(color);
+                    string cid = "";
+                    if (this.ContentId == link.InAtomId.LibraryElementId)
+                    {
+                        cid = link.OutAtomId.LibraryElementId;
+                    }
+                    else if (this.ContentId == link.OutAtomId.LibraryElementId)
+                    {
+                        cid = link.InAtomId.LibraryElementId;
+                    }
+                    var circlelink = new LinkCircle(circle, cid);
+                    Color color = link.Color;
+                    circlelink.Circle.Fill = new SolidColorBrush(color);
 
-                CircleLinks.Add(circlelink);
+                    CircleLinks.Add(circlelink);
+                }
+                
             }
             
             RaisePropertyChanged("CircleLinks");

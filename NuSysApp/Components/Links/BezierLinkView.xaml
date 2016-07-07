@@ -20,7 +20,7 @@
         </ResourceDictionary>
     </converters:AnimatableUserControl.Resources>
     <Canvas Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}">
-        <Path x:Name="BezierLink" Stroke="White" StrokeThickness="30">
+        <Path x:Name="BezierLink" Stroke="White" StrokeThickness="30" PointerPressed="BezierLink_OnPointerPressed">
             <Path.Data>
                 <PathGeometry>
                     <PathGeometry.Figures>
@@ -37,7 +37,7 @@
                 </PathGeometry>
             </Path.Data>
         </Path>
-        <Path x:Name="BezierLinkInner" Stroke="{Binding Color}" StrokeThickness="25" CompositeMode="MinBlend" Opacity="0.28">
+        <Path x:Name="BezierLinkInner" Stroke="{Binding Color}" StrokeThickness="25" CompositeMode="MinBlend" Opacity="0.28" PointerPressed="BezierLink_OnPointerPressed">
             <Path.Data>
                 <PathGeometry>
                     <PathGeometry.Figures>

@@ -36,6 +36,16 @@ namespace NuSysApp
             ToolControllers.Add(model.Id, this);
             Model.SetLibraryIds(Filter(GetUpdatedDataList()));
 
+            //CODE TO DELETE Non RMS STUFF
+            /*
+            foreach (var id in new HashSet<string>(SessionController.Instance.ContentController.IdList))
+            {
+                Task.Run(async delegate
+                {
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteLibraryElementRequest(id));
+                });
+            }*/
+
             //CODE BELOW IS HACKY WAY TO DOWNLOAD ALL THE PDF'S 
             /*
             Task.Run(async delegate
@@ -112,9 +122,8 @@ namespace NuSysApp
             ToolControllers[parentid].LibraryIdsChanged -= ParentLibraryIdsChanged;
             Model.ParentIds.Remove(parentid);
             Model.SetLibraryIds(GetUpdatedDataList());
-            LibraryIdsChanged.Invoke(this, Model.LibraryIds);
+            LibraryIdsChanged?.Invoke(this, Model.LibraryIds);
             ToolControllers[parentid].Disposed -= OnParentDisposed;
-            ToolControllers.Remove(parentid);
         }
 
         public virtual void RemoveParent(ToolController parentController)
@@ -136,6 +145,8 @@ namespace NuSysApp
                 RemoveParent(parentController);
             }
             Disposed?.Invoke(Model.Id);
+            ToolControllers.Remove(Model.Id);
+
         }
 
         public HashSet<string> Filter(HashSet<string> ids)

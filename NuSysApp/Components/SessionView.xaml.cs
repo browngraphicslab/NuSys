@@ -511,6 +511,11 @@ namespace NuSysApp
             var id = message.GetString("id");
             Debug.WriteLine("making element: " + id);
             var libraryModel = SessionController.Instance.ContentController.GetContent(libraryId);
+            if (libraryModel == null)
+            {
+                messagesLeft.Remove(id);
+                return;
+            }
             var type = libraryModel.Type;
             switch (type)
             {

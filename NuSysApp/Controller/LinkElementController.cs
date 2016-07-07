@@ -56,7 +56,7 @@ namespace NuSysApp
             {
                 var vmIn = (ElementViewModel)vmListIn?.Single()?.DataContext;
 
-                vmIn?.LinkList?.Remove(this);
+           //     vmIn?.LinkList?.Remove(this);
             }
 
             var vmListOut = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
@@ -66,7 +66,7 @@ namespace NuSysApp
             {
                 var vmOut = (ElementViewModel)vmListOut?.Single()?.DataContext;
 
-                vmOut?.LinkList?.Remove(this);
+             //   vmOut?.LinkList?.Remove(this);
 
             }
 
