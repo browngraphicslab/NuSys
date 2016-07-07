@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="500"
-    d:DesignWidth="450">
+    d:DesignWidth="490">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -272,9 +272,8 @@
 
             <Grid Grid.Row="2">
                 <local:TextInputBlock x:Name ="Searchfield"  Width="440"  BubbleTop="False" TextChanged="TextBox_OnTextChanging"  LeftJustified="True" Margin="-40,2,0,2"></local:TextInputBlock>
-                <Border  HorizontalAlignment="Right" Background="Transparent"  x:Name="xSearchExportButton" ManipulationMode="TranslateX,TranslateY" ManipulationStarted="XSearchExportButton_OnManipulationStarted" ManipulationDelta="XSearchExportButton_OnManipulationDelta" ManipulationCompleted="XSearchExportButton_OnManipulationCompleted" PointerPressed="XSearchExportButton_OnPointerPressed">
-                    <TextBlock Text="&#xE8AD;" FontFamily="Segoe MDL2 Assets" Margin="10,15,10,10" Foreground="{StaticResource color3}"></TextBlock>
-                </Border>
+                <Image Source="/Assets/search as collection.png" HorizontalAlignment="Right" Margin="10,12,10,10" x:Name="xSearchExportButton" ManipulationMode="TranslateX, TranslateY" ManipulationStarted="XSearchExportButton_OnManipulationStarted"
+                       ManipulationDelta="XSearchExportButton_OnManipulationDelta" ManipulationCompleted="XSearchExportButton_OnManipulationCompleted" PointerPressed="XSearchExportButton_OnPointerPressed"></Image>
 
             </Grid>
         </Grid>

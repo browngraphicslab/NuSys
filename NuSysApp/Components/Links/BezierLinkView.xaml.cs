@@ -183,25 +183,25 @@ namespace NuSysApp
                         */
                     }
                 }
-                else
+            else
+            {
+                if (Annotation.Text == "")
                 {
-                    if (Annotation.Text == "")
-                    {
-                        AnnotationContainer.Visibility = Visibility.Collapsed;
-                    }
+                    AnnotationContainer.Visibility = Visibility.Collapsed;
+                }
 
-                    this.Annotation.DeActivate();
-                    if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
-                    {
-                          
-                    }
+                this.Annotation.DeActivate();
+                if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
+                {
 
-                    if (((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod != null)
-                    {
-                        ((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.Model.Deselect();
-                    }
+                }
+
+                if (((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod != null)
+                {
+                    ((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.Model.Deselect();
                 }
             }
+        }
         
 
         private void JumpToLinkedTime()
