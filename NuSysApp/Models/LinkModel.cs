@@ -25,7 +25,6 @@ namespace NuSysApp
 
         public string OutAtomId { get; set; }
         public string Annotation { get; set; }
-        public string ContentId { get; set; }
 
         //public LinkedTimeBlockModel InFineGrain { get; set; }
 

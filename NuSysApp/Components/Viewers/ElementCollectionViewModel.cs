@@ -118,7 +118,7 @@ namespace NuSysApp
                     var lm = new LinkModel(SessionController.Instance.GenerateId());
                     lm.InAtomId = controller.Model.Id;
                     lm.OutAtomId = dc.Controller.Model.Id;
-                    lm.ContentId = id;
+                    lm.LibraryId = id;
                     var lc = new LinkElementController(lm);
                     var view = new BezierLinkView(new LinkViewModel(lc));
                     AtomViewList.Add(view);
@@ -156,7 +156,10 @@ namespace NuSysApp
             var link = SessionController.Instance.LinkController.GetLinkLibraryElementController(id);
             foreach (var atom in new HashSet<FrameworkElement>(AtomViewList.Where(e=> e.DataContext is LinkViewModel)))
             {
-                if (((atom.DataContext as LinkViewModel).Model as LinkModel).ContentId == id)
+                var vm = atom.DataContext as LinkViewModel;
+                var linkModel = (vm?.Controller?.Model as LinkModel);
+                Debug.Assert(linkModel != null);
+                if (linkModel.LibraryId == link.LibraryElementModel.LibraryElementId)
                 {
                     AtomViewList.Remove(atom);
                 }
