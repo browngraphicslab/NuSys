@@ -54,13 +54,5 @@
                 </PathGeometry>
             </Path.Data>
         </Path>
-        <StackPanel x:Name="AnnotationContainer" Orientation="Vertical" >
-            <Grid>
-                <Rectangle x:Name="Rect" Fill="LightGray" Width="260"  HorizontalAlignment="Left"/>
-                <StackPanel Orientation="Horizontal" IsHitTestVisible="{Binding IsSelected}" >
-                    <local:TextInputBlock x:Name ="Annotation" BubbleTop="True"  LeftJustified="False" SetHeight="30" HorizontalAlignment="Stretch" Loaded="Annotation_Loaded"></local:TextInputBlock>
-                </StackPanel>
-            </Grid>
-        </StackPanel>
     </Canvas>
 </converters:AnimatableUserControl>
