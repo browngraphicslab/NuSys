@@ -144,6 +144,8 @@ namespace NuSysApp
             IntervalRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.LightCyan);
             xResizingTriangle.Visibility = Visibility.Collapsed;
             xNameTextBox.Visibility = Visibility.Collapsed;
+            IntervalRectangle.IsHitTestVisible = true;
+
             Selected = false;
 
 
@@ -156,6 +158,10 @@ namespace NuSysApp
             IntervalRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
             xResizingTriangle.Visibility = Visibility.Visible;
             xNameTextBox.Visibility = Visibility.Visible;
+            //IntervalRectangle.IsTapEnabled = false;
+            IntervalRectangle.IsHitTestVisible = false;
+
+
             Selected = true;
 
         }
@@ -163,7 +169,7 @@ namespace NuSysApp
         private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             var vm = DataContext as VideoRegionViewModel;
-
+            /*
             if (!vm.Editable)
                 return;
 
@@ -171,6 +177,8 @@ namespace NuSysApp
                 this.Deselect();
             else
                 this.Select();
+                */
+            e.Handled = true;
 
         }
         private void IntervalRectangle_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -196,7 +204,14 @@ namespace NuSysApp
 
         private void IntervalRectangle_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            OnRegionSeek?.Invoke(((this.DataContext as VideoRegionViewModel).RegionController.Model as VideoRegionModel).Start);
+            if (!Selected)
+            {
+                OnRegionSeek?.Invoke(((this.DataContext as VideoRegionViewModel).RegionController.Model as VideoRegionModel).Start + 0.001);
+            }
+
+
+            e.Handled = true;
+
         }
     }
 }
