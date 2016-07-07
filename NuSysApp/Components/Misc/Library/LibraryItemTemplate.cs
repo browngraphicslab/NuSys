@@ -37,6 +37,10 @@ namespace NuSysApp
 
         private void Controller_TitleChanged(object sender, string title)
         {
+            if (title == null)
+            {
+                return;
+            }
             Title = title;
         }
 

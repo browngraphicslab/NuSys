@@ -27,6 +27,7 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.DataContext = vm;
+            this.Deselect();
             _toggleManipulation = false;
             Selected = false;
 //            Rect.RenderTransform = new CompositeTransform();
@@ -81,14 +82,16 @@ namespace NuSysApp
         public void Deselect()
         {
             Rect.Fill = new SolidColorBrush(Windows.UI.Colors.LightCyan);
+            xNameTextBox.Visibility = Visibility.Collapsed;
             Selected = false;
-
 
         }
 
         public void Select()
         {
             Rect.Fill = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
+            xNameTextBox.Visibility = Visibility.Visible;
+
             Selected = true;
 
         }
@@ -123,5 +126,13 @@ namespace NuSysApp
                 UpdateModel(e.Delta.Translation.X, e.Delta.Translation.X);
             }
         }
+
+        private void xNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var vm = DataContext as AudioRegionViewModel;
+            vm.Name = (sender as TextBox).Text;
+            vm.RegionController.SetTitle(vm.Name);
+        }
+
     }
 }

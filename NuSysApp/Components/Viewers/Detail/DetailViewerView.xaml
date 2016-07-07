@@ -121,7 +121,7 @@
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         
-        <Grid x:Name="xContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource color1}" Padding="25,10,25,10">
+        <Grid x:Name="xContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource color1}" BorderBrush="{StaticResource color2}" BorderThickness="3,0,0,0"  Padding="25,10,25,10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
@@ -137,7 +137,7 @@
                 <TextBlock Text="x" Foreground="White" FontSize="24"/>
             </Border>
 
-            <StackPanel Grid.Row="1" Canvas.ZIndex="100" x:Name="TitleEnter" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,20" BorderBrush="DarkSlateGray" BorderThickness="0,0,0,1">
+            <StackPanel Grid.Row="1" Canvas.ZIndex="100" x:Name="TitleEnter" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,0" BorderBrush="DarkSlateGray" BorderThickness="0,0,0,1">
                 <!--<TextBlock Text="{Binding Title}" Foreground="White" FontSize="30" CharacterSpacing="45" HorizontalAlignment="Stretch"/>-->
                 <local:TextInputBlock  x:Name ="TitleBox" HasBackground="False"  TextColor="DarkSlateGray"  FontWeight="Thin"  LeftJustified="True"  FontSize="40" BubbleTop="False" SetHeight="40" HorizontalAlignment="Stretch" TextChanged="TitleBox_OnTextChanged"/>
                 <!--<Rectangle HorizontalAlignment="Stretch" Fill="White" Height="2"/>-->
@@ -208,6 +208,14 @@
 
         </Grid>
 
+        <Grid x:Name="resizer" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="50" Margin="5,0,0,0"
+                    ManipulationDelta="Resizer_OnManipulationDelta" ManipulationMode="All" Tapped="closeDV_OnTapped">
+            <Grid.RenderTransform>
+                <TranslateTransform X="-30"></TranslateTransform>
+            </Grid.RenderTransform>
+            <Image x:Name="resizerImage" Source="/Assets/openclose icon.png" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+        </Grid>
+
         <Grid x:Name="TabPanel" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="{StaticResource color2}"
                     ManipulationDelta="Resizer_OnManipulationDelta" ManipulationMode="All" Visibility="{Binding TabVisibility}">
             <Grid.RenderTransform>
@@ -229,11 +237,11 @@
                                 <Border.RenderTransform>
                                     <TranslateTransform Y="15"></TranslateTransform>
                                 </Border.RenderTransform>-->
-                                <TextBlock x:Name="TabTitle" Tapped="TabList_OnTapped" HorizontalAlignment="Left"  Text="{Binding Title}" Width="100" Margin="5,0,0,0"  VerticalAlignment="Center">
+                            <TextBlock x:Name="TabTitle" Tapped="TabList_OnTapped" HorizontalAlignment="Left"  Text="{Binding Title}" Width="100" Margin="5,0,0,0"  VerticalAlignment="Center">
                                     <!--<TextBlock.RenderTransform>
                                         <RotateTransform Angle="90"></RotateTransform>
                                     </TextBlock.RenderTransform>-->
-                                </TextBlock>
+                            </TextBlock>
                             <!--</Border>-->
                         </Grid>
                     </DataTemplate>
@@ -278,15 +286,5 @@
                 </ListView.ItemTemplate>
             </ListView>-->
         </Grid>
-
-        <Grid x:Name="resizer" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="50" Margin="5,0,0,0"
-                    ManipulationDelta="Resizer_OnManipulationDelta" ManipulationMode="All" Tapped="closeDV_OnTapped">
-            <Grid.RenderTransform>
-                <TranslateTransform X="-30"></TranslateTransform>
-            </Grid.RenderTransform>
-            <Image x:Name="resizerImage" Source="/Assets/openclose icon.png" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
-        </Grid>
-        
-        
     </Grid>
 </local:AnimatableUserControl>

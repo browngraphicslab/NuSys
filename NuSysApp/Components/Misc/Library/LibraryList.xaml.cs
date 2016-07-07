@@ -41,7 +41,10 @@ namespace NuSysApp
         private LibraryView _library;
         private Dictionary<string, bool> _reverseTable = new Dictionary<string, bool>();
 
-        private bool _singleTap; 
+
+        // used to check if library list items are single tapped or double tapped
+        private bool _singleTap;
+        
         public LibraryList(LibraryView library, LibraryPageViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
         {
             this.DataContext = vm;
@@ -113,13 +116,6 @@ namespace NuSysApp
             _x = e.GetCurrentPoint(view).Position.X-25;
             _y = e.GetCurrentPoint(view).Position.Y-25;
         }
-        //private void ListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
-        //{
-
-        //    LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
-
-        //    SessionController.Instance.SessionView.ShowDetailView(SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId));
-        //}
         private async void Sort_Button_Click(object sender, RoutedEventArgs e)
         {
             var btnStr = ((Button) sender).Content.ToString();
@@ -133,6 +129,8 @@ namespace NuSysApp
         {
             LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
             LibraryElementModel element = SessionController.Instance.ContentController.GetContent(itemTemplate.ContentID);
+
+
             if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element.LibraryElementId) || (element.Type == ElementType.Link))
             {
                 e.Handled = true;
@@ -163,19 +161,33 @@ namespace NuSysApp
 
         private void LibraryListItem_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-
             LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
             LibraryElementModel element = SessionController.Instance.ContentController.GetContent(itemTemplate.ContentID);
+
+            
+            // get the pointer point position, and upper left corner of the libary in relation to the sessionview
+            var el = (FrameworkElement)sender;
+            var pointerPoint = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
+            var upperLeftPoint = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(new Point(0, 0));
+
+            // if the pointer point is in the library scroll the library
+            if (pointerPoint.X > upperLeftPoint.X && pointerPoint.X < upperLeftPoint.X + this.ActualWidth &&
+                pointerPoint.Y > upperLeftPoint.Y && pointerPoint.Y < upperLeftPoint.Y + this.ActualHeight)
+            {
+                Border border = (Border)VisualTreeHelper.GetChild(ListView, 0);
+                ScrollViewer scrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
+                scrollViewer?.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta.Translation.Y);
+            }
+            
+
             if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
             {
                 e.Handled = true;
                 return;
             }
 
-            var el = (FrameworkElement) sender;
-            var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
-            
-            var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(sp, null).Where( i => i is LibraryView);
+            var itemsBelow = VisualTreeHelper.FindElementsInHostCoordinates(pointerPoint, null).Where( i => i is LibraryView);
+
             if (itemsBelow.Any())
             {
                 SessionController.Instance.SessionView.LibraryDraggingRectangle.Hide();
@@ -196,8 +208,7 @@ namespace NuSysApp
             _y += e.Delta.Translation.Y;
 
             _propertiesWindow.Visibility = Visibility.Collapsed;
-
-
+            
         }
 
         private async void LibraryListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
@@ -352,10 +363,18 @@ namespace NuSysApp
 
         private void HeaderPanel_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
+            // set _singleTap to false to stop single tap event from occuring
             _singleTap = false;
-            LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
-            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(itemTemplate.ContentID);
-            SessionController.Instance.SessionView.ShowDetailView(SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId));
+
+            // get the item template from the sender
+            var itemTemplate = (sender as Grid)?.DataContext as LibraryItemTemplate;
+            // get the library element model using the content id
+            var element = SessionController.Instance.ContentController.GetContent(itemTemplate?.ContentID);
+            // get the library element controller using the library element id
+            var controller =
+                SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId);
+            // show the detail viewer
+            SessionController.Instance.SessionView.ShowDetailView(controller);
         }
         
         //private void RegionsPanel_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -386,13 +405,24 @@ namespace NuSysApp
         {
             var textBlock = sender as Button;
             var id = textBlock?.DataContext as string;
+
+            // get the currWorkSpaceId
+            var currWorkSpaceId =
+                SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.LibraryElementId;
+            Debug.Assert(currWorkSpaceId != null);
+
+            // if we are deleting the currentWorkSpace, return
+            if ( currWorkSpaceId == id)
+            {
+                return;
+            }
+
             Task.Run(async delegate
             {
                 var request = new DeleteLibraryElementRequest(id);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             });
         }
-        
     }
 
 }

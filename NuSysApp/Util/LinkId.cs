@@ -40,7 +40,7 @@ namespace NuSysApp
         {
             if (RegionId == null)
             {
-                return LibraryElementId.GetHashCode();
+                return LibraryElementId?.GetHashCode() ?? 0;
             }
             return RegionId.GetHashCode();
         }

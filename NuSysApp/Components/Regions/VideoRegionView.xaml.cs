@@ -26,6 +26,7 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.DataContext = vm;
+            this.Deselect();
         }
 
         public Grid RegionRectangle
@@ -139,6 +140,7 @@ namespace NuSysApp
             xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Blue);
             IntervalRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.LightCyan);
             xResizingTriangle.Visibility = Visibility.Collapsed;
+            xNameTextBox.Visibility = Visibility.Collapsed;
             Selected = false;
 
 
@@ -150,6 +152,7 @@ namespace NuSysApp
             xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
             IntervalRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
             xResizingTriangle.Visibility = Visibility.Visible;
+            xNameTextBox.Visibility = Visibility.Visible;
             Selected = true;
 
         }
@@ -179,6 +182,13 @@ namespace NuSysApp
             SessionController.Instance.SessionView.ShowDetailView(vm?.LibraryElementController);
             var regionController = vm?.RegionController;
             SessionController.Instance.SessionView.ShowDetailView(regionController);
+        }
+
+        private void xNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var vm = DataContext as VideoRegionViewModel;
+            vm.Name = (sender as TextBox).Text;
+            vm.RegionController.SetTitle(vm.Name);
         }
     }
 }

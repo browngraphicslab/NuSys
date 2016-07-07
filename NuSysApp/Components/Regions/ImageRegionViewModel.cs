@@ -25,7 +25,6 @@ namespace NuSysApp
             {
                 _name = value;
                 Model.Name = _name;
-                RegionController.SetTitle(_name);
                 RaisePropertyChanged("Name");
             }
         }
@@ -94,9 +93,15 @@ namespace NuSysApp
 
             regionController.SizeChanged += RegionController_SizeChanged;
             regionController.LocationChanged += RegionController_LocationChanged;
+            regionController.TitleChanged += RegionController_TitleChanged;
             Name = Model.Name;
             Editable = true;
 
+        }
+
+        private void RegionController_TitleChanged(object source, string title)
+        {
+            Name = title;
         }
 
         private void RegionController_LocationChanged(object sender, Point topLeft)

@@ -107,6 +107,8 @@ namespace NuSysApp
                     {
                         //(region as PdfRegion).PageLocation += 1;
                         collection.Add(region);
+                        
+
                     }
                     return collection;
                 }
@@ -142,7 +144,6 @@ namespace NuSysApp
         private void AddRegionToList(object source, RegionController regionController)
         {
             RegionCollection.Add(regionController.Model);
-            regionController.TitleChanged += UpdateCollection;
             RaisePropertyChanged("OrderedRegionCollection");
 
         }
@@ -255,6 +256,10 @@ namespace NuSysApp
                 {
                     return false;
                 }
+                if (CurrentElementController == null)
+                {
+                    return false;
+                }
                 View = await _viewHomeTabViewFactory.CreateFromSendable(CurrentElementController, CurrentElementController.LibraryElementModel.Regions);
                 if (View == null)
                 {
@@ -295,11 +300,6 @@ namespace NuSysApp
             
         }
 
-        public void UpdateCollection(object sender, string title)
-        {
-
-            RaisePropertyChanged("RegionCollection");
-        }
 
         public void AddTab(IDetailViewable viewable)
         {

@@ -164,7 +164,7 @@ namespace NuSysApp
         {
             get
             {
-                return AtomViewList.Select(e => (ElementViewModel) e.DataContext).ToList();
+                return AtomViewList.Select(e =>  e.DataContext as ElementViewModel).ToList();
             }
         }
 

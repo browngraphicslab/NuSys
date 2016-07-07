@@ -271,7 +271,13 @@
             </Grid>
 
             <Grid Grid.Row="2">
+<<<<<<< HEAD
                 <local:TextInputBlock x:Name ="Searchfield"  Width="440"  BubbleTop="False" TextChanged="TextBox_OnTextChanging"  LeftJustified="True" Margin="-40,2,0,2"></local:TextInputBlock>
+=======
+                <Canvas Width="400" Height="38" Background="Transparent" VerticalAlignment="Bottom" Margin="-40,0,0,0">
+                    <local:TextInputBlock x:Name ="Searchfield" Width="400"  BubbleTop="False" TextChanged="TextBox_OnTextChanging"  LeftJustified="True"></local:TextInputBlock>
+                </Canvas>
+>>>>>>> 722db933106f3ac0c05ebaf659ae81e0891199c6
                 <Border  HorizontalAlignment="Right" Background="Transparent"  x:Name="xSearchExportButton" ManipulationMode="TranslateX,TranslateY" ManipulationStarted="XSearchExportButton_OnManipulationStarted" ManipulationDelta="XSearchExportButton_OnManipulationDelta" ManipulationCompleted="XSearchExportButton_OnManipulationCompleted" PointerPressed="XSearchExportButton_OnPointerPressed">
                     <TextBlock Text="&#xE8AD;" FontFamily="Segoe MDL2 Assets" Margin="10,15,10,10" Foreground="{StaticResource color3}"></TextBlock>
                 </Border>
