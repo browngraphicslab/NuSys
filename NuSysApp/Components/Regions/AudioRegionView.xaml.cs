@@ -22,6 +22,8 @@ namespace NuSysApp
         private bool _toggleManipulation;
         public delegate void RegionSelectedEventHandler(object sender, bool selected);
         public event RegionSelectedEventHandler OnSelected;
+        public delegate void OnRegionSeekHandler(double time);
+        public event OnRegionSeekHandler OnRegionSeek;
         public bool Selected { get; set; }
         public AudioRegionView(AudioRegionViewModel vm)
         {
@@ -126,12 +128,15 @@ namespace NuSysApp
                 UpdateModel(e.Delta.Translation.X, e.Delta.Translation.X);
             }
         }
-
         private void xNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             var vm = DataContext as AudioRegionViewModel;
             vm.Name = (sender as TextBox).Text;
             vm.RegionController.SetTitle(vm.Name);
+        }
+        private void Rect_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            OnRegionSeek?.Invoke(((DataContext as AudioRegionViewModel).RegionController.Model as TimeRegionModel).Start);
         }
 
     }

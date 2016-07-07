@@ -11,9 +11,10 @@
 
     <Grid x:Name="Canvas" DoubleTapped="XGrid_OnDoubleTapped">
         <Grid.RenderTransform>
-            <CompositeTransform TranslateY="10"></CompositeTransform>
-        </Grid.RenderTransform>
-        <Rectangle x:Name="Rect" PointerPressed="Rect_PointerPressed" ManipulationDelta="Rect_OnManipulationDelta" Width="{Binding Path=RegionWidth}" Fill="LightCyan" Height="100"  Opacity=".2" HorizontalAlignment="Left" VerticalAlignment="Top" ManipulationMode="{Binding Path=Editable, Converter={StaticResource mConverter}}" >
+        <CompositeTransform TranslateY="10"></CompositeTransform>
+    </Grid.RenderTransform>
+        <Rectangle x:Name="Rect" PointerPressed="Rect_PointerPressed" ManipulationDelta="Rect_OnManipulationDelta" Width="{Binding Path=RegionWidth}" Fill="LightCyan" Height="100"  Opacity=".2" HorizontalAlignment="Left" VerticalAlignment="Top" ManipulationMode="{Binding Path=Editable, Converter={StaticResource mConverter}}" Tapped="Rect_OnTapped" >
+
             <Rectangle.RenderTransform>
                 <CompositeTransform TranslateX="{Binding LeftHandleX}"/>
             </Rectangle.RenderTransform>

@@ -35,7 +35,7 @@ namespace NuSysApp
         private List<LinkedTimeBlockViewModel> _timeBlocks;
         private bool _addTimeBlockMode;
         private Line _temporaryLinkVisual;
-
+        
 
 
         public AudioNodeView(AudioNodeViewModel vm)
@@ -68,7 +68,7 @@ namespace NuSysApp
 
             ((AudioNodeModel)vm.Model).OnJump += AudioNodeView_OnJump;
             MediaPlayer.AudioSource = vm.AudioSource;
-
+            vm.OnRegionSeekPassing += MediaPlayer.onSeekedTo;
             //playbackElement.MediaEnded += MediaEnded;
         }
 
