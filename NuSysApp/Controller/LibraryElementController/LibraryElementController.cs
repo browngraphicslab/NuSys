@@ -320,9 +320,26 @@ namespace NuSysApp
                     case ElementType.Video:
                         return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_large.jpg");
                         break;
+                    case ElementType.PDF:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
+                        break;
+                    case ElementType.Audio:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
+                        break;
+                    case ElementType.Text:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/text.png");
+                        break;
+                    case ElementType.Collection:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/collection_1.png");
+                        break;
+                    case ElementType.Word:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/word.png");
+                        break;
+                    case ElementType.Link:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/link.png");
+                        break;
                     default:
                         return new Uri("ms-appx:///Assets/icon_chat.png");
-                        break;
                 }
             }
         }
@@ -340,9 +357,26 @@ namespace NuSysApp
                     case ElementType.Video:
                         return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_medium.jpg");
                         break;
+                    case ElementType.PDF:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
+                        break;
+                    case ElementType.Audio:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
+                        break;
+                    case ElementType.Text:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/text.png");
+                        break;
+                    case ElementType.Collection:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/collection_1.png");
+                        break;
+                    case ElementType.Word:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/word.png");
+                        break;
+                    case ElementType.Link:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/link.png");
+                        break;
                     default:
                         return new Uri("ms-appx:///Assets/icon_chat.png");
-                        break;
                 }
             }
         }
