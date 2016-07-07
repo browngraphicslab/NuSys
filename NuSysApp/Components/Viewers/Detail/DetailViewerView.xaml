@@ -203,7 +203,6 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="100"></ColumnDefinition>
                                     <ColumnDefinition Width="*"></ColumnDefinition>
-                                    <ColumnDefinition Width="30"></ColumnDefinition>
                                     <ColumnDefinition Width="100"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
 
@@ -213,18 +212,28 @@
 
                                 </local:TextInputBlock>
                                 <Button Grid.Column="2" x:Name="AddTagButton"  Height="30" Width="30" Content="+" Foreground="{StaticResource darkforeground}" Click="AddTagButton_OnClick"  Background="{StaticResource color6}" VerticalAlignment="Center"></Button>
-                                <Button Grid.Column="3" x:Name="SuggestButton"  Height="40" Width="100" Content="Suggest" Foreground="{StaticResource darkforeground}" Click="AddTagButton_OnClick"  Background="{StaticResource color6}" VerticalAlignment="Center" Margin="10,0,0,0"></Button>
+                                <!-- <Button Grid.Column="3" x:Name="SuggestButton"  Height="40" Width="100" Content="Suggest" Foreground="{StaticResource darkforeground}" Click="AddTagButton_OnClick"  Background="{StaticResource color6}" VerticalAlignment="Center" Margin="10,0,0,0"></Button> -->
                             </Grid>
                         </Grid>
 
                         <Grid Grid.Row="2" HorizontalAlignment="Stretch">
-                            <ItemsControl x:Name="Tags" ItemsSource="{Binding Tags}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <local:WrapPanel/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                            </ItemsControl>
+                            <StackPanel>
+                                <ItemsControl x:Name="SuggestedTags" ItemsSource="{Binding SuggestedTags}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <local:WrapPanel/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                                <ItemsControl x:Name="Tags" ItemsSource="{Binding Tags}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <local:WrapPanel/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                            </StackPanel>
+
                         </Grid>
                     </Grid>
                 </PivotItem>
