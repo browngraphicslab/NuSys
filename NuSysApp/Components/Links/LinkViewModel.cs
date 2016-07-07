@@ -12,15 +12,13 @@ namespace NuSysApp
 
         private ElementController InElementController;
         private ElementController OutElementController;
+        private LinkLibraryElementController _linkLibraryElementController;
 
         public LinkModel LinkModel { get; }
         private SolidColorBrush _defaultColor;
         public LinkViewModel(LinkElementController controller) : base(controller)
         {
             LinkModel = (LinkModel)controller.Model;
-
-            controller.AnnotationChanged += ControllerOnAnnotationChanged;
-            Annotation = LinkModel.Annotation;
 
             InElementController = SessionController.Instance.IdToControllers[LinkModel.InAtomId]; 
             OutElementController = SessionController.Instance.IdToControllers[LinkModel.OutAtomId];
@@ -29,6 +27,12 @@ namespace NuSysApp
                 (int) (InElementController.Model.Y + (Math.Abs(OutElementController.Model.Y - InElementController.Model.Y)/2)));
 
             Color = new SolidColorBrush(Constants.color2);
+
+            _linkLibraryElementController =
+                SessionController.Instance.LinkController.GetLinkLibraryElementController(LinkModel.LibraryId);
+            _linkLibraryElementController.TitleChanged += LinkLibraryElementController_TitleChanged;
+
+            Annotation = _linkLibraryElementController.Title;
 
             /*
             if (LinkModel.InFineGrain != null)
@@ -43,6 +47,11 @@ namespace NuSysApp
             OutElementController.SizeChanged += OutElementControllerOnSizeChanged;
             controller.ColorChanged += Controller_ColorChanged;
             
+        }
+
+        private void LinkLibraryElementController_TitleChanged(object sender, string title)
+        {
+            Title = title;
         }
 
         private void Controller_ColorChanged(SolidColorBrush color)
@@ -61,11 +70,6 @@ namespace NuSysApp
             return base.Init();
         }
 
-        private void ControllerOnAnnotationChanged(string text)
-        {
-            Annotation = text;
-            RaisePropertyChanged("Annotation");
-        }
 
         private void OutElementControllerOnSizeChanged(object source, double width, double height)
         {
@@ -85,6 +89,8 @@ namespace NuSysApp
             InElementController.SizeChanged -= OutElementControllerOnSizeChanged;
             OutElementController.SizeChanged -= OutElementControllerOnSizeChanged;
             ((LinkElementController)Controller).ColorChanged -= Controller_ColorChanged;
+            _linkLibraryElementController.TitleChanged -= LinkLibraryElementController_TitleChanged;
+
             base.Dispose();
         }
       
@@ -119,9 +125,15 @@ namespace NuSysApp
             }
         }
 
+        private string _annotation;
         public string Annotation
         {
-            get;set;
+            get { return _annotation; }
+            set
+            {
+                _annotation = value;
+                RaisePropertyChanged("Annotation");
+            }
         }
 
         public override PointCollection ReferencePoints
@@ -136,5 +148,13 @@ namespace NuSysApp
  
              }
          }
+
+        public void UpdateTitle(string title)
+        {
+            _linkLibraryElementController.TitleChanged -= LinkLibraryElementController_TitleChanged;
+            _linkLibraryElementController.SetTitle(title);
+            _linkLibraryElementController.TitleChanged += LinkLibraryElementController_TitleChanged;
+
+        }
     }
 }

@@ -42,7 +42,7 @@ namespace NuSysApp
                 _message["rectangleMod"] = (rectangle.DataContext as RectangleViewModel);
             }
         }
-        public override async Task CheckOutgoingRequest()
+        public override async Task<bool> CheckOutgoingRequest()
         {
             if (!_message.ContainsKey("id"))
             {
@@ -56,6 +56,7 @@ namespace NuSysApp
             SetServerEchoType(ServerEchoType.Everyone);
             SetServerItemType(ServerItemType.Alias);
             SetServerRequestType(ServerRequestType.Add);
+            return true;
         }
 
         public override async Task ExecuteRequestFunction()
@@ -75,8 +76,8 @@ namespace NuSysApp
 
                 var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(creator);
                 parentCollectionLibraryElement.AddChild(id);
-
                 await SessionController.Instance.NuSysNetworkSession.AddPresentationLink(id1, id2, parentCollectionLibraryElement.LibraryElementId);
+
             }
         }
     }

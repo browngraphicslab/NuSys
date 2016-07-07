@@ -201,8 +201,8 @@ namespace NuSysApp
                 }
                 try
                 {
-                    var list = JsonConvert.DeserializeObject<List<Tuple<string, string>>>(data, settings);
-                    var returnSet = list.Select(tup => new PresentationLink() {Id1 = tup.Item1, Id2 = tup.Item2});
+                    var list = JsonConvert.DeserializeObject<List<TupleIntermediate<string, string>>>(data, settings);
+                    var returnSet = list.Select(tup => new PresentationLink() {Id1 = tup.m_Item1, Id2 = tup.m_Item2});
                     return new HashSet<PresentationLink>(returnSet);
                 }
                 catch (Exception e)
@@ -493,11 +493,15 @@ namespace NuSysApp
             {
                 content = LibraryElementModelFactory.CreateFromMessage(new Message(dict));
             }
-            await UITask.Run(async delegate
+            if (content != null)
             {
-                var args = new LoadContentEventArgs(contentData, regions, inks);
-                SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId).Load(args);
-            });
+                await UITask.Run(async delegate
+                {
+                    var args = new LoadContentEventArgs(contentData, regions, inks);
+                    SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId)
+                        .Load(args);
+                });
+            }
         }
 
         private Region GetRegionFromString(string regionString, string contentId = null)
@@ -737,6 +741,12 @@ namespace NuSysApp
             {
                 Data = data;
             }
+        }
+
+        private class TupleIntermediate<S,T>
+        {
+            public S m_Item1 { get; set; }
+            public T m_Item2 { get; set; }
         }
         private class RegionIntermediate
         {

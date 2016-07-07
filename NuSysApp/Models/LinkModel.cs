@@ -30,19 +30,13 @@ namespace NuSysApp
 
         //TODO: public RegionView
         
-        public Region InFineGrain { set; get; }
-        public RectangleViewModel RectangleMod { get; set; }
-
-        public Dictionary<string, object> InFGDictionary { get; set; }
-        public Dictionary<string, object> OutFGDictionary { get; set; }
+        public RectangleViewModel RectangleModel { get; set; }
 
         public override async Task UnPack(Message props)
         {
             IsPresentationLink = props.GetBool("isPresentationLink", false);
             InAtomId = props.GetString("id1", InAtomId);
             OutAtomId = props.GetString("id2", InAtomId);
-            InFGDictionary = props.GetDict<string, object>("inFGDictionary");
-            OutFGDictionary = props.GetDict<string, object>("outFGDictionary");
             Annotation = props.GetString("annotation", "");
 
             if (props.ContainsKey("rectangleMod"))
@@ -62,7 +56,7 @@ namespace NuSysApp
                             rectangleViewModel.RectWidthRatio == viewModel.RectWidthRatio && rectangleViewModel.RectHeightRatio == viewModel.RectHeightRatio && 
                             rectangleViewModel.PdfPageNumber == viewModel.PdfPageNumber)
                             {
-                                RectangleMod = rectangleViewModel;
+                                RectangleModel = rectangleViewModel;
                                 break;
                             }
                         }
@@ -77,34 +71,11 @@ namespace NuSysApp
                         if (rectangle.LeftRatio == viewModel.LeftRatio && rectangle.TopRatio == viewModel.TopRatio &&
                             rectangle.RectWidthRatio == viewModel.RectWidthRatio && rectangle.RectHeightRatio == viewModel.RectHeightRatio)
                         {
-                            RectangleMod = rectangle;
+                            RectangleModel = rectangle;
                             break;
                         }
                     }
                 }    
-            }
-
-            if (props.ContainsKey("inFineGrain"))
-            {
-
-                switch (SessionController.Instance.IdToControllers[OutAtomId].Model.ElementType)
-                {
-                    case ElementType.Image:
-                        InFineGrain = JsonConvert.DeserializeObject<RectangleRegion>(props.Get("inFineGrain"));
-                        break;
-                    case ElementType.PDF:
-                        InFineGrain = JsonConvert.DeserializeObject<PdfRegion>(props.Get("inFineGrain"));
-                        break;
-                    case ElementType.Audio:
-                        InFineGrain = JsonConvert.DeserializeObject<TimeRegionModel>(props.Get("inFineGrain"));
-                        break;
-                    case ElementType.Video:
-                        InFineGrain = JsonConvert.DeserializeObject<VideoRegionModel>(props.Get("inFineGrain"));
-                        break;
-
-                }
-              
-
             }
             base.UnPack(props);
         }
@@ -114,13 +85,10 @@ namespace NuSysApp
             var dict = await base.Pack();
             dict.Add("id1", InAtomId);
             dict.Add("id2", OutAtomId);
-            dict.Add("inFGDictionary", InFGDictionary);
-            dict.Add("outFGDictionary", OutFGDictionary);
             dict.Add("type", ElementType.ToString());
             dict.Add("annotation", Annotation);
-            dict.Add("inFineGrain", InFineGrain);
             dict.Add("isPresentationLink", IsPresentationLink);
-            dict.Add("rectangleModel", RectangleMod);
+            dict.Add("rectangleModel", RectangleModel);
             return dict;
         }
     }

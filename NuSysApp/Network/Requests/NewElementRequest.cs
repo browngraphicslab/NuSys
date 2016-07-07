@@ -15,7 +15,7 @@ namespace NuSysApp
             SetServerRequestType(ServerRequestType.Add);
         }
 
-        public override async Task CheckOutgoingRequest()
+        public override async Task<bool> CheckOutgoingRequest()
         {
             if (!_message.ContainsKey("id"))
             {
@@ -25,6 +25,7 @@ namespace NuSysApp
             {
                 throw new NewNodeRequestException("New Node requests require messages with at least 'contentId'");
             }
+            return true;
         }
 
         public override async Task ExecuteRequestFunction()
@@ -41,112 +42,120 @@ namespace NuSysApp
             {
                 libraryElement = LibraryElementModelFactory.CreateFromMessage(_message);
             }
-            if (!SessionController.Instance.ContentController.GetLibraryElementController(libraryElement.LibraryElementId).LoadingOrLoaded)
+            if (libraryElement != null)
             {
-                SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(libraryId);
-            }
-
-            var elementType = libraryElement.Type;
-
-            switch (elementType)
-            {
-                case ElementType.Text:
-                    elementModel = new TextElementModel(id);
-                    await elementModel.UnPack(_message);
-                    controller = new TextNodeController((TextElementModel)elementModel);
-                    break;
-                case ElementType.Image:
-                    elementModel = new ImageElementModel(id);
-                    await elementModel.UnPack(_message);
-                    controller = new ImageElementIntanceController(elementModel);
-                    break;
-                case ElementType.Word:
-                    elementModel = new WordNodeModel(id);
-                    await elementModel.UnPack(_message);
-                    controller = new ElementController(elementModel);
-                    break;
-                case ElementType.Powerpoint:
-                    elementModel = new PowerpointNodeModel(id);
-                    await elementModel.UnPack(_message);
-                    controller = new ElementController(elementModel);
-                    break;
-                case ElementType.PDF:
-                    elementModel = new PdfNodeModel(id);
-                    await elementModel.UnPack(_message);
-                    controller = new ElementController(elementModel);
-                    break;
-                case ElementType.Audio:
-                    elementModel = new AudioNodeModel(id);
-                    await elementModel.UnPack(_message);
-                    controller = new ElementController(elementModel);
-                    break;
-                case ElementType.Video:
-                    elementModel = new VideoNodeModel(id);
-                    await elementModel.UnPack(_message);
-                    controller = new ElementController(elementModel);
-                    break;
-                case ElementType.Tag:
-                    elementModel = new TagNodeModel(id);
-                    await elementModel.UnPack(_message);
-                    controller = new ElementController(elementModel);
-                    break;
-                case ElementType.Web:
-                    elementModel = new WebNodeModel(id);
-                    await elementModel.UnPack(_message);
-                    controller = new ElementController(elementModel);
-                    break;
-                case ElementType.Collection:
-                    elementModel = new CollectionElementModel(id);
-                    await elementModel.UnPack(_message);
-                    controller = new ElementCollectionController(elementModel);
-                    break;
-                case ElementType.Area:
-                    elementModel = new AreaModel(id);
-                    await elementModel.UnPack(_message);
-                    controller = new ElementController(elementModel);
-                    break;
-                case ElementType.Link:
-                    elementModel = new LinkModel(id);
-                    await elementModel.UnPack(_message);
-                    controller = new LinkElementController((LinkModel)elementModel);
-                    break;
-                case ElementType.Recording:
-                    controller = new ElementController(null);
-                    break;
-                default:
-                    throw new InvalidOperationException("This node type is not yet supported");
-            }
-
-            foreach (var tag in controller.LibraryElementModel.Keywords)
-            {
-                controller.LibraryElementModel.Keywords.Add(tag);
-            }
-            //controller.LibraryElementModel.Keywords.
-
-            SessionController.Instance.IdToControllers[id] = controller;
-
-            var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(creator);
-            parentCollectionLibraryElement.AddChild(id);
-
-            if (parentCollectionLibraryElement.LibraryElementId == SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.LibraryElementId)
-            {
-                Task.Run(async delegate
+                if (
+                    !SessionController.Instance.ContentController.GetLibraryElementController(
+                        libraryElement.LibraryElementId).LoadingOrLoaded)
                 {
-                    await
-                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
-                            new SubscribeToCollectionRequest(libraryId));
-                });
-            }
-            
-            if (elementType == ElementType.Collection)
-            {
-                //TODO have this code somewhere but not stack overflow.  aka: add in a level checker so we don't recursively load 
-                var existingChildren = ((CollectionLibraryElementModel) (controller.LibraryElementModel))?.Children;
-                foreach (var childId in existingChildren)
+                    SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(libraryId);
+                }
+
+                var elementType = libraryElement.Type;
+
+                switch (elementType)
                 {
-                    if (SessionController.Instance.IdToControllers.ContainsKey(childId))
+                    case ElementType.Text:
+                        elementModel = new TextElementModel(id);
+                        await elementModel.UnPack(_message);
+                        controller = new TextNodeController((TextElementModel)elementModel);
+                        break;
+                    case ElementType.Image:
+                        elementModel = new ImageElementModel(id);
+                        await elementModel.UnPack(_message);
+                        controller = new ImageElementIntanceController(elementModel);
+                        break;
+                    case ElementType.Word:
+                        elementModel = new WordNodeModel(id);
+                        await elementModel.UnPack(_message);
+                        controller = new ElementController(elementModel);
+                        break;
+                    case ElementType.Powerpoint:
+                        elementModel = new PowerpointNodeModel(id);
+                        await elementModel.UnPack(_message);
+                        controller = new ElementController(elementModel);
+                        break;
+                    case ElementType.PDF:
+                        elementModel = new PdfNodeModel(id);
+                        await elementModel.UnPack(_message);
+                        controller = new ElementController(elementModel);
+                        break;
+                    case ElementType.Audio:
+                        elementModel = new AudioNodeModel(id);
+                        await elementModel.UnPack(_message);
+                        controller = new ElementController(elementModel);
+                        break;
+                    case ElementType.Video:
+                        elementModel = new VideoNodeModel(id);
+                        await elementModel.UnPack(_message);
+                        controller = new ElementController(elementModel);
+                        break;
+                    case ElementType.Tag:
+                        elementModel = new TagNodeModel(id);
+                        await elementModel.UnPack(_message);
+                        controller = new ElementController(elementModel);
+                        break;
+                    case ElementType.Web:
+                        elementModel = new WebNodeModel(id);
+                        await elementModel.UnPack(_message);
+                        controller = new ElementController(elementModel);
+                        break;
+                    case ElementType.Collection:
+                        elementModel = new CollectionElementModel(id);
+                        await elementModel.UnPack(_message);
+                        controller = new ElementCollectionController(elementModel);
+                        break;
+                    case ElementType.Area:
+                        elementModel = new AreaModel(id);
+                        await elementModel.UnPack(_message);
+                        controller = new ElementController(elementModel);
+                        break;
+                    case ElementType.Link:
+                        elementModel = new LinkModel(id);
+                        await elementModel.UnPack(_message);
+                        controller = new LinkElementController((LinkModel)elementModel);
+                        break;
+                    case ElementType.Recording:
+                        controller = new ElementController(null);
+                        break;
+                    default:
+                        throw new InvalidOperationException("This node type is not yet supported");
+                }
+
+                foreach (var tag in controller.LibraryElementModel.Keywords)
+                {
+                    controller.LibraryElementModel.Keywords.Add(tag);
+                }
+                //controller.LibraryElementModel.Keywords.
+
+                SessionController.Instance.IdToControllers[id] = controller;
+
+                var parentCollectionLibraryElement =
+                    (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(creator);
+                parentCollectionLibraryElement.AddChild(id);
+
+                if (parentCollectionLibraryElement.LibraryElementId ==
+                    SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.LibraryElementId)
+                {
+                    Task.Run(async delegate
                     {
-                        ((ElementCollectionController) controller).AddChild(SessionController.Instance.IdToControllers[childId]);
+                        await
+                            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                                new SubscribeToCollectionRequest(libraryId));
+                    });
+                }
+
+                if (elementType == ElementType.Collection)
+                {
+                    //TODO have this code somewhere but not stack overflow.  aka: add in a level checker so we don't recursively load 
+                    var existingChildren = ((CollectionLibraryElementModel)(controller.LibraryElementModel))?.Children;
+                    foreach (var childId in existingChildren)
+                    {
+                        if (SessionController.Instance.IdToControllers.ContainsKey(childId))
+                        {
+                            ((ElementCollectionController)controller).AddChild(
+                                SessionController.Instance.IdToControllers[childId]);
+                        }
                     }
                 }
             }

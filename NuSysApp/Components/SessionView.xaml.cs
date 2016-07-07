@@ -132,8 +132,33 @@ namespace NuSysApp
             }
 
             var presentationLinks = await SessionController.Instance.NuSysNetworkSession.GetPresentationLinks(firstId);
+
+            foreach (var presentationlink in presentationLinks)
+            {
+
+                NewPresetationLink(presentationlink);
+            }
             // await Library.Reload();
         }
+
+        private async void NewPresetationLink(PresentationLink presentationlink)
+        {
+            var id = WaitingRoomView.InitialWorkspaceId;
+            var link = new LinkModel(id);
+            var contentId = SessionController.Instance.GenerateId();
+            Message _message = new Message();
+            _message["id1"] = presentationlink.Id1;
+            _message["id2"] = presentationlink.Id2;
+            _message["id"] = contentId;
+            _message["isPresentationLink"] = true;
+            await link.UnPack(_message);
+            var linkController = new LinkElementController(link);
+            SessionController.Instance.IdToControllers[contentId] = linkController;
+
+            var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(id);
+            parentCollectionLibraryElement.AddChild(contentId);
+        }
+
         private void NewNetworkUser(NetworkUser user)
         {
             UITask.Run(delegate
@@ -630,8 +655,8 @@ namespace NuSysApp
             Canvas.SetTop(ChatButton, mainCanvas.ActualHeight - 70);
             Canvas.SetLeft(ChatNotifs, 37);
             Canvas.SetTop(ChatNotifs, mainCanvas.ActualHeight - 67);
-            Canvas.SetLeft(SnapshotButton, MainCanvas.ActualWidth - 65);
-            Canvas.SetTop(SnapshotButton, MainCanvas.ActualHeight - 65);
+            //Canvas.SetLeft(SnapshotButton, MainCanvas.ActualWidth - 65);
+            //Canvas.SetTop(SnapshotButton, MainCanvas.ActualHeight - 65);
         }
         private void UpdateTitle(object sender, object args)
         {
