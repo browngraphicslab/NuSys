@@ -28,7 +28,9 @@ namespace NuSysApp
 
         private void Controller_Loaded(object sender)
         {
-            RaisePropertyChanged("RegionViews");
+            RegionViews.Clear();
+            SetExistingRegions();
+            //RaisePropertyChanged("RegionViews");
         }
         public void VideoMediaPlayer_Loaded(object sender, RoutedEventArgs e)
         {
