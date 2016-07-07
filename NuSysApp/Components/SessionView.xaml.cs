@@ -131,7 +131,7 @@ namespace NuSysApp
                 NewNetworkUser(user);
             }
 
-
+            var presentationLinks = await SessionController.Instance.NuSysNetworkSession.GetPresentationLinks(firstId);
             // await Library.Reload();
         }
         private void NewNetworkUser(NetworkUser user)
