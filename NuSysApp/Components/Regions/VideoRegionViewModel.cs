@@ -45,7 +45,7 @@ namespace NuSysApp
             set
             {
                 _name = value;
-                Model.Name = _name;
+                //Model.Name = _name;
                 RaisePropertyChanged("Name");
             }
         }
@@ -140,6 +140,7 @@ namespace NuSysApp
             regionController.SizeChanged += SizeChanged;
             regionController.LocationChanged += LocationChanged;
             regionController.IntervalChanged += IntervalChanged;
+            regionController.TitleChanged += TitleChanged;
             _height = (model.Height);
             _width = (model.Width);
             _topLeftPoint = new Point(model.TopLeftPoint.X , model.TopLeftPoint.Y );
@@ -151,6 +152,11 @@ namespace NuSysApp
             Name = Model.Name;
 
             Editable = true;
+        }
+
+        private void TitleChanged(object source, string title)
+        {
+            Name = title;
         }
 
         private void LocationChanged(object sender, Point topLeft)

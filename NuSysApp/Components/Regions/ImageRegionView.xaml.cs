@@ -44,7 +44,7 @@ namespace NuSysApp
             this.RenderTransform = composite;
             OnSelected?.Invoke(this, true);
 
-            //vm.PropertyChanged += PropertyChanged;
+            vm.PropertyChanged += PropertyChanged;
             vm.SizeChanged += ChangeSize;
             vm.LocationChanged += ChangeLocation;
             var model = vm.Model as RectangleRegion;
@@ -125,14 +125,14 @@ namespace NuSysApp
         {
             switch (e.PropertyName)
             {
-                case "Width": case "Height":
+                case "Selected":
                     var vm = DataContext as ImageRegionViewModel;
-                    if (vm == null)
+                    if (vm.Selected)
                     {
-                        break;
+                        this.Select();
                     }
-                    xMainRectangle.Width = vm.Width;
-                    xMainRectangle.Height = vm.Height;
+                    break;
+                default:
                     break;
             }
         }

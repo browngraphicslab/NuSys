@@ -49,7 +49,18 @@ namespace NuSysApp
         public double RightHandleY2 { get; set; }
         public double RegionHeight { get; set; }
         public double RegionWidth { get; set; }
-        public string Name { set; get; }
+        private string _name;
+
+        public string Name
+        {
+            get { return _name; }
+            set
+            {
+                _name = value;
+                //Model.Name = _name;
+                RaisePropertyChanged("Name");
+            }
+        }
         public bool Editable
         {
             set
