@@ -168,7 +168,7 @@ namespace NuSysApp
             // get the pointer point position, and upper left corner of the libary in relation to the sessionview
             var el = (FrameworkElement)sender;
             var pointerPoint = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
-            var upperLeftPoint = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(new Point(0, 0));
+            var upperLeftPoint = xGrid.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(new Point(0, 0));
 
             // if the pointer point is in the library scroll the library
             if (pointerPoint.X > upperLeftPoint.X && pointerPoint.X < upperLeftPoint.X + this.ActualWidth &&
