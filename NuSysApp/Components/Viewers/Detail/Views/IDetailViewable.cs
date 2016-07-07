@@ -8,6 +8,6 @@ namespace NuSysApp
 {
     public interface IDetailViewable
     {
-
+        string TabId();
     }
 }

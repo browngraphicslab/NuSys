@@ -46,6 +46,10 @@ namespace NuSysApp
             {
                 return false;
             }
+            if (BasicToolModel.Selection == null)
+            {
+                return false;
+            }
             switch (BasicToolModel.Filter)
             {
                 case ToolModel.ToolFilterTypeTitle.Title:

@@ -30,7 +30,6 @@ namespace NuSysApp
             } 
         }
         
-
         #region Events
         public delegate void ContentChangedEventHandler(object source, string contentData);
         public delegate void RegionAddedEventHandler(object source, RegionController regionController);
@@ -70,7 +69,7 @@ namespace NuSysApp
         }
         private event LoadedEventHandler _onLoaded;
         #endregion Events
-
+        
         public bool IsLoaded { get; private set; }
 
         /// <summary>
@@ -375,13 +374,22 @@ namespace NuSysApp
                         return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_small.jpg");
                         break;
                     case ElementType.PDF:
-                        return new Uri("ms-appx:///Assets/icon_pdf");
+                        return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
                         break;
                     case ElementType.Audio:
-                        return new Uri("ms-appx:///Assets/icon_recording.png");
+                        return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
                         break;
                     case ElementType.Text:
-                        return new Uri("ms-appx:///Assets/icon_text.png");
+                        return new Uri("ms-appx:///Assets/library_thumbnails/text.png");
+                        break;
+                    case ElementType.Collection:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/collection_1.png");
+                        break;
+                    case ElementType.Word:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/word.png");
+                        break;
+                    case ElementType.Link:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/link.png");
                         break;
                     default:
                         return new Uri("ms-appx:///Assets/icon_chat.png");
@@ -490,6 +498,11 @@ namespace NuSysApp
             var linkedIds = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(this.LibraryElementModel.LibraryElementId));
             var controllers = linkedIds.Select(id =>SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
             return new HashSet<LinkLibraryElementController>(controllers);
+        }
+
+        public string TabId()
+        {
+            return LibraryElementModel.LibraryElementId;
         }
         #endregion
 

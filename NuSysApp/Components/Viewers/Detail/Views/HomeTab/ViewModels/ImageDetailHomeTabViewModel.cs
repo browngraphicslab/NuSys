@@ -17,6 +17,7 @@ namespace NuSysApp
         public LibraryElementModel Model { get; }
         public ObservableCollection<ImageRegionView> RegionViews { set; get; }
         public Uri Image { get; }
+        
         public double ImageWidth {
             set
             {
@@ -32,7 +33,7 @@ namespace NuSysApp
         private double _imageWidth;
         
         //public Boolean Editable { get; set; }
-        public ImageDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
+        public ImageDetailHomeTabViewModel(LibraryElementController controller, HashSet<Region> regionsToLoad) : base(controller, regionsToLoad)
         {
             LibraryElementController = controller;
             Model = controller.LibraryElementModel;
@@ -40,7 +41,7 @@ namespace NuSysApp
             Image = controller.GetSource();
             RegionViews = new ObservableCollection<ImageRegionView>();
             Editable = true;
-            
+           
         }
 
         public override void AddRegion(object sender, RegionController regionController)
@@ -111,16 +112,16 @@ namespace NuSysApp
            //return view.ActualWidth;
             return view.GetImgWidth();
         }
-        public override void SetExistingRegions(HashSet<Region> regions)
+        public override void SetExistingRegions()
         {
-            if (regions == null)
+            if (RegionsToLoad == null)
             {
                 return;
             }
 
             RegionViews.Clear();
 
-            foreach (var regionModel in regions)
+            foreach (var regionModel in RegionsToLoad)
             {
                 var imageRegion = regionModel as RectangleRegion;
                 if (imageRegion == null)

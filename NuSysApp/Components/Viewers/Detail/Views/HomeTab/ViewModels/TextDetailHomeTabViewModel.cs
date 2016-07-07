@@ -12,7 +12,7 @@ namespace NuSysApp
         public event TextChangedHandler TextChanged;
 
         public LibraryElementController Controller { get; }
-        public TextDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
+        public TextDetailHomeTabViewModel(LibraryElementController controller, HashSet<Region> regionsToLoad) : base(controller, regionsToLoad)
         {
             Controller = controller;
             controller.ContentChanged += ContentChanged;
@@ -38,7 +38,7 @@ namespace NuSysApp
             //throw new NotImplementedException();
         }
 
-        public override void SetExistingRegions(HashSet<Region> regions)
+        public override void SetExistingRegions()
         {
 
         }

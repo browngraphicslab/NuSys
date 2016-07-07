@@ -50,7 +50,23 @@ namespace NuSysApp
                 RaisePropertyChanged("Name");
             }
         }
-        public bool Editable { get; set; }
+        public bool Editable
+        {
+            set
+            {
+
+                _editable = value;
+
+                RaisePropertyChanged("Editable");
+            }
+            get
+            {
+                return _editable;
+            }
+        }
+
+        private bool _editable;
+
         public double OriginalHeight { get; set; }
         public double OriginalWidth { get; set; }
 
@@ -151,16 +167,15 @@ namespace NuSysApp
             {
 
                 var detailVM = ContainerViewModel as PdfDetailHomeTabViewModel;
-                //note: GetWidth of PDFRegionViewModel is not like GetWidth of ImageRegionViewMOdel
-                var diff = detailVM.GetViewWidth() - detailVM.GetWidth();
 
 
-
-                Height = model.Height * height;
-                Width = model.Width * detailVM.GetWidth();
-                ContainerHeight = height;
+                ContainerHeight = detailVM.GetHeight();
                 ContainerWidth = detailVM.GetWidth();
-                topLeft = new Point(model.TopLeftPoint.X * ContainerWidth, model.TopLeftPoint.Y * height);
+
+                Height = model.Height * ContainerHeight;
+                Width = model.Width * ContainerWidth;
+                topLeft = new Point(model.TopLeftPoint.X * ContainerWidth, model.TopLeftPoint.Y * ContainerHeight);
+
             }
             else {
 

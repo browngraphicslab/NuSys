@@ -310,13 +310,6 @@ namespace NuSysApp
                 return;
             }
 
-            //regionsPanel?.RowDefinitions.Add(new RowDefinition());
-            //var panelTitle = new TextBlock();
-            //panelTitle.Text = "Regions:";
-            //regionsPanel?.Children.Add(panelTitle);
-            //panelTitle.HorizontalAlignment = HorizontalAlignment.Left;
-            //Grid.SetRow(panelTitle, 0);
-            //Grid.SetColumn(panelTitle, 1);
             var count = 0;
 
             foreach (var regionModel in elementModel.Regions)
@@ -343,13 +336,18 @@ namespace NuSysApp
                     SessionController.Instance.SessionView.ShowDetailView(controller);
                 };
                 regionsPanel?.Children.Add(textBox);
-                textBox.HorizontalAlignment = HorizontalAlignment.Right;
+                textBox.HorizontalAlignment = HorizontalAlignment.Left;
                 Grid.SetColumn(textBox, 1);
                 Grid.SetRow(textBox, count);
                 count++;
             }
             regionsPanel.Width = listItem.ActualWidth;
             regionsPanel.Visibility = Visibility.Visible;
+
+            ListView.SelectionChanged += delegate
+            {
+                regionsPanel.Visibility = Visibility.Collapsed;
+            };
         }
 
         private void HeaderPanel_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
@@ -359,12 +357,13 @@ namespace NuSysApp
             LibraryElementModel element = SessionController.Instance.ContentController.GetContent(itemTemplate.ContentID);
             SessionController.Instance.SessionView.ShowDetailView(SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId));
         }
-        private void RegionsPanel_OnTapped(object sender, TappedRoutedEventArgs e)
-         {
-             var panel = sender as Grid;
-             if (panel == null) return;
-             panel.Visibility = Visibility.Collapsed;
-         }
+        
+        //private void RegionsPanel_OnTapped(object sender, TappedRoutedEventArgs e)
+        // {
+        //     var panel = sender as Grid;
+        //     if (panel == null) return;
+        //     panel.Visibility = Visibility.Collapsed;
+        // }
 
         private async void LibraryListItem_OnRightTapped(object sender, RightTappedRoutedEventArgs e)
         {
@@ -393,7 +392,6 @@ namespace NuSysApp
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             });
         }
-
         
     }
 

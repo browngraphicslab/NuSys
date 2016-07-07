@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -178,6 +179,78 @@ namespace NuSysApp
                     data = await responseContent.ReadAsStringAsync();
                 }
                 return data;
+            });
+        }
+
+        public async Task<HashSet<PresentationLink>> GetPresentationLinks(string collectionContentId)
+        {
+            return await Task.Run(async delegate
+            {
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    StringEscapeHandling = StringEscapeHandling.EscapeNonAscii
+                };
+                var client =
+                    new HttpClient(new HttpClientHandler {ClientCertificateOptions = ClientCertificateOption.Automatic});
+                var response = await client.GetAsync(GetUri("getcontentwithoutdata/" + collectionContentId));
+
+                string data;
+                using (var content = response.Content)
+                {
+                    data = await content.ReadAsStringAsync();
+                }
+                try
+                {
+                    var list = JsonConvert.DeserializeObject<List<Tuple<string, string>>>(data, settings);
+                    var returnSet = list.Select(tup => new PresentationLink() {Id1 = tup.Item1, Id2 = tup.Item2});
+                    return new HashSet<PresentationLink>(returnSet);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("error parsing presentation links returned from server for presentationlink fetching");
+                    return null;
+                }
+            });
+        }
+        public async Task<bool> RemovePresentationLink(string id1, string id2)
+        {
+            return await Task.Run(async delegate
+            {
+                var dict = new Dictionary<string, object>();
+                dict["id1"] = id1;
+                dict["id2"] = id2;
+                var data = await SendDictionaryToServer("removepresentationlink", dict);
+                try
+                {
+                    var success = bool.Parse(data);
+                    return success;
+                }
+                catch (Exception boolParsException)
+                {
+                    Debug.WriteLine("error parsing bool returned from server for presentationlink removing");
+                }
+                return false;
+            });
+        }
+        public async Task<bool> AddPresentationLink(string contentId, string id1, string id2)
+        {
+            return await Task.Run(async delegate
+            {
+                var dict = new Dictionary<string, object>();
+                dict["id1"] = id1;
+                dict["id2"] = id2;
+                dict["contentId"] = contentId;
+                var data = await SendDictionaryToServer("addpresentationlink", dict);
+                try
+                {
+                    var success = bool.Parse(data);
+                    return success;
+                }
+                catch (Exception boolParsException)
+                {
+                    Debug.WriteLine("error parsing bool returned from server for presentationlink removing");
+                }
+                return false;
             });
         }
         public async Task<bool> AddRegionToContent(string contentId, Region region)
@@ -537,7 +610,7 @@ namespace NuSysApp
             }
             catch (Exception e)
             {
-                throw new Exception("Exception caught during writing to server data writer");
+                throw new Exception("Exception caught during writing to server data writer.  Reason: "+e.Message);
             }
         }
         public async Task<Dictionary<string, Dictionary<string, object>>> GetRepo()

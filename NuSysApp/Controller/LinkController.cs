@@ -45,6 +45,10 @@ namespace NuSysApp
             foreach (var l in _links[inAtomId])
             {
                 var temp = SessionController.Instance.ContentController.GetContent(l) as LinkLibraryElementModel;
+                if (temp == null)
+                {
+                    continue;//shouldn't do, we should throw an exception or use debug.assert.  But since we just need to cram for demo, idgaf
+                }
                 if ((temp.InAtomId == inAtomId && temp.OutAtomId == outAtomId) ||
                     (temp.InAtomId == outAtomId && temp.OutAtomId == inAtomId))
                 {

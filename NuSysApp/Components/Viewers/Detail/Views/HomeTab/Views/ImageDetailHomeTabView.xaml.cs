@@ -150,7 +150,7 @@ namespace NuSysApp
         private void BitmapImage_ImageOpened(object sender, RoutedEventArgs e)
         {
             var vm = (ImageDetailHomeTabViewModel)DataContext;
-            vm.SetExistingRegions(vm.LibraryElementController.LibraryElementModel.Regions);
+            vm.SetExistingRegions();
 
         }
     }

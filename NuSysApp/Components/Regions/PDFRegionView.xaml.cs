@@ -66,9 +66,11 @@ namespace NuSysApp
             //If in detail view, adjust to the right to account for difference between view and actual image.
             if (regionVM.ContainerViewModel is PdfDetailHomeTabViewModel)
             {
-                var ivm = regionVM.ContainerViewModel as PdfDetailHomeTabViewModel;
-                var diff = ivm.GetViewWidth() - ivm.GetWidth();
-                composite.TranslateX += diff / 2;
+                var pvm = regionVM.ContainerViewModel as PdfDetailHomeTabViewModel;
+                var diffWidth = pvm.GetViewWidth() - parentWidth;
+                var diffHeight = pvm.GetViewHeight() - parentHeight;
+                composite.TranslateX += diffWidth / 2;
+                composite.TranslateY += diffHeight / 2;
             }
 
 
@@ -97,9 +99,11 @@ namespace NuSysApp
             //If in detail view, adjust to the right to account for difference between view and actual image.
             if (vm.ContainerViewModel is PdfDetailHomeTabViewModel)
             {
-                var ivm = vm.ContainerViewModel as PdfDetailHomeTabViewModel;
-                var diff = ivm.GetViewWidth() - ivm.GetWidth();
-                composite.TranslateX += diff / 2;
+                var pvm = vm.ContainerViewModel as PdfDetailHomeTabViewModel;
+                var diffWidth = pvm.GetViewWidth() - pvm.GetWidth();
+                var diffHeight = pvm.GetViewHeight() - pvm.GetHeight();
+                composite.TranslateX += diffWidth / 2;
+                composite.TranslateY += diffHeight / 2;
             }
         }
 
@@ -170,13 +174,16 @@ namespace NuSysApp
             }
 
             var ivm = vm.ContainerViewModel as PdfDetailHomeTabViewModel;
-            var diff = ivm.GetViewWidth() - vm.ContainerViewModel.GetWidth();
+            var diffWidth = ivm.GetViewWidth() - ivm.GetWidth();
+            var diffHeight = ivm.GetViewHeight() - ivm.GetHeight();
 
-            var leftXBound = diff / 2;
-            var rightXBound = diff / 2 + ivm.GetWidth();
+            var leftXBound = diffWidth / 2;
+            var rightXBound = diffHeight / 2 + ivm.GetWidth();
 
+            var upYBound = diffHeight / 2;
+            var downYBound = diffHeight / 2 + ivm.GetHeight();
 
-            if (xMainRectangle.Width + rt.TranslateX + e.Delta.Translation.X <= rightXBound)
+            if (xMainRectangle.Width + rt.TranslateX + e.Delta.Translation.X - diffWidth/2 <= rightXBound)
             {
                 xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
                 vm.Width = xMainRectangle.Width;
@@ -184,7 +191,7 @@ namespace NuSysApp
 
             }
 
-            if (xMainRectangle.Height + rt.TranslateY + e.Delta.Translation.Y <= vm.ContainerHeight)
+            if (xMainRectangle.Height + rt.TranslateY + e.Delta.Translation.Y - diffHeight/2 <= downYBound)
             {
                 xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
                 vm.Height = xMainRectangle.Height;
@@ -254,11 +261,15 @@ namespace NuSysApp
                 return;
             }
             var ivm = vm.ContainerViewModel as PdfDetailHomeTabViewModel;
-            var diff = ivm.GetViewWidth() - vm.ContainerViewModel.GetWidth();
+            var diffWidth = ivm.GetViewWidth() - ivm.GetWidth();
+            var diffHeight = ivm.GetViewHeight() - ivm.GetHeight();
 
-            var leftXBound = diff / 2;
-            var rightXBound = diff / 2 + ivm.GetWidth() - vm.Width;
+            var leftXBound = diffWidth / 2;
+            var rightXBound = diffWidth / 2 + ivm.GetWidth() - vm.Width;
 
+
+            var upYBound = diffHeight / 2;
+            var downYBound = diffHeight / 2 + ivm.GetHeight() - vm.Height;
 
             _tx += e.Delta.Translation.X;
             _ty += e.Delta.Translation.Y;
@@ -277,13 +288,13 @@ namespace NuSysApp
             }
 
             //Translating Y
-            if (_ty < 0)
+            if (_ty < upYBound)
             {
-                rt.TranslateY = 0;
+                rt.TranslateY = upYBound;
             }
-            else if (_ty > vm.ContainerHeight - vm.OriginalHeight)
+            else if (_ty > downYBound)
             {
-                rt.TranslateY = vm.ContainerHeight - vm.OriginalHeight;
+                rt.TranslateY = downYBound;
             }
             else
             {
@@ -291,7 +302,7 @@ namespace NuSysApp
             }
 
             var composite = RenderTransform as CompositeTransform;
-            var topLeft = new Point(composite.TranslateX - leftXBound, composite.TranslateY);
+            var topLeft = new Point(composite.TranslateX - leftXBound, composite.TranslateY - upYBound);
             vm.SetNewLocation(topLeft);
             e.Handled = true; 
         }
@@ -363,6 +374,7 @@ namespace NuSysApp
         private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var vm = DataContext as RegionViewModel;
+            //SessionController.Instance.SessionView.ShowDetailView(vm?.LibraryElementController);
             var regionController = vm?.RegionController;
             SessionController.Instance.SessionView.ShowDetailView(regionController);
         }

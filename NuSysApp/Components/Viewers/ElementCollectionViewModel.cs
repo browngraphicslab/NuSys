@@ -87,7 +87,10 @@ namespace NuSysApp
             foreach (var linkId in contentLinks)
             {
                 var link = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
-                toLinkIds.Add(link.InAtomId.LibraryElementId == controller.LibraryElementModel.LibraryElementId ? link.OutAtomId : link.InAtomId);
+                if (link != null)
+                {
+                    toLinkIds.Add(link.InAtomId.LibraryElementId == controller.LibraryElementModel.LibraryElementId ? link.OutAtomId : link.InAtomId);
+                }
             }
             var toAddAtoms = new HashSet<FrameworkElement>();
             foreach ( var atom in AtomViewList.Where(r => !(r.DataContext is LinkViewModel) && r.DataContext != null).Select(e => e.DataContext as ElementViewModel))
@@ -118,11 +121,11 @@ namespace NuSysApp
             {
                 Debug.Assert(atom.DataContext is ElementViewModel);
                 var vm = (atom.DataContext as ElementViewModel);
-                if (vm.Controller == controller)
+                if (vm?.Controller == controller)
                 {
                     AtomViewList.Remove(atom);
                 }
-                else if(vm.ElementType == ElementType.Link)
+                else if(vm?.ElementType == ElementType.Link)
                 {
                     Debug.Assert(vm is LinkViewModel);
                     var linkVm = vm as LinkViewModel;

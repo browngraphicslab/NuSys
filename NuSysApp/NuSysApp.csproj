@@ -100,7 +100,10 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\add from file dark.png" />
+    <Content Include="Assets\audio main menu.png" />
     <Content Include="Assets\collection icon bluegreen.png" />
+    <Content Include="Assets\collection main menu.png" />
     <Content Include="Assets\filter.png" />
     <Content Include="Assets\add from file.png" />
     <Content Include="Assets\icon_chat.png" />
@@ -134,6 +137,12 @@
     <Content Include="Assets\icon_whitex.png" />
     <Content Include="Assets\info.png" />
     <Content Include="Assets\ink.png" />
+    <Content Include="Assets\library_thumbnails\audio.png" />
+    <Content Include="Assets\library_thumbnails\collection_1.png" />
+    <Content Include="Assets\library_thumbnails\link.png" />
+    <Content Include="Assets\library_thumbnails\pdf.png" />
+    <Content Include="Assets\library_thumbnails\text.png" />
+    <Content Include="Assets\library_thumbnails\word.png" />
     <Content Include="Assets\listview bluegreen.png" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\logos\150x150.png" />
@@ -366,6 +375,7 @@
     <Compile Include="Converters\MutabilityToBrushConverter.cs" />
     <Compile Include="Models\LibraryElementModelFactory.cs" />
     <Compile Include="Models\LinkLibraryElementModel.cs" />
+    <Compile Include="Models\PresentationLink.cs" />
     <Compile Include="Models\Regions\PDFRegion.cs" />
     <Compile Include="Models\Regions\TimeRegionModel.cs" />
     <Compile Include="Components\Viewers\Detail\Regionable.cs" />
@@ -618,6 +628,7 @@
     <Compile Include="Util\AccessList.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
+    <Compile Include="Util\DetailViewTabType.cs" />
     <Compile Include="Util\EventUtil.cs" />
     <Compile Include="Util\ExplorationMode.cs" />
     <Compile Include="Util\ExtensionMethods.cs" />
@@ -823,6 +834,8 @@
     <Content Include="Assets\star-xxl.png" />
     <Content Include="Assets\star_icon.png" />
     <Content Include="Assets\StoreLogo.png" />
+    <Content Include="Assets\text node main menu.png" />
+    <Content Include="Assets\tools icon.png" />
     <Content Include="Assets\tool_icon.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\wordIcon.png" />

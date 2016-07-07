@@ -12,11 +12,13 @@ namespace NuSysApp
         public LibraryElementController Controller { get; }
         public ObservableCollection<Region> Regions;
         public ObservableCollection<AudioRegionView> RegionViews { set; get; }
-        public AudioDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
+        
+        public AudioDetailHomeTabViewModel(LibraryElementController controller, HashSet<Region> regionsToLoad) : base(controller, regionsToLoad)
         {
             Controller = controller;
             Regions = new ObservableCollection<Region>();
             RegionViews = new ObservableCollection<AudioRegionView>();
+            _regionsToLoad = regionsToLoad;
         }
         public void RegionAdded(Region newRegion, AudioDetailHomeTabView contentview)
         {
@@ -66,13 +68,13 @@ namespace NuSysApp
             return View.ActualHeight;
         }
 
-        public override void SetExistingRegions(HashSet<Region> regions)
+        public override void SetExistingRegions()
         {
-            if (regions == null)
+            if (_regionsToLoad == null)
             {
                 return;
             }
-            foreach (var regionModel in regions)
+            foreach (var regionModel in _regionsToLoad)
             {
                 var AudioRegion = regionModel as TimeRegionModel;
                 if (AudioRegion == null)
