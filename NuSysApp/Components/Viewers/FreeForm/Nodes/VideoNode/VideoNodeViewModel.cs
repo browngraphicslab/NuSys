@@ -111,10 +111,12 @@ namespace NuSysApp
                     ((regionview.DataContext as VideoRegionViewModel).Model as VideoRegionModel).End >= position)
                 {
                     regionview.RegionRectangle.Visibility = Visibility.Visible;
+                    regionview.Select();
                 }
                 else
                 {
                     regionview.RegionRectangle.Visibility = Visibility.Collapsed;
+                    regionview.Deselect();
 
                 }
             }

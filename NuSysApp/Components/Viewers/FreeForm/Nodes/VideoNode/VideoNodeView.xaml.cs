@@ -243,6 +243,11 @@ namespace NuSysApp
             (DataContext as ElementViewModel).Controller.SaveTimeBlock();
 
         }
+
+        private void VideoMediaPlayer_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            
+        }
     }
 }
 
