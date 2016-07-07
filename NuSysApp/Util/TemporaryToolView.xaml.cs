@@ -82,10 +82,8 @@ namespace NuSysApp
         {
             if ((DataContext as BasicToolViewModel).Selection != null && ((DataContext as BasicToolViewModel).Controller as BasicToolController).Model.Selected && xPropertiesList.SelectedItems.Count == 0)
             {
-                xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
                 //xPropertiesList.SelectedItem = GetListItem((DataContext as BasicToolViewModel).Selection);
                 xPropertiesList.SelectedItem = ((DataContext as BasicToolViewModel).Selection);
-                xPropertiesList.SelectionChanged += XPropertiesList_OnSelectionChanged;
                 xPropertiesList.ScrollIntoView(xPropertiesList.SelectedItem);
             }
             Binding bb = new Binding();
@@ -209,25 +207,21 @@ namespace NuSysApp
             e.Handled = true;
         }
 
-        private void xList_PointerPressed(object sender, PointerRoutedEventArgs e)
+        private void xListItem_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             _x = e.GetCurrentPoint(xCanvas).Position.X - 25;
             _y = e.GetCurrentPoint(xCanvas).Position.Y - 25;
+           
         }
 
 
-        private async void xList_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        private async void xListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             
             //var x = e.OriginalSource as ListBox;
             //var y = x.SelectedItems;
             if (xCanvas.Children.Contains(_dragItem))
                 xCanvas.Children.Remove(_dragItem);
-
-            
-
-
-            
             if (_currentDragMode == DragMode.Collection)
             {
                 _currentDragMode = DragMode.Filter;
@@ -241,7 +235,7 @@ namespace NuSysApp
 
         }
 
-        private void xList_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        private void xListItem_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var el = (FrameworkElement)sender;
             var sp = el.TransformToVisual(xPropertiesList).TransformPoint(e.Position);
@@ -261,7 +255,7 @@ namespace NuSysApp
                 }
                 
             }
-            else if(_currentDragMode == DragMode.Scroll && !e.IsInertial)
+            else if(_currentDragMode == DragMode.Scroll)
             {
                 _dragItem.Visibility = Visibility.Visible;
                 _currentDragMode = DragMode.Filter;
@@ -278,7 +272,7 @@ namespace NuSysApp
             }
         }
 
-        private async void xList_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        private async void xListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             
             
@@ -371,14 +365,7 @@ namespace NuSysApp
 
             // TOOD: refresh library
         }
-
-        private void XPropertiesList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (xPropertiesList.SelectedItems.Count == 1)
-            {
-                (DataContext as BasicToolViewModel).Selection = (((string)(xPropertiesList.SelectedItems[0])));
-            }
-        }
+        
 
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
@@ -474,7 +461,21 @@ namespace NuSysApp
             xPieSeries.ReleasePointerCapture(e.Pointer);
         }
 
-        
+
+        private void xListItem_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            if ((DataContext as ToolViewModel).Controller.Model.Selected && (DataContext as BasicToolViewModel).Selection.Equals(((sender as Grid).Children[0] as TextBlock).Text))
+            {
+                (DataContext as ToolViewModel).Controller.UnSelect();
+            }
+            else
+            {
+                if (xPropertiesList.SelectedItems.Count == 1)
+                {
+                    (DataContext as BasicToolViewModel).Selection = (((string)(xPropertiesList.SelectedItems[0])));
+                }
+            }
+        }
     }
 
 }

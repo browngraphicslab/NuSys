@@ -67,7 +67,7 @@ namespace NuSysApp
             }
             return false;
         }
-        public void UnSelect()
+        public override void UnSelect()
         {
             MetadataToolModel.SetSelected(false);
             MetadataToolModel.SetLibraryIds(Filter(GetUpdatedDataList()));
