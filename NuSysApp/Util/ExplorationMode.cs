@@ -321,10 +321,10 @@ namespace NuSysApp
         internal void ExploreLink(LinkViewModel vm)
         {
             // We will use the in atom or the out atom ID to decide which side of the link to go to
-            string id = vm.LinkModel.InAtomId;
+            string id = vm.LinkModel.InAtomId.LibraryElementId;
             if (vm.LinkModel.InAtomId.Equals(_currentNode.Id))
             {
-                id = vm.LinkModel.OutAtomId;
+                id = vm.LinkModel.OutAtomId.LibraryElementId;
             }
 
             // Find a list of element view models that have that id

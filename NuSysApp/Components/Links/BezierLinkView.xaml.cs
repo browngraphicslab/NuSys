@@ -121,37 +121,7 @@ namespace NuSysApp
                     }
                     
 
-                    if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
-                    {
 
-                        switch(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Type)
-                        {
-                            case Region.RegionType.Rectangle:
-                                //var imageRegionModel = (PdfNodeModel)SessionController.Instance.IdToControllers[model.OutAtomId].Model;
-                                var imageRegionModel = ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain;
-                                var modelId = imageRegionModel.Id;
-                                var model = ((LinkModel)(DataContext as LinkViewModel).Model);
-                                ;
-                                var list =
-                                    SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
-                                        item => ((ElementViewModel)item.DataContext).Model.Id == SessionController.Instance.IdToControllers[model.OutAtomId].Model.Id);
-                                var view = list?.First();
-                                if (view == null)
-                                {
-                                    return;
-                                }
-
-     
-                                //await ((ImageNodeView)view).onGoTo(imageRegionModel);
-
-                                break;
-                            default:
-                                break;
-
-                        }
-                        //((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Select();
-                        //this.JumpToLinkedTime();
-                    }
                     /*
 
                     if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)

@@ -54,6 +54,7 @@ namespace NuSysApp
                         new LinkId(controller.LibraryElementModel.LibraryElementId));
                 foreach (var linkId in contentLinks)
                 {
+                    
                     var link =
                         SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
                     AddVisualLinks(controller, link.LibraryElementId);
@@ -94,6 +95,16 @@ namespace NuSysApp
                 var link = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
                 AddVisualLinks(controller,link.LibraryElementId);
             }
+            foreach (var regions in controller.LibraryElementModel.Regions)
+            {
+                var regioncontroller = SessionController.Instance.RegionsController.GetRegionController(regions.Id);
+                 var cLinks = SessionController.Instance.LinkController.GetLinkedIds(regioncontroller.Id);
+                foreach (var linkId in cLinks)
+                {
+                    var link = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
+                    AddVisualLinks(regioncontroller, controller, link.LibraryElementId);
+                }
+            }
             controller.Deleted += OnChildDeleted;
         }
 
@@ -104,30 +115,115 @@ namespace NuSysApp
                 return;
             }
             var link = SessionController.Instance.LinkController.GetLinkLibraryElementController(id);
+            
             foreach (var atom in new HashSet<FrameworkElement>(AtomViewList))
             {
-
                 var dc = (atom.DataContext as ElementViewModel);
+                foreach (var region in (atom.DataContext as ElementViewModel).Controller.LibraryElementModel.Regions)
+                {
+                    //  if (dc.Controller == controller) continue;
+                    var regioncontroller =
+    SessionController.Instance.RegionsController.GetRegionController(region.Id);
+                    if (regioncontroller.Id ==
+                        link.LinkLibraryElementModel.InAtomId ||
+                        regioncontroller.Id ==
+                        link.LinkLibraryElementModel.OutAtomId)
+                    {
+                        var isAlreadyMade = false;
+                        foreach (var linkvms in AtomViewList.Where(r => r.DataContext is LinkViewModel).Select(e => e.DataContext as LinkViewModel))
+                        {
+
+                            if ((linkvms.Controller.Model as LinkModel).InAtomId == controller.LibraryElementController.Id && (linkvms.Controller.Model as LinkModel).OutAtomId == regioncontroller.Id ||
+                                (linkvms.Controller.Model as LinkModel).OutAtomId == controller.LibraryElementController.Id && (linkvms.Controller.Model as LinkModel).InAtomId == regioncontroller.Id)
+                            {
+                                isAlreadyMade = true;
+                            }
+                        }
+                        if (isAlreadyMade) continue;
+                        var lm = new LinkModel(SessionController.Instance.GenerateId());
+                        lm.InAtomId = new LinkId(controller.Model.Id);
+                        lm.OutAtomId = new LinkId(dc.Model.Id,region.Id);
+                        lm.LibraryId = id;
+                        var lc = new LinkElementController(lm);
+                        var view = new BezierLinkView(new LinkViewModel(lc));
+                        AtomViewList.Add(view);
+
+                    }
+                }
                 Debug.Assert(dc != null);
-                if (dc.Controller == controller) continue;
-                if (dc.ContentId ==
-                    link.LinkLibraryElementModel.InAtomId.LibraryElementId ||
-                    dc.ContentId ==
-                    link.LinkLibraryElementModel.OutAtomId.LibraryElementId)
+              //  if (dc.Controller == controller) continue;
+                if (dc.Controller.LibraryElementController.Id ==
+                    link.LinkLibraryElementModel.InAtomId ||
+                    dc.Controller.LibraryElementController.Id ==
+                    link.LinkLibraryElementModel.OutAtomId)
                 {
                      var isAlreadyMade = false;
                      foreach (var linkvms in AtomViewList.Where(r => r.DataContext is LinkViewModel).Select(e=>e.DataContext as LinkViewModel))
                      {
-                         if ((linkvms.Controller.Model as LinkModel).InAtomId == controller.Model.Id && (linkvms.Controller.Model as LinkModel).OutAtomId == dc.Model.Id || 
-                             (linkvms.Controller.Model as LinkModel).OutAtomId == controller.Model.Id && (linkvms.Controller.Model as LinkModel).InAtomId == dc.Model.Id)
+                         if ((linkvms.Controller.Model as LinkModel).InAtomId == controller.LibraryElementController.Id && (linkvms.Controller.Model as LinkModel).OutAtomId == dc.Controller.LibraryElementController.Id || 
+                             (linkvms.Controller.Model as LinkModel).OutAtomId == controller.LibraryElementController.Id && (linkvms.Controller.Model as LinkModel).InAtomId == dc.Controller.LibraryElementController.Id)
                          {
                              isAlreadyMade = true;
                          }
                      }
                      if (isAlreadyMade) continue;
                     var lm = new LinkModel(SessionController.Instance.GenerateId());
-                    lm.InAtomId = controller.Model.Id;
-                    lm.OutAtomId = dc.Controller.Model.Id;
+                    lm.InAtomId = new LinkId(controller.Model.Id);
+                    lm.OutAtomId = new LinkId(dc.Controller.Model.Id);
+                    lm.LibraryId = id;
+                    var lc = new LinkElementController(lm);
+                    var view = new BezierLinkView(new LinkViewModel(lc));
+                    AtomViewList.Add(view);
+
+                }
+            }
+        }
+        private void AddVisualLinks(RegionController controller, ElementController elementController, string id)
+        {
+            if (elementController is LinkElementController)
+            {
+                return;
+            }
+            var link = SessionController.Instance.LinkController.GetLinkLibraryElementController(id);
+
+            foreach (var atom in new HashSet<FrameworkElement>(AtomViewList))
+            {
+                var dc = (atom.DataContext as ElementViewModel);
+                foreach (var region in (atom.DataContext as ElementViewModel).Controller.LibraryElementModel.Regions)
+                {
+                    //  if (dc.Controller == controller) continue;
+                    var regioncontroller =
+    SessionController.Instance.RegionsController.GetRegionController(region.Id);
+                    if (regioncontroller.Id == controller.Id)
+                    {
+                      //  continue;
+                    }
+                    if (regioncontroller.Id ==
+                        link.LinkLibraryElementModel.InAtomId ||
+                        regioncontroller.Id ==
+                        link.LinkLibraryElementModel.OutAtomId)
+                    {
+
+                        var lm = new LinkModel(SessionController.Instance.GenerateId());
+                        lm.InAtomId = new LinkId(elementController.Model.Id, controller.Model.Id);
+                        lm.OutAtomId = new LinkId(dc.Model.Id, region.Id);
+                        lm.LibraryId = id;
+                        var lc = new LinkElementController(lm);
+                        var view = new BezierLinkView(new LinkViewModel(lc));
+                        AtomViewList.Add(view);
+
+                    }
+                }
+                Debug.Assert(dc != null);
+                //  if (dc.Controller == controller) continue;
+                if (dc.Controller.LibraryElementController.Id ==
+                    link.LinkLibraryElementModel.InAtomId ||
+                    dc.Controller.LibraryElementController.Id ==
+                    link.LinkLibraryElementModel.OutAtomId)
+                {
+                    var lm = new LinkModel(SessionController.Instance.GenerateId());
+                    lm.InAtomId = new LinkId(elementController.Model.Id,controller.Model.Id);
+                    lm.OutAtomId = new LinkId(dc.Controller.Model.Id);
                     lm.LibraryId = id;
                     var lc = new LinkElementController(lm);
                     var view = new BezierLinkView(new LinkViewModel(lc));
@@ -152,8 +248,12 @@ namespace NuSysApp
             var toRemoveAtoms = new HashSet<FrameworkElement>();
             foreach (var atom in AtomViewList.Where(r => (r.DataContext is LinkViewModel) && r.DataContext != null))
             {
-                toRemoveAtoms.Add(atom);
+                if (contentLinks.Contains((atom.DataContext as LinkViewModel).LinkModel.LibraryId))
+                {
+                    toRemoveAtoms.Add(atom);
+                }
             }
+
             foreach (var toRemove in toRemoveAtoms)
             {
                 AtomViewList.Remove(toRemove);

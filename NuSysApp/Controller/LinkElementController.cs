@@ -26,14 +26,14 @@ namespace NuSysApp
 
         public LinkElementController(LinkModel model) : base(model)
         {
-            if (!SessionController.Instance.IdToControllers.ContainsKey(model.InAtomId))
+            if (!SessionController.Instance.IdToControllers.ContainsKey(model.InAtomId.LibraryElementId))
                 return;
             
-            if (!SessionController.Instance.IdToControllers.ContainsKey(model.OutAtomId))
+            if (!SessionController.Instance.IdToControllers.ContainsKey(model.OutAtomId.LibraryElementId))
                 return;
 
-            InElement = SessionController.Instance.IdToControllers[model.InAtomId];
-            OutElement = SessionController.Instance.IdToControllers[model.OutAtomId];
+            InElement = SessionController.Instance.IdToControllers[model.InAtomId.LibraryElementId];
+            OutElement = SessionController.Instance.IdToControllers[model.OutAtomId.LibraryElementId];
             InElement.AddLink(this);
             OutElement.AddLink(this);
 

@@ -185,8 +185,8 @@ namespace NuSysApp
         public async Task RequestAddNewLink(LinkId idToLinkTo, string title)
         {
             var m = new Message();
-            var contentId = SessionController.Instance.RegionsController.GetLibraryElementModelId(this.Model.Id); // The ID of the library element this region is associated with.
-            m["id1"] = new LinkId(contentId, this.Model.Id);
+        //    var contentId = SessionController.Instance.RegionsController.GetLibraryElementModelId(this.Model.Id); // The ID of the library element this region is associated with.
+            m["id1"] = this.Id;
             m["id2"] = idToLinkTo;
             m["title"] = title;
             await SessionController.Instance.LinkController.RequestLink(m);
@@ -196,7 +196,7 @@ namespace NuSysApp
         public void RequestRemoveLink(LinkId linkLibraryElementID)
         {
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(linkLibraryElementID.LibraryElementId) as LinkLibraryElementController;
-            SessionController.Instance.LinkController.RemoveLink(controller.Id.LibraryElementId);
+            SessionController.Instance.LinkController.RemoveLink(controller.Id.RegionId);
         }
         public void ChangeLinkTitle(string linkLibraryElementID, string title)
         {
