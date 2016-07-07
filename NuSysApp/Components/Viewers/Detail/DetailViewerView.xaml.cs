@@ -345,8 +345,9 @@ namespace NuSysApp
             textview?.Dispose();
             var videoView = vm.View as VideoDetailHomeTabView;
             videoView?.Dispose();
-            var Audioview = vm.View as AudioDetailHomeTabView;
-            Audioview?.StopAudio();
+            videoView?.StopMedia();
+            var audioview = vm.View as AudioDetailHomeTabView;
+            audioview?.StopAudio();
         }
 
         private void metaData_OnTapped(object sender, TappedRoutedEventArgs e)

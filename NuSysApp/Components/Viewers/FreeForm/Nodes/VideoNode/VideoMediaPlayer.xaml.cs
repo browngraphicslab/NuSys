@@ -220,5 +220,10 @@ namespace NuSysApp
                 ((UIElement)sender).ReleasePointerCapture(e.Pointer);
         }
 
+        public void StopMedia()
+        {
+            playbackElement.Stop();
+        }
+
     }
 }

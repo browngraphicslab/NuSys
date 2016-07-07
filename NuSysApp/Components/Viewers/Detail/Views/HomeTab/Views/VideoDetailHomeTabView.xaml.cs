@@ -87,5 +87,10 @@ namespace NuSysApp
         }
         public double VideoWidth => VideoMediaPlayer.MediaPlayer.ActualWidth;
         public double VideoHeight => VideoMediaPlayer.MediaPlayer.ActualHeight;
+
+        public void StopMedia()
+        {
+            VideoMediaPlayer.StopMedia();
+        }
     }
 }
