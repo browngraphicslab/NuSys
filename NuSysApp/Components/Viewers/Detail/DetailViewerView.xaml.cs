@@ -346,8 +346,19 @@ namespace NuSysApp
             var videoView = vm.View as VideoDetailHomeTabView;
             videoView?.Dispose();
             videoView?.StopMedia();
+            if (vm.RegionView is VideoDetailHomeTabView)
+            {
+                var videoRegionView = vm.RegionView as VideoDetailHomeTabView;
+                videoRegionView?.Dispose();
+                videoRegionView?.StopMedia();
+            }
             var audioview = vm.View as AudioDetailHomeTabView;
             audioview?.StopAudio();
+            if (vm.RegionView is AudioDetailHomeTabView)
+            {
+                var audioRegionView = vm.RegionView as AudioDetailHomeTabView;
+                audioRegionView?.StopAudio();
+            }
         }
 
         private void metaData_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -477,6 +488,7 @@ namespace NuSysApp
         private void XRootPivot_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var vm = (DetailViewerViewModel)DataContext;
+
             var listView = sender as Pivot;
             var index = listView?.SelectedIndex;
             if (vm.TabDictionary.ContainsKey(_currentDetailViewable.TabId()))
