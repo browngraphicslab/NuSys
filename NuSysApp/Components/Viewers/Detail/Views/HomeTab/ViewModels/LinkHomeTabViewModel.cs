@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpDX.DirectWrite;
 
 namespace NuSysApp
 {
@@ -10,6 +11,7 @@ namespace NuSysApp
     {
         public string LinkFrom { get; private set; }
         public string LinkTo { get; private set; }
+        public string Annotation { get; private set; }
 
         private LinkLibraryElementController _controller;
         public LinkHomeTabViewModel(LinkLibraryElementController controller, HashSet<Region> regionsToLoad) : base(controller, regionsToLoad)
@@ -22,11 +24,17 @@ namespace NuSysApp
                 var fromController = SessionController.Instance.RegionsController.GetRegionController(linkModel.OutAtomId.RegionId);
                 if (fromController == null)
                 {
-                    var fromLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel.OutAtomId.LibraryElementId);
+                    var fromLibraryElementController =
+                        SessionController.Instance.ContentController.GetLibraryElementController(
+                            linkModel.OutAtomId.LibraryElementId);
                     LinkFrom = fromLibraryElementController.Title;
-                    return;
+
                 }
-                LinkFrom = fromController.Title;
+                else
+                {
+                    LinkFrom = fromController.Title;
+                }
+                
             }
             else
             {
@@ -39,11 +47,17 @@ namespace NuSysApp
                 var toController = SessionController.Instance.RegionsController.GetRegionController(linkModel.InAtomId.RegionId);
                 if (toController == null)
                 {
-                    var toLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel.InAtomId.LibraryElementId);
+                    var toLibraryElementController =
+                        SessionController.Instance.ContentController.GetLibraryElementController(
+                            linkModel.InAtomId.LibraryElementId);
                     LinkTo = toLibraryElementController.Title;
                     return;
                 }
-                LinkTo = toController?.Title;
+                else
+                {
+                    LinkTo = toController?.Title;
+                }
+                
             }
             else
             {
@@ -51,12 +65,23 @@ namespace NuSysApp
                 LinkTo = toController.Title;
             }
 
+            Annotation = controller.LinkLibraryElementModel.Data;
+            controller.ContentChanged += Controller_ContentChanged; 
+
+        }
+
+        private void Controller_ContentChanged(object source, string contentData)
+        {
+            _controller.ContentChanged -= Controller_ContentChanged;
+            Annotation = contentData;
+            _controller.ContentChanged += Controller_ContentChanged;
 
         }
 
         public void UpdateAnnotation(string text)
         {
-            _controller.LinkLibraryElementModel.Data = text;
+
+            _controller.SetContentData(text); 
         }
 
         public override void AddRegion(object sender, RegionController regionController)

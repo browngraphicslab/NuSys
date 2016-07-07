@@ -194,7 +194,7 @@ namespace NuSysApp
                 xRootPivot.Items.Add(pivotItem);
             }
 
-            if (controller.LibraryElementModel.Type == ElementType.Text ||
+            if (controller.LibraryElementModel.Type == ElementType.Text || controller.LibraryElementModel.Type == ElementType.Link ||
                 controller.LibraryElementModel.Type == ElementType.Collection || controller.LibraryElementModel.Type == ElementType.Word)
             {
                 if (xRootPivot?.Items?.Count == 4)
