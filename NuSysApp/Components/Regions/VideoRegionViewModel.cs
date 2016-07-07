@@ -45,7 +45,7 @@ namespace NuSysApp
             set
             {
                 _name = value;
-                Model.Name = _name;
+                //Model.Name = _name;
                 RaisePropertyChanged("Name");
             }
         }
@@ -61,7 +61,7 @@ namespace NuSysApp
         public double RectangleHeight {
             get
             {
-                return _height * ContainerViewModel.GetHeight();
+                return Math.Max(0, _height * ContainerViewModel.GetHeight());
             }
             set
             {
@@ -70,7 +70,7 @@ namespace NuSysApp
             }
         }
         public double RectangleWidth {
-            get { return _width*ContainerViewModel.GetWidth(); }
+            get { return Math.Max(0, _width*ContainerViewModel.GetWidth()); }
             set
             {
                 _width = value;
@@ -81,7 +81,7 @@ namespace NuSysApp
         {
             get
             {
-                return (_intervalEnd - _intervalStart) * (ContainerViewModel.GetWidth()-2*_progressbarMargin);
+                return Math.Max(0, (_intervalEnd - _intervalStart) * (ContainerViewModel.GetWidth() - 2 * _progressbarMargin));
             }
             set
             {
@@ -93,7 +93,7 @@ namespace NuSysApp
         {
             get
             {
-                return _intervalRegionTranslateY * ContainerViewModel.GetHeight() + _progressbarMargin;
+                return Math.Max(0, _intervalRegionTranslateY * ContainerViewModel.GetHeight() + _progressbarMargin);
             }
             set
             {
@@ -103,7 +103,7 @@ namespace NuSysApp
         }
         public double IntervalStart
         {
-            get { return _intervalStart * (ContainerViewModel.GetWidth()-2*_progressbarMargin) + _progressbarMargin; }
+            get { return Math.Max(0, _intervalStart * (ContainerViewModel.GetWidth() - 2 * _progressbarMargin) + _progressbarMargin); }
             set
             {
                 Debug.Assert(!Double.IsNaN(value));
@@ -114,7 +114,7 @@ namespace NuSysApp
         }
         public double IntervalEnd
         {
-            get { return _intervalEnd * (ContainerViewModel.GetWidth()-2*_progressbarMargin)+_progressbarMargin; }
+            get { return Math.Max(0, _intervalEnd * (ContainerViewModel.GetWidth() - 2 * _progressbarMargin) + _progressbarMargin); }
             set
             {
                 _intervalEnd = value;
@@ -140,6 +140,7 @@ namespace NuSysApp
             regionController.SizeChanged += SizeChanged;
             regionController.LocationChanged += LocationChanged;
             regionController.IntervalChanged += IntervalChanged;
+            regionController.TitleChanged += TitleChanged;
             _height = (model.Height);
             _width = (model.Width);
             _topLeftPoint = new Point(model.TopLeftPoint.X , model.TopLeftPoint.Y );
@@ -151,6 +152,11 @@ namespace NuSysApp
             Name = Model.Name;
 
             Editable = true;
+        }
+
+        private void TitleChanged(object source, string title)
+        {
+            Name = title;
         }
 
         private void LocationChanged(object sender, Point topLeft)
@@ -168,6 +174,7 @@ namespace NuSysApp
         {
             RectangleWidth = width;
             RectangleHeight = height;
+
         }
 
         private void BaseSizeChanged(object sender, double width, double height)
