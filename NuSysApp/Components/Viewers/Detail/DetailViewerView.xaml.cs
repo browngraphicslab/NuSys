@@ -407,6 +407,7 @@ namespace NuSysApp
 
             var vm = (DetailViewerViewModel)DataContext;
             vm.TabPaneHeight = this.Width; //once again, will need to refactor this - supposed to be TabPaneWidth
+            vm.TabHeight = vm.TabPaneHeight/vm.Tabs.Count;
         }
 
         private void TabList_OnTapped(object sender, TappedRoutedEventArgs e)
