@@ -120,7 +120,40 @@
     </local:AnimatableUserControl.Resources>
 
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        
+
+        <Grid x:Name="TabPanel" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="{StaticResource color2}"
+                    ManipulationDelta="Resizer_OnManipulationDelta" ManipulationMode="All" Visibility="{Binding TabVisibility}">
+            <Grid.RenderTransform>
+                <TranslateTransform X="0"></TranslateTransform>
+            </Grid.RenderTransform>
+
+            <ItemsControl x:Name="IC"  ItemsSource="{Binding Tabs}" HorizontalAlignment="Stretch">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"  x:Name="TabList" Tapped="TabList_OnTapped" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid x:Name="TabStack" Height="40" Width="120" Padding="0,0,1,0">
+                            <!--Height="{Binding ElementName=TabList, Path=DataContext.TabHeight}"-->
+                            <Image Tapped="ExitTab_OnTapped" Source="/Assets/icon_node_x.png" HorizontalAlignment="Right" Height="8" Margin="0,0,5,0"  VerticalAlignment="Center"></Image>
+                            <!--<Border x:Name="Tab" Tapped="TabList_OnTapped" MaxWidth="{Binding ElementName=TabList, Path=DataContext.TextHeight}">
+                                <Border.RenderTransform>
+                                    <TranslateTransform Y="15"></TranslateTransform>
+                                </Border.RenderTransform>-->
+                            <TextBlock x:Name="TabTitle" Tapped="TabList_OnTapped" HorizontalAlignment="Left"  Text="{Binding Title}" Width="100" Margin="5,0,0,0"  VerticalAlignment="Center">
+                                    <!--<TextBlock.RenderTransform>
+                                        <RotateTransform Angle="90"></RotateTransform>
+                                    </TextBlock.RenderTransform>-->
+                            </TextBlock>
+                            <!--</Border>-->
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+
         <Grid x:Name="xContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource color1}" BorderBrush="{StaticResource color2}" BorderThickness="3,0,0,0"  Padding="25,10,25,10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"></RowDefinition>
@@ -142,9 +175,10 @@
                 <local:TextInputBlock  x:Name ="TitleBox" HasBackground="False"  TextColor="DarkSlateGray"  FontWeight="Thin"  LeftJustified="True"  FontSize="40" BubbleTop="False" SetHeight="40" HorizontalAlignment="Stretch" TextChanged="TitleBox_OnTextChanged"/>
                 <!--<Rectangle HorizontalAlignment="Stretch" Fill="White" Height="2"/>-->
             </StackPanel>
+
             <Pivot x:Name="xRootPivot" Grid.Row="2" Margin="0,0,0,0" Grid.RowSpan="5" SelectionChanged="XRootPivot_OnSelectionChanged">
                 <PivotItem Header="Home">
-                    
+
                     <!--Pivot content goes here-->
                     <ContentPresenter Grid.Row="2" x:Name ="nodeContent" Content="{Binding View}" HorizontalAlignment="Center" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></ContentPresenter>
                 </PivotItem>
@@ -201,11 +235,8 @@
                 <PivotItem Header="Regions">
                     <local:RegionEditorTabView x:Name="xRegionEditorView"  Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></local:RegionEditorTabView>
                 </PivotItem>
-                   
+
             </Pivot>
-
-
-
         </Grid>
 
         <Grid x:Name="resizer" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="50" Margin="5,0,0,0"
@@ -216,75 +247,5 @@
             <Image x:Name="resizerImage" Source="/Assets/openclose icon.png" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Grid>
 
-        <Grid x:Name="TabPanel" HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="{StaticResource color2}"
-                    ManipulationDelta="Resizer_OnManipulationDelta" ManipulationMode="All" Visibility="{Binding TabVisibility}">
-            <Grid.RenderTransform>
-                <TranslateTransform X="0"></TranslateTransform>
-            </Grid.RenderTransform>
-
-            <ItemsControl x:Name="IC"  ItemsSource="{Binding Tabs}" HorizontalAlignment="Stretch">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal"  x:Name="TabList" Tapped="TabList_OnTapped" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Grid x:Name="TabStack" Height="40" Width="120" Padding="0,0,1,0">
-                            <!--Height="{Binding ElementName=TabList, Path=DataContext.TabHeight}"-->
-                            <Image Tapped="ExitTab_OnTapped" Source="/Assets/icon_node_x.png" HorizontalAlignment="Right" Height="8" Margin="0,0,5,0"  VerticalAlignment="Center"></Image>
-                            <!--<Border x:Name="Tab" Tapped="TabList_OnTapped" MaxWidth="{Binding ElementName=TabList, Path=DataContext.TextHeight}">
-                                <Border.RenderTransform>
-                                    <TranslateTransform Y="15"></TranslateTransform>
-                                </Border.RenderTransform>-->
-                            <TextBlock x:Name="TabTitle" Tapped="TabList_OnTapped" HorizontalAlignment="Left"  Text="{Binding Title}" Width="100" Margin="5,0,0,0"  VerticalAlignment="Center">
-                                    <!--<TextBlock.RenderTransform>
-                                        <RotateTransform Angle="90"></RotateTransform>
-                                    </TextBlock.RenderTransform>-->
-                            </TextBlock>
-                            <!--</Border>-->
-                        </Grid>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-
-            <!--<ListView x:Name="ListView"  ItemsSource="{Binding Tabs}" >
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel x:Name="TabList" VerticalAlignment="Stretch" HorizontalAlignment="Left" Tapped="TabList_OnTapped" Padding="0" Width="30" />
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property= "VerticalContentAlignment" Value="Stretch" />
-                        <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
-                        <Setter Property="Padding" Value="0,0,0,0"/>
-                    </Style>
-                </ListView.ItemContainerStyle>
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <Canvas x:Name="TabStack" VerticalAlignment="Stretch" HorizontalAlignment="Right" Height="{Binding ElementName=TabList, Path=DataContext.TabHeight}" Width="30">
-                            <Border x:Name="ExitTab" Tapped="ExitTab_OnTapped" >
-                                <TextBlock Text="X" Foreground="White" FontSize="20" VerticalAlignment="Top">
-                                    <TextBlock.RenderTransform>
-                                        <RotateTransform CenterX="0.5" CenterY="0.5" Angle="-90"></RotateTransform>
-                                    </TextBlock.RenderTransform>
-                                </TextBlock>
-                            </Border>
-                            <Border x:Name="Tab" Tapped="TabList_OnTapped">
-                                <Border.RenderTransform>
-                                    <TranslateTransform Y ="-30"></TranslateTransform>
-                                </Border.RenderTransform>
-                                <TextBlock x:Name="TabTitle" Text="{Binding Title}" VerticalAlignment="Top">
-                                    <TextBlock.RenderTransform>
-                                        <RotateTransform CenterX="0.5" CenterY="0.5" Angle="-90"></RotateTransform>
-                                    </TextBlock.RenderTransform>
-                                </TextBlock>
-                            </Border>
-                        </Canvas>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>-->
-        </Grid>
     </Grid>
 </local:AnimatableUserControl>

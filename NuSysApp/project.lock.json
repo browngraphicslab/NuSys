@@ -13625,11 +13625,7 @@
     },
     "Microsoft.ApplicationInsights.WindowsApps/1.0.0": {
       "sha512": "NvBQnFeiFd0O1QdBz06UGApD7zn7ztVi7qO18IsM3EjiXRNgfrEBXB+azNm8XqLY8xGFAqh3HAuSd/wHZMe0XA==",
-<<<<<<< HEAD
       "type": "package",
-=======
-      "type": "Package",
->>>>>>> 722db933106f3ac0c05ebaf659ae81e0891199c6
       "files": [
         "Microsoft.ApplicationInsights.WindowsApps.1.0.0.nupkg.sha512",
         "Microsoft.ApplicationInsights.WindowsApps.nuspec",
