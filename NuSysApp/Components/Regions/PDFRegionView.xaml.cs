@@ -374,7 +374,7 @@ namespace NuSysApp
         private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var vm = DataContext as RegionViewModel;
-            SessionController.Instance.SessionView.ShowDetailView(vm?.LibraryElementController);
+            //SessionController.Instance.SessionView.ShowDetailView(vm?.LibraryElementController);
             var regionController = vm?.RegionController;
             SessionController.Instance.SessionView.ShowDetailView(regionController);
         }
@@ -394,6 +394,13 @@ namespace NuSysApp
             libraryElementController.RemoveRegion(vm.RegionController.Model);
 
 
+        }
+
+        private void xNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var vm = DataContext as PdfRegionViewModel;
+            vm.Name = (sender as TextBox).Text;
+            vm.RegionController.SetTitle(vm.Name);
         }
     }
 }

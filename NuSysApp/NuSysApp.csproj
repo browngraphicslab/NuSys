@@ -370,6 +370,7 @@
     <Compile Include="Converters\MutabilityToBrushConverter.cs" />
     <Compile Include="Models\LibraryElementModelFactory.cs" />
     <Compile Include="Models\LinkLibraryElementModel.cs" />
+    <Compile Include="Models\PresentationLink.cs" />
     <Compile Include="Models\Regions\PDFRegion.cs" />
     <Compile Include="Models\Regions\TimeRegionModel.cs" />
     <Compile Include="Components\Viewers\Detail\Regionable.cs" />

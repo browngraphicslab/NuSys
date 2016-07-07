@@ -19,6 +19,7 @@ namespace NuSysApp
 {
     public class AudioRegionViewModel : RegionViewModel 
     {
+
         public event PropertyChangedEventHandler PropertyChanged;
         public delegate void DoubleChanged(object sender, double e);
         public event DoubleChanged WidthChanged;
@@ -48,8 +49,22 @@ namespace NuSysApp
         public double RightHandleY2 { get; set; }
         public double RegionHeight { get; set; }
         public double RegionWidth { get; set; }
-        public Boolean Editable { get; set; }
+        public bool Editable
+        {
+            set
+            {
 
+                _editable = value;
+
+                RaisePropertyChanged("Editable");
+            }
+            get
+            {
+                return _editable;
+            }
+        }
+
+        private bool _editable;
 
         public AudioRegionViewModel(TimeRegionModel model, LibraryElementController controller, RegionController regionController, Sizeable sizeable) : base(model,controller, regionController, sizeable)
         {

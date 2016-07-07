@@ -35,7 +35,20 @@ namespace NuSysApp
         private Point _topLeftPoint;
         private bool _editable;
         private double _intervalRegionTranslateY;
+        private string _name;
+
         #endregion PrivateVariables
+
+        public string Name
+        {
+            get { return _name; }
+            set
+            {
+                _name = value;
+                Model.Name = _name;
+                RaisePropertyChanged("Name");
+            }
+        }
         public bool Editable {
             get { return _editable; }
             set
@@ -134,6 +147,8 @@ namespace NuSysApp
             _intervalEnd = model.End;
             _intervalRegionWidth = _intervalEnd - _intervalStart;
             _intervalRegionTranslateY = 1;
+
+            Name = Model.Name;
 
             Editable = true;
         }
