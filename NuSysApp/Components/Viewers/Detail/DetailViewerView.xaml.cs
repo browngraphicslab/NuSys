@@ -431,6 +431,7 @@ namespace NuSysApp
             {
                 ShowElement(viewable as LibraryElementController, tabToOpenTo);
             }
+            
             e.Handled = true;
         }
 
