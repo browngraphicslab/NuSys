@@ -30,6 +30,9 @@ namespace NuSysApp
         private Line _temporaryLinkVisual;
         private List<AudioRegionViewModel> _timeRegions;
 
+        public AudioMediaPlayer AudioMediaPlayer { get { return MediaPlayer; } }
+
+        
         public AudioDetailHomeTabView(AudioDetailHomeTabViewModel vm)
         {
             this.DataContext = vm;
@@ -41,6 +44,7 @@ namespace NuSysApp
             //scrubBar.SetValue(Canvas.ZIndexProperty, 1);
 
             MediaPlayer.AudioSource = vm.Controller.GetSource();
+            
 
                 //((AudioNodeModel)(vm.Model)).Controller.OnScrub += ControllerOnScrub;
             //((AudioNodeModel)(vm.Model)).Controller.OnPlay += Controller_OnPlay1;

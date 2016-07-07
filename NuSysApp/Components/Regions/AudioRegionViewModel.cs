@@ -49,6 +49,7 @@ namespace NuSysApp
         public double RightHandleY2 { get; set; }
         public double RegionHeight { get; set; }
         public double RegionWidth { get; set; }
+        public string Name { set; get; }
         public bool Editable
         {
             set
@@ -70,11 +71,23 @@ namespace NuSysApp
         {
             ContainerSizeChanged += BaseSizeChanged;
             RegionWidth = (model.End-model.Start)*sizeable.GetWidth();
+            RegionHeight = sizeable.GetHeight();
+
             LefthandleY1 = 10;
             LefthandleY2 = 110; //+ contentView.ActualHeight;
             RightHandleY1 = 10;
             RightHandleY2 = 110; //+ contentView.ActualHeight;
+            Name = Model.Name;
+
+            regionController.TitleChanged += RegionController_TitleChanged;
+
         }
+
+        private void RegionController_TitleChanged(object source, string title)
+        {
+            Name = title;
+        }
+
         private void BaseSizeChanged(object sender, double width, double height)
         {
             var model = Model as TimeRegionModel;

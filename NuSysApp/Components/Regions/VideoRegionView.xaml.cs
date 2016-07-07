@@ -26,6 +26,7 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.DataContext = vm;
+            this.Deselect();
         }
 
         public Grid RegionRectangle
