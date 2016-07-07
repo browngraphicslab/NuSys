@@ -40,7 +40,12 @@ namespace NuSysApp
                         id2 = message.Get("id2").Length == 32
                             ? new LinkId(message.GetString("id2"))
                             : JsonConvert.DeserializeObject<LinkId>(message.GetString("id2"));
-
+                        //if something is linking to itself
+                        if ((id1.IsRegion && id2.IsRegion && id1.RegionId.Equals(id2.RegionId)) ||
+                            (!id1.IsRegion && !id2.IsRegion && id1.LibraryElementId.Equals(id2.LibraryElementId)))
+                        {
+                            return null;
+                        }
                         model = new LinkLibraryElementModel(id1, id2, id);
                         break;
                     default:
@@ -55,10 +60,7 @@ namespace NuSysApp
                 }
                 return model;
             }
-            else
-            {
-                return SessionController.Instance.ContentController.GetContent(id);
-            }
+            return null;
         }
     }
 }

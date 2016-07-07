@@ -42,7 +42,7 @@ namespace NuSysApp
                 _message["rectangleMod"] = (rectangle.DataContext as RectangleViewModel);
             }
         }
-        public override async Task CheckOutgoingRequest()
+        public override async Task<bool> CheckOutgoingRequest()
         {
             if (!_message.ContainsKey("id"))
             {
@@ -56,6 +56,7 @@ namespace NuSysApp
             SetServerEchoType(ServerEchoType.Everyone);
             SetServerItemType(ServerItemType.Alias);
             SetServerRequestType(ServerRequestType.Add);
+            return true;
         }
 
         public override async Task ExecuteRequestFunction()
