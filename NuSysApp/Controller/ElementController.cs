@@ -224,12 +224,12 @@ namespace NuSysApp
         public void RequestVisualLinkTo(string id)
         {
             var parent = SessionController.Instance.ContentController.GetContent(Model.ParentCollectionId) as CollectionLibraryElementModel;
-            parent.addLink(id);
+            parent.AddLink(id);
         }
         public void RequestDeleteVisualLink(string id)
         {
             var parent = SessionController.Instance.ContentController.GetContent(Model.ParentCollectionId) as CollectionLibraryElementModel;
-            parent.removeLink(id);
+            parent.RemoveLink(id);
         }
 
         public virtual async Task RequestPresentationLinkTo(string otherId, RectangleView rectangle = null, LinkedTimeBlock block = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)

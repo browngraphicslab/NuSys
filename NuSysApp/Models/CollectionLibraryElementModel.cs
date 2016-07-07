@@ -62,12 +62,12 @@ namespace NuSysApp
             return false;
         }
 
-        public void addLink(string id)
+        public void AddLink(string id)
         {
             OnLinkAdded?.Invoke(id);
         }
 
-        public void removeLink(string id)
+        public void RemoveLink(string id)
         {
             OnLinkRemoved?.Invoke(id);
         }
