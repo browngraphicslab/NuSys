@@ -668,10 +668,6 @@ namespace NuSysApp
             else if (viewable is LibraryElementController)
             {
                 var controller = viewable as LibraryElementController;
-                if (!controller.IsLoaded)
-                {
-                    return;
-                }
                 await xDetailViewer.ShowElement(viewable as LibraryElementController, tabToOpenTo);
             }
         }
