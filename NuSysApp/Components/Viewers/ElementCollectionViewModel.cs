@@ -106,15 +106,18 @@ namespace NuSysApp
             var link = SessionController.Instance.LinkController.GetLinkLibraryElementController(id);
             foreach (var atom in new HashSet<FrameworkElement>(AtomViewList))
             {
-                if ((atom.DataContext as ElementViewModel).Controller == controller) continue;
-                if ((atom.DataContext as ElementViewModel).ContentId ==
+
+                var dc = (atom.DataContext as ElementViewModel);
+                Debug.Assert(dc != null);
+                if (dc.Controller == controller) continue;
+                if (dc.ContentId ==
                     link.LinkLibraryElementModel.InAtomId.LibraryElementId ||
-                    (atom.DataContext as ElementViewModel).ContentId ==
+                    dc.ContentId ==
                     link.LinkLibraryElementModel.OutAtomId.LibraryElementId)
                 {
                     var lm = new LinkModel(SessionController.Instance.GenerateId());
                     lm.InAtomId = controller.Model.Id;
-                    lm.OutAtomId = (atom.DataContext as ElementViewModel).Controller.Model.Id;
+                    lm.OutAtomId = dc.Controller.Model.Id;
                     lm.ContentId = id;
                     var lc = new LinkElementController(lm);
                     var view = new BezierLinkView(new LinkViewModel(lc));
@@ -122,73 +125,30 @@ namespace NuSysApp
 
                 }
             }
-            /*   var contentLinks = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(controller.LibraryElementModel.LibraryElementId));
+        }
+        private void RemoveAllVisualLinks(ElementController controller)
+        {
+            if (controller is LinkElementController)
+            {
+                return;
+            }
+            var contentLinks = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(controller.LibraryElementModel.LibraryElementId));
             var toLinkIds = new HashSet<LinkId>();
             foreach (var linkId in contentLinks)
             {
                 var link = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
-                if (link != null)
-                {
-                    toLinkIds.Add(link.InAtomId.LibraryElementId == controller.LibraryElementModel.LibraryElementId ? link.OutAtomId : link.InAtomId);
-                }
+                toLinkIds.Add(link.InAtomId.LibraryElementId == controller.LibraryElementModel.LibraryElementId ? link.OutAtomId : link.InAtomId);
             }
-            var toAddAtoms = new HashSet<FrameworkElement>();
-            foreach ( var atom in AtomViewList.Where(r => !(r.DataContext is LinkViewModel) && r.DataContext != null).Select(e => e.DataContext as ElementViewModel))
+            var toRemoveAtoms = new HashSet<FrameworkElement>();
+            foreach (var atom in AtomViewList.Where(r => (r.DataContext is LinkViewModel) && r.DataContext != null))
             {
-                if (atom == null)
-                {
-                    continue;
-                }
-                if (toLinkIds.Select(Id=>Id.LibraryElementId).Contains(atom.ContentId))
-
-                {
-                    var isAlreadyMade = false;
-                    foreach (var link in AtomViewList.Where(r => r.DataContext is LinkViewModel).Select(e => e.DataContext as LinkViewModel))
-                    {
-                        if ((link.Controller.Model as LinkModel).InAtomId == controller.Model.Id &&
-                            (link.Controller.Model as LinkModel).OutAtomId == atom.Model.Id ||
-                            (link.Controller.Model as LinkModel).OutAtomId == controller.Model.Id &&
-                            (link.Controller.Model as LinkModel).InAtomId == atom.Model.Id)
-                        {
-                            isAlreadyMade = true;
-                        }
-                    }
-                    if (isAlreadyMade) continue;
-                    var lm = new LinkModel(SessionController.Instance.GenerateId());
-                    lm.InAtomId = controller.Model.Id;
-                    lm.OutAtomId = atom.Controller.Model.Id;
-                    lm.ContentId = ;
-                    var lc = new LinkElementController(lm);
-                    var view = new BezierLinkView(new LinkViewModel(lc));
-                    toAddAtoms.Add(view);
-                }
+                toRemoveAtoms.Add(atom);
             }
-            foreach (var toAdd in toAddAtoms)
+            foreach (var toRemove in toRemoveAtoms)
             {
-                AtomViewList.Add(toAdd);
-            }*/
-        }
-        private void RemoveVisualLinks(ElementController controller)
-        {
-            foreach (var atom in new HashSet<FrameworkElement>(AtomViewList))
-            {
-                Debug.Assert(atom.DataContext is ElementViewModel);
-                var vm = (atom.DataContext as ElementViewModel);
-                if (vm?.Controller == controller)
-                {
-                    AtomViewList.Remove(atom);
-                }
-                else if(vm?.ElementType == ElementType.Link)
-                {
-                    Debug.Assert(vm is LinkViewModel);
-                    var linkVm = vm as LinkViewModel;
-                    var linkModel = linkVm.LinkModel;
-                    if (linkModel.InAtomId == controller.Model.Id || linkModel.OutAtomId == controller.Model.Id)
-                    {
-                        AtomViewList.Remove(atom);
-                    }
-                }
+                AtomViewList.Remove(toRemove);
             }
+            
         }
 
         public void RemoveVisualLink(string id)
@@ -211,7 +171,7 @@ namespace NuSysApp
 
         private void OnChildRemoved(object source, ElementController elementController)
         {
-            RemoveVisualLinks(elementController);
+            RemoveAllVisualLinks(elementController);
             var soughtChildren = AtomViewList.Where(a => ((ElementViewModel) a.DataContext).Id == elementController.Model.Id);
             if (soughtChildren.Any())
             {

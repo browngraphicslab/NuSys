@@ -125,7 +125,7 @@ namespace NuSysApp
                     if (SessionController.Instance.ContentController.GetContent(id) != null)
                     {
                         var controller = SessionController.Instance.ContentController.GetLibraryElementController(id);
-                        Debug.Assert(title != null);
+                        //Debug.Assert(title != null);
                         controller.SetTitle(title);//TODO make sure no other variables, like timestamp, need to be set here
                     }
                     else
