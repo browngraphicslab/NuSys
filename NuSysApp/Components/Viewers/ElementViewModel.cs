@@ -195,7 +195,7 @@ namespace NuSysApp
                     {
                         cid = link.InAtomId.LibraryElementId;
                     }
-                    var circlelink = new LinkCircle(circle, cid);
+                    var circlelink = new LinkCircle(new LinkId(circle), new LinkId(cid));
                     Color color = link.Color;
                     circlelink.Circle.Fill = new SolidColorBrush(color);
 

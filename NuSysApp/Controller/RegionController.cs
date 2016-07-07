@@ -40,6 +40,8 @@ namespace NuSysApp
         public event MetadataChangedEventHandler MetadataChanged;
 
 
+
+
         private bool _selected;
         private bool _blockServerUpdates;
         public RegionController(Region model)

@@ -45,7 +45,7 @@ namespace NuSysApp
             set
             {
                 _name = value;
-                Model.Name = _name;
+                //Model.Name = _name;
                 RaisePropertyChanged("Name");
             }
         }

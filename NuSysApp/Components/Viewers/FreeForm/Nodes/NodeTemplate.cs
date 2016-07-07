@@ -23,6 +23,7 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using MyToolkit.UI;
 using NuSysApp.Viewers;
+using Newtonsoft.Json;
 
 // The Templated Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234235
 
@@ -390,7 +391,7 @@ namespace NuSysApp
                                     var regiondc = region.DataContext as ImageRegionViewModel;
                                     var m = new Message();
                                     m["id1"] = regiondc.RegionController.Id;
-                                    m["id2"] = vm.Controller.LibraryElementController.Id;
+                                    m["id2"] = vm.Controller.LibraryElementController.Id; 
                                     SessionController.Instance.LinkController.RequestLink(m);
                           ////          vm.Controller.RequestVisualLinkTo();
                                 }

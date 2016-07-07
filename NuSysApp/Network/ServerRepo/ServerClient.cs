@@ -192,7 +192,7 @@ namespace NuSysApp
                 };
                 var client =
                     new HttpClient(new HttpClientHandler {ClientCertificateOptions = ClientCertificateOption.Automatic});
-                var response = await client.GetAsync(GetUri("getcontentwithoutdata/" + collectionContentId));
+                var response = await client.GetAsync(GetUri("getpresentationlinks/" + collectionContentId));
 
                 string data;
                 using (var content = response.Content)

@@ -29,6 +29,9 @@ namespace NuSysApp
             this.Deselect();
         }
 
+        public delegate void OnRegionSeekHandler(double time);
+
+        public event OnRegionSeekHandler OnRegionSeek;
         public Grid RegionRectangle
         {
             get { return xGrid; }
@@ -189,6 +192,11 @@ namespace NuSysApp
             var vm = DataContext as VideoRegionViewModel;
             vm.Name = (sender as TextBox).Text;
             vm.RegionController.SetTitle(vm.Name);
+        }
+
+        private void IntervalRectangle_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            OnRegionSeek?.Invoke(((this.DataContext as VideoRegionViewModel).RegionController.Model as VideoRegionModel).Start);
         }
     }
 }
