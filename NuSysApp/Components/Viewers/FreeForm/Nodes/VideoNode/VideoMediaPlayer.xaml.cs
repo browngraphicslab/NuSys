@@ -137,6 +137,10 @@ namespace NuSysApp
 
             TimeSpan timespan = new TimeSpan(0, 0, 0, 0, (int)millliseconds);
             playbackElement.Position = timespan;
+            Binding b = new Binding();
+            b.ElementName = "playbackElement";
+            b.Path = new PropertyPath("Position.TotalMilliseconds");
+            scrubBar.SetBinding(ProgressBar.ValueProperty, b);
         }
         private void ControllerOnDisposed(object source)
         {
