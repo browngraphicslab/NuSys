@@ -132,11 +132,14 @@ namespace NuSysApp
             // get the data type of the list item template
             var groupNodeDataGridInfo = (e.OriginalSource as FrameworkElement)?.DataContext as GroupNodeDataGridInfo;
 
+            var elementContoller = SessionController.Instance.IdToControllers[groupNodeDataGridInfo?.Id];
+            var libraryElementModelId = elementContoller?.LibraryElementModel.LibraryElementId;
+
             // get the controller from the data type
-            var controller = SessionController.Instance.ContentController.GetLibraryElementController(groupNodeDataGridInfo?.Id);
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
 
             // return if the controller is null
-            Debug.Assert(controller != null);
+            //Debug.Assert(controller != null);
             if (controller == null)
             {
                 return;
