@@ -75,6 +75,8 @@ namespace NuSysApp
 
                 var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(creator);
                 parentCollectionLibraryElement.AddChild(id);
+
+                await SessionController.Instance.NuSysNetworkSession.AddPresentationLink(id1, id2, parentCollectionLibraryElement.LibraryElementId);
             }
         }
     }
