@@ -13,6 +13,8 @@ namespace NuSysApp
 {
     public class VideoDetailHomeTabViewModel : DetailHomeTabViewModel, Sizeable
     {
+        public delegate void OnRegionSeekPassingHandler(double time);
+        public event OnRegionSeekPassingHandler OnRegionSeekPassing;
         public LibraryElementController Controller { get; }
         public ObservableCollection<VideoRegionView> RegionViews { set; get; }
         
@@ -114,10 +116,16 @@ namespace NuSysApp
                 var vm = new VideoRegionViewModel(videoRegion, Controller, regionController as VideoRegionController, this);
                 vm.Editable = this.Editable;
                 var view = new VideoRegionView(vm);
+                view.OnRegionSeek += View_OnRegionSeek;
                 RegionViews.Add(view);
 
             }
             RaisePropertyChanged("RegionViews");
+        }
+
+        private void View_OnRegionSeek(double time)
+        {
+            OnRegionSeekPassing?.Invoke(time);
         }
 
         public override Region GetNewRegion()

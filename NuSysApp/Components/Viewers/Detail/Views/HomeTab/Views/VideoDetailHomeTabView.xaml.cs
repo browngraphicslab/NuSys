@@ -51,6 +51,7 @@ namespace NuSysApp
             vm.View = this;
             VideoMediaPlayer.MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
             VideoMediaPlayer.ScrubBar.ValueChanged += vm.ScrubBarOnValueChanged;
+            vm.OnRegionSeekPassing += VideoMediaPlayer.onSeekedTo;
             //Loaded += delegate (object sender, RoutedEventArgs args)
             //{
             //    var sw = SessionController.Instance.SessionView.ActualWidth / 2;

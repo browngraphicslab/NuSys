@@ -88,6 +88,10 @@ namespace NuSysApp
         {
             var view = await _nodeViewFactory.CreateFromSendable(controller);
             AtomViewList.Add(view);
+            if (controller is LinkElementController)
+            {
+                return;
+            }
             var contentLinks = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(controller.LibraryElementModel.LibraryElementId));
             foreach (var linkId in contentLinks)
             {
