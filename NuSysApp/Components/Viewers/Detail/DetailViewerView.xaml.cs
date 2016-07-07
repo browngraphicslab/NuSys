@@ -344,9 +344,13 @@ namespace NuSysApp
             var textview = (vm.View as TextDetailHomeTabView);
             textview?.Dispose();
             var videoView = vm.View as VideoDetailHomeTabView;
+            //not implemented
             videoView?.Dispose();
+            videoView?.StopVideo();
             var Audioview = vm.View as AudioDetailHomeTabView;
             Audioview?.StopAudio();
+            
+
         }
 
         private void metaData_OnTapped(object sender, TappedRoutedEventArgs e)

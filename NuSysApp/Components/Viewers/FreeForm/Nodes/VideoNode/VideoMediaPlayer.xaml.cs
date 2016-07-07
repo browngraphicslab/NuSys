@@ -106,6 +106,11 @@ namespace NuSysApp
             playbackElement.Play();
         }
 
+        public void StopVideo()
+        {
+            playbackElement.Pause();
+        }
+
         private void OnPause_Click(object sender, RoutedEventArgs e)
         {
             playbackElement.Stop();
