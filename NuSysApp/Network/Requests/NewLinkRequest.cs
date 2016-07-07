@@ -45,7 +45,6 @@ namespace NuSysApp
             {
                 _message["rectangleMod"] = (rectangle.DataContext as RectangleViewModel);
             }
-            SetServerSettings();
         }
 
         private void SetServerSettings()
@@ -55,7 +54,7 @@ namespace NuSysApp
             SetServerRequestType(ServerRequestType.Add);
         }
 
-        public override async Task CheckOutgoingRequest()
+        public override async Task<bool> CheckOutgoingRequest()
         {
             if (!_message.ContainsKey("id"))
             {
@@ -85,21 +84,30 @@ namespace NuSysApp
 
 
             var libraryElement = LibraryElementModelFactory.CreateFromMessage(_message);
-
-            var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElement.LibraryElementId);
-            libraryElement.Timestamp = time;
-            var loadEventArgs = new LoadContentEventArgs(_message["data"]?.ToString());
-            if (_message.ContainsKey("data") && _message["data"] != null)
+            if (libraryElement != null)
             {
-                controller.Load(loadEventArgs);
-            }
-            libraryElement.ServerUrl = url;
-            //SessionController.Instance.LinkController.AddLink(_message.GetString("id"));
+                var controller =
+                    SessionController.Instance.ContentController.GetLibraryElementController(
+                        libraryElement.LibraryElementId);
+                libraryElement.Timestamp = time;
+                var loadEventArgs = new LoadContentEventArgs(_message["data"]?.ToString());
+                if (_message.ContainsKey("data") && _message["data"] != null)
+                {
+                    controller.Load(loadEventArgs);
+                }
+                libraryElement.ServerUrl = url;
+                //SessionController.Instance.LinkController.AddLink(_message.GetString("id"));
 
-            AddLinks(JsonConvert.DeserializeObject<LinkId>((string) _message["id1"]),
-                JsonConvert.DeserializeObject<LinkId>((string) _message["id2"]),
-                _message.GetString("id"));
-            SetServerSettings();
+                AddLinks(JsonConvert.DeserializeObject<LinkId>((string) _message["id1"]),
+                    JsonConvert.DeserializeObject<LinkId>((string) _message["id2"]),
+                    _message.GetString("id"));
+                SetServerSettings();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public override async Task ExecuteRequestFunction()
@@ -110,7 +118,7 @@ namespace NuSysApp
             var creator = _message.GetString("creator");
             //var contentId = _message.GetString("contentId");
 
-            var link = LibraryElementModelFactory.CreateFromMessage(_message);
+            //var link = LibraryElementModelFactory.CreateFromMessage(_message);
 
             var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(creator);
             parentCollectionLibraryElement.AddChild(id);

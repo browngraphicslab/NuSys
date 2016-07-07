@@ -70,27 +70,29 @@ namespace NuSysApp
         public async Task ExecuteRequest(Request request)
         {
             await Task.Run(async delegate {
-
-                await request.CheckOutgoingRequest();
-                Message message = request.GetFinalMessage();
-
-                if (request.WaitForRequestReturn())
+                //if CheckOutgoingRequest created a valid thing
+                if (await request.CheckOutgoingRequest())
                 {
-                    ManualResetEvent mre = new ManualResetEvent(false);
-                    string requestID = SessionController.Instance.GenerateId();
-                    _requestEventDictionary[requestID] = mre;
+                    Message message = request.GetFinalMessage();
 
-                    message["system_local_request_id"] = requestID;
-
-                    await _serverClient.SendMessageToServer(message);
-                    if (_requestEventDictionary.ContainsKey(requestID))
+                    if (request.WaitForRequestReturn())
                     {
-                        mre.WaitOne();
+                        ManualResetEvent mre = new ManualResetEvent(false);
+                        string requestID = SessionController.Instance.GenerateId();
+                        _requestEventDictionary[requestID] = mre;
+
+                        message["system_local_request_id"] = requestID;
+
+                        await _serverClient.SendMessageToServer(message);
+                        if (_requestEventDictionary.ContainsKey(requestID))
+                        {
+                            mre.WaitOne();
+                        }
                     }
-                }
-                else
-                {
-                    await _serverClient.SendMessageToServer(message);
+                    else
+                    {
+                        await _serverClient.SendMessageToServer(message);
+                    }
                 }
             });
         }
@@ -417,7 +419,7 @@ namespace NuSysApp
             }
             catch (Exception e)
             {
-                throw new Exception("couldn't write to file because "+e.Message);
+                throw new Exception("couldn't write to file because " + e.Message);
             }
             return path;
         }
@@ -481,7 +483,7 @@ namespace NuSysApp
 
         public async Task UpdateRegion(Region region)
         {
-            if (region == null ||_regionUpdateDebounceList.Contains(region.Id))
+            if (region == null || _regionUpdateDebounceList.Contains(region.Id))
             {
                 return;
             }

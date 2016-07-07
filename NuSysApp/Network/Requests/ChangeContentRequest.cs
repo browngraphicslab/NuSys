@@ -29,10 +29,11 @@ namespace NuSysApp
             SetServerRequestType(ServerRequestType.Update);
         }
 
-        public override async Task CheckOutgoingRequest()
+        public override async Task<bool> CheckOutgoingRequest()
         {
             var time = DateTime.UtcNow.ToString();
             _message["library_element_last_edited_timestamp"] = time;
+            return true;
         }
 
         public override async Task ExecuteRequestFunction()

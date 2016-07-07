@@ -25,12 +25,13 @@ namespace NuSysApp
             SetServerItemType(ServerItemType.Content);
             SetServerRequestType(ServerRequestType.Remove);
         }
-        public override async Task CheckOutgoingRequest()
+        public override async Task<bool> CheckOutgoingRequest()
         {
             if (!_message.ContainsKey("id"))
             {
                 throw new Exception("Library Element Delete requests must contains a library 'id' to delete");
             }
+            return true;
         }
         public override async Task ExecuteRequestFunction()
         {

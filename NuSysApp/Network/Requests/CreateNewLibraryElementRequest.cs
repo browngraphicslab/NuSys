@@ -33,8 +33,9 @@ namespace NuSysApp
             SetServerRequestType(ServerRequestType.Add);
         }
 
-        public override async Task CheckOutgoingRequest()
+        public override async Task<bool> CheckOutgoingRequest()
         {
+            SetServerSettings();
             var time = DateTime.UtcNow.ToString();
             _message["library_element_creation_timestamp"] = time;
             _message["library_element_last_edited_timestamp"] = time;
@@ -44,21 +45,27 @@ namespace NuSysApp
                 url = _message["server_url"].ToString();
             }
 
-            ElementType type = (ElementType) Enum.Parse(typeof (ElementType), (string) _message["type"], true);
+            ElementType type = (ElementType) Enum.Parse(typeof(ElementType), (string) _message["type"], true);
 
             LibraryElementModel libraryElement = LibraryElementModelFactory.CreateFromMessage(_message);
-            SessionController.Instance.ContentController.Add(libraryElement);
-            var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElement.LibraryElementId);
-            libraryElement.Timestamp = time;
-            var loadEventArgs = new LoadContentEventArgs(_message["data"]?.ToString());
-            if (_message.ContainsKey("data") && _message["data"] != null)
+            if (libraryElement != null)
             {
-                if (libraryElement.Type != ElementType.Word)
+                SessionController.Instance.ContentController.Add(libraryElement);
+                var controller =
+                    SessionController.Instance.ContentController.GetLibraryElementController(
+                        libraryElement.LibraryElementId);
+                libraryElement.Timestamp = time;
+                var loadEventArgs = new LoadContentEventArgs(_message["data"]?.ToString());
+                if (_message.ContainsKey("data") && _message["data"] != null)
                 {
-                    controller.Load(loadEventArgs);
+                    if (libraryElement.Type != ElementType.Word)
+                    {
+                        controller.Load(loadEventArgs);
+                    }
                 }
+                libraryElement.ServerUrl = url;
             }
-            libraryElement.ServerUrl = url;
+            return true;
         }
     }
 }
