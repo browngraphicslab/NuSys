@@ -82,16 +82,23 @@ namespace NuSysApp
 
         private async void OnPointerReleased(object source, PointerRoutedEventArgs args)
         {
-            if (_id == null)
-                return;
 
             var point = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
             if (!this.IsPointerInGroup(point))
             {
                 var newPos = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(point);
-                var controller = SessionController.Instance.IdToControllers[_id];
-                await controller.RequestMoveToCollection(WaitingRoomView.InitialWorkspaceId, newPos.X, newPos.Y);
+                Debug.Assert(newPos != null);
+
+                // safe check if the id is in IdToControllers before requesting to move it to the current collection
+                ElementController controller;
+                SessionController.Instance.IdToControllers.TryGetValue(_id ?? "", out controller);
+                if (controller != null)
+                {
+                    await controller.RequestMoveToCollection(WaitingRoomView.InitialWorkspaceId, newPos.X, newPos.Y);
+                }
             }
+
+            // rmeove the _drag image from the canvas, and reset private variables for dragging element _id and image
             SessionController.Instance.SessionView.MainCanvas.Children.Remove(_drag);
             _drag = null;
             _id = null;
@@ -126,16 +133,24 @@ namespace NuSysApp
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             _doubleTapped = true;
+            // get the data type of the list item template
+            var groupNodeDataGridInfo = (e.OriginalSource as FrameworkElement)?.DataContext as GroupNodeDataGridInfo;
 
-            // get the item template from the sender
-            var itemTemplate = (e.OriginalSource as FrameworkElement)?.DataContext as GroupNodeDataGridInfo;
-            // get the library element model using the content id
-            var element = SessionController.Instance.ContentController.GetContent(itemTemplate?.Id);
-            // get the library element controller using the library element id
-            var controller =
-                SessionController.Instance.ContentController.GetLibraryElementController(element?.LibraryElementId);
+            // if groupNodeDataGridInfo is null, double click did not occur on item so return
+            if (groupNodeDataGridInfo == null)
+            {
+                return;
+            }
 
-            // make sure controller is not null
+            // the list item template has an element controller id, use that to get the library element Model Id
+            ElementController elementController;
+            SessionController.Instance.IdToControllers.TryGetValue(groupNodeDataGridInfo.Id, out elementController);
+            var libraryElementModelId = elementController?.LibraryElementModel.LibraryElementId;
+
+            // get the controller from the data type
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
+
+            // return if the controller is null
             Debug.Assert(controller != null);
 
             // check for unsupported types
@@ -146,7 +161,7 @@ namespace NuSysApp
                 return;
             }
 
-            // show the detail viewer
+            // open the detail viewer
             SessionController.Instance.SessionView.ShowDetailView(controller);
         }
 
