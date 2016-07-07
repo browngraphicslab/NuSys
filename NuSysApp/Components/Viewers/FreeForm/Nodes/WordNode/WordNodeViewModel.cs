@@ -45,8 +45,15 @@ namespace NuSysApp
             var wnlec = controller?.LibraryElementController as WordNodeLibraryElementController;
             wnlec.Locked += LibraryElementController_Locked;
             wnlec.UnLocked += LibraryElementController_UnLocked;
+            controller.LibraryElementController.ContentChanged += ChangeContent;
         }
-
+        private void ChangeContent(object source, string contentData)
+        {
+            Task.Run(async delegate {
+                _document = await MediaUtil.DataToPDF(Controller.LibraryElementModel.Data);
+                await UITask.Run(async delegate { await Goto(CurrentPageNumber); });
+            });
+        }
         private void LibraryElementController_UnLocked(object sender)
         {
             IsLocked = false;

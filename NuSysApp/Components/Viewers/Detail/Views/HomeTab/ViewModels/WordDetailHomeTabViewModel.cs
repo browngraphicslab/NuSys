@@ -32,7 +32,6 @@ namespace NuSysApp
                 _document = await MediaUtil.DataToPDF(Controller.LibraryElementModel.Data);
                 await UITask.Run(async delegate { await Goto(_pageNumber); });
             });
-
         }
 
         public override async Task Init()

@@ -37,6 +37,7 @@ namespace NuSysApp
         {
             var time = DateTime.UtcNow.ToString();
             _message["library_element_creation_timestamp"] = time;
+            _message["library_element_last_edited_timestamp"] = time;
             string url = null;
             if (_message.ContainsKey("server_url"))
             {
