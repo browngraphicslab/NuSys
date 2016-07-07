@@ -58,9 +58,9 @@
             <Grid>
                 <Rectangle x:Name="Rect" Fill="LightGray" Width="260"  HorizontalAlignment="Left"/>
                 <StackPanel Orientation="Horizontal" IsHitTestVisible="{Binding IsSelected}" >
-                    <TextBox x:Name ="Title" HorizontalAlignment="Stretch" Height="32" VerticalAlignment="Top" Text="{Binding Annotation}"></TextBox>
+                    <TextBox x:Name ="Title" HorizontalAlignment="Stretch" Height="32" VerticalAlignment="Top" Text="{Binding Annotation}" TextAlignment="Center"/>
                 </StackPanel>
             </Grid>
-        </StackPanel>
+            </StackPanel>
     </Canvas>
 </converters:AnimatableUserControl>

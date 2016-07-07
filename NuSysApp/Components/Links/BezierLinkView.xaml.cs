@@ -36,19 +36,14 @@ namespace NuSysApp
 
             //    Annotation.Text = vm.Annotation;
             Title.TextChanged += TitleOnTextChanged;
-
  
-
-            var linkController = (LinkElementController) vm.Controller;
-            linkController.AnnotationChanged += LinkControllerOnAnnotationChanged;
-          //  linkController.PositionChanged += LinkControllerOnPositionChanged;
-
             Canvas.SetZIndex(this, -2);//temporary fix to make sure events are propagated to nodes
 
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
                 UpdateControlPoints();
             };
+
         }
 
         private void LinkControllerOnAnnotationChanged(string text)
@@ -72,30 +67,12 @@ namespace NuSysApp
             vm.UpdateTitle(Title.Text);
         }
 
-        private void ControllerOnTitleChanged(object source, string title)
-        {
-       //     Annotation.Text = title;
-       //     AnnotationContainer.Visibility = title == "" ? Visibility.Collapsed : Visibility.Visible;
-        }
-
         private void OnDisposed(object source)
         {
             var vm = (ElementViewModel)DataContext;
             vm.PropertyChanged -= OnPropertyChanged;
             vm.Controller.Disposed -= OnDisposed;
-            if (vm?.Controller?.LibraryElementController != null)
-            {
-                vm.Controller.LibraryElementController.TitleChanged -= ControllerOnTitleChanged;
-            }
-            //var linkController = (LinkElementController)vm.Controller;
-           // linkController.AnnotationChanged -= LinkControllerOnAnnotationChanged;
             DataContext = null;
-        }
-
-        private void UpdateText()
-        {
-          //  var vm = DataContext as LinkViewModel;
-          //  vm.Controller.LibraryElementModel.SetTitle(Annotation.Text);           
         }
 
         private async void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
@@ -105,141 +82,23 @@ namespace NuSysApp
 
             Canvas.SetZIndex(this, -10);
 
-            var vm = (LinkViewModel)DataContext;
+            var vm = DataContext as LinkViewModel;
 
             if (propertyChangedEventArgs.PropertyName == "IsSelected")
             {
-                if (vm.IsSelected)
+                // if the vm is selected make sure title is read only in exploration mode
+                if (vm?.IsSelected ?? false)
                 {
-              
-                    if (SessionController.Instance.SessionView.ModeInstance?.Mode != ModeType.EXPLORATION)
-                    {
-                        TitleContainer.Visibility = Visibility.Visible;
-                    }
-                    
-
-                    if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
-                    {
-
-                        switch(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Type)
-                        {
-                            case Region.RegionType.Rectangle:
-                                //var imageRegionModel = (PdfNodeModel)SessionController.Instance.IdToControllers[model.OutAtomId].Model;
-                                var imageRegionModel = ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain;
-                                var modelId = imageRegionModel.Id;
-                                var model = ((LinkModel)(DataContext as LinkViewModel).Model);
-                                ;
-                                var list =
-                                    SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
-                                        item => ((ElementViewModel)item.DataContext).Model.Id == SessionController.Instance.IdToControllers[model.OutAtomId].Model.Id);
-                                var view = list?.First();
-                                if (view == null)
-                                {
-                                    return;
-                                }
-
-     
-                                //await ((ImageNodeView)view).onGoTo(imageRegionModel);
-
-                                break;
-                            default:
-                                break;
-
-                        }
-                        //((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Select();
-                        //this.JumpToLinkedTime();
-                    }
-                    /*
-
-                    if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
-                    {   
-                        ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Select();
-                        this.JumpToLinkedTime();
-                    }
-                    if (((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod != null)
-                    {
-                        LinkModel model = ((LinkModel)(DataContext as LinkViewModel).Model);
-                        if (SessionController.Instance.IdToControllers[model.OutAtomId].Model.ElementType == ElementType.PDF)
-                        {
-                            PdfNodeModel pdfModel = (PdfNodeModel)SessionController.Instance.IdToControllers[model.OutAtomId].Model;
-                            var modelId = pdfModel.Id;
-
-                            var list =
-                                SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
-                                    item => ((ElementViewModel)item.DataContext).Model.Id == modelId);
-                            var view = list?.First();
-                            if (view == null)
-                            {
-                                return;
-                            }
-                           
-                            await ((PdfNodeView)view).onGoTo(((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.PdfPageNumber);
-                        }
-
-                        ((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.Model.Select();
-                        */
-                    }
-                }
-                else
-                {
-
-                    if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
-                    {
-                          
-                    }
-
-                    if (((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod != null)
-                    {
-                        ((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.Model.Deselect();
-                    }
-                }
-            }
-        
-
-        private void JumpToLinkedTime()
-        {
-
-            /*
-            if (((LinkModel) (DataContext as LinkViewModel).Model).InFineGrain.Start.TotalMilliseconds <
-                ((LinkModel) (DataContext as LinkViewModel).Model).InFineGrain.End.TotalMilliseconds)
-            {
-                if (
-                    SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model
-                        .ElementType == ElementType.Video)
-                {
-                    (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
-                    VideoNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Start);
+                    Title.IsReadOnly = SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION;
 
                 }
-                else if (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model
-                        .ElementType == ElementType.Audio)
-                {
-                    (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
-                    AudioNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Start);
-                }
-
-
             }
             else
             {
-                if (
-                    SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model
-                        .ElementType == ElementType.Video)
-                {
-                    (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
-                    VideoNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.End);
-
-                }
-                else if (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model
-                        .ElementType == ElementType.Audio)
-                {
-                    (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
-                    AudioNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.End);
-
-                }
+                (vm?.Model as LinkModel)?.RectangleModel?.Model.Deselect();
             }
-            */
         }
+        
 
         private void OnAtomPropertyChanged(object sender, PropertyChangedEventArgs e)
         {

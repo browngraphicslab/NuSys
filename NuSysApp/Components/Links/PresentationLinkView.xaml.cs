@@ -38,42 +38,6 @@ namespace NuSysApp
             {
                 UpdateControlPoints();
             };
-
-            object value;
-            if (vm.LinkModel.InFGDictionary != null)
-            {
-                switch (SessionController.Instance.IdToControllers[vm.LinkModel.InAtomId].Model.ElementType)
-                {
-                    case ElementType.Image:
-                        Debug.WriteLine("This links from a image with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
-
-                        break;
-                    case ElementType.Text:
-                        Debug.WriteLine("This links from a text with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
-                        break;
-                    case ElementType.Audio:
-                        Debug.WriteLine("This links from a text with values " + vm.LinkModel.InFGDictionary.TryGetValue("start", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("end", out value));
-                        break;
-                }
-            }
-
-            if (vm.LinkModel.OutFGDictionary != null)
-            {
-                switch (SessionController.Instance.IdToControllers[vm.LinkModel.OutAtomId].Model.ElementType)
-                {
-                    case ElementType.Image:
-                        Debug.Write("to a image with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
-
-                        break;
-                    case ElementType.Text:
-                        Debug.Write("to a text with values " + vm.LinkModel.InFGDictionary.TryGetValue("x", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("y", out value));
-
-                        break;
-                    case ElementType.Audio:
-                        Debug.Write("to a media with values " + vm.LinkModel.InFGDictionary.TryGetValue("start", out value) + ", " + vm.LinkModel.InFGDictionary.TryGetValue("end", out value));
-                        break;
-                }
-            }
         }
 
         private void LinkControllerOnPositionChanged(object source, double d, double d1, double dx, double dy)
@@ -121,105 +85,48 @@ namespace NuSysApp
 
             this.UpdateControlPoints();
 
-
-            var vm = (LinkViewModel)DataContext;
+            // get the link view model as the data context
+            var vm = DataContext as LinkViewModel;
+            var linkModel = (LinkModel)vm?.Model;
 
             if (propertyChangedEventArgs.PropertyName == "IsSelected")
             {
-                if (vm.IsSelected)
-                {
-                    AnnotationContainer.Visibility = Visibility.Visible;
-                    Delete.Visibility = Visibility.Visible;
-                    if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
-                    {
-                       // ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Select();
-                        this.JumpToLinkedTime();
-                    }
-                    if (((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod != null)
-                    {
-                        LinkModel model = ((LinkModel)(DataContext as LinkViewModel).Model);
-                        if (SessionController.Instance.IdToControllers[model.OutAtomId].Model.ElementType == ElementType.PDF)
-                        {
-                            PdfNodeModel pdfModel = (PdfNodeModel)SessionController.Instance.IdToControllers[model.OutAtomId].Model;
-                            var modelId = pdfModel.Id;
 
+                // if the link is selected
+                if (vm?.IsSelected ?? false)
+                {                  
+                    if (linkModel.RectangleModel != null)
+                    {
+                        // if the presentation link goes to a PdfNodeModel make sure we got to the right page
+                        var pdfNodeModel = SessionController.Instance.IdToControllers[linkModel.OutAtomId].Model as PdfNodeModel;
+                        if (pdfNodeModel != null)
+                        {
+                            // get the pdfNodeModel id
+                            var modelId = pdfNodeModel.Id;
+
+                            // get the pdfNodeView using the pdf Model id
                             var list =
                                 SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
-                                    item => ((ElementViewModel)item.DataContext).Model.Id == modelId);
-                            var view = list?.First();
-                            if (view == null)
-                            {
-                                return;
-                            }
+                                    item => (item.DataContext as ElementViewModel)?.Model.Id == modelId);
+                            var view = list?.First() as PdfNodeView;
 
-                            await ((PdfNodeView)view).onGoTo(((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.PdfPageNumber);
+                            // follow the link
+                            if (view != null)
+                            {
+                                await view.onGoTo(linkModel.RectangleModel.PdfPageNumber);
+                            }
+                            
                         }
 
-                        ((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.Model.Select();
+                        linkModel.RectangleModel.Model.Select();
 
                     }
-                    SessionController.Instance.SessionView.Explore(vm);
                 }
-
                 else
                 {
-
-                    Delete.Visibility = Visibility.Collapsed;
-                    if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain != null)
-                    {
-                        //((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Deselect();
-                    }
-
-                    if (((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod != null)
-                    {
-                        ((LinkModel)(DataContext as LinkViewModel).Model).RectangleMod.Model.Deselect();
-                    }
+                    linkModel?.RectangleModel?.Model.Deselect();
                 }
             }
-        }
-
-        private void JumpToLinkedTime()
-        {
-            /*
-            if (((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Start.TotalMilliseconds <
-                ((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.End.TotalMilliseconds)
-            {
-                if (
-                    SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model
-                        .ElementType == ElementType.Video)
-                {
-                    (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
-                    VideoNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Start);
-
-                }
-                else if (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model
-                        .ElementType == ElementType.Audio)
-                {
-                    (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
-                    AudioNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.Start);
-                }
-
-
-            }
-            else
-            {
-                if (
-                    SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model
-                        .ElementType == ElementType.Video)
-                {
-                    (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
-                    VideoNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.End);
-
-                }
-                else if (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model
-                        .ElementType == ElementType.Audio)
-                {
-                    (SessionController.Instance.IdToControllers[(DataContext as LinkViewModel).LinkModel.OutAtomId].Model as
-                    AudioNodeModel).Jump(((LinkModel)(DataContext as LinkViewModel).Model).InFineGrain.End);
-
-                }
-            }
-            */
         }
 
 
@@ -255,10 +162,6 @@ namespace NuSysApp
 
             curve.Point2 = new Point(anchor1.X - distanceX / 2, anchor2.Y);
             curve.Point1 = new Point(anchor2.X + distanceX / 2, anchor1.Y);
-
-            Canvas.SetLeft(AnnotationContainer, anchor1.X - distanceX / 2);
-            Canvas.SetTop(AnnotationContainer, anchor1.Y - distanceY / 2);
-
         }
 
         private void UpdateArrow()

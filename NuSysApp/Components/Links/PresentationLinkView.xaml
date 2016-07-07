@@ -48,12 +48,5 @@
             </Path.Data>
         </Path>
         <Polygon x:Name="arrow" Fill="{StaticResource color4}" Points="0,0 40,20, 0,40"/>
-
-        <StackPanel x:Name="AnnotationContainer" Orientation="Vertical" Visibility="Collapsed" >
-
-            <Button Margin="0,2,0,2" x:Name="Delete" Visibility="{Binding IsSelected, Converter={StaticResource vConverter}}" Click="Delete_OnClick" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
-                <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
-            </Button>
-        </StackPanel>
     </Canvas>
 </converters:AnimatableUserControl>
