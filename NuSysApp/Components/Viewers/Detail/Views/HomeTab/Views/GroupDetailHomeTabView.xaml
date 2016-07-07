@@ -89,11 +89,11 @@
                         HorizontalAlignment="Center" Margin="10,-100,10,10" Background="{StaticResource color2}" Foreground="{StaticResource color1}" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
             <TextBlock Margin="0,-4,0,0" FontSize="24">enter collection</TextBlock>
         </Button>
-        <!--<Grid x:Name="WebContainer" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent">
+        <Grid x:Name="WebContainer" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent">
             <WebView Name ="MyWebView"  Width="{Binding ElementName=WebContainer, Path=Width}"  Height ="100"  ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled"  
                              Visibility="Visible" HorizontalAlignment ="Stretch" VerticalAlignment="Stretch" IsTapEnabled="True">
             </WebView>
-        </Grid>-->
+        </Grid>
         
     </StackPanel>
 
