@@ -33,25 +33,62 @@ namespace NuSysApp
         public event VisualizationLoadedEventHandler OnVisualizationLoaded;
         public delegate void OnRegionSeekPassingHandler(double time);
         public event OnRegionSeekPassingHandler OnRegionSeekPassing;
+
+        public ObservableCollection<AudioRegionView> Regions { private set; get; }
         public AudioNodeViewModel(ElementController controller) : base(controller)
         {
             Width = controller.Model.Width;
             Height = controller.Model.Height;
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
 
+
+            this.CreateAudioRegionViews();
+
             controller.Disposed += ControllerOnDisposed;
             Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
-            Controller.SizeChanged += Controller_SizeChanged;
+            //Controller.SizeChanged += Controller_SizeChanged;
             Controller.LibraryElementController.Loaded += LibraryElementController_Loaded;
         }
 
         private void LibraryElementController_Loaded(object sender)
         {
-            RaisePropertyChanged("Regions");
+            this.CreateAudioRegionViews();
         }
 
-        private void Controller_SizeChanged(object source, double width, double height)
+
+        public void CreateAudioRegionViews()
         {
+            var elementController = Controller.LibraryElementController;
+            var regionHashSet = elementController.LibraryElementModel.Regions;
+
+            if (regionHashSet == null)
+            {
+                return;
+            }
+
+            Regions.Clear();
+
+            foreach (var model in regionHashSet)
+            {
+                var audioModel = model as TimeRegionModel;
+                AudioRegionController regionController;
+
+                if (SessionController.Instance.RegionsController.GetRegionController(audioModel.Id) == null)
+                {
+                    var factory = new RegionControllerFactory();
+                    regionController = factory.CreateFromSendable(audioModel, ContentId) as AudioRegionController;
+                }
+                else {
+                    regionController = SessionController.Instance.RegionsController.GetRegionController(audioModel.Id) as AudioRegionController;
+                }
+
+                var viewmodel = new AudioRegionViewModel(audioModel, elementController, regionController, this);
+                viewmodel.Editable = false;
+                var view = new AudioRegionView(viewmodel);
+                Regions.Add(view);
+
+
+            }
             RaisePropertyChanged("Regions");
         }
 
@@ -98,6 +135,7 @@ namespace NuSysApp
                 return Controller.LibraryElementController.GetSource();
             }
         }
+        /*
         public ObservableCollection<AudioRegionView> Regions { get
             {
                 var collection = new ObservableCollection<AudioRegionView>();
@@ -120,6 +158,7 @@ namespace NuSysApp
                 return collection;
             }
         }
+        */
 
         private void View_OnRegionSeek(double time)
         {

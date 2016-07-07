@@ -39,19 +39,19 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = vm;
             this.Deselect();
-
-            CompositeTransform composite = new CompositeTransform();
-            this.RenderTransform = composite;
-            OnSelected?.Invoke(this, true);
-
-            vm.PropertyChanged += PropertyChanged;
-            vm.SizeChanged += ChangeSize;
-            vm.LocationChanged += ChangeLocation;
             var model = vm.Model as RectangleRegion;
             if (model == null)
             {
                 return;
             }
+
+            CompositeTransform composite = new CompositeTransform();
+            this.RenderTransform = composite;
+
+            vm.PropertyChanged += PropertyChanged;
+            vm.SizeChanged += ChangeSize;
+            vm.LocationChanged += ChangeLocation;
+
 
             var parentWidth = vm.ContainerViewModel.GetWidth();
             var parentHeight = vm.ContainerViewModel.GetHeight();
@@ -68,10 +68,7 @@ namespace NuSysApp
                 var diffHeight = ivm.GetViewHeight() - parentHeight;
                 composite.TranslateX += diffWidth / 2;
                 composite.TranslateY += diffHeight / 2;
-
             }
-
-
 
             _tx = composite.TranslateX;
             _ty = composite.TranslateY;

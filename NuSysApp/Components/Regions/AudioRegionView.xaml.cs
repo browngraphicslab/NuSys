@@ -44,12 +44,7 @@ namespace NuSysApp
             var vm = this.DataContext as AudioRegionViewModel;
             if (Rect.Width + e.Delta.Translation.X > 0 && vm.LeftHandleX + e.Delta.Translation.X > 0 && vm.LeftHandleX + e.Delta.Translation.X < vm.RightHandleX)
             {
-                //          (Bound1.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
-                //          Bound1.X1 += e.Delta.Translation.X;
-                //          Bound1.X2 += e.Delta.Translation.X;
-                //           (Rect.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
-                //          Rect.Width -= e.Delta.Translation.X;
-                UpdateModel(e.Delta.Translation.X,0);
+                vm.SetNewPoints(e.Delta.Translation.X,0);
             }
         }
 
@@ -62,7 +57,7 @@ namespace NuSysApp
                 //         Bound2.X2 += e.Delta.Translation.X;
                 //        Bound2.X1 += e.Delta.Translation.X;
                 //        Rect.Width += e.Delta.Translation.X;
-                UpdateModel(0,e.Delta.Translation.X);
+                vm.SetNewPoints(0,e.Delta.Translation.X);
             }
         }
 
@@ -76,15 +71,12 @@ namespace NuSysApp
            
         }
 
-        private void UpdateModel(double d1, double d2)
-        {
-                var vm = this.DataContext as AudioRegionViewModel; 
-                vm.SetNewPoints(d1,d2); 
-        }
+
         public void Deselect()
         {
             Rect.Fill = new SolidColorBrush(Windows.UI.Colors.LightCyan);
             xNameTextBox.Visibility = Visibility.Collapsed;
+            Rect.IsHitTestVisible = true;
             Selected = false;
 
         }
@@ -93,7 +85,7 @@ namespace NuSysApp
         {
             Rect.Fill = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
             xNameTextBox.Visibility = Visibility.Visible;
-
+            Rect.IsHitTestVisible = false;
             Selected = true;
 
         }
@@ -101,7 +93,7 @@ namespace NuSysApp
         private void Rect_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             var vm = DataContext as AudioRegionViewModel;
-
+            /*
             if (!vm.Editable)
                 return;
 
@@ -109,6 +101,8 @@ namespace NuSysApp
                 this.Deselect();
             else
                 this.Select();
+                */
+            e.Handled = true;
 
         }
         private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
@@ -125,7 +119,7 @@ namespace NuSysApp
             if (Rect.Width + e.Delta.Translation.X > 0 && vm.RightHandleX + e.Delta.Translation.X < vm.ContainerViewModel.GetWidth() && vm.LeftHandleX + e.Delta.Translation.X > 0)
             {
 
-                UpdateModel(e.Delta.Translation.X, e.Delta.Translation.X);
+                vm.SetNewPoints(e.Delta.Translation.X, e.Delta.Translation.X);
             }
         }
         private void xNameTextBox_TextChanged(object sender, TextChangedEventArgs e)

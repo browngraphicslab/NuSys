@@ -21,6 +21,10 @@ namespace NuSysApp
 {
     public sealed partial class AudioMediaPlayer : UserControl
     {
+
+        public ProgressBar ScrubBar => this.ProgressBar;
+        public MediaElement MediaPlayer => this.MediaElement;
+
         public AudioMediaPlayer()
         {
             this.InitializeComponent();
@@ -64,6 +68,8 @@ namespace NuSysApp
         private void MediaElement_OnMediaOpened(object sender, RoutedEventArgs e)
         {
             // TODO Fire event to add regions
+
+            
         }
 
         private void ProgressBar_OnTapped(object sender, TappedRoutedEventArgs e)

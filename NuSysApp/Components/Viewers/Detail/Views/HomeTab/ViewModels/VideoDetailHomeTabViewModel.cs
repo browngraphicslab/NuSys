@@ -67,7 +67,6 @@ namespace NuSysApp
                 {
                     regionview.RegionRectangle.Visibility = Visibility.Collapsed;
                     regionview.Deselect();
-
                 }
             }
         }
