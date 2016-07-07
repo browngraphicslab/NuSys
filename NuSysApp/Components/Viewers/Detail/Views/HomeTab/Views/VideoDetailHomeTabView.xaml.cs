@@ -78,16 +78,16 @@ namespace NuSysApp
             var vm = (VideoNodeViewModel)DataContext;
             vm.Controller.Disposed -= ControllerOnDisposed;
         }
-        /*
+        
         private void MediaPlayer_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             var vm = DataContext as VideoDetailHomeTabViewModel;
-            foreach (var regionView in vm.RegionViews)
-            {
-                regionView.Deselect();
-            }
+            //foreach (var regionView in vm.RegionViews)
+            //{
+              //regionView.Deselect();
+            //}
         }
-        */
+        
         public double VideoWidth => VideoMediaPlayer.MediaPlayer.ActualWidth;
         public double VideoHeight => VideoMediaPlayer.MediaPlayer.ActualHeight;
 
