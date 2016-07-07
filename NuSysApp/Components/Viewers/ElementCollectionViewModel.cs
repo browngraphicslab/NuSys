@@ -115,6 +115,16 @@ namespace NuSysApp
                     dc.ContentId ==
                     link.LinkLibraryElementModel.OutAtomId.LibraryElementId)
                 {
+                     var isAlreadyMade = false;
+                     foreach (var linkvms in AtomViewList.Where(r => r.DataContext is LinkViewModel).Select(e=>e.DataContext as LinkViewModel))
+                     {
+                         if ((linkvms.Controller.Model as LinkModel).InAtomId == controller.Model.Id && (linkvms.Controller.Model as LinkModel).OutAtomId == dc.Model.Id || 
+                             (linkvms.Controller.Model as LinkModel).OutAtomId == controller.Model.Id && (linkvms.Controller.Model as LinkModel).InAtomId == dc.Model.Id)
+                         {
+                             isAlreadyMade = true;
+                         }
+                     }
+                     if (isAlreadyMade) continue;
                     var lm = new LinkModel(SessionController.Instance.GenerateId());
                     lm.InAtomId = controller.Model.Id;
                     lm.OutAtomId = dc.Controller.Model.Id;
