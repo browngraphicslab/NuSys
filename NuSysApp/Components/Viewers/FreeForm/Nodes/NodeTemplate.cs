@@ -426,10 +426,10 @@ namespace NuSysApp
                     }
                     else
                     {
-                        if (dc.LinkList.Where(c => c.OutElement.Model.Id == vm.Id).Count() > 0 || vm.LinkList.Where(c => c.OutElement.Model.Id == dc.Id).Count() > 0)
-                        {
-                            return;
-                        }
+                   //     if (dc.LinkList.Where(c => c.OutElement.Model.Id == vm.Id).Count() > 0 || vm.LinkList.Where(c => c.OutElement.Model.Id == dc.Id).Count() > 0)
+                   //     {
+                   //         return;
+                   //     }
 
 
                         if (_currenDragMode == DragMode.Link)
