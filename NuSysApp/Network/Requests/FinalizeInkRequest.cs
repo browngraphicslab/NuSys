@@ -12,7 +12,7 @@ namespace NuSysApp
     {
         public FinalizeInkRequest(Message message) : base(Request.RequestType.FinalizeInkRequest, message){}
 
-        public async override Task CheckOutgoingRequest()
+        public async override Task<bool> CheckOutgoingRequest()
         {
             if (_message.GetString("id", null) == null)
             {
@@ -23,6 +23,7 @@ namespace NuSysApp
             SetServerItemType(ServerItemType.Content);
             SetServerRequestType(ServerRequestType.Update);
             SetServerIgnore(false);
+            return true;
         }
         public override async Task ExecuteRequestFunction()
         {

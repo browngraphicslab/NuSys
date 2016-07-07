@@ -71,7 +71,8 @@ namespace NuSysApp
 
         public double OriginalHeight { get; set; }
         public double OriginalWidth { get; set; }
-        public delegate void SizeChangedEventHandler(object sender, double height, double width);
+
+        public delegate void SizeChangedEventHandler(object sender, double width, double height);
         public event SizeChangedEventHandler SizeChanged;
 
         public delegate void LocationChangedEventHandler(object sender, Point topLeft);
@@ -196,9 +197,12 @@ namespace NuSysApp
                 ContainerHeight = detailVM.GetHeight();
                 ContainerWidth = detailVM.GetWidth();
 
-                Height = model.Height * ContainerHeight;
-                Width = model.Width * ContainerWidth;
-                topLeft = new Point(model.TopLeftPoint.X * ContainerWidth, model.TopLeftPoint.Y * ContainerHeight);
+                //Height = model.Height * ContainerHeight;
+                //Width = model.Width * ContainerWidth;
+
+                Width = model.Width * width;
+                Height = model.Height * height;
+                topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
 
             }
             else {

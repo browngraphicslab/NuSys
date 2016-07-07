@@ -98,11 +98,6 @@ namespace NuSysApp
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewLinkRequest(m1));
         }
 
-        public void SaveTimeBlock()
-        {
-            _debouncingDictionary.Add("inFineGrain", ((LinkModel)Model).InFineGrain);
-        }
-
         public void SetAnnotation(string text)
         {
             var linkModel = (LinkModel) Model;

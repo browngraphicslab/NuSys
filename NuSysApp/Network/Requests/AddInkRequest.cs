@@ -15,7 +15,7 @@ namespace NuSysApp
 
         public AddInkRequest(Message message) : base(Request.RequestType.AddInkRequest, message){}
 
-        public async override Task CheckOutgoingRequest()
+        public async override Task<bool> CheckOutgoingRequest()
         {
             if (_message.GetString("id", null) == null)
             {
@@ -33,6 +33,7 @@ namespace NuSysApp
             SetServerItemType(ServerItemType.Ink);
             SetServerRequestType(ServerRequestType.Add);
             SetServerIgnore(false);
+            return true;
         }
         public override async Task ExecuteRequestFunction()
         {

@@ -35,7 +35,7 @@
 
                     <TextBlock x:Name="xTitle" TextAlignment="Center" Foreground="{StaticResource color3}"  Text="Filter Type" Height="35" Grid.Row="0" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta"/>
                     <Charting:Chart Visibility="Collapsed" Grid.Row="1" x:Name="xPieChart" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0" Width="Auto" Height="Auto">
-                        <Charting:PieSeries x:Name="xPieSeries"  ManipulationMode="All" PointerPressed="xList_PointerPressed" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted" SelectionChanged="DataPointSeries_OnSelectionChanged" PointerReleased="XPieSeries_OnPointerReleased" Margin="0" IndependentValuePath="Key" DependentValuePath="Value" IsSelectionEnabled="True"/>
+                        <Charting:PieSeries x:Name="xPieSeries"  ManipulationMode="All" PointerPressed="xListItem_PointerPressed" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted" SelectionChanged="DataPointSeries_OnSelectionChanged" PointerReleased="XPieSeries_OnPointerReleased" Margin="0" IndependentValuePath="Key" DependentValuePath="Value" IsSelectionEnabled="True"/>
                         <Charting:Chart.LegendStyle>
                             <Style TargetType="dataVisualization:Legend">
                                 <Setter Property="VerticalAlignment" Value="Stretch" />
@@ -82,20 +82,18 @@
                             </Style>
                         </Charting:Chart.LegendStyle>
                     </Charting:Chart>
-                    <!--<ListBox x:Name="xPropertiesList" CanDrag="True" SelectionChanged="XPropertiesList_OnSelectionChanged"  Height="200" Grid.Row="1" Width="Auto" Background="AliceBlue" SelectionMode="Single" PointerPressed="xList_PointerPressed" ManipulationMode="TranslateX, TranslateY" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted"/>-->
-                    <ListView x:Name="xPropertiesList" CanDrag="True" ManipulationMode="All"  SelectionChanged="XPropertiesList_OnSelectionChanged"  Height="200" Grid.Row="1" Width="Auto" Background="White" SelectionMode="Single" ItemsSource="{Binding PropertiesToDisplayUnique}" >
+                    <ListView x:Name="xPropertiesList" CanDrag="True" ManipulationMode="TranslateX, TranslateY" Height="200" Grid.Row="1" Width="Auto" Background="White" SelectionMode="Single" ItemsSource="{Binding PropertiesToDisplayUnique}" >
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
                                 <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
                                 <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
-                                <Setter Property="Padding" Value="5,5,5,5"/>
+                                <Setter Property="Padding" Value="0,0,0,0"/>
                             </Style>
                         </ListView.ItemContainerStyle>
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <Grid x:Name="xGridListItem" PointerPressed="xList_PointerPressed"  Width="Auto" ManipulationMode="All" ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted">
-                                    <!--ManipulationStarted="xList_ManipulationStarted" ManipulationDelta="xList_ManipulationDelta" ManipulationCompleted="xList_ManipulationCompleted">-->
-                                    <TextBlock Text="{Binding}" Foreground="{StaticResource color3}" Width="Auto" />
+                                <Grid x:Name="xGridListItem" Background="Transparent" Tapped="xListItem_OnTapped"  PointerPressed="xListItem_PointerPressed"  Width="Auto" ManipulationMode="All" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
+                                    <TextBlock Text="{Binding}" Foreground="{StaticResource color3}" VerticalAlignment="Center" Width="Auto" />
                                 </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>

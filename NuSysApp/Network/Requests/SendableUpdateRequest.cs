@@ -13,13 +13,16 @@ namespace NuSysApp
         {
             SetServerSettings(saveToServer);
         }
-        public override async Task CheckOutgoingRequest()
+        public override async Task<bool> CheckOutgoingRequest()
         {
             if (!_message.ContainsKey("id"))
             {
                 throw new Exception("The Sendable update must have a key labeled 'id'");
             }
             _message["sender_user_id"] = SessionController.Instance.LocalUserID;
+            var time = DateTime.UtcNow.ToString();
+            _message["library_element_last_edited_timestamp"] = time;
+            return true;
         }
 
         private void SetServerSettings(bool saveToServer = false)

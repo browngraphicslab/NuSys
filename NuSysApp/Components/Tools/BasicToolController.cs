@@ -70,7 +70,7 @@ namespace NuSysApp
             }
             return false;
         }
-        public void UnSelect()
+        public override void UnSelect()
         {
             BasicToolModel.SetSelected(false);
             BasicToolModel.SetLibraryIds(Filter(GetUpdatedDataList()));
