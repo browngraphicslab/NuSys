@@ -191,6 +191,11 @@ namespace NuSysApp
                 _vm.AdvancedSearch(new Query(args.QueryText));
             }
         }
+
+        public void SetFocusOnSearchBox()
+        {
+            SearchBox.Focus(FocusState.Programmatic);
+        }
         #endregion search bar text manipulation
 
         private async void RootGrid_OnTapped(object sender, TappedRoutedEventArgs e)
