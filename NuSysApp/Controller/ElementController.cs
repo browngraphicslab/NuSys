@@ -234,6 +234,7 @@ namespace NuSysApp
 
         public virtual async Task RequestPresentationLinkTo(string otherId, RectangleView rectangle = null, LinkedTimeBlock block = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
         {
+
             var contentId = SessionController.Instance.GenerateId();
          //   var libraryElementRequest = new CreateNewLibraryElementRequest(contentId, null, ElementType.Link, "NEW PRESENTATION LINK");
             var request = new NewPresentationLinkRequest(Model.Id, otherId, Model.ParentCollectionId, contentId, block, rectangle, inFGDictionary, outFGDictionary, null, true);
