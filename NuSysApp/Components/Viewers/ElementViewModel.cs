@@ -169,9 +169,13 @@ namespace NuSysApp
             {
                 return;
             }
-
+            var id = this.Controller.LibraryElementModel?.LibraryElementId;
+            if (id == null)
+            {
+                return;
+            }
             CircleLinks.Clear();
-            var circleList = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(this.Controller.LibraryElementModel.LibraryElementId));
+            var circleList = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(id));
             if(circleList == null)
             {
                 return;
