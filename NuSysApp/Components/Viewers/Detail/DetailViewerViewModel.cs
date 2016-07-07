@@ -255,6 +255,10 @@ namespace NuSysApp
                 {
                     return false;
                 }
+                if (CurrentElementController == null)
+                {
+                    return false;
+                }
                 View = await _viewHomeTabViewFactory.CreateFromSendable(CurrentElementController, CurrentElementController.LibraryElementModel.Regions);
                 if (View == null)
                 {

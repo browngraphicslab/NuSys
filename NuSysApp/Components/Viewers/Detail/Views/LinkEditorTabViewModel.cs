@@ -64,6 +64,7 @@ namespace NuSysApp
 
         internal void DeleteLink(string id)
         {
+            SessionController.Instance.ActiveFreeFormViewer.AllContent.First().Controller.RequestDeleteVisualLink(id);
             SessionController.Instance.LinkController.RemoveLink(id);
             Task.Run(async delegate
             {
@@ -79,7 +80,6 @@ namespace NuSysApp
                     break;
                 }
             }
-
         }
 
         private void LinkController_OnNewLink(LinkLibraryElementController link)
@@ -164,17 +164,18 @@ namespace NuSysApp
 
         }
 
-        public void CreateLink(LinkId Id, string title)
+        public async void CreateLink(LinkId idToLinkTo, string title)
         {
             if (_linkable == null)
             {
                 return;
             }
-
-            _linkable.RequestAddNewLink(Id);
-            var linkId = SessionController.Instance.LinkController.GetLinkIdBetween(_linkable.Id, Id);
-            var linkController = SessionController.Instance.ContentController.GetLibraryElementController(linkId) as LinkLibraryElementController;
-            linkController?.SetTitle(title);
+            _linkable.LinkAdded -= _linkable_LinkAdded;
+            await _linkable.RequestAddNewLink(idToLinkTo, title);
+            var linkId = SessionController.Instance.LinkController.GetLinkIdBetween(_linkable.Id, idToLinkTo);
+            //var linkController = SessionController.Instance.ContentController.GetLibraryElementController(linkId) as LinkLibraryElementController;
+            //linkController?.SetTitle(title);
+            _linkable.LinkAdded += _linkable_LinkAdded;
         }
         public void SortByLinkedTo()
         {
