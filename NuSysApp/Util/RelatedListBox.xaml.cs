@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -80,9 +81,10 @@ namespace NuSysApp
             var block = grid?.FindName("xListViewItem") as TextBlock;
             var model = block?.DataContext as LibraryElementModel;
             
-            var vms = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => ((ElementViewModel)item.DataContext).Controller.LibraryElementModel.LibraryElementId == model?.LibraryElementId);
-            var foo = vms.ToList();
-            var element = foo[0].DataContext as ElementViewModel;
+            var vms = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => ((ElementViewModel)item.DataContext)?.Controller?.LibraryElementModel?.LibraryElementId == model?.LibraryElementId);
+            var foo = vms?.ToList();
+            var element = foo[0]?.DataContext as ElementViewModel;
+            Debug.Assert(element != null);
             SessionController.Instance.SessionView.Explore(element);
 
         }
