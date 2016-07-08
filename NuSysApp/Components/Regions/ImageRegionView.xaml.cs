@@ -25,12 +25,8 @@ namespace NuSysApp
     {
 
         public Point _topLeft;
-        public Point _bottomRight;
         private double _tx;
         private double _ty;
-
-        public delegate void RegionSelectedEventHandler(object sender, bool selected);
-        public event RegionSelectedEventHandler OnSelected;
 
         public bool Selected {private set; get; }
 
@@ -39,49 +35,51 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = vm;
             this.Deselect();
-
-            CompositeTransform composite = new CompositeTransform();
-            this.RenderTransform = composite;
-            OnSelected?.Invoke(this, true);
-
-            vm.PropertyChanged += PropertyChanged;
-            vm.SizeChanged += ChangeSize;
-            vm.LocationChanged += ChangeLocation;
             var model = vm.Model as RectangleRegion;
             if (model == null)
             {
                 return;
             }
 
+            CompositeTransform composite = new CompositeTransform();
+            this.RenderTransform = composite;
+
+            vm.PropertyChanged += PropertyChanged;
+            vm.SizeChanged += ChangeSize;
+            vm.LocationChanged += ChangeLocation;
+
+
             var parentWidth = vm.ContainerViewModel.GetWidth();
             var parentHeight = vm.ContainerViewModel.GetHeight();
             
             composite.TranslateX = model.TopLeftPoint.X * parentWidth;
             composite.TranslateY = model.TopLeftPoint.Y * parentHeight;
+            vm.Width = (model.Width) * parentWidth;
+            vm.Height = (model.Height) * parentHeight;
 
             //If in detail view, adjust to the right to account for difference between view and actual image.
             if (vm.ContainerViewModel is ImageDetailHomeTabViewModel)
             {
                 var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
 
-                var diffWidth = ivm.GetViewWidth() - parentWidth;
-                var diffHeight = ivm.GetViewHeight() - parentHeight;
-                composite.TranslateX += diffWidth / 2;
-                composite.TranslateY += diffHeight / 2;
-
+                var horizontalMargin = (ivm.GetViewWidth() - parentWidth)/2;
+                var verticalMargin = (ivm.GetViewHeight() - parentHeight)/2;
+                composite.TranslateX += horizontalMargin;
+                composite.TranslateY += verticalMargin;
             }
-
-
 
             _tx = composite.TranslateX;
             _ty = composite.TranslateY;
 
-            vm.Width = (model.Width) * parentWidth;
-            vm.Height = (model.Height) * parentHeight;
+
 
         }
 
-
+        /// <summary>
+        /// Changes location of view according to the element that contains it.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="topLeft"></param>
         private void ChangeLocation(object sender, Point topLeft)
         {
 
@@ -100,13 +98,18 @@ namespace NuSysApp
             if (vm.ContainerViewModel is ImageDetailHomeTabViewModel)
             {
                 var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
-                var diffWidth = ivm.GetViewWidth() - ivm.GetWidth();
-                var diffHeight = ivm.GetViewHeight() - ivm.GetHeight();
-                composite.TranslateX += diffWidth / 2;
-                composite.TranslateY += diffHeight / 2;
+                var horizontalMargin = (ivm.GetViewWidth() - ivm.GetWidth())/ 2;
+                var verticalMargin = (ivm.GetViewHeight() - ivm.GetHeight()) / 2;
+                composite.TranslateX += horizontalMargin;
+                composite.TranslateY += verticalMargin;
             }
         }
-
+        /// <summary>
+        /// Changes size of view according to element that contains it.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         private void ChangeSize(object sender, double width, double height)
         {
             var vm = DataContext as ImageRegionViewModel;
@@ -121,6 +124,7 @@ namespace NuSysApp
             vm.Width = width;
             vm.Height = height;
         }
+        //NOTE: Not properly implemented yet.
         private void PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
@@ -137,10 +141,6 @@ namespace NuSysApp
             }
         }
 
-        private void xResizingTriangle_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-        {
-
-        }
 
         /// <summary>
         /// Updates the width and height of the region relative to the position of the resizing triangle.
@@ -162,33 +162,37 @@ namespace NuSysApp
 
             //Because editing is done only in region editor tab, this is probably safe to cast.
             var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
-            var diffWidth = ivm.GetViewWidth() - ivm.GetWidth();
-            var diffHeight = ivm.GetViewHeight() - ivm.GetHeight();
+            if (ivm == null)
+            {
+                return;
+            }
 
-            var leftXBound = diffWidth / 2;
-            var rightXBound = diffHeight / 2 + ivm.GetWidth();
+            var horizontalMargin = (ivm.GetViewWidth() - ivm.GetWidth()) / 2;
+            var verticalMargin = (ivm.GetViewHeight() - ivm.GetHeight())/ 2;
 
-            var upYBound = diffHeight / 2;
-            var downYBound = diffHeight / 2 + ivm.GetHeight();
+            var leftXBound = horizontalMargin;
+            var rightXBound = horizontalMargin + ivm.GetWidth();
+
+            var upYBound = verticalMargin;
+            var downYBound = verticalMargin + ivm.GetHeight();
 
 
             //CHANGE IN WIDTH
-            if (xMainRectangle.Width + rt.TranslateX + e.Delta.Translation.X - diffWidth/2 <= rightXBound)
+            if (xMainRectangle.Width + rt.TranslateX + e.Delta.Translation.X <= rightXBound)
             {
                 xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
                 vm.Width = xMainRectangle.Width;
 
-
             }
             //CHANGE IN HEIGHT
             
-            if (xMainRectangle.Height + rt.TranslateY + e.Delta.Translation.Y - diffHeight/2 <= downYBound)
+            if (xMainRectangle.Height + rt.TranslateY + e.Delta.Translation.Y <= downYBound)
             {
                 xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
                 vm.Height = xMainRectangle.Height;
-
             }
 
+            //Updates viewmodel
             vm.SetNewSize(xMainRectangle.Width, xMainRectangle.Height);
 
     
@@ -196,8 +200,6 @@ namespace NuSysApp
 
         private void xResizingTriangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-
-            //OnSelected?.Invoke(this, true);
 
             this.Select();
             e.Handled = true;
@@ -219,15 +221,15 @@ namespace NuSysApp
             }
 
             var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
-            var diffWidth = ivm.GetViewWidth() - ivm.GetWidth();
-            var diffHeight = ivm.GetViewHeight() - ivm.GetHeight();
+            var horizontalMargin = (ivm.GetViewWidth() - ivm.GetWidth())/2;
+            var verticalMargin = (ivm.GetViewHeight() - ivm.GetHeight())/2;
 
-            var leftXBound = diffWidth / 2;
-            var rightXBound = diffWidth / 2 + ivm.GetWidth() - vm.Width;
+            var leftXBound = horizontalMargin;
+            var rightXBound = horizontalMargin + ivm.GetWidth() - vm.Width;
 
 
-            var upYBound = diffHeight / 2;
-            var downYBound = diffHeight / 2 + ivm.GetHeight() - vm.Height;
+            var upYBound = verticalMargin;
+            var downYBound = verticalMargin + ivm.GetHeight() - vm.Height;
 
             _tx += e.Delta.Translation.X;
             _ty += e.Delta.Translation.Y;
@@ -261,23 +263,13 @@ namespace NuSysApp
             }
 
             var composite = RenderTransform as CompositeTransform;
+            //Makes sure the location of the point is generalized -- not relative to the margined container.
             var topLeft = new Point(composite.TranslateX - leftXBound, composite.TranslateY - upYBound);
+            //Updates the viewmodel
             vm.SetNewLocation(topLeft); 
             e.Handled = true;
         }
 
-        private void UpdateViewModel()
-        {
-            var composite = RenderTransform as CompositeTransform;
-            var vm = DataContext as ImageRegionViewModel;
-            if (vm == null || composite == null)
-            {
-                return;
-            }
-            var topLeft = new Point(composite.TranslateX, composite.TranslateY);
-            var bottomRight = new Point(topLeft.X + xMainRectangle.Width, topLeft.Y + xMainRectangle.Height);
-            vm.SetNewPoints(topLeft, bottomRight);
-        }
 
         private void RectangleRegionView_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
@@ -286,16 +278,6 @@ namespace NuSysApp
             {
                 return;
             }
-            /*
-            var tx = ((CompositeTransform)this.RenderTransform).TranslateX;
-            var ty = ((CompositeTransform)this.RenderTransform).TranslateY;
-            if (tx < 0 || tx + vm.Width > vm.ContainerWidth)
-                return;
-            if (ty < 0 || ty + vm.Height > vm.ContainerHeight)
-                return;
-                */
-
-
 
             _tx = ((CompositeTransform)this.RenderTransform).TranslateX;
             _ty = ((CompositeTransform)this.RenderTransform).TranslateY;
@@ -314,9 +296,8 @@ namespace NuSysApp
             xResizingTriangle.Visibility = Visibility.Collapsed;
             xDelete.Visibility = Visibility.Collapsed;
             xNameTextBox.Visibility = Visibility.Collapsed;
+     
             Selected = false;
-
-
         }
 
         public void Select()
@@ -331,7 +312,7 @@ namespace NuSysApp
         }
 
 
-        
+        //Selection is currently very primitive.
         private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             var vm = DataContext as ImageRegionViewModel;
@@ -373,9 +354,7 @@ namespace NuSysApp
         private void xNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             var vm = DataContext as ImageRegionViewModel;
-            vm.Name = (sender as TextBox).Text;
-            vm.RegionController.SetTitle(vm.Name);
-
+            vm.SetNewName((sender as TextBox).Text);
 
         }
     }

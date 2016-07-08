@@ -53,7 +53,8 @@ namespace NuSysApp
             });
             await Goto(_pageNumber);
         }
-        public async Task Goto(int pageNumber)
+
+        public async Task Goto(int pageNumber, Region region = null)
         {
             if (_document == null)
                 return;
@@ -63,9 +64,11 @@ namespace NuSysApp
                 return;
             }
             _pageNumber = pageNumber;
-            await RenderPage(_pageNumber);
+            await RenderPage(_pageNumber, region);
+
+
         }
-        private async Task RenderPage(int pageNumber)
+        private async Task RenderPage(int pageNumber, Region region = null)
         {
             if (_document == null)
                 return;
@@ -91,10 +94,24 @@ namespace NuSysApp
                 if ((model as PdfRegion).PageLocation != _pageNumber)
                 {
                     regionView.Visibility = Visibility.Collapsed;
+                    regionView.Deselect();
+
                 }
                 else
                 {
                     regionView.Visibility = Visibility.Visible;
+                    if (region != null)
+                    {
+                        if (model.Id == region.Id)
+                        {
+                            regionView.Select();
+                        }
+                        else
+                        {
+                            regionView.Deselect();
+                            //ensures that only thing selected is the pdf you just clicked.
+                        }
+                    }
                 }
             }
 
@@ -220,7 +237,7 @@ namespace NuSysApp
 
             foreach (var regionView in RegionViews.ToList<PDFRegionView>())
             {
-                if ((regionView.DataContext as PdfRegionViewModel).Model == imageRegion)
+                if ((regionView.DataContext as PdfRegionViewModel).Model.Id == imageRegion.Id)
                     RegionViews.Remove(regionView);
             }
 
@@ -303,8 +320,7 @@ namespace NuSysApp
                 {
                     view.Visibility = Visibility.Collapsed;
                 }
-                if (!Editable)
-                    vm.Editable = false;
+                vm.Editable = Editable;
 
                 RegionViews.Add(view);
                 

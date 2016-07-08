@@ -124,9 +124,7 @@ namespace NuSysApp
                 return;
             }
             
-            //GridTransform.TranslateX += e.Delta.Translation.X;
-            //GridTransform.TranslateY += e.Delta.Translation.Y;
-            
+
 
             vm.SetRegionLocation(new Point(GridTransform.TranslateX + e.Delta.Translation.X, GridTransform.TranslateY + e.Delta.Translation.Y));
             e.Handled = true;
@@ -144,6 +142,7 @@ namespace NuSysApp
             IntervalRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.LightCyan);
             xResizingTriangle.Visibility = Visibility.Collapsed;
             xNameTextBox.Visibility = Visibility.Collapsed;
+            xDelete.Visibility = Visibility.Collapsed;
             IntervalRectangle.IsHitTestVisible = true;
 
             Selected = false;
@@ -158,7 +157,7 @@ namespace NuSysApp
             IntervalRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
             xResizingTriangle.Visibility = Visibility.Visible;
             xNameTextBox.Visibility = Visibility.Visible;
-            //IntervalRectangle.IsTapEnabled = false;
+            xDelete.Visibility = Visibility.Visible;
             IntervalRectangle.IsHitTestVisible = false;
 
 
@@ -211,6 +210,20 @@ namespace NuSysApp
 
 
             e.Handled = true;
+
+        }
+
+        private void xDelete_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var vm = this.DataContext as VideoRegionViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+
+            var libraryElementController = vm.LibraryElementController;
+            libraryElementController.RemoveRegion(vm.RegionController.Model);
+
 
         }
     }

@@ -9,8 +9,8 @@ namespace NuSysApp
 {
     public class AudioRegionController : RegionController
     {
-        public event RegionSizeChangedEventHandler SizeChanged;
-        public delegate void RegionSizeChangedEventHandler(object sender, Point topLeft, Point bottomRight);
+        public event RegionTimeChangedEventHandler TimeChanged;
+        public delegate void RegionTimeChangedEventHandler(object sender, double start, double end);
 
         public TimeRegionModel Model
         {
@@ -18,11 +18,14 @@ namespace NuSysApp
         }
         public AudioRegionController(TimeRegionModel model) : base(model)
         {
+
         }
-        public void ChangeSize(double start, double end)
+        public void ChangeEndPoints(double start, double end)
         {
             Model.Start = start;
             Model.End = end;
+            TimeChanged?.Invoke(this, start, end);
+            UpdateServer();
         }
     }
 }

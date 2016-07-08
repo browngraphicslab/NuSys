@@ -13,17 +13,26 @@
         <Grid.RenderTransform>
         <CompositeTransform TranslateY="10"></CompositeTransform>
     </Grid.RenderTransform>
-        <Rectangle x:Name="Rect" PointerPressed="Rect_PointerPressed" ManipulationDelta="Rect_OnManipulationDelta" Width="{Binding Path=RegionWidth}" Fill="LightCyan" Height="100"  Opacity=".2" HorizontalAlignment="Left" VerticalAlignment="Top" ManipulationMode="{Binding Path=Editable, Converter={StaticResource mConverter}}" Tapped="Rect_OnTapped" >
-
+        <Rectangle x:Name="Rect" ManipulationDelta="Rect_OnManipulationDelta" Width="{Binding RegionWidth}" Fill="LightCyan" Height="100"  Opacity=".42" HorizontalAlignment="Left" VerticalAlignment="Top" ManipulationMode="{Binding Path=Editable, Converter={StaticResource mConverter}}" Tapped="Rect_OnTapped" >
             <Rectangle.RenderTransform>
                 <CompositeTransform TranslateX="{Binding LeftHandleX}"/>
             </Rectangle.RenderTransform>
         </Rectangle>
-        <TextBox x:Name="xNameTextBox" Height="15" Text="{Binding Name}" TextChanged="xNameTextBox_TextChanged" Width="{Binding RegionWidth}" HorizontalAlignment="Left" VerticalAlignment="Top">
-            <TextBox.RenderTransform>
+        <Grid x:Name="xToolBar"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="{Binding RegionWidth}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="15"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0" x:Name="xNameTextBox" IsReadOnly="{Binding IsReadOnly}" Height="15" Text="{Binding Name}" HorizontalAlignment="Stretch" TextChanged="xNameTextBox_TextChanged" VerticalAlignment="Top">
+            </TextBox>
+            <Image Grid.Column="1" x:Name="xDelete" Width="15" Height="15" PointerPressed="xDelete_PointerPressed"  Stretch="Uniform" Source="ms-appx:///Assets/icon_delete_color.png"></Image>
+
+
+            <Grid.RenderTransform>
                 <CompositeTransform TranslateX="{Binding LeftHandleX}" TranslateY="100"/>
-            </TextBox.RenderTransform>
-        </TextBox>
+            </Grid.RenderTransform>
+        </Grid>
+
         <local:AudioRegionBound x:Name="Bound1"  X1="{Binding Path=LeftHandleX}" X2="{Binding Path=LeftHandleX}" Y1="0" Y2="100"  ManipulationMode="{Binding Path=Editable, Converter={StaticResource mConverter}}" 
                                 PointerPressed="Handle_OnPointerPressed" ManipulationDelta="Bound1_OnManipulationDelta" PointerReleased="Handle_OnPointerReleased" ManipulationCompleted="OnManipulationCompleted">
             <local:AudioRegionBound.RenderTransform>

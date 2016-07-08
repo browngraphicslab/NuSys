@@ -24,7 +24,8 @@ namespace NuSysApp
                     controller = new PdfRegionController(pdfModel);
                     break;
                 case Region.RegionType.Time:
-                    controller = new RegionController(regionModel);
+                    var audioModel = regionModel as TimeRegionModel;
+                    controller = new AudioRegionController(audioModel);
                     break;
                 case Region.RegionType.Video:
                     Debug.Assert(regionModel is VideoRegionModel);

@@ -12,19 +12,17 @@ namespace NuSysApp
     public class ImageRegionViewModel : RegionViewModel
     {
 
-        //public event PropertyChangedEventHandler PropertyChanged;
-        public double ContainerHeight { get; set; }
-        public double ContainerWidth { get; set; }
         private double _height;
         private double _width;
         private string _name;
+        private bool _editable;
 
+        
         public string Name {
             get { return _name; }
             set
             {
                 _name = value;
-                //Model.Name = _name;
                 RaisePropertyChanged("Name");
             }
         }
@@ -49,7 +47,6 @@ namespace NuSysApp
             }
         }
 
-
         public bool Editable
         {
             set
@@ -65,12 +62,10 @@ namespace NuSysApp
             }
         }
         public bool Selected { set; get; }
-
-
-        private bool _editable;
-
         public double OriginalHeight { get; set; }
         public double OriginalWidth { get; set; }
+        public double ContainerHeight { get; set; }
+        public double ContainerWidth { get; set; }
 
         public delegate void SizeChangedEventHandler(object sender, double width, double height);
         public event SizeChangedEventHandler SizeChanged;
@@ -90,8 +85,6 @@ namespace NuSysApp
             ContainerWidth = sizeable.GetWidth();
             Height = model.Height * ContainerHeight;
             Width = model.Width * ContainerWidth;
-            //regionController.RegionUpdated += Controller_RegionUpdated;
-
 
             regionController.SizeChanged += RegionController_SizeChanged;
             regionController.LocationChanged += RegionController_LocationChanged;
@@ -102,9 +95,9 @@ namespace NuSysApp
             Selected = false;
 
 
-
         }
 
+        //Not currently implemented
         private void RegionController_OnSelect(RegionController regionController)
         {
             RaisePropertyChanged("Selected");
@@ -148,35 +141,6 @@ namespace NuSysApp
         }
         
 
-        //NO LONGER USED
-        /*
-        private void Controller_RegionUpdated(object source, Region region)
-        {
-            if (region.Id != Model.Id)
-            {
-                return;
-            }
-            var model = Model as RectangleRegion;
-            if (model == null)
-            {
-                return;
-            }
-            Height = model.BottomRightPoint.Y * ContainerViewModel.GetHeight() - model.TopLeftPoint.Y * ContainerViewModel.GetHeight();
-            Width = model.BottomRightPoint.X * ContainerViewModel.GetWidth() - model.TopLeftPoint.X * ContainerViewModel.GetWidth();
-
-
-            RegionChanged?.Invoke(this, Height, Width);
-            var topLeft = new Point(model.TopLeftPoint.X * ContainerViewModel.GetWidth(), model.TopLeftPoint.Y * ContainerViewModel.GetHeight());
-            var bottomRight = new Point(model.BottomRightPoint.X * ContainerViewModel.GetWidth(), model.BottomRightPoint.Y * ContainerViewModel.GetHeight());
-            SizeChanged?.Invoke(this, topLeft, bottomRight);
-
-
-            //RaisePropertyChanged("Height");
-            //RaisePropertyChanged("Width");
-
-        }
-        */
-
         private void BaseSizeChanged(object sender, double width, double height)
         {
 
@@ -186,69 +150,20 @@ namespace NuSysApp
                 return;
             }
             Point topLeft;
-            Point bottomRight;
 
-            if (ContainerViewModel is ImageDetailHomeTabViewModel)
-            {
+            //Width and height passed in are the width and height of image itself.
+            Height = model.Height * height;
+            Width = model.Width * width;
+            ContainerHeight = height;
+            ContainerWidth = width;
+            topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
 
-                var detailVM = ContainerViewModel as ImageDetailHomeTabViewModel;
-                var diff = detailVM.GetViewWidth() - detailVM.GetWidth();
-
-                ContainerHeight = detailVM.GetHeight();
-                ContainerWidth = detailVM.GetWidth();
-
-                //Height = model.Height * ContainerHeight;
-                //Width = model.Width * ContainerWidth;
-
-                Width = model.Width * width;
-                Height = model.Height * height;
-                topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
-
-            }
-            else {
-
-                Height = model.Height * height;
-                Width = model.Width * width;
-                ContainerHeight = height;
-                ContainerWidth = width;
-                topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
-
-            }
-
- 
-
-            
-            //TODO: HOOK THIS UP
             SizeChanged?.Invoke(this, Width, Height);
             LocationChanged?.Invoke(this, topLeft);
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
             RaisePropertyChanged("ContainerHeight");
             RaisePropertyChanged("ContainerWidth");
-        }
-
-
-        public void SetNewPoints(Point topLeft, Point bottomRight)
-        {
-            var model = Model as RectangleRegion;
-            if (model == null)
-            {
-                return;
-            }
-            var normalTopLeftX = topLeft.X / ContainerViewModel.GetWidth();
-            var normalTopLeftY = topLeft.Y / ContainerViewModel.GetHeight();
-            var normalBottomRightX = bottomRight.X / ContainerViewModel.GetWidth();
-            var normalBottomRightY = bottomRight.Y / ContainerViewModel.GetHeight();
-
-            model.TopLeftPoint = new Point(normalTopLeftX, normalTopLeftY);
-           // model.Width = 
-            //model.BottomRightPoint = new Point(normalBottomRightX, normalBottomRightY);
-
-            
-            RegionController.UpdateRegion(Model);
-            
-
-            
         }
 
         public void SetNewLocation(Point topLeft)
@@ -262,8 +177,6 @@ namespace NuSysApp
             var normalTopLeftY = topLeft.Y / ContainerViewModel.GetHeight();
 
             var tlp = new Point(normalTopLeftX, normalTopLeftY);
-            //model.BottomRightPoint = new Point(normalBottomRightX, normalBottomRightY);
-
 
             (RegionController as RectangleRegionController).SetLocation(tlp);
         }
@@ -281,6 +194,12 @@ namespace NuSysApp
             
 
             (RegionController as RectangleRegionController).SetSize(normalWidth, normalHeight);
+        }
+
+        public void SetNewName(string text)
+        {
+            Name = text;
+            RegionController.SetTitle(Name);
         }
     }
 }

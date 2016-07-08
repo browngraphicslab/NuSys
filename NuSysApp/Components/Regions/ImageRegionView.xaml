@@ -23,7 +23,7 @@
         </Rectangle>
         <Path x:Name="xResizingTriangle" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Left"
                       Height="25" Stretch="Fill" Margin="-28,-28,0,0" UseLayoutRounding="False" VerticalAlignment="Top" Width="25"
-                      Opacity=".35"  Canvas.ZIndex="20" Visibility="{Binding Editable,Converter={StaticResource vConverter}}"  ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" ManipulationStarted="xResizingTriangle_ManipulationStarted" ManipulationDelta="xResizingTriangle_ManipulationDelta" ManipulationCompleted="xResizingTriangle_ManipulationCompleted">
+                      Opacity=".35"  Canvas.ZIndex="20" Visibility="{Binding Editable,Converter={StaticResource vConverter}}"  ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" ManipulationStarted="xResizingTriangle_ManipulationStarted" ManipulationDelta="xResizingTriangle_ManipulationDelta">
             <Path.RenderTransform>
                 <CompositeTransform x:Name="ResizerTransform" TranslateX="{Binding Width}" TranslateY="{Binding Height}">
                 </CompositeTransform>

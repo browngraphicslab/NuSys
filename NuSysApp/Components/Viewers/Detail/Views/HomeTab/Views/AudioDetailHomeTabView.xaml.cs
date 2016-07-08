@@ -43,10 +43,14 @@ namespace NuSysApp
             _timeRegions = new List<AudioRegionViewModel>();
             //scrubBar.SetValue(Canvas.ZIndexProperty, 1);
 
-            MediaPlayer.AudioSource = vm.Controller.GetSource();
-            
+            AudioMediaPlayer.AudioSource = vm.Controller.GetSource();
+            AudioMediaPlayer.MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
+            AudioMediaPlayer.ScrubBar.ValueChanged += vm.ScrubBarOnValueChanged;
 
-                //((AudioNodeModel)(vm.Model)).Controller.OnScrub += ControllerOnScrub;
+
+
+
+            //((AudioNodeModel)(vm.Model)).Controller.OnScrub += ControllerOnScrub;
             //((AudioNodeModel)(vm.Model)).Controller.OnPlay += Controller_OnPlay1;
             //((AudioNodeModel)(vm.Model)).Controller.OnPause += Controller_OnPause1;
             //((AudioNodeModel)(vm.Model)).Controller.OnStop += Controller_OnStop1;
@@ -56,23 +60,30 @@ namespace NuSysApp
 
             //(DataContext as AudioNodeViewModel).OnVisualizationLoaded += LoadPlaybackElement;
 
-            
 
-           /* _temporaryLinkVisual = new Line();
-            _temporaryLinkVisual.Stroke = new SolidColorBrush(Colors.Aqua);
-            _temporaryLinkVisual.StrokeThickness = VisualizationImage.ActualHeight;
-            _temporaryLinkVisual.Y1 = Canvas.GetTop(VisualizationImage) + VisualizationImage.ActualHeight / 2 + VisualizationImage.Margin.Top;
-            _temporaryLinkVisual.Y2 = Canvas.GetTop(VisualizationImage) + VisualizationImage.ActualHeight / 2 + VisualizationImage.Margin.Top;
-            _temporaryLinkVisual.PointerMoved += ScrubBar_OnPointerMoved;
-            _temporaryLinkVisual.PointerReleased += ScrubBar_OnPointerReleased;
-            _temporaryLinkVisual.Opacity = 1;
-*/
+
+            /* _temporaryLinkVisual = new Line();
+             _temporaryLinkVisual.Stroke = new SolidColorBrush(Colors.Aqua);
+             _temporaryLinkVisual.StrokeThickness = VisualizationImage.ActualHeight;
+             _temporaryLinkVisual.Y1 = Canvas.GetTop(VisualizationImage) + VisualizationImage.ActualHeight / 2 + VisualizationImage.Margin.Top;
+             _temporaryLinkVisual.Y2 = Canvas.GetTop(VisualizationImage) + VisualizationImage.ActualHeight / 2 + VisualizationImage.Margin.Top;
+             _temporaryLinkVisual.PointerMoved += ScrubBar_OnPointerMoved;
+             _temporaryLinkVisual.PointerReleased += ScrubBar_OnPointerReleased;
+             _temporaryLinkVisual.Opacity = 1;
+ */
             vm.Controller.Disposed += ControllerOnDisposed;
             vm.OnRegionSeekPassing += MediaPlayer.onSeekedTo;
             vm.View = this;
             
 
         }
+
+        private void MediaPlayer_MediaOpened(object sender, RoutedEventArgs e)
+        {
+            var vm = DataContext as AudioDetailHomeTabViewModel;
+            vm.Duration = AudioMediaPlayer.MediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
+        }
+
         public void StopAudio()
         {
             MediaPlayer.StopMusic();
@@ -98,10 +109,12 @@ namespace NuSysApp
         private void AudioPlayer_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             var vm = DataContext as AudioDetailHomeTabViewModel;
+            /*
             foreach (var regionView in vm.RegionViews)
             {
                 regionView.Deselect();
             }
+            */
         }
         private void ControllerOnDisposed(object source)
         {
