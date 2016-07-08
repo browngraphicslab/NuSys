@@ -16,6 +16,7 @@ using NAudio;
 using NAudio.Wave;
 using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Linq;
 
 namespace NuSysApp
 {
@@ -40,14 +41,33 @@ namespace NuSysApp
             Width = controller.Model.Width;
             Height = controller.Model.Height;
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
-
+            Regions = new ObservableCollection<AudioRegionView>();
 
             this.CreateAudioRegionViews();
 
             controller.Disposed += ControllerOnDisposed;
             Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
+            Controller.LibraryElementController.RegionRemoved += LibraryElementControllerOnRegionRemoved;
             //Controller.SizeChanged += Controller_SizeChanged;
             Controller.LibraryElementController.Loaded += LibraryElementController_Loaded;
+        }
+
+        private void LibraryElementControllerOnRegionRemoved(object source, Region region)
+        {
+            var audioRegion = region as TimeRegionModel;
+            if (audioRegion == null)
+            {
+                return;
+            }
+
+            foreach (var regionView in Regions.ToList<AudioRegionView>())
+            {
+                if ((regionView.DataContext as ImageRegionViewModel).Model == audioRegion)
+                    Regions.Remove(regionView);
+            }
+
+
+            RaisePropertyChanged("Regions");
         }
 
         private void LibraryElementController_Loaded(object sender)
@@ -190,13 +210,37 @@ namespace NuSysApp
         }
         private void LibraryElementControllerOnRegionAdded(object source, RegionController regionController)
         {
+            var audioRegionController = regionController as AudioRegionController;
+            var audioRegion = audioRegionController?.Model as TimeRegionModel;
+            if (audioRegion == null)
+            {
+                return;
+            }
+            var vm = new AudioRegionViewModel(audioRegion, Controller.LibraryElementController, audioRegionController, this);
+            var view = new AudioRegionView(vm);
+            vm.Editable = false;
+            Regions.Add(view);
             RaisePropertyChanged("Regions");
         }
 
         private void LibraryElementControllerOnRegionUpdated(object source, Region region)
         {
-            RaisePropertyChanged("Regions");
-        }
+            /*
+            var imageRegion = region as RectangleRegion;
+            if (imageRegion == null)
+            {
+                return;
+            }
+
+            foreach (var regionView in Regions.ToList<AudioRegionView>())
+            {
+                if ((regionView.DataContext as ImageRegionViewModel).Model == imageRegion)
+                    Regions.Remove(regionView);
+            }
+            */
+            
+
+            RaisePropertyChanged("Regions");        }
 
         private async void Visualize(byte[] bytes)
         {

@@ -121,6 +121,7 @@ namespace NuSysApp
 
                 vm.SetNewPoints(e.Delta.Translation.X, e.Delta.Translation.X);
             }
+            e.Handled = true;
         }
         private void xNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -130,7 +131,12 @@ namespace NuSysApp
         }
         private void Rect_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            OnRegionSeek?.Invoke(((DataContext as AudioRegionViewModel).RegionController.Model as TimeRegionModel).Start);
+            if (!Selected)
+            {
+                OnRegionSeek?.Invoke(((DataContext as AudioRegionViewModel).RegionController.Model as TimeRegionModel).Start + 0.01);
+            }
+
+            e.Handled = true;
         }
 
     }

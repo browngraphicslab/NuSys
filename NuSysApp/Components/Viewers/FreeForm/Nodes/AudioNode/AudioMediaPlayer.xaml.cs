@@ -55,31 +55,49 @@ namespace NuSysApp
             }
         }
 
-        private void ProgressBar_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-        {
-        //    MediaElement.Position = new TimeSpan(Convert.ToInt64(e.NewValue * MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds));
-        }
-
-        private void ProgressBar_OnSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            // TODO Fire event to reposition Regions
-        }
 
         private void MediaElement_OnMediaOpened(object sender, RoutedEventArgs e)
         {
-            // TODO Fire event to add regions
+            //var vm = this.DataContext as AudioNodeViewModel;
+            //if (vm == null)
+            //{
+            //    return;
+            //}
 
-            
+
+            //double width = this.ActualWidth;
+            //double height = this.ActualHeight;
+            //vm.Controller.SetSize(width, height);
+
+            MediaElement.Position = new TimeSpan(0);
+
+
         }
 
         private void ProgressBar_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            MediaElement.Position = new TimeSpan(Convert.ToInt64(e.GetPosition(ProgressBar).X * MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds));
+            //MediaElement.Position = new TimeSpan(Convert.ToInt64(e.GetPosition(ProgressBar).X * MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds));
+
+            double ratio = e.GetPosition((UIElement)sender).X / ProgressBar.ActualWidth;
+            double millliseconds = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds * ratio;
+
+            TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)millliseconds);
+            MediaElement.Position = time;
+
+            if (MediaElement.CurrentState != MediaElementState.Playing)
+            {
+                Binding b = new Binding();
+                b.ElementName = "MediaElement";
+                b.Path = new PropertyPath("Position.TotalMilliseconds");
+                ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
+                //playbackElement.Play();
+            }
         }
 
         private void ProgressBar_OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            // Might be useful for resizing regions
+            MediaElement.Play();
+            ((UIElement)sender).ReleasePointerCapture(e.Pointer);
         }
         public void onSeekedTo(double time)
         {
@@ -87,9 +105,14 @@ namespace NuSysApp
 
             TimeSpan timespan = new TimeSpan(0, 0, 0, 0, (int)millliseconds);
             MediaElement.Position = timespan;
+            Binding b = new Binding();
+            b.ElementName = "MediaElement";
+            b.Path = new PropertyPath("Position.TotalMilliseconds");
+            ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
         }
         private void ProgressBar_OnPointerMoved(object sender, PointerRoutedEventArgs e)
         {
+            /*
             if (e.GetCurrentPoint((UIElement) sender).Properties.IsLeftButtonPressed)
             {
                 double jumpToRatio = e.GetCurrentPoint((UIElement) sender).Position.X/ProgressBar.ActualWidth;
@@ -97,6 +120,31 @@ namespace NuSysApp
 
                 TimeSpan time = new TimeSpan(0, 0, 0, 0, (int) milliseconds);
                 MediaElement.Position = time;
+            }*/
+
+            if (e.GetCurrentPoint((UIElement)sender).Properties.IsLeftButtonPressed)
+            {
+                double ratio = e.GetCurrentPoint((UIElement)sender).Position.X / ProgressBar.ActualWidth;
+                double seconds = MediaElement.NaturalDuration.TimeSpan.TotalSeconds * ratio;
+
+                TimeSpan time = new TimeSpan(0, 0, (int)seconds);
+                MediaElement.Position = time;
+                if (MediaElement.CurrentState != MediaElementState.Playing)
+                {
+                    Binding b = new Binding();
+                    b.ElementName = "MediaElement";
+                    b.Path = new PropertyPath("Position.TotalMilliseconds");
+                    ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
+
+                    //playbackElement.Play();
+                }
+                else
+                {
+                    ((UIElement)sender).CapturePointer(e.Pointer);
+                    MediaElement.Pause();
+                }
+
+                e.Handled = true;
             }
 
         }

@@ -124,9 +124,7 @@ namespace NuSysApp
                 return;
             }
             
-            //GridTransform.TranslateX += e.Delta.Translation.X;
-            //GridTransform.TranslateY += e.Delta.Translation.Y;
-            
+
 
             vm.SetRegionLocation(new Point(GridTransform.TranslateX + e.Delta.Translation.X, GridTransform.TranslateY + e.Delta.Translation.Y));
             e.Handled = true;

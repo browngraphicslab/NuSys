@@ -20,8 +20,8 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Image x:Name="VisualizationImage" Height ="100"  Stretch="Fill" Grid.Row ="0" Margin="10,10,10,10"></Image>
-        <ProgressBar x:Name ="ProgressBar" ValueChanged="ProgressBar_OnValueChanged" SizeChanged ="ProgressBar_OnSizeChanged" Height ="{Binding ElementName=VisualizationImage, Path=ActualHeight}"  Grid.Row="0" Margin="10,10,10,10" 
-                     Value = "{Binding ElementName=MediaElement, Path = Position.TotalMilliseconds}" Maximum="{Binding ElementName=MediaElement, Path=NaturalDuration.TimeSpan.TotalMilliseconds}" 
+        <ProgressBar x:Name ="ProgressBar" Height ="{Binding ElementName=VisualizationImage, Path=ActualHeight}"  Grid.Row="0" Margin="10,10,10,10" 
+                     Value = "0" Maximum="{Binding ElementName=MediaElement, Path=NaturalDuration.TimeSpan.TotalMilliseconds}" 
                      Tapped="ProgressBar_OnTapped" PointerMoved="ProgressBar_OnPointerMoved" PointerReleased="ProgressBar_OnPointerReleased" Opacity="0.3" />
         <Grid Grid.Row="1" HorizontalAlignment="Left">
             <TextBlock  Margin="10,0,0,0" Text ="{Binding ElementName=MediaElement, Path=Position, Converter={StaticResource PositionToStringConverter}}"></TextBlock>

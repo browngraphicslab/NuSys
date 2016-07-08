@@ -101,9 +101,12 @@ namespace NuSysApp
             var model = Model as TimeRegionModel;
             model.Start = start;
             model.End = end;
+            RegionWidth = (model.End - model.Start) * ContainerViewModel.GetWidth();
 
             RaisePropertyChanged("LeftHandleX");
             RaisePropertyChanged("RegionWidth");
+            RaisePropertyChanged("RightHandleX");
+
         }
 
         private void RegionController_RegionUpdated(object source, Region region)
