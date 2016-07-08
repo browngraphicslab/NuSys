@@ -67,9 +67,20 @@ namespace NuSysApp
             vm.Controller.Disposed += ControllerOnDisposed;
 
             ((AudioNodeModel)vm.Model).OnJump += AudioNodeView_OnJump;
+
+            //I'm sorry for the stupid name. I don't think it was me, but I'm too lazy to fix it.
+            MediaPlayer.MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
+            MediaPlayer.ScrubBar.ValueChanged += vm.ScrubBarOnValueChanged;
+
             MediaPlayer.AudioSource = vm.AudioSource;
             vm.OnRegionSeekPassing += MediaPlayer.onSeekedTo;
             //playbackElement.MediaEnded += MediaEnded;
+        }
+
+        private void MediaPlayer_MediaOpened(object sender, RoutedEventArgs e)
+        {
+            var vm = DataContext as AudioNodeViewModel;
+            vm.AudioDuration = MediaPlayer.MediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
         }
 
         private void MediaEnded(object sender, RoutedEventArgs e)

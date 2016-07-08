@@ -51,6 +51,10 @@ namespace NuSysApp
         {
             if (MediaElement.CurrentState != MediaElementState.Playing)
             {
+                Binding b = new Binding();
+                b.ElementName = "MediaElement";
+                b.Path = new PropertyPath("Position.TotalMilliseconds");
+                ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
                 MediaElement.Play();
             }
         }
@@ -151,8 +155,22 @@ namespace NuSysApp
 
         private void MediaElement_OnMediaEnded(object sender, RoutedEventArgs e)
         {
-            MediaElement.Position = TimeSpan.Zero;
+            Audio_OnJump(new TimeSpan(0));
         }
+
+        public void Audio_OnJump(TimeSpan time)
+        {
+            MediaElement.Position = time;
+            if (MediaElement.CurrentState != MediaElementState.Playing)
+            {
+                Binding b = new Binding();
+                b.ElementName = "MediaElement";
+                b.Path = new PropertyPath("Position.TotalMilliseconds");
+                ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
+
+            }
+        }
+
 
         public async Task RenderImageSource(Grid RenderedGrid)
         {

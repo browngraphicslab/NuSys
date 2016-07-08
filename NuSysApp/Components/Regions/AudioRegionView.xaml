@@ -13,12 +13,12 @@
         <Grid.RenderTransform>
         <CompositeTransform TranslateY="10"></CompositeTransform>
     </Grid.RenderTransform>
-        <Rectangle x:Name="Rect" ManipulationDelta="Rect_OnManipulationDelta" Width="{Binding RegionWidth}" Fill="LightCyan" Height="100"  Opacity=".2" HorizontalAlignment="Left" VerticalAlignment="Top" ManipulationMode="{Binding Path=Editable, Converter={StaticResource mConverter}}" Tapped="Rect_OnTapped" >
+        <Rectangle x:Name="Rect" ManipulationDelta="Rect_OnManipulationDelta" Width="{Binding RegionWidth}" Fill="LightCyan" Height="100"  Opacity=".42" HorizontalAlignment="Left" VerticalAlignment="Top" ManipulationMode="{Binding Path=Editable, Converter={StaticResource mConverter}}" Tapped="Rect_OnTapped" >
             <Rectangle.RenderTransform>
                 <CompositeTransform TranslateX="{Binding LeftHandleX}"/>
             </Rectangle.RenderTransform>
         </Rectangle>
-        <TextBox x:Name="xNameTextBox" Height="15" Text="{Binding Name}" TextChanged="xNameTextBox_TextChanged" Width="{Binding RegionWidth}" HorizontalAlignment="Left" VerticalAlignment="Top">
+        <TextBox x:Name="xNameTextBox" IsReadOnly="{Binding IsReadOnly}" Height="15" Text="{Binding Name}"  TextChanged="xNameTextBox_TextChanged" Width="{Binding RegionWidth}" HorizontalAlignment="Left" VerticalAlignment="Top">
             <TextBox.RenderTransform>
                 <CompositeTransform TranslateX="{Binding LeftHandleX}" TranslateY="100"/>
             </TextBox.RenderTransform>

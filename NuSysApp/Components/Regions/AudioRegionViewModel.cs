@@ -69,12 +69,15 @@ namespace NuSysApp
                 _editable = value;
 
                 RaisePropertyChanged("Editable");
+                RaisePropertyChanged("IsReadOnly");
             }
             get
             {
                 return _editable;
             }
         }
+        //needed for xaml (setting text box to read only)
+        public bool IsReadOnly { get { return !Editable; } }
 
         private bool _editable;
 

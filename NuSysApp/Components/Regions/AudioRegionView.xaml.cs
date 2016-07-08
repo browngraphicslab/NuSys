@@ -31,8 +31,11 @@ namespace NuSysApp
             this.DataContext = vm;
             this.Deselect();
             _toggleManipulation = false;
-            Selected = false;
-//            Rect.RenderTransform = new CompositeTransform();
+
+
+
+
+
         }
         private void Handle_OnPointerPressed(object sender, PointerRoutedEventArgs e)
        {

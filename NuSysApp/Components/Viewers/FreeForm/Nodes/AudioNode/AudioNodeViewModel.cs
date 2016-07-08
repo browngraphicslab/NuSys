@@ -17,6 +17,7 @@ using NAudio.Wave;
 using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Linq;
+using Windows.UI.Xaml.Controls.Primitives;
 
 namespace NuSysApp
 {
@@ -34,7 +35,7 @@ namespace NuSysApp
         public event VisualizationLoadedEventHandler OnVisualizationLoaded;
         public delegate void OnRegionSeekPassingHandler(double time);
         public event OnRegionSeekPassingHandler OnRegionSeekPassing;
-
+        public double AudioDuration { set; get; }
         public ObservableCollection<AudioRegionView> Regions { private set; get; }
         public AudioNodeViewModel(ElementController controller) : base(controller)
         {
@@ -48,8 +49,17 @@ namespace NuSysApp
             controller.Disposed += ControllerOnDisposed;
             Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
             Controller.LibraryElementController.RegionRemoved += LibraryElementControllerOnRegionRemoved;
-            //Controller.SizeChanged += Controller_SizeChanged;
+            Controller.SizeChanged += Controller_SizeChanged;
             Controller.LibraryElementController.Loaded += LibraryElementController_Loaded;
+        }
+
+        private void Controller_SizeChanged(object source, double width, double height)
+        {
+            foreach (var rv in Regions)
+            {
+                var regionViewViewModel = rv.DataContext as AudioRegionViewModel;
+                regionViewViewModel?.ChangeSize(this, width, height);
+            }
         }
 
         private void LibraryElementControllerOnRegionRemoved(object source, Region region)
@@ -110,6 +120,24 @@ namespace NuSysApp
 
             }
             RaisePropertyChanged("Regions");
+        }
+
+        public void ScrubBarOnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            double position = e.NewValue / AudioDuration;
+            foreach (var regionview in Regions)
+            {
+                if (((regionview.DataContext as AudioRegionViewModel).Model as TimeRegionModel).Start <= position &&
+                    ((regionview.DataContext as AudioRegionViewModel).Model as TimeRegionModel).End >= position)
+                {
+                    regionview.Select();
+                }
+                else
+                {
+                    regionview.Deselect();
+
+                }
+            }
         }
 
         private void ControllerOnDisposed(object source)
