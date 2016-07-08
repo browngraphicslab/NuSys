@@ -29,6 +29,10 @@ namespace NuSysApp
 
         private const int ListBoxHeightOffset = 175;
 
+        private const int _minHeight = 200;
+
+        private const int _minWidth = 200;
+
         private double _x;
 
         private double _y;
@@ -189,11 +193,31 @@ namespace NuSysApp
 
         private void SetSize(double width, double height)
         {
-            (DataContext as MetadataToolViewModel).Controller.SetSize(width, height);
-            xMetadataKeysList.Height = height - ListBoxHeightOffset;
-            xMetadataValuesList.Height = height - ListBoxHeightOffset;
-            xMetadataKeysList.Width = width/2;
-            xMetadataValuesList.Width =width/2;
+            if (width < _minWidth && height < _minHeight)
+            {
+                return;
+            }
+            if (width > _minWidth && height > _minHeight)
+            {
+                (DataContext as MetadataToolViewModel).Controller.SetSize(width, height);
+                xMetadataKeysList.Height = height - ListBoxHeightOffset;
+                xMetadataValuesList.Height = height - ListBoxHeightOffset;
+                xMetadataKeysList.Width = width / 2;
+                xMetadataValuesList.Width = width / 2;
+            }
+            else if (height < _minHeight)
+            {
+                (DataContext as MetadataToolViewModel).Controller.SetSize(width, this.Height);
+                xMetadataKeysList.Width = width / 2;
+                xMetadataValuesList.Width = width / 2;
+            }
+            else if (width < _minWidth)
+            {
+                (DataContext as MetadataToolViewModel).Controller.SetSize(this.Width, height);
+                xMetadataKeysList.Height = height - ListBoxHeightOffset;
+                xMetadataValuesList.Height = height - ListBoxHeightOffset;
+            }
+
 
         }
 

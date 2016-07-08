@@ -67,37 +67,6 @@ namespace NuSysApp.Components.Tools
             xPieChart.Width = width;
         }
 
-        //public void RefreshColorPallete()
-        //{
-        //    ResourceDictionaryCollection pieSeriesPalette = new ResourceDictionaryCollection();
-
-        //    Brush currentBrush = new SolidColorBrush(Colors.Red);
-
-        //    ResourceDictionary pieDataPointStyles = new ResourceDictionary();
-        //    Style stylePie = new Style(typeof(PieDataPoint));
-        //    stylePie.Setters.Add(new Setter(PieDataPoint.BackgroundProperty, currentBrush));
-        //    pieDataPointStyles.Add("DataPointStyle", stylePie);
-        //    pieSeriesPalette.Add(pieDataPointStyles);
-
-        //    currentBrush = new SolidColorBrush(Colors.Blue);
-
-        //    pieDataPointStyles = new ResourceDictionary();
-        //    stylePie = new Style(typeof(PieDataPoint));
-        //    stylePie.Setters.Add(new Setter(PieDataPoint.BackgroundProperty, currentBrush));
-        //    pieDataPointStyles.Add("DataPointStyle", stylePie);
-        //    pieSeriesPalette.Add(pieDataPointStyles);
-
-        //    currentBrush = new SolidColorBrush(Colors.Green);
-
-        //    pieDataPointStyles = new ResourceDictionary();
-        //    stylePie = new Style(typeof(PieDataPoint));
-        //    stylePie.Setters.Add(new Setter(PieDataPoint.BackgroundProperty, currentBrush));
-        //    pieDataPointStyles.Add("DataPointStyle", stylePie);
-        //    pieSeriesPalette.Add(pieDataPointStyles);
-
-        //    xPieChart.Palette = pieSeriesPalette;
-        //}
-
         public void SetProperties(List<string> propertiesList)
         {
             PieChartDictionary = new Dictionary<string, int>();

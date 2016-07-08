@@ -27,6 +27,9 @@ namespace NuSysApp.Components.Tools
         private enum ViewMode { PieChart, List }
         private ViewMode _currentViewMode;
 
+        private const int _minHeight = 200;
+        private const int _minWidth = 180;
+
         public BaseToolView(BasicToolViewModel vm, double x, double y)
         {
             this.InitializeComponent();
@@ -170,11 +173,25 @@ namespace NuSysApp.Components.Tools
         }
         public void SetSize(double width, double height)
         {
-            (DataContext as BasicToolViewModel).Controller.SetSize(width, height);
-            _toolView.SetSize(width, height);
-            //xPropertiesList.Height = y - ListBoxHeightOffset;
-            //xPieChart.Height = y - 175;
-            //xPieChart.Width = x;
+            if (width < _minWidth && height < _minHeight)
+            {
+                return;
+            }
+            if (width > _minWidth && height > _minHeight)
+            {
+                (DataContext as BasicToolViewModel).Controller.SetSize(width, height);
+                _toolView.SetSize(width, height);
+            }
+            else if (height < _minHeight)
+            {
+                (DataContext as BasicToolViewModel).Controller.SetSize(width, this.Height);
+                _toolView.SetSize(width, this.Height);
+            }
+            else if (width < _minWidth)
+            {
+                (DataContext as BasicToolViewModel).Controller.SetSize(this.Width, height);
+                _toolView.SetSize(this.Width, height);
+            }
         }
         private void XPieChartButton_OnClick(object sender, RoutedEventArgs e)
         {
