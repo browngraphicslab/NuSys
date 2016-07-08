@@ -78,7 +78,7 @@ namespace NuSysApp
             MyWebView.Height = parentHeight;
         }
 
-        private void ControllerOnDisposed(object source)
+        private void ControllerOnDisposed(object source, object args)
         {
             var vm = (TextDetailHomeTabViewModel)DataContext;
             MyWebView.NavigationCompleted -= MyWebViewOnNavigationCompleted;

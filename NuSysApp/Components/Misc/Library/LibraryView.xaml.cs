@@ -204,7 +204,7 @@ namespace NuSysApp
         //                m["height"] = 400;
         //                m["nodeType"] = element.NodeType.ToString();
         //                m["autoCreate"] = true;
-        //                m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.Id };
+        //                m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.ContentId };
 
         //                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
         //            }

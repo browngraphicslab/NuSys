@@ -104,7 +104,7 @@ namespace NuSysApp
             
         }
 
-        private void ControllerOnDisposed(object source)
+        private void ControllerOnDisposed(object source, object args)
         {
             var vm = (AudioNodeViewModel)DataContext;
             vm.PropertyChanged -= Node_SelectionChanged;

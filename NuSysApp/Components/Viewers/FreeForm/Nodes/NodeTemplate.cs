@@ -309,15 +309,15 @@ namespace NuSysApp
                                     100);
                                 if (_currenDragMode == DragMode.PresentationLink)
                                 {
-                                    vm.Controller.RequestPresentationLinkTo(dc.Id, (RectangleView)element, null, inFgDictionary,
-                                        outFgDictionary);
+                                    /*vm.Controller.RequestPresentationLinkTo(dc.Id, (RectangleView)element, null, inFgDictionary,
+                                        outFgDictionary);*/
                                 }
                                 else
                                 {
                                     var m = new Message();
-                                    m["id1"] = new LinkId(dc.ContentId);
-                                    m["id2"] = new LinkId(vm.ContentId);
-                                    SessionController.Instance.LinkController.RequestLink(m);
+                                    m["id1"] = dc.ContentId;
+                                    m["id2"] = vm.ContentId;
+                                    SessionController.Instance.LinksController.RequestLink(m);
                                 }
                             }
                         }
@@ -328,16 +328,16 @@ namespace NuSysApp
                             {
                                 if (_currenDragMode == DragMode.PresentationLink)
                                 {
-                                    // vm.Controller.RequestPresentationLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
+                                    // vm.Controller.RequestPresentationLinkTo(dc.ContentId, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
                                 }
                                 else
                                 {
                                     var region = element as AudioRegionView;
                                     var regiondc = region.DataContext as AudioRegionViewModel;
                                     var m = new Message();
-                                    m["id1"] = regiondc.RegionController.Id;
-                                    m["id2"] = vm.Controller.LibraryElementController.Id;
-                                    SessionController.Instance.LinkController.RequestLink(m);
+                                    m["id1"] = regiondc.RegionController.ContentId;
+                                    m["id2"] = vm.Controller.LibraryElementController.ContentId;
+                                    SessionController.Instance.LinksController.RequestLink(m);
                                //     vm.Controller.RequestVisualLinkTo();
                                 }
                             }
@@ -346,16 +346,16 @@ namespace NuSysApp
                             {
                                 if (_currenDragMode == DragMode.PresentationLink)
                                 {
-                                    // vm.Controller.RequestPresentationLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
+                                    // vm.Controller.RequestPresentationLinkTo(dc.ContentId, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
                                 }
                                 else
                                 {
                                     var region = element as VideoRegionView;
                                     var regiondc = region.DataContext as VideoRegionViewModel;
                                     var m = new Message();
-                                    m["id1"] = regiondc.RegionController.Id;
-                                    m["id2"] = vm.Controller.LibraryElementController.Id;
-                                    SessionController.Instance.LinkController.RequestLink(m);
+                                    m["id1"] = regiondc.RegionController.ContentId;
+                                    m["id2"] = vm.Controller.LibraryElementController.ContentId;
+                                    SessionController.Instance.LinksController.RequestLink(m);
                              //       vm.Controller.RequestVisualLinkTo();
                                 }
                             }
@@ -364,16 +364,16 @@ namespace NuSysApp
                             {
                                 if (_currenDragMode == DragMode.PresentationLink)
                                 {
-                                    // vm.Controller.RequestPresentationLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
+                                    // vm.Controller.RequestPresentationLinkTo(dc.ContentId, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
                                 }
                                 else
                                 {
                                     var region = element as PDFRegionView;
                                     var regiondc = region.DataContext as PdfRegionViewModel;
                                     var m = new Message();
-                                    m["id1"] = regiondc.RegionController.Id;
-                                    m["id2"] = vm.Controller.LibraryElementController.Id;
-                                    SessionController.Instance.LinkController.RequestLink(m);
+                                    m["id1"] = regiondc.RegionController.ContentId;
+                                    m["id2"] = vm.Controller.LibraryElementController.ContentId;
+                                    SessionController.Instance.LinksController.RequestLink(m);
                                //     vm.Controller.RequestVisualLinkTo();
                                 }
                             }
@@ -383,16 +383,16 @@ namespace NuSysApp
                                // Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100, 100, 100);
                                 if (_currenDragMode == DragMode.PresentationLink)
                                 {
-                                   // vm.Controller.RequestPresentationLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
+                                   // vm.Controller.RequestPresentationLinkTo(dc.ContentId, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
                                 }
                                 else
                                 {
                                     var region = element as ImageRegionView;
                                     var regiondc = region.DataContext as ImageRegionViewModel;
                                     var m = new Message();
-                                    m["id1"] = regiondc.RegionController.Id;
-                                    m["id2"] = vm.Controller.LibraryElementController.Id; 
-                                    SessionController.Instance.LinkController.RequestLink(m);
+                                    m["id1"] = regiondc.RegionController.ContentId;
+                                    m["id2"] = vm.Controller.LibraryElementController.ContentId; 
+                                    SessionController.Instance.LinksController.RequestLink(m);
                           ////          vm.Controller.RequestVisualLinkTo();
                                 }
                             }
@@ -408,16 +408,16 @@ namespace NuSysApp
                                     100);
                                 if (_currenDragMode == DragMode.PresentationLink)
                                 {
-                                    vm.Controller.RequestPresentationLinkTo(dc.Id, null, (LinkedTimeBlock)element, inFgDictionary,
+                                    vm.Controller.RequestPresentationLinkTo(dc.ContentId, null, (LinkedTimeBlock)element, inFgDictionary,
                                            outFgDictionary);
                                 }
                                 else
                                 {
-                                    vm.Controller.RequestLinkTo(dc.Id, null, (LinkedTimeBlock) element, inFgDictionary,
+                                    vm.Controller.RequestLinkTo(dc.ContentId, null, (LinkedTimeBlock) element, inFgDictionary,
                                         outFgDictionary);
                                 }
                                 //(element as LinkedTimeBlock).changeColor();
-                                //vm.Controller.RequestLinkTo(dc.Id, (LinkedTimeBlock)element);
+                                //vm.Controller.RequestLinkTo(dc.ContentId, (LinkedTimeBlock)element);
 
                                 */
 
@@ -427,7 +427,7 @@ namespace NuSysApp
                     }
                     else
                     {
-                   //     if (dc.LinkList.Where(c => c.OutElement.Model.Id == vm.Id).Count() > 0 || vm.LinkList.Where(c => c.OutElement.Model.Id == dc.Id).Count() > 0)
+                   //     if (dc.LinkList.Where(c => c.OutElement.Model.ContentId == vm.ContentId).Count() > 0 || vm.LinkList.Where(c => c.OutElement.Model.ContentId == dc.ContentId).Count() > 0)
                    //     {
                    //         return;
                    //     }
@@ -442,15 +442,15 @@ namespace NuSysApp
                             else
                             {
                                 var m = new Message();
-                                m["id1"] = new LinkId(dc.ContentId);
-                                m["id2"] = new LinkId(vm.ContentId);
-                                SessionController.Instance.LinkController.RequestLink(m);
+                                m["id1"] = dc.ContentId;
+                                m["id2"] = vm.ContentId;
+                                SessionController.Instance.LinksController.RequestLink(m);
                             }
                          //   vm.Controller.RequestVisualLinkTo();
                         }
                         if (_currenDragMode == DragMode.PresentationLink)
-                        {
-                            vm.Controller.RequestPresentationLinkTo(dc.Id);
+                        {/*
+                            vm.Controller.RequestPresentationLinkTo(dc.Id);*/
                         }
                     }
                 }

@@ -253,6 +253,36 @@ namespace NuSysApp
                 return false;
             });
         }
+
+        public async Task<Dictionary<string, string>> GetRegionMapping(string contentId)
+        {
+            return await Task.Run(async delegate
+            {
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    StringEscapeHandling = StringEscapeHandling.EscapeNonAscii
+                };
+                var client =
+                    new HttpClient(new HttpClientHandler { ClientCertificateOptions = ClientCertificateOption.Automatic });
+                var response = await client.GetAsync(GetUri("getregionmapping/" + contentId));
+
+                string data;
+                using (var content = response.Content)
+                {
+                    data = await content.ReadAsStringAsync();
+                }
+                try
+                {
+                    var list = JsonConvert.DeserializeObject<Dictionary<string, string>>(data, settings);
+                    return list;
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("error parsing region mapping returned from server");
+                    return null;
+                }
+            });
+        }
         public async Task<bool> AddRegionToContent(string contentId, Region region)
         {
             return await Task.Run(async delegate

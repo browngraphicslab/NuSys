@@ -28,7 +28,7 @@ namespace NuSysApp
             Disposed += OnDisposed;
         }
 
-        private void OnDisposed(object source)
+        private void OnDisposed(object source, object args)
         {
             var contentModel = SessionController.Instance.ContentController.GetContent(Model.LibraryId);
             if (contentModel != null)

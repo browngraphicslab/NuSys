@@ -103,7 +103,7 @@ namespace NuSysApp
                 regionView.Deselect();
             }
         }
-        private void ControllerOnDisposed(object source)
+        private void ControllerOnDisposed(object source, object args)
         {
 
             var vm = (AudioNodeViewModel) DataContext;

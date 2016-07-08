@@ -147,7 +147,7 @@ namespace NuSysApp
             b.Path = new PropertyPath("Position.TotalMilliseconds");
             scrubBar.SetBinding(ProgressBar.ValueProperty, b);
         }
-        private void ControllerOnDisposed(object source)
+        private void ControllerOnDisposed(object source, object args)
         {
             playbackElement.Stop();
             var vm = (VideoNodeViewModel) DataContext;

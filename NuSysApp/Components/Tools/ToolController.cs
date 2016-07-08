@@ -37,14 +37,14 @@ namespace NuSysApp
             Model.SetLibraryIds(Filter(GetUpdatedDataList()));
 
             //CODE TO DELETE Non RMS STUFF
-            /*
+            
             foreach (var id in new HashSet<string>(SessionController.Instance.ContentController.IdList))
             {
                 Task.Run(async delegate
                 {
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteLibraryElementRequest(id));
                 });
-            }*/
+            }
 
             //CODE BELOW IS HACKY WAY TO DOWNLOAD ALL THE PDF'S 
             /*

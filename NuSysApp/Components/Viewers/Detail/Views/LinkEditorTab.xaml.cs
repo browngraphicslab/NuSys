@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -47,7 +48,8 @@ namespace NuSysApp
             }
             var vm = DataContext as LinkEditorTabViewModel;
             var title = linkTitle.Text;
-            vm?.CreateLink(new LinkId(content?.ContentID), title);
+            Debug.Assert(content != null && content.ContentID != null);
+            vm?.CreateLink(content.ContentID, title);
             
         }
 

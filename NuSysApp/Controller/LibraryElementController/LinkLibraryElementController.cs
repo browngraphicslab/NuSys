@@ -18,7 +18,7 @@ namespace NuSysApp
 
         public void DeleteLink()
         {
-            SessionController.Instance.LinkController.RemoveLink(this.LinkLibraryElementModel.LibraryElementId);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteLibraryElementRequest(LinkLibraryElementModel.LibraryElementId));
           //  SessionController.Instance.ActiveFreeFormViewer.AllContent.First().Controller.RequestVisualLinkTo();
             Dispose();
         }

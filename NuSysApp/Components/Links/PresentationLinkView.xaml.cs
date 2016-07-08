@@ -23,13 +23,13 @@ namespace NuSysApp
 
             vm.PropertyChanged += OnPropertyChanged;
             var color = Application.Current.Resources["color4"] as SolidColorBrush;
-            vm.Color = color;
+            //vm.Color = color;
 
             //  vm.Controller.LibraryElementModel.OnTitleChanged+= ControllerOnTitleChanged;
             vm.Controller.Disposed += OnDisposed;
 
-            var linkController = (LinkElementController)vm.Controller;
-            linkController.AnnotationChanged += LinkControllerOnAnnotationChanged;
+            var linkController = (LinkController)vm.Controller;
+            //linkController.AnnotationChanged += LinkControllerOnAnnotationChanged;
             //  linkController.PositionChanged += LinkControllerOnPositionChanged;
 
             Canvas.SetZIndex(this, -2);//temporary fix to make sure events are propagated to nodes
@@ -53,8 +53,8 @@ namespace NuSysApp
         private void AnnotationOnTextChanged(object source, string title)
         {
             var vm = (LinkViewModel)DataContext;
-            var controller = (LinkElementController)vm.Controller;
-            controller.SetAnnotation(title);
+            var controller = (LinkController)vm.Controller;
+            //controller.SetAnnotation(title);
         }
 
         private void ControllerOnTitleChanged(object source, string title)
@@ -63,13 +63,13 @@ namespace NuSysApp
             //     AnnotationContainer.Visibility = title == "" ? Visibility.Collapsed : Visibility.Visible;
         }
 
-        private void OnDisposed(object source)
+        private void OnDisposed(object source, object args)
         {
             var vm = (ElementViewModel)DataContext;
             vm.PropertyChanged -= OnPropertyChanged;
             vm.Controller.Disposed -= OnDisposed;
             vm.Controller.LibraryElementController.TitleChanged -= ControllerOnTitleChanged;
-            //var linkController = (LinkElementController)vm.Controller;
+            //var linkController = (LinkController)vm.Controller;
             // linkController.AnnotationChanged -= LinkControllerOnAnnotationChanged;
             DataContext = null;
         }
@@ -87,6 +87,7 @@ namespace NuSysApp
 
             // get the link view model as the data context
             var vm = DataContext as LinkViewModel;
+            /*
             var linkModel = (LinkModel)vm?.Model;
 
             if (propertyChangedEventArgs.PropertyName == "IsSelected")
@@ -101,7 +102,7 @@ namespace NuSysApp
                 {
                     linkModel?.RectangleModel?.Model.Deselect();
                 }
-            }
+            }*/
         }
 
 
@@ -122,16 +123,15 @@ namespace NuSysApp
 
             var vm = (LinkViewModel)this.DataContext;
 
-            var controller = (LinkElementController)vm.Controller;
+            var controller = (LinkController)vm.Controller;
 
             if (controller.InElement == null)
                 return;
             if (controller.OutElement == null)
                 return;
 
-            var anchor1 = new Point(controller.InElement.Model.X + controller.InElement.Model.Width / 2, controller.InElement.Model.Y + controller.InElement.Model.Height / 2);
-            var anchor2 = new Point(controller.OutElement.Model.X + controller.OutElement.Model.Width / 2, controller.OutElement.Model.Y + controller.OutElement.Model.Height / 2);
-
+            var anchor1 = new Point(controller.InElement.Anchor.X, controller.InElement.Anchor.Y);
+            var anchor2 = new Point(controller.OutElement.Anchor.X, controller.OutElement.Anchor.Y);
             var distanceX = anchor1.X - anchor2.X;
             var distanceY = anchor1.Y - anchor2.Y;
 
@@ -155,14 +155,13 @@ namespace NuSysApp
         private void UpdateEndPoints()
         {
             var vm = (LinkViewModel)this.DataContext;
-            var controller = (LinkElementController)vm.Controller;
+            var controller = (LinkController)vm.Controller;
             if (controller.InElement == null)
                 return;
             if (controller.OutElement == null)
                 return;
-            var anchor1 = new Point(controller.InElement.Model.X + controller.InElement.Model.Width / 2, controller.InElement.Model.Y + controller.InElement.Model.Height / 2);
-            var anchor2 = new Point(controller.OutElement.Model.X + controller.OutElement.Model.Width / 2, controller.OutElement.Model.Y + controller.OutElement.Model.Height / 2);
-
+            var anchor1 = new Point(controller.InElement.Anchor.X, controller.InElement.Anchor.Y);
+            var anchor2 = new Point(controller.OutElement.Anchor.X, controller.OutElement.Anchor.Y);
             pathfigure.StartPoint = anchor1;
             curve.Point3 = anchor2;
         }
@@ -170,8 +169,8 @@ namespace NuSysApp
         private async void Delete_OnClick(object sender, RoutedEventArgs e)
         {
             var vm = (LinkViewModel)this.DataContext;
-            var controller = (LinkElementController)vm.Controller;
-            await controller.RequestDelete();
+            var controller = (LinkController)vm.Controller;
+            //await controller.RequestDelete();//TODO ALLOW DELETING OF PRESENTATION LINKS
         }
 
         private void Annotation_Loaded(object sender, RoutedEventArgs e)

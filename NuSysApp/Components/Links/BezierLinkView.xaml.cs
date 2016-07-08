@@ -50,7 +50,7 @@ namespace NuSysApp
         {
             var vm = (LinkViewModel)DataContext;
              Title.Text = text;
-            if (text != "" || vm.IsSelected)
+            if (text != "")//TODO put visibility settings back in
             {
                  Title.Visibility = Visibility.Visible;
             }
@@ -64,14 +64,16 @@ namespace NuSysApp
         {
 
             var vm = DataContext as LinkViewModel;
-            vm.UpdateTitle(Title.Text);
+            Debug.Assert(vm != null);
+            vm?.UpdateTitle(Title.Text);
         }
 
-        private void OnDisposed(object source)
+        private void OnDisposed(object source, object nothing = null)
         {
-            var vm = (ElementViewModel)DataContext;
+            var vm = (LinkViewModel)DataContext;
             vm.PropertyChanged -= OnPropertyChanged;
             vm.Controller.Disposed -= OnDisposed;
+            SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Remove(this);
             DataContext = null;
         }
 
@@ -87,7 +89,7 @@ namespace NuSysApp
             if (propertyChangedEventArgs.PropertyName == "IsSelected")
             {
                 // if the vm is selected make sure title is read only in exploration mode
-                if (vm?.IsSelected ?? false)
+                if (false)
                 {
                     Title.IsReadOnly = SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION;
                     
@@ -95,7 +97,7 @@ namespace NuSysApp
             }
             else
             {
-                (vm?.Model as LinkModel)?.RectangleModel?.Model.Deselect();
+                //(vm?.Model as LinkModel)?.RectangleModel?.Model.Deselect();
             }
         }
         
@@ -122,9 +124,9 @@ namespace NuSysApp
 
             var vm = (LinkViewModel)this.DataContext;
 
-            var controller = (LinkElementController)vm.Controller;
-            var anchor1 = new Point(controller.InElement.Model.X + controller.InElement.Model.Width / 2, controller.InElement.Model.Y + controller.InElement.Model.Height / 2);
-            var anchor2 = new Point(controller.OutElement.Model.X + controller.OutElement.Model.Width / 2, controller.OutElement.Model.Y + controller.OutElement.Model.Height / 2);
+            var controller = (LinkController)vm.Controller;
+            var anchor1 = new Point(controller.InElement.Anchor.X, controller.InElement.Anchor.Y);
+            var anchor2 = new Point(controller.OutElement.Anchor.X, controller.OutElement.Anchor.Y);
 
             var distanceX = anchor1.X - anchor2.X;
             var distanceY = anchor1.Y - anchor2.Y;
@@ -142,9 +144,9 @@ namespace NuSysApp
         private void UpdateEndPoints()
         {
             var vm = (LinkViewModel)this.DataContext;
-            var controller = (LinkElementController)vm.Controller;
-            var anchor1 = new Point(controller.InElement.Model.X + controller.InElement.Model.Width / 2, controller.InElement.Model.Y + controller.InElement.Model.Height / 2);
-            var anchor2 = new Point(controller.OutElement.Model.X + controller.OutElement.Model.Width / 2, controller.OutElement.Model.Y + controller.OutElement.Model.Height / 2);
+            var controller = (LinkController)vm.Controller;
+            var anchor1 = new Point(controller.InElement.Anchor.X, controller.InElement.Anchor.Y);
+            var anchor2 = new Point(controller.OutElement.Anchor.X, controller.OutElement.Anchor.Y);
 
             pathfigure.StartPoint = anchor1;
             curve.Point3 = anchor2;
@@ -158,7 +160,11 @@ namespace NuSysApp
             if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION)
             {
                 // Handles exploration mode
-                var vm = DataContext as LinkViewModel;
+                var vm = DataContext as ElementViewModel;
+                if (vm == null)
+                {
+                    return;//TODO HERE WE SHOULD HANDLE THE CASE OF EXPLORING LINKS
+                }
                 Debug.Assert(vm != null);
                 Canvas.SetZIndex(this, -10);
                 SessionController.Instance.SessionView.Explore(vm);
@@ -167,8 +173,10 @@ namespace NuSysApp
 
         private void BezierLink_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            var vm = (ElementViewModel)DataContext;
-            var linkController = SessionController.Instance.LinkController.GetLinkLibraryElementController(vm.Model.LibraryId);
+            var vm = DataContext as LinkViewModel;
+            Debug.Assert(vm != null);
+            var linkController = SessionController.Instance.LinksController.GetLinkLibraryElementControllerFromLibraryElementId(vm?.Controller.ContentId);
+            Debug.Assert(linkController != null);
             SessionController.Instance.SessionView.ShowDetailView(linkController);
         }
     }

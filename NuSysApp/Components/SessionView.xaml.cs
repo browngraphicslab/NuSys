@@ -152,9 +152,9 @@ namespace NuSysApp
             _message["id2"] = presentationlink.Id2;
             _message["id"] = contentId;
             _message["isPresentationLink"] = true;
-            await link.UnPack(_message);
-            var linkController = new LinkElementController(link);
-            SessionController.Instance.IdToControllers[contentId] = linkController;
+           // await link.UnPack(_message);
+            //var linkController = new LinkController(link);
+            //SessionController.Instance.IdToControllers[contentId] = linkController;
 
             var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(id);
             parentCollectionLibraryElement.AddChild(contentId);
@@ -308,6 +308,8 @@ namespace NuSysApp
         {
             if (_modeInstance == null || _modeInstance.Mode != ModeType.EXPLORATION) return;
             var exp = _modeInstance as ExplorationMode;
+
+            /*
             var linkViewModel = elementViewModel as LinkViewModel;
             if (linkViewModel != null)
             {
@@ -317,7 +319,7 @@ namespace NuSysApp
             {
                 exp?.MoveTo(elementViewModel);
             }
-            SetModeButtons();
+            SetModeButtons();*/
         }
 
         public void ExitMode()
@@ -464,9 +466,34 @@ namespace NuSysApp
                 }
                 dict[id] = msg;
             }
+
+
             await Task.Run(async delegate {
-                await MakeCollection(dict, true, 2);
+                await MakeCollection(new Dictionary<string, Message>(dict), true, 2);
             });
+            await Task.Run(async delegate
+            {
+                var i = SessionController.Instance;
+                foreach (var elementId in dict.Keys)
+                {
+                    string id = null;
+                    if (SessionController.Instance.IdToControllers.ContainsKey(elementId))
+                    {
+                        id = SessionController.Instance.IdToControllers[elementId].ContentId;
+                    }
+                    if (id != null && i.ContentController.GetLibraryElementController(id) != null)
+                    {
+                        foreach (var linkId in i.LinksController.GetLinkedIds(id))
+                        {
+                            Debug.Assert(
+                                i.ContentController.GetLibraryElementController(linkId) is LinkLibraryElementController);
+                            i.LinksController.CreateVisualLinks(
+                                i.ContentController.GetLibraryElementController(linkId) as LinkLibraryElementController);
+                        }
+                    }
+                }
+            });
+
             Debug.WriteLine("done joining collection: " + collectionId);
 
             xLoadingGrid.Visibility = Visibility.Collapsed;

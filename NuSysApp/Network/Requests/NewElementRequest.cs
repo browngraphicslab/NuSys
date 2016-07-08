@@ -109,12 +109,12 @@ namespace NuSysApp
                         elementModel = new AreaModel(id);
                         await elementModel.UnPack(_message);
                         controller = new ElementController(elementModel);
-                        break;
+                        break;/*
                     case ElementType.Link:
                         elementModel = new LinkModel(id);
                         await elementModel.UnPack(_message);
-                        controller = new LinkElementController((LinkModel)elementModel);
-                        break;
+                        controller = new LinkController((LinkModel)elementModel);
+                        break;*/
                     case ElementType.Recording:
                         controller = new ElementController(null);
                         break;
@@ -158,6 +158,7 @@ namespace NuSysApp
                         }
                     }
                 }
+                SessionController.Instance.LinksController.AddAlias(controller);
             }
         }
     }

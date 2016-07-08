@@ -55,7 +55,7 @@ namespace NuSysApp
             RaisePropertyChanged("Regions");
         }
 
-        private void ControllerOnDisposed(object source)
+        private void ControllerOnDisposed(object source, object args)
         {
             Controller.LibraryElementController.Loaded -= InitWhenReady;
             Controller.Disposed -= ControllerOnDisposed;

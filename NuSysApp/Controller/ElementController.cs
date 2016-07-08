@@ -15,7 +15,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace NuSysApp
 {
-    public class ElementController
+    public class ElementController : ILinkable
     {
         private ElementModel _model;
         protected DebouncingDictionary _debouncingDictionary;
@@ -23,8 +23,6 @@ namespace NuSysApp
         public delegate void AlphaChangedEventHandler(object source, double alpha);
 
         public delegate void DeleteEventHandler(object source);
-
-        public delegate void DisposeEventHandler(object source);
 
         public delegate void LocationUpdateEventHandler(object source, double x, double y, double dx = 0, double dy = 0);
 
@@ -36,13 +34,10 @@ namespace NuSysApp
 
         public delegate void RegionTestChangedEventHandler(object source, RectangleViewModel region);
 
-        public delegate void LinkAddedEventHandler(object source, LinkElementController linkController);
-
         public delegate void SelectionChangedHandler(object source, bool selected);
 
-        public event DisposeEventHandler Disposed;
+        public event EventHandler Disposed;
         public event DeleteEventHandler Deleted;
-        public event LinkAddedEventHandler LinkedAdded;
         public event MetadataChangeEventHandler MetadataChange;
         public event LocationUpdateEventHandler PositionChanged;
         public event SizeUpdateEventHandler SizeChanged;
@@ -50,6 +45,17 @@ namespace NuSysApp
         public event AlphaChangedEventHandler AlphaChanged;
         public event RegionTestChangedEventHandler RegionTestChanged;
         public event SelectionChangedHandler SelectionChanged;
+        public event EventHandler<Point2d> AnchorChanged;
+
+
+        public Point2d Anchor
+        {
+            get
+            {
+                return new Point2d(Model.X + Model.Width/2, Model.Y+Model.Width / 2);
+            }
+        }
+
 
         public ElementController(ElementModel model)
         {
@@ -69,19 +75,18 @@ namespace NuSysApp
                 var title = LibraryElementModel.Title;
                 Model.Title = title;
             }
+            Debug.Assert(this.Id != null);
+            SessionController.Instance.LinksController.AddLinkable(this);
         }
 
 
         public virtual void Dispose()
         {
             if (LibraryElementController != null)
+            {
                 LibraryElementController.Deleted -= Delete;
-            Disposed?.Invoke(this);
-        }
-
-        public void AddLink(LinkElementController linkController)
-        {
-            LinkedAdded?.Invoke(this, linkController);
+            }
+            Disposed?.Invoke(this, EventArgs.Empty);
         }
 
         public void SetScale(double sx, double sy)
@@ -110,7 +115,7 @@ namespace NuSysApp
             Model.Width = width;
             Model.Height = height;
             SizeChanged?.Invoke(this, width, height);
-
+            AnchorChanged?.Invoke(this,Anchor);
             _debouncingDictionary.Add("width", width);
             _debouncingDictionary.Add("height", height);
         }
@@ -125,6 +130,7 @@ namespace NuSysApp
             Model.Y = y;
 
             PositionChanged?.Invoke(this, x, y, x - px, y - py);
+            AnchorChanged?.Invoke(this, Anchor);
 
             _debouncingDictionary.Add("x", x);
             _debouncingDictionary.Add("y", y);
@@ -211,37 +217,38 @@ namespace NuSysApp
             m["creator"] = Model.ParentCollectionId;
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
         }
-
-        public virtual async Task RequestLinkTo(LinkId otherId, RectangleView rectangle = null, UserControl regionView = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
+        /*
+        public virtual async Task RequestLinkTo(string otherId, RectangleView rectangle = null, UserControl regionView = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
         {
             var contentId = SessionController.Instance.GenerateId();
             var libraryElementRequest = new CreateNewLibraryElementRequest(contentId,null,ElementType.Link, "NEW LINK");
-            var request = new NewLinkRequest(new LinkId(Model.Id), otherId, Model.ParentCollectionId,contentId, regionView, rectangle, inFGDictionary, outFGDictionary);
+            var request = new NewLinkRequest(new string(Model.ContentId), otherId, Model.ParentCollectionId,contentId, regionView, rectangle, inFGDictionary, outFGDictionary);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-        }
-
+        }*/
+        /*
         public void RequestVisualLinkTo(string id)
         {
             var parent = SessionController.Instance.ContentController.GetContent(Model.ParentCollectionId) as CollectionLibraryElementModel;
             parent.addLink(id);
-        }
+        }*/
+        /*
         public void RequestDeleteVisualLink(string id)
         {
             var parent = SessionController.Instance.ContentController.GetContent(Model.ParentCollectionId) as CollectionLibraryElementModel;
             parent.removeLink(id);
-        }
-
+        }*/
+        /*
         public virtual async Task RequestPresentationLinkTo(string otherId, RectangleView rectangle = null, LinkedTimeBlock block = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
         {
 
             var contentId = SessionController.Instance.GenerateId();
          //   var libraryElementRequest = new CreateNewLibraryElementRequest(contentId, null, ElementType.Link, "NEW PRESENTATION LINK");
-            var request = new NewPresentationLinkRequest(Model.Id, otherId, Model.ParentCollectionId, contentId, block, rectangle, inFGDictionary, outFGDictionary, null, true);
+            var request = new NewPresentationLinkRequest(Model.ContentId, otherId, Model.ParentCollectionId, contentId, block, rectangle, inFGDictionary, outFGDictionary, null, true);
    //         await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }
-
+        */
         public Dictionary<string, object> CreateImageDictionary(double x, double y, double height, double width)
         {
             Dictionary<string, object> dic = new Dictionary<string, object>();
@@ -308,6 +315,24 @@ namespace NuSysApp
             get
             {
                 return LibraryElementController?.LibraryElementModel;
+            }
+        }
+
+        public string Id
+        {
+            get
+            {
+                Debug.Assert(Model != null);
+                return Model.Id;
+            }
+        }
+
+        public string ContentId
+        {
+            get
+            {
+                Debug.Assert(Model != null);
+                return Model.LibraryId;
             }
         }
 
