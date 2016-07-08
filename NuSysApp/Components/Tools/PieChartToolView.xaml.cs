@@ -35,28 +35,6 @@ namespace NuSysApp.Components.Tools
             
             _baseTool = baseTool;
             _dragItem = baseTool.Vm.InitializeDragFilterImage();
-            //Binding bb = new Binding();
-            //bb.Path = new PropertyPath("PieChartDictionary");
-            //xPieSeries.SetBinding(PieSeries.ItemsSourceProperty, bb);
-            //RefreshColorPallete();
-            //(xPieChart.Series[0] as PieSeries).ItemsSource = PieChartDictionary;
-        }
-        private void XPieSeries_OnPointerReleased(object sender, PointerRoutedEventArgs e)
-        {
-            var selected = (sender as PieSeries).SelectedItem is KeyValuePair<string, int> ? (KeyValuePair<string, int>)(sender as PieSeries).SelectedItem : new KeyValuePair<string, int>();
-
-            if (_baseTool.Vm.Selection != null && _baseTool.Vm.Controller.Model.Selected && _baseTool.Vm.Selection.Equals(selected.Key))
-            {
-                _baseTool.Vm.Controller.UnSelect();
-            }
-            else
-            {
-                if (xPieSeries.SelectedItem != null)
-                {
-                    _baseTool.Vm.Selection = selected.Key;
-                }
-            }
-            xPieSeries.ReleasePointerCapture(e.Pointer);
         }
 
         public void SetSize(double width, double height)
@@ -127,11 +105,10 @@ namespace NuSysApp.Components.Tools
         }
 
 
-        private async void xListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        private async void PieSlice_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             if (_baseTool.getCanvas().Children.Contains(_dragItem))
                 _baseTool.getCanvas().Children.Remove(_dragItem);
-            //_dragItem = (DataContext as ToolViewModel).InitializeDragFilterImage();
             _baseTool.getCanvas().Children.Add(_dragItem);
             _dragItem.RenderTransform = new CompositeTransform();
             var t = (CompositeTransform)_dragItem.RenderTransform;
@@ -141,7 +118,7 @@ namespace NuSysApp.Components.Tools
             t.TranslateY = sp.Y - _dragItem.ActualWidth / 2;
         }
 
-        private void xListItem_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        private void PieSlice_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             if ((_dragItem.RenderTransform as CompositeTransform) != null)
             {
@@ -155,9 +132,7 @@ namespace NuSysApp.Components.Tools
             }
         }
 
-
-
-        private async void xListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        private async void PieSlice_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             _baseTool.getCanvas().Children.Remove(_dragItem);
 
@@ -171,9 +146,29 @@ namespace NuSysApp.Components.Tools
             {
                 return;
             }
+            var selected = (KeyValuePair<string, int>)(sender as FrameworkElement).DataContext;
+            _baseTool.Vm.Selection = selected.Key;
             _baseTool.Vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
 
 
+        }
+
+        private void Slice_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void Root_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var selected = (KeyValuePair<string, int>)(sender as FrameworkElement).DataContext;
+            if (_baseTool.Vm.Selection != null && _baseTool.Vm.Controller.Model.Selected && _baseTool.Vm.Selection.Equals(selected.Key))
+            {
+                _baseTool.Vm.Controller.UnSelect();
+            }
+            else
+            {
+                _baseTool.Vm.Selection = selected.Key;
+            }
         }
     }
 }

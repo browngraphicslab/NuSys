@@ -16,7 +16,7 @@
     <nuSysApp:AnimatableUserControl.Resources>
         <ControlTemplate x:Key="MyPieDataPointTemplate"
                     TargetType="charting:PieDataPoint">
-            <Grid
+            <Grid Tapped="Root_OnTapped" PointerPressed="Slice_OnPointerPressed" ManipulationMode="All" ManipulationStarted="PieSlice_ManipulationStarted" ManipulationDelta="PieSlice_ManipulationDelta" ManipulationCompleted="PieSlice_ManipulationCompleted"
                         x:Name="Root"
                         Opacity="0">
                 <VisualStateManager.VisualStateGroups>
@@ -557,7 +557,7 @@
     </nuSysApp:AnimatableUserControl.Resources>
     <Canvas x:Name="xCanvas" HorizontalAlignment="Left">
         <charting:Chart x:Name="xPieChart" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0" Width="Auto" Height="Auto">
-            <charting:PieSeries x:Name="xPieSeries" Palette="{StaticResource MyStylePalette}" ManipulationMode="All" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted" PointerReleased="XPieSeries_OnPointerReleased" Margin="0,0,0,0" IndependentValuePath="Key" DependentValuePath="Value" IsSelectionEnabled="True"/>
+            <charting:PieSeries x:Name="xPieSeries" Palette="{StaticResource MyStylePalette}"  Margin="0,0,0,0" IndependentValuePath="Key" DependentValuePath="Value" IsSelectionEnabled="True"/>
             <charting:Chart.LegendStyle>
                 <Style TargetType="dataVisualization:Legend">
                     <Setter Property="VerticalAlignment" Value="Stretch" />
