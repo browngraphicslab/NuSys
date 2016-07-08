@@ -19,8 +19,6 @@ namespace NuSysApp
         public LinkViewModel(LinkElementController controller) : base(controller)
         {
             LinkModel = (LinkModel)controller.Model;
-            
-            Annotation = LinkModel.Annotation;
 
             InElementController = SessionController.Instance.IdToControllers[LinkModel.InAtomId.LibraryElementId]; 
             OutElementController = SessionController.Instance.IdToControllers[LinkModel.OutAtomId.LibraryElementId];
