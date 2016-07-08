@@ -259,5 +259,10 @@ namespace NuSysApp
             (RegionController as PdfRegionController).SetSize(normalWidth, normalHeight);
         }
 
+        public void SetNewName(string text)
+        {
+            Name = text;
+            RegionController.SetTitle(Name);
+        }
     }
 }

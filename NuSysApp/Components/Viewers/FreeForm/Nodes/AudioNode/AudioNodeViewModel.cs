@@ -115,12 +115,18 @@ namespace NuSysApp
                 var viewmodel = new AudioRegionViewModel(audioModel, elementController, regionController, this);
                 viewmodel.Editable = false;
                 var view = new AudioRegionView(viewmodel);
+                view.OnRegionSeek += View_OnRegionSeek;
+
                 Regions.Add(view);
 
 
             }
             RaisePropertyChanged("Regions");
         }
+
+
+
+
 
         public void ScrubBarOnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
