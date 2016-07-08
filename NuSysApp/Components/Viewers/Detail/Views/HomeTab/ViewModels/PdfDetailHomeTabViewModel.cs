@@ -220,7 +220,7 @@ namespace NuSysApp
 
             foreach (var regionView in RegionViews.ToList<PDFRegionView>())
             {
-                if ((regionView.DataContext as PdfRegionViewModel).Model == imageRegion)
+                if ((regionView.DataContext as PdfRegionViewModel).Model.Id == imageRegion.Id)
                     RegionViews.Remove(regionView);
             }
 
@@ -303,8 +303,7 @@ namespace NuSysApp
                 {
                     view.Visibility = Visibility.Collapsed;
                 }
-                if (!Editable)
-                    vm.Editable = false;
+                vm.Editable = Editable;
 
                 RegionViews.Add(view);
                 

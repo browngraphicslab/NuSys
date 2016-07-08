@@ -333,11 +333,22 @@ namespace NuSysApp
 
         private void RemoveRegionFromList(object source, Region region)
         {
-            if (RegionCollection.Contains(region))
-                RegionCollection.Remove(region);
+
+
+            foreach (var model in RegionCollection.ToList<Region>())
+            {
+                if ((model.Id == region.Id))
+                    {
+                    RegionCollection.Remove(model);
+                }
+            }
             RaisePropertyChanged("OrderedRegionCollection");
 
         }
+
+
+
+   
 
         private void KeywordsChanged(object sender, HashSet<Keyword> keywords)
         {

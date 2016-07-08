@@ -159,41 +159,21 @@ namespace NuSysApp
         private void BaseSizeChanged(object sender, double width, double height)
         {
 
-            var model = Model as PdfRegion ;
+            var model = Model as PdfRegion;
             if (model == null)
             {
                 return;
             }
 
-            Point topLeft;
-            Point bottomRight;
-            if (ContainerViewModel is PdfDetailHomeTabViewModel)
-            {
 
-                var detailVM = ContainerViewModel as PdfDetailHomeTabViewModel;
-
-
-                ContainerHeight = detailVM.GetHeight();
-                ContainerWidth = detailVM.GetWidth();
-
-                Height = model.Height * ContainerHeight;
-                Width = model.Width * ContainerWidth;
-                topLeft = new Point(model.TopLeftPoint.X * ContainerWidth, model.TopLeftPoint.Y * ContainerHeight);
-
-            }
-            else {
-
-                Height = model.Height * height;
-                Width = model.Width * width;
-                ContainerHeight = height;
-                ContainerWidth = width;
-                topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
-
-            }
+            //Width and height passed in are the width and height of PDF itself.
+            Height = model.Height * height;
+            Width = model.Width * width;
+            ContainerHeight = height;
+            ContainerWidth = width;
+            var topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
 
 
-
-           
 
             //TODO: HOOK THIS UP
             SizeChanged?.Invoke(this, Width, Height);

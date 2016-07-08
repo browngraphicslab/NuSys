@@ -60,7 +60,7 @@ namespace NuSysApp
             }
             foreach (var regionView in RegionViews.ToList<PDFRegionView>())
             {
-                if ((regionView.DataContext as PdfRegionViewModel).Model == pdfRegion)
+                if ((regionView.DataContext as PdfRegionViewModel).Model.Id == pdfRegion.Id)
                     RegionViews.Remove(regionView);
             }
             RaisePropertyChanged("RegionViews");
