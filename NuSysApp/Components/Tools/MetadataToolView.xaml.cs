@@ -57,6 +57,8 @@ namespace NuSysApp
                 (vm.Controller as MetadataToolController).Model.Selected &&
                 vm.Selection.Item1 != null)
             {
+                xMetadataValuesList.ItemsSource =
+                       vm.AllMetadataDictionary[vm.Selection.Item1];
                 xMetadataKeysList.SelectedItem = vm.Selection.Item1;
                 if (vm.Selection.Item2 != null)
                 {
@@ -65,7 +67,6 @@ namespace NuSysApp
                 else
                 {
                     xMetadataValuesList.SelectedItem = null;
-                    //xMetadataValuesList.ItemsSource = vm.AllMetadataDictionary[vm.Selection.Item1];
                 }
             }
             else
@@ -89,7 +90,6 @@ namespace NuSysApp
         public void Dispose()
         {
             (DataContext as MetadataToolViewModel).PropertiesToDisplayChanged -= Vm_PropertiesToDisplayChanged;
-
         }
 
 
@@ -98,26 +98,26 @@ namespace NuSysApp
             var vm = DataContext as MetadataToolViewModel;
             Debug.Assert(vm != null);
             xMetadataKeysList.ItemsSource = vm.AllMetadataDictionary.Keys;
-            if (vm.Selection != null &&
-                (vm.Controller as MetadataToolController).Model.Selected &&
-                vm.Selection.Item1 != null)
-            {
-                xMetadataKeysList.SelectedItem = vm.Selection.Item1;
-                if (vm.Selection.Item2 != null)
-                {
-                    xMetadataValuesList.SelectedItem = vm.Selection.Item2;
-                }
-                else
-                {
-                    xMetadataValuesList.ItemsSource = vm.AllMetadataDictionary[vm.Selection.Item1];
-                }
-            }
-            else
-            {
-                xMetadataValuesList.ItemsSource = new List<string>();
-            }
-            xMetadataKeysList.ScrollIntoView(xMetadataKeysList.SelectedItem);
-            xMetadataValuesList.ScrollIntoView(xMetadataValuesList.SelectedItem);
+            //if (vm.Selection != null &&
+            //    (vm.Controller as MetadataToolController).Model.Selected &&
+            //    vm.Selection.Item1 != null)
+            //{
+            //    xMetadataKeysList.SelectedItem = vm.Selection.Item1;
+            //    if (vm.Selection.Item2 != null)
+            //    {
+            //        xMetadataValuesList.SelectedItem = vm.Selection.Item2;
+            //    }
+            //    else
+            //    {
+            //        xMetadataValuesList.ItemsSource = vm.AllMetadataDictionary[vm.Selection.Item1];
+            //    }
+            //}
+            //else
+            //{
+            //    xMetadataValuesList.ItemsSource = new List<string>();
+            //}
+            //xMetadataKeysList.ScrollIntoView(xMetadataKeysList.SelectedItem);
+            //xMetadataValuesList.ScrollIntoView(xMetadataValuesList.SelectedItem);
 
 
         }
@@ -410,8 +410,8 @@ namespace NuSysApp
                 Debug.Assert(vm != null);
                 if (xMetadataKeysList.SelectedItems.Count == 1)
                 {
-                    xMetadataValuesList.ItemsSource =
-                        vm.AllMetadataDictionary[(string)xMetadataKeysList.SelectedItems[0]];
+                    //xMetadataValuesList.ItemsSource =
+                    //    vm.AllMetadataDictionary[(string)xMetadataKeysList.SelectedItems[0]];
                     vm.Selection = new Tuple<string, string>((string)xMetadataKeysList.SelectedItems[0], null);
                 }
             }

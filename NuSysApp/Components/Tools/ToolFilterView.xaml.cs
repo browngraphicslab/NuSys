@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using NuSysApp.Components.Tools;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -174,7 +175,7 @@ namespace NuSysApp
             BasicToolController controller = new BasicToolController(model);
             BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
             viewmodel.Filter = selection;
-            TemporaryToolView view = new TemporaryToolView(viewmodel, (RenderTransform as CompositeTransform).TranslateX, (RenderTransform as CompositeTransform).TranslateY);
+            BaseToolView view = new BaseToolView(viewmodel, (RenderTransform as CompositeTransform).TranslateX, (RenderTransform as CompositeTransform).TranslateY);
 
             if (_parentToolViewModels.Count != 0)
             {
