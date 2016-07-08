@@ -63,9 +63,9 @@ namespace NuSysApp
                 
                 this.Width = SessionController.Instance.SessionView.ActualWidth / 2;
                 this.Height = SessionController.Instance.SessionView.ActualHeight;
-                vm.TabPaneHeight = this.Height;
+                vm.TabPaneHeight = this.Width; //I know that this is confusing, but we switched the tab from on the side to on the top. I should refactor this later
                 this.MaxHeight = SessionController.Instance.SessionView.ActualHeight;
-                this.MaxWidth = SessionController.Instance.SessionView.ActualWidth - resizer.ActualWidth-30;
+                this.MaxWidth = SessionController.Instance.SessionView.ActualWidth - resizer.ActualWidth;
                 Canvas.SetTop(this, 0);
                 Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);
                 // Metadata.ItemsSource = vm.Metadata;
@@ -387,7 +387,7 @@ namespace NuSysApp
 
             double rightCoord = Canvas.GetLeft(this) + this.Width;
        
-            if ((this.Width > 250 || e.Delta.Translation.X < 0) && (Canvas.GetLeft(this) > 0 || e.Delta.Translation.X > 0) && (Canvas.GetLeft(this) > 30 || e.Delta.Translation.X > 0))
+            if ((this.Width > 600 || e.Delta.Translation.X < 0) && (Canvas.GetLeft(this) > 0 || e.Delta.Translation.X > 0) && (Canvas.GetLeft(this) > 30 || e.Delta.Translation.X > 0))
             {
                 //this.Width -= Math.Min(e.Delta.Translation.X,this.Width);
                 /*
@@ -417,6 +417,10 @@ namespace NuSysApp
             {
                 Canvas.SetLeft(this,30);
             }
+
+            var vm = (DetailViewerViewModel)DataContext;
+            vm.TabPaneHeight = this.Width; //once again, will need to refactor this - supposed to be TabPaneWidth
+            vm.TabHeight = vm.TabPaneHeight/vm.Tabs.Count;
         }
 
         private void TabList_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -440,6 +444,7 @@ namespace NuSysApp
             {
                 ShowElement(viewable as LibraryElementController, tabToOpenTo);
             }
+            
             e.Handled = true;
         }
 

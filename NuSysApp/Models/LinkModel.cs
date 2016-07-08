@@ -21,9 +21,9 @@ namespace NuSysApp
 
         public bool IsPresentationLink { get; set; }
 
-        public string InAtomId { get; set; }
+        public LinkId InAtomId { get; set; }
 
-        public string OutAtomId { get; set; }
+        public LinkId OutAtomId { get; set; }
         public string Annotation { get; set; }
 
         //public LinkedTimeBlockModel InFineGrain { get; set; }
@@ -35,48 +35,10 @@ namespace NuSysApp
         public override async Task UnPack(Message props)
         {
             IsPresentationLink = props.GetBool("isPresentationLink", false);
-            InAtomId = props.GetString("id1", InAtomId);
-            OutAtomId = props.GetString("id2", InAtomId);
+            InAtomId = JsonConvert.DeserializeObject<LinkId>(props.GetString("id1"));
+            OutAtomId = JsonConvert.DeserializeObject<LinkId>(props.GetString("id2"));
+
             Annotation = props.GetString("annotation", "");
-
-            if (props.ContainsKey("rectangleMod"))
-            {
-                var viewModel = JsonConvert.DeserializeObject<RectangleViewModel>(props.Get("rectangleMod"));
-                List<RectangleViewModel> regionsList;
-
-                if (SessionController.Instance.IdToControllers[OutAtomId].Model.ElementType == ElementType.PDF)
-                {
-                    PdfNodeModel model = (PdfNodeModel) SessionController.Instance.IdToControllers[OutAtomId].Model;
-                    foreach (KeyValuePair<int, List<RectangleViewModel>> entry in model.PageRegionDict)
-                    {
-                        List<RectangleViewModel> list = entry.Value;
-                        foreach (var rectangleViewModel in list)
-                        {
-                            if (rectangleViewModel.LeftRatio == viewModel.LeftRatio && rectangleViewModel.TopRatio == viewModel.TopRatio &&
-                            rectangleViewModel.RectWidthRatio == viewModel.RectWidthRatio && rectangleViewModel.RectHeightRatio == viewModel.RectHeightRatio && 
-                            rectangleViewModel.PdfPageNumber == viewModel.PdfPageNumber)
-                            {
-                                RectangleModel = rectangleViewModel;
-                                break;
-                            }
-                        }
-                    }
-
-                } else if (SessionController.Instance.IdToControllers[OutAtomId].Model.ElementType == ElementType.Image)
-                {
-                    regionsList = ((ElementModel)SessionController.Instance.IdToControllers[OutAtomId].Model).RegionsModel;
-
-                    foreach (var rectangle in regionsList)
-                    {
-                        if (rectangle.LeftRatio == viewModel.LeftRatio && rectangle.TopRatio == viewModel.TopRatio &&
-                            rectangle.RectWidthRatio == viewModel.RectWidthRatio && rectangle.RectHeightRatio == viewModel.RectHeightRatio)
-                        {
-                            RectangleModel = rectangle;
-                            break;
-                        }
-                    }
-                }    
-            }
             base.UnPack(props);
         }
 

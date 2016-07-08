@@ -61,7 +61,7 @@ namespace NuSysApp
             SizeChanged += delegate(object sender, SizeChangedEventArgs args)
             {
                 SetHeight(SessionController.Instance.SessionView.ActualHeight/2);
-
+                SetDimension(SessionController.Instance.SessionView.DetailViewerView.ActualWidth);
             };
 
             MyWebView.Navigate(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
