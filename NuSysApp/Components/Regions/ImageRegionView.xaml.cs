@@ -296,6 +296,7 @@ namespace NuSysApp
             xResizingTriangle.Visibility = Visibility.Collapsed;
             xDelete.Visibility = Visibility.Collapsed;
             xNameTextBox.Visibility = Visibility.Collapsed;
+     
             Selected = false;
         }
 

@@ -80,7 +80,7 @@ namespace NuSysApp
 
         private void LibraryElementControllerOnRegionRemoved(object source, Region region)
         {
-            throw new NotImplementedException();
+            RaisePropertyChanged("RegionViews");
         }
 
         private void LibraryElementController_Loaded(object sender)

@@ -142,6 +142,7 @@ namespace NuSysApp
             IntervalRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.LightCyan);
             xResizingTriangle.Visibility = Visibility.Collapsed;
             xNameTextBox.Visibility = Visibility.Collapsed;
+            xDelete.Visibility = Visibility.Collapsed;
             IntervalRectangle.IsHitTestVisible = true;
 
             Selected = false;
@@ -156,7 +157,7 @@ namespace NuSysApp
             IntervalRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
             xResizingTriangle.Visibility = Visibility.Visible;
             xNameTextBox.Visibility = Visibility.Visible;
-            //IntervalRectangle.IsTapEnabled = false;
+            xDelete.Visibility = Visibility.Visible;
             IntervalRectangle.IsHitTestVisible = false;
 
 
