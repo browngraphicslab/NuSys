@@ -211,5 +211,19 @@ namespace NuSysApp
             e.Handled = true;
 
         }
+
+        private void xDelete_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            var vm = this.DataContext as VideoRegionViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+
+            var libraryElementController = vm.LibraryElementController;
+            libraryElementController.RemoveRegion(vm.RegionController.Model);
+
+
+        }
     }
 }

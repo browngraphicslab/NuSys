@@ -55,12 +55,12 @@ namespace NuSysApp
 
         public override void AddRegion(object sender, RegionController controller)
         {
-            var AudioRegion = controller.Model as TimeRegionModel;
-            if (AudioRegion == null)
+            var audioRegion = controller.Model as TimeRegionModel;
+            if (audioRegion == null)
             {
                 return;
             }
-            var vm = new AudioRegionViewModel(AudioRegion, Controller, controller as AudioRegionController, this);
+            var vm = new AudioRegionViewModel(audioRegion, Controller, controller as AudioRegionController, this);
             vm.Editable = this.Editable;
             var view = new AudioRegionView(vm);
             RegionViews.Add(view);
@@ -69,7 +69,19 @@ namespace NuSysApp
 
         public override void RemoveRegion(object sender, Region displayedRegion)
         {
-            throw new NotImplementedException();
+            var audioRegion = displayedRegion as TimeRegionModel;
+            if (audioRegion == null)
+            {
+                return;
+            }
+
+            foreach (var regionView in RegionViews.ToList<AudioRegionView>())
+            {
+                if ((regionView.DataContext as AudioRegionViewModel).Model.Id == audioRegion.Id)
+                    RegionViews.Remove(regionView);
+            }
+
+            RaisePropertyChanged("RegionViews");
         }
 
         public override void SizeChanged(object sender, double width, double height)

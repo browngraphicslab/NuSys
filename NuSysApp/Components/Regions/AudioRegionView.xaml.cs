@@ -80,6 +80,7 @@ namespace NuSysApp
             Rect.Fill = new SolidColorBrush(Windows.UI.Colors.LightCyan);
             xNameTextBox.Visibility = Visibility.Collapsed;
             Rect.IsHitTestVisible = true;
+            xDelete.Visibility = Visibility.Collapsed;
             Selected = false;
 
         }
@@ -89,6 +90,8 @@ namespace NuSysApp
             Rect.Fill = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
             xNameTextBox.Visibility = Visibility.Visible;
             Rect.IsHitTestVisible = false;
+            xDelete.Visibility = Visibility.Visible;
+
             Selected = true;
 
         }
@@ -131,6 +134,22 @@ namespace NuSysApp
             var vm = DataContext as AudioRegionViewModel;
             vm.Name = (sender as TextBox).Text;
             vm.RegionController.SetTitle(vm.Name);
+        }
+
+        private void xDelete_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+
+
+            var vm = this.DataContext as AudioRegionViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+
+            var libraryElementController = vm.LibraryElementController;
+            libraryElementController.RemoveRegion(vm.RegionController.Model);
+
+
         }
         private void Rect_OnTapped(object sender, TappedRoutedEventArgs e)
         {

@@ -75,7 +75,19 @@ namespace NuSysApp
 
         public override void RemoveRegion(object sender, Region displayedRegion)
         {
-            throw new NotImplementedException();
+            var videoRegion = displayedRegion as VideoRegionModel;
+            if (videoRegion == null)
+            {
+                return;
+            }
+
+            foreach (var regionView in RegionViews.ToList<VideoRegionView>())
+            {
+                if ((regionView.DataContext as VideoRegionViewModel).Model.Id == videoRegion.Id)
+                    RegionViews.Remove(regionView);
+            }
+
+            RaisePropertyChanged("RegionViews");
         }
 
         public override void SizeChanged(object sender, double width, double height)

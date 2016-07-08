@@ -72,7 +72,7 @@ namespace NuSysApp
 
             foreach (var regionView in Regions.ToList<AudioRegionView>())
             {
-                if ((regionView.DataContext as ImageRegionViewModel).Model.Id == audioRegion.Id)
+                if ((regionView.DataContext as AudioRegionViewModel).Model.Id == audioRegion.Id)
                     Regions.Remove(regionView);
             }
 

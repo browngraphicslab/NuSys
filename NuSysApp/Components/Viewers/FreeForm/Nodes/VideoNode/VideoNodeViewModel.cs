@@ -71,10 +71,16 @@ namespace NuSysApp
         {
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
             Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
+            Controller.LibraryElementController.RegionRemoved += LibraryElementControllerOnRegionRemoved;
             //Controller.LibraryElementController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
             Controller.SizeChanged += Controller_SizeChanged;
             Controller.LibraryElementController.Loaded += LibraryElementController_Loaded;
 
+        }
+
+        private void LibraryElementControllerOnRegionRemoved(object source, Region region)
+        {
+            throw new NotImplementedException();
         }
 
         private void LibraryElementController_Loaded(object sender)
