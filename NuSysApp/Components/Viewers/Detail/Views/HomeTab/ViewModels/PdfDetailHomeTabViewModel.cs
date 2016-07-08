@@ -94,18 +94,24 @@ namespace NuSysApp
                 if ((model as PdfRegion).PageLocation != _pageNumber)
                 {
                     regionView.Visibility = Visibility.Collapsed;
+                    regionView.Deselect();
+
+                }
+                else
+                {
+                    regionView.Visibility = Visibility.Visible;
                     if (region != null)
                     {
                         if (model.Id == region.Id)
                         {
                             regionView.Select();
-
+                        }
+                        else
+                        {
+                            regionView.Deselect();
+                            //ensures that only thing selected is the pdf you just clicked.
                         }
                     }
-                }
-                else
-                {
-                    regionView.Visibility = Visibility.Visible;
                 }
             }
 
