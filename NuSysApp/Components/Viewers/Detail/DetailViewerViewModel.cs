@@ -61,6 +61,8 @@ namespace NuSysApp
         }
 
 
+
+
         //Visibility binding for the DV tabs. Visible when 2+ tabs.
         private Visibility _tabVisibility;
 

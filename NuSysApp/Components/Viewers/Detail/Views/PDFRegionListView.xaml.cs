@@ -43,6 +43,7 @@ namespace NuSysApp
             }
             var detailHomeTabViewModel = vm.RegionView.DataContext as PdfDetailHomeTabViewModel;
             var pdfRegion = (sender as Grid).DataContext as PdfRegion;
+
             await detailHomeTabViewModel.Goto(pdfRegion.PageLocation);
 
 

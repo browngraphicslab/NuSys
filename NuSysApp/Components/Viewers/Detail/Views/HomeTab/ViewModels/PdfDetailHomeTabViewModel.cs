@@ -53,7 +53,8 @@ namespace NuSysApp
             });
             await Goto(_pageNumber);
         }
-        public async Task Goto(int pageNumber)
+
+        public async Task Goto(int pageNumber, Region region = null)
         {
             if (_document == null)
                 return;
@@ -63,9 +64,11 @@ namespace NuSysApp
                 return;
             }
             _pageNumber = pageNumber;
-            await RenderPage(_pageNumber);
+            await RenderPage(_pageNumber, region);
+
+
         }
-        private async Task RenderPage(int pageNumber)
+        private async Task RenderPage(int pageNumber, Region region = null)
         {
             if (_document == null)
                 return;
@@ -91,6 +94,14 @@ namespace NuSysApp
                 if ((model as PdfRegion).PageLocation != _pageNumber)
                 {
                     regionView.Visibility = Visibility.Collapsed;
+                    if (region != null)
+                    {
+                        if (model.Id == region.Id)
+                        {
+                            regionView.Select();
+
+                        }
+                    }
                 }
                 else
                 {

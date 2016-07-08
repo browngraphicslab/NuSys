@@ -43,7 +43,7 @@ namespace NuSysApp
 
             foreach (var regionView in Regions.ToList<ImageRegionView>())
             {
-                if ((regionView.DataContext as ImageRegionViewModel).Model == imageRegion)
+                if ((regionView.DataContext as ImageRegionViewModel).Model.Id == imageRegion.Id)
                     Regions.Remove(regionView);
             }
             
