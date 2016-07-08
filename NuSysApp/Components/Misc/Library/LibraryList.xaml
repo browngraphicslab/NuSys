@@ -142,11 +142,12 @@
                                        Content="Delete" FontSize="14" Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed" IsHitTestVisible="False" />
                         </Grid>
 
-                        <Grid x:Name="RegionsPanel" Grid.Row="1" Grid.ColumnSpan="4" Grid.Column="0" Visibility="Collapsed" MinHeight="50" Background="White">
+                        <Grid x:Name="RegionsPanel" Grid.Row="1" Grid.ColumnSpan="4" Margin="4"  Grid.Column="0" Visibility="Collapsed" MinHeight="50" Background="White">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Margin="2" Text="Regions" FontWeight="Bold"></TextBlock>
                         </Grid>
 
                     </Grid>
