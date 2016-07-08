@@ -349,6 +349,12 @@ namespace NuSysApp
             SizeChanged?.Invoke(sender, left, width, height);
         }
 
+        public void ChangeRegionsSize(object sender, double width, double height)
+        {
+            _regionableRegionTabViewModel.SizeChanged(sender, width, height);
+            _regionableHomeTabViewModel.SizeChanged(sender, width, height);
+        }
+
         private void ControllerTitleChanged(object sender, string title)
         {
             Title = title;

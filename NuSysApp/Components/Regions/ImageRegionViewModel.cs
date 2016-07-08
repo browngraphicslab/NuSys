@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -135,6 +136,8 @@ namespace NuSysApp
         
         private void RegionController_SizeChanged(object sender, double width, double height)
         {
+            
+
             var model = Model as RectangleRegion;
             if (model == null)
             {
@@ -179,6 +182,7 @@ namespace NuSysApp
 
         private void BaseSizeChanged(object sender, double width, double height)
         {
+            Debug.WriteLine("regioncontroller sizechanged");
 
             var model = Model as RectangleRegion;
             if (model == null)
