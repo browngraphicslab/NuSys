@@ -158,7 +158,7 @@ namespace NuSysApp.Components.Tools
             e.Handled = true;
         }
 
-        private void Root_OnTapped(object sender, TappedRoutedEventArgs e)
+        private void Slice_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             var selected = (KeyValuePair<string, int>)(sender as FrameworkElement).DataContext;
             if (_baseTool.Vm.Selection != null && _baseTool.Vm.Controller.Model.Selected && _baseTool.Vm.Selection.Equals(selected.Key))
@@ -169,6 +169,16 @@ namespace NuSysApp.Components.Tools
             {
                 _baseTool.Vm.Selection = selected.Key;
             }
+        }
+
+        private void Slice_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            var selected = (KeyValuePair<string, int>)(sender as FrameworkElement).DataContext;
+            if (_baseTool.Vm.Selection != selected.Key || _baseTool.Vm.Controller.Model.Selected == false)
+            {
+                _baseTool.Vm.Selection = selected.Key;
+            }
+            _baseTool.Vm.OpenDetailView();
         }
     }
 }

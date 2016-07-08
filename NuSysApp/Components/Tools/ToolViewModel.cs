@@ -143,6 +143,16 @@ namespace NuSysApp
             });
         }
 
+        public void OpenDetailView()
+        {
+            if (Controller.Model.LibraryIds.Count == 1)
+            {
+                var lem = SessionController.Instance.ContentController.GetLibraryElementController(Controller.Model.LibraryIds.First());
+                SessionController.Instance.SessionView.ShowDetailView(lem);
+            }
+            
+        }
+
         public bool CreatesLoop(ToolViewModel toolViewModel)
         {
             bool createsLoop = false;
