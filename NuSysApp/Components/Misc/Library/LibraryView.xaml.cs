@@ -230,200 +230,229 @@ namespace NuSysApp
             }
         }
 
-        //Trent, this needs to be filled in in order for the importing to the library to work.
-        private async void AddFile()
+        /// <summary>
+        /// Returns null if invalid file, returns message to pass to server otherwise
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        private async Task<Message> CheckAndPrepFile(StorageFile file)
         {
-            var vm = SessionController.Instance.ActiveFreeFormViewer;
-
             ElementType elementType = ElementType.Text;
             string data = "";
             string title = "";
             string pdf_text = "";
 
+            var contentId = SessionController.Instance.GenerateId();
+            string serverURL = null;
+
+            var fileType = file.FileType.ToLower();
+            title = file.DisplayName;
+
+            bool validFileType = true;
+            // Create a thumbnail dictionary mapping thumbnail sizes to the byte arrays.
+            // Note that only video and images are to get thumbnails this way, currently.
+            var thumbnails = new Dictionary<ThumbnailSize, string>();
+            thumbnails[ThumbnailSize.SMALL] = "";
+            thumbnails[ThumbnailSize.MEDIUM] = "";
+            thumbnails[ThumbnailSize.LARGE] = "";
+
+            if (Constants.ImageFileTypes.Contains(fileType))
+            {
+                elementType = ElementType.Image;
+                data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(file));
+                serverURL = contentId + fileType;
+                thumbnails = await MediaUtil.GetThumbnailDictionary(file);
+            }
+            else if (Constants.WordFileTypes.Contains(fileType))
+            {
+                elementType = ElementType.Word;
+
+                byte[] fileBytes = null;
+                using (IRandomAccessStreamWithContentType stream = await file.OpenReadAsync())
+                {
+                    fileBytes = new byte[stream.Size];
+                    using (DataReader reader = new DataReader(stream))
+                    {
+                        await reader.LoadAsync((uint)stream.Size);
+                        reader.ReadBytes(fileBytes);
+                    }
+                }
+                data = Convert.ToBase64String(fileBytes);
+            }
+            else if (Constants.PowerpointFileTypes.Contains(fileType))
+            {
+                elementType = ElementType.Powerpoint;
+            }
+            else if (Constants.PdfFileTypes.Contains(fileType))
+            {
+                elementType = ElementType.PDF;
+                IRandomAccessStream s = await file.OpenReadAsync();
+
+                byte[] fileBytes = null;
+                using (IRandomAccessStreamWithContentType stream = await file.OpenReadAsync())
+                {
+                    fileBytes = new byte[stream.Size];
+                    using (DataReader reader = new DataReader(stream))
+                    {
+                        await reader.LoadAsync((uint)stream.Size);
+                        reader.ReadBytes(fileBytes);
+                    }
+                }
+
+                data = Convert.ToBase64String(fileBytes);
+
+                // Get text from the pdf
+                var myDoc = await MediaUtil.DataToPDF(data);
+
+                int numPages = myDoc.PageCount;
+                int currPage = 0;
+                while (currPage < numPages)
+                {
+                    pdf_text = pdf_text + myDoc.GetAllTexts(currPage);
+                    currPage++;
+                }
+
+                /// The following was supposed to create a thumbnail from the first page of the pdf and save
+                /// it as a 64 bit string, however there is an exception thrown when converting the 
+                /// RenderBitmap to a ByteArray...something about the index being larger than the capacity of 
+                /// the buffer...
+
+                /*
+                // Instantiate a MuPDF doc and save the rendered first page to a WritableBitmap
+                var doc = await MediaUtil.DataToPDF(data);
+                var width = 50;
+                var height = 50;
+                var writableBitmap = new WriteableBitmap(width, height);
+                IBuffer buf = new Windows.Storage.Streams.Buffer(writableBitmap.PixelBuffer.Capacity);
+                buf.Length = writableBitmap.PixelBuffer.Length;
+                doc.DrawPage(1, buf, 0, 0, 0, 0, false);
+                var ss = buf.AsStream();
+                await ss.CopyToAsync(writableBitmap.PixelBuffer.AsStream());
+                writableBitmap.Invalidate();
+
+                // Create an Image, and set the source to the writable bitmap
+                var myImage = new Image();
+                myImage.Source = writableBitmap;
+                myImage.Height = 50;
+                myImage.Width = 50;
+
+                // Take screenshot of Image using a render bitmap. In order to do this, the image must
+                // be inside a visual component, like the session view.
+                var r = new RenderTargetBitmap();
+                SessionController.Instance.SessionView.MainCanvas.Children.Add(myImage);
+                await r.RenderAsync(myImage);
+                SessionController.Instance.SessionView.MainCanvas.Children.Remove(myImage);
+
+                // Obtain a ByteArray from the RenderBitmap, store it as a string in the thumbnail dictionary
+                var tdata = await MediaUtil.RenderTargetBitmapToByteArray(r);
+                thumbnails[ThumbnailSize.SMALL] =
+                    Convert.ToBase64String(tdata);
+                */
+
+            }
+            else if (Constants.VideoFileTypes.Contains(fileType))
+            {
+                elementType = ElementType.Video;
+                IRandomAccessStream s = await file.OpenReadAsync();
+
+                byte[] fileBytes = null;
+                using (IRandomAccessStreamWithContentType stream = await file.OpenReadAsync())
+                {
+                    fileBytes = new byte[stream.Size];
+                    using (DataReader reader = new DataReader(stream))
+                    {
+                        await reader.LoadAsync((uint)stream.Size);
+                        reader.ReadBytes(fileBytes);
+                    }
+                }
+
+                data = Convert.ToBase64String(fileBytes);
+                thumbnails = await MediaUtil.GetThumbnailDictionary(file);
+            }
+            else if (Constants.AudioFileTypes.Contains(fileType))
+            {
+                elementType = ElementType.Audio;
+                IRandomAccessStream s = await file.OpenReadAsync();
+
+                byte[] fileBytes = null;
+                using (IRandomAccessStreamWithContentType stream = await file.OpenReadAsync())
+                {
+                    fileBytes = new byte[stream.Size];
+                    using (DataReader reader = new DataReader(stream))
+                    {
+                        await reader.LoadAsync((uint)stream.Size);
+                        reader.ReadBytes(fileBytes);
+                    }
+                }
+
+                data = Convert.ToBase64String(fileBytes);
+            }
+            else
+            {
+                return null;
+            }
+
+            // create message to return
+            var m = new Message();
+            m["id"] = contentId;
+            m["data"] = data;
+            m["small_thumbnail"] = thumbnails[ThumbnailSize.SMALL];
+            //await StorageUtil.SaveAsStorageFile(thumbnails[ThumbnailSize.SMALL], @"C:\Users\Zach\Documents\test.jpg");
+            m["medium_thumbnail"] = thumbnails[ThumbnailSize.MEDIUM];
+            m["large_thumbnail"] = thumbnails[ThumbnailSize.LARGE];
+            if (!string.IsNullOrEmpty(pdf_text))
+            {
+                m["pdf_text"] = pdf_text;
+            }
+            m["type"] = elementType.ToString();
+            if (title != null)
+            {
+                m["title"] = title;
+            }
+            if (serverURL != null)
+            {
+                m["server_url"] = serverURL;
+            }
+
+            return m;
+        }
+
+        /// <summary>
+        /// Given a storage file, checks if valid and uploads to the server
+        /// </summary>
+        /// <param name="file"></param>
+        private async Task UploadFile(Message message)
+        {
+            var vm = SessionController.Instance.ActiveFreeFormViewer;
+
+            if (message == null)
+            {
+                Debug.WriteLine("tried to import invalid filetype");
+            }
+            else // upload
+            {
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(message));
+                vm.ClearSelection();
+                //   vm.ClearMultiSelection();
+            }
+        }
+
+
+        private bool _waiting;
+        //Trent, this needs to be filled in in order for the importing to the library to work.
+        private async void AddFile()
+        {
             var storageFiles = await FileManager.PromptUserForFiles(Constants.AllFileTypes);
+
             foreach (var storageFile in storageFiles)
             {
                 if (storageFile == null) return;
 
-                var contentId = SessionController.Instance.GenerateId();
-                string serverURL = null;
+                Message m = await CheckAndPrepFile(storageFile);
+                await UploadFile(m); // upload the file
 
-                var fileType = storageFile.FileType.ToLower();
-                title = storageFile.DisplayName;
-
-                bool validFileType = true;
-                // Create a thumbnail dictionary mapping thumbnail sizes to the byte arrays.
-                // Note that only video and images are to get thumbnails this way, currently.
-                var thumbnails = new Dictionary<ThumbnailSize, string>();
-                thumbnails[ThumbnailSize.SMALL] = "";
-                thumbnails[ThumbnailSize.MEDIUM] = "";
-                thumbnails[ThumbnailSize.LARGE] = "";
-
-                if (Constants.ImageFileTypes.Contains(fileType))
-                {
-                    elementType = ElementType.Image;
-                    data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
-                    serverURL = contentId + fileType;
-                    thumbnails =await MediaUtil.GetThumbnailDictionary(storageFile);
-                }
-                else if (Constants.WordFileTypes.Contains(fileType))
-                {
-                    elementType = ElementType.Word;
-                    
-                    byte[] fileBytes = null;
-                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
-                    {
-                        fileBytes = new byte[stream.Size];
-                        using (DataReader reader = new DataReader(stream))
-                        {
-                            await reader.LoadAsync((uint)stream.Size);
-                            reader.ReadBytes(fileBytes);
-                        }
-                    }
-                    data = Convert.ToBase64String(fileBytes);
-                }
-                else if (Constants.PowerpointFileTypes.Contains(fileType))
-                {
-                    elementType = ElementType.Powerpoint;
-                }
-                else if (Constants.PdfFileTypes.Contains(fileType))
-                {
-                    elementType = ElementType.PDF;
-                    IRandomAccessStream s = await storageFile.OpenReadAsync();
-
-                    byte[] fileBytes = null;
-                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
-                    {
-                        fileBytes = new byte[stream.Size];
-                        using (DataReader reader = new DataReader(stream))
-                        {
-                            await reader.LoadAsync((uint)stream.Size);
-                            reader.ReadBytes(fileBytes);
-                        }
-                    }
-
-                    data = Convert.ToBase64String(fileBytes);
-
-                    // Get text from the pdf
-                    var myDoc = await MediaUtil.DataToPDF(data); 
-                    
-                    int numPages = myDoc.PageCount;
-                    int currPage = 0;
-                    while (currPage < numPages)
-                    {
-                        pdf_text = pdf_text + myDoc.GetAllTexts(currPage);
-                        currPage++;
-                    }
-
-                    /// The following was supposed to create a thumbnail from the first page of the pdf and save
-                    /// it as a 64 bit string, however there is an exception thrown when converting the 
-                    /// RenderBitmap to a ByteArray...something about the index being larger than the capacity of 
-                    /// the buffer...
-
-                    /*
-                    // Instantiate a MuPDF doc and save the rendered first page to a WritableBitmap
-                    var doc = await MediaUtil.DataToPDF(data);
-                    var width = 50;
-                    var height = 50;
-                    var writableBitmap = new WriteableBitmap(width, height);
-                    IBuffer buf = new Windows.Storage.Streams.Buffer(writableBitmap.PixelBuffer.Capacity);
-                    buf.Length = writableBitmap.PixelBuffer.Length;
-                    doc.DrawPage(1, buf, 0, 0, 0, 0, false);
-                    var ss = buf.AsStream();
-                    await ss.CopyToAsync(writableBitmap.PixelBuffer.AsStream());
-                    writableBitmap.Invalidate();
-
-                    // Create an Image, and set the source to the writable bitmap
-                    var myImage = new Image();
-                    myImage.Source = writableBitmap;
-                    myImage.Height = 50;
-                    myImage.Width = 50;
-
-                    // Take screenshot of Image using a render bitmap. In order to do this, the image must
-                    // be inside a visual component, like the session view.
-                    var r = new RenderTargetBitmap();
-                    SessionController.Instance.SessionView.MainCanvas.Children.Add(myImage);
-                    await r.RenderAsync(myImage);
-                    SessionController.Instance.SessionView.MainCanvas.Children.Remove(myImage);
-
-                    // Obtain a ByteArray from the RenderBitmap, store it as a string in the thumbnail dictionary
-                    var tdata = await MediaUtil.RenderTargetBitmapToByteArray(r);
-                    thumbnails[ThumbnailSize.SMALL] =
-                        Convert.ToBase64String(tdata);
-                    */
-
-                }
-                else if (Constants.VideoFileTypes.Contains(fileType))
-                {
-                    elementType = ElementType.Video;
-                    IRandomAccessStream s = await storageFile.OpenReadAsync();
-
-                    byte[] fileBytes = null;
-                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
-                    {
-                        fileBytes = new byte[stream.Size];
-                        using (DataReader reader = new DataReader(stream))
-                        {
-                            await reader.LoadAsync((uint)stream.Size);
-                            reader.ReadBytes(fileBytes);
-                        }
-                    }
-
-                    data = Convert.ToBase64String(fileBytes);
-                    thumbnails=await MediaUtil.GetThumbnailDictionary(storageFile);
-                }
-                else if (Constants.AudioFileTypes.Contains(fileType))
-                {
-                    elementType = ElementType.Audio;
-                    IRandomAccessStream s = await storageFile.OpenReadAsync();
-
-                    byte[] fileBytes = null;
-                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
-                    {
-                        fileBytes = new byte[stream.Size];
-                        using (DataReader reader = new DataReader(stream))
-                        {
-                            await reader.LoadAsync((uint)stream.Size);
-                            reader.ReadBytes(fileBytes);
-                        }
-                    }
-
-                    data = Convert.ToBase64String(fileBytes);
-                }
-                else
-                {
-                    validFileType = false;
-                }
-                if (validFileType)
-                {
-                    var m = new Message();
-                    m["id"] = contentId;
-                    m["data"] = data;
-                    m["small_thumbnail"] = thumbnails[ThumbnailSize.SMALL];
-                    //await StorageUtil.SaveAsStorageFile(thumbnails[ThumbnailSize.SMALL], @"C:\Users\Zach\Documents\test.jpg");
-                    m["medium_thumbnail"] = thumbnails[ThumbnailSize.MEDIUM];
-                    m["large_thumbnail"] = thumbnails[ThumbnailSize.LARGE];
-                    if (!string.IsNullOrEmpty(pdf_text))
-                    {
-                        m["pdf_text"] = pdf_text;
-                    }
-                    m["type"] = elementType.ToString();
-                    if (title != null)
-                    {
-                        m["title"] = title;
-                    }
-                    if (serverURL != null)
-                    {
-                        m["server_url"] = serverURL;
-                    }
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(m));
-                    vm.ClearSelection();
-                    //   vm.ClearMultiSelection();
-                }
-                else
-                {
-                    Debug.WriteLine("tried to import invalid filetype");
-                }
+                // wait for a minute
+                Task.Delay(60000).Wait();
             }
         }
 
