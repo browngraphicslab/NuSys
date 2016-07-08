@@ -6,6 +6,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using NuSysApp.Components.Tools;
 
 namespace NuSysApp
 {
@@ -169,6 +170,24 @@ namespace NuSysApp
             return createsLoop;
         }
 
+        public void FilterIconDropped(IEnumerable<UIElement> hitsStart,  FreeFormViewerViewModel wvm, double x, double y)
+        {
+            if (hitsStart.Where(uiElem => (uiElem is FrameworkElement) && (uiElem as FrameworkElement).DataContext is ToolViewModel).ToList().Any())
+            {
+                var hitsStartList = hitsStart.Where(uiElem => (uiElem is AnimatableUserControl) && (uiElem as AnimatableUserControl).DataContext is ToolViewModel).ToList();
+                AddFilterToExistingTool(hitsStartList, wvm);
+            }
+            else if (hitsStart.Where(uiElem => (uiElem is ToolFilterView)).ToList().Any())
+            {
+                var hitsStartList = hitsStart.Where(uiElem => (uiElem is ToolFilterView)).ToList();
+                AddFilterToFilterToolView(hitsStartList, wvm);
+            }
+            else
+            {
+                AddNewFilterTool(x, y, wvm);
+            }
+        }
+
         public void AddNewFilterTool(double x, double y, FreeFormViewerViewModel wvm)
         {
             var toolFilter = new ToolFilterView(x, y, this);
@@ -192,16 +211,8 @@ namespace NuSysApp
 
         public void AddFilterToExistingTool(List<UIElement> hitsStartList, FreeFormViewerViewModel wvm)
         {
-            ToolViewModel toolViewModel;
-            if ((hitsStartList.First() as TemporaryToolView) != null)
-            {
-                toolViewModel = (hitsStartList.First() as TemporaryToolView).DataContext as ToolViewModel;
-            }
-            else
-            {
-                toolViewModel = (hitsStartList.First() as MetadataToolView).DataContext as ToolViewModel;
-            }
-            if (toolViewModel != this)
+            ToolViewModel toolViewModel = (hitsStartList.First() as AnimatableUserControl).DataContext as ToolViewModel;
+            if (toolViewModel != null && toolViewModel != this)
             {
                 if (!CreatesLoop(toolViewModel))
                 {
@@ -211,9 +222,7 @@ namespace NuSysApp
                     wvm.AtomViewList.Add(link);
                     toolViewModel.Controller.AddParent(Controller);
                 }
-
             }
-
         }
 
         public Image InitializeDragFilterImage()

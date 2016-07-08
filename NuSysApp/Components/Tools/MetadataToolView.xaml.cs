@@ -267,24 +267,6 @@ namespace NuSysApp
         {
             if (xCanvas.Children.Contains(_dragItem))
                 xCanvas.Children.Remove(_dragItem);
-            //if (_currentDragMode == DragMode.Key)
-            //{
-            //    //xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
-            //    xMetadataKeysList.SelectionChanged -= XMetadataKeysList_OnSelectionChanged;
-            //    xMetadataKeysList.SelectedItem = ((sender as Grid).Children[0] as TextBlock).Text;
-            //    xMetadataKeysList.SelectionChanged += XMetadataKeysList_OnSelectionChanged;
-            //}
-            //else if (_currentDragMode == DragMode.Value)
-            //{
-            //    //xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
-            //    xMetadataValuesList.SelectionChanged -= XMetadataValuesList_OnSelectionChanged;
-            //    xMetadataValuesList.SelectedItem = ((sender as Grid).Children[0] as TextBlock).Text;
-            //    xMetadataValuesList.SelectionChanged += XMetadataValuesList_OnSelectionChanged;
-            //}
-
-
-
-            //_currentDragMode = DragMode.Filter;
             if (_currentDragMode == DragMode.Collection)
             {
                 _dragItem = (DataContext as ToolViewModel).InitializeDragFilterImage();
@@ -359,26 +341,7 @@ namespace NuSysApp
                     (DataContext as MetadataToolViewModel).Selection = new Tuple<string, string>((DataContext as MetadataToolViewModel).Selection.Item1, (((Grid)sender).Children[0] as TextBlock).Text);
                 }
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
-                if (hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList().Any())
-                {
-                    var hitsStartList = hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList();
-                    (DataContext as ToolViewModel).AddFilterToExistingTool(hitsStartList, wvm);
-                }
-
-                else if (hitsStart.Where(uiElem => (uiElem is MetadataToolView)).ToList().Any())
-                {
-                    var hitsStartList = hitsStart.Where(uiElem => (uiElem is MetadataToolView)).ToList();
-                    (DataContext as ToolViewModel).AddFilterToExistingTool(hitsStartList, wvm);
-                }
-                else if (hitsStart.Where(uiElem => (uiElem is ToolFilterView)).ToList().Any())
-                {
-                    var hitsStartList = hitsStart.Where(uiElem => (uiElem is ToolFilterView)).ToList();
-                    (DataContext as ToolViewModel).AddFilterToFilterToolView(hitsStartList, wvm);
-                }
-                else
-                {
-                    (DataContext as ToolViewModel).AddNewFilterTool(r.X, r.Y, wvm);
-                }
+                (DataContext as ToolViewModel).FilterIconDropped(hitsStart, wvm, r.X, r.Y);
             }
             
 

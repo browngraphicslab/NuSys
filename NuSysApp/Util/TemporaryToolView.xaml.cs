@@ -182,33 +182,15 @@ namespace NuSysApp
 
             if (_currentDragMode == DragMode.Filter)
             {
+                
+                _baseTool.Vm.Selection = (((Grid)sender).Children[0] as TextBlock).Text;
+
                 var wvm = SessionController.Instance.ActiveFreeFormViewer;
                 var el = (FrameworkElement)sender;
                 var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
                 var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(sp.X, sp.Y, 300, 300));
-                _baseTool.Vm.Selection = (((Grid)sender).Children[0] as TextBlock).Text;
-
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
-                if (hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList().Any())
-                {
-                    var hitsStartList = hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList();
-                    _baseTool.Vm.AddFilterToExistingTool(hitsStartList, wvm);
-                }
-
-                else if (hitsStart.Where(uiElem => (uiElem is MetadataToolView)).ToList().Any())
-                {
-                    var hitsStartList = hitsStart.Where(uiElem => (uiElem is MetadataToolView)).ToList();
-                    _baseTool.Vm.AddFilterToExistingTool(hitsStartList, wvm);
-                }
-                else if (hitsStart.Where(uiElem => (uiElem is ToolFilterView)).ToList().Any())
-                {
-                    var hitsStartList = hitsStart.Where(uiElem => (uiElem is ToolFilterView)).ToList();
-                    _baseTool.Vm.AddFilterToFilterToolView(hitsStartList, wvm);
-                }
-                else
-                {
-                    _baseTool.Vm.AddNewFilterTool(r.X, r.Y, wvm);
-                }
+                _baseTool.Vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
 
             }
         }

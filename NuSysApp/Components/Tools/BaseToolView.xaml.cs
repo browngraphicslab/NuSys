@@ -19,7 +19,7 @@ using NuSysApp.Tools;
 
 namespace NuSysApp.Components.Tools
 {
-    public sealed partial class BaseToolView : UserControl
+    public sealed partial class BaseToolView : AnimatableUserControl
     {
         public BasicToolViewModel Vm;
         private Image _dragItem;

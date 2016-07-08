@@ -202,26 +202,7 @@ namespace NuSysApp.Components.Tools
             {
                 return;
             }
-            if (hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList().Any())
-            {
-                var hitsStartList = hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList();
-                (DataContext as ToolViewModel).AddFilterToExistingTool(hitsStartList, wvm);
-            }
-
-            else if (hitsStart.Where(uiElem => (uiElem is MetadataToolView)).ToList().Any())
-            {
-                var hitsStartList = hitsStart.Where(uiElem => (uiElem is MetadataToolView)).ToList();
-                (DataContext as ToolViewModel).AddFilterToExistingTool(hitsStartList, wvm);
-            }
-            else if (hitsStart.Where(uiElem => (uiElem is ToolFilterView)).ToList().Any())
-            {
-                var hitsStartList = hitsStart.Where(uiElem => (uiElem is ToolFilterView)).ToList();
-                (DataContext as ToolViewModel).AddFilterToFilterToolView(hitsStartList, wvm);
-            }
-            else
-            {
-                (DataContext as ToolViewModel).AddNewFilterTool(r.X, r.Y, wvm);
-            }
+            _baseTool.Vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
 
 
         }
