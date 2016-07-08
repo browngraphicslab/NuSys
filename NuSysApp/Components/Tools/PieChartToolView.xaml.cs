@@ -148,19 +148,12 @@ namespace NuSysApp.Components.Tools
                 if (item.Content.Equals(selection))
                 {
                     item.Background = new SolidColorBrush(Colors.Blue);
-                    return;
                 }
                 else
                 {
                     item.Background = transparent;
                 }
             }
-
-        }
-        private void xListItem_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            _x = e.GetCurrentPoint(_baseTool.getCanvas()).Position.X - 25;
-            _y = e.GetCurrentPoint(_baseTool.getCanvas()).Position.Y - 25;
 
         }
 
@@ -173,8 +166,10 @@ namespace NuSysApp.Components.Tools
             _baseTool.getCanvas().Children.Add(_dragItem);
             _dragItem.RenderTransform = new CompositeTransform();
             var t = (CompositeTransform)_dragItem.RenderTransform;
-            t.TranslateX = _x;
-            t.TranslateY = _y;
+            var el = (FrameworkElement)sender;
+            var sp = el.TransformToVisual(_baseTool.getCanvas()).TransformPoint(e.Position);
+            t.TranslateX = sp.X - _dragItem.ActualWidth/2;
+            t.TranslateY = sp.Y - _dragItem.ActualWidth / 2;
         }
 
         private void xListItem_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -203,6 +198,10 @@ namespace NuSysApp.Components.Tools
             var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(sp.X, sp.Y, 300, 300));
 
             var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
+            if (hitsStart.Contains(this))
+            {
+                return;
+            }
             if (hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList().Any())
             {
                 var hitsStartList = hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList();

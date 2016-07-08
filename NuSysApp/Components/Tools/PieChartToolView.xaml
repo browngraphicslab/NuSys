@@ -14,7 +14,7 @@
 
     <Canvas x:Name="xCanvas" HorizontalAlignment="Left">
         <charting:Chart x:Name="xPieChart" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0" Width="Auto" Height="Auto">
-            <charting:PieSeries x:Name="xPieSeries"  ManipulationMode="All" PointerPressed="xListItem_PointerPressed" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted" PointerReleased="XPieSeries_OnPointerReleased" Margin="0,0,0,0" IndependentValuePath="Key" DependentValuePath="Value" IsSelectionEnabled="True"/>
+            <charting:PieSeries x:Name="xPieSeries"  ManipulationMode="All" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted" PointerReleased="XPieSeries_OnPointerReleased" Margin="0,0,0,0" IndependentValuePath="Key" DependentValuePath="Value" IsSelectionEnabled="True"/>
             <charting:Chart.LegendStyle>
                 <Style TargetType="dataVisualization:Legend">
                     <Setter Property="VerticalAlignment" Value="Stretch" />
