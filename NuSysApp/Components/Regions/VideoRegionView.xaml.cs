@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -138,8 +139,8 @@ namespace NuSysApp
         public void Deselect()
         {
             xMainRectangle.StrokeThickness = 3;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Blue);
-            IntervalRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.LightCyan);
+            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Azure);
+            IntervalRectangle.Fill = new SolidColorBrush(Color.FromArgb(255, 219, 151, 179));
             xResizingTriangle.Visibility = Visibility.Collapsed;
             xNameTextBox.Visibility = Visibility.Collapsed;
             xDelete.Visibility = Visibility.Collapsed;
@@ -154,7 +155,7 @@ namespace NuSysApp
         {
             xMainRectangle.StrokeThickness = 6;
             xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
-            IntervalRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
+            IntervalRectangle.Fill = new SolidColorBrush(Color.FromArgb(255, 152, 26, 77));
             xResizingTriangle.Visibility = Visibility.Visible;
             xNameTextBox.Visibility = Visibility.Visible;
             xDelete.Visibility = Visibility.Visible;

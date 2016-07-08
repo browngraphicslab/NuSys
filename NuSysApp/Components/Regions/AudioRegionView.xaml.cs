@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -77,7 +78,7 @@ namespace NuSysApp
 
         public void Deselect()
         {
-            Rect.Fill = new SolidColorBrush(Windows.UI.Colors.LightCyan);
+            Rect.Fill = new SolidColorBrush(Color.FromArgb(255, 219, 151, 179));
             xNameTextBox.Visibility = Visibility.Collapsed;
             Rect.IsHitTestVisible = true;
             xDelete.Visibility = Visibility.Collapsed;
@@ -87,7 +88,7 @@ namespace NuSysApp
 
         public void Select()
         {
-            Rect.Fill = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
+            Rect.Fill = new SolidColorBrush(Color.FromArgb(255, 152, 26, 77));
             xNameTextBox.Visibility = Visibility.Visible;
             Rect.IsHitTestVisible = false;
             xDelete.Visibility = Visibility.Visible;
