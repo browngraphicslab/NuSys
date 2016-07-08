@@ -27,6 +27,13 @@
                         <CompositeTransform></CompositeTransform>
                     </Image.RenderTransform>
                 </Image>
+                <ItemsControl x:Name="ItemsControl"  ItemsSource="{Binding RegionViews}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
                 <Button x:Name="pageLeft" Height ="50" Width="50" VerticalAlignment="Center" Background=" Transparent" HorizontalAlignment="Left" Click="OnPageLeftClick">
                     <Button.Content>
                         <Image Opacity=".8" Stretch="Uniform" Source="ms-appx:///Assets/icon_pdf_left.png" />
@@ -37,13 +44,7 @@
                         <Image Opacity=".8" Stretch="Uniform" Source="ms-appx:///Assets/icon_pdf_right.png" />
                     </Button.Content>
                 </Button>
-                <ItemsControl x:Name="ItemsControl"  ItemsSource="{Binding RegionViews}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <Canvas/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
+
             </Grid>
         </Border>
         <StackPanel Visibility="Collapsed">
