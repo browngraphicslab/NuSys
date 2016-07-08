@@ -91,7 +91,7 @@
         </Button>
         <Grid x:Name="WebContainer" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent">
             <WebView Name ="MyWebView"  Width="{Binding ElementName=WebContainer, Path=Width}"  Height ="100"  ScrollViewer.ZoomMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled"  
-                             Visibility="Visible" HorizontalAlignment ="Stretch" VerticalAlignment="Stretch" IsTapEnabled="True">
+                             Visibility="Collapsed" HorizontalAlignment ="Stretch" VerticalAlignment="Stretch" IsTapEnabled="True">
             </WebView>
         </Grid>
         
