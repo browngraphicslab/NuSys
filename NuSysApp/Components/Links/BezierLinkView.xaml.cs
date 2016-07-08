@@ -90,7 +90,7 @@ namespace NuSysApp
                 if (vm?.IsSelected ?? false)
                 {
                     Title.IsReadOnly = SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION;
-
+                    
                 }
             }
             else
@@ -163,6 +163,13 @@ namespace NuSysApp
                 Canvas.SetZIndex(this, -10);
                 SessionController.Instance.SessionView.Explore(vm);
             }
+        }
+
+        private void BezierLink_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            var vm = (ElementViewModel)DataContext;
+            var linkController = SessionController.Instance.LinkController.GetLinkLibraryElementController(vm.Model.LibraryId);
+            SessionController.Instance.SessionView.ShowDetailView(linkController);
         }
     }
 }

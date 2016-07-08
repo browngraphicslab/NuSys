@@ -130,7 +130,7 @@ namespace NuSysApp
             {
                 NewNetworkUser(user);
             }
-
+            
             var presentationLinks = await SessionController.Instance.NuSysNetworkSession.GetPresentationLinks(firstId);
 
             foreach (var presentationlink in presentationLinks)
@@ -138,6 +138,7 @@ namespace NuSysApp
 
                 NewPresetationLink(presentationlink);
             }
+
             // await Library.Reload();
         }
 

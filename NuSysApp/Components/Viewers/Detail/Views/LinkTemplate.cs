@@ -36,16 +36,35 @@ namespace NuSysApp
             var linkModel = controller.LinkLibraryElementModel;
             if (linkModel.InAtomId == id)
             {
-                var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.OutAtomId.LibraryElementId);
-                Debug.Assert(libraryElementModel != null);
-                LinkedTo = libraryElementModel.Title;
-
+                if (linkModel.OutAtomId.IsRegion)
+                {
+                    var regionController = SessionController.Instance.RegionsController.GetRegionController(linkModel.OutAtomId.RegionId);
+                    Debug.Assert(regionController != null);
+                    LinkedTo = regionController.Title;
+                }
+                else
+                {
+                    var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.OutAtomId.LibraryElementId);
+                    Debug.Assert(libraryElementModel != null);
+                    LinkedTo = libraryElementModel.Title;
+                }
+                
             }
             else
             {
-                var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.InAtomId.LibraryElementId);
-                Debug.Assert(libraryElementModel != null);
-                LinkedTo = libraryElementModel.Title;
+                if (linkModel.InAtomId.IsRegion)
+                {
+                    var regionController = SessionController.Instance.RegionsController.GetRegionController(linkModel.InAtomId.RegionId);
+                    Debug.Assert(regionController != null);
+                    LinkedTo = regionController.Title;
+                }
+                else
+                {
+                    var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.InAtomId.LibraryElementId);
+                    Debug.Assert(libraryElementModel != null);
+                    LinkedTo = libraryElementModel.Title;
+                }
+                
             }
             ID = controller.LinkLibraryElementModel.LibraryElementId;
         }

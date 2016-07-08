@@ -92,35 +92,10 @@ namespace NuSysApp
             if (propertyChangedEventArgs.PropertyName == "IsSelected")
             {
 
-                // if the link is selected
-                if (vm?.IsSelected ?? false)
-                {                  
-                    if (linkModel.RectangleModel != null)
-                    {
-                        // if the presentation link goes to a PdfNodeModel make sure we got to the right page
-                        var pdfNodeModel = SessionController.Instance.IdToControllers[linkModel.OutAtomId].Model as PdfNodeModel;
-                        if (pdfNodeModel != null)
-                        {
-                            // get the pdfNodeModel id
-                            var modelId = pdfNodeModel.Id;
-
-                            // get the pdfNodeView using the pdf Model id
-                            var list =
-                                SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
-                                    item => (item.DataContext as ElementViewModel)?.Model.Id == modelId);
-                            var view = list?.First() as PdfNodeView;
-
-                            // follow the link
-                            if (view != null)
-                            {
-                                await view.onGoTo(linkModel.RectangleModel.PdfPageNumber);
-                            }
-                            
-                        }
-
-                        linkModel.RectangleModel.Model.Select();
-
-                    }
+                if (vm.IsSelected)
+                {
+                  
+                    SessionController.Instance.SessionView.Explore(vm);
                 }
                 else
                 {

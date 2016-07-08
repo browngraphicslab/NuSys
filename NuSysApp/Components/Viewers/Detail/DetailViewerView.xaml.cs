@@ -194,7 +194,7 @@ namespace NuSysApp
                 xRootPivot.Items.Add(pivotItem);
             }
 
-            if (controller.LibraryElementModel.Type == ElementType.Text ||
+            if (controller.LibraryElementModel.Type == ElementType.Text || controller.LibraryElementModel.Type == ElementType.Link ||
                 controller.LibraryElementModel.Type == ElementType.Collection || controller.LibraryElementModel.Type == ElementType.Word)
             {
                 if (xRootPivot?.Items?.Count == 4)
@@ -346,25 +346,20 @@ namespace NuSysApp
             var videoView = vm.View as VideoDetailHomeTabView;
             videoView?.Dispose();
             videoView?.StopVideo();
-            if (vm.RegionView != null)
+            if (vm.RegionView is VideoDetailHomeTabView)
             {
                 var videoRegionView = vm.RegionView as VideoDetailHomeTabView;
                 videoRegionView?.Dispose();
                 videoRegionView?.StopVideo();
             }
-
-            var Audioview = vm.View as AudioDetailHomeTabView;
-            Audioview?.Dispose();
-            Audioview?.StopAudio();
-
-            if (vm.RegionView != null)
+            var audioview = vm.View as AudioDetailHomeTabView;
+            audioview?.Dispose();
+            audioview?.StopAudio();
+            if (vm.RegionView is AudioDetailHomeTabView)
             {
                 var audioRegionView = vm.RegionView as AudioDetailHomeTabView;
-                audioRegionView?.Dispose();
                 audioRegionView?.StopAudio();
             }
-            
-
         }
 
         private void metaData_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -499,6 +494,7 @@ namespace NuSysApp
         private void XRootPivot_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var vm = (DetailViewerViewModel)DataContext;
+
             var listView = sender as Pivot;
             var index = listView?.SelectedIndex;
             if (vm.TabDictionary.ContainsKey(_currentDetailViewable.TabId()))

@@ -48,7 +48,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <local:VideoMediaPlayer x:Name="VideoMediaPlayer"></local:VideoMediaPlayer>
+                <local:VideoMediaPlayer x:Name="VideoMediaPlayer" PointerPressed="VideoMediaPlayer_PointerPressed"></local:VideoMediaPlayer>
                 <ItemsControl ItemsSource="{Binding RegionViews}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>

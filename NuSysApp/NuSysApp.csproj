@@ -342,6 +342,7 @@
     <Compile Include="Components\Viewers\Detail\ILinkable.cs" />
     <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
     <Compile Include="Components\Viewers\Detail\Sizeable.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\LinkHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\IDetailViewable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\WordDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml.cs">
