@@ -89,7 +89,7 @@ namespace NuSysApp
                 case "Type":
                     ordered = new List<LibraryItemTemplate>(ItemList.OrderBy(l => ((LibraryItemTemplate)l).Type.ToString()));
                     break;
-                case "Date/Timestamp":
+                case "Date/Time":
                     ordered = new List<LibraryItemTemplate>(ItemList.OrderByDescending(l => Constants.GetTimestampTicksOfLibraryElementModel((LibraryItemTemplate)l)));
                     break;
                 default:

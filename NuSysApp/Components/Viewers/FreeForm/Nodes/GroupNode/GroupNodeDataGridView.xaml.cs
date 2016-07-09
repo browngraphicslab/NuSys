@@ -153,14 +153,6 @@ namespace NuSysApp
             // return if the controller is null
             Debug.Assert(controller != null);
 
-            // check for unsupported types
-            if (controller.LibraryElementModel.Type == ElementType.Word || 
-                controller.LibraryElementModel.Type == ElementType.Powerpoint ||
-                controller.LibraryElementModel.Type == ElementType.Link)
-            {
-                return;
-            }
-
             // open the detail viewer
             SessionController.Instance.SessionView.ShowDetailView(controller);
         }
