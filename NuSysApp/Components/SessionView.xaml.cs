@@ -226,6 +226,7 @@ namespace NuSysApp
 
         public void EnterPresentationMode(ElementViewModel em)
         {
+            Debug.Assert(em == null);
             _modeInstance = new PresentationMode(em);
 
             // change the proper visibilities

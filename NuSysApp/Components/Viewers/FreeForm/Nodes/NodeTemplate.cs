@@ -491,7 +491,9 @@ namespace NuSysApp
         private void OnPresentationClick(object sender, RoutedEventArgs e)
         {
             
-            var vm = ((ElementViewModel)this.DataContext);
+            var vm = DataContext as ElementViewModel;
+            Debug.Assert(vm != null);
+
             var sv = SessionController.Instance.SessionView;
 
             // unselect start element
