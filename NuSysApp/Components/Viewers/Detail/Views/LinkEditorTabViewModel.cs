@@ -66,11 +66,14 @@ namespace NuSysApp
         {
             //SessionController.Instance.ActiveFreeFormViewer.AllContent.First().Controller.RequestDeleteVisualLink(id);
             //SessionController.Instance.LinksController.RemoveLink(id);
-            Task.Run(async delegate
-            {
-                var request = new DeleteLibraryElementRequest(id);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-            });
+
+            _linkTabable.RequestRemoveLink(id);
+
+            //Task.Run(async delegate
+            //{
+            //    var request = new DeleteLibraryElementRequest(id);
+            //    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            //});
 
             foreach (var template in LinkTemplates)
             {
@@ -130,9 +133,19 @@ namespace NuSysApp
             _linkTabable.LinkRemoved += LinkTabableLinkRemoved;
         }
 
-        private void LinkTabableLinkRemoved(object sender, string e)
+        private void LinkTabableLinkRemoved(object sender, string linkLibraryElementID)
         {
-            throw new NotImplementedException();
+            if (_linkTabable == null)
+            {
+                return;
+            }
+            foreach (var template in new HashSet<LinkTemplate>(LinkTemplates))
+            {
+                if (template.ID == linkLibraryElementID)
+                {
+                    LinkTemplates.Remove(template);
+                }
+            }
         }
 
         private void LinkTabableLinkAdded(object sender, LinkLibraryElementController controller)

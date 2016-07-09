@@ -275,7 +275,7 @@ namespace NuSysApp
             var linkableAliases = GetInstancesOfContent(libraryElementId);
             foreach (var linkableAlias in linkableAliases)
             {
-                Debug.Assert(_contentIdToLinkableIds.ContainsKey(linkableAlias.Id));
+                Debug.Assert(_contentIdToLinkableIds.ContainsKey(linkableAlias.ContentId));
                 RemoveAlias(linkableAlias.Id);
             }
             DisposeContent(content.ContentId);
