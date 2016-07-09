@@ -185,6 +185,10 @@ namespace NuSysApp
             }
             _linkTabable.LinkAdded -= LinkTabableLinkAdded;
             await _linkTabable.RequestAddNewLink(idToLinkTo, title);
+            var newLinkController = SessionController.Instance.LinksController.GetLinkLibraryElementControllerBetweenContent(
+                _linkTabable.ContentId, idToLinkTo);
+            var template = new LinkTemplate(newLinkController, _linkTabable.ContentId);
+            LinkTemplates.Add(template);
             //var linkId = SessionController.Instance.LinksController.GetLinkIdBetween(_linkTabable.ContentId, idToLinkTo);
             //var linkController = SessionController.Instance.ContentController.GetLibraryElementController(linkId) as LinkLibraryElementController;
             //linkController?.SetTitle(title);
