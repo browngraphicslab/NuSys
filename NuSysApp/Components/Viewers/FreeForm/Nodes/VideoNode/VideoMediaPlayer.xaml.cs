@@ -20,9 +20,9 @@ namespace NuSysApp
 {
     public sealed partial class VideoMediaPlayer : UserControl
     {
-        Boolean _loaded = false;
+        private bool _loaded = false;
         //needed for "dragging" through scrub bar
-        Boolean _wasPlaying = false;
+        private bool _wasPlaying = false;
         public VideoMediaPlayer()
         {
             this.InitializeComponent();
@@ -186,7 +186,6 @@ namespace NuSysApp
                 b.Path = new PropertyPath("Position.TotalMilliseconds");
                 scrubBar.SetBinding(ProgressBar.ValueProperty, b);
                 playbackElement.Pause();
-                //playbackElement.Play();
             }
 
         }
@@ -207,9 +206,7 @@ namespace NuSysApp
                         b.ElementName = "playbackElement";
                         b.Path = new PropertyPath("Position.TotalMilliseconds");
                         scrubBar.SetBinding(ProgressBar.ValueProperty, b);
-                        //playbackElement.Pause();
 
-                    //playbackElement.Play();
                 }
                 else
                     {
