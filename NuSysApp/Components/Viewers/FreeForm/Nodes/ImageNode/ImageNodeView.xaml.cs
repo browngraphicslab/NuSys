@@ -17,9 +17,7 @@ using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using NAudio.Wave;
-using NuSysApp.Components.Viewers.FreeForm;
 using NuSysApp.Util;
-using NuSysApp.Viewers;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -45,15 +43,8 @@ namespace NuSysApp
             TempRegion.Fill = new SolidColorBrush(Colors.Transparent);
             TempRegion.StrokeThickness = 2;
             TempRegion.Stroke = new SolidColorBrush(Colors.Red);
-            
-
-            // vm.Controller.SizeChanged += Controller_SizeChanged;
-           // vm.Controller.ContainerSizeChanged += Controller_SizeChanged;
-    
-            vm.PropertyChanged +=VmOnPropertyChanged;
 
             Loaded += ViewLoaded;
-            //XamlRenderingBackgroundTask x = new RenderTask(this.xImage);
 
             vm.Controller.Disposed += ControllerOnDisposed;
             SizeChanged += ImageNodeView_SizeChanged;
@@ -82,30 +73,6 @@ namespace NuSysApp
                 {
                     reg.Select();
                 }
-            }
-        }
-
-
-        private void VmOnPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Width" || e.PropertyName == "Height")
-            {
-                ObservableCollection<RectangleView> list1 = _vm.RegionsListTest;
-
-                foreach (var rectangle in list1)
-                {
-                    rectangle.setRectangleSize(_vm.Width, _vm.Height);
-                }
-            }
-        }
-
-        private void Controller_SizeChanged(object source, double width, double height)
-        {
-            ObservableCollection<RectangleView> list1 = _vm.RegionsListTest;
-
-            foreach (var rectangle in list1)
-            {
-                rectangle.setRectangleSize(_vm.Width, _vm.Height);
             }
         }
 
@@ -180,13 +147,6 @@ namespace NuSysApp
                 attributes.Add("heightRatio", heightRatio);
                 attributes.Add("leftRatio", leftRatio);
                 attributes.Add("topRatio", topRatio);
-
-                RectangleViewModel rvm = new RectangleViewModel(new RectangleModel(), attributes);
-                RectangleView rv = new RectangleView(rvm); 
-
-                // add to controller
-                _vm.Controller.SetRegionModel(rvm);
-                _vm.RegionsListTest.Add(rv);
 
                 // works?
                 Canvas.Children.Remove(TempRegion);

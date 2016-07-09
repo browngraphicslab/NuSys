@@ -18,10 +18,6 @@ using System.Collections.ObjectModel;
 using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
-using NuSysApp.Components.Viewers.FreeForm;
-using System.Net;
-using Newtonsoft.Json;
-using NuSysApp.Util;
 
 namespace NuSysApp
 {
@@ -86,20 +82,6 @@ namespace NuSysApp
             RegionViews.Add(view);
             RaisePropertyChanged("RegionViews");
         }
-
-        private void PdfRegionControllerOnPageLocationChanged(object sender, int pageLocation)
-        {
-            //foreach (var regionView in RegionViews)
-            //{
-            //    var regionVM = regionView.DataContext as RegionViewModel;
-            //    var regionModel = regionVM?.Model as PdfRegion;
-            //    if (regionModel?.PageLocation != CurrentPageNumber)
-            //    {
-            //        regionView.Visibility = Visibility.Collapsed;
-            //    }
-            //}
-        }
-
         
         public void CreatePdfRegionViews()
         {

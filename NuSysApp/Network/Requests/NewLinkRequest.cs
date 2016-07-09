@@ -6,11 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
-using NuSysApp.Components.Nodes;
-using NuSysApp.Components.Viewers.FreeForm;
-using NuSysApp.Controller;
-using NuSysApp.Nodes.AudioNode;
-using NuSysApp.Viewers;
 using Windows.UI.Xaml.Controls;
 using Newtonsoft.Json;
 
@@ -19,32 +14,13 @@ namespace NuSysApp
     public class NewLinkRequest : Request
     {
         public NewLinkRequest(Message m) : base(RequestType.NewLinkRequest,m){}
-        public NewLinkRequest(string id1, string id2, string creator, string contentId, UserControl regionView, RectangleView rectangle, Dictionary<string, object> inFineGrainDictionary, Dictionary<string, object> outFineGrainDictionary, string id = null, bool IsPresentationLink = false) : base(RequestType.NewLinkRequest)
+        public NewLinkRequest(string id1, string id2, string creator, string contentId, string id = null) : base(RequestType.NewLinkRequest)
         {
             _message["id1"] = id1;
             _message["id2"] = id2;
             _message["id"] = id ?? SessionController.Instance.GenerateId();
             _message["creator"] = creator;
             _message["contentId"] = contentId;
-            _message["isPresentationLink"] = IsPresentationLink;
-
-            if (inFineGrainDictionary != null)
-            {
-                _message["inFGDictionary"] = inFineGrainDictionary;
-            }
-            if (outFineGrainDictionary != null)
-            {
-                _message["outFGDictionary"] = outFineGrainDictionary;
-            }
-            if (regionView != null)
-            {
-                _message["inFineGrain"] = (regionView.DataContext as RegionViewModel).Model;
-                //_message["inFineGrain"] = regionView;
-            }
-            if (rectangle != null)
-            {
-                _message["rectangleMod"] = (rectangle.DataContext as RectangleViewModel);
-            }
         }
 
         private void SetServerSettings()

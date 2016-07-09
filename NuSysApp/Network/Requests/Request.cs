@@ -30,7 +30,6 @@ namespace NuSysApp
             DeleteLibraryElementRequest,
             AddInkRequest,
             RemoveInkRequest,
-            NewPresentationLinkRequest
         }
 
         public enum ServerItemType

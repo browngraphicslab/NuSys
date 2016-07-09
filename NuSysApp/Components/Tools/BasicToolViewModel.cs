@@ -1,13 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
-using NuSysApp.Components.Viewers.FreeForm;
-using NuSysApp.Util;
-
 namespace NuSysApp
 {
     public class ChartSlice

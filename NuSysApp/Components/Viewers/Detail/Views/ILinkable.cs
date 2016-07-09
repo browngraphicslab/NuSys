@@ -12,5 +12,6 @@ namespace NuSysApp
         event EventHandler<Point2d> AnchorChanged;
         string Id { get; }
         string ContentId { get; }
+        void UpdateCircleLinks();
     }
 }

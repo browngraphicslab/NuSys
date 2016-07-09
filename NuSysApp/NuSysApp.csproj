@@ -269,11 +269,9 @@
     <Compile Include="Components\InqCanvas\WetDryInkCanvas.cs" />
     <Compile Include="Components\ISelectable.cs" />
     <Compile Include="Components\Keywords\Keyword.cs" />
-    <Compile Include="Components\Links\IdMap.cs" />
     <Compile Include="Components\Links\LinkCircle.xaml.cs">
       <DependentUpon>LinkCircle.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Links\LinkControllerDataStructure.cs" />
     <Compile Include="Components\Links\PresentationLinkView.xaml.cs">
       <DependentUpon>PresentationLinkView.xaml</DependentUpon>
     </Compile>
@@ -415,11 +413,6 @@
     <Compile Include="Components\Viewers\FreeForm\LibraryDragElement.xaml.cs">
       <DependentUpon>LibraryDragElement.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\FreeForm\RectangleModel.cs" />
-    <Compile Include="Components\Viewers\FreeForm\RectangleView.xaml.cs">
-      <DependentUpon>RectangleView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Viewers\FreeForm\RectangleViewModel.cs" />
     <Compile Include="Components\Viewers\Search\Query.cs" />
     <Compile Include="Components\Viewers\Search\SearchResult.cs" />
     <Compile Include="Components\Viewers\Search\SearchResultTemplate.cs" />
@@ -608,7 +601,6 @@
     <Compile Include="Network\NetworkSession.cs" />
     <Compile Include="Network\NetworkUser.cs" />
     <Compile Include="Network\NuSysNetworkSession.cs" />
-    <Compile Include="Network\Requests\NewPresentationLinkRequest.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
     <Compile Include="Network\Requests\ChangeContentRequest.cs" />
     <Compile Include="Network\Requests\ChatDialogRequest.cs" />
@@ -1138,10 +1130,6 @@
     <Page Include="Components\Viewers\FreeForm\Nodes\WordNode\WordNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Components\Viewers\FreeForm\RectangleView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\Search\SearchView.xaml">
       <SubType>Designer</SubType>
