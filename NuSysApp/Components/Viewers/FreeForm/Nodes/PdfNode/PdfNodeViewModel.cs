@@ -238,16 +238,17 @@ namespace NuSysApp
             if (ImageSource == null)
                 return;
 
-            //if (ImageSource.PixelWidth > ImageSource.PixelHeight)
-            //{
-            //    var r = ImageSource.PixelHeight / (double)ImageSource.PixelWidth;
-            //    base.SetSize(width, width * r);
-            //}
-            //else
-            //{
-            //    var r = ImageSource.PixelWidth / (double)ImageSource.PixelHeight;
-            //    base.SetSize(height * r, height);
-            //}
+
+            if (ImageSource.PixelWidth > ImageSource.PixelHeight)
+            {
+                var r = ImageSource.PixelHeight / (double)ImageSource.PixelWidth;
+                base.SetSize(width, width * r);
+            }
+            else
+            {
+                var r = ImageSource.PixelWidth / (double)ImageSource.PixelHeight;
+                base.SetSize(height * r, height);
+            }
         }
 
         protected override void OnSizeChanged(object source, double width, double height)
