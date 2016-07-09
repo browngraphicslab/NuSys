@@ -65,5 +65,11 @@ namespace NuSysApp
         {
             ControlPointsChanged?.Invoke(this, EventArgs.Empty);
         }
+
+        public void DeletePresentationLink()
+        {
+            SessionController.Instance.NuSysNetworkSession.RemovePresentationLink(_inElementController.Model.Id, _outElementController.Model.Id);
+            FireDisposed(this, EventArgs.Empty);
+        }
     }
 }

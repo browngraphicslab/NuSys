@@ -77,6 +77,11 @@ namespace NuSysApp
             Controller.LibraryElementController.Loaded += LibraryElementController_Loaded;
 
         }
+        //Eventually, we will refactor video regions to be more like audio/image/pdf so we don' thave to do this.
+        public void UpdateRegions()
+        {
+            RaisePropertyChanged("RegionViews");
+        }
 
         private void LibraryElementControllerOnRegionRemoved(object source, Region region)
         {

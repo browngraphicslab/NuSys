@@ -50,6 +50,7 @@ namespace NuSysApp
             vm.Editable = this.Editable;
             var view = new VideoRegionView(vm);
             RegionViews.Add(view);
+            view.OnRegionSeek += View_OnRegionSeek;
             RaisePropertyChanged("RegionViews");
         }
         public void ScrubBarOnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -112,7 +113,7 @@ namespace NuSysApp
         }
         public void MediaPlayerOnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
-
+            SetExistingRegions();
         }
 
         public override void SetExistingRegions()

@@ -144,7 +144,7 @@
                 <PivotItem Header="Home">
 
                     <!--Pivot content goes here-->
-                    <ContentPresenter Grid.Row="2" x:Name ="nodeContent" Content="{Binding View}" HorizontalAlignment="Center" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></ContentPresenter>
+                    <ContentPresenter Grid.Row="2" x:Name ="nodeContent" Content="{Binding View}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></ContentPresenter>
                 </PivotItem>
                 <PivotItem Header="Metadata">
                     <!--Pivot content goes here-->

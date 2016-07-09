@@ -21,7 +21,8 @@ namespace NuSysApp
 {
     public sealed partial class AudioMediaPlayer : UserControl
     {
-
+        //needed for "dragging" through scrub bar
+        private bool _wasPlaying = false;
         public ProgressBar ScrubBar => this.ProgressBar;
         public MediaElement MediaPlayer => this.MediaElement;
 
@@ -36,6 +37,8 @@ namespace NuSysApp
             if (MediaElement.CurrentState != MediaElementState.Stopped)
             {
                 MediaElement.Stop();
+                _wasPlaying = false;
+
             }
         }
 
@@ -44,6 +47,8 @@ namespace NuSysApp
             if (MediaElement.CurrentState != MediaElementState.Paused)
             {
                 MediaElement.Pause();
+                _wasPlaying = false;
+
             }
         }
 
@@ -56,6 +61,8 @@ namespace NuSysApp
                 b.Path = new PropertyPath("Position.TotalMilliseconds");
                 ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
                 MediaElement.Play();
+                _wasPlaying = true;
+
             }
         }
 
@@ -94,13 +101,22 @@ namespace NuSysApp
                 b.ElementName = "MediaElement";
                 b.Path = new PropertyPath("Position.TotalMilliseconds");
                 ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
-                //playbackElement.Play();
+                MediaElement.Pause();
             }
         }
 
         private void ProgressBar_OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            MediaElement.Play();
+            if (_wasPlaying)
+            {
+                MediaElement.Play();
+
+            }
+            else
+            {
+                MediaElement.Pause();
+
+            }
             ((UIElement)sender).ReleasePointerCapture(e.Pointer);
         }
         public void onSeekedTo(double time)
@@ -140,12 +156,11 @@ namespace NuSysApp
                     b.Path = new PropertyPath("Position.TotalMilliseconds");
                     ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
 
-                    //playbackElement.Play();
                 }
                 else
                 {
                     ((UIElement)sender).CapturePointer(e.Pointer);
-                    MediaElement.Pause();
+                    //MediaElement.Pause();
                 }
 
                 e.Handled = true;
@@ -156,6 +171,8 @@ namespace NuSysApp
         private void MediaElement_OnMediaEnded(object sender, RoutedEventArgs e)
         {
             Audio_OnJump(new TimeSpan(0));
+            _wasPlaying = false;
+
         }
 
         public void Audio_OnJump(TimeSpan time)
