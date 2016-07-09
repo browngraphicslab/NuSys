@@ -14,15 +14,6 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
-using NuSysApp.Components.Nodes;
-using NuSysApp.Components.Viewers.FreeForm;
-using NuSysApp.Nodes.AudioNode;
-using Windows.Graphics.Imaging;
-using Windows.Graphics.Display;
-using Windows.Storage;
-using Windows.Storage.Pickers;
-using MyToolkit.UI;
-using NuSysApp.Viewers;
 using Newtonsoft.Json;
 
 // The Templated Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234235
@@ -277,9 +268,6 @@ namespace NuSysApp
 
                 var hitsStart2 = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
                 hitsStart2 = hitsStart2.Where(uiElem => (uiElem as FrameworkElement).DataContext is RegionViewModel).ToList();
-
-                var hitRectangleView = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
-                hitRectangleView = hitRectangleView.Where(uiElem => (uiElem as FrameworkElement).DataContext is RectangleViewModel).ToList();
                 
                 if (hitsStart.Any()){
                     var first = (FrameworkElement)hitsStart.First();
@@ -291,26 +279,7 @@ namespace NuSysApp
                         return;
                     }
 
-                    if (hitRectangleView.Any())
-                    {
-                        foreach (var element in hitRectangleView)
-                        {
-                            if (element is RectangleView)
-                            {
-                                if (_currenDragMode == DragMode.PresentationLink)
-                                {
-                                    AddPresentationLink(dc?.Id,vm?.Id);
-                                }
-                                else
-                                {
-                                    var m = new Message();
-                                    m["id1"] = dc.ContentId;
-                                    m["id2"] = vm.ContentId;
-                                    SessionController.Instance.LinksController.RequestLink(m);
-                                }
-                            }
-                        }
-                    } else if (hitsStart2.Any()){
+                    if (hitsStart2.Any()){
                         foreach (var element in hitsStart2)
                         {
                             if (element is AudioRegionView)

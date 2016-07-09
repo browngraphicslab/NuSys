@@ -5,11 +5,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI;
-using Windows.UI.Xaml.Controls;
-using Newtonsoft.Json;
-using NuSysApp;
-using NuSysApp.Components.Viewers.FreeForm;
-
 namespace NuSysApp
 { 
     public class LinksController
@@ -81,6 +76,9 @@ namespace NuSysApp
 
                 _linkableIdToLinkIds[outId].Add(controller.Id);
                 _linkableIdToLinkIds[inId].Add(controller.Id);
+
+                controller.OutElement.UpdateCircleLinks();
+                controller.InElement.UpdateCircleLinks();
             }
             if(!_linkableIdToLinkIds.ContainsKey(linkable.Id))
             {
@@ -310,10 +308,10 @@ namespace NuSysApp
             var vm = new LinkViewModel(controller);
            
             UITask.Run(async delegate
-                        {
-                            var view = new BezierLinkView(vm);
-                            SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(view);
-                        });
+            {
+                var view = new BezierLinkView(vm);
+                SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(view);
+            });
         }
 
         /// <summary>

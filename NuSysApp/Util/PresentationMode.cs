@@ -60,10 +60,6 @@ namespace NuSysApp
                     previous = null;
                     foreach (LinkController link in list)
                     {
-                        var linkModel = (LinkModel)link.Model;
-                        if (!linkModel.IsPresentationLink)
-                            continue;
-
                         if (link.OutElement.Id.Equals(model.Id))
                         {
                             var l = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => ((ElementViewModel)item.DataContext).Model.Id == link.InElement.Id);

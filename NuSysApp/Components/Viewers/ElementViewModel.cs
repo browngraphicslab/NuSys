@@ -11,7 +11,6 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
-using NuSysApp.Components.Viewers.FreeForm;
 using NuSysApp.Controller;
 using NuSysApp.Util;
 
@@ -32,9 +31,7 @@ namespace NuSysApp
         private bool Favorited;
 
         #endregion Private Members
-
-        public ObservableCollection<RectangleView> RegionsListTest { get; set; }
-
+       
         public ElementViewModel(ElementController controller)
         {
             _controller = controller;
@@ -53,20 +50,16 @@ namespace NuSysApp
             }
             controller.Disposed += OnDisposed;
             controller.Deleted += ControllerOnDeleted;
+            controller.LinksUpdated += ControllerLinksUpdated;
 
             Tags = new ObservableCollection<Button>();
             CircleLinks = new ObservableCollection<LinkCircle>();
             ReadFromModel();
+        }
 
-            RegionsListTest = new ObservableCollection<RectangleView>();
-            if (ElementType == ElementType.Image)
-            {
-                foreach (var element in Model.RegionsModel)
-                {
-                    RectangleView rv = new RectangleView(element);
-                    RegionsListTest.Add(rv);
-                }
-            }   
+        private void ControllerLinksUpdated(object source)
+        {
+            UITask.Run(async delegate { CreateCircleLinks(); });
         }
 
         private void ControllerOnAnchorChanged(object sender, Point2d point2D)
@@ -79,7 +72,7 @@ namespace NuSysApp
             CreateTags();
         }
 
-        public void UpdateLinks(LinkLibraryElementController model)
+        public void UpdateLinks()
         {
             UITask.Run(async delegate { CreateCircleLinks(); });    
         }

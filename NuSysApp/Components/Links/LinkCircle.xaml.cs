@@ -40,6 +40,12 @@ namespace NuSysApp
         private Thickness _visibleThickness;
         private bool _firstTimeOpened;
         private BitmapImage _bmp;
+
+        /// <summary>
+        /// constructor for link circle.  takes in link-id, content Id
+        /// </summary>
+        /// <param name="lID"></param>
+        /// <param name="cID"></param>
         public LinkCircle(string lID, string cID)
         {
             this.lID = lID;

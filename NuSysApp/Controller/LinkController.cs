@@ -112,6 +112,11 @@ namespace NuSysApp
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 
+        public void UpdateCircleLinks()
+        {
+            //TODO add in circle links?
+        }
+
         /*
         public void UpdateAnchor()
         {

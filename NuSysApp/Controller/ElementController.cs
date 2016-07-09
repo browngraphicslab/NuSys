@@ -5,12 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.ApplicationSettings;
-using NuSysApp.Components.Nodes;
-using NuSysApp.Components.Viewers.FreeForm;
-using NuSysApp.Controller;
-using NuSysApp.Util;
-using NuSysApp.Nodes.AudioNode;
-using NuSysApp.Viewers;
 using Windows.UI.Xaml.Controls;
 
 namespace NuSysApp
@@ -32,9 +26,9 @@ namespace NuSysApp
 
         public delegate void SizeUpdateEventHandler(object source, double width, double height);
 
-        public delegate void RegionTestChangedEventHandler(object source, RectangleViewModel region);
-
         public delegate void SelectionChangedHandler(object source, bool selected);
+
+        public delegate void LinksUpdatedEventHandler(object source);
 
         public event EventHandler Disposed;
         public event DeleteEventHandler Deleted;
@@ -43,10 +37,9 @@ namespace NuSysApp
         public event SizeUpdateEventHandler SizeChanged;
         public event ScaleChangedEventHandler ScaleChanged;
         public event AlphaChangedEventHandler AlphaChanged;
-        public event RegionTestChangedEventHandler RegionTestChanged;
         public event SelectionChangedHandler SelectionChanged;
         public event EventHandler<Point2d> AnchorChanged;
-
+        public event LinksUpdatedEventHandler LinksUpdated;
 
         public Point2d Anchor
         {
@@ -115,12 +108,15 @@ namespace NuSysApp
             Model.Width = width;
             Model.Height = height;
             SizeChanged?.Invoke(this, width, height);
-            AnchorChanged?.Invoke(this,Anchor);
+            FireAnchorChanged();
             _debouncingDictionary.Add("width", width);
             _debouncingDictionary.Add("height", height);
         }
 
- 
+        private void FireAnchorChanged()
+        {
+            AnchorChanged?.Invoke(this, Anchor);
+        }
 
         public void SetPosition(double x, double y)
         {
@@ -130,7 +126,7 @@ namespace NuSysApp
             Model.Y = y;
 
             PositionChanged?.Invoke(this, x, y, x - px, y - py);
-            AnchorChanged?.Invoke(this, Anchor);
+            FireAnchorChanged();
 
             _debouncingDictionary.Add("x", x);
             _debouncingDictionary.Add("y", y);
@@ -162,33 +158,7 @@ namespace NuSysApp
 
             _debouncingDictionary.Add("alpha", alpha);
         }
-
-        public void SetRegionModel(RectangleViewModel region)
-        {
-            Model.RegionsModel.Add(region);
-            RegionTestChanged?.Invoke(this, region);
-            _debouncingDictionary.Add("regionsModel", Model.RegionsModel);
-        }
-
-        public void AddPageRegion(int page, RectangleViewModel region)
-        {
-            if ((Model as PdfNodeModel).PageRegionDict.ContainsKey(page))
-            {
-                (Model as PdfNodeModel).PageRegionDict[page].Add(region);
-            }
-            else
-            {
-                (Model as PdfNodeModel).PageRegionDict[page] = new List<RectangleViewModel>() { region };
-            }
-
-            var m = new Message();
-            m["pageRegionDict"] = (Model as PdfNodeModel).PageRegionDict;
-            m["id"] = Model.Id;
-            var request = new SendableUpdateRequest(m, true);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-            //_debouncingDictionary.Add("pageRegionDict", (Model as PdfNodeModel).PageRegionDict);
-        }
-
+       
         public void Delete(object sender)
         {
             Deleted?.Invoke(this);
@@ -217,38 +187,7 @@ namespace NuSysApp
             m["creator"] = Model.ParentCollectionId;
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
         }
-        /*
-        public virtual async Task RequestLinkTo(string otherId, RectangleView rectangle = null, UserControl regionView = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
-        {
-            var contentId = SessionController.Instance.GenerateId();
-            var libraryElementRequest = new CreateNewLibraryElementRequest(contentId,null,ElementType.Link, "NEW LINK");
-            var request = new NewLinkRequest(new string(Model.ContentId), otherId, Model.ParentCollectionId,contentId, regionView, rectangle, inFGDictionary, outFGDictionary);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-        }*/
-        /*
-        public void RequestVisualLinkTo(string id)
-        {
-            var parent = SessionController.Instance.ContentController.GetContent(Model.ParentCollectionId) as CollectionLibraryElementModel;
-            parent.addLink(id);
-        }*/
-        /*
-        public void RequestDeleteVisualLink(string id)
-        {
-            var parent = SessionController.Instance.ContentController.GetContent(Model.ParentCollectionId) as CollectionLibraryElementModel;
-            parent.removeLink(id);
-        }*/
-        /*
-        public virtual async Task RequestPresentationLinkTo(string otherId, RectangleView rectangle = null, LinkedTimeBlock block = null, Dictionary<string, object> inFGDictionary = null, Dictionary<string, object> outFGDictionary = null)
-        {
 
-            var contentId = SessionController.Instance.GenerateId();
-         //   var libraryElementRequest = new CreateNewLibraryElementRequest(contentId, null, ElementType.Link, "NEW PRESENTATION LINK");
-            var request = new NewPresentationLinkRequest(Model.ContentId, otherId, Model.ParentCollectionId, contentId, block, rectangle, inFGDictionary, outFGDictionary, null, true);
-   //         await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-        }
-        */
         public Dictionary<string, object> CreateImageDictionary(double x, double y, double height, double width)
         {
             Dictionary<string, object> dic = new Dictionary<string, object>();
@@ -368,6 +307,11 @@ namespace NuSysApp
                 string region = props.Get("region");
                 //RegionChanged?.Invoke(this, region);
             }
+        }
+
+        public void UpdateCircleLinks()
+        {
+            LinksUpdated?.Invoke(this);
         }
     }
 }

@@ -10,7 +10,6 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using NuSysApp.Controller;
 using NuSysApp.Util;
-using NuSysApp.Viewers;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
