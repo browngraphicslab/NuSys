@@ -426,6 +426,10 @@ namespace NuSysApp
         private void TabList_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             var viewable = (sender as FrameworkElement)?.DataContext as IDetailViewable;
+            if (viewable == null)
+            {
+                return;
+            }
             var vm = DataContext as DetailViewerViewModel;
             if (vm == null)
             {
