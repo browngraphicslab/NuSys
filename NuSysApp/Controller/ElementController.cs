@@ -52,7 +52,7 @@ namespace NuSysApp
         {
             get
             {
-                return new Point2d(Model.X + Model.Width/2, Model.Y+Model.Width / 2);
+                return new Point2d(Model.X + Model.Width/2, Model.Y+Model.Height / 2);
             }
         }
 

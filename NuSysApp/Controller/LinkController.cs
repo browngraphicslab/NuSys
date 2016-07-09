@@ -43,7 +43,7 @@ namespace NuSysApp
             {
                 //return new Point2d((OutElement.Anchor.X + (Math.Abs(OutElement.Anchor.X - InElement.Anchor.X) / 2)),
                 //(InElement.Anchor.Y + (Math.Abs(OutElement.Anchor.Y - InElement.Anchor.Y) / 2)));
-                return new Point2d((InElement.Anchor.X + OutElement.Anchor.X)/2, (InElement.Anchor.Y + OutElement.Anchor.Y)/2);
+                return new Point2d((InElement.Anchor.X + OutElement.Anchor.X)/2, (OutElement.Anchor.Y + InElement.Anchor.Y)/2);
             }
         }
 
