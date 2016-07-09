@@ -161,7 +161,7 @@ namespace NuSysApp
 
         private async Task SendRequest(byte[] data, ElementType type)
         {
-            var vm = (ElementViewModel) DataContext;
+            var vm = (RecordingNodeViewModel) DataContext;
 
             Message m = new Message();
             var width = SessionController.Instance.SessionView.ActualWidth;
