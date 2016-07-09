@@ -45,6 +45,12 @@ namespace NuSysApp
         public delegate void OnContentUpdatedEventHandler(object sender, LibraryElementController controller,Message message);
         public event OnContentUpdatedEventHandler OnContentUpdated;
 
+        public delegate void PresentationLinkAddedEventHandler(object sender, string id1, string id2);
+        public event PresentationLinkAddedEventHandler PresentationLinkAdded;
+
+        public delegate void PresentationLinkRemovedEventHandler(object sender, string id1, string id2);
+        public event PresentationLinkRemovedEventHandler PresentationLinkRemoved;
+
         public static HashSet<string> NeededLibraryDataIDs = new HashSet<string>();
         public string ServerBaseURI { get; private set; }
         
@@ -149,6 +155,12 @@ namespace NuSysApp
                                         loadArgs.Data = dict["data"] as string;
                                         controller.Load(loadArgs);
                                     }
+                                    break;
+                                case "remove_presentation_link":
+                                    PresentationLinkRemoved?.Invoke(this,dict["id1"] as string, dict["id2"] as string);
+                                    break;
+                                case "add_presentation_link":
+                                    PresentationLinkAdded?.Invoke(this, dict["id1"] as string, dict["id2"] as string);
                                     break;
                             }
                         }

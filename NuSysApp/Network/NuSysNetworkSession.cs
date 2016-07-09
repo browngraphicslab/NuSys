@@ -56,7 +56,38 @@ namespace NuSysApp
             _serverClient.OnClientJoined += AddNetworkUser;
             _serverClient.OnRegionUpdated += RegionUpdated;
             _serverClient.OnContentUpdated += ContentUpdated;
+            _serverClient.PresentationLinkAdded += PresentationLinkAdded;
+            _serverClient.PresentationLinkRemoved += PresentationLinkRemoved;
             LockController = new LockController(_serverClient);
+        }
+
+        private void PresentationLinkRemoved(object sender, string id1, string id2)
+        {
+            var presentationLinks =
+                SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
+                    atom => atom.DataContext is PresentationLinkViewModel);
+            foreach (var element in presentationLinks)
+            {
+                var model = ((PresentationLinkViewModel)element.DataContext).Model;
+                if (model?.ElementId1 == id1 && model?.ElementId2 == id2)
+                {
+                    ((PresentationLinkViewModel) element.DataContext).FireDisposed(this, EventArgs.Empty);
+                }
+
+            }
+        }
+
+        private void PresentationLinkAdded(object sender, string id1, string id2)
+        {
+            if (SessionController.Instance.IdToControllers.ContainsKey(id1) &&
+                SessionController.Instance.IdToControllers.ContainsKey(id2))
+            {
+                var presentationlink = new PresentationLinkModel();
+                presentationlink.ElementId1 = id1;
+                presentationlink.ElementId2 = id2;
+                var vm = new PresentationLinkViewModel(presentationlink);
+                new PresentationLinkView(vm);
+            }
         }
 
         #region Requests
