@@ -24,7 +24,7 @@ namespace NuSysApp
 
         public string ID { get; set; }
 
-        public LinkTemplate(LinkLibraryElementController controller, LinkId id)
+        public LinkTemplate(LinkLibraryElementController controller, string id)
         {
             Title = "Unnamed Link";
             if (controller.Title != null)
@@ -36,31 +36,31 @@ namespace NuSysApp
             var linkModel = controller.LinkLibraryElementModel;
             if (linkModel.InAtomId == id)
             {
-                if (linkModel.OutAtomId.IsRegion)
+                if (SessionController.Instance.RegionsController.IsRegionId(linkModel.OutAtomId))
                 {
-                    var regionController = SessionController.Instance.RegionsController.GetRegionController(linkModel.OutAtomId.RegionId);
+                    var regionController = SessionController.Instance.RegionsController.GetRegionController(linkModel.OutAtomId);
                     Debug.Assert(regionController != null);
                     LinkedTo = regionController.Title;
                 }
-                else
+                else if(SessionController.Instance.LinksController.IsContentId(linkModel.OutAtomId))
                 {
-                    var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.OutAtomId.LibraryElementId);
+                    var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.OutAtomId);
                     Debug.Assert(libraryElementModel != null);
                     LinkedTo = libraryElementModel.Title;
                 }
-                
+                //LinkedTo = "";
             }
             else
             {
-                if (linkModel.InAtomId.IsRegion)
+                if (SessionController.Instance.RegionsController.IsRegionId(linkModel.InAtomId))
                 {
-                    var regionController = SessionController.Instance.RegionsController.GetRegionController(linkModel.InAtomId.RegionId);
+                    var regionController = SessionController.Instance.RegionsController.GetRegionController(linkModel.InAtomId);
                     Debug.Assert(regionController != null);
                     LinkedTo = regionController.Title;
                 }
-                else
+                else if (SessionController.Instance.LinksController.IsContentId(linkModel.InAtomId))
                 {
-                    var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.InAtomId.LibraryElementId);
+                    var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.InAtomId);
                     Debug.Assert(libraryElementModel != null);
                     LinkedTo = libraryElementModel.Title;
                 }

@@ -27,7 +27,7 @@ namespace NuSysApp
         private Storyboard _storyboard;
         private SolidColorBrush _backwardColor = Application.Current.Resources["lighterredcolor"] as SolidColorBrush;
         private SolidColorBrush _forwardColor = Application.Current.Resources["color4"] as SolidColorBrush;
-        private HashSet<LinkElementController> _linksUsed = new HashSet<LinkElementController>();
+        private HashSet<LinkController> _linksUsed = new HashSet<LinkController>();
         public ModeType Mode { get { return ModeType.PRESENTATION;} }
 
         public PresentationMode(ElementViewModel start)
@@ -52,21 +52,21 @@ namespace NuSysApp
             {
                 var curr = start;
                 var previous = curr;
-                LinkElementController linkController = null;
+                LinkController linkController = null;
                 while (previous != null)
                 {
-                    var list = new List<LinkElementController>(previous.LinkList);
+                    var list = new List<LinkController>(previous.LinkList);
                     var model = previous.Model;
                     previous = null;
-                    foreach (LinkElementController link in list)
+                    foreach (LinkController link in list)
                     {
                         var linkModel = (LinkModel)link.Model;
                         if (!linkModel.IsPresentationLink)
                             continue;
 
-                        if (link.OutElement.Model.Equals(model))
+                        if (link.OutElement.Id.Equals(model.Id))
                         {
-                            var l = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => ((ElementViewModel)item.DataContext).Model.Id == link.InElement.Model.Id);
+                            var l = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => ((ElementViewModel)item.DataContext).Model.Id == link.InElement.Id);
                             previous = l?.First()?.DataContext as ElementViewModel;
                             linkController = link;
                             break;
@@ -79,7 +79,7 @@ namespace NuSysApp
                         break;
                     }
                     _linksUsed.Add(linkController);
-                    linkController.SetColor(_backwardColor);
+                    //linkController.SetColor(_backwardColor);
                 }
             });
         }
@@ -151,7 +151,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="controller"></param>
         /// <param name="reverse"></param>
-        private void SetColor(LinkElementController controller, bool reverse)
+        private void SetColor(LinkController controller, bool reverse)
         {
             if (controller == null)
             {
@@ -159,11 +159,11 @@ namespace NuSysApp
             }
             if (reverse)
             {
-                controller.SetColor(_forwardColor);
+                //controller.SetColor(_forwardColor);
             }
             else
             {
-                controller.SetColor(_backwardColor);
+                //controller.SetColor(_backwardColor);
             }
             _linksUsed.Add(controller);
         }
@@ -197,13 +197,13 @@ namespace NuSysApp
             {
                 if (link != null)
                 {
-                    link.SetColor(Application.Current.Resources["color4"] as SolidColorBrush);
+                    //link.SetColor(Application.Current.Resources["color4"] as SolidColorBrush);
                 }
             }
             AnimatePresentation(_originalTransform.ScaleX, _originalTransform.CenterX, _originalTransform.CenterY, _originalTransform.TranslateX, _originalTransform.TranslateY);
         }
 
-        private LinkElementController GetLinkBetweenNode(ElementViewModel model)
+        private LinkController GetLinkBetweenNode(ElementViewModel model)
         {
             if (model == null)
             {
@@ -213,7 +213,7 @@ namespace NuSysApp
             foreach (var link in links)
             {
 
-                if (link.InElement.Model.Id == model.Model.Id || link.OutElement.Model.Id == model.Model.Id)
+                if (link.InElement.Id == model.Model.Id || link.OutElement.Id == model.Model.Id)
                 {
                     return link;
                 }
@@ -232,22 +232,23 @@ namespace NuSysApp
             {
                 return null;
             }
-            foreach (LinkElementController link in vm.LinkList)
+            foreach (LinkController link in vm.LinkList)
             {
+                /*
                 var linkModel = (LinkModel)link.Model;
                 if (!linkModel.IsPresentationLink)
                     continue;
 
-                if (link.OutElement.Model.Equals(vm.Model) && reverse)
+                if (link.OutElement.Equals(vm.Model) && reverse)
                 {
-                    return link.InElement.Model;
+                    return link.InElement;
                 }
 
                 if (link.InElement.Model.Equals(vm.Model) && !reverse)
                 {
                     return link.OutElement.Model;
                 }
-
+                */
             }
             return null;
         }

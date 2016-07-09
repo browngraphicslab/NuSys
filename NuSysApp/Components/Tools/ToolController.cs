@@ -48,7 +48,8 @@ namespace NuSysApp
                 {
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteLibraryElementRequest(id));
                 });
-            }*/
+            }
+            */
 
             //CODE BELOW IS HACKY WAY TO DOWNLOAD ALL THE PDF'S 
             /*
@@ -210,11 +211,13 @@ namespace NuSysApp
         }
         public Dictionary<string, List<string>> GetMetadata(string libraryId)
         {
-            var element = SessionController.Instance.ContentController.GetContent(libraryId);
-            if (element != null)
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryId);
+            if (controller != null)
             {
-                var metadata = (element?.Metadata?.ToDictionary(k=>k.Key,v=>v.Value?.Values ?? new List<string>()) ?? new Dictionary<string, List<string>>());
+                var metadata = (controller?.LibraryElementModel?.FullMetadata?.ToDictionary(k=>k.Key,v=>v.Value?.Values ?? new List<string>()) ?? new Dictionary<string, List<string>>());
 
+                var element = controller.LibraryElementModel;
+                Debug.Assert(element != null);
                 metadata["Title"] = new List<string>(){ element.Title};
                 metadata["Type"] = new List<string>() { element.Type.ToString()};
                 metadata["Date"] = new List<string>() { GetDate(element)};

@@ -54,14 +54,14 @@ namespace NuSysApp
                     break;
                 case ElementType.Area:
                     view = new AreaNodeView(new AreaNodeViewModel((ElementCollectionController)controller));
-                    break;
+                    break;/*
                 case ElementType.Link:
                     var linkModel = (LinkModel)controller.Model;
                     if (linkModel.IsPresentationLink)
-                        view = new PresentationLinkView(new LinkViewModel((LinkElementController)controller));
+                        view = new PresentationLinkView(new LinkViewModel((LinkController)controller));
                     else
-                        view = new BezierLinkView(new LinkViewModel((LinkElementController)controller));
-                    break;
+                        view = new BezierLinkView(new LinkViewModel((LinkController)controller));
+                    break;*/
             }
             await ((ElementViewModel)view.DataContext).Init();
 

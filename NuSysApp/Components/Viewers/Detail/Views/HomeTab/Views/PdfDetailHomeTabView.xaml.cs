@@ -61,7 +61,7 @@ namespace NuSysApp
             //xBorder.Clip = new RectangleGeometry {Rect= new Rect(0,0,e.NewSize.Width, e.NewSize.Height)};
         }
 
-        private void ControllerOnDisposed(object source)
+        private void ControllerOnDisposed(object source, object args)
         {
             var vm = (PdfDetailHomeTabViewModel)DataContext;
             vm.Controller.Disposed += ControllerOnDisposed;

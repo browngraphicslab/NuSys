@@ -13,7 +13,7 @@ namespace NuSysApp
     /// Takes care of all the modifying and events invoking for the library element model
     /// Should manage keeping the library element model up to date as well as updating the server
     /// </summary>
-    public class LibraryElementController : IMetadatable, ILinkable, IDetailViewable
+    public class LibraryElementController : IMetadatable, ILinkTabable, IDetailViewable
     {
         protected DebouncingDictionary _debouncingDictionary;
         private LibraryElementModel _libraryElementModel;
@@ -35,7 +35,6 @@ namespace NuSysApp
         public delegate void RegionAddedEventHandler(object source, RegionController regionController);
         public delegate void RegionRemovedEventHandler(object source, Region region);
         public delegate void MetadataChangedEventHandler(object source);
-        public delegate void DisposeEventHandler(object source);
         public delegate void TitleChangedEventHandler(object sender, string title);
         public delegate void FavoritedEventHandler(object sender, bool favorited);
         public delegate void LoadedEventHandler(object sender);
@@ -46,7 +45,7 @@ namespace NuSysApp
         public event RegionAddedEventHandler RegionAdded;
         public event RegionRemovedEventHandler RegionRemoved;
         public event MetadataChangedEventHandler MetadataChanged;
-        public event DisposeEventHandler Disposed;
+        public event EventHandler Disposed;
         public event TitleChangedEventHandler TitleChanged;
         public event FavoritedEventHandler Favorited;
         public event DeletedEventHandler Deleted;
@@ -199,7 +198,7 @@ namespace NuSysApp
                 _libraryElementModel.Metadata.TryRemove(entry.Key, out outobj);
             }
             _libraryElementModel.Metadata.TryAdd(entry.Key,entry);
-            ChangeMetadata(_libraryElementModel.Metadata);
+            ChangeMetadata(_libraryElementModel.FullMetadata);
             return true;
         }
 
@@ -216,7 +215,7 @@ namespace NuSysApp
             }
             MetadataEntry outobj;
             _libraryElementModel.Metadata.TryRemove(key, out outobj);
-            ChangeMetadata(_libraryElementModel.Metadata);
+            ChangeMetadata(LibraryElementModel.FullMetadata);
             return true;
         }
 
@@ -226,11 +225,12 @@ namespace NuSysApp
         /// </summary>
         public List<string> GetMetadata(string key)
         {
-            if (string.IsNullOrEmpty(key) || !_libraryElementModel.Metadata.ContainsKey(key) || string.IsNullOrWhiteSpace(key))
+            var full = LibraryElementModel.FullMetadata;
+            if (string.IsNullOrEmpty(key) || !full.ContainsKey(key) || string.IsNullOrWhiteSpace(key))
             {
                 return null;
             }
-            return _libraryElementModel.Metadata[key].Values;
+            return full[key].Values;
         }
 
         /// <summary>
@@ -469,7 +469,7 @@ namespace NuSysApp
         }
         public virtual void Dispose()
         {
-            Disposed?.Invoke(this);
+            Disposed?.Invoke(this, EventArgs.Empty);
         }
         public void SetLoading(bool loading)
         {
@@ -480,9 +480,13 @@ namespace NuSysApp
             get { return _loading || IsLoaded; }
         }
 
-        public LinkId Id
+        public string ContentId
         {
-            get { return new LinkId(this.LibraryElementModel.LibraryElementId); }
+            get
+            {
+                Debug.Assert(LibraryElementModel?.LibraryElementId != null);
+                return LibraryElementModel.LibraryElementId;
+            }
         }
 
         public void SetNetworkUser(NetworkUser user)
@@ -500,39 +504,31 @@ namespace NuSysApp
             LinkAdded?.Invoke(this, linkController);
         }
 
-    /*    public void RemoveLink(LinkLibraryElementController linkController)
-        {
-            LinkRemoved?.Invoke(this, linkController.Id);
-        }*/
+        //public void RemoveLink(LinkLibraryElementController linkController)
+        //{
+        //    LinkRemoved?.Invoke(this, linkController.ContentId);
+        //}
 
         #region Linking methods
-        public async Task RequestAddNewLink(LinkId idToLinkTo, string title)
+        public async Task RequestAddNewLink(string idToLinkTo, string title)
         {
             var m = new Message();
-            m["id1"] = new LinkId(this.LibraryElementModel.LibraryElementId);
+            m["id1"] = LibraryElementModel.LibraryElementId;
             m["id2"] = idToLinkTo;
             m["title"] = title;
-            await SessionController.Instance.LinkController.RequestLink(m);
+            await SessionController.Instance.LinksController.RequestLink(m);
         }
 
-        public void RequestRemoveLink(LinkId linkLibraryElementID)
+        public void RequestRemoveLink(string linkLibraryElementID)
         {
-            SessionController.Instance.LinkController.RemoveLink(linkLibraryElementID.LibraryElementId);
-        }
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                new DeleteLibraryElementRequest(linkLibraryElementID));
+            LinkRemoved?.Invoke(this, linkLibraryElementID);
 
-        public void ChangeLinkTitle(string linkLibraryElementID, string title)
-        {
-            SessionController.Instance.LinkController.ChangeLinkTitle(linkLibraryElementID, title);
         }
-
-        public void ChangeLinkTags(string linkLibraryElementID, HashSet<String> tags)
-        {
-            SessionController.Instance.LinkController.ChangeLinkTags(linkLibraryElementID, tags);
-        }
-
         public HashSet<LinkLibraryElementController> GetAllLinks()
         {
-            var linkedIds = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(this.LibraryElementModel.LibraryElementId));
+            var linkedIds = SessionController.Instance.LinksController.GetLinkedIds(LibraryElementModel.LibraryElementId);
             var controllers = linkedIds.Select(id =>SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
             return new HashSet<LinkLibraryElementController>(controllers);
         }

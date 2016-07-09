@@ -88,7 +88,7 @@ namespace NuSysApp
             m["height"] = 400;
             m["autoCreate"] = true;
             m["creator"] =  SessionController.Instance.ActiveFreeFormViewer.ContentId;
-            m["nodeType"] = ElementType.PDF.ToString();
+            m["type"] = ElementType.PDF.ToString();
 
             var metadata = new Dictionary<string, object>();
             metadata["BookmarkId"] = Controller.LibraryElementController.GetMetadata("BookmarkId");

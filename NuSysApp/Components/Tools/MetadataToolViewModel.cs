@@ -28,9 +28,7 @@ namespace NuSysApp
             {
                 if (!AllMetadataDictionary.ContainsKey((_controller as MetadataToolController).MetadataToolModel.Selection.Item1))
                 {
-
                     (_controller as MetadataToolController).UnSelect();
-                    //AllMetadataDictionary = (_controller as MetadataToolController).GetAllMetadata();
                 }
                 else if (Selection.Item2 != null && !AllMetadataDictionary[Selection.Item1].Contains(Selection.Item2) || Selection.Item2 == null)
                 {

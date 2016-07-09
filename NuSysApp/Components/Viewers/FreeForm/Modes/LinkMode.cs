@@ -56,11 +56,12 @@ namespace NuSysApp {
             var startVm = (hitsStart.First() as FrameworkElement).DataContext as ElementViewModel;
             var endVm = (hitsEnd.First() as FrameworkElement).DataContext as ElementViewModel;
 
+            /*
             // Don't allow links where the start and end atom are identical
             if (startVm == null || endVm == null || startVm == endVm || startVm.Id == endVm.Id || startVm.LinkList.Contains( endVm.Controller) || endVm.LinkList.Contains(startVm.Controller))
-                return;
+                return;*/
 
-        //    startVm.Controller.RequestLinkTo(endVm.Id);
+        //    startVm.Controller.RequestLinkTo(endVm.ContentId);
 
             lineModel.Delete();
             

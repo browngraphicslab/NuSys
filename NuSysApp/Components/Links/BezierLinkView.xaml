@@ -19,7 +19,7 @@
             <converters:BoolToVisibilityConverter x:Key="bConverter"/>
         </ResourceDictionary>
     </converters:AnimatableUserControl.Resources>
-    <Canvas Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}">
+    <Canvas Visibility="Visible">
         <Path x:Name="BezierLink" Stroke="White" StrokeThickness="30" PointerPressed="BezierLink_OnPointerPressed" DoubleTapped="BezierLink_OnDoubleTapped">
             <Path.Data>
                 <PathGeometry>
@@ -37,7 +37,7 @@
                 </PathGeometry>
             </Path.Data>
         </Path>
-        <Path x:Name="BezierLinkInner" Stroke="{Binding Color}" StrokeThickness="25" CompositeMode="MinBlend" Opacity="0.28" PointerPressed="BezierLink_OnPointerPressed" DoubleTapped="BezierLink_OnDoubleTapped">
+        <Path x:Name="BezierLinkInner" Stroke="Red" StrokeThickness="25" CompositeMode="MinBlend" Opacity="0.28" PointerPressed="BezierLink_OnPointerPressed" DoubleTapped="BezierLink_OnDoubleTapped">
             <Path.Data>
                 <PathGeometry>
                     <PathGeometry.Figures>
@@ -58,7 +58,7 @@
             <Grid>
                 <Rectangle x:Name="Rect" Fill="LightGray" Width="260"  HorizontalAlignment="Left"/>
                 <StackPanel Orientation="Horizontal" IsHitTestVisible="{Binding IsSelected}" >
-                    <TextBox x:Name ="Title" HorizontalAlignment="Stretch" Height="32" VerticalAlignment="Top" Text="{Binding Annotation}" TextAlignment="Center"/>
+                    <TextBox x:Name ="Title" HorizontalAlignment="Stretch" Height="32" VerticalAlignment="Top" Text="{Binding Title}" TextAlignment="Center"/>
                 </StackPanel>
             </Grid>
             </StackPanel>

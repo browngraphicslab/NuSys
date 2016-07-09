@@ -48,7 +48,7 @@ namespace NuSysApp
             DataGrid.SelectedItem = null;
         }
 
-        private void ControllerOnDisposed(object source)
+        private void ControllerOnDisposed(object source, object args)
         {
             var vm = (ElementViewModel) DataContext;
             SessionController.Instance.SessionView.MainCanvas.RemoveHandler(UIElement.PointerReleasedEvent, _releaseHandler);
@@ -142,7 +142,7 @@ namespace NuSysApp
                 return;
             }
 
-            // the list item template has an element controller id, use that to get the library element Model Id
+            // the list item template has an element controller id, use that to get the library element Model ContentId
             ElementController elementController;
             SessionController.Instance.IdToControllers.TryGetValue(groupNodeDataGridInfo.Id, out elementController);
             var libraryElementModelId = elementController?.LibraryElementModel.LibraryElementId;
@@ -152,14 +152,6 @@ namespace NuSysApp
 
             // return if the controller is null
             Debug.Assert(controller != null);
-
-            // check for unsupported types
-            if (controller.LibraryElementModel.Type == ElementType.Word || 
-                controller.LibraryElementModel.Type == ElementType.Powerpoint ||
-                controller.LibraryElementModel.Type == ElementType.Link)
-            {
-                return;
-            }
 
             // open the detail viewer
             SessionController.Instance.SessionView.ShowDetailView(controller);

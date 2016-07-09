@@ -9,20 +9,19 @@ using Windows.Foundation;
 
 namespace NuSysApp
 {
-    public class RegionController : IMetadatable, ILinkable, IDetailViewable
+    public class RegionController : IMetadatable, ILinkTabable, IDetailViewable
     {
         public Region Model;
-
-
+        
         public string Title
         {
             get { return Model?.Name; }
             set { SetTitle(value);}
         }
 
-        public LinkId Id
+        public string ContentId
         {
-            get { return new LinkId(SessionController.Instance.RegionsController.GetLibraryElementModelId(this.Model.Id),this.Model.Id); }
+            get { return SessionController.Instance.RegionsController.GetLibraryElementModelId(Model.Id); }
         }
 
 
@@ -178,40 +177,31 @@ namespace NuSysApp
 
      /*   public void RemoveLink(LinkLibraryElementController linkController)
         {
-            LinkRemoved?.Invoke(this, linkController.Id);
+            LinkRemoved?.Invoke(this, linkController.ContentId);
         }*/
 
         #region Linking methods
-        public async Task RequestAddNewLink(LinkId idToLinkTo, string title)
+        public async Task RequestAddNewLink(string idToLinkTo, string title)
         {
             var m = new Message();
-        //    var contentId = SessionController.Instance.RegionsController.GetLibraryElementModelId(this.Model.Id); // The ID of the library element this region is associated with.
-            m["id1"] = this.Id;
+        //    var contentId = SessionController.Instance.RegionsController.GetLibraryElementModelId(this.Model.ContentId); // The ID of the library element this region is associated with.
+            m["id1"] = this.ContentId;
             m["id2"] = idToLinkTo;
             m["title"] = title;
-            await SessionController.Instance.LinkController.RequestLink(m);
-            //SessionController.Instance.LinkController.RequestLink(new LinkId( SessionController.Instance.RegionsController.GetLibraryElementModelId(this.Model.Id),this.Model.Id), idToLinkTo);
+            await SessionController.Instance.LinksController.RequestLink(m);
+            //SessionController.Instance.LinksController.RequestLink(new LinkId( SessionController.Instance.RegionsController.GetLibraryElementModelId(this.Model.ContentId),this.Model.ContentId), idToLinkTo);
         }
 
-        public void RequestRemoveLink(LinkId linkLibraryElementID)
+        public void RequestRemoveLink(string linkLibraryElementID)
         {
-            var controller = SessionController.Instance.ContentController.GetLibraryElementController(linkLibraryElementID.LibraryElementId) as LinkLibraryElementController;
-            SessionController.Instance.LinkController.RemoveLink(controller.Id.RegionId);
-        }
-        public void ChangeLinkTitle(string linkLibraryElementID, string title)
-        {
-            SessionController.Instance.LinkController.ChangeLinkTitle(linkLibraryElementID, title);
-        }
-
-        public void ChangeLinkTags(string linkLibraryElementID, HashSet<String> tags)
-        {
-            SessionController.Instance.LinkController.ChangeLinkTags(linkLibraryElementID, tags);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                new DeleteLibraryElementRequest(linkLibraryElementID));
         }
         
         public HashSet<LinkLibraryElementController> GetAllLinks()
         {
-            var libraryElementIdForRegion = SessionController.Instance.RegionsController.GetLibraryElementModelId(Model.Id);
-            var linkedIds = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(libraryElementIdForRegion, Model.Id));
+            //var libraryElementIdForRegion = SessionController.Instance.RegionsController.GetLibraryElementModelId(Model.Id);
+            var linkedIds = SessionController.Instance.LinksController.GetLinkedIds(Model.Id);
             var controllers = linkedIds.Select(id => SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
             return new HashSet<LinkLibraryElementController>(controllers);
         }

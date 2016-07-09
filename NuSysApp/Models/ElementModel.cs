@@ -139,7 +139,6 @@ namespace NuSysApp
             dict.Add("scaleX", ScaleX);
             dict.Add("scaleY", ScaleY);
             dict.Add("title", Title);
-            dict.Add("nodeType", ElementType.ToString());
             dict.Add("type", ElementType.ToString());
             dict.Add("contentId", LibraryId);
 
@@ -175,7 +174,12 @@ namespace NuSysApp
                // LastNetworkUser = SessionController.Instance.NuSysNetworkSession.NetworkMembers[props.GetString("system_sender_ip")];
             }
 
-            if (props.ContainsKey("nodeType"))
+            if (props.ContainsKey("type"))
+            {
+                string t = props.GetString("type");
+                ElementType = (ElementType)Enum.Parse(typeof(ElementType), t);
+            }
+            else if (props.ContainsKey("nodeType"))
             {
                 string t = props.GetString("nodeType");
                 ElementType = (ElementType)Enum.Parse(typeof(ElementType), t);
