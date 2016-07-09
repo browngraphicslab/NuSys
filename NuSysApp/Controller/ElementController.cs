@@ -191,7 +191,6 @@ namespace NuSysApp
 
         public void Delete(object sender)
         {
-            SessionController.Instance.LinksController.RemoveAlias(this.Id);
             Deleted?.Invoke(this);
             SessionController.Instance.ActiveFreeFormViewer.DeselectAll();
 
@@ -367,7 +366,6 @@ namespace NuSysApp
             if (props.ContainsKey("region"))
             {
                 string region = props.Get("region");
-                Debug.WriteLine("REGIONS!!!!" + region);
                 //RegionChanged?.Invoke(this, region);
             }
         }

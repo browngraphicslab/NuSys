@@ -158,7 +158,7 @@ namespace NuSysApp
                         }
                     }
                 }
-                SessionController.Instance.LinksController.AddAlias(controller);
+                //SessionController.Instance.LinksController.AddAlias(controller);
             }
         }
     }

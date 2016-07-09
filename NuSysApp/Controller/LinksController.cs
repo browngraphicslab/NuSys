@@ -51,12 +51,13 @@ namespace NuSysApp
         public void AddLinkable(ILinkable linkable)
         {
             Debug.Assert(linkable != null && linkable.Id != null && linkable.ContentId != null);
+            var linkableContentId = linkable.ContentId;
             _linkableIdToLinkableController.TryAdd(linkable.Id, linkable);
-            if (!_contentIdToLinkableIds.ContainsKey(linkable.ContentId))
+            if (!_contentIdToLinkableIds.ContainsKey(linkableContentId))
             {
-                _contentIdToLinkableIds[linkable.ContentId] = new HashSet<string>();
+                _contentIdToLinkableIds[linkableContentId] = new HashSet<string>();
             }
-            _contentIdToLinkableIds[linkable.ContentId].Add(linkable.Id);
+            _contentIdToLinkableIds[linkableContentId].Add(linkable.Id);
             linkable.Disposed += LinkableOnDisposed;
 
             //if linkable is LinkController
@@ -84,6 +85,23 @@ namespace NuSysApp
             if(!_linkableIdToLinkIds.ContainsKey(linkable.Id))
             {
                 _linkableIdToLinkIds[linkable.Id] = new HashSet<string>();
+            }
+            
+            // Get the list of links attached to the current linkable's library element model
+            var linkLibraryElementModelIds = GetLinkedIds(linkableContentId);
+            // Get the list of library element controllers that are attached to this linkable's library elment model
+            var oppositeLibraryElementControllers =
+                linkLibraryElementModelIds.Select(linkId =>
+                GetOppositeLibraryElementModel(linkableContentId, GetLinkLibraryElementControllerFromLibraryElementId(linkId)));
+
+            // create the bezier lnks
+            foreach (var libraryElementController in oppositeLibraryElementControllers)
+            {
+                var linkables = GetInstancesOfContent(libraryElementController.ContentId);
+                foreach (var link in linkables)
+                {
+                    CreateBezierLinkBetween(linkable, link);
+                }
             }
         }
 
@@ -173,41 +191,6 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// To be API called whenever an alias is created
-        /// RECURSIVE
-        /// </summary>
-        /// <param name="linkableController"></param>
-        public void AddAlias(ILinkable linkableController)
-        {
-            var linkableContentId = linkableController.ContentId;
-            Debug.Assert(linkableContentId != null);
-            var linkLibraryElementModelIds = GetLinkedIds(linkableContentId);
-            var oppositeLibraryElementControllers =
-                linkLibraryElementModelIds.Select(linkId => 
-                GetOppositeLibraryElementModel(linkableContentId, GetLinkLibraryElementControllerFromLibraryElementId(linkId)));
-
-            foreach (var libraryElementController in oppositeLibraryElementControllers)
-            {
-                var linkables = GetInstancesOfContent(libraryElementController.ContentId);
-                foreach (var link in linkables)
-                {
-                    CreateBezierLinkBetween(linkableController, link);
-                }
-            }
-        }
-
-        /// <summary>
-        /// To Be API called whenever an Alias is Removed
-        /// Removes all the links attached to that alias
-        /// </summary>
-        /// <param name="linkableController"></param>
-        public void RemoveAlias(string linkableControllerId)
-        {
-            //Debug.WriteLine($"RemoveAlias: {linkableControllerId}");
-            //Debug.Assert(linkableControllerId != null && _linkableIdToLinkIds.ContainsKey(linkableControllerId));
-        }
-
-        /// <summary>
         /// Creates the visual links for a given link library element controller
         /// </summary>
         /// <param name="linkController"></param>
@@ -254,7 +237,6 @@ namespace NuSysApp
         /// <param name="content"></param>
         public void RemoveContent(LibraryElementController content)
         {
-            Debug.WriteLine($"RemoveContent {content.ContentId}");
             var libraryElementId = content?.LibraryElementModel?.LibraryElementId;
             Debug.Assert(libraryElementId != null);
             Debug.Assert(content?.LibraryElementModel != null);
@@ -272,12 +254,6 @@ namespace NuSysApp
                 _contentIdToLinkableIds[linkLibraryElementModel.OutAtomId].Remove(libraryElementId);
             }
 
-            var linkableAliases = GetInstancesOfContent(libraryElementId);
-            foreach (var linkableAlias in linkableAliases)
-            {
-                Debug.Assert(_contentIdToLinkableIds.ContainsKey(linkableAlias.ContentId));
-                RemoveAlias(linkableAlias.Id);
-            }
             DisposeContent(content.ContentId);
         }
 
@@ -486,7 +462,6 @@ namespace NuSysApp
         /// <param name="linkableId"></param>
         private void DisposeLinkable(string linkableId)
         {
-            Debug.WriteLine($"DisposeLinkable: {linkableId}");
             Debug.Assert(linkableId != null);
 
             ILinkable outLinkable;
@@ -509,12 +484,9 @@ namespace NuSysApp
         /// <param name="contentId"></param>
         private void DisposeContent(string contentId)
         {
-
-            Debug.WriteLine($"DisposeContent {contentId}");
             HashSet<string> outObj;
             _contentIdToLinkableIds.TryRemove(contentId, out outObj);
             _contentIdToLinkContentIds.TryRemove(contentId, out outObj);
-
         }
 
         //private ILinkable GetLinkableBetweenLinkables(ILinkable one, ILinkable two)
