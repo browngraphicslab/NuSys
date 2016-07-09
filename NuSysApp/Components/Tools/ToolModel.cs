@@ -19,6 +19,15 @@ namespace NuSysApp
             MetadataKeys,
             MetadataValues
         }
+
+        public enum ParentOperatorType
+        {
+            And,
+            Or
+        }
+
+        public ParentOperatorType ParentOperator { get; private set; }
+
         public HashSet<string> LibraryIds { get; private set; }
         public HashSet<string> ParentIds { get; private set; }
         public bool Selected { get; private set; }
@@ -28,6 +37,12 @@ namespace NuSysApp
             Id = SessionController.Instance.GenerateId();
             ParentIds = new HashSet<string>();
             LibraryIds = new HashSet<string>();
+            ParentOperator = ParentOperatorType.Or;
+        }
+
+        public void SetParentOperator(ParentOperatorType parentOperator)
+        {
+            ParentOperator = parentOperator;
         }
 
         public void SetLibraryIds(HashSet<string> libraryIds)

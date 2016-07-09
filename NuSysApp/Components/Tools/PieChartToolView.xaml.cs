@@ -18,7 +18,7 @@ using WinRTXamlToolkit.Controls.DataVisualization.Charting;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace NuSysApp.Components.Tools
+namespace NuSysApp
 {
     public sealed partial class PieChartToolView : AnimatableUserControl, ToolViewable
     {
@@ -94,7 +94,7 @@ namespace NuSysApp.Components.Tools
             {
                 if (item.Content.Equals(selection))
                 {
-                    item.Background = new SolidColorBrush(Colors.Blue);
+                    item.Background = new SolidColorBrush(Colors.LightBlue);
                 }
                 else
                 {

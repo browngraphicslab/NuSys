@@ -20,14 +20,14 @@ namespace NuSysApp
         public delegate void SizeChangedEventHandler(object sender, double width, double height);
         public delegate void DisposedEventHandler(string parentid);
         public delegate void ParentsIdsChangedEventHandler();
-
-
+        public delegate void NumberOfParentsChangedEventHandler (int numberOfParents);
 
         public event LibraryIdsChangedEventHandler LibraryIdsChanged;
         public event LocationChangedEventHandler LocationChanged;
         public event SizeChangedEventHandler SizeChanged;
         public event DisposedEventHandler Disposed;
         public event ParentsIdsChangedEventHandler ParentsLibraryIdsChanged;
+        public event NumberOfParentsChangedEventHandler NumberOfParentsChanged;
 
 
 
@@ -114,19 +114,29 @@ namespace NuSysApp
                 if (Model.ParentIds.Add(parentController.Model?.Id))
                 {
                     parentController.LibraryIdsChanged += ParentLibraryIdsChanged;
-                    Model.SetLibraryIds(GetUpdatedDataList());
+                    Model.SetLibraryIds(Filter(GetUpdatedDataList()));
                     LibraryIdsChanged?.Invoke(this, Model.LibraryIds);
                     ParentsLibraryIdsChanged?.Invoke();
                     parentController.Disposed += OnParentDisposed;
+                    NumberOfParentsChanged?.Invoke(Model.ParentIds.Count);
+                    
                 }
             }
+        }
+
+        public void SetParentOperator(ToolModel.ParentOperatorType parentOperator)
+        {
+            Model.SetParentOperator(parentOperator);
+            Model.SetLibraryIds(Filter(GetUpdatedDataList()));
+            LibraryIdsChanged?.Invoke(this, Model.LibraryIds);
+            ParentsLibraryIdsChanged?.Invoke();
         }
 
         public void OnParentDisposed(string parentid)
         {
             ToolControllers[parentid].LibraryIdsChanged -= ParentLibraryIdsChanged;
             Model.ParentIds.Remove(parentid);
-            Model.SetLibraryIds(GetUpdatedDataList());
+            Model.SetLibraryIds(Filter(GetUpdatedDataList()));
             LibraryIdsChanged?.Invoke(this, Model.LibraryIds);
             ParentsLibraryIdsChanged?.Invoke();
             ToolControllers[parentid].Disposed -= OnParentDisposed;
@@ -142,6 +152,7 @@ namespace NuSysApp
 
                 }
             }
+            NumberOfParentsChanged?.Invoke(Model.ParentIds.Count);
         }
 
         public abstract void UnSelect();
@@ -154,7 +165,6 @@ namespace NuSysApp
             }
             Disposed?.Invoke(Model.Id);
             ToolControllers.Remove(Model.Id);
-
         }
 
         public HashSet<string> Filter(HashSet<string> ids)
@@ -225,15 +235,24 @@ namespace NuSysApp
         public HashSet<string> GetUpdatedDataList()
         {
             var controllers = Model.ParentIds.Select(item => ToolControllers.ContainsKey(item) ? ToolControllers[item] : null);
-            var list = new List<string>();
-            foreach (var enumerable in controllers.Select(controller => controller?.Model.LibraryIds))
-            {
-                list.AddRange(enumerable ?? new HashSet<string>());
-            }
             if (controllers.Count() == 0)
             {
                 return SessionController.Instance.ContentController.IdList;
             }
+            IEnumerable<string> list = controllers?.First().Model.LibraryIds;
+            foreach (var enumerable in controllers.Select(controller => controller?.Model.LibraryIds))
+            {
+                switch (Model.ParentOperator)
+                {
+                    case ToolModel.ParentOperatorType.And:
+                        list = list.Intersect(enumerable);
+                        break;
+                    case ToolModel.ParentOperatorType.Or:
+                        list = list.Concat(enumerable ?? new HashSet<string>());
+                        break;
+                }
+            }
+           
             return new HashSet<string>(list);
         }
         public void SetLocation(double x, double y)

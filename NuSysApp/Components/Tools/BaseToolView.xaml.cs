@@ -6,6 +6,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
@@ -13,11 +14,12 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using NetTopologySuite.Utilities;
 using NuSysApp.Tools;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace NuSysApp.Components.Tools
+namespace NuSysApp
 {
     public sealed partial class BaseToolView : AnimatableUserControl
     {
@@ -32,9 +34,9 @@ namespace NuSysApp.Components.Tools
 
         public BaseToolView(BasicToolViewModel vm, double x, double y)
         {
+            this.DataContext = vm;
             this.InitializeComponent();
             vm.Controller.SetLocation(x, y);
-            this.DataContext = vm;
             Vm = vm;
             xTitle.Text = vm.Filter.ToString();
             vm.ReloadPropertiesToDisplay();
@@ -42,11 +44,45 @@ namespace NuSysApp.Components.Tools
             _toolView.SetProperties(Vm.PropertiesToDisplay);
             xViewTypeGrid.Children.Add((UIElement)_toolView);
             _currentViewMode = ViewMode.List;
-            SetSize(400,600);
+            SetSize(250,450);
             (vm.Controller as BasicToolController).SelectionChanged += OnSelectionChanged;
             vm.PropertiesToDisplayChanged += Vm_PropertiesToDisplayChanged;
+            vm.Controller.NumberOfParentsChanged += Controller_NumberOfParentsChanged;
             xCollectionElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             xCollectionElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
+            //xParentOperatorPickerList.ItemsSource = vm.ParentOperatorList;
+        }
+
+        private void Controller_NumberOfParentsChanged(int numOfParents)
+        {
+            //xParentOperatorPickerList.Visibility = Visibility.Visible;
+            //xViewTypeGrid.Visibility = Visibility.Collapsed;
+            if (numOfParents > 1)
+            {
+                xParentOperatorGrid.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                xParentOperatorGrid.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        //private void XParentOperatorPickerList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    if (xParentOperatorPickerList.SelectedItem != null)
+        //    {
+        //        Assert.IsTrue(xParentOperatorPickerList.SelectedItem is ToolModel.ParentOperatorType);
+        //        Vm.Controller.SetParentOperator(xParentOperatorPickerList.SelectedItem is ToolModel.ParentOperatorType ? (ToolModel.ParentOperatorType) xParentOperatorPickerList.SelectedItem : ToolModel.ParentOperatorType.And);
+        //        xParentOperatorPickerList.Visibility = Visibility.Collapsed;
+        //        xViewTypeGrid.Visibility = Visibility.Visible;
+        //    }
+        //}
+
+        public void Dispose()
+        {
+            (DataContext as BasicToolViewModel).PropertiesToDisplayChanged -= Vm_PropertiesToDisplayChanged;
+            ((DataContext as BasicToolViewModel).Controller as BasicToolController).SelectionChanged -= OnSelectionChanged;
+            (DataContext as BasicToolViewModel).Controller.NumberOfParentsChanged -= Controller_NumberOfParentsChanged;
         }
 
         private void Vm_PropertiesToDisplayChanged()
@@ -112,12 +148,6 @@ namespace NuSysApp.Components.Tools
             this.Dispose();
         }
 
-        public void Dispose()
-        {
-            (DataContext as BasicToolViewModel).PropertiesToDisplayChanged -= Vm_PropertiesToDisplayChanged;
-            ((DataContext as BasicToolViewModel).Controller as BasicToolController).SelectionChanged -= OnSelectionChanged;
-        }
-
         public Canvas getCanvas()
         {
             return xCanvas;
@@ -168,17 +198,21 @@ namespace NuSysApp.Components.Tools
             if (width > _minWidth && height > _minHeight)
             {
                 (DataContext as BasicToolViewModel).Controller.SetSize(width, height);
+                //xParentOperatorPickerList.Height = height - 175;
+                //xParentOperatorPickerList.Width = width;
                 _toolView.SetSize(width, height);
             }
             else if (height < _minHeight)
             {
                 (DataContext as BasicToolViewModel).Controller.SetSize(width, this.Height);
                 _toolView.SetSize(width, this.Height);
+                //xParentOperatorPickerList.Width = width;
             }
             else if (width < _minWidth)
             {
                 (DataContext as BasicToolViewModel).Controller.SetSize(this.Width, height);
                 _toolView.SetSize(this.Width, height);
+                //xParentOperatorPickerList.Height = height - 175;
             }
         }
 
@@ -227,7 +261,21 @@ namespace NuSysApp.Components.Tools
             {
                 vm.Controller.SetLocation(vm.X + x, vm.Y + y);
             }
+        }
 
+
+        private void XParentOperatorText_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (Vm.Controller.Model.ParentOperator == ToolModel.ParentOperatorType.And)
+            {
+                Vm.Controller.SetParentOperator(ToolModel.ParentOperatorType.Or);
+                xParentOperatorText.Text = "OR";
+            }
+            else if (Vm.Controller.Model.ParentOperator == ToolModel.ParentOperatorType.Or)
+            {
+                Vm.Controller.SetParentOperator(ToolModel.ParentOperatorType.And);
+                xParentOperatorText.Text = "AND";
+            }
         }
     }
 

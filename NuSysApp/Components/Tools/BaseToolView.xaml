@@ -1,5 +1,5 @@
 ﻿<nuSysApp:AnimatableUserControl
-    x:Class="NuSysApp.Components.Tools.BaseToolView"
+    x:Class="NuSysApp.BaseToolView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:NuSysApp.Components.Tools"
@@ -14,50 +14,71 @@
     RenderTransform="{Binding Transform}"
     IsDoubleTapEnabled="True">
     <Canvas x:Name="xCanvas" >
-        <StackPanel Orientation="Horizontal">
-            <Button x:Name="xDeleteButton" Click ="Delete_Click" VerticalAlignment="Top">
-                <Image Source="ms-appx:///Assets/icon_delete_color.png" Height="20" Width="20"></Image>
-            </Button>
-            <Grid Height="{Binding Height}" Width="{Binding Width}" MinHeight="100">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Grid x:Name ="xGrid" Grid.Row ="0" BorderBrush="{StaticResource color2}" BorderThickness="1" Background="White">
+        <StackPanel>
+            <Border Name="xParentOperatorGrid" Visibility="Collapsed" Height="40" CornerRadius="2,2,0,0" Background="{StaticResource color1}" Tapped="XParentOperatorText_OnTapped" Margin="40,0,0,0">
+                   <TextBlock Text="OR" Name="xParentOperatorText" HorizontalAlignment="Center" FontSize="24"  VerticalAlignment="Center"></TextBlock>
+            </Border>
+            
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="xDeleteButton" Click ="Delete_Click" VerticalAlignment="Top">
+                    <Image Source="ms-appx:///Assets/icon_delete_color.png" Height="20" Width="20"></Image>
+                </Button>
+                <Grid Height="{Binding Height}" Width="{Binding Width}" MinHeight="100">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <TextBlock x:Name="xTitle" TextAlignment="Center" Foreground="{StaticResource color3}"  Text="Filter Type" Height="35" Grid.Row="0" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta"/>
-                    <Grid Name="xViewTypeGrid" Grid.Row="1">
-                        
-                    </Grid>
-                    <StackPanel Name ="xbottompanel" BorderBrush="{StaticResource color2}"  BorderThickness="0.3" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta">
+                    <Grid x:Name ="xGrid" Grid.Row ="1" BorderBrush="{StaticResource color2}" BorderThickness="1" Background="White">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-                        <Button x:Name="xPieChartButton" Click="XPieChartButton_OnClick"  Margin="20,0,0,0" Background="Transparent">
-                            <Image Source="ms-appx:///Assets/piegraph bluegreen.png" Height="20" Width="20"></Image>
-                        </Button>
-                        <Button x:Name="xListViewButton" Click="XListViewButton_OnClick"  Margin="20,0,0,0" Background="Transparent">
-                            <Image Source="ms-appx:///Assets/listview bluegreen.png" Height="20" Width="20"></Image>
+                        <TextBlock x:Name="xTitle" TextAlignment="Center" Foreground="{StaticResource color3}"  Text="Filter Type" Height="35" Grid.Row="0" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta"/>
+
+                        <!--<ListView Visibility="Collapsed" Grid.Row="1" Name="xParentOperatorPickerList" SelectionChanged="XParentOperatorPickerList_OnSelectionChanged">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock  HorizontalAlignment="Center" TextAlignment="Center" FontSize="32" Text="{Binding}" Margin="50"/>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>-->
+
+                        <Grid Name="xViewTypeGrid" Grid.Row="1">
+                        </Grid>
+                        <StackPanel Name ="xbottompanel" BorderBrush="{StaticResource color2}"  BorderThickness="0.3" Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta">
+
+                            <Button x:Name="xPieChartButton" Click="XPieChartButton_OnClick"  Margin="20,0,0,0" Background="Transparent">
+                                <Image Source="ms-appx:///Assets/piegraph bluegreen.png" Height="20" Width="20"></Image>
+                            </Button>
+                            <Button x:Name="xListViewButton" Click="XListViewButton_OnClick"  Margin="20,0,0,0" Background="Transparent">
+                                <Image Source="ms-appx:///Assets/listview bluegreen.png" Height="20" Width="20"></Image>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal">
+                        <Button x:Name="xCollectionElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Center">
+                            <StackPanel>
+                                <Image Source="ms-appx:///Assets/collection icon bluegreen.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                                <TextBlock Text="Collection" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="11"></TextBlock>
+                            </StackPanel>
                         </Button>
                     </StackPanel>
-                </Grid>
-                <StackPanel Grid.Row="2" Orientation="Horizontal">
-                    <Button x:Name="xCollectionElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Center">
-                        <StackPanel>
-                            <Image Source="ms-appx:///Assets/collection icon bluegreen.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                            <TextBlock Text="Collection" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="11"></TextBlock>
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-                <Path x:Name="xResizer" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
+                    <Path x:Name="xResizer" Grid.Row="1" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
                       Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
                       Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" ManipulationDelta="Resizer_OnManipulationDelta"/>
-
-            </Grid>
+                </Grid>
+            </StackPanel>
         </StackPanel>
+        
     </Canvas>
 </nuSysApp:AnimatableUserControl>
 

@@ -18,7 +18,6 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
-using NuSysApp.Components.Tools;
 using NuSysApp.Tools;
 using NuSysApp.Viewers;
 using WinRTXamlToolkit.Controls;
