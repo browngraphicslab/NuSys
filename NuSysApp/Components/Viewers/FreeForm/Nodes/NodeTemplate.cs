@@ -444,7 +444,10 @@ namespace NuSysApp
                                 var m = new Message();
                                 m["id1"] = dc.ContentId;
                                 m["id2"] = vm.ContentId;
-                                SessionController.Instance.LinksController.RequestLink(m);
+                                if (dc.ContentId != vm.ContentId)
+                                {
+                                    SessionController.Instance.LinksController.RequestLink(m);
+                                }
                             }
                          //   vm.Controller.RequestVisualLinkTo();
                         }
