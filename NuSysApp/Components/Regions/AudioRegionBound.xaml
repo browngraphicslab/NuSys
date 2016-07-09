@@ -21,7 +21,7 @@
                         <CompositeTransform TranslateY="-8" TranslateX="-3.5"/>
                     </Ellipse.RenderTransform>
                 </Ellipse>
-                <Line x:Name="Handle" Y1="{Binding Y1}" Y2="{Binding Y2}"  X1="{Binding X1}" X2 ="{Binding X1}" StrokeThickness="4" Stroke="Azure" Width="7" Height="{Binding Y2}">
+                <Line x:Name="Handle" Y1="{Binding Y1}" Y2="{Binding Y2}"  StrokeThickness="4" Stroke="Azure" Width="7" Height="{Binding Y2}">
                     <Line.RenderTransform>
                         <CompositeTransform TranslateY="-10"/>
                     </Line.RenderTransform>

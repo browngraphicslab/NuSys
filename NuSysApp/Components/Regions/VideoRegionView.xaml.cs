@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 using SharpDX.Direct3D11;
+using System.Threading.Tasks;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -22,12 +23,8 @@ namespace NuSysApp
 {
     public sealed partial class VideoRegionView : UserControl
     {
-        public VideoRegionView(VideoRegionViewModel vm)
-        {
-            this.InitializeComponent();
-            this.DataContext = vm;
-            this.Deselect();
-        }
+        private bool _isSingleTap;
+
 
         public delegate void OnRegionSeekHandler(double time);
 
@@ -38,6 +35,14 @@ namespace NuSysApp
         }
 
         public bool Selected { get; set; }
+
+
+        public VideoRegionView(VideoRegionViewModel vm)
+        {
+            this.InitializeComponent();
+            this.DataContext = vm;
+            this.Deselect();
+        }
         private void Bound1_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var composite = IntervalRectangle.RenderTransform as CompositeTransform;
@@ -134,6 +139,12 @@ namespace NuSysApp
 
         private void RectangleRegionView_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
+            if (!Selected)
+            {
+                this.Select();
+                OnRegionSeek?.Invoke(((this.DataContext as VideoRegionViewModel).RegionController.Model as VideoRegionModel).Start + 0.001);
+
+            }
             e.Handled = true;
         }
         public void Deselect()
@@ -182,18 +193,20 @@ namespace NuSysApp
                 this.Deselect();
             else
                 this.Select();
-                */
+                
             e.Handled = true;
-
+            */
         }
         private void IntervalRectangle_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             Bound1_OnManipulationDelta(sender,e);
             Bound2_OnManipulationDelta2(sender, e);
         }
-
+        
         private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
+            _isSingleTap = false;
+
             var vm = DataContext as RegionViewModel;
             SessionController.Instance.SessionView.ShowDetailView(vm?.LibraryElementController);
             var regionController = vm?.RegionController;
@@ -207,8 +220,13 @@ namespace NuSysApp
             vm.RegionController.SetTitle(vm.Name);
         }
 
-        private void IntervalRectangle_OnTapped(object sender, TappedRoutedEventArgs e)
+        private async void IntervalRectangle_OnTapped(object sender, TappedRoutedEventArgs e)
         {
+            // check to see if double tap gets called
+            _isSingleTap = true;
+            await Task.Delay(200);
+            if (!_isSingleTap) return;
+
             if (!Selected)
             {
                 OnRegionSeek?.Invoke(((this.DataContext as VideoRegionViewModel).RegionController.Model as VideoRegionModel).Start + 0.001);

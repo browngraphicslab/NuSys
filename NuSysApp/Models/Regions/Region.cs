@@ -22,7 +22,7 @@ namespace NuSysApp
         public string Name { get; set; }
         public string Id { get; set; }
         public ConcurrentDictionary<string, MetadataEntry> Metadata { get; set; }
-        public Region(string name = "Untitled", Dictionary<string, MetadataEntry> metadata = null)
+        public Region(string name = "Untitled Region", Dictionary<string, MetadataEntry> metadata = null)
         {
             Id = SessionController.Instance.GenerateId();
             Name = name;
