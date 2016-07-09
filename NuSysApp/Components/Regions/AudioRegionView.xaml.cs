@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
@@ -26,15 +27,16 @@ namespace NuSysApp
         public delegate void OnRegionSeekHandler(double time);
         public event OnRegionSeekHandler OnRegionSeek;
         public bool Selected { get; set; }
+
+
+        private bool _isSingleTap;
+
         public AudioRegionView(AudioRegionViewModel vm)
         {
             this.InitializeComponent();
             this.DataContext = vm;
             this.Deselect();
             _toggleManipulation = false;
-
-
-
 
 
         }
@@ -65,6 +67,7 @@ namespace NuSysApp
             }
         }
 
+ 
         private void Handle_OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
             _toggleManipulation = false;
@@ -88,11 +91,14 @@ namespace NuSysApp
 
         public void Select()
         {
+            var vm = DataContext as AudioRegionViewModel;
             Rect.Fill = new SolidColorBrush(Color.FromArgb(255, 152, 26, 77));
             xNameTextBox.Visibility = Visibility.Visible;
             Rect.IsHitTestVisible = false;
-            xDelete.Visibility = Visibility.Visible;
-
+            if (vm.Editable)
+            {
+                xDelete.Visibility = Visibility.Visible;
+            }
             Selected = true;
 
         }
@@ -114,6 +120,8 @@ namespace NuSysApp
         }
         private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
+            _isSingleTap = false;
+
             var vm = DataContext as RegionViewModel;
             SessionController.Instance.SessionView.ShowDetailView(vm?.LibraryElementController);
             var regionController = vm?.RegionController;
@@ -152,8 +160,15 @@ namespace NuSysApp
 
 
         }
-        private void Rect_OnTapped(object sender, TappedRoutedEventArgs e)
+        private async void Rect_OnTapped(object sender, TappedRoutedEventArgs e)
         {
+
+            // check to see if double tap gets called
+            _isSingleTap = true;
+            await Task.Delay(200);
+            if (!_isSingleTap) return;
+
+
             if (!Selected)
             {
                 OnRegionSeek?.Invoke(((DataContext as AudioRegionViewModel).RegionController.Model as TimeRegionModel).Start + 0.01);

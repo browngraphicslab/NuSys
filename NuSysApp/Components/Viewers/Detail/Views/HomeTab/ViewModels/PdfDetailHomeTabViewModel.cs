@@ -240,8 +240,8 @@ namespace NuSysApp
 
         public override void SizeChanged(object sender, double width, double height)
         {
-            var newHeight = View.ActualHeight;
-            var newWidth = View.ActualWidth;
+            var newHeight = this.GetHeight();
+            var newWidth = this.GetWidth();
 
             foreach (var rv in RegionViews)
             {

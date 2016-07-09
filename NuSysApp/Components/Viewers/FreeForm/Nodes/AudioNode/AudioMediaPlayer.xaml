@@ -29,7 +29,7 @@
         <Grid Grid.Row="1" HorizontalAlignment="Right">
             <TextBlock Margin="0,0,10,0" Text ="{Binding ElementName=MediaElement, Path=NaturalDuration.TimeSpan, Converter={StaticResource PositionToStringConverter}}"></TextBlock>
         </Grid>
-        <StackPanel Grid.Row="2"  Orientation="Horizontal" HorizontalAlignment="Center"  Margin="0,0,0,0" VerticalAlignment="Top">
+        <StackPanel Grid.Row="2"  Orientation="Horizontal" HorizontalAlignment="Center"  Margin="0,28,0,0" VerticalAlignment="Top">
 
             <Button x:Name="Play" Tapped="Play_OnTapped" Margin="10,0,10,0"  Style="{StaticResource NodeSubMenuItem}">
                 <Image Source="ms-appx:///Assets/node icons/icon_play.png" Height="20"></Image>
@@ -37,7 +37,7 @@
             <Button x:Name="Pause" Tapped ="Pause_OnTapped" Margin="10,0,10,0"  Style="{StaticResource NodeSubMenuItem}">
                 <Image Source="ms-appx:///Assets/node icons/icon_pause.png" Height="20"/>
             </Button>
-            <Button x:Name="Stop" Tapped="Stop_OnTapped" Margin="10,0,10,0"  Style="{StaticResource NodeSubMenuItem}">
+            <Button  x:Name="Stop" Tapped="Stop_OnTapped" Margin="10,0,10,0"  Style="{StaticResource NodeSubMenuItem}">
                 <Image Source="ms-appx:///Assets/node icons/icon_stop.png" Height="20"></Image>
             </Button>
             <MediaElement x:Name="MediaElement" MediaOpened="MediaElement_OnMediaOpened" MediaEnded="MediaElement_OnMediaEnded" Stretch="Fill" AudioCategory="Speech" AutoPlay="False" Position ="0"/>

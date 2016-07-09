@@ -62,9 +62,17 @@ namespace NuSysApp
             var anchor2 = new Point(vm.OutAnchor.X, vm.OutAnchor.Y);
 
             var distanceX = anchor1.X - anchor2.X;
+            var distanceY = anchor1.Y - anchor2.Y;
+
             curve.Point2 = new Point(anchor1.X - distanceX / 2, anchor2.Y);
             curve.Point1 = new Point(anchor2.X + distanceX / 2, anchor1.Y);
+
+            //Update position of delete button. Eventually, will have annotations?
+            Canvas.SetLeft(Delete, anchor1.X - distanceX / 2);
+            Canvas.SetTop(Delete, anchor1.Y - distanceY / 2);
         }
+
+
 
         private void UpdateArrow()
         {
@@ -89,6 +97,12 @@ namespace NuSysApp
             var anchor2 = new Point(vm.OutAnchor.X, vm.OutAnchor.Y);
             pathfigure.StartPoint = anchor1;
             curve.Point3 = anchor2;
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var vm = DataContext as PresentationLinkViewModel;
+            vm.DeletePresentationLink();
         }
     }
 }

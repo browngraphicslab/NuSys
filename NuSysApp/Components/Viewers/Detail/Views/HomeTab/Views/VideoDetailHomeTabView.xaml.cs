@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Components.Nodes;
 using NuSysApp.Nodes.AudioNode;
+using System.Threading.Tasks;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -50,6 +51,7 @@ namespace NuSysApp
             vm.Controller.Disposed += ControllerOnDisposed;
             vm.View = this;
             VideoMediaPlayer.MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
+            
             VideoMediaPlayer.ScrubBar.ValueChanged += vm.ScrubBarOnValueChanged;
             vm.OnRegionSeekPassing += VideoMediaPlayer.onSeekedTo;
             //Loaded += delegate (object sender, RoutedEventArgs args)
@@ -63,10 +65,12 @@ namespace NuSysApp
             //};
         }
 
-        private void MediaPlayer_MediaOpened(object sender, RoutedEventArgs e)
+        private async void MediaPlayer_MediaOpened(object sender, RoutedEventArgs e)
         {
             var vm = DataContext as VideoDetailHomeTabViewModel;
             vm.VideoDuration = VideoMediaPlayer.MediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
+            await Task.Delay(200);
+            vm.SetExistingRegions();
         }
 
         public void Dispose()

@@ -268,7 +268,7 @@ namespace NuSysApp
             var vm = SessionController.Instance.ActiveFreeFormViewer;
             if (elementType == ElementType.Recording)
             {
-                var r = new RecordingNodeView(new ElementViewModel(new ElementController(new ElementModel("")
+                var r = new RecordingNodeView(new RecordingNodeViewModel(new RecordingNodeController(new ElementModel("")
                 {
                     X = pos.X,
                     Y = pos.Y,

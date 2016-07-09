@@ -44,17 +44,10 @@
             </Storyboard>
         </ResourceDictionary>
     </local:AnimatableUserControl.Resources>
-    
+
     <Canvas x:Name="xCanvas">
-        <local:NodeTemplate x:Name="nodeTpl" Background="{StaticResource color6}" BorderBrush="Transparent">
-            <local:NodeTemplate.SubMenu>
-                <StackPanel Orientation="Vertical">
-                    <Button Margin="0,2,0,2" x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
-                        <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
-                    </Button>
-                </StackPanel>
-            </local:NodeTemplate.SubMenu>
-            <local:NodeTemplate.Inner>
+        <Border BorderThickness="1" BorderBrush="#FF000000" VerticalAlignment="Top">
+
             <Grid x:Name="myGrid" Width="{Binding Width}" Height="{Binding Height}">
                 <Grid >
                     <CaptureElement Name="preview"  Width="{Binding Width}" Height="{Binding Height}"/>
@@ -62,7 +55,7 @@
                     <local:MediaRecorderView x:Name="xMediaRecorder"  Width="{Binding Width}" Height="{Binding Height}" ></local:MediaRecorderView>
                 </Grid>
             </Grid>
-            </local:NodeTemplate.Inner>
-        </local:NodeTemplate>
+        </Border>
     </Canvas>
+
 </local:AnimatableUserControl>

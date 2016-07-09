@@ -35,9 +35,14 @@ namespace NuSysApp
             DataContext = vm;
 
             var model = vm.Model;
+            //If same collection, disable enter collection button
+            var id = ((GroupDetailHomeTabViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
+            if (id == SessionController.Instance.ActiveFreeFormViewer.ContentId)
+            {
+                EnterCollectionButton.Visibility = Visibility.Collapsed;
+            }
 
-
-            List<Uri> AllowedUris = new List<Uri>();
+                List<Uri> AllowedUris = new List<Uri>();
             AllowedUris.Add(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
 
 
