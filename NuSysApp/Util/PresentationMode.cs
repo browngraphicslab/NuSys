@@ -19,7 +19,6 @@ namespace NuSysApp
     /// </summary>
     class PresentationMode : IDisposable, IModable
     {
-
         private ElementViewModel _previousNode;
         private ElementViewModel _nextNode;
         private ElementViewModel _currentNode;
@@ -48,8 +47,10 @@ namespace NuSysApp
             // get a copy of the session controllers transform so we can revert back to it at end of presentation
             _originalTransform = MakeShallowCopy(SessionController.Instance.ActiveFreeFormViewer.CompositeTransform);
 
+            // set current, forward, and backward for presentation movement
+            Load(_currentNode, out _previousNode, out _nextNode);
+
             // zoom in on the current node
-            Load();
             FullScreen(_currentNode);
         }
 
@@ -90,7 +91,7 @@ namespace NuSysApp
         public void MoveToNext()
         {
             _currentNode = _nextNode;
-            Load();
+            Load(_currentNode, out _previousNode, out _nextNode);
             FullScreen(_currentNode);
         }
 
@@ -110,8 +111,8 @@ namespace NuSysApp
         /// </summary>
         public void MoveToPrevious()
         {
-            _currentNode = _previousNode;2
-            Load();
+            _currentNode = _previousNode;
+            Load(_currentNode, out _previousNode, out _nextNode);
             FullScreen(_currentNode);
         }
 
@@ -134,6 +135,7 @@ namespace NuSysApp
         private ElementViewModel GetNext(ElementViewModel currentElemVm)
         {
             Debug.Assert(currentElemVm != null);
+            Debug.Assert(PresentationLinkViewModel.Models != null);
             // there might be more than one outgoing link but we always just choose one
             var outgoingLink = PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.InElementId == currentElemVm.Id);
             var nextElemVm = outgoingLink?.OutElementViewModel;
@@ -151,6 +153,7 @@ namespace NuSysApp
         private ElementViewModel GetPrevious(ElementViewModel currentElemVm)
         {
             Debug.Assert(currentElemVm != null);
+            Debug.Assert(PresentationLinkViewModel.Models != null);
             // there might be more than one outgoing link but we always just choose one
             var incomingLink = PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.OutElementId == currentElemVm.Id);
             var prevElemVm = incomingLink?.InElementViewModel;
@@ -185,7 +188,7 @@ namespace NuSysApp
             double tagAdjustment = 0;
 
             var view = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
-                    item => ((ElementViewModel)item.DataContext).Model.Id == elementToBeFullScreened.Id);
+                    item => (item.DataContext as ElementViewModel)?.Model.Id == elementToBeFullScreened.Id);
 
             if (view.Count() == 0)
             {

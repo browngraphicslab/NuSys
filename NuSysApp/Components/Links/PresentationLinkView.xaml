@@ -47,6 +47,6 @@
                 </GeometryGroup>
             </Path.Data>
         </Path>
-        <Polygon x:Name="arrow" Fill="{StaticResource color4}" Points="0,0 40,20, 0,40"/>
+        <Polygon x:Name="arrow" Fill="{StaticResource color4}" Points="0,20 40,0, 40,40"/>
     </Canvas>
 </converters:AnimatableUserControl>

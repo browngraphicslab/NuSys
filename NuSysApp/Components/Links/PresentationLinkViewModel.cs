@@ -46,7 +46,7 @@ namespace NuSysApp
             _outElementController.AnchorChanged += FireControlPointsChanged;
 
             _inElementController.Disposed += FireDisposed;
-            _inElementController.Disposed += FireDisposed;
+            _outElementController.Disposed += FireDisposed;
             Model = model;
         }
 

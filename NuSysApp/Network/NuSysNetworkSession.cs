@@ -71,8 +71,10 @@ namespace NuSysApp
                 foreach (var element in presentationLinks)
                 {
                     var model = ((PresentationLinkViewModel) element.DataContext).Model;
-                    if (model?.ElementId1 == id1 && model?.ElementId2 == id2)
+                    if (model?.InElementId == id1 && model?.OutElementId == id2)
                     {
+                        Debug.Assert(PresentationLinkViewModel.Models != null);
+                        PresentationLinkViewModel.Models.Remove(model);
                         ((PresentationLinkViewModel) element.DataContext).FireDisposed(this, EventArgs.Empty);
                     }
                 }
@@ -88,9 +90,14 @@ namespace NuSysApp
                 UITask.Run(delegate
                 {
                     var presentationlink = new PresentationLinkModel();
-                    presentationlink.ElementId1 = id1;
-                    presentationlink.ElementId2 = id2;
+                    presentationlink.InElementId = id1;
+                    presentationlink.OutElementId = id2;
                     var vm = new PresentationLinkViewModel(presentationlink);
+                    if (PresentationLinkViewModel.Models == null)
+                    {
+                        PresentationLinkViewModel.Models = new HashSet<PresentationLinkModel>();
+                    }
+                    PresentationLinkViewModel.Models.Add(presentationlink);
                     new PresentationLinkView(vm);
                 });
             }
