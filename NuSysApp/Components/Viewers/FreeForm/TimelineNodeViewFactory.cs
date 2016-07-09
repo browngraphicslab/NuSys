@@ -110,7 +110,7 @@ namespace NuSysApp
                 //    view = new AreaNodeView(new AreaNodeViewModel((ElementCollectionController)controller));
                 //    break;
                 //case ElementType.Link:
-                //    view = new BezierLinkView(new LinkViewModel((LinkElementController)controller));
+                //    view = new BezierLinkView(new LinkViewModel((LinkController)controller));
                 //     break;
             }
             //await ((ElementViewModel)view.DataContext).Init();

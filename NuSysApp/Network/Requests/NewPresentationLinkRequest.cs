@@ -61,6 +61,7 @@ namespace NuSysApp
 
         public override async Task ExecuteRequestFunction()
         {
+            /*
             var id1 = _message.GetString("id1");
             var id2 = _message.GetString("id2");
             var id = _message.GetString("id");
@@ -71,14 +72,14 @@ namespace NuSysApp
             {
                 var link = new LinkModel(id);
                 await link.UnPack(_message);
-                var linkController = new LinkElementController(link);
+                var linkController = new LinkController(link);
                 SessionController.Instance.IdToControllers[id] = linkController;
 
                 var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(creator);
                 parentCollectionLibraryElement.AddChild(id);
                 await SessionController.Instance.NuSysNetworkSession.AddPresentationLink(id1, id2, parentCollectionLibraryElement.LibraryElementId);
 
-            }
+            }*/
         }
     }
 }

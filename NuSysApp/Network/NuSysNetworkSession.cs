@@ -429,6 +429,16 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Returns a mapping of regionID to LibraryElement ContentId of its parent
+        /// </summary>
+        /// <param name="collectionContentId"></param>
+        /// <returns></returns>
+        public async Task<Dictionary<string, string>> GetRegionMapping(string collectionContentId)
+        {
+            return await _serverClient.GetRegionMapping(collectionContentId);
+        }
+
+        /// <summary>
         ///   Will add a presentation link to the server.  
         ///   Will return true if successful, false if not
         ///  The id1 and id2 are ElementModel ID's, not LibraryElementModelId's
@@ -456,7 +466,7 @@ namespace NuSysApp
         }
         /// <summary>
         /// Will fetch and return a hashset of presentation links for a given collection
-        /// the presentation links ID's will be elementModel Id's
+        /// the presentation links ID's will be elementModel ContentId's
         /// </summary>
         /// <param name="contentId"></param>
         /// <returns></returns>

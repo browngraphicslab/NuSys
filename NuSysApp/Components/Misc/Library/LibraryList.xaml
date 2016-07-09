@@ -91,10 +91,10 @@
                         Title
                     </Button>
                     <Button Style="{StaticResource SortButton}" HorizontalAlignment="Left" Grid.Column="2" Click="Sort_Button_Click" Foreground="{StaticResource color2}" Background="Transparent"  FontSize="15" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
-                    Type
+                        Type
                     </Button>
                     <Button Style="{StaticResource SortButton}" HorizontalAlignment="Left" Margin="0,0,3,0" Grid.Column="3" Click="Sort_Button_Click" Foreground="{StaticResource color2}" Background="Transparent"  FontSize="15" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
-                   Date/Time
+                        Date/Time
                     </Button>
                 </Grid>
             </ListView.Header>

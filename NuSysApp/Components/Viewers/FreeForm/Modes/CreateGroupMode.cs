@@ -147,7 +147,7 @@ namespace NuSysApp
                 elementMsg["x"] = p.X;
                 elementMsg["y"] = p.Y;
                 elementMsg["contentId"] = contentId;
-                elementMsg["nodeType"] = ElementType.Collection;
+                elementMsg["type"] = ElementType.Collection;
                 elementMsg["creator"] = controller2.LibraryElementModel.LibraryElementId;
                 elementMsg["id"] = newCollectionId;
 

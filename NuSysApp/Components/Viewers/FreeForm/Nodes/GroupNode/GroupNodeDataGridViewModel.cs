@@ -23,7 +23,7 @@ namespace NuSysApp
             controller.Disposed += ControllerOnDisposed;
         }
 
-        private void ControllerOnDisposed(object source)
+        private void ControllerOnDisposed(object source, object args)
         {
             AtomDataList.Clear();
             _infoDict = null;

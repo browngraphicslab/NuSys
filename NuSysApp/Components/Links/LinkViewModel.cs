@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media;
@@ -7,155 +8,83 @@ using NuSysApp.Controller;
 
 namespace NuSysApp
 {
-    public class LinkViewModel : ElementViewModel
+    public class LinkViewModel : BaseINPC
     {
+        public ObservableCollection<LinkController> LinkList{ get; set; }
 
-        private ElementController InElementController;
-        private ElementController OutElementController;
-        private LinkLibraryElementController _linkLibraryElementController;
-
-        public LinkModel LinkModel { get; }
-        private SolidColorBrush _defaultColor;
-        public LinkViewModel(LinkElementController controller) : base(controller)
+        public LinkModel LinkModel
         {
-            LinkModel = (LinkModel)controller.Model;
-
-            InElementController = SessionController.Instance.IdToControllers[LinkModel.InAtomId.LibraryElementId]; 
-            OutElementController = SessionController.Instance.IdToControllers[LinkModel.OutAtomId.LibraryElementId];
-
-
-            Anchor = new Point2d((int) (OutElementController.Model.X + (Math.Abs(OutElementController.Model.X - InElementController.Model.X)/2)),
-                (int) (InElementController.Model.Y + (Math.Abs(OutElementController.Model.Y - InElementController.Model.Y)/2)));
-
-            Color = new SolidColorBrush(Constants.color2);
-
-            _linkLibraryElementController =
-                SessionController.Instance.LinkController.GetLinkLibraryElementController(LinkModel.LibraryId);
-            _linkLibraryElementController.TitleChanged += LinkLibraryElementController_TitleChanged;
-
-            Annotation = _linkLibraryElementController.Title;
-
-            /*
-            if (LinkModel.InFineGrain != null)
+            get
             {
-                LinkModel.InFineGrain.OnTimeChange += InFineGrain_OnTimeChange;
+                Debug.Assert(Controller != null && Controller.Model != null);
+                return Controller.Model;
             }
-            */
-
-            InElementController.PositionChanged += InElementControllerOnPositionChanged;
-            OutElementController.PositionChanged += InElementControllerOnPositionChanged;
-            InElementController.SizeChanged += OutElementControllerOnSizeChanged;
-            OutElementController.SizeChanged += OutElementControllerOnSizeChanged;
-            controller.ColorChanged += Controller_ColorChanged;
-            
+        }
+        
+        private string _title;
+        private string _annotation;
+        private readonly LinkController _controller;
+        public LinkController Controller {
+            get
+            {
+                Debug.Assert(_controller != null);
+                return _controller;
+            } 
+        }
+        public Point2d Anchor
+        {
+            get { return Controller.Anchor; }
         }
 
-        private void LinkLibraryElementController_TitleChanged(object sender, string title)
+        public string Title
+        {
+            get { return _title; }
+            set
+            {
+                _title = value;
+                RaisePropertyChanged("Title");
+            }
+        }
+
+        public LinkViewModel(LinkController controller)
+        {
+            _controller = controller;
+
+            Debug.Assert(controller.LibraryElementController != null);
+            controller.TitleChanged += TitleChanged;
+
+            controller.AnchorChanged += ChangeAnchor;
+            Title = controller.Title;
+            RaisePropertyChanged("Anchor");
+        }
+
+        private void ChangeAnchor(object sender, Point2d e)
+        {
+            UpdateAnchor();
+        }
+
+        private void TitleChanged(object sender, string title)
         {
             Title = title;
         }
 
-        private void Controller_ColorChanged(SolidColorBrush color)
+
+        public void Dispose()
         {
-            Color = color;
-        }
-
-        private void InFineGrain_OnTimeChange()
-        {
-            ((LinkElementController)Controller).SaveTimeBlock();
-        }
-
-        public override Task Init()
-        {
-            UpdateAnchor();
-            return base.Init();
-        }
-
-
-        private void OutElementControllerOnSizeChanged(object source, double width, double height)
-        {
-            UpdateAnchor();
-        }
-
-        private void InElementControllerOnPositionChanged(object source, double d, double d1, double x, double y)
-        {
-            UpdateAnchor();
-        }
-
-
-        public override void Dispose()
-        {
-            InElementController.PositionChanged -= InElementControllerOnPositionChanged;
-            OutElementController.PositionChanged -= InElementControllerOnPositionChanged;
-            InElementController.SizeChanged -= OutElementControllerOnSizeChanged;
-            OutElementController.SizeChanged -= OutElementControllerOnSizeChanged;
-            ((LinkElementController)Controller).ColorChanged -= Controller_ColorChanged;
-            _linkLibraryElementController.TitleChanged -= LinkLibraryElementController_TitleChanged;
-
-            base.Dispose();
+            Controller.TitleChanged -= TitleChanged;
         }
       
 
-        public override void UpdateAnchor()
+        public void UpdateAnchor()
         {
-            Anchor = new Point2d((int)(OutElementController.Model.X + (Math.Abs(OutElementController.Model.X - InElementController.Model.X) / 2)),
-                (int)(InElementController.Model.Y + (Math.Abs(OutElementController.Model.Y - InElementController.Model.Y) / 2)));
-
-            foreach (var link in LinkList)
-            {
-                link.UpdateAnchor();
-            }
             RaisePropertyChanged("Anchor");
         }
 
-        public override bool IsSelected
-        {
-            get { return base.IsSelected; }
-            set
-            {
-                base.IsSelected = value;
-                if (value)
-                {
-                    _defaultColor = Color;
-                }
-                Color = value
-                    ? new SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0xFF, 0xAA, 0x2D))
-                    : _defaultColor;
-                RaisePropertyChanged("Color");
-                RaisePropertyChanged("IsSelected");
-            }
-        }
-
-        private string _annotation;
-        public string Annotation
-        {
-            get { return _annotation; }
-            set
-            {
-                _annotation = value;
-                RaisePropertyChanged("Annotation");
-            }
-        }
-
-        public override PointCollection ReferencePoints
-        {
-             get
-             {
-                 PointCollection pts = new PointCollection();
-                 pts.Add(new Point2d(Anchor.X, Anchor.Y));
-                 pts.Add(new Point2d(OutElementController.Model.X, OutElementController.Model.Y));
-                 pts.Add(new Point2d(InElementController.Model.X, InElementController.Model.Y));
-                 return pts;
- 
-             }
-         }
-
         public void UpdateTitle(string title)
         {
-            _linkLibraryElementController.TitleChanged -= LinkLibraryElementController_TitleChanged;
-            _linkLibraryElementController.SetTitle(title);
-            _linkLibraryElementController.TitleChanged += LinkLibraryElementController_TitleChanged;
-
+            Controller.TitleChanged -= TitleChanged;
+            Controller.LibraryElementController.SetTitle(title);
+            Controller.TitleChanged += TitleChanged;
         }
     }
 }

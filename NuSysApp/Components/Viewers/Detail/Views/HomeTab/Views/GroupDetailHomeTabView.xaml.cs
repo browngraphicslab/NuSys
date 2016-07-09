@@ -115,7 +115,7 @@ namespace NuSysApp
         }
 
 
-        private void ControllerOnDisposed(object source)
+        private void ControllerOnDisposed(object source, object args)
         {
             var vm = (GroupDetailHomeTabViewModel)DataContext;
             MyWebView.NavigationCompleted -= MyWebViewOnNavigationCompleted;
@@ -135,7 +135,7 @@ namespace NuSysApp
             {
                 var node = sendable.Model;
                 var groups = (List<string>) node.GetMetaData("groups");
-                if (groups.Contains(vm.Id))
+                if (groups.Contains(vm.ContentId))
                 {
                     modelList.Add(node);
                 }
@@ -143,7 +143,7 @@ namespace NuSysApp
 
             foreach (var model in modelList)
             {
-                var nodeModel = SessionController.Instance.IdToSendables[model.Id];
+                var nodeModel = SessionController.Instance.IdToSendables[model.ContentId];
                 var view = await _factory.CreateFromSendable(nodeModel.Model, null);
                 var viewVm = (ElementViewModel)view.DataContext;
                 view.RenderTransform = new CompositeTransform();

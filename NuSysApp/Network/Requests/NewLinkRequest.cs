@@ -19,10 +19,10 @@ namespace NuSysApp
     public class NewLinkRequest : Request
     {
         public NewLinkRequest(Message m) : base(RequestType.NewLinkRequest,m){}
-        public NewLinkRequest(LinkId id1, LinkId id2, string creator, string contentId, UserControl regionView, RectangleView rectangle, Dictionary<string, object> inFineGrainDictionary, Dictionary<string, object> outFineGrainDictionary, string id = null, bool IsPresentationLink = false) : base(RequestType.NewLinkRequest)
+        public NewLinkRequest(string id1, string id2, string creator, string contentId, UserControl regionView, RectangleView rectangle, Dictionary<string, object> inFineGrainDictionary, Dictionary<string, object> outFineGrainDictionary, string id = null, bool IsPresentationLink = false) : base(RequestType.NewLinkRequest)
         {
-            _message["id1"] = JsonConvert.SerializeObject(id1);
-            _message["id2"] = JsonConvert.SerializeObject(id2);
+            _message["id1"] = id1;
+            _message["id2"] = id2;
             _message["id"] = id ?? SessionController.Instance.GenerateId();
             _message["creator"] = creator;
             _message["contentId"] = contentId;
@@ -70,6 +70,8 @@ namespace NuSysApp
             SetServerItemType(ServerItemType.Alias);
             SetServerRequestType(ServerRequestType.Add);
             */
+
+            
             var time = DateTime.UtcNow.ToString();
             _message["library_element_creation_timestamp"] = time;
             string url = null;
@@ -84,6 +86,7 @@ namespace NuSysApp
 
 
             var libraryElement = LibraryElementModelFactory.CreateFromMessage(_message);
+            
             if (libraryElement != null)
             {
                 var controller =
@@ -96,11 +99,11 @@ namespace NuSysApp
                     controller.Load(loadEventArgs);
                 }
                 libraryElement.ServerUrl = url;
-                //SessionController.Instance.LinkController.AddLink(_message.GetString("id"));
-
-                AddLinks(JsonConvert.DeserializeObject<LinkId>((string) _message["id1"]),
-                    JsonConvert.DeserializeObject<LinkId>((string) _message["id2"]),
-                    _message.GetString("id"));
+                //SessionController.Instance.LinksController.AddLink(_message.GetString("id"));
+                var id1 = (string) _message["id1"];
+                var id2 = (string) _message["id2"];
+                var id = _message.GetString("id");
+                AddLinks(id1,id2,id);
                 SetServerSettings();
                 return true;
             }
@@ -112,8 +115,8 @@ namespace NuSysApp
 
         public override async Task ExecuteRequestFunction()
         {
-            var id1 = JsonConvert.DeserializeObject<LinkId>((string)_message["id1"]);
-            var id2 = JsonConvert.DeserializeObject<LinkId>((string)_message["id2"]);
+            var id1 = (string)_message["id1"];
+            var id2 = (string)_message["id2"];
             var id = _message.GetString("id");
             var creator = _message.GetString("creator");
             //var contentId = _message.GetString("contentId");
@@ -127,14 +130,15 @@ namespace NuSysApp
 
         }
 
-        private void AddLinks(LinkId id1, LinkId id2, string contentId)
+        private void AddLinks(string id1, string id2, string contentId)
         {
-            var controller1 = SessionController.Instance.ContentController.GetLibraryElementController(id1.LibraryElementId);
-            var controller2 = SessionController.Instance.ContentController.GetLibraryElementController(id2.LibraryElementId);
+            var controller1 = SessionController.Instance.ContentController.GetLibraryElementController(id1);
+            var controller2 = SessionController.Instance.ContentController.GetLibraryElementController(id2);
             var linkController = SessionController.Instance.ContentController.GetLibraryElementController(contentId);
             Debug.Assert(controller1 != null && controller2 != null && linkController != null && linkController is LinkLibraryElementController);
             controller1.AddLink(linkController as LinkLibraryElementController);
             controller2.AddLink(linkController as LinkLibraryElementController);
+            SessionController.Instance.LinksController.CreateVisualLinks(linkController as LinkLibraryElementController);
         }
     }
 }

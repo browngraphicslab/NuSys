@@ -176,7 +176,7 @@ namespace NuSysApp
             m["width"] = vm.Width;
             m["height"] = vm.Height;
             m["title"] = "";
-            m["nodeType"] = type.ToString();
+            m["type"] = type.ToString();
             m["autoCreate"] = true;
             m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 

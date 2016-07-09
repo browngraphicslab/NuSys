@@ -12,11 +12,10 @@ namespace NuSysApp
 {
     public class LinkLibraryElementModel: LibraryElementModel
     {
-        public LinkId InAtomId { get; set; }
-        public LinkId OutAtomId { get; set; }
+        public string InAtomId { get; set; }
+        public string OutAtomId { get; set; }
         public Color Color { get; set; }
-        public LinkLibraryElementModel(LinkId id1, LinkId id2, string id, Dictionary<string, MetadataEntry> metadata = null, string contentName = null, bool favorited = false): base(id, ElementType.Link, metadata, contentName, favorited)
-
+        public LinkLibraryElementModel(string id1, string id2, string id): base(id, ElementType.Link)
         {
             InAtomId = id1;
             OutAtomId = id2;
@@ -27,25 +26,13 @@ namespace NuSysApp
         {
             if (message.ContainsKey("id1"))
             {
-                if ((message["id1"] as string).Length == 32)
-                {
-                    InAtomId = new LinkId(message["id1"] as string);
-                }
-                else
-                {
-                    InAtomId = JsonConvert.DeserializeObject<LinkId>((string)message["id1"]);
-                }
+                InAtomId = message["id1"] as string;
+                Debug.Assert(InAtomId != null);
             }
             if (message.ContainsKey("id2"))
             {
-                if ((message["id2"] as string)?.Length == 32)
-                {
-                    OutAtomId = new LinkId(message["id2"] as string);
-                }
-                else
-                {
-                    OutAtomId = JsonConvert.DeserializeObject<LinkId>((string)message["id2"]);
-                }
+                OutAtomId = message["id2"] as string;
+                Debug.Assert(OutAtomId != null);
             }
             if (message.ContainsKey("color"))
             {

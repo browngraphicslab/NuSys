@@ -113,7 +113,7 @@ namespace NuSysApp
                 var m = new Message();
                 m["width"] = "300";
                 m["height"] = "300";
-                m["nodeType"] = ElementType.Collection.ToString();
+                m["type"] = ElementType.Collection.ToString();
                 m["x"] = x;
                 m["y"] = y;
                 m["contentId"] = collectionID;
@@ -132,7 +132,7 @@ namespace NuSysApp
                     dict["title"] = lem.Title;
                     dict["width"] = "300";
                     dict["height"] = "300";
-                    dict["nodeType"] = lem.Type.ToString();
+                    dict["type"] = lem.Type.ToString();
                     dict["x"] = "50000";
                     dict["y"] = "50000";
                     dict["contentId"] = lem.LibraryElementId;

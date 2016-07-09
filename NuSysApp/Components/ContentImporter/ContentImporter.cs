@@ -81,7 +81,7 @@ namespace NuSysApp
                         m["width"] = 400;
                         m["height"] = 400;
                         m["title"] = "Imported from Chrome";
-                        m["nodeType"] = ElementType.Text.ToString();
+                        m["type"] = ElementType.Text.ToString();
                         m["autoCreate"] = true;
                         m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
@@ -144,7 +144,7 @@ namespace NuSysApp
                         var contentId = SessionController.Instance.GenerateId();
 
                         Message m = CreateMessage(selectionItem, contentId, centerpoint);
-                        m["nodeType"] = ElementType.Text.ToString();
+                        m["type"] = ElementType.Text.ToString();
 
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest( new CreateNewLibraryElementRequest(contentId, rtfContent, ElementType.Text));
@@ -162,7 +162,7 @@ namespace NuSysApp
                             var contentId = SessionController.Instance.GenerateId();
 
                             Message m = CreateMessage(selectionItem, contentId, centerpoint);
-                            m["nodeType"] = ElementType.Image.ToString();
+                            m["type"] = ElementType.Image.ToString();
 
                             StorageFile imgFile;
                             try {

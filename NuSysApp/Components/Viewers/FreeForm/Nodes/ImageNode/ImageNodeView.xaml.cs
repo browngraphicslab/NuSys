@@ -109,7 +109,7 @@ namespace NuSysApp
             }
         }
 
-        private void ControllerOnDisposed(object source)
+        private void ControllerOnDisposed(object source, object args)
         {
             var vm = (ImageElementViewModel) DataContext;
             vm.Controller.Disposed -= ControllerOnDisposed;

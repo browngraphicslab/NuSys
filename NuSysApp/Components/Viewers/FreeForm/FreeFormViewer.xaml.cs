@@ -176,7 +176,7 @@ namespace NuSysApp
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(m));
         }
 
-        private void ControllerOnDisposed(object source)
+        private void ControllerOnDisposed(object source, object args)
         {
             _nodeManipulationMode.Deactivate();
             _createGroupMode.Deactivate();

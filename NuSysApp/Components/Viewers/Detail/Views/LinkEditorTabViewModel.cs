@@ -15,7 +15,7 @@ namespace NuSysApp
         public ObservableCollection<LinkTemplate> LinkTemplates { get; }
         public ObservableCollection<LibraryItemTemplate> LibraryElements { get; } 
 
-        private ILinkable _linkable;
+        private ILinkTabable _linkTabable;
 
         public LinkEditorTabViewModel()
         {
@@ -35,8 +35,8 @@ namespace NuSysApp
             }
             SessionController.Instance.ContentController.OnNewContent += ContentController_OnNewContent;
             SessionController.Instance.ContentController.OnElementDelete += ContentController_OnElementDelete;
-            SessionController.Instance.LinkController.OnLinkRemoved += LinkController_OnLinkRemoved;
-            SessionController.Instance.LinkController.OnNewLink += LinkController_OnNewLink;
+            //SessionController.Instance.LinksController.OnLinkRemoved += LinkController_OnLinkRemoved;
+            //SessionController.Instance.LinksController.OnNewLink += LinkController_OnNewLink;
         }
 
         private void ContentController_OnElementDelete(LibraryElementModel element)
@@ -64,13 +64,16 @@ namespace NuSysApp
 
         internal void DeleteLink(string id)
         {
-            SessionController.Instance.ActiveFreeFormViewer.AllContent.First().Controller.RequestDeleteVisualLink(id);
-            SessionController.Instance.LinkController.RemoveLink(id);
-            Task.Run(async delegate
-            {
-                var request = new DeleteLibraryElementRequest(id);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-            });
+            //SessionController.Instance.ActiveFreeFormViewer.AllContent.First().Controller.RequestDeleteVisualLink(id);
+            //SessionController.Instance.LinksController.RemoveLink(id);
+
+            _linkTabable.RequestRemoveLink(id);
+
+            //Task.Run(async delegate
+            //{
+            //    var request = new DeleteLibraryElementRequest(id);
+            //    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            //});
 
             foreach (var template in LinkTemplates)
             {
@@ -84,14 +87,14 @@ namespace NuSysApp
 
         private void LinkController_OnNewLink(LinkLibraryElementController link)
         {
-            if (_linkable == null)
+            if (_linkTabable == null)
             {
                 return;
             }
-            if (_linkable.Id == link.LinkLibraryElementModel.InAtomId ||
-                _linkable.Id == link.LinkLibraryElementModel.OutAtomId)
+            if (_linkTabable.ContentId == link.LinkLibraryElementModel.InAtomId ||
+                _linkTabable.ContentId == link.LinkLibraryElementModel.OutAtomId)
             {
-                var template = new LinkTemplate(link, _linkable.Id);
+                var template = new LinkTemplate(link, _linkTabable.ContentId);
                 UITask.Run(async delegate {
                     LinkTemplates.Add(template);
                 });
@@ -100,7 +103,7 @@ namespace NuSysApp
 
         private void LinkController_OnLinkRemoved(LinkLibraryElementController link)
         {
-            if (_linkable == null)
+            if (_linkTabable == null)
             {
                 return;
             }
@@ -113,35 +116,45 @@ namespace NuSysApp
             }
         }
 
-        public void ChangeLinkTemplates(ILinkable linkable)
+        public void ChangeLinkTemplates(ILinkTabable linkTabable)
         {
-            if (linkable == null)
+            if (linkTabable == null)
             {
                 return;
             }
             LinkTemplates.Clear();
-            _linkable = linkable;
-            foreach (var controller in linkable.GetAllLinks())
+            _linkTabable = linkTabable;
+            foreach (var controller in linkTabable.GetAllLinks())
             {
-                var template = new LinkTemplate(controller, linkable.Id);
+                var template = new LinkTemplate(controller, linkTabable.ContentId);
                 LinkTemplates.Add(template);
             }
-            _linkable.LinkAdded += _linkable_LinkAdded;
-            _linkable.LinkRemoved += _linkable_LinkRemoved;
+            _linkTabable.LinkAdded += LinkTabableLinkAdded;
+            _linkTabable.LinkRemoved += LinkTabableLinkRemoved;
         }
 
-        private void _linkable_LinkRemoved(object sender, string e)
+        private void LinkTabableLinkRemoved(object sender, string linkLibraryElementID)
         {
-            throw new NotImplementedException();
-        }
-
-        private void _linkable_LinkAdded(object sender, LinkLibraryElementController controller)
-        {
-            if (_linkable == null)
+            if (_linkTabable == null)
             {
                 return;
             }
-            var template = new LinkTemplate(controller, _linkable.Id);
+            foreach (var template in new HashSet<LinkTemplate>(LinkTemplates))
+            {
+                if (template.ID == linkLibraryElementID)
+                {
+                    LinkTemplates.Remove(template);
+                }
+            }
+        }
+
+        private void LinkTabableLinkAdded(object sender, LinkLibraryElementController controller)
+        {
+            if (_linkTabable == null)
+            {
+                return;
+            }
+            var template = new LinkTemplate(controller, _linkTabable.ContentId);
             UITask.Run(delegate {
                 LinkTemplates.Add(template);
             });
@@ -164,18 +177,22 @@ namespace NuSysApp
 
         }
 
-        public async void CreateLink(LinkId idToLinkTo, string title)
+        public async void CreateLink(string idToLinkTo, string title)
         {
-            if (_linkable == null)
+            if (_linkTabable == null)
             {
                 return;
             }
-            _linkable.LinkAdded -= _linkable_LinkAdded;
-            await _linkable.RequestAddNewLink(idToLinkTo, title);
-            var linkId = SessionController.Instance.LinkController.GetLinkIdBetween(_linkable.Id, idToLinkTo);
+            _linkTabable.LinkAdded -= LinkTabableLinkAdded;
+            await _linkTabable.RequestAddNewLink(idToLinkTo, title);
+            var newLinkController = SessionController.Instance.LinksController.GetLinkLibraryElementControllerBetweenContent(
+                _linkTabable.ContentId, idToLinkTo);
+            var template = new LinkTemplate(newLinkController, _linkTabable.ContentId);
+            LinkTemplates.Add(template);
+            //var linkId = SessionController.Instance.LinksController.GetLinkIdBetween(_linkTabable.ContentId, idToLinkTo);
             //var linkController = SessionController.Instance.ContentController.GetLibraryElementController(linkId) as LinkLibraryElementController;
             //linkController?.SetTitle(title);
-            _linkable.LinkAdded += _linkable_LinkAdded;
+            _linkTabable.LinkAdded += LinkTabableLinkAdded;
         }
         public void SortByLinkedTo()
         {

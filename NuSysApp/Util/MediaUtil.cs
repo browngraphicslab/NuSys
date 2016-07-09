@@ -126,7 +126,7 @@ namespace NuSysApp
         /*
 public static async Task<StorageFile> ConvertByteToAudio(byte[] byteArray)
 {
-   var recordStorageFile = await _rootFolder.CreateFileAsync(Id + ".mp3", CreationCollisionOption.GenerateUniqueName);
+   var recordStorageFile = await _rootFolder.CreateFileAsync(ContentId + ".mp3", CreationCollisionOption.GenerateUniqueName);
    await FileIO.WriteBytesAsync(recordStorageFile, byteArray);
    return recordStorageFile;
 }*/

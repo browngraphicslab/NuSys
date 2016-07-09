@@ -37,13 +37,11 @@ namespace NuSysApp
         {
             var libraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(_message.GetString("id"));
             if (libraryElementController == null)
-                return;
-            libraryElementController.Delete();
-            if (libraryElementController is LinkLibraryElementController)
             {
-                var llec = libraryElementController as LinkLibraryElementController;
-                llec.DeleteLink();
+                return;
             }
+            SessionController.Instance.LinksController.RemoveContent(libraryElementController);
+            libraryElementController.Delete();
         }
     }
 }

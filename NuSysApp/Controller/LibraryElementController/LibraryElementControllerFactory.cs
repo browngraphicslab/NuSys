@@ -22,6 +22,7 @@ namespace NuSysApp
                 case ElementType.Link:
                     Debug.Assert(model is LinkLibraryElementModel);
                     controller = new LinkLibraryElementController(model as LinkLibraryElementModel);
+                    //SessionController.Instance.LinksController.CreateVisualLinks(controller as LinkLibraryElementController);
                     break;
                 default:
                     controller = new LibraryElementController(model);

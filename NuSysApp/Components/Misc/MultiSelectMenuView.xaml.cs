@@ -81,7 +81,7 @@ namespace NuSysApp
             elementMsg["x"] = bb.X;
             elementMsg["y"] = bb.Y;
             elementMsg["contentId"] = contentId;
-            elementMsg["nodeType"] = ElementType.Collection;
+            elementMsg["type"] = ElementType.Collection;
             elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             elementMsg["id"] = newCollectionId;
 
@@ -103,7 +103,7 @@ namespace NuSysApp
                 dict["title"] = libraryElementModel?.Title;
                 dict["width"] = vm.Width;
                 dict["height"] = vm.Height;
-                dict["nodeType"] = libraryElementModel.Type.ToString();
+                dict["type"] = libraryElementModel.Type.ToString();
                 dict["x"] = vm.Transform.TranslateX - bb.X + Constants.MaxCanvasSize/2.0;
                 dict["y"] = vm.Transform.TranslateY - bb.Y + Constants.MaxCanvasSize / 2.0;
                 dict["contentId"] = libraryElementModel.LibraryElementId;
@@ -155,7 +155,7 @@ namespace NuSysApp
             m["width"] = 400;
             m["height"] = 400;
             m["color"] = Colors.Red;
-            m["nodeType"] = ElementType.Area.ToString();
+            m["type"] = ElementType.Area.ToString();
             m["points"] = Stroke.GetInkPoints();
             m["autoCreate"] = true;
             m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;

@@ -146,7 +146,7 @@ namespace NuSysApp
 
                 //var message = new Message();
                 //message["url"] = url;
-                //message["id"] = (DataContext as WebNodeViewModel).Id;
+                //message["id"] = (DataContext as WebNodeViewModel).ContentId;
                 //var request = new SendableUpdateRequest(message);
                 //SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             }

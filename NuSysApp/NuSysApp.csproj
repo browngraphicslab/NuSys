@@ -269,9 +269,11 @@
     <Compile Include="Components\InqCanvas\WetDryInkCanvas.cs" />
     <Compile Include="Components\ISelectable.cs" />
     <Compile Include="Components\Keywords\Keyword.cs" />
+    <Compile Include="Components\Links\IdMap.cs" />
     <Compile Include="Components\Links\LinkCircle.xaml.cs">
       <DependentUpon>LinkCircle.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Links\LinkControllerDataStructure.cs" />
     <Compile Include="Components\Links\PresentationLinkView.xaml.cs">
       <DependentUpon>PresentationLinkView.xaml</DependentUpon>
     </Compile>
@@ -346,7 +348,7 @@
     <Compile Include="Components\Tools\BasicToolViewModel.cs" />
     <Compile Include="Components\Tools\ToolViewable.cs" />
     <Compile Include="Components\Tools\ToolViewModel.cs" />
-    <Compile Include="Components\Viewers\Detail\ILinkable.cs" />
+    <Compile Include="Components\Viewers\Detail\ILinkTabable.cs" />
     <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
     <Compile Include="Components\Viewers\Detail\Sizeable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\LinkHomeTabViewModel.cs" />
@@ -355,6 +357,7 @@
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml.cs">
       <DependentUpon>WordDetailHomeTabView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Viewers\Detail\Views\ILinkable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\LinkEditorTab.xaml.cs">
       <DependentUpon>LinkEditorTab.xaml</DependentUpon>
     </Compile>
@@ -373,7 +376,7 @@
     <Compile Include="Controller\LibraryElementController\LibraryElementControllerFactory.cs" />
     <Compile Include="Controller\LibraryElementController\LinkLibraryElementController.cs" />
     <Compile Include="Controller\LibraryElementController\WordNodeLibraryElementController.cs" />
-    <Compile Include="Controller\LinkController.cs" />
+    <Compile Include="Controller\LinksController.cs" />
     <Compile Include="Controller\RectangleRegionController.cs" />
     <Compile Include="Controller\PdfRegionController.cs" />
     <Compile Include="Controller\RegionController.cs" />
@@ -574,7 +577,7 @@
     <Compile Include="Controller\ElementController.cs" />
     <Compile Include="Controller\LibraryElementController\LibraryElementController.cs" />
     <Compile Include="Controller\LibraryElementController\LoadContentEventArgs.cs" />
-    <Compile Include="Controller\LinkElementController.cs" />
+    <Compile Include="Controller\LinkController.cs" />
     <Compile Include="Controller\LockDictionary.cs" />
     <Compile Include="Controller\MediaController.cs" />
     <Compile Include="Controller\SessionController.cs" />
@@ -644,11 +647,11 @@
     <Compile Include="Util\ExtensionMethods.cs" />
     <Compile Include="Util\GestureRecognizer.cs" />
     <Compile Include="Util\GestureType.cs" />
+    <Compile Include="Util\INusysDisposable.cs" />
     <Compile Include="Util\LibraryTab.cs" />
     <Compile Include="Util\IModable.cs" />
     <Compile Include="Util\LineEquation.cs" />
     <Compile Include="Util\LineSegment.cs" />
-    <Compile Include="Util\LinkId.cs" />
     <Compile Include="Util\MathUtil.cs" />
     <Compile Include="Util\MediaUtil.cs" />
     <Compile Include="Util\MetadatableType.cs" />

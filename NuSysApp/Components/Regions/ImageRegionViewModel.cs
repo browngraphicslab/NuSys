@@ -140,7 +140,6 @@ namespace NuSysApp
 
         }
         
-
         private void BaseSizeChanged(object sender, double width, double height)
         {
 

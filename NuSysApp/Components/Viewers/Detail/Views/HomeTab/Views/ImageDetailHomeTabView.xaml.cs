@@ -84,7 +84,7 @@ namespace NuSysApp
         }
 
 
-        private void ControllerOnDisposed(object source)
+        private void ControllerOnDisposed(object source, object args)
         {
             var vm = (ImageDetailHomeTabViewModel) DataContext;
             vm.LibraryElementController.Disposed -= ControllerOnDisposed;

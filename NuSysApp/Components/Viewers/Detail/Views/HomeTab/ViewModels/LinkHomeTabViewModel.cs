@@ -19,14 +19,14 @@ namespace NuSysApp
             _controller = controller;
             var linkModel = controller.LinkLibraryElementModel;
 
-            if (linkModel.OutAtomId.IsRegion)
+            if (SessionController.Instance.RegionsController.IsRegionId(linkModel.OutAtomId))
             {
-                var fromController = SessionController.Instance.RegionsController.GetRegionController(linkModel.OutAtomId.RegionId);
+                var fromController = SessionController.Instance.RegionsController.GetRegionController(linkModel.OutAtomId);
                 if (fromController == null)
                 {
                     var fromLibraryElementController =
                         SessionController.Instance.ContentController.GetLibraryElementController(
-                            linkModel.OutAtomId.LibraryElementId);
+                            linkModel.OutAtomId);
                     LinkFrom = fromLibraryElementController.Title;
 
                 }
@@ -38,18 +38,18 @@ namespace NuSysApp
             }
             else
             {
-                var fromController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel.OutAtomId.LibraryElementId);
+                var fromController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel.OutAtomId);
                 LinkFrom = fromController.Title;
             }
 
-            if (linkModel.InAtomId.IsRegion)
+            if (SessionController.Instance.RegionsController.IsRegionId(linkModel.InAtomId))
             {
-                var toController = SessionController.Instance.RegionsController.GetRegionController(linkModel.InAtomId.RegionId);
+                var toController = SessionController.Instance.RegionsController.GetRegionController(linkModel.InAtomId);
                 if (toController == null)
                 {
                     var toLibraryElementController =
                         SessionController.Instance.ContentController.GetLibraryElementController(
-                            linkModel.InAtomId.LibraryElementId);
+                            linkModel.InAtomId);
                     LinkTo = toLibraryElementController.Title;
                     return;
                 }
@@ -61,7 +61,7 @@ namespace NuSysApp
             }
             else
             {
-                var toController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel.InAtomId.LibraryElementId);
+                var toController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel.InAtomId);
                 LinkTo = toController.Title;
             }
 
