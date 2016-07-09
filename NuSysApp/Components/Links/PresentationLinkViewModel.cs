@@ -15,7 +15,7 @@ namespace NuSysApp
 
         public EventHandler ControlPointsChanged;
         public event EventHandler Disposed;
-
+        public PresentationLinkModel Model { get; private set; }
         public Point2d InAnchor
         {
             get
@@ -47,9 +47,10 @@ namespace NuSysApp
 
             _inElementController.Disposed += FireDisposed;
             _inElementController.Disposed += FireDisposed;
+            Model = model;
         }
 
-        private void FireDisposed(object sender, EventArgs eventArgs)
+        public void FireDisposed(object sender, EventArgs eventArgs)
         {
             _inElementController.AnchorChanged -= FireControlPointsChanged;
             _outElementController.AnchorChanged -= FireControlPointsChanged;
