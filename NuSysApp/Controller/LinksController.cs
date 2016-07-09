@@ -217,6 +217,13 @@ namespace NuSysApp
         {
             Debug.Assert(m.ContainsKey("id1"));
             Debug.Assert(m.ContainsKey("id2"));
+
+            //if a content is trying to be linked to itself
+            if (m.GetString("id1").Equals(m.Get("id2")))
+            {
+                return;
+            }
+
             // don't create a link between two library element models, if there is already a link
             // element controller between them
             if(GetLinkLibraryElementControllerBetweenContent(m.GetString("id1"), m.GetString("id2")) != null)
@@ -361,7 +368,6 @@ namespace NuSysApp
 
         public LinkLibraryElementController GetLinkLibraryElementControllerBetweenContent(string libElemId1, string libElemId2)
         {
-
             Debug.Assert(libElemId1 != null && _contentIdToLinkContentIds.ContainsKey(libElemId1));
             Debug.Assert(libElemId2 != null && _contentIdToLinkContentIds.ContainsKey(libElemId2));
             Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementController(libElemId1) != null);
