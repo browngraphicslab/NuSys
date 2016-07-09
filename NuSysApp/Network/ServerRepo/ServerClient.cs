@@ -182,7 +182,7 @@ namespace NuSysApp
             });
         }
 
-        public async Task<HashSet<PresentationLink>> GetPresentationLinks(string collectionContentId)
+        public async Task<HashSet<PresentationLinkModel>> GetPresentationLinks(string collectionContentId)
         {
             return await Task.Run(async delegate
             {
@@ -202,8 +202,8 @@ namespace NuSysApp
                 try
                 {
                     var list = JsonConvert.DeserializeObject<List<TupleIntermediate<string, string>>>(data, settings);
-                    var returnSet = list.Select(tup => new PresentationLink() {Id1 = tup.m_Item1, Id2 = tup.m_Item2});
-                    return new HashSet<PresentationLink>(returnSet);
+                    var returnSet = list.Select(tup => new PresentationLinkModel() {ElementId1 = tup.m_Item1, ElementId2 = tup.m_Item2});
+                    return new HashSet<PresentationLinkModel>(returnSet);
                 }
                 catch (Exception e)
                 {

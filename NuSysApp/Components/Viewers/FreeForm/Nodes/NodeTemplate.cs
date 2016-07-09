@@ -244,13 +244,9 @@ namespace NuSysApp
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
             var p = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
             var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(p.X, p.Y, 300, 300));
-            var send = (FrameworkElement) sender;
             if (_currenDragMode == DragMode.Duplicate)
             {
-               
                 var vm = (ElementViewModel)DataContext;
-                
-
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
                 hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement) is GroupNodeView).ToList();
 
@@ -301,16 +297,9 @@ namespace NuSysApp
                         {
                             if (element is RectangleView)
                             {
-                                Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100,
-                                    100,
-                                    200);
-                                Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100,
-                                    100,
-                                    100);
                                 if (_currenDragMode == DragMode.PresentationLink)
                                 {
-                                    /*vm.Controller.RequestPresentationLinkTo(dc.Id, (RectangleView)element, null, inFgDictionary,
-                                        outFgDictionary);*/
+                                    AddPresentationLink(dc?.Id,vm?.Id);
                                 }
                                 else
                                 {
@@ -328,7 +317,7 @@ namespace NuSysApp
                             {
                                 if (_currenDragMode == DragMode.PresentationLink)
                                 {
-                                    // vm.Controller.RequestPresentationLinkTo(dc.ContentId, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
+                                    AddPresentationLink(dc?.Id,vm?.Id);
                                 }
                                 else
                                 {
@@ -346,7 +335,7 @@ namespace NuSysApp
                             {
                                 if (_currenDragMode == DragMode.PresentationLink)
                                 {
-                                    // vm.Controller.RequestPresentationLinkTo(dc.ContentId, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
+                                    AddPresentationLink(dc?.Id,vm?.Id);
                                 }
                                 else
                                 {
@@ -364,7 +353,7 @@ namespace NuSysApp
                             {
                                 if (_currenDragMode == DragMode.PresentationLink)
                                 {
-                                    // vm.Controller.RequestPresentationLinkTo(dc.ContentId, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
+                                    AddPresentationLink(dc?.Id,vm?.Id);
                                 }
                                 else
                                 {
@@ -379,11 +368,9 @@ namespace NuSysApp
                             }
                             if (element is ImageRegionView)
                             {
-                             //   Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100, 100, 200);
-                               // Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100, 100, 100);
                                 if (_currenDragMode == DragMode.PresentationLink)
                                 {
-                                   // vm.Controller.RequestPresentationLinkTo(dc.ContentId, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
+                                    AddPresentationLink(dc?.Id,vm?.Id);
                                 }
                                 else
                                 {
@@ -391,55 +378,17 @@ namespace NuSysApp
                                     var regiondc = region.DataContext as ImageRegionViewModel;
                                     var m = new Message();
                                     m["id1"] = regiondc.RegionController.ContentId;
-                                    m["id2"] = vm.Controller.LibraryElementController.ContentId; 
+                                    m["id2"] = vm.Controller.LibraryElementController.ContentId;
                                     SessionController.Instance.LinksController.RequestLink(m);
-                          ////          vm.Controller.RequestVisualLinkTo();
                                 }
                             }
-                            
-                            /*
-                            if (element is LinkedTimeBlock)
-                            {
-                                Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100,
-                                    100,
-                                    200);
-                                Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100,
-                                    100,
-                                    100);
-                                if (_currenDragMode == DragMode.PresentationLink)
-                                {
-                                    vm.Controller.RequestPresentationLinkTo(dc.ContentId, null, (LinkedTimeBlock)element, inFgDictionary,
-                                           outFgDictionary);
-                                }
-                                else
-                                {
-                                    vm.Controller.RequestLinkTo(dc.ContentId, null, (LinkedTimeBlock) element, inFgDictionary,
-                                        outFgDictionary);
-                                }
-                                //(element as LinkedTimeBlock).changeColor();
-                                //vm.Controller.RequestLinkTo(dc.ContentId, (LinkedTimeBlock)element);
-
-                                */
-
-
-                            
                         }
                     }
                     else
                     {
-                   //     if (dc.LinkList.Where(c => c.OutElement.Model.ContentId == vm.ContentId).Count() > 0 || vm.LinkList.Where(c => c.OutElement.Model.ContentId == dc.ContentId).Count() > 0)
-                   //     {
-                   //         return;
-                   //     }
-
-
                         if (_currenDragMode == DragMode.Link)
                         {
-                            if (dc is RegionViewModel)
-                            {
-
-                            }
-                            else
+                            if (!(dc is RegionViewModel))
                             {
                                 var m = new Message();
                                 m["id1"] = dc.ContentId;
@@ -449,11 +398,10 @@ namespace NuSysApp
                                     SessionController.Instance.LinksController.RequestLink(m);
                                 }
                             }
-                         //   vm.Controller.RequestVisualLinkTo();
                         }
                         if (_currenDragMode == DragMode.PresentationLink)
-                        {/*
-                            vm.Controller.RequestPresentationLinkTo(dc.Id);*/
+                        {
+                            AddPresentationLink(dc?.Id,vm?.Id);
                         }
                     }
                 }
@@ -463,6 +411,23 @@ namespace NuSysApp
             (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta));
         }
 
+        /// <summary>
+        /// creates a presentation link between to two elements whose id's are passed in
+        /// </summary>
+        /// <param name="elementId1"></param>
+        /// <param name="elementId2"></param>
+        private void AddPresentationLink(string elementId1, string elementId2)
+        {
+            var currentCollection = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+
+            Debug.Assert(elementId1 != null);
+            Debug.Assert(elementId2 != null);
+            Debug.Assert(currentCollection != null);
+            Debug.Assert(SessionController.Instance.IdToControllers.ContainsKey(elementId1));
+            Debug.Assert(SessionController.Instance.IdToControllers.ContainsKey(elementId2));
+
+            SessionController.Instance.NuSysNetworkSession.AddPresentationLink(elementId1, elementId2, currentCollection);
+        }
         private void BtnAddOnManipulationDelta(object sender, PointerRoutedEventArgs args)
         {
             if (_dragItem == null)

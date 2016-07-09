@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class PresentationLink
+    public class PresentationLinkModel
     {
-        public string Id1 { get; set; }
-        public string Id2 { get; set; }
+        public string ElementId1 { get; set; }
+        public string ElementId2 { get; set; }
     }
 }

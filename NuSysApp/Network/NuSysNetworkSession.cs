@@ -470,7 +470,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="contentId"></param>
         /// <returns></returns>
-        public async Task<HashSet<PresentationLink>> GetPresentationLinks(string contentId)
+        public async Task<HashSet<PresentationLinkModel>> GetPresentationLinks(string contentId)
         {
             return await _serverClient.GetPresentationLinks(contentId);
         }
