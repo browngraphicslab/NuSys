@@ -30,7 +30,7 @@ namespace NuSysApp
         private ViewMode _currentViewMode;
 
         private const int _minHeight = 200;
-        private const int _minWidth = 180;
+        private const int _minWidth = 200;
 
         public BaseToolView(BasicToolViewModel vm, double x, double y)
         {

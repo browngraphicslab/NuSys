@@ -64,8 +64,8 @@ namespace NuSysApp
             var outToolVM = vm.OutTool;
 
 
-            var anchor1 = new Point(inToolVM.X + inToolVM.Width / 2, inToolVM.Y + 13);
-            var anchor2 = new Point(outToolVM.X + outToolVM.Width / 2, outToolVM.Y + 13);
+            var anchor1 = new Point(inToolVM.X + inToolVM.Width / 2 + 60, inToolVM.Y + 20);
+            var anchor2 = new Point(outToolVM.X + outToolVM.Width / 2 + 60, outToolVM.Y + 20);
 
             var distanceX = anchor1.X - anchor2.X;
             var distanceY = anchor1.Y - anchor2.Y;
@@ -97,8 +97,8 @@ namespace NuSysApp
             var inToolVM = vm.InTool;
             var outToolVM = vm.OutTool;
 
-            var anchor1 = new Point(inToolVM.X + inToolVM.Width / 2, inToolVM.Y + 13);
-            var anchor2 = new Point(outToolVM.X + outToolVM.Width / 2, outToolVM.Y + 13);
+            var anchor1 = new Point(inToolVM.X + inToolVM.Width / 2 + 60, inToolVM.Y + 20);
+            var anchor2 = new Point(outToolVM.X + outToolVM.Width / 2 + 60, outToolVM.Y + 20);
 
 
             pathfigure.StartPoint = anchor1;

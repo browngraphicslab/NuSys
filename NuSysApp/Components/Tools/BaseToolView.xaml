@@ -15,7 +15,7 @@
     IsDoubleTapEnabled="True">
     <Canvas x:Name="xCanvas" >
         <StackPanel>
-            <Border Name="xParentOperatorGrid" Visibility="Collapsed"  Height="40" CornerRadius="2,2,0,0" Background="{StaticResource color1}" Tapped="XParentOperatorText_OnTapped" Margin="60,0,0,0">
+            <Border Name="xParentOperatorGrid" Visibility="Collapsed" Width="70" Height="40" CornerRadius="2,2,0,0" Background="{StaticResource color1}" Tapped="XParentOperatorText_OnTapped" Margin="100,0,40,0">
                    <TextBlock Text="OR" Name="xParentOperatorText" HorizontalAlignment="Center" FontSize="24"  VerticalAlignment="Center"></TextBlock>
             </Border>
             
