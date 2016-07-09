@@ -306,7 +306,7 @@ namespace NuSysApp
             dict = new Message();
             dict["width"] = size.Width.ToString();
             dict["height"] = size.Height.ToString();
-            dict["nodeType"] = elementType.ToString();
+            dict["type"] = elementType.ToString();
             dict["title"] = title;
             dict["x"] = (p.X).ToString();
             dict["y"] = (p.Y).ToString();

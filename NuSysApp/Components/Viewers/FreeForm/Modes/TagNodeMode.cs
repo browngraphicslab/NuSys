@@ -171,7 +171,7 @@ namespace NuSysApp
                 props["creator"] = groupTagNode.Id;
                 props.Remove("id");
                 props.Remove("type");
-                props.Remove("nodeType");
+                props.Remove("type");
                 props.Remove("x");
                 props.Remove("y");
               //  props.Remove("metadata");

@@ -66,10 +66,10 @@ namespace NuSysApp
                 var outId = controller?.OutElement?.Id;
                 var inId = controller?.InElement?.Id;
 
-                Debug.Assert(inId!= null);
+                Debug.Assert(inId != null);
                 if (!_linkableIdToLinkIds.ContainsKey(inId))
                 {
-                    _linkableIdToLinkIds[inId] =  new HashSet<string>();
+                    _linkableIdToLinkIds[inId] = new HashSet<string>();
                 }
 
                 Debug.Assert(outId != null);
@@ -80,6 +80,10 @@ namespace NuSysApp
 
                 _linkableIdToLinkIds[outId].Add(controller.Id);
                 _linkableIdToLinkIds[inId].Add(controller.Id);
+            }
+            if(!_linkableIdToLinkIds.ContainsKey(linkable.Id))
+            {
+                _linkableIdToLinkIds[linkable.Id] = new HashSet<string>();
             }
         }
 
@@ -199,14 +203,8 @@ namespace NuSysApp
         /// <param name="linkableController"></param>
         public void RemoveAlias(string linkableControllerId)
         {
-            Debug.Assert(linkableControllerId != null && _linkableIdToLinkIds.ContainsKey(linkableControllerId));
-            var connectedLinkIds = _linkableIdToLinkIds[linkableControllerId];
-
-            foreach (var connectedLinkId in connectedLinkIds)
-            {
-                var controller = GetLinkable(connectedLinkId);
-                DisposeLinkable(controller.Id);
-            }
+            //Debug.WriteLine($"RemoveAlias: {linkableControllerId}");
+            //Debug.Assert(linkableControllerId != null && _linkableIdToLinkIds.ContainsKey(linkableControllerId));
         }
 
         /// <summary>
@@ -256,8 +254,24 @@ namespace NuSysApp
         /// <param name="content"></param>
         public void RemoveContent(LibraryElementController content)
         {
+            Debug.WriteLine($"RemoveContent {content.ContentId}");
             var libraryElementId = content?.LibraryElementModel?.LibraryElementId;
             Debug.Assert(libraryElementId != null);
+            Debug.Assert(content?.LibraryElementModel != null);
+            if (content.LibraryElementModel.Type == ElementType.Link)
+            {
+                Debug.Assert(content.LibraryElementModel is LinkLibraryElementModel);
+                var linkLibraryElementModel = content.LibraryElementModel as LinkLibraryElementModel;
+                
+                Debug.Assert(_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.InAtomId));
+                Debug.Assert(_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.OutAtomId));
+                Debug.Assert(_contentIdToLinkContentIds[linkLibraryElementModel.InAtomId].Contains(libraryElementId));
+                Debug.Assert(_contentIdToLinkContentIds[linkLibraryElementModel.OutAtomId].Contains(libraryElementId));
+
+                _contentIdToLinkableIds[linkLibraryElementModel.InAtomId].Remove(libraryElementId);
+                _contentIdToLinkableIds[linkLibraryElementModel.OutAtomId].Remove(libraryElementId);
+            }
+
             var linkableAliases = GetInstancesOfContent(libraryElementId);
             foreach (var linkableAlias in linkableAliases)
             {
@@ -312,7 +326,7 @@ namespace NuSysApp
         {
             var linkLibElemController = GetLinkLibraryElementControllerBetweenLinkables(one, two);
             Debug.Assert(linkLibElemController != null);
-
+            Debug.Assert(one.Id != two.Id);
             var model = new LinkModel();
             model.InAtomId = one.Id;
             model.OutAtomId = two.Id;
@@ -472,10 +486,19 @@ namespace NuSysApp
         /// <param name="linkableId"></param>
         private void DisposeLinkable(string linkableId)
         {
+            Debug.WriteLine($"DisposeLinkable: {linkableId}");
             Debug.Assert(linkableId != null);
 
-            ILinkable otherOutObject;
-            _linkableIdToLinkableController.TryRemove(linkableId, out otherOutObject);
+            ILinkable outLinkable;
+            _linkableIdToLinkableController.TryRemove(linkableId, out outLinkable);
+
+            Debug.Assert(outLinkable != null);
+            Debug.Assert(outLinkable.ContentId != null);
+            Debug.Assert(_contentIdToLinkableIds.ContainsKey(outLinkable.ContentId));
+            Debug.Assert(_contentIdToLinkableIds[outLinkable.ContentId].Contains(linkableId));
+
+            _contentIdToLinkableIds[outLinkable.ContentId].Remove(linkableId);
+
             HashSet<string> outObj;
             _linkableIdToLinkIds.TryRemove(linkableId, out outObj);
         }
@@ -486,6 +509,8 @@ namespace NuSysApp
         /// <param name="contentId"></param>
         private void DisposeContent(string contentId)
         {
+
+            Debug.WriteLine($"DisposeContent {contentId}");
             HashSet<string> outObj;
             _contentIdToLinkableIds.TryRemove(contentId, out outObj);
             _contentIdToLinkContentIds.TryRemove(contentId, out outObj);

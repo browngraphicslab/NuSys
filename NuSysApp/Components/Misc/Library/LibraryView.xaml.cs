@@ -457,7 +457,7 @@ namespace NuSysApp
                     dict["title"] = element?.Title + " element";
                     dict["width"] = size.Width.ToString();
                     dict["height"] = size.Height.ToString();
-                    dict["nodeType"] = elementType.ToString();
+                    dict["type"] = elementType.ToString();
                     dict["x"] = pos.X;
                     dict["y"] = pos.Y;
                     dict["contentId"] = libraryId;
@@ -601,7 +601,7 @@ namespace NuSysApp
             elementMsg["x"] = r.X;
             elementMsg["y"] = r.Y;
             elementMsg["contentId"] = contentId;
-            elementMsg["nodeType"] = ElementType.Collection;
+            elementMsg["type"] = ElementType.Collection;
             elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             elementMsg["id"] = newCollectionId;
             if (ListContainer.Children[0] == _libraryList)
@@ -622,7 +622,7 @@ namespace NuSysApp
                     dict["title"] = libraryItemTemplate?.Title;
                     dict["width"] = "300";
                     dict["height"] = "300";
-                    dict["nodeType"] = libraryItemTemplate?.Type;
+                    dict["type"] = libraryItemTemplate?.Type;
                     dict["x"] = "50000";
                     dict["y"] = "50000";
                     dict["contentId"] = libraryItemTemplate?.ContentID;
@@ -641,7 +641,7 @@ namespace NuSysApp
                     dict["title"] = itemTemplate?.Title;
                     dict["width"] = "300";
                     dict["height"] = "300";
-                    dict["nodeType"] = itemTemplate?.Type;
+                    dict["type"] = itemTemplate?.Type;
                     dict["x"] = "50000";
                     dict["y"] = "50000";
                     dict["contentId"] = itemTemplate?.ContentID;

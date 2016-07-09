@@ -91,11 +91,7 @@ namespace NuSysApp
 
         public void Dispose(object sender, object args)
         {
-            Debug.WriteLine($"LinkControllerId: {this.Id}");
-            if (this.Id == "e1c944a062094899802217383b467255")
-            {
-                
-            }
+            Debug.WriteLine($"LinkControllerId about to be disposed: {this.Id}");
             if (InElement != null)
             {
                 InElement.AnchorChanged -= ChangeAnchor;

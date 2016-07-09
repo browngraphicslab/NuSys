@@ -191,6 +191,7 @@ namespace NuSysApp
 
         public void Delete(object sender)
         {
+            SessionController.Instance.LinksController.RemoveAlias(this.Id);
             Deleted?.Invoke(this);
             SessionController.Instance.ActiveFreeFormViewer.DeselectAll();
 
@@ -213,7 +214,7 @@ namespace NuSysApp
             m["y"] = y;
             m["width"] = Model.Width;
             m["height"] = Model.Height;
-            m["nodeType"] = Model.ElementType.ToString();
+            m["type"] = Model.ElementType.ToString();
             m["creator"] = Model.ParentCollectionId;
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
         }
@@ -285,7 +286,7 @@ namespace NuSysApp
             var m1 = new Message(await Model.Pack());
             m1["metadata"] = metadata;
             m1["contentId"] = Model.LibraryId;
-            m1["nodeType"] = Model.ElementType;
+            m1["type"] = Model.ElementType;
             m1["title"] = Model.Title;
             m1["x"] = x;
             m1["y"] = y;

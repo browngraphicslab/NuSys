@@ -199,7 +199,7 @@ namespace NuSysApp
             m["width"] = 400;
             m["height"] = 400;
             m["url"] = url;
-            m["nodeType"] = ElementType.Web;
+            m["nodetype"] = ElementType.Web;
             m["autoCreate"] = true;
             m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId ;
             m["id"] = nodeid;
