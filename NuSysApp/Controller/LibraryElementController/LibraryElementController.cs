@@ -198,7 +198,7 @@ namespace NuSysApp
                 _libraryElementModel.Metadata.TryRemove(entry.Key, out outobj);
             }
             _libraryElementModel.Metadata.TryAdd(entry.Key,entry);
-            ChangeMetadata(GetFullMetadata());
+            ChangeMetadata(_libraryElementModel.FullMetadata);
             return true;
         }
 
@@ -215,7 +215,7 @@ namespace NuSysApp
             }
             MetadataEntry outobj;
             _libraryElementModel.Metadata.TryRemove(key, out outobj);
-            ChangeMetadata(GetFullMetadata());
+            ChangeMetadata(LibraryElementModel.FullMetadata);
             return true;
         }
 
@@ -225,40 +225,12 @@ namespace NuSysApp
         /// </summary>
         public List<string> GetMetadata(string key)
         {
-            var full = GetFullMetadata();
+            var full = LibraryElementModel.FullMetadata;
             if (string.IsNullOrEmpty(key) || !full.ContainsKey(key) || string.IsNullOrWhiteSpace(key))
             {
                 return null;
             }
             return full[key].Values;
-        }
-
-        public Dictionary<string, MetadataEntry> GetFullMetadata()
-        {
-            var metadata = new Dictionary<string, MetadataEntry>(LibraryElementModel.Metadata);
-            //ADD IMMUTABLE DATA TO METADATA, so they can show up in md editor
-            if (!metadata.ContainsKey("Timestamp"))
-            {
-                metadata.Add("Timestamp", new MetadataEntry("Timestamp", new List<string> { LibraryElementModel.Timestamp }, MetadataMutability.IMMUTABLE));
-            }
-            if (!metadata.ContainsKey("Creator"))
-            {
-                metadata.Add("Creator", new MetadataEntry("Creator", new List<string> { LibraryElementModel.Creator }, MetadataMutability.IMMUTABLE));
-            }
-            if (!metadata.ContainsKey("Title"))
-            {
-                metadata.Add("Title", new MetadataEntry("Title", new List<string> { Title }, MetadataMutability.IMMUTABLE));
-            }
-            if (!metadata.ContainsKey("Type"))
-            {
-                metadata.Add("Type", new MetadataEntry("Type", new List<string> { LibraryElementModel.Type.ToString() }, MetadataMutability.IMMUTABLE));
-            }
-            if (!metadata.ContainsKey("Keywords"))
-            {
-                var keywords = LibraryElementModel.Keywords.Select(key => key.Text);
-                metadata.Add("Keywords", new MetadataEntry("Keywords", new List<string>(keywords), MetadataMutability.IMMUTABLE));
-            }
-            return metadata;
         }
 
         /// <summary>
