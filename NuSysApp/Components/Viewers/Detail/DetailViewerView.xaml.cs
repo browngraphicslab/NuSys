@@ -426,6 +426,8 @@ namespace NuSysApp
 
             var vm = (DetailViewerViewModel)DataContext;
             vm.TabPaneHeight = this.Width; //once again, will need to refactor this - supposed to be TabPaneWidth
+            //avoid passing in infinity:
+            if(vm.Tabs.Count == 0) { return; }
             vm.TabHeight = vm.TabPaneHeight/vm.Tabs.Count;
         }
 

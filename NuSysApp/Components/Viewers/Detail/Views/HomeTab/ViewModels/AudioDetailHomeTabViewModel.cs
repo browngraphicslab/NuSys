@@ -146,7 +146,7 @@ namespace NuSysApp
 
         public override Region GetNewRegion()
         {
-            var region = new TimeRegionModel("Region", 0.25, 0.75);
+            var region = new TimeRegionModel("Untitled Region", 0.25, 0.75);
             return region;
         }
 
