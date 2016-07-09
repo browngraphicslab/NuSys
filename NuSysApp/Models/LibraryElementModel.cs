@@ -33,6 +33,8 @@ namespace NuSysApp
         public string Creator { set; get; }
         public string Timestamp { get; set; }//TODO maybe put in a timestamp, maybe remove the field from the library
 
+        public string LastEditedTimestamp { get; set; }
+
         public string ServerUrl { get; set; }
        
         public LibraryElementModel(string id, ElementType elementType, Dictionary<string, MetadataEntry> metadata = null, string contentName = null, bool favorited = false)
@@ -104,6 +106,10 @@ namespace NuSysApp
             if (!Metadata.ContainsKey("Timestamp"))
             {
                 Metadata.TryAdd("Timestamp", new MetadataEntry("Timestamp", new List<string> { Timestamp }, MetadataMutability.IMMUTABLE));
+            }
+            if (!Metadata.ContainsKey("LastEditedTimestamp"))
+            {
+                Metadata.TryAdd("LastEditedTimestamp", new MetadataEntry("LastEditedTimestamp", new List<string> { LastEditedTimestamp }, MetadataMutability.IMMUTABLE));
             }
             if (!Metadata.ContainsKey("Creator"))
             {

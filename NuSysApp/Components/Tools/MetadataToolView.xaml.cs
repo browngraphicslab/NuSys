@@ -29,6 +29,10 @@ namespace NuSysApp
 
         private const int ListBoxHeightOffset = 175;
 
+        private const int _minHeight = 200;
+
+        private const int _minWidth = 200;
+
         private double _x;
 
         private double _y;
@@ -40,12 +44,44 @@ namespace NuSysApp
             vm.Controller.SetLocation(x, y);
             this.DataContext = vm;
             SetSize(400,500);
-            xCollectionElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
-            xCollectionElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
+            xCollectionElement.AddHandler(PointerPressedEvent, new PointerEventHandler(CollectionBtnAddOnManipulationStarting), true);
+            xCollectionElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(CollectionBtnAddOnManipulationCompleted), true);
             vm.PropertiesToDisplayChanged += Vm_PropertiesToDisplayChanged;
-            //xMetadataKeysList.ItemsSource = (DataContext as MetadataToolViewModel).AllMetadataDictionary.Keys;
+            (vm.Controller as MetadataToolController).SelectionChanged += On_SelectionChanged;
+            vm.Controller.NumberOfParentsChanged += Controller_NumberOfParentsChanged;
+
+            vm.ReloadPropertiesToDisplay();
             xMetadataKeysList.ItemsSource = (DataContext as MetadataToolViewModel)?.AllMetadataDictionary.Keys;
 
+        }
+
+        private void On_SelectionChanged(object sender)
+        {
+            var vm = DataContext as MetadataToolViewModel;
+            if (vm.Selection != null &&
+                (vm.Controller as MetadataToolController).Model.Selected &&
+                vm.Selection.Item1 != null)
+            {
+                xMetadataValuesList.ItemsSource =
+                       vm.AllMetadataDictionary[vm.Selection.Item1];
+                xMetadataKeysList.SelectedItem = vm.Selection.Item1;
+                xMetadataKeysList.ScrollIntoView(xMetadataKeysList.SelectedItem);
+
+                if (vm.Selection.Item2 != null)
+                {
+                    xMetadataValuesList.SelectedItem = vm.Selection.Item2;
+                    xMetadataValuesList.ScrollIntoView(xMetadataValuesList.SelectedItem);
+                }
+                else
+                {
+                    xMetadataValuesList.SelectedItem = null;
+                }
+            }
+            else
+            {
+                xMetadataKeysList.SelectedItem = null;
+                xMetadataValuesList.ItemsSource = new List<string>();
+            }
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)
@@ -54,141 +90,53 @@ namespace NuSysApp
             wvm.AtomViewList.Remove(this);
             (DataContext as ToolViewModel)?.Dispose();
             this.Dispose();
-
         }
 
         public void Dispose()
         {
             (DataContext as MetadataToolViewModel).PropertiesToDisplayChanged -= Vm_PropertiesToDisplayChanged;
+            ((DataContext as MetadataToolViewModel).Controller as MetadataToolController).SelectionChanged -= On_SelectionChanged;
+            (DataContext as MetadataToolViewModel).Controller.NumberOfParentsChanged -= Controller_NumberOfParentsChanged;
 
         }
 
+        private void Controller_NumberOfParentsChanged(int numOfParents)
+        {
+            //xParentOperatorPickerList.Visibility = Visibility.Visible;
+            //xViewTypeGrid.Visibility = Visibility.Collapsed;
+            if (numOfParents > 1)
+            {
+                xParentOperatorGrid.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                xParentOperatorGrid.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void XParentOperatorText_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var vm = DataContext as ToolViewModel;
+            if (vm.Controller.Model.ParentOperator == ToolModel.ParentOperatorType.And)
+            {
+                vm.Controller.SetParentOperator(ToolModel.ParentOperatorType.Or);
+                xParentOperatorText.Text = "OR";
+            }
+            else if (vm.Controller.Model.ParentOperator == ToolModel.ParentOperatorType.Or)
+            {
+                vm.Controller.SetParentOperator(ToolModel.ParentOperatorType.And);
+                xParentOperatorText.Text = "AND";
+            }
+        }
 
         private void Vm_PropertiesToDisplayChanged()
         {
             var vm = DataContext as MetadataToolViewModel;
             Debug.Assert(vm != null);
             xMetadataKeysList.ItemsSource = vm.AllMetadataDictionary.Keys;
-            if (vm.Selection != null &&
-                (vm.Controller as MetadataToolController).Model.Selected &&
-                vm.Selection.Item1 != null)
-            {
-                xMetadataKeysList.SelectedItem = vm.Selection.Item1;
-                if (vm.Selection.Item2 != null)
-                {
-                    xMetadataValuesList.SelectedItem = vm.Selection.Item2;
-                }
-                else
-                {
-                    xMetadataValuesList.ItemsSource = vm.AllMetadataDictionary[vm.Selection.Item1];
-                }
-            }
-            else
-            {
-                xMetadataValuesList.ItemsSource = new List<string>();
-            }
-            xMetadataKeysList.ScrollIntoView(xMetadataKeysList.SelectedItem);
-            xMetadataValuesList.ScrollIntoView(xMetadataValuesList.SelectedItem);
-
-
         }
 
-
-
-        private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)
-        {
-            xCanvas.Children.Remove(_dragItem);
-
-            var wvm = SessionController.Instance.ActiveFreeFormViewer;
-            var p = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
-            var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(p.X, p.Y, 300, 300));
-            var send = (FrameworkElement)sender;
-            if (_currentDragMode == DragMode.Collection)
-
-            {
-                var vm = DataContext as ToolViewModel;
-                if (vm != null)
-                {
-                    vm.CreateCollection(r.X, r.Y);
-                }
-            }
-
-            ReleasePointerCaptures();
-            (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta));
-            args.Handled = true;
-        }
-
-        private void Tool_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
-        {
-
-
-            e.Handled = true;
-
-
-        }
-
-        private void XFilterElement_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            e.Handled = true;
-        }
-
-        private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            if (SessionController.Instance.SessionView.IsPenMode)
-                return;
-
-            var vm = (ToolViewModel)this.DataContext;
-
-            var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
-            var resizeX = vm.Width + e.Delta.Translation.X / zoom;
-            var resizeY = vm.Height + e.Delta.Translation.Y / zoom;
-
-            if (resizeX > MinWidth && resizeY > MinHeight)
-            {
-                SetSize(resizeX, resizeY);
-
-            }
-            else if (resizeX > MinWidth)
-            {
-                SetSize(resizeX, vm.Height);
-            }
-            else if (resizeY > MinHeight)
-            {
-                SetSize(vm.Width, resizeY);
-            }
-        }
-
-        private void SetSize(double width, double height)
-        {
-            (DataContext as MetadataToolViewModel).Controller.SetSize(width, height);
-            xMetadataKeysList.Height = height - ListBoxHeightOffset;
-            xMetadataValuesList.Height = height - ListBoxHeightOffset;
-            xMetadataKeysList.Width = width/2;
-            xMetadataValuesList.Width =width/2;
-
-        }
-
-        private void Tool_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-
-            var vm = DataContext as ToolViewModel;
-            var wvm = SessionController.Instance.ActiveFreeFormViewer;
-
-
-            var x = e.Delta.Translation.X / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
-            var y = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
-
-
-
-            if (vm != null)
-            {
-                vm.Controller.SetLocation(vm.X + x, vm.Y + y);
-            }
-
-        }
-
-
-        private async void BtnAddOnManipulationStarting(object sender, PointerRoutedEventArgs args)
+        private async void CollectionBtnAddOnManipulationStarting(object sender, PointerRoutedEventArgs args)
         {
 
             if (xCanvas.Children.Contains(_dragItem))
@@ -212,13 +160,12 @@ namespace NuSysApp
             _dragItem.Height = 50;
             xCanvas.Children.Add(_dragItem);
             _dragItem.RenderTransform = new CompositeTransform();
-            (sender as FrameworkElement).AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta), true);
+            (sender as FrameworkElement).AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(CollectionBtnAddOnManipulationDelta), true);
             args.Handled = true;
         }
 
-        private void BtnAddOnManipulationDelta(object sender, PointerRoutedEventArgs args)
+        private void CollectionBtnAddOnManipulationDelta(object sender, PointerRoutedEventArgs args)
         {
-
             if (_dragItem == null)
                 return;
             var t = (CompositeTransform)_dragItem.RenderTransform;
@@ -228,34 +175,110 @@ namespace NuSysApp
             args.Handled = true;
         }
 
+        private async void CollectionBtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)
+        {
+            xCanvas.Children.Remove(_dragItem);
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            var p = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
+            var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(p.X, p.Y, 300, 300));
+            var send = (FrameworkElement)sender;
+            if (_currentDragMode == DragMode.Collection)
+            {
+                var vm = DataContext as ToolViewModel;
+                if (vm != null)
+                {
+                    vm.CreateCollection(r.X, r.Y);
+                }
+            }
+            ReleasePointerCaptures();
+            (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(CollectionBtnAddOnManipulationDelta));
+            args.Handled = true;
+        }
+
+        private void Tool_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void Tool_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            var vm = DataContext as ToolViewModel;
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            var x = e.Delta.Translation.X / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
+            var y = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
+            if (vm != null)
+            {
+                vm.Controller.SetLocation(vm.X + x, vm.Y + y);
+            }
+        }
+
+        private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            if (SessionController.Instance.SessionView.IsPenMode)
+                return;
+
+            var vm = (ToolViewModel)this.DataContext;
+            var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
+            var resizeX = vm.Width + e.Delta.Translation.X / zoom;
+            var resizeY = vm.Height + e.Delta.Translation.Y / zoom;
+            if (resizeX > MinWidth && resizeY > MinHeight)
+            {
+                SetSize(resizeX, resizeY);
+
+            }
+            else if (resizeX > MinWidth)
+            {
+                SetSize(resizeX, vm.Height);
+            }
+            else if (resizeY > MinHeight)
+            {
+                SetSize(vm.Width, resizeY);
+            }
+        }
+
+        private void SetSize(double width, double height)
+        {
+            if (width < _minWidth && height < _minHeight)
+            {
+                return;
+            }
+            var vm = (DataContext as MetadataToolViewModel);
+            if (width > _minWidth && height > _minHeight)
+            {
+                vm.Controller.SetSize(width, height);
+                xMetadataKeysList.Height = height - ListBoxHeightOffset;
+                xMetadataValuesList.Height = height - ListBoxHeightOffset;
+                xMetadataKeysList.Width = width / 2;
+                xMetadataValuesList.Width = width / 2;
+            }
+            else if (height < _minHeight)
+            {
+                vm.Controller.SetSize(width, this.Height);
+                xMetadataKeysList.Width = width / 2;
+                xMetadataValuesList.Width = width / 2;
+            }
+            else if (width < _minWidth)
+            {
+                vm.Controller.SetSize(this.Width, height);
+                xMetadataKeysList.Height = height - ListBoxHeightOffset;
+                xMetadataValuesList.Height = height - ListBoxHeightOffset;
+            }
+        }
+
+
+        
+
         private void xList_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             _x = e.GetCurrentPoint(xCanvas).Position.X - 25;
             _y = e.GetCurrentPoint(xCanvas).Position.Y - 25;
+            e.Handled = true;
         }
 
         private async void xListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             if (xCanvas.Children.Contains(_dragItem))
                 xCanvas.Children.Remove(_dragItem);
-            //if (_currentDragMode == DragMode.Key)
-            //{
-            //    //xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
-            //    xMetadataKeysList.SelectionChanged -= XMetadataKeysList_OnSelectionChanged;
-            //    xMetadataKeysList.SelectedItem = ((sender as Grid).Children[0] as TextBlock).Text;
-            //    xMetadataKeysList.SelectionChanged += XMetadataKeysList_OnSelectionChanged;
-            //}
-            //else if (_currentDragMode == DragMode.Value)
-            //{
-            //    //xPropertiesList.SelectionChanged -= XPropertiesList_OnSelectionChanged;
-            //    xMetadataValuesList.SelectionChanged -= XMetadataValuesList_OnSelectionChanged;
-            //    xMetadataValuesList.SelectedItem = ((sender as Grid).Children[0] as TextBlock).Text;
-            //    xMetadataValuesList.SelectionChanged += XMetadataValuesList_OnSelectionChanged;
-            //}
-
-
-
-            //_currentDragMode = DragMode.Filter;
             if (_currentDragMode == DragMode.Collection)
             {
                 _dragItem = (DataContext as ToolViewModel).InitializeDragFilterImage();
@@ -265,7 +288,6 @@ namespace NuSysApp
             var t = (CompositeTransform)_dragItem.RenderTransform;
             t.TranslateX = _x;
             t.TranslateY = _y;
-
         }
 
         private void xListItem_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -293,7 +315,6 @@ namespace NuSysApp
                 {
                     _dragItem.Visibility = Visibility.Collapsed;
                 }
-
             }
             else if (_dragItem.Visibility == Visibility.Collapsed && !e.IsInertial)
             {
@@ -321,38 +342,18 @@ namespace NuSysApp
 
             if (_dragItem.Visibility == Visibility.Visible)
             {
+                var vm = (DataContext as MetadataToolViewModel);
                 if (_currentDragMode == DragMode.Key)
                 {
-                    (DataContext as MetadataToolViewModel).Selection = new Tuple<string, string>((((Grid)sender).Children[0] as TextBlock).Text, null);
+                    vm.Selection = new Tuple<string, string>((((Grid)sender).Children[0] as TextBlock).Text, null);
                 }
                 else if (_currentDragMode == DragMode.Value)
                 {
-                    (DataContext as MetadataToolViewModel).Selection = new Tuple<string, string>((DataContext as MetadataToolViewModel).Selection.Item1, (((Grid)sender).Children[0] as TextBlock).Text);
+                    vm.Selection = new Tuple<string, string>(vm.Selection.Item1, (((Grid)sender).Children[0] as TextBlock).Text);
                 }
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
-                if (hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList().Any())
-                {
-                    var hitsStartList = hitsStart.Where(uiElem => (uiElem is TemporaryToolView)).ToList();
-                    (DataContext as ToolViewModel).AddFilterToExistingTool(hitsStartList, wvm);
-                }
-
-                else if (hitsStart.Where(uiElem => (uiElem is MetadataToolView)).ToList().Any())
-                {
-                    var hitsStartList = hitsStart.Where(uiElem => (uiElem is MetadataToolView)).ToList();
-                    (DataContext as ToolViewModel).AddFilterToExistingTool(hitsStartList, wvm);
-                }
-                else if (hitsStart.Where(uiElem => (uiElem is ToolFilterView)).ToList().Any())
-                {
-                    var hitsStartList = hitsStart.Where(uiElem => (uiElem is ToolFilterView)).ToList();
-                    (DataContext as ToolViewModel).AddFilterToFilterToolView(hitsStartList, wvm);
-                }
-                else
-                {
-                    (DataContext as ToolViewModel).AddNewFilterTool(r.X, r.Y, wvm);
-                }
+                vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
             }
-            
-
         }
 
         private void XList_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -379,15 +380,8 @@ namespace NuSysApp
             else
             {
                 Debug.Assert(vm != null);
-                if (xMetadataKeysList.SelectedItems.Count == 1)
-                {
-                    xMetadataValuesList.ItemsSource =
-                        vm.AllMetadataDictionary[(string)xMetadataKeysList.SelectedItems[0]];
-                    vm.Selection = new Tuple<string, string>((string)xMetadataKeysList.SelectedItems[0], null);
-                }
+                vm.Selection = new Tuple<string, string>(((sender as Grid).Children[0] as TextBlock).Text, null);
             }
-            
-
         }
 
         private void ValueListItem_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -402,11 +396,21 @@ namespace NuSysApp
             else
             {
                 Debug.Assert(vm != null);
-                if (xMetadataValuesList.SelectedItems.Count == 1 && xMetadataKeysList.SelectedItems.Count == 1)
+                if (xMetadataKeysList.SelectedItems.Count == 1)
                 {
-                    vm.Selection = new Tuple<string, string>(vm.Selection.Item1, (string)xMetadataValuesList.SelectedItems[0]);
+                    vm.Selection = new Tuple<string, string>(vm.Selection.Item1, ((sender as Grid).Children[0] as TextBlock).Text);
                 }
             }
+        }
+
+        private void ValueListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            var vm = (DataContext as MetadataToolViewModel);
+            if (vm.Selection.Item2 != (((sender as Grid).Children[0] as TextBlock).Text))
+            {
+                vm.Selection = new Tuple<string, string>(vm.Selection.Item1, ((sender as Grid).Children[0] as TextBlock).Text);
+            }
+            vm.OpenDetailView();
         }
     }
 }

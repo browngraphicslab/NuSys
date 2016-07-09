@@ -316,6 +316,9 @@
     </Compile>
     <Compile Include="Components\Regions\PDFRegionViewModel.cs" />
     <Compile Include="Components\Regions\RegionViewModel.cs" />
+    <Compile Include="Components\Tools\BaseToolView.xaml.cs">
+      <DependentUpon>BaseToolView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Tools\BasicToolController.cs" />
     <Compile Include="Components\Tools\BasicToolModel.cs" />
     <Compile Include="Components\Tools\MetadataToolController.cs" />
@@ -324,6 +327,9 @@
       <DependentUpon>MetadataToolView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Tools\MetadataToolViewModel.cs" />
+    <Compile Include="Components\Tools\PieChartToolView.xaml.cs">
+      <DependentUpon>PieChartToolView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Tools\ToolController.cs" />
     <Compile Include="Components\Tools\ToolFilterLinkView.xaml.cs">
       <DependentUpon>ToolFilterLinkView.xaml</DependentUpon>
@@ -338,6 +344,7 @@
     <Compile Include="Components\Tools\ToolLinkViewModel.cs" />
     <Compile Include="Components\Tools\ToolModel.cs" />
     <Compile Include="Components\Tools\BasicToolViewModel.cs" />
+    <Compile Include="Components\Tools\ToolViewable.cs" />
     <Compile Include="Components\Tools\ToolViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\ILinkable.cs" />
     <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
@@ -904,7 +911,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\Tools\BaseToolView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Tools\MetadataToolView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Tools\PieChartToolView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

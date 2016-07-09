@@ -40,7 +40,7 @@
                         </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock  HorizontalAlignment="Center" TextAlignment="Center" Text="{Binding}" Margin="10"/>
+                                <TextBlock  HorizontalAlignment="Center" TextAlignment="Center" Text="{Binding}" Margin="3"/>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>

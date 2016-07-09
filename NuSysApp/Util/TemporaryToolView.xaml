@@ -5,16 +5,10 @@
     xmlns:local="using:NuSysApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:Charting="using:WinRTXamlToolkit.Controls.DataVisualization.Charting"
-    xmlns:foundation="using:Windows.Foundation"
-    xmlns:dataVisualization="using:WinRTXamlToolkit.Controls.DataVisualization"
-    xmlns:controls="using:WinRTXamlToolkit.Controls"
     mc:Ignorable="d"
 
-    Width="{Binding Width}"
-    Height="{Binding Height}"
-    RenderTransform="{Binding Transform}"
     IsDoubleTapEnabled="True">
+<!--<<<<<<< HEAD
 
     <Canvas x:Name="xCanvas" >
         <StackPanel Orientation="Horizontal">
@@ -35,73 +29,6 @@
                     <Grid Height="45" Background="{StaticResource color1}">
                         <TextBlock x:Name="xTitle" TextAlignment="Center" Foreground="{StaticResource color3}"  Text="filter type" Height="22" Grid.Row="0" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
                     </Grid>
-
-                    <Charting:Chart Visibility="Collapsed" Grid.Row="1" x:Name="xPieChart" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0" Width="Auto" Height="Auto">
-                        <Charting:PieSeries x:Name="xPieSeries"  ManipulationMode="All" PointerPressed="xListItem_PointerPressed" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted" SelectionChanged="DataPointSeries_OnSelectionChanged" PointerReleased="XPieSeries_OnPointerReleased" Margin="0" IndependentValuePath="Key" DependentValuePath="Value" IsSelectionEnabled="True"/>
-                        <Charting:Chart.LegendStyle>
-                            <Style TargetType="dataVisualization:Legend">
-                                <Setter Property="VerticalAlignment" Value="Stretch" />
-                                <Setter Property="ItemsPanel">
-                                    <Setter.Value>
-                                        <ItemsPanelTemplate>
-                                            <controls:UniformGrid Columns="1"/>
-                                        </ItemsPanelTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Setter Property="ItemContainerStyle" xmlns:series="using:WinRTXamlToolkit.Controls.DataVisualization.Charting">
-                                    <Setter.Value>
-                                        <Style TargetType="Charting:LegendItem">
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="Charting:LegendItem">
-                                                        <Border MinWidth="200" BorderThickness="3" Margin="20,10" CornerRadius="10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{StaticResource color2}">
-                                                            <dataVisualization:Title HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="60" FontWeight="Bold" Content="Fuck everyone" />
-                                                        </Border>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Style>
-                                    </Setter.Value>
-                                </Setter>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="dataVisualization:Legend">
-                                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="2">
-                                                <Grid ManipulationMode="All" Width ="200">
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="Auto" />
-                                                        <RowDefinition />
-                                                    </Grid.RowDefinitions>
-                                                    <dataVisualization:Title  Grid.Row="0" x:Name="HeaderContent" Content="{TemplateBinding Header}" ContentTemplate="{TemplateBinding HeaderTemplate}" Style="{TemplateBinding TitleStyle}" />
-                                                    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Visible"  VerticalScrollBarVisibility="Visible"  BorderThickness="0" Padding="0" IsTabStop="False">
-                                                        <ItemsPresenter x:Name="Items" Margin="10,0,10,10" />
-                                                    </ScrollViewer>
-                                                </Grid>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </Charting:Chart.LegendStyle>
-                    </Charting:Chart>
-
-                    <ListView x:Name="xPropertiesList" CanDrag="True" ManipulationMode="TranslateX, TranslateY" Height="200" Grid.Row="1" Width="Auto" Background="White" SelectionMode="Single" ItemsSource="{Binding PropertiesToDisplayUnique}" >
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="ListViewItem">
-                                <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
-                                <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
-                                <Setter Property="Padding" Value="10,0,10,0"/>
-                            </Style>
-                        </ListView.ItemContainerStyle>
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid x:Name="xGridListItem" Background="Transparent" Tapped="xListItem_OnTapped"  PointerPressed="xListItem_PointerPressed"  Width="Auto" ManipulationMode="All" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
-                                    <TextBlock Text="{Binding}" Foreground="{StaticResource color3}" VerticalAlignment="Center" Width="Auto" />
-                                </Grid>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-
                     <Grid Name ="xbottompanel" Background="{StaticResource color1}" Padding="0,0,40,0"  Height="50" Grid.Row="2" VerticalAlignment="Center" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta">
                         <StackPanel Orientation="Horizontal">
                             <Button x:Name="xPieChartButton" Click="XPieChartButton_OnClick"  Margin="20,0,0,0" Background="Transparent">
@@ -125,9 +52,30 @@
 
             </Grid>
         </StackPanel>
-
-
+=======-->
+    <Canvas>
+        <ListView x:Name="xPropertiesList" CanDrag="True" ManipulationMode="TranslateX, TranslateY" Height="200" Width="Auto" Background="White" SelectionMode="Single" ItemsSource="{x:Bind PropertiesToDisplayUnique}" >
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
+                    <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Padding" Value="10,0,10,0"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid x:Name="xGridListItem" Background="Transparent" DoubleTapped ="xListItem_OnDoubleTapped" Tapped="xListItem_OnTapped"  PointerPressed="xListItem_PointerPressed"  Width="Auto" ManipulationMode="All" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
+                        <TextBlock Text="{Binding}" Foreground="{StaticResource color3}" VerticalAlignment="Center" Width="Auto" />
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </Canvas>
+    
+
+    <!-->>>>>>> origin/tooldebugging-->
+
+
 </local:AnimatableUserControl>
 
 
