@@ -16,17 +16,17 @@
             </Border.RenderTransform>
             <StackPanel Orientation="Vertical">
 
-                <Ellipse x:Name="Bulb" Width="10" Height="10" Fill="Azure" >
+                <Ellipse x:Name="Bulb" Width="10" Height="10" Fill="#DB97B3" >
                     <Ellipse.RenderTransform>
                         <CompositeTransform TranslateY="-8" TranslateX="-3.5"/>
                     </Ellipse.RenderTransform>
                 </Ellipse>
-                <Line x:Name="Handle" Y1="{Binding Y1}" Y2="{Binding Y2}"  X1="{Binding X1}" X2 ="{Binding X1}" StrokeThickness="4" Stroke="Azure" Width="7" Height="{Binding Y2}">
+                <Line x:Name="Handle" Y1="{Binding Y1}" Y2="{Binding Y2}"  X1="{Binding X1}" X2 ="{Binding X1}" StrokeThickness="4" Stroke="#DB97B3" Width="7" Height="{Binding Y2}">
                     <Line.RenderTransform>
                         <CompositeTransform TranslateY="-10"/>
                     </Line.RenderTransform>
                 </Line>
-                <Ellipse x:Name="Bulb2" Width="10" Height="10" Fill="Azure">
+                <Ellipse x:Name="Bulb2" Width="10" Height="10" Fill="#DB97B3">
                     <Ellipse.RenderTransform>
                         <CompositeTransform TranslateY="-13" TranslateX="-3.5"/>
                     </Ellipse.RenderTransform>
