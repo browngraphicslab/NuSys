@@ -136,6 +136,11 @@ namespace NuSysApp
             {
                 Debug.Assert(presentationlink != null);
                 var vm = new PresentationLinkViewModel(presentationlink);
+                if (PresentationLinkViewModel.Models == null)
+                {
+                    PresentationLinkViewModel.Models = new HashSet<PresentationLinkModel>();
+                }
+                PresentationLinkViewModel.Models.Add(presentationlink);
                 new PresentationLinkView(vm);
             }
             
@@ -226,6 +231,7 @@ namespace NuSysApp
 
         public void EnterPresentationMode(ElementViewModel em)
         {
+            Debug.Assert(em != null);
             _modeInstance = new PresentationMode(em);
 
             // change the proper visibilities
