@@ -506,6 +506,7 @@ namespace NuSysApp
             var vm = (DetailViewerViewModel)DataContext;
 
             var listView = sender as Pivot;
+            (DataContext as DetailViewerViewModel)?.ChangeSize(this, Canvas.GetLeft(this) + this.Width, Width, Height);
             var index = listView?.SelectedIndex;
             if (vm.TabDictionary.ContainsKey(_currentDetailViewable.TabId()))
             {

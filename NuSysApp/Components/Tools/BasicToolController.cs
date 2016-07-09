@@ -107,22 +107,16 @@ namespace NuSysApp
             {
                 case ToolModel.ToolFilterTypeTitle.Creator:
                     return allMetadata.ContainsKey("Creator") ? allMetadata["Creator"] : new List<string>();
-                    break;
                 case ToolModel.ToolFilterTypeTitle.Title:
                     return allMetadata.ContainsKey("Title") ? allMetadata["Title"] : new List<string>();
-                    break;
                 case ToolModel.ToolFilterTypeTitle.Type:
                     return allMetadata.ContainsKey("Type") ? allMetadata["Type"] : new List<string>();
-                    break;
                 case ToolModel.ToolFilterTypeTitle.Date:
                     return allMetadata.ContainsKey("Date") ? allMetadata["Date"] : new List<string>();
-                    break;
                 case ToolModel.ToolFilterTypeTitle.LastEditedDate:
                     return allMetadata.ContainsKey("LastEditedDate") ? allMetadata["LastEditedDate"] : new List<string>();
-                    break;
                 case ToolModel.ToolFilterTypeTitle.MetadataKeys:
                     return allMetadata.Keys.ToList();
-                    break;
                 case ToolModel.ToolFilterTypeTitle.MetadataValues:
                     var ret = new List<string>();
                     foreach (var values in allMetadata.Values)
@@ -130,7 +124,6 @@ namespace NuSysApp
                         ret.AddRange(values);
                     }
                     return ret;
-                    break;
                     
             }
             return new List<string>();

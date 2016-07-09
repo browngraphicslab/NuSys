@@ -433,7 +433,7 @@ namespace NuSysApp
         }
         public Dictionary<string, MetadataEntry> GetMetadata()
         {
-            return new Dictionary<string,MetadataEntry>(_libraryElementModel?.Metadata);
+            return _libraryElementModel.FullMetadata;
         }
         public Uri GetSource()
         {
