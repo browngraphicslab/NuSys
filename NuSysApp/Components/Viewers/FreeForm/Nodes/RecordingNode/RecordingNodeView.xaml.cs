@@ -17,7 +17,7 @@ namespace NuSysApp
         private bool _isRecording;
         private bool _isopen;
 
-        public RecordingNodeView(ElementViewModel vm)
+        public RecordingNodeView(RecordingNodeViewModel vm)
         {
             DataContext = vm;
             vm.Controller.SetSize(vm.Width, vm.Height);
@@ -27,11 +27,6 @@ namespace NuSysApp
                 SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Remove(this);
             };
 
-            nodeTpl.OnTemplateReady += delegate
-            {
-                nodeTpl.DuplicateElement.Visibility = nodeTpl.Link.Visibility = nodeTpl.PresentationLink.Visibility = nodeTpl.PresentationMode.Visibility = Visibility.Collapsed;
-                nodeTpl.titleContainer.Visibility = Visibility.Collapsed;
-            };
         }
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)
