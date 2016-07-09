@@ -558,7 +558,6 @@ namespace NuSysApp
 
                     // make the title read only if we are in exploration mode
                     title.IsReadOnly = SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION;
-
                     highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 156, 197, 194));
                     highlight.BorderThickness = new Thickness(2);
                     highlight.Background = new SolidColorBrush(Colors.Transparent);
@@ -577,9 +576,11 @@ namespace NuSysApp
                 }
                 if (!(vm.IsEditing || vm.IsSelected))
                 {
-                    highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 131, 166, 163));
+                    highlight.BorderBrush = new SolidColorBrush(Colors.Black);
                     highlight.BorderThickness = new Thickness(1);
-                    hitArea.Visibility = Visibility.Visible;
+                    highlight.Visibility = Visibility.Collapsed;
+                    bg.BorderBrush = new SolidColorBrush(Colors.Black);
+                    bg.BorderThickness = new Thickness(1);
                 }
             }
         }
