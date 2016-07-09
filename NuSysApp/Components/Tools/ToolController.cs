@@ -37,7 +37,7 @@ namespace NuSysApp
             Model.SetLibraryIds(Filter(GetUpdatedDataList()));
 
             //CODE TO DELETE Non RMS STUFF
-            
+            /*
             foreach (var id in new HashSet<string>(SessionController.Instance.ContentController.IdList))
             {
                 Task.Run(async delegate
@@ -45,6 +45,7 @@ namespace NuSysApp
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteLibraryElementRequest(id));
                 });
             }
+            */
 
             //CODE BELOW IS HACKY WAY TO DOWNLOAD ALL THE PDF'S 
             /*
@@ -185,15 +186,15 @@ namespace NuSysApp
         }
         public Dictionary<string, List<string>> GetMetadata(string libraryId)
         {
-            var element = SessionController.Instance.ContentController.GetContent(libraryId);
-            if (element != null)
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryId);
+            if (controller != null)
             {
-                var metadata = (element?.Metadata?.ToDictionary(k=>k.Key,v=>v.Value?.Values ?? new List<string>()) ?? new Dictionary<string, List<string>>());
+                var metadata = (controller?.GetFullMetadata()?.ToDictionary(k=>k.Key,v=>v.Value?.Values ?? new List<string>()) ?? new Dictionary<string, List<string>>());
 
-                metadata["Title"] = new List<string>(){ element.Title};
-                metadata["Type"] = new List<string>() { element.Type.ToString()};
-                metadata["Date"] = new List<string>() { GetDate(element)};
-                metadata["Creator"] = new List<string>() { element.Creator};
+                metadata["Title"] = new List<string>(){ controller.LibraryElementModel.Title};
+                metadata["Type"] = new List<string>() { controller.LibraryElementModel.Type.ToString()};
+                metadata["Date"] = new List<string>() { GetDate(controller.LibraryElementModel) };
+                metadata["Creator"] = new List<string>() { controller.LibraryElementModel.Creator};
                 return metadata;
             }
             return new Dictionary<string, List<string>>();

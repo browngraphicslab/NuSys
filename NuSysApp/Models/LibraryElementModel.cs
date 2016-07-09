@@ -95,28 +95,6 @@ namespace NuSysApp
             {
                 PDFStrings.Add(LibraryElementId);
             }*/
-            AddDefaultMetadata();
-        }
-
-        private void AddDefaultMetadata()
-        {
-            //ADD IMMUTABLE DATA TO METADATA, so they can show up in md editor
-            if (!Metadata.ContainsKey("Timestamp"))
-            {
-                Metadata.TryAdd("Timestamp", new MetadataEntry("Timestamp", new List<string> { Timestamp }, MetadataMutability.IMMUTABLE));
-            }
-            if (!Metadata.ContainsKey("Creator"))
-            {
-                Metadata.TryAdd("Creator", new MetadataEntry("Creator", new List<string> { Creator }, MetadataMutability.IMMUTABLE));
-            }
-            if (!Metadata.ContainsKey("Title"))
-            {
-                Metadata.TryAdd("Title", new MetadataEntry("Title", new List<string> { Title }, MetadataMutability.IMMUTABLE));
-            }
-            if (!Metadata.ContainsKey("Type"))
-            {
-                Metadata.TryAdd("Type", new MetadataEntry("Type", new List<string> { Type.ToString() }, MetadataMutability.IMMUTABLE));
-            }
         }
         protected virtual void OnSessionControllerEnterNewCollection()
         {
@@ -126,7 +104,6 @@ namespace NuSysApp
         public void SetMetadata(Dictionary<string, MetadataEntry> metadata)
         {
             Metadata = new ConcurrentDictionary<string, MetadataEntry>(metadata);
-            AddDefaultMetadata();
         }
         /*
 * Trent, Help ME.!!!!! He's talking about bio. What did I do to deserve this. 
