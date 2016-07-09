@@ -503,10 +503,10 @@ namespace NuSysApp
             LinkAdded?.Invoke(this, linkController);
         }
 
-    /*    public void RemoveLink(LinkLibraryElementController linkController)
-        {
-            LinkRemoved?.Invoke(this, linkController.ContentId);
-        }*/
+        //public void RemoveLink(LinkLibraryElementController linkController)
+        //{
+        //    LinkRemoved?.Invoke(this, linkController.ContentId);
+        //}
 
         #region Linking methods
         public async Task RequestAddNewLink(string idToLinkTo, string title)
@@ -522,6 +522,8 @@ namespace NuSysApp
         {
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
                 new DeleteLibraryElementRequest(linkLibraryElementID));
+            LinkRemoved?.Invoke(this, linkLibraryElementID);
+
         }
         public HashSet<LinkLibraryElementController> GetAllLinks()
         {

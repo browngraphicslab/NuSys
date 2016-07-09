@@ -48,7 +48,7 @@ namespace NuSysApp
                     Debug.Assert(libraryElementModel != null);
                     LinkedTo = libraryElementModel.Title;
                 }
-                LinkedTo = "";
+                //LinkedTo = "";
             }
             else
             {
