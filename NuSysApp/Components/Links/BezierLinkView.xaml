@@ -58,7 +58,7 @@
             <Grid>
                 <Rectangle x:Name="Rect" Fill="LightGray" Width="260"  HorizontalAlignment="Left"/>
                 <StackPanel Orientation="Horizontal" IsHitTestVisible="{Binding IsSelected}" >
-                    <TextBox x:Name ="Title" HorizontalAlignment="Stretch" Height="32" VerticalAlignment="Top" Text="{Binding Annotation}" TextAlignment="Center"/>
+                    <TextBox x:Name ="Title" HorizontalAlignment="Stretch" Height="32" VerticalAlignment="Top" Text="{Binding Title}" TextAlignment="Center"/>
                 </StackPanel>
             </Grid>
             </StackPanel>

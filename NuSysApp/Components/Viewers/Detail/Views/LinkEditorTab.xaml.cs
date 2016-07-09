@@ -50,6 +50,8 @@ namespace NuSysApp
             var title = linkTitle.Text;
             Debug.Assert(content != null && content.ContentID != null);
             vm?.CreateLink(content.ContentID, title);
+            linkTitle.Text = "";
+            
             
         }
 
