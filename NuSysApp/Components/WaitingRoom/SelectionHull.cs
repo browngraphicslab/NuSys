@@ -293,6 +293,10 @@ namespace NuSysApp
             var count = 0;
             foreach (var atom in atoms)
             {
+                if (atom == null)
+                {
+                    continue;
+                }
                 foreach (var refPoint in atom.ReferencePoints)
                 {
                     if (this.IsPointInHull(refPoint))

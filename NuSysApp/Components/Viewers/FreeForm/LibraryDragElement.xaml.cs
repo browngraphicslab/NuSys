@@ -92,14 +92,16 @@ namespace NuSysApp
                 // icons supported
                 case ElementType.Image:
                 case ElementType.Video:
+                case ElementType.PDF:
+                case ElementType.Audio:
+                case ElementType.Text:
+                case ElementType.Link:
+                case ElementType.Collection:
                     var iconUri = SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId).SmallIconUri;
                     IconImage.Source = new BitmapImage(iconUri);
                     IconImage.Visibility = Visibility.Visible;
                     break;
-                // no icon support
-                case ElementType.PDF:
-                case ElementType.Audio:
-                case ElementType.Text:
+                // no icon support          
                 default:
                     SwitchType(element.Type);
                     break;

@@ -14,15 +14,6 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
-using NuSysApp.Components.Nodes;
-using NuSysApp.Components.Viewers.FreeForm;
-using NuSysApp.Nodes.AudioNode;
-using Windows.Graphics.Imaging;
-using Windows.Graphics.Display;
-using Windows.Storage;
-using Windows.Storage.Pickers;
-using MyToolkit.UI;
-using NuSysApp.Viewers;
 using Newtonsoft.Json;
 
 // The Templated Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234235
@@ -244,13 +235,9 @@ namespace NuSysApp
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
             var p = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
             var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(p.X, p.Y, 300, 300));
-            var send = (FrameworkElement) sender;
             if (_currenDragMode == DragMode.Duplicate)
             {
-               
                 var vm = (ElementViewModel)DataContext;
-                
-
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
                 hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement) is GroupNodeView).ToList();
 
@@ -281,9 +268,6 @@ namespace NuSysApp
 
                 var hitsStart2 = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
                 hitsStart2 = hitsStart2.Where(uiElem => (uiElem as FrameworkElement).DataContext is RegionViewModel).ToList();
-
-                var hitRectangleView = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
-                hitRectangleView = hitRectangleView.Where(uiElem => (uiElem as FrameworkElement).DataContext is RectangleViewModel).ToList();
                 
                 if (hitsStart.Any()){
                     var first = (FrameworkElement)hitsStart.First();
@@ -295,49 +279,23 @@ namespace NuSysApp
                         return;
                     }
 
-                    if (hitRectangleView.Any())
-                    {
-                        foreach (var element in hitRectangleView)
-                        {
-                            if (element is RectangleView)
-                            {
-                                Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100,
-                                    100,
-                                    200);
-                                Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100,
-                                    100,
-                                    100);
-                                if (_currenDragMode == DragMode.PresentationLink)
-                                {
-                                    vm.Controller.RequestPresentationLinkTo(dc.Id, (RectangleView)element, null, inFgDictionary,
-                                        outFgDictionary);
-                                }
-                                else
-                                {
-                                    var m = new Message();
-                                    m["id1"] = new LinkId(dc.ContentId);
-                                    m["id2"] = new LinkId(vm.ContentId);
-                                    SessionController.Instance.LinkController.RequestLink(m);
-                                }
-                            }
-                        }
-                    } else if (hitsStart2.Any()){
+                    if (hitsStart2.Any()){
                         foreach (var element in hitsStart2)
                         {
                             if (element is AudioRegionView)
                             {
                                 if (_currenDragMode == DragMode.PresentationLink)
                                 {
-                                    // vm.Controller.RequestPresentationLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
+                                    AddPresentationLink(dc?.Id,vm?.Id);
                                 }
                                 else
                                 {
                                     var region = element as AudioRegionView;
                                     var regiondc = region.DataContext as AudioRegionViewModel;
                                     var m = new Message();
-                                    m["id1"] = regiondc.RegionController.Id;
-                                    m["id2"] = vm.Controller.LibraryElementController.Id;
-                                    SessionController.Instance.LinkController.RequestLink(m);
+                                    m["id1"] = regiondc.RegionController.ContentId;
+                                    m["id2"] = vm.Controller.LibraryElementController.ContentId;
+                                    SessionController.Instance.LinksController.RequestLink(m);
                                //     vm.Controller.RequestVisualLinkTo();
                                 }
                             }
@@ -346,16 +304,16 @@ namespace NuSysApp
                             {
                                 if (_currenDragMode == DragMode.PresentationLink)
                                 {
-                                    // vm.Controller.RequestPresentationLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
+                                    AddPresentationLink(dc?.Id,vm?.Id);
                                 }
                                 else
                                 {
                                     var region = element as VideoRegionView;
                                     var regiondc = region.DataContext as VideoRegionViewModel;
                                     var m = new Message();
-                                    m["id1"] = regiondc.RegionController.Id;
-                                    m["id2"] = vm.Controller.LibraryElementController.Id;
-                                    SessionController.Instance.LinkController.RequestLink(m);
+                                    m["id1"] = regiondc.RegionController.ContentId;
+                                    m["id2"] = vm.Controller.LibraryElementController.ContentId;
+                                    SessionController.Instance.LinksController.RequestLink(m);
                              //       vm.Controller.RequestVisualLinkTo();
                                 }
                             }
@@ -364,93 +322,55 @@ namespace NuSysApp
                             {
                                 if (_currenDragMode == DragMode.PresentationLink)
                                 {
-                                    // vm.Controller.RequestPresentationLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
+                                    AddPresentationLink(dc?.Id,vm?.Id);
                                 }
                                 else
                                 {
                                     var region = element as PDFRegionView;
                                     var regiondc = region.DataContext as PdfRegionViewModel;
                                     var m = new Message();
-                                    m["id1"] = regiondc.RegionController.Id;
-                                    m["id2"] = vm.Controller.LibraryElementController.Id;
-                                    SessionController.Instance.LinkController.RequestLink(m);
+                                    m["id1"] = regiondc.RegionController.ContentId;
+                                    m["id2"] = vm.Controller.LibraryElementController.ContentId;
+                                    SessionController.Instance.LinksController.RequestLink(m);
                                //     vm.Controller.RequestVisualLinkTo();
                                 }
                             }
                             if (element is ImageRegionView)
                             {
-                             //   Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100, 100, 200);
-                               // Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100, 100, 100);
                                 if (_currenDragMode == DragMode.PresentationLink)
                                 {
-                                   // vm.Controller.RequestPresentationLinkTo(dc.Id, null, element as ImageRegionView, inFgDictionary, outFgDictionary);
+                                    AddPresentationLink(dc?.Id,vm?.Id);
                                 }
                                 else
                                 {
                                     var region = element as ImageRegionView;
                                     var regiondc = region.DataContext as ImageRegionViewModel;
                                     var m = new Message();
-                                    m["id1"] = regiondc.RegionController.Id;
-                                    m["id2"] = vm.Controller.LibraryElementController.Id; 
-                                    SessionController.Instance.LinkController.RequestLink(m);
-                          ////          vm.Controller.RequestVisualLinkTo();
+                                    m["id1"] = regiondc.RegionController.ContentId;
+                                    m["id2"] = vm.Controller.LibraryElementController.ContentId;
+                                    SessionController.Instance.LinksController.RequestLink(m);
                                 }
                             }
-                            
-                            /*
-                            if (element is LinkedTimeBlock)
-                            {
-                                Dictionary<string, object> inFgDictionary = vm.Controller.CreateTextDictionary(200, 100,
-                                    100,
-                                    200);
-                                Dictionary<string, object> outFgDictionary = vm.Controller.CreateTextDictionary(100, 100,
-                                    100,
-                                    100);
-                                if (_currenDragMode == DragMode.PresentationLink)
-                                {
-                                    vm.Controller.RequestPresentationLinkTo(dc.Id, null, (LinkedTimeBlock)element, inFgDictionary,
-                                           outFgDictionary);
-                                }
-                                else
-                                {
-                                    vm.Controller.RequestLinkTo(dc.Id, null, (LinkedTimeBlock) element, inFgDictionary,
-                                        outFgDictionary);
-                                }
-                                //(element as LinkedTimeBlock).changeColor();
-                                //vm.Controller.RequestLinkTo(dc.Id, (LinkedTimeBlock)element);
-
-                                */
-
-
-                            
                         }
                     }
                     else
                     {
-                   //     if (dc.LinkList.Where(c => c.OutElement.Model.Id == vm.Id).Count() > 0 || vm.LinkList.Where(c => c.OutElement.Model.Id == dc.Id).Count() > 0)
-                   //     {
-                   //         return;
-                   //     }
-
-
                         if (_currenDragMode == DragMode.Link)
                         {
-                            if (dc is RegionViewModel)
-                            {
-
-                            }
-                            else
+                            if (!(dc is RegionViewModel))
                             {
                                 var m = new Message();
-                                m["id1"] = new LinkId(dc.ContentId);
-                                m["id2"] = new LinkId(vm.ContentId);
-                                SessionController.Instance.LinkController.RequestLink(m);
+                                m["id1"] = dc.ContentId;
+                                m["id2"] = vm.ContentId;
+                                if (dc.ContentId != vm.ContentId)
+                                {
+                                    SessionController.Instance.LinksController.RequestLink(m);
+                                }
                             }
-                         //   vm.Controller.RequestVisualLinkTo();
                         }
                         if (_currenDragMode == DragMode.PresentationLink)
                         {
-                            vm.Controller.RequestPresentationLinkTo(dc.Id);
+                            AddPresentationLink(dc?.Id,vm?.Id);
                         }
                     }
                 }
@@ -460,6 +380,23 @@ namespace NuSysApp
             (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta));
         }
 
+        /// <summary>
+        /// creates a presentation link between to two elements whose id's are passed in
+        /// </summary>
+        /// <param name="elementId1"></param>
+        /// <param name="elementId2"></param>
+        private void AddPresentationLink(string elementId1, string elementId2)
+        {
+            var currentCollection = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+
+            Debug.Assert(elementId1 != null);
+            Debug.Assert(elementId2 != null);
+            Debug.Assert(currentCollection != null);
+            Debug.Assert(SessionController.Instance.IdToControllers.ContainsKey(elementId1));
+            Debug.Assert(SessionController.Instance.IdToControllers.ContainsKey(elementId2));
+
+            SessionController.Instance.NuSysNetworkSession.AddPresentationLink(elementId1, elementId2, currentCollection);
+        }
         private void BtnAddOnManipulationDelta(object sender, PointerRoutedEventArgs args)
         {
             if (_dragItem == null)
@@ -523,7 +460,9 @@ namespace NuSysApp
         private void OnPresentationClick(object sender, RoutedEventArgs e)
         {
             
-            var vm = ((ElementViewModel)this.DataContext);
+            var vm = DataContext as ElementViewModel;
+            Debug.Assert(vm != null);
+
             var sv = SessionController.Instance.SessionView;
 
             // unselect start element
@@ -590,7 +529,6 @@ namespace NuSysApp
 
                     // make the title read only if we are in exploration mode
                     title.IsReadOnly = SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION;
-
                     highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 156, 197, 194));
                     highlight.BorderThickness = new Thickness(2);
                     highlight.Background = new SolidColorBrush(Colors.Transparent);
@@ -609,9 +547,11 @@ namespace NuSysApp
                 }
                 if (!(vm.IsEditing || vm.IsSelected))
                 {
-                    highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 131, 166, 163));
+                    highlight.BorderBrush = new SolidColorBrush(Colors.Black);
                     highlight.BorderThickness = new Thickness(1);
-                    hitArea.Visibility = Visibility.Visible;
+                    highlight.Visibility = Visibility.Collapsed;
+                    bg.BorderBrush = new SolidColorBrush(Colors.Black);
+                    bg.BorderThickness = new Thickness(1);
                 }
             }
         }

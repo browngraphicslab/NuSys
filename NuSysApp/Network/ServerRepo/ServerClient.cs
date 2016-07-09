@@ -45,6 +45,12 @@ namespace NuSysApp
         public delegate void OnContentUpdatedEventHandler(object sender, LibraryElementController controller,Message message);
         public event OnContentUpdatedEventHandler OnContentUpdated;
 
+        public delegate void PresentationLinkAddedEventHandler(object sender, string id1, string id2);
+        public event PresentationLinkAddedEventHandler PresentationLinkAdded;
+
+        public delegate void PresentationLinkRemovedEventHandler(object sender, string id1, string id2);
+        public event PresentationLinkRemovedEventHandler PresentationLinkRemoved;
+
         public static HashSet<string> NeededLibraryDataIDs = new HashSet<string>();
         public string ServerBaseURI { get; private set; }
         
@@ -150,6 +156,12 @@ namespace NuSysApp
                                         controller.Load(loadArgs);
                                     }
                                     break;
+                                case "remove_presentation_link":
+                                    PresentationLinkRemoved?.Invoke(this,dict["id1"] as string, dict["id2"] as string);
+                                    break;
+                                case "add_presentation_link":
+                                    PresentationLinkAdded?.Invoke(this, dict["id1"] as string, dict["id2"] as string);
+                                    break;
                             }
                         }
 
@@ -182,7 +194,7 @@ namespace NuSysApp
             });
         }
 
-        public async Task<HashSet<PresentationLink>> GetPresentationLinks(string collectionContentId)
+        public async Task<HashSet<PresentationLinkModel>> GetPresentationLinks(string collectionContentId)
         {
             return await Task.Run(async delegate
             {
@@ -202,8 +214,8 @@ namespace NuSysApp
                 try
                 {
                     var list = JsonConvert.DeserializeObject<List<TupleIntermediate<string, string>>>(data, settings);
-                    var returnSet = list.Select(tup => new PresentationLink() {Id1 = tup.m_Item1, Id2 = tup.m_Item2});
-                    return new HashSet<PresentationLink>(returnSet);
+                    var returnSet = list.Select(tup => new PresentationLinkModel() {InElementId = tup.m_Item1, OutElementId = tup.m_Item2});
+                    return new HashSet<PresentationLinkModel>(returnSet);
                 }
                 catch (Exception e)
                 {
@@ -251,6 +263,36 @@ namespace NuSysApp
                     Debug.WriteLine("error parsing bool returned from server for presentationlink removing");
                 }
                 return false;
+            });
+        }
+
+        public async Task<Dictionary<string, string>> GetRegionMapping(string contentId)
+        {
+            return await Task.Run(async delegate
+            {
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    StringEscapeHandling = StringEscapeHandling.EscapeNonAscii
+                };
+                var client =
+                    new HttpClient(new HttpClientHandler { ClientCertificateOptions = ClientCertificateOption.Automatic });
+                var response = await client.GetAsync(GetUri("getregionmapping/" + contentId));
+
+                string data;
+                using (var content = response.Content)
+                {
+                    data = await content.ReadAsStringAsync();
+                }
+                try
+                {
+                    var list = JsonConvert.DeserializeObject<Dictionary<string, string>>(data, settings);
+                    return list;
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("error parsing region mapping returned from server");
+                    return null;
+                }
             });
         }
         public async Task<bool> AddRegionToContent(string contentId, Region region)

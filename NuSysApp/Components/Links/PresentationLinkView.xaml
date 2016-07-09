@@ -21,7 +21,7 @@
     </converters:AnimatableUserControl.Resources>
     <Canvas Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}" >
         <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
-        <Path x:Name="BezierLink" Stroke="{Binding Color}" StrokeThickness="30" Opacity=".30">
+        <Path x:Name="BezierLink" Stroke="YellowGreen" StrokeThickness="48" Opacity=".30">
             <Path.Data>
                 <GeometryGroup>
                     <PathGeometry>
@@ -47,6 +47,6 @@
                 </GeometryGroup>
             </Path.Data>
         </Path>
-        <Polygon x:Name="arrow" Fill="{StaticResource color4}" Points="0,0 40,20, 0,40"/>
+        <Polygon x:Name="arrow" Fill="{StaticResource color4}" Points="0,20 40,0, 40,40"/>
     </Canvas>
 </converters:AnimatableUserControl>

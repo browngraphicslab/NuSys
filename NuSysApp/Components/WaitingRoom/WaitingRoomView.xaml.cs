@@ -80,18 +80,12 @@ namespace NuSysApp
 
             SlideOutLogin.Completed += SlideOutLoginComplete;
 
-            AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(Prresseed), true);
             AutoLogin();
         }
 
         private void SlideOutLoginComplete(object sender, object e)
         {
             login.Visibility = Visibility.Collapsed;
-        }
-
-        private void Prresseed(object sender, PointerRoutedEventArgs e)
-        {
-            Debug.WriteLine("asdasds");
         }
 
         private async void Init()

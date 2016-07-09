@@ -54,7 +54,7 @@ namespace NuSysApp
                 message["y"] = y;
                 message["width"] = width;
                 message["height"] = height;
-                message["nodeType"] = ElementType.Collection;
+                message["type"] = ElementType.Collection;
                 message["collectionview"] = collectionView;
                 message["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
                 message["id"] = newId;

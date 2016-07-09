@@ -123,11 +123,6 @@ namespace NuSysApp
             }
             RaisePropertyChanged("Regions");
         }
-
-
-
-
-
         public void ScrubBarOnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             double position = e.NewValue / AudioDuration;
@@ -145,8 +140,7 @@ namespace NuSysApp
                 }
             }
         }
-
-        private void ControllerOnDisposed(object source)
+        private void ControllerOnDisposed(object source, object args)
         {
             Controller.LibraryElementController.Loaded -= InitWhenReady;
             Controller.Disposed -= ControllerOnDisposed;

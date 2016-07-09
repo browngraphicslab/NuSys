@@ -56,7 +56,51 @@ namespace NuSysApp
             _serverClient.OnClientJoined += AddNetworkUser;
             _serverClient.OnRegionUpdated += RegionUpdated;
             _serverClient.OnContentUpdated += ContentUpdated;
+            _serverClient.PresentationLinkAdded += PresentationLinkAdded;
+            _serverClient.PresentationLinkRemoved += PresentationLinkRemoved;
             LockController = new LockController(_serverClient);
+        }
+
+        private void PresentationLinkRemoved(object sender, string id1, string id2)
+        {
+            UITask.Run(delegate
+            {
+                var presentationLinks =
+                    SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
+                        atom => atom.DataContext is PresentationLinkViewModel);
+                foreach (var element in presentationLinks)
+                {
+                    var model = ((PresentationLinkViewModel) element.DataContext).Model;
+                    if (model?.InElementId == id1 && model?.OutElementId == id2)
+                    {
+                        Debug.Assert(PresentationLinkViewModel.Models != null);
+                        PresentationLinkViewModel.Models.Remove(model);
+                        ((PresentationLinkViewModel) element.DataContext).FireDisposed(this, EventArgs.Empty);
+                    }
+                }
+            });
+        }
+    
+
+        private void PresentationLinkAdded(object sender, string id1, string id2)
+        {
+            if (SessionController.Instance.IdToControllers.ContainsKey(id1) &&
+                SessionController.Instance.IdToControllers.ContainsKey(id2))
+            {
+                UITask.Run(delegate
+                {
+                    var presentationlink = new PresentationLinkModel();
+                    presentationlink.InElementId = id1;
+                    presentationlink.OutElementId = id2;
+                    var vm = new PresentationLinkViewModel(presentationlink);
+                    if (PresentationLinkViewModel.Models == null)
+                    {
+                        PresentationLinkViewModel.Models = new HashSet<PresentationLinkModel>();
+                    }
+                    PresentationLinkViewModel.Models.Add(presentationlink);
+                    new PresentationLinkView(vm);
+                });
+            }
         }
 
         #region Requests
@@ -240,9 +284,6 @@ namespace NuSysApp
                     break;
                 case Request.RequestType.RemoveInkRequest:
                     request = new RemoveInkRequest(message);
-                    break;
-                case Request.RequestType.NewPresentationLinkRequest:
-                    request = new NewPresentationLinkRequest(message);
                     break;
                 default:
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
@@ -429,6 +470,16 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Returns a mapping of regionID to LibraryElement ContentId of its parent
+        /// </summary>
+        /// <param name="collectionContentId"></param>
+        /// <returns></returns>
+        public async Task<Dictionary<string, string>> GetRegionMapping(string collectionContentId)
+        {
+            return await _serverClient.GetRegionMapping(collectionContentId);
+        }
+
+        /// <summary>
         ///   Will add a presentation link to the server.  
         ///   Will return true if successful, false if not
         ///  The id1 and id2 are ElementModel ID's, not LibraryElementModelId's
@@ -456,11 +507,11 @@ namespace NuSysApp
         }
         /// <summary>
         /// Will fetch and return a hashset of presentation links for a given collection
-        /// the presentation links ID's will be elementModel Id's
+        /// the presentation links ID's will be elementModel ContentId's
         /// </summary>
         /// <param name="contentId"></param>
         /// <returns></returns>
-        public async Task<HashSet<PresentationLink>> GetPresentationLinks(string contentId)
+        public async Task<HashSet<PresentationLinkModel>> GetPresentationLinks(string contentId)
         {
             return await _serverClient.GetPresentationLinks(contentId);
         }

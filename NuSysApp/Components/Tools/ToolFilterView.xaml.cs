@@ -107,7 +107,7 @@ namespace NuSysApp
             _links = new List<ToolFilterLinkView>();
             SetLocation(x, y);
             Filters = new ObservableCollection<ToolModel.ToolFilterTypeTitle>()
-            { ToolModel.ToolFilterTypeTitle.Type, ToolModel.ToolFilterTypeTitle.Title,  ToolModel.ToolFilterTypeTitle.Creator,  ToolModel.ToolFilterTypeTitle.Date, ToolModel.ToolFilterTypeTitle.MetadataKeys, ToolModel.ToolFilterTypeTitle.AllMetadata};
+            { ToolModel.ToolFilterTypeTitle.Type, ToolModel.ToolFilterTypeTitle.Title,  ToolModel.ToolFilterTypeTitle.Creator,  ToolModel.ToolFilterTypeTitle.Date, ToolModel.ToolFilterTypeTitle.LastEditedDate,  ToolModel.ToolFilterTypeTitle.MetadataKeys, ToolModel.ToolFilterTypeTitle.AllMetadata};
 
         }
 
@@ -142,73 +142,79 @@ namespace NuSysApp
 
             e.Handled = true;
         }
+
+        private void CreateMetadataToolView(FreeFormViewerViewModel wvm)
+        {
+            MetadataToolModel model = new MetadataToolModel();
+            MetadataToolController controller = new MetadataToolController(model);
+            MetadataToolViewModel viewmodel = new MetadataToolViewModel(controller);
+            viewmodel.Filter = ToolModel.ToolFilterTypeTitle.AllMetadata;
+            MetadataToolView view = new MetadataToolView(viewmodel, (RenderTransform as CompositeTransform).TranslateX, (RenderTransform as CompositeTransform).TranslateY);
+
+            if (_parentToolViewModels.Count != 0)
+            {
+                foreach (var tool in _parentToolViewModels)
+                {
+                    controller.AddParent(tool.Controller);
+                    var linkviewmodel = new ToolLinkViewModel(tool, view.DataContext as ToolViewModel);
+                    var link = new ToolLinkView(linkviewmodel);
+                    Canvas.SetZIndex(link, -1);
+                    wvm.AtomViewList.Add(link);
+                }
+
+
+
+            }
+            wvm.AtomViewList.Add(view);
+        }
+
+        private void CreateBasicToolView(ToolModel.ToolFilterTypeTitle selection, FreeFormViewerViewModel wvm)
+        {
+            BasicToolModel model = new BasicToolModel();
+            BasicToolController controller = new BasicToolController(model);
+            BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
+            viewmodel.Filter = selection;
+            BaseToolView view = new BaseToolView(viewmodel, (RenderTransform as CompositeTransform).TranslateX, (RenderTransform as CompositeTransform).TranslateY);
+
+            if (_parentToolViewModels.Count != 0)
+            {
+                foreach (var tool in _parentToolViewModels)
+                {
+                    controller.AddParent(tool.Controller);
+                    var linkviewmodel = new ToolLinkViewModel(tool, view.DataContext as ToolViewModel);
+                    var link = new ToolLinkView(linkviewmodel);
+                    Canvas.SetZIndex(link, -1);
+                    wvm.AtomViewList.Add(link);
+                }
+
+            }
+            wvm.AtomViewList.Add(view);
+        }
+
         private void XFilterList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (xFilterList.SelectedItems.Count() < 1)
             {
                 return;
             }
+            ToolModel.ToolFilterTypeTitle selection = (ToolModel.ToolFilterTypeTitle)(xFilterList.SelectedItems[0]);
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            var x = Canvas.GetZIndex(this) - 1;
 
 
+            if (selection == ToolModel.ToolFilterTypeTitle.AllMetadata)            
+            {
+                CreateMetadataToolView(wvm);
+            }
             else
             {
-                ToolModel.ToolFilterTypeTitle selection = (ToolModel.ToolFilterTypeTitle)(xFilterList.SelectedItems[0]);
-                var wvm = SessionController.Instance.ActiveFreeFormViewer;
-
-                if (selection == ToolModel.ToolFilterTypeTitle.AllMetadata)
-                {
-                    MetadataToolModel model = new MetadataToolModel();
-                    MetadataToolController controller = new MetadataToolController(model);
-                    MetadataToolViewModel viewmodel = new MetadataToolViewModel(controller);
-                    viewmodel.Filter = ToolModel.ToolFilterTypeTitle.AllMetadata;
-                    MetadataToolView view = new MetadataToolView(viewmodel, (RenderTransform as CompositeTransform).TranslateX, (RenderTransform as CompositeTransform).TranslateY);
-
-                    if (_parentToolViewModels.Count != 0)
-                    {
-                        foreach (var tool in _parentToolViewModels)
-                        {
-                            controller.AddParent(tool.Controller);
-                            var linkviewmodel = new ToolLinkViewModel(tool, view.DataContext as ToolViewModel);
-                            var link = new ToolLinkView(linkviewmodel);
-                            Canvas.SetZIndex(link, Canvas.GetZIndex(this) - 1);
-                            wvm.AtomViewList.Add(link);
-                        }
-                        
-                        
-                       
-                    }
-                    wvm.AtomViewList.Add(view);
-                }
-                else
-                {
-                    BasicToolModel model = new BasicToolModel();
-                    BasicToolController controller = new BasicToolController(model);
-                    BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
-                    viewmodel.Filter = selection;
-                    TemporaryToolView view = new TemporaryToolView(viewmodel, (RenderTransform as CompositeTransform).TranslateX, (RenderTransform as CompositeTransform).TranslateY);
-
-                    if (_parentToolViewModels.Count != 0)
-                    {
-                        foreach (var tool in _parentToolViewModels)
-                        {
-                            controller.AddParent(tool.Controller);
-                            var linkviewmodel = new ToolLinkViewModel(tool, view.DataContext as ToolViewModel);
-                            var link = new ToolLinkView(linkviewmodel);
-                            Canvas.SetZIndex(link, Canvas.GetZIndex(this) - 1);
-                            wvm.AtomViewList.Add(link);
-                        }
-                        
-                    }
-                    wvm.AtomViewList.Add(view);
-                }
-                foreach (var link in _links)
-                {
-                    wvm.AtomViewList.Remove(link);
-                }
-                wvm.AtomViewList.Remove(this);
-
+                CreateBasicToolView(selection, wvm);
             }
-
+            foreach (var link in _links)
+            {
+                wvm.AtomViewList.Remove(link);
+            }
+            wvm.AtomViewList.Remove(this);
         }
 
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)

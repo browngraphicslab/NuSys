@@ -109,7 +109,10 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            Controller.LibraryElementController.Loaded -= LibraryElementModelOnOnLoaded;
+            if (Controller != null)
+            {
+                Controller.LibraryElementController.Loaded -= LibraryElementModelOnOnLoaded;
+            }
             Image.ImageOpened -= UpdateSizeFromModel;
         }
 

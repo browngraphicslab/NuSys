@@ -91,10 +91,10 @@
                         Title
                     </Button>
                     <Button Style="{StaticResource SortButton}" HorizontalAlignment="Left" Grid.Column="2" Click="Sort_Button_Click" Foreground="{StaticResource color2}" Background="Transparent"  FontSize="15" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
-                    Type
+                        Type
                     </Button>
                     <Button Style="{StaticResource SortButton}" HorizontalAlignment="Left" Margin="0,0,3,0" Grid.Column="3" Click="Sort_Button_Click" Foreground="{StaticResource color2}" Background="Transparent"  FontSize="15" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std">
-                   Date/Time
+                        Date/Time
                     </Button>
                 </Grid>
             </ListView.Header>
@@ -142,11 +142,12 @@
                                        Content="Delete" FontSize="14" Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed" IsHitTestVisible="False" />
                         </Grid>
 
-                        <Grid x:Name="RegionsPanel" Grid.Row="1" Grid.ColumnSpan="4" Grid.Column="0" Visibility="Collapsed" MinHeight="50" Background="White">
+                        <Grid x:Name="RegionsPanel" Grid.Row="1" Grid.ColumnSpan="4" Margin="4"  Grid.Column="0" Visibility="Collapsed" MinHeight="50" Background="White">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Margin="2" Text="Regions" FontWeight="Bold"></TextBlock>
                         </Grid>
 
                     </Grid>

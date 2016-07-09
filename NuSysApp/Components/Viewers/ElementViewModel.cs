@@ -11,7 +11,6 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
-using NuSysApp.Components.Viewers.FreeForm;
 using NuSysApp.Controller;
 using NuSysApp.Util;
 
@@ -22,7 +21,6 @@ namespace NuSysApp
         #region Private Members      
 
         protected double _x, _y, _height, _width, _alpha;
-        private Point2d _anchor = new Point2d(0,0);
         private string _id;
         private SolidColorBrush _color;
         private bool _isEditing, _isEditingInk;
@@ -33,70 +31,59 @@ namespace NuSysApp
         private bool Favorited;
 
         #endregion Private Members
-
-        public ObservableCollection<RectangleView> RegionsListTest { get; set; }
-
+       
         public ElementViewModel(ElementController controller)
         {
             _controller = controller;
-            LinkList = new ObservableCollection<LinkElementController>();
+            LinkList = new ObservableCollection<LinkController>();
             controller.MetadataChange += OnMetadataChange;
             controller.PositionChanged += OnPositionChanged;
             controller.SizeChanged += OnSizeChanged;
             controller.ScaleChanged += OnScaleChanged;
             controller.AlphaChanged += OnAlphaChanged;
             controller.MetadataChange += OnMetadataChange;
+            controller.AnchorChanged += ControllerOnAnchorChanged;
             if (controller.LibraryElementController != null)
             {
                 controller.LibraryElementController.TitleChanged += OnTitleChanged;
                 controller.LibraryElementController.KeywordsChanged += KeywordsChanged;
             }
-            controller.LinkedAdded += OnLinkedAdded;
             controller.Disposed += OnDisposed;
             controller.Deleted += ControllerOnDeleted;
+            controller.LinksUpdated += ControllerLinksUpdated;
 
             Tags = new ObservableCollection<Button>();
             CircleLinks = new ObservableCollection<LinkCircle>();
             ReadFromModel();
-
-            RegionsListTest = new ObservableCollection<RectangleView>();
-            SessionController.Instance.LinkController.OnNewLink += UpdateLinks;
-            SessionController.Instance.LinkController.OnLinkRemoved += UpdateLinks;
-            if (ElementType == ElementType.Image)
-            {
-                foreach (var element in Model.RegionsModel)
-                {
-                    RectangleView rv = new RectangleView(element);
-                    RegionsListTest.Add(rv);
-                }
-            }   
         }
+
+        private void ControllerLinksUpdated(object source)
+        {
+            UITask.Run(async delegate { CreateCircleLinks(); });
+        }
+
+        private void ControllerOnAnchorChanged(object sender, Point2d point2D)
+        {
+            UpdateAnchor();
+        }
+
         private void KeywordsChanged(object sender, HashSet<Keyword> keywords)
         {
             CreateTags();
         }
 
-        public void UpdateLinks(LinkLibraryElementController model)
+        public void UpdateLinks()
         {
             UITask.Run(async delegate { CreateCircleLinks(); });    
         }
         private void ControllerOnDeleted(object source)
         {
-            foreach (var link in LinkList)
-            {
-                link.RequestDelete();
-            }
+
         }
 
-        private void OnDisposed(object source)
+        private void OnDisposed(object source, object args)
         {
             Dispose();
-        }
-
-        private void OnLinkedAdded(object source, LinkElementController linkController)
-        {
-            LinkList.Add(linkController);
-            UpdateAnchor();
         }
 
         public virtual async Task Init()
@@ -122,7 +109,6 @@ namespace NuSysApp
 
             Transform.TranslateX = x;
             Transform.TranslateY = y;
-            UpdateAnchor();
             RaisePropertyChanged("Transform");
         }
 
@@ -138,10 +124,7 @@ namespace NuSysApp
 
             _width = width;
             _height = height;
-
-
-
-            UpdateAnchor();
+            
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
         }
@@ -175,7 +158,7 @@ namespace NuSysApp
                 return;
             }
             CircleLinks.Clear();
-            var circleList = SessionController.Instance.LinkController.GetLinkedIds(new LinkId(id));
+            var circleList = SessionController.Instance.LinksController.GetLinkedIds(id);
             if(circleList == null)
             {
                 return;
@@ -187,15 +170,15 @@ namespace NuSysApp
                 if (link != null)
                 {
                     string cid = "";
-                    if (this.ContentId == link.InAtomId.LibraryElementId)
+                    if (this.ContentId == link.InAtomId)
                     {
-                        cid = link.OutAtomId.LibraryElementId;
+                        cid = link.OutAtomId;
                     }
-                    else if (this.ContentId == link.OutAtomId.LibraryElementId)
+                    else if (this.ContentId == link.OutAtomId)
                     {
-                        cid = link.InAtomId.LibraryElementId;
+                        cid = link.InAtomId;
                     }
-                    var circlelink = new LinkCircle(new LinkId(circle), new LinkId(cid));
+                    var circlelink = new LinkCircle(circle, cid);
                     Color color = link.Color;
                     circlelink.Circle.Fill = new SolidColorBrush(color);
 
@@ -305,7 +288,6 @@ namespace NuSysApp
                 _controller.LibraryElementController.TitleChanged -= OnTitleChanged;
                 _controller.LibraryElementController.KeywordsChanged -= KeywordsChanged;
             }
-            _controller.LinkedAdded -= OnLinkedAdded;
             _controller.Disposed -= OnDisposed;
             
             Tags = null;
@@ -317,23 +299,12 @@ namespace NuSysApp
         {
             Width = width;
             Height = height;
-            UpdateAnchor();
         }
 
         #endregion
-
-
-
         public virtual void UpdateAnchor()
         {
-            Anchor = new Point2d(Transform.TranslateX + Width/2, Transform.TranslateY + Height/2);
-            if (Double.IsNaN(Anchor.X))
-                Debug.WriteLine("");
-            foreach (var link in LinkList)
-            {
-                link.UpdateAnchor();
-            }
-            
+            RaisePropertyChanged("Anchor");
         }
 
         public virtual double GetRatio()
@@ -344,7 +315,7 @@ namespace NuSysApp
 
         #region Public Properties
 
-        public ObservableCollection<LinkElementController> LinkList { get; set; }
+        public ObservableCollection<LinkController> LinkList { get; set; }
         
         public virtual bool IsSelected
         {
@@ -391,20 +362,10 @@ namespace NuSysApp
                 RaisePropertyChanged("Transform");
             }
         }
-
-
+        
         public Point2d Anchor
         {
-            get { return _anchor; }
-            set
-            {
-                if (_anchor == value)
-                {
-                    return;
-                }
-                _anchor = value;
-                RaisePropertyChanged("Anchor");
-            }
+            get { return Controller.Anchor; }
         }
 
         public ElementModel Model

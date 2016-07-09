@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights.DataContracts;
 using Newtonsoft.Json;
 
 namespace NuSysApp
@@ -31,21 +32,9 @@ namespace NuSysApp
                         break;
                     case ElementType.Link:
                         Debug.Assert(message.ContainsKey("id1") && message.ContainsKey("id2"));
-                        LinkId id1;
-                        LinkId id2;
-                        //TODO dont have this length check and just use linkIds
-                        id1 = message.Get("id1").Length == 32
-                            ? new LinkId(message.GetString("id1"))
-                            : JsonConvert.DeserializeObject<LinkId>(message.GetString("id1"));
-                        id2 = message.Get("id2").Length == 32
-                            ? new LinkId(message.GetString("id2"))
-                            : JsonConvert.DeserializeObject<LinkId>(message.GetString("id2"));
-                        //if something is linking to itself
-                        if ((id1.IsRegion && id2.IsRegion && id1.RegionId.Equals(id2.RegionId)) ||
-                            (!id1.IsRegion && !id2.IsRegion && id1.LibraryElementId.Equals(id2.LibraryElementId)))
-                        {
-                            return null;
-                        }
+                        var id1 = message.Get("id1");
+                        var id2 = message.Get("id2");
+
                         model = new LinkLibraryElementModel(id1, id2, id);
                         break;
                     default:
@@ -56,7 +45,11 @@ namespace NuSysApp
                 SessionController.Instance.ContentController.Add(model);
                 if (type == ElementType.Link)
                 {
-                    SessionController.Instance.LinkController.AddLink(id);
+                    var linkController =
+                        SessionController.Instance.ContentController.GetLibraryElementController(id) as
+                            LinkLibraryElementController;
+                    Debug.Assert(linkController != null);
+                    SessionController.Instance.LinksController.AddLinkLibraryElementController(linkController);
                 }
                 return model;
             }

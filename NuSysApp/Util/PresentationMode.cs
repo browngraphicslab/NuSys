@@ -19,157 +19,85 @@ namespace NuSysApp
     /// </summary>
     class PresentationMode : IDisposable, IModable
     {
-        private ElementViewModel _previousNode = null;
-        private ElementViewModel _nextNode = null;
+        private ElementViewModel _previousNode;
+        private ElementViewModel _nextNode;
         private ElementViewModel _currentNode;
+
+        // Animation Values
         private CompositeTransform _originalTransform;
         private DispatcherTimer _timer;
         private Storyboard _storyboard;
         private SolidColorBrush _backwardColor = Application.Current.Resources["lighterredcolor"] as SolidColorBrush;
         private SolidColorBrush _forwardColor = Application.Current.Resources["color4"] as SolidColorBrush;
-        private HashSet<LinkElementController> _linksUsed = new HashSet<LinkElementController>();
-        public ModeType Mode { get { return ModeType.PRESENTATION;} }
+
+
+        // IModeable Interface
+        public ModeType Mode => ModeType.PRESENTATION; 
 
         public PresentationMode(ElementViewModel start)
         {
+            Debug.Assert(start != null);
 
-            if (start == null)
-            {
-                return;
-            }
-
-            _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromMilliseconds(1);
+            // setup the animation variables
+            _timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(1)};
             _timer.Tick += OnTick;
             _storyboard = new Storyboard();
             _currentNode = start;
+
+            // get a copy of the session controllers transform so we can revert back to it at end of presentation
             _originalTransform = MakeShallowCopy(SessionController.Instance.ActiveFreeFormViewer.CompositeTransform);
-            Load();
-            FullScreen();
 
-            
-            UITask.Run(async delegate
-            {
-                var curr = start;
-                var previous = curr;
-                LinkElementController linkController = null;
-                while (previous != null)
-                {
-                    var list = new List<LinkElementController>(previous.LinkList);
-                    var model = previous.Model;
-                    previous = null;
-                    foreach (LinkElementController link in list)
-                    {
-                        var linkModel = (LinkModel)link.Model;
-                        if (!linkModel.IsPresentationLink)
-                            continue;
+            // set current, forward, and backward for presentation movement
+            Load(_currentNode, out _previousNode, out _nextNode);
 
-                        if (link.OutElement.Model.Equals(model))
-                        {
-                            var l = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => ((ElementViewModel)item.DataContext).Model.Id == link.InElement.Model.Id);
-                            previous = l?.First()?.DataContext as ElementViewModel;
-                            linkController = link;
-                            break;
-                        }
-                    }
-                    if (linkController == null)
-                        continue;
-                    if (linkController != null && _linksUsed.Contains(linkController))
-                    {
-                        break;
-                    }
-                    _linksUsed.Add(linkController);
-                    linkController.SetColor(_backwardColor);
-                }
-            });
-        }
-
-
-
-        private void OnTick(object sender, object e)
-        {
-            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Redraw();
-
+            // zoom in on the current node
+            FullScreen(_currentNode);
         }
 
         /// <summary>
-        /// Checks if there is a valid next node and stores it
+        /// Redraws the ink on the canvas
         /// </summary>
-        /// <returns></returns>
-        private void Load()
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnTick(object sender, object e)
         {
-            var next = GetNextOrPrevNode(_currentNode, false);
-            if (next == null)
-            {
-                _nextNode = null;
-            }
-            else
-            {
-                var nextVMList = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
-                    item => ((ElementViewModel)item.DataContext).Model.Id == next.Id);
-
-                _nextNode = (ElementViewModel)nextVMList.Single().DataContext;
-            }
-
-            var prev = GetNextOrPrevNode(_currentNode, true);
-            if (prev == null)
-            {
-                _previousNode = null;
-            }
-            else
-            {
-                var prevVMList = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
-                item => ((ElementViewModel)item.DataContext).Model.Id == prev.Id);
-
-                _previousNode = (ElementViewModel)prevVMList.Single().DataContext;
-            }
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Redraw();
         }
 
+        /// <summary>
+        /// From the IModeable Interface
+        /// Pans and zooms the screen to the Current Node
+        /// </summary>
         public void GoToCurrent()
         {
-            FullScreen();
+            Debug.Assert(_currentNode != null);
+            FullScreen(_currentNode);
         }
 
+        /// <summary>
+        /// From the IModeable Interface
+        /// Used to check if there is a valid presentation link going forward from the current Node
+        /// </summary>
+        /// <returns></returns>
         public bool Next()
         {
             return (_nextNode != null);
         }
 
         /// <summary>
+        /// From the IModeable Interface
         /// Full screen zooms into the next node found
         /// </summary>
         public void MoveToNext()
         {
-            SetColor(GetLinkBetweenNode(_nextNode), false);
             _currentNode = _nextNode;
-            Load();
-            FullScreen();
-        }
-     
-        /// <summary>
-        /// Sets the color of the passing links
-        /// </summary>
-        /// <param name="controller"></param>
-        /// <param name="reverse"></param>
-        private void SetColor(LinkElementController controller, bool reverse)
-        {
-            if (controller == null)
-            {
-                return;
-            }
-            if (reverse)
-            {
-                controller.SetColor(_forwardColor);
-            }
-            else
-            {
-                controller.SetColor(_backwardColor);
-            }
-            _linksUsed.Add(controller);
+            Load(_currentNode, out _previousNode, out _nextNode);
+            FullScreen(_currentNode);
         }
 
         /// <summary>
-        /// Checks if there are any previous nodes
+        /// From the IModeable Interface
+        /// Used to check if there is a valid presentation link going backward from the current Node
         /// </summary>
         /// <returns></returns>
         public bool Previous()
@@ -178,99 +106,89 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// From the IModeable Interface
         /// Full screen zooms into the previous node
         /// </summary>
         public void MoveToPrevious()
         {
-            SetColor(GetLinkBetweenNode(_previousNode), true);
             _currentNode = _previousNode;
-            Load();
-            FullScreen();
+            Load(_currentNode, out _previousNode, out _nextNode);
+            FullScreen(_currentNode);
         }
 
         /// <summary>
+        /// From the IModeable Interface
         /// Exits presentation mode by resetting the original composite transform properties
         /// </summary>
         public void ExitMode()
         {
-            foreach (var link in _linksUsed)
-            {
-                if (link != null)
-                {
-                    link.SetColor(Application.Current.Resources["color4"] as SolidColorBrush);
-                }
-            }
             AnimatePresentation(_originalTransform.ScaleX, _originalTransform.CenterX, _originalTransform.CenterY, _originalTransform.TranslateX, _originalTransform.TranslateY);
         }
 
-        private LinkElementController GetLinkBetweenNode(ElementViewModel model)
+        /// <summary>
+        /// If there is a presenation link pointing away from param currentElemVM, returns the ElementViewModel
+        /// at the end of that presentation link.
+        /// Else returns nulll
+        /// </summary>
+        /// <param name="currentElemVm"></param>
+        /// <returns></returns>
+        private ElementViewModel GetNext(ElementViewModel currentElemVm)
         {
-            if (model == null)
-            {
-                return null;
-            }
-            var links = _currentNode.LinkList;
-            foreach (var link in links)
-            {
+            Debug.Assert(currentElemVm != null);
+            Debug.Assert(PresentationLinkViewModel.Models != null);
+            // there might be more than one outgoing link but we always just choose one
+            var outgoingLink = PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.InElementId == currentElemVm.Id);
+            var nextElemVm = outgoingLink?.OutElementViewModel;
+            return nextElemVm;
 
-                if (link.InElement.Model.Id == model.Model.Id || link.OutElement.Model.Id == model.Model.Id)
-                {
-                    return link;
-                }
-            }
-            return null;
         }
 
         /// <summary>
-        /// Finds previous node for presentation if reverse is true, next node otherwise.
+        /// If there is a presenation link pointing to the param currentElemVM, returns the ElementViewModel
+        /// at the start of that presentation link.
+        /// Else returns nulll
         /// </summary>
-        /// <param name="vm"></param>
+        /// <param name="currentElemVm"></param>
         /// <returns></returns>
-        private ElementModel GetNextOrPrevNode(ElementViewModel vm, bool reverse)
+        private ElementViewModel GetPrevious(ElementViewModel currentElemVm)
         {
-            if (vm?.LinkList == null)
-            {
-                return null;
-            }
-            foreach (LinkElementController link in vm.LinkList)
-            {
-                var linkModel = (LinkModel)link.Model;
-                if (!linkModel.IsPresentationLink)
-                    continue;
-
-                if (link.OutElement.Model.Equals(vm.Model) && reverse)
-                {
-                    return link.InElement.Model;
-                }
-
-                if (link.InElement.Model.Equals(vm.Model) && !reverse)
-                {
-                    return link.OutElement.Model;
-                }
-
-            }
-            return null;
+            Debug.Assert(currentElemVm != null);
+            Debug.Assert(PresentationLinkViewModel.Models != null);
+            // there might be more than one outgoing link but we always just choose one
+            var incomingLink = PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.OutElementId == currentElemVm.Id);
+            var prevElemVm = incomingLink?.InElementViewModel;
+            return prevElemVm;
         }
+
+
+        /// <summary>
+        /// Sets previousElemVm to an ElemVM with a presentation link that ends at currentElemVM
+        /// Sets nextElemVm to an ElemVM with a presentation link that starts at currentElemVM 
+        /// </summary>
+        /// <param name="currentElemVm"></param>
+        /// <param name="previousElemVm"></param>
+        /// <param name="nextElemVm"></param>
+        private void Load(ElementViewModel currentElemVm, out ElementViewModel previousElemVm, out ElementViewModel nextElemVm)
+        {
+            previousElemVm = GetNext(currentElemVm);
+            nextElemVm = GetPrevious(currentElemVm);
+        }
+
+
 
         /// <summary>
         /// Will make a full screen appeareance for the passed in element view model. Use this for presentation view.
         /// </summary>
         /// <param name="e"></param>
-
-        private void FullScreen()
+        private void FullScreen(ElementViewModel elementToBeFullScreened)
         {
-            if (_currentNode == null)
-                return;
+            Debug.Assert(elementToBeFullScreened != null);
 
             // Determines tag adjustment by getting the height of the tag container from the view
             double tagAdjustment = 0;
 
-            if (_currentNode == null)
-            {
-                return;
-            }
             var view = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
-                    item => ((ElementViewModel)item.DataContext).Model.Id == _currentNode.Id);
+                    item => (item.DataContext as ElementViewModel)?.Model.Id == elementToBeFullScreened.Id);
 
             if (view.Count() == 0)
             {
@@ -285,11 +203,11 @@ namespace NuSysApp
 
 
             // Define some variables that will be used in future translation/scaling
-            var nodeWidth = _currentNode.Width;
-            var nodeHeight = _currentNode.Height + 40 + tagAdjustment; // 40 for title adjustment
+            var nodeWidth = elementToBeFullScreened.Width;
+            var nodeHeight = elementToBeFullScreened.Height + 40 + tagAdjustment; // 40 for title adjustment
             var sv = SessionController.Instance.SessionView;
-            var x = _currentNode.Model.X + nodeWidth / 2;
-            var y = _currentNode.Model.Y - 40 + nodeHeight / 2;
+            var x = elementToBeFullScreened.Model.X + nodeWidth / 2;
+            var y = elementToBeFullScreened.Model.Y - 40 + nodeHeight / 2;
             var widthAdjustment = sv.ActualWidth / 2;
             var heightAdjustment = sv.ActualHeight / 2;
 
@@ -338,10 +256,7 @@ namespace NuSysApp
 
             var duration = new Duration(TimeSpan.FromSeconds(1));
             _storyboard.Stop();
-            _storyboard = new Storyboard();
-
-
-            _storyboard.Duration = duration;
+            _storyboard = new Storyboard {Duration = duration};
 
             // Create a DoubleAnimation for each property to animate
             var scaleAnimationX = MakeAnimationElement(scale, "ScaleX", duration);
@@ -438,7 +353,6 @@ namespace NuSysApp
             _storyboard = null;
             _backwardColor = null;
             _forwardColor = null;
-            _linksUsed = null;
         }
     }
 }

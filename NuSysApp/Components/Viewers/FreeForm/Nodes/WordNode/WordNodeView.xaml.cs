@@ -32,7 +32,7 @@ namespace NuSysApp
             await _vm.Goto(page);
         }
 
-        private void ControllerOnDisposed(object source)
+        private void ControllerOnDisposed(object source, object args)
         {
             var vm = (WordNodeViewModel)DataContext;
             nodeTpl.Dispose();

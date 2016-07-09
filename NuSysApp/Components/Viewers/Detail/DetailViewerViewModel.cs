@@ -48,6 +48,8 @@ namespace NuSysApp
 
         public ObservableCollection<FrameworkElement> Tags { get; set; }
 
+        public ObservableCollection<FrameworkElement> SuggestedTags { get; set; }
+
         // Tabs keeps track of which tabs are open in the DV
         private ObservableCollection<IDetailViewable> _tabs;
         public ObservableCollection<IDetailViewable> Tabs
@@ -136,6 +138,7 @@ namespace NuSysApp
 
         {
             Tags = new ObservableCollection<FrameworkElement>();
+            SuggestedTags = new ObservableCollection<FrameworkElement>();
             Metadata = new ObservableCollection<StackPanel>();
             RegionCollection = new ObservableCollection<Region>();
             Tabs = new ObservableCollection<IDetailViewable>();
@@ -242,7 +245,9 @@ namespace NuSysApp
 
                 controller.TitleChanged += ControllerTitleChanged;
                 MakeTagList();
+                MakeSuggestedTagList();
                 RaisePropertyChanged("View");
+                RaisePropertyChanged("SuggestedTags");
                 RaisePropertyChanged("Tags");
                 RaisePropertyChanged("Metadata");
                 RaisePropertyChanged("RegionView");
@@ -355,6 +360,7 @@ namespace NuSysApp
         private void KeywordsChanged(object sender, HashSet<Keyword> keywords)
         {
             MakeTagList();
+            //MakeSuggestedTagList();
         }
         
         public void ChangeSize(object sender, double left, double width, double height)
@@ -381,6 +387,79 @@ namespace NuSysApp
                 }
             }
             RaisePropertyChanged("Tags");
+        }
+
+        public void MakeSuggestedTagList()
+        {
+            // clear the current suggested tags
+            SuggestedTags.Clear();
+            if (CurrentElementController != null)
+            {
+                //TODO remove debug asserts, if statements are ugly but needed because otherwise produced async crash on key not found
+
+                // get the metaDataDictionary for the currentelementController
+                var metaDataDict = CurrentElementController?.LibraryElementModel.Metadata;
+                var suggestedTags = new List<string>();
+                // get a list of the suggested tags from the metadataentry for system suggested names
+                if (metaDataDict.ContainsKey("system_suggested_names"))
+                {
+                    suggestedTags = metaDataDict["system_suggested_names"].Values;
+                }
+                if (metaDataDict.ContainsKey("system_suggested_dates"))
+                {
+                    suggestedTags.AddRange(metaDataDict["system_suggested_dates"].Values);
+                }
+                if (metaDataDict.ContainsKey("system_suggested_topics"))
+                {
+                    suggestedTags.AddRange(metaDataDict["system_suggested_topics"].Values);
+                }
+
+                // count the number of times each tag appears in the suggested tags using a <tag, count> dictionary
+                var tagCountDictionary = new Dictionary<string, int>();
+                foreach (var suggestedTag in suggestedTags)
+                {
+                    var lowerTag = suggestedTag.ToLower();
+                    if (tagCountDictionary.ContainsKey(lowerTag))
+                    {
+                        tagCountDictionary[lowerTag] += 1;
+                    }
+                    else
+                    {
+                        tagCountDictionary.Add(lowerTag, 1);
+                    }                  
+                }
+
+                // remove the tags from the <tag, count> dictionary which are already set as keywords
+                var currentTags = CurrentElementController?.LibraryElementModel.Keywords;
+                foreach (var currentTag in currentTags)
+                {
+                    var lowerTag = currentTag.Text.ToLower();
+                    if (tagCountDictionary.ContainsKey(lowerTag))
+                    {
+                        tagCountDictionary.Remove(lowerTag);
+                    }
+                }
+
+                // now use the tagCountDictionary to order the tags by their importance
+                var suggestions = from entry in tagCountDictionary
+                                orderby entry.Value ascending
+                                select entry.Key;
+
+                // create a limited number of tag blocks
+                int numSuggestions = 0;
+                foreach (var suggestion in suggestions)
+                {
+                    // this is the limiter
+                    if (numSuggestions == 5)
+                    {
+                        break;
+                    }
+                    var suggestedTagBlock = MakeSuggestedTagBlock(suggestion);
+                    SuggestedTags.Add(suggestedTagBlock);
+                    numSuggestions++;                   
+                }
+            }
+            RaisePropertyChanged("SuggestedTags");
         }
 
         //this is an ugly method, refactor later so not making a UI element in viewmodel
@@ -421,6 +500,50 @@ namespace NuSysApp
             tagBlock.FontStyle = FontStyle.Italic;
            // tagBlock.IsHitTestVisible = false;
             return tagBlock;
+        }
+
+        //this is an ugly method, refactor later so not making a UI element in viewmodel
+        public FrameworkElement MakeSuggestedTagBlock(string text)
+        {
+            var tagContent = new TextBlock() { Text = text };
+            tagContent.Foreground = new SolidColorBrush(Constants.foreground6);
+            tagContent.FontStyle = FontStyle.Italic;
+            tagContent.HorizontalAlignment = HorizontalAlignment.Stretch;
+
+            var stackPanel = new Grid();
+            stackPanel.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            stackPanel.Children.Add(tagContent);
+            Grid.SetColumn(tagContent, 0);
+
+            Button suggestedTagBlock = new Button();
+            suggestedTagBlock.Background = new SolidColorBrush(Colors.Transparent);
+            suggestedTagBlock.Content = stackPanel;
+            suggestedTagBlock.Height = 30;
+            suggestedTagBlock.Padding = new Thickness(5);
+            suggestedTagBlock.BorderThickness = new Thickness(0);
+            suggestedTagBlock.Foreground = new SolidColorBrush(Constants.foreground6);
+            suggestedTagBlock.Margin = new Thickness(5, 2, 2, 5);
+            suggestedTagBlock.FontStyle = FontStyle.Italic;
+            suggestedTagBlock.Tapped += SuggestedTagBlock_Tapped;
+            
+            // This is Super Important! adds the string to the button so Tapped method can access the string!
+            suggestedTagBlock.Tag = text;
+            return suggestedTagBlock;
+        }
+
+        private void SuggestedTagBlock_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            var text = (sender as Button)?.Tag as string;
+            Debug.Assert(text != null);
+            // not sure if topic modeling is the right source for keywordSource
+            var keyword = new Keyword(text, Keyword.KeywordSource.TopicModeling);
+            CurrentElementController?.AddKeyword(keyword);
+            SuggestedTags.Remove(sender as FrameworkElement);
+            // when we run out of tags, try to make more
+            if (SuggestedTags.Count == 0)
+            {
+                MakeSuggestedTagList();
+            }
         }
 
         private async void DeleteGridOnTapped(object sender, TappedRoutedEventArgs tappedRoutedEventArgs)

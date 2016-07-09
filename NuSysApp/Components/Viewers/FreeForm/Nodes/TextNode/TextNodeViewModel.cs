@@ -38,7 +38,7 @@ namespace NuSysApp
             }
         }
 
-        private void ControllerOnDisposed(object source)
+        private void ControllerOnDisposed(object source, object args)
         {
             ((TextNodeController)Controller).TextChanged -= TextChanged;
             ((TextNodeController)Controller).SelectionChanged -= SelectionChanged;

@@ -340,7 +340,7 @@ namespace NuSysApp
             {
                 InkBubble.Visibility = Visibility.Visible;
                 SetUpInking();
-                SetImage("ms-appx:///Assets/icon_whitex.png", InkImg);
+                SetImage("ms-appx:///Assets/icon_metadata_x", InkImg);
                 // FlipOpen.Begin();
             }
             else
@@ -348,7 +348,7 @@ namespace NuSysApp
                 InkBubble.Visibility = Visibility.Collapsed;
                 TextBox.Text = this.TextBox.Text.Trim();
                 TextChanged?.Invoke(this, TextBox.Text.Trim());
-                SetImage("ms-appx:///Assets/icon_node_ink.png", InkImg);
+                SetImage("ms-appx:///Assets/ink.png", InkImg);
             }
             _isInking = !_isInking;
         }

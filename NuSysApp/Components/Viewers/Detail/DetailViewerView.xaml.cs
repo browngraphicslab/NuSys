@@ -57,7 +57,9 @@ namespace NuSysApp
 
                 vm.PropertyChanged += OnPropertyChanged;
                 Tags.ItemsSource = vm.Tags;
+                SuggestedTags.ItemsSource = vm.SuggestedTags;
                 vm.MakeTagList();
+                vm.MakeSuggestedTagList();
 
                 xMetadataEditorView.Metadatable = vm.CurrentElementController;
                 
@@ -72,6 +74,7 @@ namespace NuSysApp
                 
               };
 
+            /*
             SuggestButton.Click += delegate(object sender, RoutedEventArgs args)
             {
                 var dvm = (DetailViewerViewModel)DataContext;
@@ -83,6 +86,7 @@ namespace NuSysApp
                 }
                 
             };
+            */
             
         }
 
@@ -158,6 +162,7 @@ namespace NuSysApp
                 Visibility = Visibility.Visible;
             }
 
+            /*
             //If the element is a PDF, the button to autogenerate tags is made visible.
             if (controller.LibraryElementModel.Type == ElementType.PDF)
             {
@@ -167,6 +172,7 @@ namespace NuSysApp
             {
                 SuggestButton.Visibility = Visibility.Collapsed;
             }
+            */
 
             //Also, for PDFs the list view of the regions is shown in the Region Editor tab. 
             if (controller.LibraryElementModel.Type == ElementType.PDF)
@@ -426,6 +432,10 @@ namespace NuSysApp
         private void TabList_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             var viewable = (sender as FrameworkElement)?.DataContext as IDetailViewable;
+            if (viewable == null)
+            {
+                return;
+            }
             var vm = DataContext as DetailViewerViewModel;
             if (vm == null)
             {

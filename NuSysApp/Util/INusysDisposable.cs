@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class PresentationLink
+    public interface INuSysDisposable
     {
-        public string Id1 { get; set; }
-        public string Id2 { get; set; }
+        event EventHandler Disposed;
     }
 }

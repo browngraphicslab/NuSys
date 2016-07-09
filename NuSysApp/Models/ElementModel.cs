@@ -4,11 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Shapes;
-using Newtonsoft.Json;
-using NuSysApp.Components.Viewers.FreeForm;
-using NuSysApp.Util;
-using NuSysApp.Viewers;
 
 namespace NuSysApp
 {
@@ -23,14 +18,12 @@ namespace NuSysApp
         private double _width;
         private double _x;
         private double _y;
-
-        public List<RectangleViewModel> RegionsModel { get; set; }
+        
 
         public ElementModel(string id) : base(id)
         {
             ElementType = ElementType.None;
             InqCanvas = new InqCanvasModel(id);
-            RegionsModel = new List<RectangleViewModel>();
         }
 
         public ElementType ElementType { get; set; }
@@ -139,11 +132,8 @@ namespace NuSysApp
             dict.Add("scaleX", ScaleX);
             dict.Add("scaleY", ScaleY);
             dict.Add("title", Title);
-            dict.Add("nodeType", ElementType.ToString());
             dict.Add("type", ElementType.ToString());
             dict.Add("contentId", LibraryId);
-
-            dict.Add("regionModels", RegionsModel);
 
             var lines = new List<Dictionary<string, object>>();
             foreach (var inqLineModel in InqCanvas.Lines)
@@ -175,7 +165,12 @@ namespace NuSysApp
                // LastNetworkUser = SessionController.Instance.NuSysNetworkSession.NetworkMembers[props.GetString("system_sender_ip")];
             }
 
-            if (props.ContainsKey("nodeType"))
+            if (props.ContainsKey("type"))
+            {
+                string t = props.GetString("type");
+                ElementType = (ElementType)Enum.Parse(typeof(ElementType), t);
+            }
+            else if (props.ContainsKey("nodeType"))
             {
                 string t = props.GetString("nodeType");
                 ElementType = (ElementType)Enum.Parse(typeof(ElementType), t);
@@ -187,10 +182,6 @@ namespace NuSysApp
             if (props.ContainsKey("creator"))
             {
                 ParentCollectionId = props.GetString("creator", ParentCollectionId);
-            }
-            if (props.ContainsKey("regionsModel"))
-            {
-                RegionsModel = props.GetList<RectangleViewModel>("regionsModel", new List<RectangleViewModel>());
             }
 
             InqCanvas.UnPack(props);

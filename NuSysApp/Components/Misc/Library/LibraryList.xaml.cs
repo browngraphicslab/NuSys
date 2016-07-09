@@ -14,6 +14,7 @@ using Windows.Foundation.Collections;
 using Windows.Media.Capture;
 using Windows.Media.MediaProperties;
 using Windows.UI;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -312,6 +313,7 @@ namespace NuSysApp
                 regionsPanel?.RowDefinitions.Add(new RowDefinition());
                 var textBox = new TextBlock();
                 textBox.Text = "No regions associated with this element.";
+                textBox.Margin = new Thickness(2);
                 textBox.FontSize = 13;
                 regionsPanel?.Children.Add(textBox);
                 textBox.HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -321,7 +323,18 @@ namespace NuSysApp
                 return;
             }
 
-            var count = 0;
+            regionsPanel?.RowDefinitions.Add(new RowDefinition());
+            var regionTextBox = new TextBlock();
+            regionTextBox.Text = "Regions:";
+            regionTextBox.Margin = new Thickness(70,2,2,2);
+            regionTextBox.FontSize = 13;
+            regionTextBox.FontWeight = FontWeights.Bold;
+            regionsPanel?.Children.Add(regionTextBox);
+            regionTextBox.HorizontalAlignment = HorizontalAlignment.Stretch;
+            Grid.SetRow(regionTextBox, 1);
+            Grid.SetColumn(regionTextBox, 1);
+
+            var count = 1;
 
             foreach (var regionModel in elementModel.Regions)
             {
@@ -330,6 +343,11 @@ namespace NuSysApp
                 row.Height = GridLength.Auto;
                 regionsPanel?.RowDefinitions.Add(row);
                 var textBox = new Button();
+                textBox.HorizontalAlignment = HorizontalAlignment.Right;
+                textBox.Background = new SolidColorBrush(Color.FromArgb(255, 199, 222, 222));
+                textBox.Foreground = new SolidColorBrush(Color.FromArgb(255, 17, 61, 64));
+                textBox.Margin = new Thickness(140,0,0,2);
+                textBox.MinWidth = 250;
                 textBox.Content = regionModel.Name;
                 regionController.TitleChanged += delegate
                 {
@@ -338,7 +356,9 @@ namespace NuSysApp
                 textBox.FontSize = 13;
                 if (textBox.IsPointerOver)
                 {
-                    textBox.Background = new SolidColorBrush(Colors.DarkOliveGreen);
+                    textBox.Background = new SolidColorBrush(Colors.White);
+                    textBox.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 199, 222, 222));
+                    textBox.BorderThickness = new Thickness(1);
                 }
                 textBox.DoubleTapped += delegate
                 {

@@ -131,7 +131,7 @@ namespace NuSysApp
         {
         }
 
-        private void ControllerOnDisposed(object source)
+        private void ControllerOnDisposed(object source, object args)
         {
             var vm = (VideoNodeViewModel) DataContext;
             vm.Controller.LibraryElementController.Loaded -= LoadVideo;

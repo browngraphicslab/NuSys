@@ -9,6 +9,7 @@ using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml;
 using System.Diagnostics;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace NuSysApp
@@ -33,8 +34,39 @@ namespace NuSysApp
         public string Creator { set; get; }
         public string Timestamp { get; set; }//TODO maybe put in a timestamp, maybe remove the field from the library
 
+        public string LastEditedTimestamp { get; set; }
+
         public string ServerUrl { get; set; }
-       
+
+        public Dictionary<string, MetadataEntry> FullMetadata
+        {
+            get
+            {
+                var metadata = new Dictionary<string, MetadataEntry>(Metadata);
+                if (!metadata.ContainsKey("Timestamp"))
+                {
+                    metadata.Add("Timestamp", new MetadataEntry("Timestamp", new List<string> { Timestamp }, MetadataMutability.IMMUTABLE));
+                }
+                if (!metadata.ContainsKey("Creator"))
+                {
+                    metadata.Add("Creator", new MetadataEntry("Creator", new List<string> { Creator }, MetadataMutability.IMMUTABLE));
+                }
+                if (!metadata.ContainsKey("Title"))
+                {
+                    metadata.Add("Title", new MetadataEntry("Title", new List<string> { Title }, MetadataMutability.IMMUTABLE));
+                }
+                if (!metadata.ContainsKey("Type"))
+                {
+                    metadata.Add("Type", new MetadataEntry("Type", new List<string> { Type.ToString() }, MetadataMutability.IMMUTABLE));
+                }
+                if (!metadata.ContainsKey("Keywords"))
+                {
+                    var keywords = Keywords.Select(key => key.Text);
+                    metadata.Add("Keywords", new MetadataEntry("Keywords", new List<string>(keywords), MetadataMutability.IMMUTABLE));
+                }
+                return metadata;
+            }
+        }
         public LibraryElementModel(string id, ElementType elementType, Dictionary<string, MetadataEntry> metadata = null, string contentName = null, bool favorited = false)
         {
             Data = null;
@@ -95,28 +127,6 @@ namespace NuSysApp
             {
                 PDFStrings.Add(LibraryElementId);
             }*/
-            AddDefaultMetadata();
-        }
-
-        private void AddDefaultMetadata()
-        {
-            //ADD IMMUTABLE DATA TO METADATA, so they can show up in md editor
-            if (!Metadata.ContainsKey("Timestamp"))
-            {
-                Metadata.TryAdd("Timestamp", new MetadataEntry("Timestamp", new List<string> { Timestamp }, MetadataMutability.IMMUTABLE));
-            }
-            if (!Metadata.ContainsKey("Creator"))
-            {
-                Metadata.TryAdd("Creator", new MetadataEntry("Creator", new List<string> { Creator }, MetadataMutability.IMMUTABLE));
-            }
-            if (!Metadata.ContainsKey("Title"))
-            {
-                Metadata.TryAdd("Title", new MetadataEntry("Title", new List<string> { Title }, MetadataMutability.IMMUTABLE));
-            }
-            if (!Metadata.ContainsKey("Type"))
-            {
-                Metadata.TryAdd("Type", new MetadataEntry("Type", new List<string> { Type.ToString() }, MetadataMutability.IMMUTABLE));
-            }
         }
         protected virtual void OnSessionControllerEnterNewCollection()
         {
@@ -126,7 +136,6 @@ namespace NuSysApp
         public void SetMetadata(Dictionary<string, MetadataEntry> metadata)
         {
             Metadata = new ConcurrentDictionary<string, MetadataEntry>(metadata);
-            AddDefaultMetadata();
         }
         /*
 * Trent, Help ME.!!!!! He's talking about bio. What did I do to deserve this. 

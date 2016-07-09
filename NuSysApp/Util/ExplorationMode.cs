@@ -28,7 +28,7 @@ namespace NuSysApp
         private Storyboard _storyboard;
         private SolidColorBrush _backwardColor = Application.Current.Resources["lighterredcolor"] as SolidColorBrush;
         private SolidColorBrush _forwardColor = Application.Current.Resources["color4"] as SolidColorBrush;
-        private HashSet<LinkElementController> _linksUsed = new HashSet<LinkElementController>();
+        private HashSet<LinkController> _linksUsed = new HashSet<LinkController>();
         public ElementViewModel CurrentNode { get { return _currentNode; } }
         private RelatedListBox _relatedListBox;
         private Stack<ElementViewModel> _explorationHistory;
@@ -148,13 +148,14 @@ namespace NuSysApp
         /// </summary>
         public void ExitMode()
         {
+            /*
             foreach (var link in _linksUsed)
             {
                 if (link != null)
                 {
                     link.SetColor(Application.Current.Resources["color4"] as SolidColorBrush);
                 }
-            }
+            }*/
             AnimatePresentation(_originalTransform.ScaleX, _originalTransform.CenterX, _originalTransform.CenterY, _originalTransform.TranslateX, _originalTransform.TranslateY);
            this.HideRelatedListBox();
         }
@@ -321,10 +322,10 @@ namespace NuSysApp
         internal void ExploreLink(LinkViewModel vm)
         {
             // We will use the in atom or the out atom ID to decide which side of the link to go to
-            string id = vm.LinkModel.InAtomId.LibraryElementId;
+            string id = vm.LinkModel.InAtomId;
             if (vm.LinkModel.InAtomId.Equals(_currentNode.Id))
             {
-                id = vm.LinkModel.OutAtomId.LibraryElementId;
+                id = vm.LinkModel.OutAtomId;
             }
 
             // Find a list of element view models that have that id
@@ -339,13 +340,13 @@ namespace NuSysApp
             this.MoveTo(opposite);
 
             // Make sure the link is deselected
-            vm.IsSelected = false;
-        
+            //vm.IsSelected = false;
+        /*
             vm.Color = Application.Current.Resources["color2"] as SolidColorBrush;
             if (vm.LinkModel.IsPresentationLink)
             {
                 vm.Color = Application.Current.Resources["color4"] as SolidColorBrush;
-            }
+            }*/
         }
 
         /// <summary>
