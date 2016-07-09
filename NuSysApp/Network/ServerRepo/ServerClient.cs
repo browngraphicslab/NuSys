@@ -202,7 +202,7 @@ namespace NuSysApp
                 try
                 {
                     var list = JsonConvert.DeserializeObject<List<TupleIntermediate<string, string>>>(data, settings);
-                    var returnSet = list.Select(tup => new PresentationLinkModel() {ElementId1 = tup.m_Item1, ElementId2 = tup.m_Item2});
+                    var returnSet = list.Select(tup => new PresentationLinkModel() {InElementId = tup.m_Item1, OutElementId = tup.m_Item2});
                     return new HashSet<PresentationLinkModel>(returnSet);
                 }
                 catch (Exception e)

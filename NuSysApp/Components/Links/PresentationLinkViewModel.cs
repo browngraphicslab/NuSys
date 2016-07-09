@@ -1,10 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace NuSysApp
 {
     public class PresentationLinkViewModel : INuSysDisposable
     {
+
+        // maintain a list of models so that we can use presentation mode
+        public static HashSet<PresentationLinkModel> Models;
+
         private readonly ElementController _inElementController;
         private readonly ElementController _outElementController;
 
@@ -31,11 +36,11 @@ namespace NuSysApp
         public PresentationLinkViewModel(PresentationLinkModel model) 
         {
             //if you fail these debugs, keep them and simply dont create presentation link instead
-            Debug.Assert(model?.ElementId1 != null && SessionController.Instance.IdToControllers.ContainsKey(model.ElementId1));
-            Debug.Assert(model?.ElementId2 != null && SessionController.Instance.IdToControllers.ContainsKey(model.ElementId2));
+            Debug.Assert(model?.InElementId != null && SessionController.Instance.IdToControllers.ContainsKey(model.InElementId));
+            Debug.Assert(model?.OutElementId != null && SessionController.Instance.IdToControllers.ContainsKey(model.OutElementId));
 
-            _inElementController = SessionController.Instance.IdToControllers[model.ElementId1];
-            _outElementController = SessionController.Instance.IdToControllers[model.ElementId2];
+            _inElementController = SessionController.Instance.IdToControllers[model.InElementId];
+            _outElementController = SessionController.Instance.IdToControllers[model.OutElementId];
 
             _inElementController.AnchorChanged += FireControlPointsChanged;
             _outElementController.AnchorChanged += FireControlPointsChanged;
