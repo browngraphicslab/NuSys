@@ -100,6 +100,7 @@ namespace NuSysApp
 
         private void xResizingTriangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
+
             e.Handled = true;
         }
 
@@ -137,8 +138,9 @@ namespace NuSysApp
         }
         public void Deselect()
         {
+            var vm = DataContext as VideoRegionViewModel;
             xMainRectangle.StrokeThickness = 3;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Blue);
+            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
             IntervalRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.LightCyan);
             xResizingTriangle.Visibility = Visibility.Collapsed;
             xNameTextBox.Visibility = Visibility.Collapsed;
@@ -152,12 +154,16 @@ namespace NuSysApp
 
         public void Select()
         {
+            var vm = DataContext as VideoRegionViewModel;
             xMainRectangle.StrokeThickness = 6;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
+            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
             IntervalRectangle.Fill = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
             xResizingTriangle.Visibility = Visibility.Visible;
             xNameTextBox.Visibility = Visibility.Visible;
-            xDelete.Visibility = Visibility.Visible;
+            if (vm.Editable)
+            {
+                xDelete.Visibility = Visibility.Visible;
+            }
             IntervalRectangle.IsHitTestVisible = false;
 
 
@@ -220,7 +226,7 @@ namespace NuSysApp
             {
                 return;
             }
-
+           
             var libraryElementController = vm.LibraryElementController;
             libraryElementController.RemoveRegion(vm.RegionController.Model);
 

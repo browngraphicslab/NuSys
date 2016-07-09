@@ -9,7 +9,7 @@ namespace NuSysApp
 {
     public class VideoRegionModel : RectangleRegion
     {
-        public VideoRegionModel(Point topLeft, Point bottomRight, double start = .25, double end = .75, string name="untitled node") : base(topLeft, bottomRight, name)
+        public VideoRegionModel(Point topLeft, Point bottomRight, double start = .25, double end = .75, string name="Untitled") : base(topLeft, bottomRight, name)
         {
             Start = start;
             End = end;

@@ -21,6 +21,8 @@ namespace NuSysApp
     public sealed partial class VideoMediaPlayer : UserControl
     {
         Boolean _loaded = false;
+        //needed for "dragging" through scrub bar
+        Boolean _wasPlaying = false;
         public VideoMediaPlayer()
         {
             this.InitializeComponent();
@@ -92,6 +94,7 @@ namespace NuSysApp
         private void OnStop_Click(object sender, TappedRoutedEventArgs e)
         {
             playbackElement.Pause();
+            _wasPlaying = false;
 
         }
 
@@ -104,22 +107,28 @@ namespace NuSysApp
             b.Path = new PropertyPath("Position.TotalMilliseconds");
             scrubBar.SetBinding(ProgressBar.ValueProperty, b);
             playbackElement.Play();
+            _wasPlaying = true;
         }
 
         public void StopVideo()
         {
             playbackElement.Pause();
+            _wasPlaying = false;
         }
 
         private void OnPause_Click(object sender, RoutedEventArgs e)
         {
             playbackElement.Stop();
             scrubBar.Value = 0;
-           // e.Handled = true;
+            _wasPlaying = false;
+
+            // e.Handled = true;
         }
         private void MediaEnded(object sender, RoutedEventArgs e)
         {
             VideoNodeView_OnJump(new TimeSpan(0));
+            _wasPlaying = false;
+
         }
 
 
@@ -176,6 +185,7 @@ namespace NuSysApp
                 b.ElementName = "playbackElement";
                 b.Path = new PropertyPath("Position.TotalMilliseconds");
                 scrubBar.SetBinding(ProgressBar.ValueProperty, b);
+                playbackElement.Pause();
                 //playbackElement.Play();
             }
 
@@ -197,13 +207,14 @@ namespace NuSysApp
                         b.ElementName = "playbackElement";
                         b.Path = new PropertyPath("Position.TotalMilliseconds");
                         scrubBar.SetBinding(ProgressBar.ValueProperty, b);
+                        //playbackElement.Pause();
 
-                        //playbackElement.Play();
-                    }
-                    else
+                    //playbackElement.Play();
+                }
+                else
                     {
                         ((UIElement) sender).CapturePointer(e.Pointer);
-                        playbackElement.Pause();
+                        //playbackElement.Pause();
                     }
 
                 e.Handled = true;
@@ -218,8 +229,6 @@ namespace NuSysApp
        }
 
 
-       
-
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
@@ -232,7 +241,16 @@ namespace NuSysApp
 
         private void ScrubBar_OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
+            if (_wasPlaying)
+            {
                 playbackElement.Play();
+
+            }
+            else
+            {
+                playbackElement.Pause();
+
+            }
                 ((UIElement)sender).ReleasePointerCapture(e.Pointer);
         }
 

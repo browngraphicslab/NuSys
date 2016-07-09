@@ -64,6 +64,7 @@ namespace NuSysApp
             vm.Editable = this.Editable;
             var view = new AudioRegionView(vm);
             RegionViews.Add(view);
+            view.OnRegionSeek += View_OnRegionSeek;
             RaisePropertyChanged("RegionViews");
         }
 
@@ -145,7 +146,7 @@ namespace NuSysApp
 
         public override Region GetNewRegion()
         {
-            var region = new TimeRegionModel("name", 0, 1);
+            var region = new TimeRegionModel("Region", 0.25, 0.75);
             return region;
         }
 

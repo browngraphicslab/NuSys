@@ -11,7 +11,7 @@ namespace NuSysApp
     {
 
         public int PageLocation { get; set; }
-        public PdfRegion(Point p1, Point p2, int pageLocation, string name = "Untitled Rectangle") : base(p1,p2,name)
+        public PdfRegion(Point p1, Point p2, int pageLocation, string name = "Untitled") : base(p1,p2,name)
         {
             PageLocation = pageLocation;
             Type = RegionType.Pdf;

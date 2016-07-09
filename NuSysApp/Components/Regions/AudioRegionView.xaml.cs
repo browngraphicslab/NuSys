@@ -87,11 +87,14 @@ namespace NuSysApp
 
         public void Select()
         {
+            var vm = DataContext as AudioRegionViewModel;
             Rect.Fill = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
             xNameTextBox.Visibility = Visibility.Visible;
             Rect.IsHitTestVisible = false;
-            xDelete.Visibility = Visibility.Visible;
-
+            if (vm.Editable)
+            {
+                xDelete.Visibility = Visibility.Visible;
+            }
             Selected = true;
 
         }

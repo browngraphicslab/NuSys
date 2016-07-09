@@ -254,6 +254,8 @@ namespace NuSysApp
             var view = new AudioRegionView(vm);
             vm.Editable = false;
             Regions.Add(view);
+            view.OnRegionSeek += View_OnRegionSeek;
+
             RaisePropertyChanged("Regions");
         }
 
