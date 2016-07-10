@@ -97,7 +97,26 @@ namespace NuSysApp
             {
                 return;
             }
-            vm.SetRegionSize(xMainRectangle.Width + e.Delta.Translation.X, xMainRectangle.Height + e.Delta.Translation.Y);
+
+            var vvm = vm.ContainerViewModel as VideoDetailHomeTabViewModel;
+
+            double newWidth = xMainRectangle.Width;
+            double newHeight = xMainRectangle.Height;
+
+            //CHANGE IN WIDTH
+            if (xMainRectangle.Width + vm.TopLeft.X + e.Delta.Translation.X <= vvm.GetWidth())
+            {
+                newWidth = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
+
+            }
+            //CHANGE IN HEIGHT
+
+            if (xMainRectangle.Height + vm.TopLeft.Y + e.Delta.Translation.Y <= vvm.GetHeight())
+            {
+                newHeight = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
+            }
+
+            vm.SetRegionSize(newWidth, newHeight);
             e.Handled = true;
         }
         private void xResizingTriangle_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
