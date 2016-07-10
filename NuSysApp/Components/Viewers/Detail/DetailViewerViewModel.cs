@@ -450,6 +450,10 @@ namespace NuSysApp
                 var tagCountDictionary = new Dictionary<string, int>();
                 foreach (var suggestedTag in suggestedTags)
                 {
+                    if (suggestedTag == null)
+                    {
+                        continue;
+                    }
                     var lowerTag = suggestedTag.ToLower();
                     if (tagCountDictionary.ContainsKey(lowerTag))
                     {
