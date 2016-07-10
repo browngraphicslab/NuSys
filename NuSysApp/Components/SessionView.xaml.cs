@@ -134,14 +134,22 @@ namespace NuSysApp
             var presentationLinks = await SessionController.Instance.NuSysNetworkSession.GetPresentationLinks(firstId);
             foreach (var presentationlink in presentationLinks)
             {
-                Debug.Assert(presentationlink != null);
-                var vm = new PresentationLinkViewModel(presentationlink);
-                if (PresentationLinkViewModel.Models == null)
+                Debug.Assert(presentationlink != null && presentationlink?.InElementId != null && presentationlink?.OutElementId != null);
+
+
+                // If the two elements the presentation link connects aren't on the current workspace don't make the link
+                if (SessionController.Instance.IdToControllers.ContainsKey(presentationlink.InElementId) &&
+                    SessionController.Instance.IdToControllers.ContainsKey(presentationlink.OutElementId))
                 {
-                    PresentationLinkViewModel.Models = new HashSet<PresentationLinkModel>();
+                    var vm = new PresentationLinkViewModel(presentationlink);
+                    if (PresentationLinkViewModel.Models == null)
+                    {
+                        PresentationLinkViewModel.Models = new HashSet<PresentationLinkModel>();
+                    }
+                    PresentationLinkViewModel.Models.Add(presentationlink);
+                    new PresentationLinkView(vm);
                 }
-                PresentationLinkViewModel.Models.Add(presentationlink);
-                new PresentationLinkView(vm);
+
             }
             
         }
