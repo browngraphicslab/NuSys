@@ -9,6 +9,7 @@ namespace NuSysApp
 {
     public class RectangleRegion : Region
     {
+        // Very confusing!! Width = width ratio
         public RectangleRegion(Point topLeft, Point bottomRight, string name = "Untitled Rectangle") : base(name)
         {
             TopLeftPoint = topLeft;

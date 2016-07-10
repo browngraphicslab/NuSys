@@ -384,14 +384,6 @@ namespace NuSysApp
             }
         }
 
-        private void forceOnManipDelta()
-        {
-            double rightCoord = Canvas.GetLeft(this) + this.Width;
-            
-            var newWidth = Width - Math.Min(1, this.Width);
-            (DataContext as DetailViewerViewModel)?.ChangeSize(this, rightCoord - newWidth, newWidth, Height);
-        }
-
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
       //      if (!_allowResize)
@@ -403,26 +395,6 @@ namespace NuSysApp
 
             if ((this.Width > 600 || e.Delta.Translation.X < 0) && (Canvas.GetLeft(this) > 0 || e.Delta.Translation.X > 0) && (Canvas.GetLeft(this) > 30 || e.Delta.Translation.X > 0))
             {
-                //this.Width -= Math.Min(e.Delta.Translation.X,this.Width);
-                /*
-               // xContainer.Width = this.Width - 30;
-
-               // exitButtonContainer.Width = xContainer.Width;
-
-                if (nodeContent.Content is ImageDetailHomeTabView)
-                {
-                   // ((ImageDetailHomeTabView) nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
-                } else if (nodeContent.Content is TextDetailHomeTabView)
-                {
-                 //   ((TextDetailHomeTabView)nodeContent.Content).SetDimension(xContainer.Width);
-                } else if (nodeContent.Content is WebDetailView)
-                {
-                    ((WebDetailView)nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
-                    Canvas.SetTop(nodeContent, (SessionController.Instance.SessionView.ActualHeight - nodeContent.Height) / 2);
-                }
-                */
-                
-                //Canvas.SetLeft(this, rightCoord - this.Width);
                 (DataContext as DetailViewerViewModel)?.ChangeSize(this, rightCoord - newWidth, newWidth, Height);
                 e.Handled = true;
             }
@@ -511,8 +483,9 @@ namespace NuSysApp
         private void XRootPivot_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var vm = (DetailViewerViewModel)DataContext;
-            vm.ChangeRegionsSize(this, this.Width +1, this.Height);
- 
+
+            //vm.ChangeRegionsSize(this, this.Width, this.Height);
+            //(DataContext as DetailViewerViewModel)?.ChangeSize(this, Canvas.GetLeft(this) + this.Width + 50, this.Width + 50, Height);
             //Resizer_OnManipulationDelta(this, );
             //Resize(this, Canvas.GetLeft(this), Width + 50, Height);
 

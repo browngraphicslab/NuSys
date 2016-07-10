@@ -116,11 +116,14 @@ namespace NuSysApp
             {
                 return;
             }
+
             xMainRectangle.Width = width;
             xMainRectangle.Height = height;
+
             vm.Width = width;
             vm.Height = height;
         }
+
         private void PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)

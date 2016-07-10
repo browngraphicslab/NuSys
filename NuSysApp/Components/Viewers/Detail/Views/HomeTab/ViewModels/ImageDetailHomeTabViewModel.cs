@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -81,8 +82,11 @@ namespace NuSysApp
 
         public override void SizeChanged(object sender, double width, double height)
         {
+            //Debug.WriteLine("ImageDetailHomeTabViewModel Being Called");
             var newHeight = this.GetHeight();
             var newWidth = this.GetWidth();
+
+            //Debug.WriteLine("Width: " + (View as ImageDetailHomeTabView).GetImgWidth());
 
             foreach (var rv in RegionViews)
             {

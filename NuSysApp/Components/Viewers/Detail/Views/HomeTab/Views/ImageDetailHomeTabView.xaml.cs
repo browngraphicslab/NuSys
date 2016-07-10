@@ -58,11 +58,22 @@ namespace NuSysApp
             return xImg.ActualHeight;
         }
 
+        private double _nonZeroPrevActualWidth = 0;
+
+        // TODO: Very hacky, change later so that the width binds instead of xaml stretching
         public double GetImgWidth()
         {
-
-            //return ActualWidth;
-            return xImg.ActualWidth;
+            double actualWidth = xImg.ActualWidth;
+            return actualWidth;
+            //if (actualWidth.Equals(0))
+            //{
+            //    return _nonZeroPrevActualWidth;
+            //}
+            //else
+            //{
+            //    _nonZeroPrevActualWidth = actualWidth;
+            //    return actualWidth;
+            //}
         }
 
         private void PropertyChanged(object sender, PropertyChangedEventArgs e)
