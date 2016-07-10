@@ -71,9 +71,6 @@
             </ListView.ItemTemplate>
         </ListView>
     </Canvas>
-    
-
-    <!-->>>>>>> origin/tooldebugging-->
 
 
 </local:AnimatableUserControl>

@@ -142,8 +142,15 @@ namespace NuSysApp
             Metadata = new ObservableCollection<StackPanel>();
             RegionCollection = new ObservableCollection<Region>();
             Tabs = new ObservableCollection<IDetailViewable>();
-          //  TabVisibility = Visibility.Collapsed;
-            
+            //  TabVisibility = Visibility.Collapsed;
+
+            SizeChanged += OnSizeChanged_InvokeTabVMSizeChanged;
+        }
+
+        private void OnSizeChanged_InvokeTabVMSizeChanged(object source, double left, double width, double height)
+        {
+            _regionableRegionTabViewModel.SizeChanged(source, width, height);
+            _regionableHomeTabViewModel.SizeChanged(source, width, height);
         }
 
         private void AddRegionToList(object source, RegionController regionController)
@@ -162,7 +169,6 @@ namespace NuSysApp
         }
 
        
-
         public async Task<bool> ShowElement(IDetailViewable viewable)
         {
             if (viewable is LibraryElementController)
@@ -238,8 +244,8 @@ namespace NuSysApp
                 };
 
 
-                SizeChanged += (sender, left, width, height) => _regionableRegionTabViewModel.SizeChanged(sender, width, height);
-                SizeChanged += (sender, left, width, height) => _regionableHomeTabViewModel.SizeChanged(sender, width, height);
+                //SizeChanged += (sender, left, width, height) => _regionableRegionTabViewModel.SizeChanged(sender, width, height);
+                //SizeChanged += (sender, left, width, height) => _regionableHomeTabViewModel.SizeChanged(sender, width, height);
                 
                 Title = controller.LibraryElementModel.Title;
 
@@ -365,7 +371,14 @@ namespace NuSysApp
         
         public void ChangeSize(object sender, double left, double width, double height)
         {
+            //Debug.WriteLine("DetailViewerViewModel ChangeSize being called");
             SizeChanged?.Invoke(sender, left, width, height);
+        }
+
+        public void ChangeRegionsSize(object sender, double width, double height)
+        {
+            _regionableRegionTabViewModel.SizeChanged(sender, width, height);
+            _regionableHomeTabViewModel.SizeChanged(sender, width, height);
         }
 
         private void ControllerTitleChanged(object sender, string title)

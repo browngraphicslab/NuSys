@@ -37,7 +37,8 @@
             </Grid>
         </Border>
         <Grid  VerticalAlignment="Bottom" Margin="10,0,0,10">
-            <Button HorizontalAlignment="Center"  Name="SourceBttn" Background="{StaticResource color2}" Height="35"  Foreground="{StaticResource foreground6}" Click="OnGoToSource">EDIT IN MICROSOFT WORD</Button>
+            <Button HorizontalAlignment="Left"  Name="SourceBttn" Background="{StaticResource color2}" Height="35"  Foreground="{StaticResource foreground6}" Click="OnGoToSource">EDIT IN MICROSOFT WORD</Button>
+            <Button HorizontalAlignment="right"  Name="CaptureButton" Background="{StaticResource color2}" Height="35"  Foreground="{StaticResource foreground6}" Click="OnCapture">TAKE WORD CAPTURE</Button>
         </Grid>
         <StackPanel Visibility="Collapsed">
             <TextBlock Text="SUGGESTED TAGS" Foreground="{StaticResource foreground6}" FontSize="30" CharacterSpacing="45" Margin="10,15,30,0" Padding="5,0,5,0"></TextBlock>

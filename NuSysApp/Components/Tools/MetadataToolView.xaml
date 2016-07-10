@@ -99,27 +99,9 @@
                             </StackPanel>
                         </Button>
                     </StackPanel>
-<!--<<<<<<< HEAD
-                </Grid>
-                <Grid Grid.Row="1" VerticalAlignment="Bottom" Background="{StaticResource color1}" Height="50">
-                    <Button x:Name="xCollectionElement" HorizontalAlignment="Left" Margin="5,0,0,0"  Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All">
-                        <StackPanel>
-                            <Image Source="ms-appx:///Assets/collection icon bluegreen.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                            <TextBlock Text="Collection" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="11"></TextBlock>
-                        </StackPanel>
-                    </Button>
-                    <Path x:Name="xResizer" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
-                    Height="50" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="50"
-                    Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" ManipulationDelta="Resizer_OnManipulationDelta"/>
-                </Grid>
-                
-                
-=======-->
                     <Path x:Name="xResizer" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
                       Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
                       Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" ManipulationDelta="Resizer_OnManipulationDelta"/>
-<!-->>>>>>> origin/tooldebugging-->
-
                 </Grid>
             </StackPanel>
         </StackPanel>

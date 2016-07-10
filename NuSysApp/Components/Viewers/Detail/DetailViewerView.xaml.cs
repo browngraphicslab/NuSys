@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.System;
+using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -17,6 +18,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using LdaLibrary;
+using MyToolkit.Utilities;
+using WinRTXamlToolkit.IO.Serialization;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -386,39 +389,25 @@ namespace NuSysApp
                 Canvas.SetLeft(this, 30);
             }
         }
+
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
       //      if (!_allowResize)
         //        return;
 
             double rightCoord = Canvas.GetLeft(this) + this.Width;
-       
+
+            var newWidth = Width - Math.Min(e.Delta.Translation.X, this.Width);
+
             if ((this.Width > 600 || e.Delta.Translation.X < 0) && (Canvas.GetLeft(this) > 0 || e.Delta.Translation.X > 0) && (Canvas.GetLeft(this) > 30 || e.Delta.Translation.X > 0))
             {
-                //this.Width -= Math.Min(e.Delta.Translation.X,this.Width);
-                /*
-               // xContainer.Width = this.Width - 30;
-
-               // exitButtonContainer.Width = xContainer.Width;
-
-                if (nodeContent.Content is ImageDetailHomeTabView)
-                {
-                   // ((ImageDetailHomeTabView) nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
-                } else if (nodeContent.Content is TextDetailHomeTabView)
-                {
-                 //   ((TextDetailHomeTabView)nodeContent.Content).SetDimension(xContainer.Width);
-                } else if (nodeContent.Content is WebDetailView)
-                {
-                    ((WebDetailView)nodeContent.Content).SetDimension(xContainer.Width, SessionController.Instance.SessionView.ActualHeight);
-                    Canvas.SetTop(nodeContent, (SessionController.Instance.SessionView.ActualHeight - nodeContent.Height) / 2);
-                }
-                */
-                var newWidth = Width - Math.Min(e.Delta.Translation.X, this.Width);
-                //Canvas.SetLeft(this, rightCoord - this.Width);
                 (DataContext as DetailViewerViewModel)?.ChangeSize(this, rightCoord - newWidth, newWidth, Height);
                 e.Handled = true;
             }
 
+            // just in case width goes past 600 - b/c manipulation delta doesn't catch everything if moving too fast -- temporary fix?
+            (DataContext as DetailViewerViewModel)?.ChangeRegionsSize(this, newWidth, Height);
+            
             if (Canvas.GetLeft(this) <= 30)
             {
                 Canvas.SetLeft(this,30);
@@ -506,6 +495,11 @@ namespace NuSysApp
         private void XRootPivot_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var vm = (DetailViewerViewModel)DataContext;
+
+            //vm.ChangeRegionsSize(this, this.Width, this.Height);
+            //(DataContext as DetailViewerViewModel)?.ChangeSize(this, Canvas.GetLeft(this) + this.Width + 50, this.Width + 50, Height);
+            //Resizer_OnManipulationDelta(this, );
+            //Resize(this, Canvas.GetLeft(this), Width + 50, Height);
 
             var listView = sender as Pivot;
             (DataContext as DetailViewerViewModel)?.ChangeSize(this, Canvas.GetLeft(this) + this.Width, Width, Height);

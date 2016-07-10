@@ -82,9 +82,10 @@ namespace NuSysApp
 
         public override void SizeChanged(object sender, double width, double height)
         {
-            Debug.WriteLine("Size Changed Called");
             var newHeight = this.GetHeight();
             var newWidth = this.GetWidth();
+
+            //Debug.WriteLine("Width: " + (View as ImageDetailHomeTabView).GetImgWidth());
 
             foreach (var rv in RegionViews)
             {
