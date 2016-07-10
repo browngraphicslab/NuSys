@@ -38,13 +38,7 @@ namespace NuSysApp
 
         public UserControl View { get; set; }
 
-        public UserControl RegionView
-        {
-            get
-            {
-                return _regionableRegionTabViewModel?.View;
-            }
-        }
+        public UserControl RegionView { set; get; }
 
         public ObservableCollection<FrameworkElement> Tags { get; set; }
 
@@ -167,8 +161,6 @@ namespace NuSysApp
             _nodeModel = null;
 
         }
-
-       
         public async Task<bool> ShowElement(IDetailViewable viewable)
         {
             if (viewable is LibraryElementController)
@@ -206,20 +198,20 @@ namespace NuSysApp
                 }
                 RaisePropertyChanged("OrderedRegionCollection");
 
-                View = await _viewHomeTabViewFactory.CreateFromSendable(controller, controller.LibraryElementModel.Regions);
+                View = await _viewHomeTabViewFactory.CreateFromSendable(controller, regions);
                 if (View == null)
                 {
                     return false;
                 }
 
-                var regionView = await _viewHomeTabViewFactory.CreateFromSendable(controller, controller.LibraryElementModel.Regions);
-                if (regionView == null)
+                RegionView = await _viewHomeTabViewFactory.CreateFromSendable(controller, regions);
+                if (RegionView == null)
                 {
                     return false;
                 }
 
 
-                _regionableRegionTabViewModel = regionView.DataContext as DetailHomeTabViewModel;
+                _regionableRegionTabViewModel = RegionView.DataContext as DetailHomeTabViewModel;
                 _regionableRegionTabViewModel.Editable = true;
                 _regionableHomeTabViewModel = View.DataContext as DetailHomeTabViewModel;
                 _regionableHomeTabViewModel.Editable = false;
@@ -230,8 +222,8 @@ namespace NuSysApp
 
                 RaisePropertyChanged("View");
                 RaisePropertyChanged("RegionView");
-                
-                regionView.Loaded += delegate
+
+                RegionView.Loaded += delegate
                 {
 
                     _regionableRegionTabViewModel.SetExistingRegions();
@@ -257,7 +249,6 @@ namespace NuSysApp
                 RaisePropertyChanged("Tags");
                 RaisePropertyChanged("Metadata");
                 RaisePropertyChanged("RegionView");
-                RaisePropertyChanged("View");
 
                 AddTab(viewable);
                 return true;
@@ -301,7 +292,6 @@ namespace NuSysApp
                 RaisePropertyChanged("View");
                 RaisePropertyChanged("Tags");
                 RaisePropertyChanged("Metadata");
-                RaisePropertyChanged("RegionView");
                 RaisePropertyChanged("View");
 
                 AddTab(viewable);
