@@ -294,12 +294,14 @@ namespace NuSysApp
                 Model.Y = y;
 
                 PositionChanged?.Invoke(this, x,y);
+                FireAnchorChanged();
             }
             if (props.ContainsKey("width") || props.ContainsKey("height"))
             {
                 var width = props.GetDouble("width", this.Model.Width);
                 var height = props.GetDouble("height", this.Model.Height);
                 SizeChanged?.Invoke(this,width,height);
+                FireAnchorChanged();
             }
 
             if (props.ContainsKey("region"))

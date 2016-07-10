@@ -73,7 +73,8 @@ namespace NuSysApp
             else
             {
                 //THIS IS THE CAUSE OF HALF OUR REGIONS PROBLEMS
-                throw new Exception("TRIED TO ADD A SECOND REGION CONTROLLER");
+                //throw new Exception("TRIED TO ADD A SECOND REGION CONTROLLER");
+                return regionModel.Id;
             }
             return null;
         }

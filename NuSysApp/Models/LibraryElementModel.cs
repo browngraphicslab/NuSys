@@ -36,8 +36,7 @@ namespace NuSysApp
 
         public string LastEditedTimestamp { get; set; }
 
-        public string ServerUrl { get; set; }
-
+        public string ServerUrl { get; set; } 
         public Dictionary<string, MetadataEntry> FullMetadata
         {
             get

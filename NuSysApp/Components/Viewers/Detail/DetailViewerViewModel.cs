@@ -413,6 +413,38 @@ namespace NuSysApp
                 {
                     suggestedTags.AddRange(metaDataDict["system_suggested_topics"].Values);
                 }
+                //HACKY solution to add suggested tags to all types, can remove later --Trent
+
+                suggestedTags.AddRange(suggestedTags);//doubles the importance of all system suggested tags added so far
+
+                foreach (var kvp in CurrentElementController.LibraryElementModel.FullMetadata ?? new Dictionary<string, MetadataEntry>())
+                {
+                    suggestedTags.AddRange(kvp.Value.Values);
+                }
+                var linksController = SessionController.Instance.LinksController;
+                foreach (var linkId in linksController.GetLinkedIds(CurrentElementController?.ContentId))
+                {
+                    var linkController = linksController.GetLinkLibraryElementControllerFromLibraryElementId(linkId);
+                    if (linkController == null)
+                    {
+                        continue;
+                    }
+                    var opposite = linksController.GetOppositeLibraryElementModel(CurrentElementController?.ContentId, linkController);
+                    if (opposite?.LibraryElementModel == null)
+                    {
+                        continue;
+                    }
+                    suggestedTags.AddRange(opposite.LibraryElementModel.Keywords.Select(key => key.Text));
+                    foreach (var kvp in opposite.LibraryElementModel.FullMetadata ?? new Dictionary<string, MetadataEntry>())
+                    {
+                        if (kvp.Key != "system_suggested_dates")
+                        {
+                            suggestedTags.AddRange(kvp.Value.Values);
+                        }
+                    }
+                }
+                //END HACKY REGION
+
 
                 // count the number of times each tag appears in the suggested tags using a <tag, count> dictionary
                 var tagCountDictionary = new Dictionary<string, int>();
@@ -442,7 +474,7 @@ namespace NuSysApp
 
                 // now use the tagCountDictionary to order the tags by their importance
                 var suggestions = from entry in tagCountDictionary
-                                orderby entry.Value ascending
+                                orderby entry.Value descending
                                 select entry.Key;
 
                 // create a limited number of tag blocks
@@ -450,7 +482,7 @@ namespace NuSysApp
                 foreach (var suggestion in suggestions)
                 {
                     // this is the limiter
-                    if (numSuggestions == 5)
+                    if (numSuggestions == 50)
                     {
                         break;
                     }

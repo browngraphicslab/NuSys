@@ -64,18 +64,10 @@ namespace NuSysApp
 
         private async void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            foreach (var atom in SessionController.Instance.ActiveFreeFormViewer.AtomViewList)
-            {
-                if (atom is PdfNodeView)
-                {
-                  //  atom.Visibility = Visibility.Collapsed;
-
-                }
-            }
-
-
             if (SessionController.Instance.SessionView.FreeFormViewer.MultiMenu.Visibility == Visibility.Visible)
+            {
                 return;
+            }
 
             _released = false;
             await Task.Delay(200);
@@ -91,7 +83,9 @@ namespace NuSysApp
 
             var dc = ((FrameworkElement)e.OriginalSource).DataContext as ElementViewModel;
             if (dc == null)
+            {
                 return;
+            }
 
             // try to explore to the ElementViewModel
             if (!(dc is LinkViewModel))

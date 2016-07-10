@@ -550,6 +550,7 @@ namespace NuSysApp
                     highlight.BorderBrush = new SolidColorBrush(Colors.Black);
                     highlight.BorderThickness = new Thickness(1);
                     highlight.Visibility = Visibility.Collapsed;
+                    hitArea.Visibility = Visibility.Visible;
                     bg.BorderBrush = new SolidColorBrush(Colors.Black);
                     bg.BorderThickness = new Thickness(1);
                 }

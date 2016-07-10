@@ -50,6 +50,9 @@ namespace NuSysApp
             vm.Controller.NumberOfParentsChanged += Controller_NumberOfParentsChanged;
             xCollectionElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             xCollectionElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
+
+            xStackElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
+            xStackElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
             //xParentOperatorPickerList.ItemsSource = vm.ParentOperatorList;
         }
 
@@ -128,11 +131,17 @@ namespace NuSysApp
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
             var p = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
             var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(p.X, p.Y, 300, 300));
-            var send = (FrameworkElement)sender;
             var vm = DataContext as ToolViewModel;
             if (vm != null)
             {
-                vm.CreateCollection(r.X, r.Y);
+                if (sender == xStackElement)
+                {
+                    vm.CreateStack(r.X, r.Y);
+                }
+                else
+                { 
+                    vm.CreateCollection(r.X, r.Y);
+                }
             }
             ReleasePointerCaptures();
             (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta));

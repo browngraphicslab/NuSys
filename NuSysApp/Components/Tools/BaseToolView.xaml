@@ -87,6 +87,12 @@
                                 <TextBlock Text="Collection" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="11"></TextBlock>
                             </StackPanel>
                         </Button>
+                        <Button x:Name="xStackElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Right" Margin="20,0,0,0">
+                            <StackPanel>
+                                <Image Source="ms-appx:///Assets/collection icon bluegreen.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                                <TextBlock Text="Stack" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="11"></TextBlock>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                     <Path x:Name="xResizer" Grid.Row="1" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
                       Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"

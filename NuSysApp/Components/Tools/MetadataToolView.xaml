@@ -91,6 +91,14 @@
                             </StackPanel>
                         </Button>
                     </StackPanel>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="60,0,0,0">
+                        <Button x:Name="xStackElement"  Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Center">
+                            <StackPanel>
+                                <Image Source="ms-appx:///Assets/collection icon bluegreen.png" Height="28" Width="28" Stretch="Uniform"></Image>
+                                <TextBlock Text="Stack" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="11"></TextBlock>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
 <!--<<<<<<< HEAD
                 </Grid>
                 <Grid Grid.Row="1" VerticalAlignment="Bottom" Background="{StaticResource color1}" Height="50">

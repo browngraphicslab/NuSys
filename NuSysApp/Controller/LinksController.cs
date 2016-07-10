@@ -357,6 +357,14 @@ namespace NuSysApp
             return controller;
         }
 
+
+        /// <summary>
+        /// returns the LinkLibraryElementController for two libraryElementModels passed in via their Id's
+        /// null if no link existed between them
+        /// </summary>
+        /// <param name="libElemId1"></param>
+        /// <param name="libElemId2"></param>
+        /// <returns></returns>
         public LinkLibraryElementController GetLinkLibraryElementControllerBetweenContent(string libElemId1, string libElemId2)
         {
 
@@ -378,6 +386,40 @@ namespace NuSysApp
             var controller = GetLinkLibraryElementControllerFromLibraryElementId(intersect.FirstOrDefault());
             Debug.Assert(controller != null);
             return controller;
+        }
+
+
+        /// <summary>
+        /// Gets the library element opposite the id passed in
+        /// </summary>
+        /// <param name="libraryElementId"></param>
+        /// <param name="linkController"></param>
+        /// <returns></returns>
+        public LibraryElementController GetOppositeLibraryElementModel(string libraryElementId,
+            LinkLibraryElementController linkController)
+        {
+            Debug.Assert(libraryElementId != null);
+            Debug.Assert(SessionController.Instance.ContentController.GetContent(libraryElementId) != null);
+
+            var inId = linkController?.LinkLibraryElementModel?.InAtomId;
+            var outId = linkController?.LinkLibraryElementModel?.OutAtomId;
+            Debug.Assert(inId != null);
+            Debug.Assert(outId != null);
+
+            string oppositeModelIdToReturn = null;
+
+            if (libraryElementId == inId)
+            {
+                oppositeModelIdToReturn = outId;
+            }
+            else if (libraryElementId == outId)
+            {
+                oppositeModelIdToReturn = inId;
+            }
+            Debug.Assert(oppositeModelIdToReturn != null);
+            var controllerToReturn = SessionController.Instance.ContentController.GetLibraryElementController(oppositeModelIdToReturn);
+            Debug.Assert(controllerToReturn != null);
+            return controllerToReturn;
         }
 
         /// <summary>
@@ -411,39 +453,6 @@ namespace NuSysApp
             {
                 return new HashSet<ILinkable>();
             }
-        }
-
-        /// <summary>
-        /// Gets the library element opposite the id passed in
-        /// </summary>
-        /// <param name="libraryElementId"></param>
-        /// <param name="linkController"></param>
-        /// <returns></returns>
-        private LibraryElementController GetOppositeLibraryElementModel(string libraryElementId,
-            LinkLibraryElementController linkController)
-        {
-            Debug.Assert(libraryElementId != null);
-            Debug.Assert(SessionController.Instance.ContentController.GetContent(libraryElementId) != null);
-
-            var inId = linkController?.LinkLibraryElementModel?.InAtomId;
-            var outId = linkController?.LinkLibraryElementModel?.OutAtomId;
-            Debug.Assert(inId != null);
-            Debug.Assert(outId != null);
-
-            string oppositeModelIdToReturn = null;
-
-            if (libraryElementId == inId)
-            {
-                oppositeModelIdToReturn = outId;
-            }
-            else if(libraryElementId == outId)
-            {
-                oppositeModelIdToReturn = inId;
-            }
-            Debug.Assert(oppositeModelIdToReturn != null);
-            var controllerToReturn = SessionController.Instance.ContentController.GetLibraryElementController(oppositeModelIdToReturn);
-            Debug.Assert(controllerToReturn != null);
-            return controllerToReturn;
         }
 
         private void LinkableOnDisposed(object sender, object args)

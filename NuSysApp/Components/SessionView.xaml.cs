@@ -294,7 +294,10 @@ namespace NuSysApp
         /// <param name="em"></param>
         public void Explore(ElementViewModel elementViewModel)
         {
-            if (_modeInstance == null || _modeInstance.Mode != ModeType.EXPLORATION) return;
+            if (_modeInstance == null || _modeInstance.Mode != ModeType.EXPLORATION)
+            {
+                return;
+            }
             var exp = _modeInstance as ExplorationMode;
 
             /*

@@ -46,6 +46,10 @@ namespace NuSysApp
             SetSize(400,500);
             xCollectionElement.AddHandler(PointerPressedEvent, new PointerEventHandler(CollectionBtnAddOnManipulationStarting), true);
             xCollectionElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(CollectionBtnAddOnManipulationCompleted), true);
+
+            xStackElement.AddHandler(PointerPressedEvent, new PointerEventHandler(CollectionBtnAddOnManipulationStarting), true);
+            xStackElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(CollectionBtnAddOnManipulationCompleted), true);
+
             vm.PropertiesToDisplayChanged += Vm_PropertiesToDisplayChanged;
             (vm.Controller as MetadataToolController).SelectionChanged += On_SelectionChanged;
             vm.Controller.NumberOfParentsChanged += Controller_NumberOfParentsChanged;
@@ -189,6 +193,10 @@ namespace NuSysApp
                 {
                     vm.CreateCollection(r.X, r.Y);
                 }
+            }
+            else
+            {
+                (DataContext as ToolViewModel)?.CreateStack(r.X, r.Y);
             }
             ReleasePointerCaptures();
             (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(CollectionBtnAddOnManipulationDelta));

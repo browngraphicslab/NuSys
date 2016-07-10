@@ -104,7 +104,7 @@ namespace NuSysApp
 
         public async void CreateCollection(double x, double y)
         {
-            await Task.Run(async delegate
+            Task.Run(async delegate
             {
                 var collectionID = SessionController.Instance.GenerateId();
                 var request = new CreateNewLibraryElementRequest(collectionID, "", ElementType.Collection,
@@ -144,7 +144,36 @@ namespace NuSysApp
 
             });
         }
+        public async void CreateStack(double x, double y)
+        {
+            Task.Run(async delegate
+            {
+                int i = 0;
+                int offset = 40;
+                foreach (var id in Controller.Model.LibraryIds)
+                {
+                    var lem = SessionController.Instance.ContentController.GetContent(id);
+                    if (lem == null || lem.Type == ElementType.Link || i > 20)//TODO indicate to user than no more than 20 non-link items will be made
+                    {
+                        continue;
+                    }
+                    var dict = new Message();
+                    dict["title"] = lem.Title;
+                    dict["width"] = "300";
+                    dict["height"] = "300";
+                    dict["type"] = lem.Type.ToString();
+                    dict["x"] = x + i*offset;
+                    dict["y"] = y + i*offset;
+                    dict["contentId"] = lem.LibraryElementId;
+                    dict["autoCreate"] = true;
+                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Model.LibraryId;
+                    var elementRequest = new NewElementRequest(dict);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(elementRequest);
+                    i++;
+                }
 
+            });
+        }
         public void OpenDetailView()
         {
             if (Controller.Model.LibraryIds.Count == 1)
