@@ -53,6 +53,9 @@ namespace NuSysApp
 
                 dataContext.SizeChanged += Resize;
 
+
+                xRegionEditorView.DataContext = DataContext;
+
                 var vm = dataContext;
 
                 vm.PropertyChanged += OnPropertyChanged;

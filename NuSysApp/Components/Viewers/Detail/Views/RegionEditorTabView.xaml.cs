@@ -31,6 +31,7 @@ namespace NuSysApp
 
         {
             this.InitializeComponent();
+
             _edgeCaseButtonExited = true;
             Canvas.SetZIndex(xButtonStack, 20);
         }
