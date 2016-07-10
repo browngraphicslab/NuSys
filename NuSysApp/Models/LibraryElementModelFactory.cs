@@ -21,7 +21,13 @@ namespace NuSysApp
             if (SessionController.Instance.ContentController.GetContent(id) == null)
             {
                 var title = message.GetString("title");
-                var metadata = message.GetDict<string, MetadataEntry>("metadata");
+                Dictionary<string, MetadataEntry> metadata = new Dictionary<string, MetadataEntry>();
+                foreach (
+                    var kvp in
+                        message.GetDict<string, MetadataEntry>("metadata") ?? new Dictionary<string, MetadataEntry>())
+                {
+                    metadata.Add(kvp.Key, new MetadataEntry(kvp.Value.Key, new List<string>(new HashSet<string>(kvp.Value.Values)), kvp.Value.Mutability));
+                }
                 var favorited = message.GetBool("favorited");
 
                 Debug.Assert(id != null);

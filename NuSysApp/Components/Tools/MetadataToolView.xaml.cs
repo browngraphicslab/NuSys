@@ -67,7 +67,7 @@ namespace NuSysApp
                 vm.Selection.Item1 != null)
             {
                 xMetadataValuesList.ItemsSource =
-                       vm.AllMetadataDictionary[vm.Selection.Item1];
+                       vm.AllMetadataDictionary[vm.Selection.Item1].OrderBy(key => !string.IsNullOrEmpty(key) && char.IsNumber(key[0])).ThenBy(key => key);
                 xMetadataKeysList.SelectedItem = vm.Selection.Item1;
                 xMetadataKeysList.ScrollIntoView(xMetadataKeysList.SelectedItem);
 

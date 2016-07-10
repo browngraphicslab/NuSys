@@ -405,10 +405,6 @@ namespace NuSysApp
                 {
                     suggestedTags = metaDataDict["system_suggested_names"].Values;
                 }
-                if (metaDataDict.ContainsKey("system_suggested_dates"))
-                {
-                    suggestedTags.AddRange(metaDataDict["system_suggested_dates"].Values);
-                }
                 if (metaDataDict.ContainsKey("system_suggested_topics"))
                 {
                     suggestedTags.AddRange(metaDataDict["system_suggested_topics"].Values);
@@ -417,9 +413,14 @@ namespace NuSysApp
 
                 suggestedTags.AddRange(suggestedTags);//doubles the importance of all system suggested tags added so far
 
+                if (metaDataDict.ContainsKey("system_suggested_dates"))
+                {
+                    suggestedTags.AddRange(metaDataDict["system_suggested_dates"].Values);
+                }
+
                 foreach (var kvp in CurrentElementController.LibraryElementModel.FullMetadata ?? new Dictionary<string, MetadataEntry>())
                 {
-                    suggestedTags.AddRange(kvp.Value.Values);
+                    suggestedTags.AddRange(new HashSet<string>(kvp.Value.Values));
                 }
                 var linksController = SessionController.Instance.LinksController;
                 foreach (var linkId in linksController.GetLinkedIds(CurrentElementController?.ContentId))
