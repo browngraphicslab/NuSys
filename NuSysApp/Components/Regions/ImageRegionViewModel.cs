@@ -155,10 +155,10 @@ namespace NuSysApp
             Width = model.Width * width;
             ContainerHeight = height;
             ContainerWidth = width;
-            topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
+            //topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
 
             SizeChanged?.Invoke(this, Width, Height);
-            LocationChanged?.Invoke(this, topLeft);
+            //LocationChanged?.Invoke(this, topLeft);
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
             RaisePropertyChanged("ContainerHeight");
