@@ -51,7 +51,11 @@ namespace NuSysApp
 
             }
 
-
+        public void RefreshRegions()
+        {
+            var vm = DataContext as ImageDetailHomeTabViewModel;
+            vm.SetExistingRegions();
+        }
         public double GetImgHeight()
         {
             //return ActualHeight;
@@ -63,8 +67,8 @@ namespace NuSysApp
         // TODO: Very hacky, change later so that the width binds instead of xaml stretching
         public double GetImgWidth()
         {
-            double actualWidth = xImg.ActualWidth;
-            return actualWidth;
+            return xImg.ActualWidth;
+            //return actualWidth;
             //if (actualWidth.Equals(0))
             //{
             //    return _nonZeroPrevActualWidth;

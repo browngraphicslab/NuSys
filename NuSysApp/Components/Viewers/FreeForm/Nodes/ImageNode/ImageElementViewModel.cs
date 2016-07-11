@@ -82,14 +82,7 @@ namespace NuSysApp
         }
         public void SizeChanged(object sender, double width, double height)
         {
-            var newHeight = View.GetHeight();
-            var newWidth = View.GetWidth();
 
-            foreach (var rv in Regions)
-            {
-                var regionViewViewModel = rv.DataContext as RegionViewModel;
-                regionViewViewModel?.ChangeSize(sender, newWidth, newHeight);
-            }
         }
 
         private void LibraryElementControllerOnRegionAdded(object source, RegionController regionController)
@@ -181,6 +174,15 @@ namespace NuSysApp
             }
 
             SetSize(width,height);
+
+            var newHeight = View.GetHeight();
+            var newWidth = View.GetWidth();
+
+            foreach (var rv in Regions)
+            {
+                var regionViewViewModel = rv.DataContext as RegionViewModel;
+                regionViewViewModel?.ChangeSize(this, width, height);
+            }
 
         }
 
