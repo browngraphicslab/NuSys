@@ -151,7 +151,10 @@ namespace NuSysApp
                 }
 
             }
-            
+            await
+                SessionController.Instance.NuSysNetworkSession.GetRegionMapping(
+                    SessionController.Instance.ActiveFreeFormViewer.ContentId);
+
         }
 
 

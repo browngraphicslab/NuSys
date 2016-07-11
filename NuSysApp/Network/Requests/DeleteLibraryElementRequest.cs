@@ -31,6 +31,28 @@ namespace NuSysApp
             {
                 throw new Exception("Library Element Delete requests must contains a library 'id' to delete");
             }
+            var id = _message.GetString("id");
+            await UITask.Run(async delegate
+            {
+                var linkModels =
+                    SessionController.Instance.ContentController.ContentValues.Where(
+                        item => item is LinkLibraryElementModel);
+                foreach (var linkModel in new HashSet<LinkLibraryElementModel>(linkModels.Select(item => item as LinkLibraryElementModel)))
+                {
+                    if (linkModel == null)
+                    {
+                        continue;
+                    }
+                    if (linkModel.InAtomId == id || linkModel.OutAtomId == id)
+                    {
+                        await Task.Run(async delegate
+                        {
+                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                                new DeleteLibraryElementRequest(linkModel.LibraryElementId));
+                        });
+                    }
+                }
+            });
             return true;
         }
         public override async Task ExecuteRequestFunction()
