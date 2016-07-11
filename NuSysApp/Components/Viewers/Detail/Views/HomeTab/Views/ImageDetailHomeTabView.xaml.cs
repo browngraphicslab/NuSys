@@ -51,7 +51,11 @@ namespace NuSysApp
 
             }
 
-
+        public void RefreshRegions()
+        {
+            var vm = DataContext as ImageDetailHomeTabViewModel;
+            vm.SetExistingRegions();
+        }
         public double GetImgHeight()
         {
             //return ActualHeight;

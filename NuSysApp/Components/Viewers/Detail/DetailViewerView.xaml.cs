@@ -496,7 +496,7 @@ namespace NuSysApp
             vm.ChangeControllersTitle(title);
         }
 
-        private void XRootPivot_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void XRootPivot_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var vm = (DetailViewerViewModel)DataContext;
 
@@ -505,15 +505,22 @@ namespace NuSysApp
             //Resizer_OnManipulationDelta(this, );
             //Resize(this, Canvas.GetLeft(this), Width + 50, Height);
 
+
+            //For a hacky fix to the detail viewer region bug, uncomment the following commented out lines of code.
+
             var listView = sender as Pivot;
-            (DataContext as DetailViewerViewModel)?.ChangeSize(this, Canvas.GetLeft(this) + this.Width, Width, Height);
             var index = listView?.SelectedIndex;
+
+                        
             if (vm.TabDictionary.ContainsKey(_currentDetailViewable.TabId()))
             {
                 switch (index.Value)
                 {
                     case 0:
                         vm.TabDictionary[_currentDetailViewable.TabId()] = DetailViewTabType.Home;
+                        await Task.Delay(200);
+                        var home = vm.View.DataContext as DetailHomeTabViewModel;
+                        home.SetExistingRegions();
                         break;
                     case 1:
                         vm.TabDictionary[_currentDetailViewable.TabId()] = DetailViewTabType.Metadata;
@@ -523,6 +530,9 @@ namespace NuSysApp
                         break;
                     case 3:
                         vm.TabDictionary[_currentDetailViewable.TabId()] = DetailViewTabType.Regions;
+                        await Task.Delay(200);
+                        var region = vm.RegionView.DataContext as DetailHomeTabViewModel;
+                        region.SetExistingRegions();
                         break;
 
                 }
@@ -534,6 +544,9 @@ namespace NuSysApp
                 {
                     case 0:
                         vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Home);
+                        await Task.Delay(200);
+                        var home = vm.View.DataContext as DetailHomeTabViewModel;
+                        home.SetExistingRegions();
                         break;
                     case 1:
                         vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Metadata);
@@ -543,9 +556,13 @@ namespace NuSysApp
                         break;
                     case 3:
                         vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Regions);
+                        await Task.Delay(200);
+                        var region = vm.RegionView.DataContext as DetailHomeTabViewModel;
+                        region.SetExistingRegions();
                         break;
                 }
             }
+
 
         }
     }
