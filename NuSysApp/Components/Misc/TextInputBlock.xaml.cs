@@ -340,7 +340,7 @@ namespace NuSysApp
             {
                 InkBubble.Visibility = Visibility.Visible;
                 SetUpInking();
-                SetImage("ms-appx:///Assets/icon_metadata_x", InkImg);
+                SetImage("ms-appx:///Assets/icon_metadata_x.png", InkImg);
                 // FlipOpen.Begin();
             }
             else
