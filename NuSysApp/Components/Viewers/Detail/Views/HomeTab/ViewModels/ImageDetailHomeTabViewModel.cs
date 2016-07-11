@@ -82,16 +82,21 @@ namespace NuSysApp
 
         public override void SizeChanged(object sender, double width, double height)
         {
-            var newHeight = this.GetHeight();
-            var newWidth = this.GetWidth();
+           
+            if (!Editable)
+            {
+                Debug.WriteLine("The detail view size is: " + width);
+                Debug.WriteLine("Image Width: " + this.GetWidth());
 
-            //Debug.WriteLine("Width: " + (View as ImageDetailHomeTabView).GetImgWidth());
+            }
 
+            
             foreach (var rv in RegionViews)
             {
-                var regionViewViewModel = rv.DataContext as RegionViewModel;
-                regionViewViewModel?.ChangeSize(sender, newWidth, newHeight);
+                var regionViewViewModel = rv.DataContext as ImageRegionViewModel;
+                regionViewViewModel?.ChangeSize(sender, this.GetWidth(), this.GetHeight());
             }
+            
         }
         public double GetHeight()
         {

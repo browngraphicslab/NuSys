@@ -142,36 +142,6 @@ namespace NuSysApp
             SizeChanged?.Invoke(this, Width, Height);
 
         }
-        
-
-        //NO LONGER USED
-        /*
-        private void Controller_RegionUpdated(object source, Region region)
-        {
-            if (region.Id != Model.Id)
-            {
-                return;
-            }
-            var model = Model as RectangleRegion;
-            if (model == null)
-            {
-                return;
-            }
-            Height = model.BottomRightPoint.Y * ContainerViewModel.GetHeight() - model.TopLeftPoint.Y * ContainerViewModel.GetHeight();
-            Width = model.BottomRightPoint.X * ContainerViewModel.GetWidth() - model.TopLeftPoint.X * ContainerViewModel.GetWidth();
-
-
-            RegionChanged?.Invoke(this, Height, Width);
-            var topLeft = new Point(model.TopLeftPoint.X * ContainerViewModel.GetWidth(), model.TopLeftPoint.Y * ContainerViewModel.GetHeight());
-            var bottomRight = new Point(model.BottomRightPoint.X * ContainerViewModel.GetWidth(), model.BottomRightPoint.Y * ContainerViewModel.GetHeight());
-            SizeChanged?.Invoke(this, topLeft, bottomRight);
-
-
-            //RaisePropertyChanged("Height");
-            //RaisePropertyChanged("Width");
-
-        }
-        */
 
         private void resetRegions()
         {
@@ -190,41 +160,18 @@ namespace NuSysApp
 
             Point topLeft;
 
-            if (ContainerViewModel is ImageDetailHomeTabViewModel)
-            {
-                Debug.WriteLine("Detail view: Base Size Changed getting called with widht: " + width);
-                //var detailVM = ContainerViewModel as ImageDetailHomeTabViewModel;
-                //var diff = detailVM.GetViewWidth() - detailVM.GetWidth();
+            //Width and height passed in are the width and height of image itself.
+            Height = model.Height * height;
+            Width = model.Width * width;
 
-                Height = model.Height * height;
-                Width = model.Width * width;
-                ContainerHeight = height;
-                ContainerWidth = width;
-                topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
+            topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
 
-                //ContainerHeight = detailVM.GetHeight();
-                //ContainerWidth = detailVM.GetWidth();
-
-                //Height = model.Height * ContainerHeight;
-                //Width = model.Width * ContainerWidth;
-            }
-            else {
-                Debug.WriteLine("Normal view: Base Size Changed getting called with widht: " + width);
-                Height = model.Height * height;
-                Width = model.Width * width;
-                ContainerHeight = height;
-                ContainerWidth = width;
-                topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
-            }
-            
-            //TODO: HOOK THIS UP
-            //SizeChanged?.Invoke(this, Width, Height); //don't need this???
-
+            SizeChanged?.Invoke(this, Width, Height);
             LocationChanged?.Invoke(this, topLeft);
+
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
-            //RaisePropertyChanged("ContainerHeight");
-            //RaisePropertyChanged("ContainerWidth");
+
         }
 
         public void SetNewLocation(Point topLeft)
