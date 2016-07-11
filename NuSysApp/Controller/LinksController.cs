@@ -225,7 +225,7 @@ namespace NuSysApp
             {
                 return;
             }
-
+            m["title"] = m["title"] ?? "Unnamed Link";
             var contentId = SessionController.Instance.GenerateId();
             m["contentId"] = contentId;
             var request = new NewLinkRequest(m);

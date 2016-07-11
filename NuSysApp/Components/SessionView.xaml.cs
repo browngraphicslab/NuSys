@@ -271,7 +271,7 @@ namespace NuSysApp
             _modeInstance = new ExplorationMode(em);
 
             /* uncomment this and go into exploration mode for a good time :)
-            var myCanvasPic = new ImageBrush() {ImageSource = new BitmapImage(new Uri("ms-appx:///Assets/tedCruzCanvasBackdrop.jpg"))};
+            var myCanvasPic = new ImageBrush() {ImageSource = new BitmapImage(new Uri("ms-appx:///Assets/mapOfParis.jpg"))};
             FreeFormViewer.CanvasColor = myCanvasPic;
             */
 

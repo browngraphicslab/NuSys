@@ -34,13 +34,14 @@ namespace NuSysApp
             };
 
             //    Annotation.Text = vm.Annotation;
-            Title.TextChanged += TitleOnTextChanged;
+
  
             Canvas.SetZIndex(this, -2);//temporary fix to make sure events are propagated to nodes
 
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
                 UpdateControlPoints();
+                Title.TextChanged += TitleOnTextChanged;
             };
 
         }
@@ -161,6 +162,24 @@ namespace NuSysApp
             var linkController = SessionController.Instance.LinksController.GetLinkLibraryElementControllerFromLibraryElementId(vm?.Controller.ContentId);
             Debug.Assert(linkController != null);
             SessionController.Instance.SessionView.ShowDetailView(linkController);
+        }
+
+        private void Title_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var tb = sender as TextBox;
+            Debug.Assert(tb != null);
+            tb.IsReadOnly = false;
+        }
+
+        private void Title_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
+                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
+            {
+                var tb = sender as TextBox;
+                Debug.Assert(tb != null);
+                tb.IsReadOnly = true;
+            }
         }
     }
 }

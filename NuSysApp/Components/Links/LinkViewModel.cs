@@ -51,10 +51,12 @@ namespace NuSysApp
             _controller = controller;
 
             Debug.Assert(controller.LibraryElementController != null);
+
             controller.TitleChanged += TitleChanged;
+            Title = controller.Title;
 
             controller.AnchorChanged += ChangeAnchor;
-            Title = controller.Title;
+
             RaisePropertyChanged("Anchor");
         }
 
