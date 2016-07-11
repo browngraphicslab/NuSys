@@ -100,7 +100,7 @@
             <!--<TextBox x:Name="linkTo" PlaceholderText="linked to..." HorizontalAlignment="Stretch" ></TextBox>-->
         </Grid>
         <Grid Padding="20,0,20,10" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top">
-            <TextBox x:Name="tags" PlaceholderText="tags - separate with commas"  HorizontalAlignment="Stretch"></TextBox>
+            <TextBox x:Name="Tags" PlaceholderText="tags - separate with commas"  HorizontalAlignment="Stretch"></TextBox>
         </Grid>
         <Grid VerticalAlignment="Top" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
             <Button x:Name="createLinkButton" Content="create link" Tapped="CreateLinkButton_OnTapped"  HorizontalAlignment="Center" IsEnabled="False"></Button>

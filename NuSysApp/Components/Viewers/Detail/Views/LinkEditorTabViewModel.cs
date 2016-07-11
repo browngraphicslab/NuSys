@@ -35,8 +35,6 @@ namespace NuSysApp
             }
             SessionController.Instance.ContentController.OnNewContent += ContentController_OnNewContent;
             SessionController.Instance.ContentController.OnElementDelete += ContentController_OnElementDelete;
-            //SessionController.Instance.LinksController.OnLinkRemoved += LinkController_OnLinkRemoved;
-            //SessionController.Instance.LinksController.OnNewLink += LinkController_OnNewLink;
         }
 
         private void ContentController_OnElementDelete(LibraryElementModel element)
@@ -64,9 +62,6 @@ namespace NuSysApp
 
         internal void DeleteLink(string id)
         {
-            //SessionController.Instance.ActiveFreeFormViewer.AllContent.First().Controller.RequestDeleteVisualLink(id);
-            //SessionController.Instance.LinksController.RemoveLink(id);
-
             _linkTabable.RequestRemoveLink(id);
 
             //Task.Run(async delegate
@@ -156,7 +151,15 @@ namespace NuSysApp
             }
             var template = new LinkTemplate(controller, _linkTabable.ContentId);
             UITask.Run(delegate {
-                LinkTemplates.Add(template);
+            foreach (var existingTemplate in LinkTemplates)
+            {
+                if (existingTemplate.ID == template.ID)
+                {
+                    return;
+                }
+            }
+
+            LinkTemplates.Add(template);
             });
         }
 
@@ -177,7 +180,7 @@ namespace NuSysApp
 
         }
 
-        public async void CreateLink(string idToLinkTo, string title)
+        public async void CreateLink(string idToLinkTo, string title, HashSet<Keyword> keywords = null)
         {
             if (_linkTabable == null)
             {
@@ -188,6 +191,10 @@ namespace NuSysApp
             var newLinkController = SessionController.Instance.LinksController.GetLinkLibraryElementControllerBetweenContent(
                 _linkTabable.ContentId, idToLinkTo);
             var template = new LinkTemplate(newLinkController, _linkTabable.ContentId);
+            if (keywords != null)
+            {
+                newLinkController.SetKeywords(keywords);
+            }
             LinkTemplates.Add(template);
             //var linkId = SessionController.Instance.LinksController.GetLinkIdBetween(_linkTabable.ContentId, idToLinkTo);
             //var linkController = SessionController.Instance.ContentController.GetLibraryElementController(linkId) as LinkLibraryElementController;
