@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
+
+    // Factories are awesome 
     public class RegionControllerFactory
     {
         public RegionController CreateFromSendable(Region regionModel, string contentId)

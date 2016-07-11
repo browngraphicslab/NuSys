@@ -151,7 +151,8 @@ namespace NuSysApp
                 }
 
             }
-            
+
+            // await SessionController.Instance.RegionsController.Load();
         }
 
 

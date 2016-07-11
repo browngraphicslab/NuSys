@@ -22,6 +22,8 @@ namespace NuSysApp
             LinkTemplates = new ObservableCollection<LinkTemplate>();
             LibraryElements = new ObservableCollection<LibraryItemTemplate>();
 
+
+            // populates 
             var idList = SessionController.Instance.ContentController.IdList;
             foreach (var id in idList)
             {

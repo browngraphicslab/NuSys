@@ -24,6 +24,17 @@ namespace NuSysApp
             get { return SessionController.Instance.RegionsController.GetLibraryElementModelId(Model.Id); }
         }
 
+        /// <summary>
+        /// Gets the library element model of the parent of the region
+        /// </summary>
+        public LibraryElementModel LibraryElementModel
+        {
+            get
+            {
+                return SessionController.Instance.ContentController.GetLibraryElementController(ContentId)?.LibraryElementModel;
+            }
+        }
+
 
         public delegate void TitleChangedEventHandler(object source, string title);
         public event TitleChangedEventHandler TitleChanged;
@@ -227,5 +238,130 @@ namespace NuSysApp
         }
         #endregion
 
+        public Uri LargeIconUri
+        {
+            get
+            {
+                if (LibraryElementModel.LargeIconUrl != null)
+                {
+                    return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LargeIconUrl);
+                }
+                switch (LibraryElementModel.Type)
+                {
+                    case ElementType.Image:
+                    case ElementType.Video:
+                        return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_large.jpg");
+                        break;
+                    case ElementType.PDF:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
+                        break;
+                    case ElementType.Audio:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
+                        break;
+                    case ElementType.Text:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/text.png");
+                        break;
+                    case ElementType.Collection:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/collection_1.png");
+                        break;
+                    case ElementType.Word:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/word.png");
+                        break;
+                    case ElementType.Link:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/link.png");
+                        break;
+                    default:
+                        return new Uri("ms-appx:///Assets/icon_chat.png");
+                }
+            }
+        }
+        public Uri MediumIconUri
+        {
+            get
+            {
+                if (LibraryElementModel.MediumIconUrl != null)
+                {
+                    return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.MediumIconUrl);
+                }
+                switch (LibraryElementModel.Type)
+                {
+                    case ElementType.Image:
+                    case ElementType.Video:
+                        return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_medium.jpg");
+                        break;
+                    case ElementType.PDF:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
+                        break;
+                    case ElementType.Audio:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
+                        break;
+                    case ElementType.Text:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/text.png");
+                        break;
+                    case ElementType.Collection:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/collection_1.png");
+                        break;
+                    case ElementType.Word:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/word.png");
+                        break;
+                    case ElementType.Link:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/link.png");
+                        break;
+                    default:
+                        return new Uri("ms-appx:///Assets/icon_chat.png");
+                }
+            }
+        }
+
+        public virtual void UnPack(Message message)
+        {
+            if (message.ContainsKey("metadata"))
+            {
+                var metadata = message.GetDict<string, MetadataEntry>("metadata");
+                if (metadata != null)
+                {
+                    ChangeMetadata(metadata);
+                }
+            }
+        }
+
+        public Uri SmallIconUri
+        {
+            get
+            {
+                if (LibraryElementModel.SmallIconUrl != null)
+                {
+                    return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.SmallIconUrl);
+                }
+                switch (LibraryElementModel.Type)
+                {
+                    case ElementType.Image:
+                    case ElementType.Video:
+                        return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_small.jpg");
+                        break;
+                    case ElementType.PDF:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
+                        break;
+                    case ElementType.Audio:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
+                        break;
+                    case ElementType.Text:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/text.png");
+                        break;
+                    case ElementType.Collection:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/collection_1.png");
+                        break;
+                    case ElementType.Word:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/word.png");
+                        break;
+                    case ElementType.Link:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/link.png");
+                        break;
+                    default:
+                        return new Uri("ms-appx:///Assets/icon_chat.png");
+                        break;
+                }
+            }
+        }
     }
 }

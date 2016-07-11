@@ -31,8 +31,18 @@ namespace NuSysApp
             controller.TitleChanged += Controller_TitleChanged;
             ThumbnailUri = controller.SmallIconUri;
             Timestamp = controller.LibraryElementModel.Timestamp.Substring(0, controller.LibraryElementModel.Timestamp.Length - 3);
-             Type = controller.LibraryElementModel.Type.ToString();
+            Type = controller.LibraryElementModel.Type.ToString();
             ContentID = controller.LibraryElementModel.LibraryElementId;
+        }
+
+        public LibraryItemTemplate(RegionController controller)
+        {
+            Title = controller.Title;
+            controller.TitleChanged += Controller_TitleChanged;
+            ThumbnailUri = controller.SmallIconUri;
+            Timestamp = controller.LibraryElementModel.Timestamp.Substring(0, controller.LibraryElementModel.Timestamp.Length - 3);
+            Type = controller.LibraryElementModel.Type.ToString();
+            ContentID = controller.ContentId;
         }
 
         private void Controller_TitleChanged(object sender, string title)

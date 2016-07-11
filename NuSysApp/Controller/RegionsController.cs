@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class RegionsController
+    public class RegionsController 
     {
         private ConcurrentDictionary<string, RegionController> _regionControllers = new ConcurrentDictionary<string, RegionController>();
 
@@ -78,5 +78,13 @@ namespace NuSysApp
             }
             return null;
         }
+
+        public async Task Load()
+        {
+        
+            _regionLibraryElementModels =  new ConcurrentDictionary<string, string>(await SessionController.Instance.NuSysNetworkSession.GetRegionMapping(
+                    SessionController.Instance.ActiveFreeFormViewer.ContentId));
+        }
+
     }
 }
