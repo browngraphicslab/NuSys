@@ -178,18 +178,18 @@ namespace NuSysApp
 
         private void ControllerOnDisposed(object source, object args)
         {
-            _nodeManipulationMode.Deactivate();
-            _createGroupMode.Deactivate();
-            _duplicateMode.Deactivate();
-            _panZoomMode.Deactivate();
-            _gestureMode.Deactivate();
-            _selectMode.Deactivate();
-            _floatingMenuMode.Deactivate();
+            _nodeManipulationMode?.Deactivate();
+            _createGroupMode?.Deactivate();
+            _duplicateMode?.Deactivate();
+            _panZoomMode?.Deactivate();
+            _gestureMode?.Deactivate();
+            _selectMode?.Deactivate();
+            _floatingMenuMode?.Deactivate();
 
-            _tagMode.Deactivate();
-            _linkMode.Deactivate();
-            _mainMode.Deactivate();
-            _simpleEditMode.Deactivate();
+            _tagMode?.Deactivate();
+            _linkMode?.Deactivate();
+            _mainMode?.Deactivate();
+            _simpleEditMode?.Deactivate();
  
         
 
