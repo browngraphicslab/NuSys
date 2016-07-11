@@ -83,6 +83,48 @@ namespace NuSysApp
                 return;
             await vm.FlipRight();
         }
+
+        /// <summary>
+        /// when the word capture button is pressed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void OnCapture(object sender, RoutedEventArgs e)
+        {
+            var vm = (WordDetailHomeTabViewModel)this.DataContext;
+            if (vm == null)
+            {
+                return;
+            }
+
+            Task.Run(async delegate
+            {
+                var m = new Message();
+
+                // Get text from the pdf
+                var myDoc = await MediaUtil.DataToPDF(vm.Controller.LibraryElementModel.Data);
+                string pdf_text = "";
+                int numPages = myDoc.PageCount;
+                int currPage = 0;
+                while (currPage < numPages)
+                {
+                    pdf_text = pdf_text + myDoc.GetAllTexts(currPage);
+                    currPage++;
+                }
+
+                m["id"] = SessionController.Instance.GenerateId();
+                m["data"] = vm.Controller.LibraryElementModel.Data;
+                if (!string.IsNullOrEmpty(pdf_text))
+                {
+                    m["pdf_text"] = pdf_text;
+                }
+                m["type"] = ElementType.PDF.ToString();
+                m["title"] = vm.Controller.LibraryElementModel.Title + " CAPTURED "+DateTime.Now.ToString();
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(m));
+            });
+        }
+
+
         /// <summary>
         /// When the source button is clicked, open the word plugin
         /// </summary>

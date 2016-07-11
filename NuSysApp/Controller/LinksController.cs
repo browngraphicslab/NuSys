@@ -476,10 +476,13 @@ namespace NuSysApp
 
             Debug.Assert(outLinkable != null);
             Debug.Assert(outLinkable.ContentId != null);
-            Debug.Assert(_contentIdToLinkableIds.ContainsKey(outLinkable.ContentId));
-            Debug.Assert(_contentIdToLinkableIds[outLinkable.ContentId].Contains(linkableId));
 
-            _contentIdToLinkableIds[outLinkable.ContentId].Remove(linkableId);
+            if (_contentIdToLinkableIds.ContainsKey(outLinkable.ContentId) &&
+                _contentIdToLinkableIds[outLinkable.ContentId].Contains(linkableId))
+            {
+
+                _contentIdToLinkableIds[outLinkable.ContentId].Remove(linkableId);
+            }
 
             HashSet<string> outObj;
             _linkableIdToLinkIds.TryRemove(linkableId, out outObj);

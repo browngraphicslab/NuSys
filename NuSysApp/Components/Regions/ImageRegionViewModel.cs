@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -128,6 +129,8 @@ namespace NuSysApp
         
         private void RegionController_SizeChanged(object sender, double width, double height)
         {
+            
+
             var model = Model as RectangleRegion;
             if (model == null)
             {
@@ -140,29 +143,65 @@ namespace NuSysApp
 
         }
         
-        private void BaseSizeChanged(object sender, double width, double height)
-        {
 
+        //NO LONGER USED
+        /*
+        private void Controller_RegionUpdated(object source, Region region)
+        {
+            if (region.Id != Model.Id)
+            {
+                return;
+            }
             var model = Model as RectangleRegion;
             if (model == null)
             {
                 return;
             }
+            Height = model.BottomRightPoint.Y * ContainerViewModel.GetHeight() - model.TopLeftPoint.Y * ContainerViewModel.GetHeight();
+            Width = model.BottomRightPoint.X * ContainerViewModel.GetWidth() - model.TopLeftPoint.X * ContainerViewModel.GetWidth();
+
+
+            RegionChanged?.Invoke(this, Height, Width);
+            var topLeft = new Point(model.TopLeftPoint.X * ContainerViewModel.GetWidth(), model.TopLeftPoint.Y * ContainerViewModel.GetHeight());
+            var bottomRight = new Point(model.BottomRightPoint.X * ContainerViewModel.GetWidth(), model.BottomRightPoint.Y * ContainerViewModel.GetHeight());
+            SizeChanged?.Invoke(this, topLeft, bottomRight);
+
+
+            //RaisePropertyChanged("Height");
+            //RaisePropertyChanged("Width");
+
+        }
+        */
+
+        private void resetRegions()
+        {
+            var model = Model as RectangleRegion;
+            LocationChanged?.Invoke(this, new Point(model.TopLeftPoint.X, model.TopLeftPoint.Y));
+        }
+
+        private void BaseSizeChanged(object sender, double width, double height)
+        {
+            
+            var model = Model as RectangleRegion;
+            if (model == null)
+            {
+                return;
+            }
+
             Point topLeft;
 
             //Width and height passed in are the width and height of image itself.
             Height = model.Height * height;
             Width = model.Width * width;
-            ContainerHeight = height;
-            ContainerWidth = width;
-            //topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
+
+            topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
 
             SizeChanged?.Invoke(this, Width, Height);
-            //LocationChanged?.Invoke(this, topLeft);
+            LocationChanged?.Invoke(this, topLeft);
+
             RaisePropertyChanged("Height");
             RaisePropertyChanged("Width");
-            RaisePropertyChanged("ContainerHeight");
-            RaisePropertyChanged("ContainerWidth");
+
         }
 
         public void SetNewLocation(Point topLeft)

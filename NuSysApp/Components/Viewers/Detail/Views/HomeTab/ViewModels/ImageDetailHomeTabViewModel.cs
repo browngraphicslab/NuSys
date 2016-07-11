@@ -82,13 +82,19 @@ namespace NuSysApp
 
         public override void SizeChanged(object sender, double width, double height)
         {
-            Debug.WriteLine("Size Changed Called");
+            /*
+            if (Editable)
+            {
+                Debug.WriteLine("The detail view size is: " + width);
+                Debug.WriteLine("Image Width: " + this.GetWidth());
 
+            }*/
             foreach (var rv in RegionViews)
             {
                 var regionViewViewModel = rv.DataContext as ImageRegionViewModel;
                 regionViewViewModel?.ChangeSize(sender, this.GetWidth(), this.GetHeight());
             }
+            
         }
         public double GetHeight()
         {

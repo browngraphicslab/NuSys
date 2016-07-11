@@ -39,16 +39,16 @@
             <Grid>
                 <Grid>
                     <Image x:Name="xRenderedPdf"  Margin="3,3,3,3" Source="{Binding ImageSource}" Stretch="Uniform" Height="{Binding Height}" Width="{Binding Width}"/>
-                    <Canvas x:Name="Canvas" VerticalAlignment ="Top" HorizontalAlignment="Left" ManipulationMode="None" >
-                        <ItemsControl x:Name="IC"  ItemsSource="{Binding RegionViews}" ManipulationMode="None">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <Canvas/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                        </ItemsControl>
-                    </Canvas>
                 </Grid>
+                <Canvas x:Name="Canvas" VerticalAlignment ="Top" HorizontalAlignment="Left" ManipulationMode="None" >
+                    <ItemsControl x:Name="IC"  ItemsSource="{Binding RegionViews}" ManipulationMode="None">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </Canvas>
                 <Button x:Name="pageLeft" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}" Height ="50" Width="50" VerticalAlignment="Top" Background=" Transparent" HorizontalAlignment="Left" Tapped="OnPageLeftClick" DoubleTapped="PageRight_OnDoubleTapped">
                     <Button.RenderTransform>
                         <TranslateTransform X="-45"  Y="-45" />
