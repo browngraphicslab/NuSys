@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
@@ -63,7 +64,7 @@ namespace NuSysApp
             
         }
 
-        public void SetViewSelection(List<string> selection)
+        public void SetViewSelection(HashSet<string> selection)
         {
             var transparent = new SolidColorBrush(Colors.Transparent);
             if (selection == null)
@@ -72,20 +73,19 @@ namespace NuSysApp
                 {
                     item.Background = transparent;
                 }
-                xPieSeries.SelectedItem = null;
+                //xPieSeries.SelectedItem = null;
                 return;
             }
             foreach (KeyValuePair<string, int> item in xPieSeries.ItemsSource)
             {
-                if (item.Key != null && item.Key.Equals(selection))
-                {
-                    xPieSeries.SelectedItem = item;
-                    break;
-                }
+                //if (item.Key != null && selection.Contains(item.Key))
+                //{
+                //    xPieSeries.SelectedItem = item;
+                //}
             }
             foreach (LegendItem item in xPieChart.LegendItems)
             {
-                if (item.Content.Equals(selection))
+                if (selection.Contains(item.Content))
                 {
                     item.Background = new SolidColorBrush(Colors.LightBlue);
                 }
@@ -140,7 +140,15 @@ namespace NuSysApp
                 return;
             }
             var selected = (KeyValuePair<string, int>)(sender as FrameworkElement).DataContext;
-            _baseTool.Vm.Selection = new List<string>() {selected.Key};
+            if (e.PointerDeviceType == PointerDeviceType.Pen)
+            {
+                _baseTool.Vm.Selection.Add(selected.Key);
+                _baseTool.Vm.Selection = _baseTool.Vm.Selection;
+            }
+            else
+            {
+                _baseTool.Vm.Selection = new HashSet<string>() { selected.Key};
+            }
             _baseTool.Vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
 
 
@@ -154,13 +162,38 @@ namespace NuSysApp
         private void Slice_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             var selected = (KeyValuePair<string, int>)(sender as FrameworkElement).DataContext;
-            if (_baseTool.Vm.Selection != null && _baseTool.Vm.Controller.Model.Selected && _baseTool.Vm.Selection.Equals(selected.Key))
+            if (_baseTool.Vm.Selection != null && _baseTool.Vm.Controller.Model.Selected && _baseTool.Vm.Selection.Contains(selected.Key))
             {
-                _baseTool.Vm.Controller.UnSelect();
+                if (e.PointerDeviceType == PointerDeviceType.Pen)
+                {
+                    _baseTool.Vm.Selection.Remove(selected.Key);
+                    _baseTool.Vm.Selection = _baseTool.Vm.Selection;
+                }
+                else
+                {
+                    _baseTool.Vm.Selection.Clear();
+                    _baseTool.Vm.Controller.UnSelect();
+
+                }
             }
             else
             {
-                _baseTool.Vm.Selection = new List<string>() { selected.Key};
+                if (e.PointerDeviceType == PointerDeviceType.Pen)
+                {
+                    if (_baseTool.Vm.Selection != null)
+                    {
+                        _baseTool.Vm.Selection.Add(selected.Key);
+                        _baseTool.Vm.Selection = _baseTool.Vm.Selection;
+                    }
+                    else
+                    {
+                        _baseTool.Vm.Selection = new HashSet<string> { selected.Key };
+                    }
+                }
+                else
+                {
+                    _baseTool.Vm.Selection = new HashSet<string> { selected.Key };
+                }
             }
         }
 
@@ -169,7 +202,7 @@ namespace NuSysApp
             var selected = (KeyValuePair<string, int>)(sender as FrameworkElement).DataContext;
             if (!_baseTool.Vm.Selection.Contains(selected.Key) || _baseTool.Vm.Controller.Model.Selected == false)
             {
-                _baseTool.Vm.Selection = new List<string>() { selected.Key};
+                _baseTool.Vm.Selection = new HashSet<string>() { selected.Key};
             }
             _baseTool.Vm.OpenDetailView();
         }

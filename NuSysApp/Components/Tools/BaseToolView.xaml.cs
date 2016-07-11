@@ -53,13 +53,10 @@ namespace NuSysApp
 
             xStackElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             xStackElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
-            //xParentOperatorPickerList.ItemsSource = vm.ParentOperatorList;
         }
 
         private void Controller_NumberOfParentsChanged(int numOfParents)
         {
-            //xParentOperatorPickerList.Visibility = Visibility.Visible;
-            //xViewTypeGrid.Visibility = Visibility.Collapsed;
             if (numOfParents > 1)
             {
                 xParentOperatorGrid.Visibility = Visibility.Visible;
@@ -69,18 +66,7 @@ namespace NuSysApp
                 xParentOperatorGrid.Visibility = Visibility.Collapsed;
             }
         }
-
-        //private void XParentOperatorPickerList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    if (xParentOperatorPickerList.SelectedItem != null)
-        //    {
-        //        Assert.IsTrue(xParentOperatorPickerList.SelectedItem is ToolModel.ParentOperatorType);
-        //        Vm.Controller.SetParentOperator(xParentOperatorPickerList.SelectedItem is ToolModel.ParentOperatorType ? (ToolModel.ParentOperatorType) xParentOperatorPickerList.SelectedItem : ToolModel.ParentOperatorType.And);
-        //        xParentOperatorPickerList.Visibility = Visibility.Collapsed;
-        //        xViewTypeGrid.Visibility = Visibility.Visible;
-        //    }
-        //}
-
+        
         public void Dispose()
         {
             (DataContext as BasicToolViewModel).PropertiesToDisplayChanged -= Vm_PropertiesToDisplayChanged;
@@ -170,7 +156,7 @@ namespace NuSysApp
             }
             else
             {
-                _toolView.SetViewSelection(null);
+                _toolView.SetViewSelection(new HashSet<string>());
             }
         }
 

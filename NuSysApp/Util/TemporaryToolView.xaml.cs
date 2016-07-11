@@ -79,16 +79,16 @@ namespace NuSysApp
 
         }
 
-        public void SetViewSelection(List<string> selections)
+        public void SetViewSelection(HashSet<string> selections)
         {
             xPropertiesList.SelectedItems.Clear();
             foreach (var selection in selections)
             {
                 xPropertiesList.SelectedItems.Add(selection);
             }
-            if (selections != null && selections.Count  > 0)
+            if (selections != null && selections.Count > 0)
             {
-                xPropertiesList.ScrollIntoView(xPropertiesList.SelectedItem);
+                xPropertiesList.ScrollIntoView(xPropertiesList.SelectedItems.Last());
             }
         }
         
@@ -103,9 +103,17 @@ namespace NuSysApp
 
         private void xListItem_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            if (_baseTool.Vm.Selection != null && _baseTool.Vm.Controller.Model.Selected && _baseTool.Vm.Selection.Equals(((sender as Grid).Children[0] as TextBlock).Text))
+            if (_baseTool.Vm.Selection != null && _baseTool.Vm.Controller.Model.Selected && _baseTool.Vm.Selection.Contains(((sender as Grid).Children[0] as TextBlock).Text))
             {
-                _baseTool.Vm.Controller.UnSelect();
+                if (e.PointerDeviceType == PointerDeviceType.Pen)
+                {
+                    _baseTool.Vm.Selection.Remove(((sender as Grid).Children[0] as TextBlock).Text);
+                    _baseTool.Vm.Selection = _baseTool.Vm.Selection;
+                }
+                else
+                {
+                    _baseTool.Vm.Controller.UnSelect();
+                }
             }
             else
             {
@@ -114,20 +122,17 @@ namespace NuSysApp
                     if (_baseTool.Vm.Selection != null)
                     {
                         var selection = ((sender as Grid).Children[0] as TextBlock).Text;
-                        if (!_baseTool.Vm.Selection.Contains(selection))
-                        {
-                            _baseTool.Vm.Selection.Add(selection);
-                        }
+                        _baseTool.Vm.Selection.Add(selection);
                         _baseTool.Vm.Selection = _baseTool.Vm.Selection;
                     }
                     else
                     {
-                        _baseTool.Vm.Selection = new List<string> { (((sender as Grid).Children[0] as TextBlock).Text) };
+                        _baseTool.Vm.Selection = new HashSet<string>{ (((sender as Grid).Children[0] as TextBlock).Text) };
                     }
                 }
                 else
                 {
-                    _baseTool.Vm.Selection = new List<string> {(((sender as Grid).Children[0] as TextBlock).Text)};
+                    _baseTool.Vm.Selection = new HashSet<string> {(((sender as Grid).Children[0] as TextBlock).Text)};
                 }
             }
         }
@@ -137,7 +142,7 @@ namespace NuSysApp
         {
             if (!_baseTool.Vm.Selection.Contains(((sender as Grid).Children[0] as TextBlock).Text) || _baseTool.Vm.Controller.Model.Selected == false)
             {
-                _baseTool.Vm.Selection = new List<string> { (((sender as Grid).Children[0] as TextBlock).Text)};
+                _baseTool.Vm.Selection = new HashSet<string> { (((sender as Grid).Children[0] as TextBlock).Text)};
             }
             _baseTool.Vm.OpenDetailView();
         }
@@ -158,7 +163,7 @@ namespace NuSysApp
         {
             var el = (FrameworkElement)sender;
             var sp = el.TransformToVisual(xPropertiesList).TransformPoint(e.Position);
-            if (sp.X < Width && sp.X > 0 && sp.Y > 0 && sp.Y < _baseTool.getCanvas().ActualHeight)
+            if (sp.X < ActualWidth && sp.X > 0 && sp.Y > 0 && sp.Y < _baseTool.getCanvas().ActualHeight)
             {
                 Border border = (Border) VisualTreeHelper.GetChild(xPropertiesList, 0);
                 ScrollViewer scrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
@@ -194,8 +199,15 @@ namespace NuSysApp
             _baseTool.getCanvas().Children.Remove(_dragItem);
             if (_currentDragMode == DragMode.Filter)
             {
-
-                _baseTool.Vm.Selection = new List<string>() {(((Grid) sender).Children[0] as TextBlock).Text};
+                if (e.PointerDeviceType == PointerDeviceType.Pen)
+                {
+                    _baseTool.Vm.Selection.Add((((Grid) sender).Children[0] as TextBlock).Text);
+                    _baseTool.Vm.Selection = _baseTool.Vm.Selection;
+                }
+                else
+                {
+                    _baseTool.Vm.Selection = new HashSet<string>() { (((Grid)sender).Children[0] as TextBlock).Text };
+                }
 
                 var wvm = SessionController.Instance.ActiveFreeFormViewer;
                 var el = (FrameworkElement)sender;
