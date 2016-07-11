@@ -40,14 +40,7 @@ namespace NuSysApp
         {
             LibraryElementModel content = SessionController.Instance.ContentController.GetContent(_message.GetString("contentId"));
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId);
-            if (_message.ContainsKey("title"))
-            {
-                controller.SetTitle(_message.GetString("title"));
-            }
-            if (_message.ContainsKey("data"))
-            {
-                controller.UnPack(new Message(new Dictionary<string, string>() { { "data", _message.GetString("data")} }));
-            }
+            controller.UnPack(_message);
             if (_message.ContainsKey("favorited"))
             {
                 controller.SetFavorited(bool.Parse(_message["favorited"].ToString()));

@@ -101,7 +101,6 @@ namespace NuSysApp
             vm.TextBindingChanged -= TextChanged;
             if (navigated)
             {
-
                 UpdateText(text);
             }
             else

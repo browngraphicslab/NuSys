@@ -90,7 +90,7 @@ namespace NuSysApp
         /// </summary>
         public void SetContentData (string contentData)
         {
-            if (_blockServerInteraction)
+            if (_blockServerInteraction)// we dont need to update server since the serve initiated this change
             {
                 return;
             }
@@ -139,6 +139,10 @@ namespace NuSysApp
         /// </summary>
         public void SetTitle(string title)
         {
+            if (_blockServerInteraction)
+            {
+                return;
+            }
             _libraryElementModel.Title = title;
             TitleChanged?.Invoke(this, title);
             _debouncingDictionary.Add("title", title);
@@ -162,6 +166,10 @@ namespace NuSysApp
         /// </summary>
         private void ChangeMetadata(Dictionary<string,MetadataEntry> metadata)
         {
+            if (_blockServerInteraction)
+            {
+                return;
+            }
             LibraryElementModel.SetMetadata(metadata);
             MetadataChanged?.Invoke(this);
             _debouncingDictionary.Add("metadata", LibraryElementModel.Metadata);
@@ -411,6 +419,7 @@ namespace NuSysApp
 
         public virtual void UnPack(Message message)
         {
+            _blockServerInteraction = true;
             if (message.ContainsKey("metadata"))
             {
                 var metadata = message.GetDict<string, MetadataEntry>("metadata");
@@ -423,10 +432,15 @@ namespace NuSysApp
             {
                 var data = message.GetString("data");
                 LibraryElementModel.Data = data;
-                _blockServerInteraction = true;
                 ContentChanged?.Invoke(this, data);
-                _blockServerInteraction = false;
             }
+            if (message.ContainsKey("title"))
+            {
+                LibraryElementModel.Title = message.GetString("title");
+                TitleChanged?.Invoke(this, message.GetString("title"));
+            }
+
+            _blockServerInteraction = false;
         }
 
         public Uri SmallIconUri
