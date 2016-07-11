@@ -402,7 +402,7 @@ namespace NuSysApp
 
             var newWidth = Width - Math.Min(e.Delta.Translation.X, this.Width);
             
-            if ((this.Width > 600 || e.Delta.Translation.X < 0) && (Canvas.GetLeft(this) > 0 || e.Delta.Translation.X > 0) && (Canvas.GetLeft(this) > 30 || e.Delta.Translation.X > 0))
+            if ((this.Width >= 600 || e.Delta.Translation.X <= 0) && (Canvas.GetLeft(this) >= 0 || e.Delta.Translation.X >= 0) && (Canvas.GetLeft(this) >= 30 || e.Delta.Translation.X >= 0))
             {
                 (DataContext as DetailViewerViewModel)?.ChangeSize(this, rightCoord - newWidth, newWidth, Height);
                 e.Handled = true;

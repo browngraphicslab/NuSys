@@ -142,36 +142,6 @@ namespace NuSysApp
             SizeChanged?.Invoke(this, Width, Height);
 
         }
-        
-
-        //NO LONGER USED
-        /*
-        private void Controller_RegionUpdated(object source, Region region)
-        {
-            if (region.Id != Model.Id)
-            {
-                return;
-            }
-            var model = Model as RectangleRegion;
-            if (model == null)
-            {
-                return;
-            }
-            Height = model.BottomRightPoint.Y * ContainerViewModel.GetHeight() - model.TopLeftPoint.Y * ContainerViewModel.GetHeight();
-            Width = model.BottomRightPoint.X * ContainerViewModel.GetWidth() - model.TopLeftPoint.X * ContainerViewModel.GetWidth();
-
-
-            RegionChanged?.Invoke(this, Height, Width);
-            var topLeft = new Point(model.TopLeftPoint.X * ContainerViewModel.GetWidth(), model.TopLeftPoint.Y * ContainerViewModel.GetHeight());
-            var bottomRight = new Point(model.BottomRightPoint.X * ContainerViewModel.GetWidth(), model.BottomRightPoint.Y * ContainerViewModel.GetHeight());
-            SizeChanged?.Invoke(this, topLeft, bottomRight);
-
-
-            //RaisePropertyChanged("Height");
-            //RaisePropertyChanged("Width");
-
-        }
-        */
 
         private void resetRegions()
         {
