@@ -56,36 +56,91 @@ namespace NuSysApp
 
             vm.ReloadPropertiesToDisplay();
             xMetadataKeysList.ItemsSource = (DataContext as MetadataToolViewModel)?.AllMetadataDictionary.Keys;
-
         }
 
         private void On_SelectionChanged(object sender)
+        {
+            var vm = DataContext as MetadataToolViewModel;
+            SetKeyListVisualSelection();
+            RefreshValueList();
+            
+        }
+
+        private void SetKeyListVisualSelection()
         {
             var vm = DataContext as MetadataToolViewModel;
             if (vm.Selection != null &&
                 (vm.Controller as MetadataToolController).Model.Selected &&
                 vm.Selection.Item1 != null)
             {
-                xMetadataValuesList.ItemsSource =
-                       vm.AllMetadataDictionary[vm.Selection.Item1];
-                xMetadataKeysList.SelectedItem = vm.Selection.Item1;
+                xMetadataKeysList.SelectedItem = (DataContext as MetadataToolViewModel).Selection.Item1;
                 xMetadataKeysList.ScrollIntoView(xMetadataKeysList.SelectedItem);
-
-                if (vm.Selection.Item2 != null)
-                {
-                    xMetadataValuesList.SelectedItem = vm.Selection.Item2;
-                    xMetadataValuesList.ScrollIntoView(xMetadataValuesList.SelectedItem);
-                }
-                else
-                {
-                    xMetadataValuesList.SelectedItem = null;
-                }
+                
             }
             else
             {
                 xMetadataKeysList.SelectedItem = null;
                 xMetadataValuesList.ItemsSource = new List<string>();
+            
             }
+        }
+
+        private void SetValueListVisualSelection()
+        {
+            var vm = DataContext as MetadataToolViewModel;
+            if (vm.Selection.Item1 != null && vm.Selection.Item2 != null)
+            {
+                xMetadataValuesList.SelectedItem = vm.Selection.Item2;
+                xMetadataValuesList.ScrollIntoView(xMetadataValuesList.SelectedItem);
+            }
+            else
+            {
+                xMetadataValuesList.SelectedItem = null;
+            }
+        }
+
+        private void XSearchBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            RefreshValueList();
+        }
+
+        /// <summary>
+        ///  Based on the selected key, and the search bar, refreshes the value list
+        /// </summary>
+        public void RefreshValueList()
+        {
+            var vm = (DataContext as MetadataToolViewModel);
+            if (vm.Selection.Item1 != null && vm.Controller.Model.Selected)
+            {
+                if (!xSearchBox.Text.Equals(""))
+                {
+                    xMetadataValuesList.ItemsSource = FilterValuesList(xSearchBox.Text);
+                }
+                else
+                {
+                    xMetadataValuesList.ItemsSource = vm.AllMetadataDictionary[vm.Selection.Item1];
+                }
+                SetValueListVisualSelection();
+            }
+            else
+            {
+                xMetadataValuesList.ItemsSource = null;
+            }
+            
+        }
+
+        private List<string> FilterValuesList(string search)
+        {
+            var filteredValuesList = new List<string>();
+            var vm = (DataContext as MetadataToolViewModel);
+            foreach (var item in vm.AllMetadataDictionary[vm.Selection.Item1])
+            {
+                if (item?.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    filteredValuesList.Add(item);
+                }
+            }
+            return filteredValuesList;
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)
@@ -106,8 +161,6 @@ namespace NuSysApp
 
         private void Controller_NumberOfParentsChanged(int numOfParents)
         {
-            //xParentOperatorPickerList.Visibility = Visibility.Visible;
-            //xViewTypeGrid.Visibility = Visibility.Collapsed;
             if (numOfParents > 1)
             {
                 xParentOperatorGrid.Visibility = Visibility.Visible;
@@ -254,8 +307,6 @@ namespace NuSysApp
             if (width > _minWidth && height > _minHeight)
             {
                 vm.Controller.SetSize(width, height);
-                //xMetadataKeysList.Height = height - ListBoxHeightOffset;
-                //xMetadataValuesList.Height = height - ListBoxHeightOffset;
                 xMetadataKeysList.Width = width / 2;
                 xMetadataValuesList.Width = width / 2;
             }
@@ -268,8 +319,6 @@ namespace NuSysApp
             else if (width < _minWidth)
             {
                 vm.Controller.SetSize(this.Width, height);
-                //xMetadataKeysList.Height = height - ListBoxHeightOffset;
-                //xMetadataValuesList.Height = height - ListBoxHeightOffset;
             }
         }
 
@@ -324,7 +373,7 @@ namespace NuSysApp
                     _dragItem.Visibility = Visibility.Collapsed;
                 }
             }
-            else if (_dragItem.Visibility == Visibility.Collapsed && !e.IsInertial)
+            else if (_dragItem.Visibility == Visibility.Collapsed)
             {
                 _dragItem.Visibility = Visibility.Visible;
             }
@@ -421,9 +470,6 @@ namespace NuSysApp
             vm.OpenDetailView();
         }
 
-        private void XSearchBox_OnTextChanged(object sender, TextChangedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }
