@@ -67,7 +67,7 @@ namespace NuSysApp
             Model.SetLibraryId(controller.LibraryElementModel.LibraryElementId);
             Debug.Assert(model.LibraryId != null);
             LibraryElementController = controller;
-            LibraryElementController.Title = "Unnamed Link";
+            //LibraryElementController.Title = "Unnamed Link";
             
 
             InElement = SessionController.Instance.LinksController.GetLinkable(model.InAtomId);
