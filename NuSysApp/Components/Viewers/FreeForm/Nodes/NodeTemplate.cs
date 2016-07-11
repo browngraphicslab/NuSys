@@ -153,6 +153,9 @@ namespace NuSysApp
             title = (TextBox)GetTemplateChild("xTitle");
             title.KeyUp += TitleOnTextChanged;
 
+            title.GotFocus += Title_GotFocus;
+            title.LostFocus += Title_LostFocus;
+
             if ((DataContext as ElementViewModel)?.Controller.LibraryElementModel != null)
             {
                 (DataContext as ElementViewModel).Controller.LibraryElementController.TitleChanged +=
@@ -164,7 +167,6 @@ namespace NuSysApp
             {
                 titleContainer.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
                 highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
-          //      highlight.Height = vm.Height + title.ActualHeight - 5;
             };
 
 
@@ -527,8 +529,7 @@ namespace NuSysApp
                 if (vm.IsSelected)
                 {
 
-                    // make the title read only if we are in exploration mode
-                    title.IsReadOnly = SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION || SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION;
+
                     highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 156, 197, 194));
                     highlight.BorderThickness = new Thickness(2);
                     highlight.Background = new SolidColorBrush(Colors.Transparent);
@@ -557,7 +558,25 @@ namespace NuSysApp
             }
         }
 
-       
+        private void Title_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var tb = sender as TextBox;
+            Debug.Assert(tb != null);
+            tb.IsReadOnly = false;
+        }
+
+        private void Title_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (SessionController.Instance.SessionView.ModeInstance.Mode == ModeType.EXPLORATION ||
+                SessionController.Instance.SessionView.ModeInstance.Mode == ModeType.PRESENTATION)
+            {
+                var tb = sender as TextBox;
+                Debug.Assert(tb != null);
+                tb.IsReadOnly = true;
+            }
+        }
+
+
     }
 }
 
