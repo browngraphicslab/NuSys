@@ -18,6 +18,7 @@ using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Linq;
 using Windows.UI.Xaml.Controls.Primitives;
+using System.Diagnostics;
 
 namespace NuSysApp
 {
@@ -105,12 +106,15 @@ namespace NuSysApp
 
                 if (SessionController.Instance.RegionsController.GetRegionController(audioModel.Id) == null)
                 {
-                    var factory = new RegionControllerFactory();
-                    regionController = factory.CreateFromSendable(audioModel, ContentId) as AudioRegionController;
+                    Debug.Fail("did not load");
+                    regionController = SessionController.Instance.RegionsController.AddRegion(audioModel, elementController.LibraryElementModel.LibraryElementId) as AudioRegionController;
                 }
                 else {
                     regionController = SessionController.Instance.RegionsController.GetRegionController(audioModel.Id) as AudioRegionController;
                 }
+
+
+
 
                 var viewmodel = new AudioRegionViewModel(audioModel, elementController, regionController, this);
                 viewmodel.Editable = false;

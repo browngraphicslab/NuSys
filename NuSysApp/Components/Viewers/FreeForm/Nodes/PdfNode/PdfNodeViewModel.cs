@@ -100,12 +100,13 @@ namespace NuSysApp
                 PdfRegionController regionController;
                 if (SessionController.Instance.RegionsController.GetRegionController(pdfRegion.Id) == null)
                 {
-                    var factory = new RegionControllerFactory();
-                    regionController = factory.CreateFromSendable(pdfRegion, ContentId) as PdfRegionController;
+                    //Debug.Fail("Did not load");
+                    regionController = SessionController.Instance.RegionsController.AddRegion(pdfRegion, Controller.LibraryElementModel.LibraryElementId) as PdfRegionController;
                 }
                 else {
                     regionController = SessionController.Instance.RegionsController.GetRegionController(pdfRegion.Id) as PdfRegionController;
                 }
+
 
                 var vm = new PdfRegionViewModel(pdfRegion, elementController, regionController, this);
                 vm.Editable = false;

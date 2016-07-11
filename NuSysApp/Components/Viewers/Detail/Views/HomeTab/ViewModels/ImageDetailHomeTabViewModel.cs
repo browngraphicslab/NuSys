@@ -137,10 +137,13 @@ namespace NuSysApp
                     return;
                 }
                 RectangleRegionController regionController;
+
+
+
                 if (SessionController.Instance.RegionsController.GetRegionController(imageRegion.Id) == null)
                 {
-                    var factory = new RegionControllerFactory();
-                    regionController = factory.CreateFromSendable(regionModel, LibraryElementController.LibraryElementModel.LibraryElementId) as RectangleRegionController;
+                    Debug.Fail("Did not load");
+                    regionController = SessionController.Instance.RegionsController.AddRegion(imageRegion, LibraryElementController.LibraryElementModel.LibraryElementId) as RectangleRegionController;
                 }
                 else {
                     regionController = SessionController.Instance.RegionsController.GetRegionController(imageRegion.Id) as RectangleRegionController;

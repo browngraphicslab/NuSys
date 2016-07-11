@@ -10,6 +10,7 @@ using Windows.UI.Xaml.Shapes;
 using Newtonsoft.Json;
 using Windows.UI.Xaml.Media;
 using NuSysApp.Util;
+using System.Diagnostics;
 
 namespace NuSysApp
 {
@@ -66,12 +67,13 @@ namespace NuSysApp
                 RectangleRegionController regionController;
                 if (SessionController.Instance.RegionsController.GetRegionController(imageModel.Id) == null)
                 {
-                    var factory = new RegionControllerFactory();
-                    regionController = factory.CreateFromSendable(imageModel, ContentId) as RectangleRegionController;
+                    //Debug.Fail("Did not load");
+                    regionController = SessionController.Instance.RegionsController.AddRegion(imageModel, LibraryElementController.LibraryElementModel.LibraryElementId) as RectangleRegionController;
                 }
                 else {
                     regionController = SessionController.Instance.RegionsController.GetRegionController(imageModel.Id) as RectangleRegionController;
                 }
+
 
                 var viewmodel = new ImageRegionViewModel(imageModel, elementController, regionController, this);
                 viewmodel.Editable = false;

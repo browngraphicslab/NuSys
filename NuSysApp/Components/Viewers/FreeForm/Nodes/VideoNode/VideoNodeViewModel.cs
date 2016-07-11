@@ -46,7 +46,15 @@ namespace NuSysApp
                     {
                         return _regionViews;
                     }
-                    var regionController = SessionController.Instance.RegionsController.GetRegionController(model.Id);
+                    VideoRegionController regionController;
+                    if (SessionController.Instance.RegionsController.GetRegionController(videoRegionModel.Id) == null)
+                    {
+                        regionController = SessionController.Instance.RegionsController.AddRegion(videoRegionModel, Controller.LibraryElementModel.LibraryElementId) as VideoRegionController;
+                    }
+                    else
+                    {
+                        regionController = SessionController.Instance.RegionsController.GetRegionController(videoRegionModel.Id) as VideoRegionController;
+                    }
                     Debug.Assert(regionController is VideoRegionController);
                     regionController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
                     var viewmodel = new VideoRegionViewModel(videoRegionModel, elementController, regionController as VideoRegionController, this);

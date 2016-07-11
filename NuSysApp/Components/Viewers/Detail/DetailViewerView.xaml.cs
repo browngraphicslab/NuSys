@@ -248,6 +248,7 @@ namespace NuSysApp
             // Update the list of links in the Link Editor
             var linkEditorViewModel = xLinkEditorView.DataContext as LinkEditorTabViewModel;
             linkEditorViewModel?.ChangeLinkTemplates(controller);
+            //linkEditorViewModel?.Update
 
             //Make the region editor invisible
             if (xRootPivot?.Items?.Count == 4)
