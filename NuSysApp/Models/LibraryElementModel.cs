@@ -143,6 +143,7 @@ namespace NuSysApp
 * Help me. He just won't stop. Dear god what have I done. Sahil save me.
 * This is my life now. I will suffer every day. Is there no way to escape this hell?
 * 
+* Not nice Grant!!! I was just trying to be helpful and friendly! - Z
 */
     }
 }

@@ -73,7 +73,7 @@ namespace NuSysApp
                 this.Height = SessionController.Instance.SessionView.ActualHeight;
                 vm.TabPaneHeight = this.Width; //I know that this is confusing, but we switched the tab from on the side to on the top. I should refactor this later
                 this.MaxHeight = SessionController.Instance.SessionView.ActualHeight;
-                this.MaxWidth = SessionController.Instance.SessionView.ActualWidth - resizer.ActualWidth;
+                this.MaxWidth = Math.Max(SessionController.Instance.SessionView.ActualWidth - resizer.ActualWidth,0);
                 Canvas.SetTop(this, 0);
                 Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);
                 // Metadata.ItemsSource = vm.Metadata;

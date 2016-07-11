@@ -191,7 +191,7 @@ namespace NuSysApp
 
             if (_libraryElementModel.Metadata.ContainsKey(entry.Key))
             {
-                if (_libraryElementModel.Metadata[entry.Key].Mutability == MetadataMutability.IMMUTABLE)//weird syntax in case we want to change mutability to an enum eventually
+                if (_libraryElementModel.Metadata[entry.Key].Mutability == MetadataMutability.IMMUTABLE)
                 {
                     return false;
                 }
@@ -217,6 +217,28 @@ namespace NuSysApp
             MetadataEntry outobj;
             _libraryElementModel.Metadata.TryRemove(key, out outobj);
             ChangeMetadata(LibraryElementModel.Metadata);
+            return true;
+        }
+
+        /// <summary>
+        /// Updates the passed in metadata with the passed in key and values
+        /// </summary>
+        /// <param name="original"></param>
+        /// <param name="key"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public bool UpdateMetadata(MetadataEntry original, string key, List<string> values)
+        {
+            // Error checking for the passed in parameters
+            if (original == null || string.IsNullOrEmpty(key) || string.IsNullOrWhiteSpace(key) || values == null || !_libraryElementModel.Metadata.ContainsKey(original.Key))
+            {
+                return false;
+            }
+
+            // Updates the metadata entry
+            var newEntry = new MetadataEntry(key, values, original.Mutability);
+            _libraryElementModel.Metadata.TryUpdate(original.Key, newEntry,newEntry);
+            ChangeMetadata(LibraryElementModel.FullMetadata);
             return true;
         }
 

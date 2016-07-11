@@ -112,7 +112,7 @@ namespace NuSysApp
 
             if (Model.Metadata.ContainsKey(entry.Key))
             {
-                if (Model.Metadata[entry.Key].Mutability == MetadataMutability.IMMUTABLE)//weird syntax in case we want to change mutability to an enum eventually
+                if (Model.Metadata[entry.Key].Mutability == MetadataMutability.IMMUTABLE)
                 {
                     return false;
                 }
@@ -138,6 +138,29 @@ namespace NuSysApp
             Model.Metadata.TryRemove(key, out value);
             return true;
         }
+
+        /// <summary>
+        /// Updates the original metadata entry with the passed in key and values 
+        /// </summary>
+        /// <param name="original"></param>
+        /// <param name="updated"></param>
+        /// <returns></returns>
+        public bool UpdateMetadata(MetadataEntry original, string key, List<string> values)
+        {
+            // Error checking for the passed in parameters
+            if (original == null || string.IsNullOrEmpty(key) || string.IsNullOrWhiteSpace(key)||values==null || !Model.Metadata.ContainsKey(original.Key))
+            {
+                return false;
+            }
+
+            // Updates the metadata entry
+            var newEntry = new MetadataEntry(key, values, original.Mutability);
+            Model.Metadata.TryUpdate(original.Key, newEntry, newEntry);
+            ChangeMetadata(new Dictionary<string, MetadataEntry>(Model.Metadata));
+            return true;
+           
+        }
+
         public List<string> GetMetadata(string key)
         {
             if (string.IsNullOrEmpty(key) || !Model.Metadata.ContainsKey(key) || string.IsNullOrWhiteSpace(key))

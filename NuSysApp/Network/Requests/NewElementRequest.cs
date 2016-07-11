@@ -149,7 +149,7 @@ namespace NuSysApp
                 {
                     //TODO have this code somewhere but not stack overflow.  aka: add in a level checker so we don't recursively load 
                     var existingChildren = ((CollectionLibraryElementModel)(controller.LibraryElementModel))?.Children;
-                    foreach (var childId in existingChildren)
+                    foreach (var childId in existingChildren ?? new HashSet<string>())
                     {
                         if (SessionController.Instance.IdToControllers.ContainsKey(childId))
                         {

@@ -78,11 +78,11 @@
                                 <Image.RenderTransform>
                                     <TranslateTransform X="23" Y="4"></TranslateTransform>
                                 </Image.RenderTransform>
-                                
+
                             </Image>
                             <TextBlock Padding="10,0,0,0" Text="Key" FontWeight="Bold" FontSize="18"  RelativePanel.AlignHorizontalCenterWithPanel="True"></TextBlock>
                         </RelativePanel>
-                        
+
                         <TextBlock Grid.Column="1" Padding="0,0,10,0" Text ="Values" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center"></TextBlock>
                     </Grid>
                 </ListView.Header>
@@ -99,25 +99,24 @@
                                     <Image Source ="ms-appx:///Assets/icon_metadata_x.png" x:Name="DeleteButton" Tapped="XDeleteButton_OnClick"  Visibility="Collapsed"   HorizontalAlignment="Center"  VerticalAlignment="Center" Width="10" Height="10"></Image>
 
                                     <Image x:Name="xEditButton" Source ="ms-appx:///Assets/icon_metadata_edit.png"   Visibility="Collapsed" HorizontalAlignment="Center" Tapped="XEditButton_OnClick" Margin="15,0,0,0" Width="10" Height="10"></Image>
-                                    
+
                                 </StackPanel>
 
-                                <TextBox  Text="{x:Bind Key}" PlaceholderText="Enter a Key"    Background="{Binding Mutability, Converter={StaticResource brushConverter}}"  PointerExited="KeyTextBox_OnPointerExited" RelativePanel.AlignHorizontalCenterWithPanel="True" BorderThickness="0" IsHitTestVisible="False" ></TextBox>
-                              
+                                <TextBox  Name="EditableKeyBox" Text="{x:Bind Key}" PlaceholderText="None"    Background="{Binding Mutability, Converter={StaticResource brushConverter}}"  RelativePanel.AlignHorizontalCenterWithPanel="True" BorderThickness="0" IsHitTestVisible="False" TextChanged="EditableKeyBox_OnTextChanged" ></TextBox>
+
                             </RelativePanel>
 
 
 
-                            <TextBox Grid.Column="1" Text="{Binding Values, Converter={StaticResource listConverter}}" PlaceholderText="Enter Values"  HorizontalAlignment="Center" HorizontalContentAlignment="Center" BorderThickness="0"   Background="{x:Bind Mutability, Converter={StaticResource brushConverter}}" VerticalAlignment="Center" VerticalContentAlignment="Center" PointerExited="ValueTextBox_OnPointerExited" IsHitTestVisible="False"></TextBox>
-                          
-                           
+                            <TextBox Grid.Column="1" Name="EditableValueBox" Text="{Binding Values, Converter={StaticResource listConverter}}" PlaceholderText="None"  HorizontalAlignment="Center" HorizontalContentAlignment="Center" BorderThickness="0"   Background="{x:Bind Mutability, Converter={StaticResource brushConverter}}" VerticalAlignment="Center" VerticalContentAlignment="Center" IsHitTestVisible="False" TextChanged="EditableValueBox_OnTextChanged"></TextBox>
+
+
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            
-            <CheckBox x:Name="xCheckBox" HorizontalAlignment="Left" Grid.Row="1" Content="show immutable entries" Checked="XCheckBox_OnChecked" Unchecked="XCheckBox_OnUnchecked" Foreground="{StaticResource color3}" ></CheckBox>
-            
+            <CheckBox x:Name="xCheckBox" HorizontalAlignment="Left" Grid.Row="1" Content="show immutable entries" Checked="XCheckBox_OnChecked" Unchecked="XCheckBox_OnUnchecked" Foreground="{StaticResource color3}" IsChecked="True" ></CheckBox>
+
         </Grid>
 
     </Grid>
