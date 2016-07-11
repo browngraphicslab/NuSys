@@ -46,7 +46,7 @@ namespace NuSysApp
             }
             if (_message.ContainsKey("data"))
             {
-                controller.SetContentData(_message.GetString("data"));
+                controller.UnPack(new Message(new Dictionary<string, string>() { { "data", _message.GetString("data")} }));
             }
             if (_message.ContainsKey("favorited"))
             {

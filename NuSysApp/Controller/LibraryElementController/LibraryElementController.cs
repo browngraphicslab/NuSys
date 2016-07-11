@@ -19,6 +19,7 @@ namespace NuSysApp
         private LibraryElementModel _libraryElementModel;
         private bool _loading = false;
         private RegionControllerFactory _regionControllerFactory = new RegionControllerFactory();
+        private bool _blockServerInteraction = false;
         public string Title {
             get
             {
@@ -89,6 +90,10 @@ namespace NuSysApp
         /// </summary>
         public void SetContentData (string contentData)
         {
+            if (_blockServerInteraction)
+            {
+                return;
+            }
             _libraryElementModel.Data = contentData;
             ContentChanged?.Invoke(this, contentData);
             _debouncingDictionary.Add("data", contentData);
@@ -413,6 +418,14 @@ namespace NuSysApp
                 {
                     ChangeMetadata(metadata);
                 }
+            }
+            if (message.ContainsKey("data"))
+            {
+                var data = message.GetString("data");
+                LibraryElementModel.Data = data;
+                _blockServerInteraction = true;
+                ContentChanged?.Invoke(this, data);
+                _blockServerInteraction = false;
             }
         }
 

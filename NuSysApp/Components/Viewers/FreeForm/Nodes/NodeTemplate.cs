@@ -186,7 +186,9 @@ namespace NuSysApp
             highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
             highlight.Height = vm.Height + title.ActualHeight - 5;
             //vm.Controller.SetTitle(title.Text);
+            vm.Controller.LibraryElementController.TitleChanged -= LibraryElementModelOnOnTitleChanged;
             vm.Controller.LibraryElementController.SetTitle(title.Text);
+            vm.Controller.LibraryElementController.TitleChanged += LibraryElementModelOnOnTitleChanged;
         }
 
         private void LibraryElementModelOnOnTitleChanged(object sender, string newTitle)
