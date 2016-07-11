@@ -23,7 +23,7 @@ namespace NuSysApp
             LibraryElements = new ObservableCollection<LibraryItemTemplate>();
 
 
-            // populates 
+            // populates the to link to list with all the library element models
             var idList = SessionController.Instance.ContentController.IdList;
             foreach (var id in idList)
             {
@@ -35,8 +35,18 @@ namespace NuSysApp
                 }
                 
             }
+            var regionIdList = SessionController.Instance.RegionsController.RegionIdsToLibraryElementIds.Keys;
+            foreach (var id in regionIdList)
+            {
+                var controller = SessionController.Instance.RegionsController.GetRegionController(id);
+                var libraryElementTemplate = new LibraryItemTemplate(controller);
+                LibraryElements.Add(libraryElementTemplate);
+
+            }
             SessionController.Instance.ContentController.OnNewContent += ContentController_OnNewContent;
             SessionController.Instance.ContentController.OnElementDelete += ContentController_OnElementDelete;
+
+            SessionController.Instance.RegionsController.OnNewRegion += RegionsController_OnNewRegion;
         }
 
         private void ContentController_OnElementDelete(LibraryElementModel element)
@@ -218,6 +228,18 @@ namespace NuSysApp
                 LinkTemplates.Add(linkTemplate);
             }
 
+        }
+
+        /// <summary>
+        /// Update the link view whenever a region is added
+        /// </summary>
+        /// <param name="regionController"></param>
+        private void RegionsController_OnNewRegion(RegionController regionController)
+        {
+            var libraryElementTemplate = new LibraryItemTemplate(regionController);
+            UITask.Run(delegate {
+                LibraryElements.Add(libraryElementTemplate);
+            });
         }
     }
 }

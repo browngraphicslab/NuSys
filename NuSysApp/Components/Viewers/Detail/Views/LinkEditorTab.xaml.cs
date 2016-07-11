@@ -43,9 +43,11 @@ namespace NuSysApp
             var content = LinkToBox.SelectedItem as LibraryItemTemplate;
             if (content == null)
             {
+                Debug.Fail("we probably should never get here");
                 createLinkButton.IsEnabled = false;
                 return;
             }
+
             var vm = DataContext as LinkEditorTabViewModel;
             var title = linkTitle.Text;
             HashSet<Keyword> keywords = null;
@@ -56,7 +58,13 @@ namespace NuSysApp
             }
             
             Debug.Assert(content != null && content.ContentID != null);
-            vm?.CreateLink(content.ContentID, title, keywords);
+            string id = content.ContentID;
+            // if we are linking to a region
+            if (content.RegionId != null)
+            {
+                //id = content.RegionId;
+            }
+            vm?.CreateLink(id, title, keywords);
             linkTitle.Text = "";
             Tags.Text = "";
         }

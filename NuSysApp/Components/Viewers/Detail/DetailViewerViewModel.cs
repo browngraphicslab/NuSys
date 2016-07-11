@@ -162,7 +162,7 @@ namespace NuSysApp
 
         }
         public async Task<bool> ShowElement(IDetailViewable viewable)
-        {
+        {      
             if (viewable is LibraryElementController)
             {
                 var controller = viewable as LibraryElementController;

@@ -23,7 +23,7 @@ namespace NuSysApp
         public string Type { get; private set; }
         public string Timestamp { get; private set; }
         public string ContentID { get; private set; }
-        
+        public string RegionId { get; private set; }
         public Uri ThumbnailUri { get; private set; }
         public LibraryItemTemplate(LibraryElementController controller)
         {
@@ -33,6 +33,7 @@ namespace NuSysApp
             Timestamp = controller.LibraryElementModel.Timestamp.Substring(0, controller.LibraryElementModel.Timestamp.Length - 3);
             Type = controller.LibraryElementModel.Type.ToString();
             ContentID = controller.LibraryElementModel.LibraryElementId;
+            RegionId = null;
         }
 
         public LibraryItemTemplate(RegionController controller)
@@ -43,6 +44,7 @@ namespace NuSysApp
             Timestamp = controller.LibraryElementModel.Timestamp.Substring(0, controller.LibraryElementModel.Timestamp.Length - 3);
             Type = controller.LibraryElementModel.Type.ToString();
             ContentID = controller.ContentId;
+            RegionId = controller.Model.Id;
         }
 
         private void Controller_TitleChanged(object sender, string title)
@@ -53,6 +55,8 @@ namespace NuSysApp
             }
             Title = title;
         }
+
+
 
         
     }
