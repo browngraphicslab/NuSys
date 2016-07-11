@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NuSysApp
 {
@@ -11,7 +12,7 @@ namespace NuSysApp
 
         }
 
-        public Tuple<string, string> Selection { get { return (_controller as MetadataToolController).MetadataToolModel.Selection; } set { (_controller as MetadataToolController).SetSelection(value); } }
+        public Tuple<string, HashSet<string>> Selection { get { return (_controller as MetadataToolController).MetadataToolModel.Selection; } set { (_controller as MetadataToolController).SetSelection(value); } }
 
         public ToolModel.ToolFilterTypeTitle Filter { get { return (_controller as MetadataToolController).MetadataToolModel.Filter; } set { (_controller as MetadataToolController).SetFilter(value); } }
 
@@ -30,12 +31,19 @@ namespace NuSysApp
                 {
                     (_controller as MetadataToolController).UnSelect();
                 }
-                else if (Selection.Item2 != null && !AllMetadataDictionary[Selection.Item1].Contains(Selection.Item2) || Selection.Item2 == null)
+                else if (Selection.Item2 != null && !Enumerable.Intersect(AllMetadataDictionary[Selection.Item1], Selection.Item2).Any() || Selection.Item2 == null)
                 {
-                    Selection = new Tuple<string, string>(Selection.Item1, null);
+                    Selection = new Tuple<string, HashSet<string>>(Selection.Item1, new HashSet<string>());
                 }
-                else if (Selection.Item2 != null && AllMetadataDictionary[Selection.Item1].Contains(Selection.Item2))
+                else if (Selection.Item2 != null && Enumerable.Intersect(AllMetadataDictionary[Selection.Item1], Selection.Item2).Any())
                 {
+                    foreach (var item in new List<string>(Selection.Item2))
+                    {
+                        if (!AllMetadataDictionary[Selection.Item1].Contains(item))
+                        {
+                            Selection.Item2.Remove(item);
+                        }
+                    }
                     Selection = Selection;
                 }
             }

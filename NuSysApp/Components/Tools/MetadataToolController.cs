@@ -53,12 +53,12 @@ namespace NuSysApp
                     var metadata = GetMetadata(libraryId);
                     if (metadata.ContainsKey(MetadataToolModel.Selection.Item1))
                     {
-                        if (MetadataToolModel.Selection.Item2 == null)
+                        if (MetadataToolModel.Selection.Item2 == null || MetadataToolModel.Selection.Item2.Count == 0)
                         {
                             return true;
                         }
-                        else if (metadata[MetadataToolModel.Selection.Item1].Contains(
-                           MetadataToolModel.Selection.Item2))
+                        else if (metadata[MetadataToolModel.Selection.Item1].Intersect(
+                           MetadataToolModel.Selection.Item2).Any())
                         {
                             return true;
                         }
@@ -69,12 +69,13 @@ namespace NuSysApp
         }
         public override void UnSelect()
         {
+            MetadataToolModel.SetSelection(new Tuple<string, HashSet<string>>(null, new HashSet<string>()));
             MetadataToolModel.SetSelected(false);
             MetadataToolModel.SetLibraryIds(Filter(GetUpdatedDataList()));
             SelectionChanged?.Invoke(this);
             FireLibraryIdsChanged();
         }
-        public virtual void SetSelection(Tuple<string, string> selection)
+        public virtual void SetSelection(Tuple<string, HashSet<string>> selection)
         {
             MetadataToolModel.SetSelection(selection);
             MetadataToolModel.SetSelected(true);

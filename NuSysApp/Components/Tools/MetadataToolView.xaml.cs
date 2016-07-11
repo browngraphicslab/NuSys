@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -63,7 +64,7 @@ namespace NuSysApp
             var vm = DataContext as MetadataToolViewModel;
             SetKeyListVisualSelection();
             RefreshValueList();
-            
+
         }
 
         private void SetKeyListVisualSelection()
@@ -73,9 +74,12 @@ namespace NuSysApp
                 (vm.Controller as MetadataToolController).Model.Selected &&
                 vm.Selection.Item1 != null)
             {
-                xMetadataValuesList.ItemsSource = vm.AllMetadataDictionary[vm.Selection.Item1].OrderBy(key => !string.IsNullOrEmpty(key) && char.IsNumber(key[0])).ThenBy(key => key);
-                xMetadataKeysList.SelectedItem = vm.Selection.Item1;
-                xMetadataKeysList.ScrollIntoView(xMetadataKeysList.SelectedItem);
+                if (xMetadataKeysList.SelectedItem != vm.Selection.Item1)
+                {
+                    xMetadataKeysList.SelectedItem = vm.Selection.Item1;
+                    xMetadataKeysList.ScrollIntoView(xMetadataKeysList.SelectedItem);
+                    
+                }
                 
             }
             else
@@ -91,12 +95,15 @@ namespace NuSysApp
             var vm = DataContext as MetadataToolViewModel;
             if (vm.Selection.Item1 != null && vm.Selection.Item2 != null)
             {
-                xMetadataValuesList.SelectedItem = vm.Selection.Item2;
-                xMetadataValuesList.ScrollIntoView(xMetadataValuesList.SelectedItem);
+                xMetadataValuesList.SelectedItems.Clear();
+                foreach (var item in vm.Selection.Item2)
+                {
+                    xMetadataValuesList.SelectedItems.Add(item);
+                }
             }
             else
             {
-                xMetadataValuesList.SelectedItem = null;
+                xMetadataValuesList.SelectedItems.Clear();
             }
         }
 
@@ -115,13 +122,30 @@ namespace NuSysApp
             {
                 if (!xSearchBox.Text.Equals(""))
                 {
-                    xMetadataValuesList.ItemsSource = FilterValuesList(xSearchBox.Text);
+                    xMetadataValuesList.ItemsSource = FilterValuesList(xSearchBox.Text).OrderBy(key => !string.IsNullOrEmpty(key) && char.IsNumber(key[0])).ThenBy(key => key);
                 }
                 else
                 {
-                    xMetadataValuesList.ItemsSource = vm.AllMetadataDictionary[vm.Selection.Item1];
+
+                    if (!ScrambledEquals(xMetadataValuesList.ItemsSource as IEnumerable<string>,
+                        vm.AllMetadataDictionary[vm.Selection.Item1].OrderBy(
+                            key => !string.IsNullOrEmpty(key) && char.IsNumber(key[0])).ThenBy(key => key)))
+                    {
+                        xMetadataValuesList.ItemsSource =
+                            vm.AllMetadataDictionary[vm.Selection.Item1].OrderBy(
+                                key => !string.IsNullOrEmpty(key) && char.IsNumber(key[0])).ThenBy(key => key);
+                        SetValueListVisualSelection();
+                        if (xMetadataValuesList.SelectedItems.Count > 0)
+                        {
+                            xMetadataValuesList.ScrollIntoView(xMetadataValuesList.SelectedItems.First());
+                        }
+                    }
+                    else
+                    {
+                        SetValueListVisualSelection();
+                    }
+
                 }
-                SetValueListVisualSelection();
             }
             else
             {
@@ -129,7 +153,35 @@ namespace NuSysApp
             }
             
         }
-
+        public bool ScrambledEquals<T>(IEnumerable<T> list1, IEnumerable<T> list2)
+        {
+            if (list1 == null || list2 == null)
+            {
+                return false;
+            }
+            var cnt = new Dictionary<T, int>();
+            foreach (T s in list1)
+            {
+                if (cnt.ContainsKey(s))
+                {
+                    cnt[s]++;
+                }
+                else {
+                    cnt.Add(s, 1);
+                }
+            }
+            foreach (T s in list2)
+            {
+                if (cnt.ContainsKey(s))
+                {
+                    cnt[s]--;
+                }
+                else {
+                    return false;
+                }
+            }
+            return cnt.Values.All(c => c == 0);
+        }
         private List<string> FilterValuesList(string search)
         {
             var filteredValuesList = new List<string>();
@@ -403,11 +455,20 @@ namespace NuSysApp
                 var vm = (DataContext as MetadataToolViewModel);
                 if (_currentDragMode == DragMode.Key)
                 {
-                    vm.Selection = new Tuple<string, string>((((Grid)sender).Children[0] as TextBlock).Text, null);
+                    vm.Selection = new Tuple<string, HashSet<string>>((((Grid)sender).Children[0] as TextBlock).Text, new HashSet<string>());
                 }
                 else if (_currentDragMode == DragMode.Value)
                 {
-                    vm.Selection = new Tuple<string, string>(vm.Selection.Item1, (((Grid)sender).Children[0] as TextBlock).Text);
+                    if (e.PointerDeviceType == PointerDeviceType.Pen)
+                    {
+                        vm.Selection.Item2.Add((((Grid)sender).Children[0] as TextBlock).Text);
+                        vm.Selection = vm.Selection;
+                    }
+                    else
+                    {
+                        vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
+                            new HashSet<string>() { (((Grid)sender).Children[0] as TextBlock).Text});
+                    }
                 }
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
                 vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
@@ -438,7 +499,7 @@ namespace NuSysApp
             else
             {
                 Debug.Assert(vm != null);
-                vm.Selection = new Tuple<string, string>(((sender as Grid).Children[0] as TextBlock).Text, null);
+                vm.Selection = new Tuple<string, HashSet<string>>(((sender as Grid).Children[0] as TextBlock).Text, new HashSet<string>());
             }
         }
 
@@ -446,17 +507,44 @@ namespace NuSysApp
         {
             var vm = (DataContext as MetadataToolViewModel);
             if (vm.Controller.Model.Selected && vm.Selection.Item2 != null &&
-                vm.Selection.Item2.Equals(
+                vm.Selection.Item2.Contains(
                     ((sender as Grid).Children[0] as TextBlock).Text))
             {
-                vm.Selection = new Tuple<string, string>(vm.Selection.Item1, null);
+                if (e.PointerDeviceType == PointerDeviceType.Pen)
+                {
+                    vm.Selection.Item2.Remove(((sender as Grid).Children[0] as TextBlock).Text);
+                    vm.Selection = vm.Selection;
+                }
+                else
+                {
+                    vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1, new HashSet<string>());
+                }
+                
             }
             else
             {
                 Debug.Assert(vm != null);
                 if (xMetadataKeysList.SelectedItems.Count == 1)
                 {
-                    vm.Selection = new Tuple<string, string>(vm.Selection.Item1, ((sender as Grid).Children[0] as TextBlock).Text);
+                    if (e.PointerDeviceType == PointerDeviceType.Pen)
+                    {
+                        if (vm.Selection != null)
+                        {
+                            var selection = ((sender as Grid).Children[0] as TextBlock).Text;
+                            vm.Selection.Item2.Add(selection);
+                            vm.Selection = vm.Selection;
+                        }
+                        else
+                        {
+                            vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
+                            new HashSet<string>() { (((Grid)sender).Children[0] as TextBlock).Text });
+                        }
+                    }
+                    else
+                    {
+                        vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
+                             new HashSet<string>() { (((Grid)sender).Children[0] as TextBlock).Text });
+                    }
                 }
             }
         }
@@ -464,9 +552,10 @@ namespace NuSysApp
         private void ValueListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var vm = (DataContext as MetadataToolViewModel);
-            if (vm.Selection.Item2 != (((sender as Grid).Children[0] as TextBlock).Text))
+            if (!vm.Selection.Item2.Contains(((sender as Grid).Children[0] as TextBlock).Text))
             {
-                vm.Selection = new Tuple<string, string>(vm.Selection.Item1, ((sender as Grid).Children[0] as TextBlock).Text);
+                vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
+                            new HashSet<string>() { (((Grid)sender).Children[0] as TextBlock).Text });
             }
             vm.OpenDetailView();
         }
