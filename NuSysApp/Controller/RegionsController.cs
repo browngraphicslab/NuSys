@@ -122,7 +122,7 @@ namespace NuSysApp
         {
         
             _regionLibraryElementModels =  new ConcurrentDictionary<string, string>(await SessionController.Instance.NuSysNetworkSession.GetRegionMapping(
-                    SessionController.Instance.ActiveFreeFormViewer.ContentId));
+                    SessionController.Instance?.ActiveFreeFormViewer?.ContentId));
             Debug.Assert(_regionLibraryElementModels != null);
 
             var regionIds = _regionLibraryElementModels.Keys;
@@ -130,9 +130,9 @@ namespace NuSysApp
             {
                 var libraryElementModel =
                     SessionController.Instance.ContentController.GetLibraryElementController(
-                        _regionLibraryElementModels[regionId]).LibraryElementModel;
-                var regionHashSet = libraryElementModel.Regions;
-                foreach (var regionModel in regionHashSet)
+                        _regionLibraryElementModels[regionId])?.LibraryElementModel;
+                var regionHashSet = libraryElementModel?.Regions;
+                foreach (var regionModel in regionHashSet ?? new HashSet<Region>())
                 {
                     if (SessionController.Instance.RegionsController.GetRegionController(regionModel.Id) == null)
                     {

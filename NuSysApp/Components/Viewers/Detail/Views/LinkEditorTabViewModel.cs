@@ -202,16 +202,19 @@ namespace NuSysApp
             await _linkTabable.RequestAddNewLink(idToLinkTo, title);
             var newLinkController = SessionController.Instance.LinksController.GetLinkLibraryElementControllerBetweenContent(
                 _linkTabable.ContentId, idToLinkTo);
-            var template = new LinkTemplate(newLinkController, _linkTabable.ContentId);
-            if (keywords != null)
+            if (newLinkController != null)
             {
-                newLinkController.SetKeywords(keywords);
+                var template = new LinkTemplate(newLinkController, _linkTabable.ContentId);
+                if (keywords != null)
+                {
+                    newLinkController.SetKeywords(keywords);
+                }
+                LinkTemplates.Add(template);
+                //var linkId = SessionController.Instance.LinksController.GetLinkIdBetween(_linkTabable.ContentId, idToLinkTo);
+                //var linkController = SessionController.Instance.ContentController.GetLibraryElementController(linkId) as LinkLibraryElementController;
+                //linkController?.SetTitle(title);
+                _linkTabable.LinkAdded += LinkTabableLinkAdded;
             }
-            LinkTemplates.Add(template);
-            //var linkId = SessionController.Instance.LinksController.GetLinkIdBetween(_linkTabable.ContentId, idToLinkTo);
-            //var linkController = SessionController.Instance.ContentController.GetLibraryElementController(linkId) as LinkLibraryElementController;
-            //linkController?.SetTitle(title);
-            _linkTabable.LinkAdded += LinkTabableLinkAdded;
         }
         public void SortByLinkedTo()
         {
