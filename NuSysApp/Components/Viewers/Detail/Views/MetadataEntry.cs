@@ -15,7 +15,14 @@ namespace NuSysApp
     public class MetadataEntry
     {
         public string Key { get; set; }
-        public List<string> Values { get; set; }       
+        private List<string> _values;
+        public List<string> Values {
+            get { return _values; }
+            set
+            {
+                _values = value; 
+                
+            } }       
         public MetadataMutability Mutability { get; set; }
         //public Windows.UI.Xaml.Media.SolidColorBrush Brush { get; set; }
 
