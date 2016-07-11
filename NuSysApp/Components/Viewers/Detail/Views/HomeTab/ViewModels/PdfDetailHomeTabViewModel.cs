@@ -297,17 +297,21 @@ namespace NuSysApp
                     return;
                 }
                 PdfRegionController regionController;
+
+
+
                 if (SessionController.Instance.RegionsController.GetRegionController(pdfRegion.Id) == null)
                 {
-                    var factory = new RegionControllerFactory();
-                    regionController = factory.CreateFromSendable(pdfRegion, Controller.LibraryElementModel.LibraryElementId) as PdfRegionController;
+                    //Debug.Fail("did not load");
+                    regionController = SessionController.Instance.RegionsController.AddRegion(pdfRegion, Controller.LibraryElementModel.LibraryElementId) as PdfRegionController;
                 }
                 else {
                     regionController = SessionController.Instance.RegionsController.GetRegionController(pdfRegion.Id) as PdfRegionController;
                 }
 
 
-               
+
+
                 var vm = new PdfRegionViewModel(pdfRegion, Controller, regionController, this);
                 var view = new PDFRegionView(vm);
                 if (pdfRegion.PageLocation != _pageNumber)

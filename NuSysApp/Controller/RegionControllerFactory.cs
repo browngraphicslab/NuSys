@@ -40,7 +40,7 @@ namespace NuSysApp
                 return null;
             }
 
-            SessionController.Instance.RegionsController.Add(controller, contentId);
+            //SessionController.Instance.RegionsController.Add(controller, contentId);
             return controller;
         }
     }

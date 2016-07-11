@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -123,9 +124,9 @@ namespace NuSysApp
                 AudioRegionController regionController;
                 if (SessionController.Instance.RegionsController.GetRegionController(audioRegion.Id) == null)
                 {
-                    var factory = new RegionControllerFactory();
-                    regionController = factory.CreateFromSendable(regionModel, Controller.LibraryElementModel.LibraryElementId) as AudioRegionController;
-                }
+                    //Debug.Fail("Did not load");
+                    regionController = SessionController.Instance.RegionsController.AddRegion(audioRegion, Controller.LibraryElementModel.LibraryElementId) as AudioRegionController;
+                    }
                 else {
                     regionController = SessionController.Instance.RegionsController.GetRegionController(audioRegion.Id) as AudioRegionController;
                 }

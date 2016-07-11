@@ -71,6 +71,27 @@ namespace NuSysApp
             return id != null && _regionLibraryElementModels.ContainsKey(id);
         }
 
+        public RegionController AddRegion(Region regionModel, string contentId)
+        {
+            Debug.Assert(regionModel != null);
+            var regionController = _regionControllerFactory.CreateFromSendable(regionModel, contentId);
+            _regionLibraryElementModels.TryAdd(regionModel.Id, contentId);
+            if (!_regionControllers.ContainsKey(regionModel.Id))
+            {
+                _regionControllers.TryAdd(regionModel.Id, regionController);
+                OnNewRegion?.Invoke(regionController);
+
+                return regionController;
+
+            }
+            else
+            {
+                throw new Exception("TRIED TO ADD A SECOND REGION CONTROLLER");
+                //return this.GetRegionController(regionModel.Id);
+            }
+            return null;
+
+        }
 
         public string Add(RegionController regionController, string contentId)
         {
@@ -91,7 +112,7 @@ namespace NuSysApp
             {
                 //THIS IS THE CAUSE OF HALF OUR REGIONS PROBLEMS
                 //throw new Exception("TRIED TO ADD A SECOND REGION CONTROLLER");
-                //Debug.Fail("^^ stop commenting this out");
+                Debug.Fail("^^ stop commenting this out");
                 return regionModel.Id;
             }
             return null;
@@ -113,8 +134,15 @@ namespace NuSysApp
                 var regionHashSet = libraryElementModel.Regions;
                 foreach (var regionModel in regionHashSet)
                 {
+                    if (SessionController.Instance.RegionsController.GetRegionController(regionModel.Id) == null)
+                    {
+                        this.AddRegion(regionModel, libraryElementModel.LibraryElementId);
+                    }
+
+                    /*
                     var regionController = _regionControllerFactory.CreateFromSendable(regionModel, libraryElementModel.LibraryElementId);
                     Add(regionController, libraryElementModel.LibraryElementId);
+                    */
                 }
             }
 
