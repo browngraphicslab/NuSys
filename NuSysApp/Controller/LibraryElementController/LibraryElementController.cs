@@ -198,7 +198,7 @@ namespace NuSysApp
                 _libraryElementModel.Metadata.TryRemove(entry.Key, out outobj);
             }
             _libraryElementModel.Metadata.TryAdd(entry.Key,entry);
-            ChangeMetadata(_libraryElementModel.FullMetadata);
+            ChangeMetadata(_libraryElementModel.Metadata);
             return true;
         }
 
@@ -215,7 +215,7 @@ namespace NuSysApp
             }
             MetadataEntry outobj;
             _libraryElementModel.Metadata.TryRemove(key, out outobj);
-            ChangeMetadata(LibraryElementModel.FullMetadata);
+            ChangeMetadata(LibraryElementModel.Metadata);
             return true;
         }
 

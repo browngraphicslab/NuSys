@@ -15,40 +15,57 @@
     RenderTransform="{Binding Transform}"
     IsDoubleTapEnabled="True">
 
-    <Canvas x:Name="xCanvas">
-        <StackPanel Orientation="Vertical">
-            <Border Name="xParentOperatorGrid" Width="70" Visibility="Collapsed" Height="40" CornerRadius="2,2,0,0" Background="{StaticResource color1}" Tapped="XParentOperatorText_OnTapped" Margin="100,0,40,0">
+    <Canvas x:Name="xCanvas" Margin="0" VerticalAlignment="Stretch">
+        <Grid Name="stack" VerticalAlignment="Stretch" Margin="0" Height="{Binding Height}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0"  Name="xParentOperatorGrid" Width="70" Visibility="Collapsed" Height="40" CornerRadius="2,2,0,0" Background="{StaticResource color1}" Tapped="XParentOperatorText_OnTapped" Margin="100,0,40,0">
                 <TextBlock Text="OR" Name="xParentOperatorText" HorizontalAlignment="Center" FontSize="24"  VerticalAlignment="Center"></TextBlock>
             </Border>
-            <StackPanel Orientation="Horizontal">
-                <Button x:Name="xDeleteButton" Click ="Delete_Click" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color1}"  VerticalAlignment="Top" Margin="0,45,5,0">
+            <Grid Grid.Row="1" Name="stack1" Margin="0" VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0"  x:Name="xDeleteButton" Click ="Delete_Click" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color1}"  VerticalAlignment="Top" Margin="0,45,5,0">
                     <Image Source="ms-appx:///Assets/node icons/delete.png" Height="20" Width="20"></Image>
                 </Button>
-                <Grid Height="{Binding Height}" Width="{Binding Width}" MinHeight="100">
+                <Grid Grid.Column="1"  Width="{Binding Width}" MinHeight="100" Margin="0" VerticalAlignment="Stretch">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <Grid x:Name ="xGrid" Grid.Row ="0" BorderBrush="{StaticResource color2}" BorderThickness="1" Background="White">
+                    <Grid x:Name ="xGrid" Grid.Row ="0" BorderBrush="{StaticResource color2}" BorderThickness="1" Background="White" Margin="0" VerticalAlignment="Stretch">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid Height="45" Background="{StaticResource color1}" BorderBrush="{StaticResource color2}" BorderThickness="0,0,0,1">
-                                <TextBlock x:Name="xTitle" Text="Metadata" TextAlignment="Center" FontSize="22"  VerticalAlignment="Center"  Foreground="{StaticResource color3}" Grid.Row="0" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
-                            </Grid>
-                            <StackPanel x:Name="xMetadataStackPanel" Grid.Row="1" Orientation="Horizontal">
-                            <StackPanel Orientation="Vertical">
-                                <Border BorderBrush="{StaticResource color2}" BorderThickness="0">
-                                        <TextBlock Text="KEYS" TextAlignment="Center" Padding="2" Foreground="{StaticResource color3}"/>
+                            <TextBlock x:Name="xTitle" Text="Metadata" TextAlignment="Center" FontSize="22"  VerticalAlignment="Center"  Foreground="{StaticResource color3}" Grid.Row="0" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
+                        </Grid>
+                        <Grid x:Name="xMetadataStackPanel" Grid.Row="1" Margin="0" VerticalAlignment="Stretch" >
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0"  Name="stack2"  Margin="0" VerticalAlignment="Stretch">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Border Grid.Row="0" BorderBrush="{StaticResource color2}" BorderThickness="0">
+                                    <TextBlock Text="KEYS" TextAlignment="Center" Padding="2" Foreground="{StaticResource color3}"/>
                                 </Border>
-                                    <ListView x:Name="xMetadataKeysList" BorderBrush="{StaticResource color2}" BorderThickness="0,1,0,0"  ManipulationMode="All" ManipulationStarted="XList_OnManipulationStarted" Height="200" Width="200" CanDrag="True" Background="{StaticResource color1}" SelectionMode="Single" >
+                                <ListView Grid.Row="1" x:Name="xMetadataKeysList" BorderBrush="{StaticResource color2}" ManipulationMode="All" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" ManipulationStarted="XList_OnManipulationStarted" Width="200"  Background="{StaticResource color1}" SelectionMode="Single" >
                                     <ListView.ItemContainerStyle>
                                         <Style TargetType="ListViewItem">
                                             <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
                                             <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
-                                            <Setter Property="Padding" Value="10"/>
+                                            <Setter Property="Padding" Value="0"/>
                                         </Style>
                                     </ListView.ItemContainerStyle>
                                     <ListView.ItemTemplate>
@@ -59,17 +76,25 @@
                                         </DataTemplate>
                                     </ListView.ItemTemplate>
                                 </ListView>
-                            </StackPanel>
-                            <StackPanel Orientation="Vertical">
-                                <Border BorderBrush="{StaticResource color2}" BorderThickness="0">
+                            </Grid>
+                            <Grid Grid.Column="1" Margin="0" VerticalAlignment="Stretch">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Border Grid.Row="0"  BorderBrush="{StaticResource color2}" BorderThickness="0">
                                     <TextBlock Text="VALUES" TextAlignment="Center" Padding="2" Foreground="{StaticResource color3}" />
                                 </Border>
-                                    <ListView x:Name="xMetadataValuesList" BorderBrush="{StaticResource color2}" BorderThickness="1,1,0,0" ManipulationMode="All" ManipulationStarted ="XList_OnManipulationStarted" Height="200" Width="200" CanDrag="True" Background="{StaticResource color1}" SelectionMode="Single" >
+                                <Border Grid.Row="1"  BorderThickness="0,0,0,1" BorderBrush="{StaticResource color2}">
+                                    <TextBox Name="xSearchBox" TextChanged="XSearchBox_OnTextChanged"/>
+                                </Border>
+                                <ListView Grid.Row="2"  x:Name="xMetadataValuesList" BorderBrush="{StaticResource color2}" Margin="0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" BorderThickness="1,1,0,0" ManipulationMode="All" ManipulationStarted ="XList_OnManipulationStarted" Width="200" Background="{StaticResource color1}" SelectionMode="Single" >
                                     <ListView.ItemContainerStyle>
                                         <Style TargetType="ListViewItem">
                                             <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
                                             <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
-                                            <Setter Property="Padding" Value="10"/>
+                                            <Setter Property="Padding" Value="0"/>
                                         </Style>
                                     </ListView.ItemContainerStyle>
                                     <ListView.ItemTemplate>
@@ -80,9 +105,15 @@
                                         </DataTemplate>
                                     </ListView.ItemTemplate>
                                 </ListView>
-                            </StackPanel>
-                        </StackPanel>
+                            </Grid>
+                        </Grid>
                     </Grid>
+                    <Path x:Name="xResizer" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
+                      Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
+                      Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" ManipulationDelta="Resizer_OnManipulationDelta"/>
+
+                </Grid>
+                <StackPanel Grid.Column="2"  Orientation="Vertical" Margin="0,40,0,0">
                     <StackPanel Grid.Row="2" Orientation="Horizontal">
                         <Button x:Name="xCollectionElement"  Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Center">
                             <StackPanel>
@@ -91,7 +122,7 @@
                             </StackPanel>
                         </Button>
                     </StackPanel>
-                    <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="60,0,0,0">
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,0">
                         <Button x:Name="xStackElement"  Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Center">
                             <StackPanel>
                                 <Image Source="ms-appx:///Assets/collection icon bluegreen.png" Height="28" Width="28" Stretch="Uniform"></Image>
@@ -99,13 +130,12 @@
                             </StackPanel>
                         </Button>
                     </StackPanel>
-                    <Path x:Name="xResizer" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
-                      Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
-                      Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" ManipulationDelta="Resizer_OnManipulationDelta"/>
-                </Grid>
-            </StackPanel>
-        </StackPanel>
-        
+                </StackPanel>
+
+            </Grid>
+        </Grid>
+
+
 
     </Canvas>
 </local:AnimatableUserControl>

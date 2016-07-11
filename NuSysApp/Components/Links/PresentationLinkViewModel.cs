@@ -8,7 +8,7 @@ namespace NuSysApp
     {
 
         // maintain a list of models so that we can use presentation mode
-        public static HashSet<PresentationLinkModel> Models;
+        public static HashSet<PresentationLinkModel> Models = new HashSet<PresentationLinkModel>();
 
         private readonly ElementController _inElementController;
         private readonly ElementController _outElementController;
@@ -69,7 +69,6 @@ namespace NuSysApp
         public void DeletePresentationLink()
         {
             SessionController.Instance.NuSysNetworkSession.RemovePresentationLink(_inElementController.Model.Id, _outElementController.Model.Id);
-            FireDisposed(this, EventArgs.Empty);
         }
     }
 }

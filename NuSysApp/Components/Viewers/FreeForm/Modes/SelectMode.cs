@@ -81,22 +81,27 @@ namespace NuSysApp
                 return;
             }
 
+
+            // try to explore the selected object, only does something if we're in explorationmode
+            var frameWorkElemToBeExplored = e.OriginalSource as FrameworkElement;
+            if (frameWorkElemToBeExplored != null)
+            {
+                SessionController.Instance.SessionView.ExploreSelectedObject(frameWorkElemToBeExplored.DataContext);
+            }
+
+
             var dc = ((FrameworkElement)e.OriginalSource).DataContext as ElementViewModel;
             if (dc == null)
             {
                 return;
             }
 
-            // try to explore to the ElementViewModel
-            if (!(dc is LinkViewModel))
+            var viwerVm = _view.DataContext as FreeFormViewerViewModel;
+            var isCtrlDown = (CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Control) &
+                                CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
+
+            if (!isCtrlDown)
             {
-                SessionController.Instance.SessionView.Explore(dc);
-            }
-
-            var viwerVm =_view.DataContext as FreeFormViewerViewModel;
-            var isCtrlDown =  (CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Control) & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
-
-            if (!isCtrlDown) {
 
 
                 if (dc == viwerVm)
@@ -122,9 +127,10 @@ namespace NuSysApp
                 else
                 {
                     viwerVm?.AddSelection(dc);
-                }               
+                }
 
             }
+
         }
 
         private async void OnPointerReleased(object sender, PointerRoutedEventArgs e)

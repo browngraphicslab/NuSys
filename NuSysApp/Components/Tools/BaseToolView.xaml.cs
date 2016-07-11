@@ -209,18 +209,18 @@ namespace NuSysApp
                 (DataContext as BasicToolViewModel).Controller.SetSize(width, height);
                 //xParentOperatorPickerList.Height = height - 175;
                 //xParentOperatorPickerList.Width = width;
-                _toolView.SetSize(width, height);
+                //_toolView.SetSize(width, height);
             }
             else if (height < _minHeight)
             {
                 (DataContext as BasicToolViewModel).Controller.SetSize(width, this.Height);
-                _toolView.SetSize(width, this.Height);
+                //_toolView.SetSize(width, this.Height);
                 //xParentOperatorPickerList.Width = width;
             }
             else if (width < _minWidth)
             {
                 (DataContext as BasicToolViewModel).Controller.SetSize(this.Width, height);
-                _toolView.SetSize(this.Width, height);
+                //_toolView.SetSize(this.Width, height);
                 //xParentOperatorPickerList.Height = height - 175;
             }
         }

@@ -70,7 +70,7 @@ namespace NuSysApp
         /// </summary>
         public void GoToCurrent()
         {
-            Debug.Assert(_currentNode != null);
+            Debug.Assert(_currentNode != null, "the current node should always be set if we are in presentation mode");
             FullScreen(_currentNode);
         }
 

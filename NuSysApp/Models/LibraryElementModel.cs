@@ -30,7 +30,9 @@ namespace NuSysApp
         public string LargeIconUrl { get; private set; }
         public string MediumIconUrl { get; private set; }
         public string SmallIconUrl { get; private set; }
-        public ConcurrentDictionary<string, MetadataEntry> Metadata { get; set; }
+        public ConcurrentDictionary<string, MetadataEntry> Metadata {
+            get;
+            set; }
         public string Creator { set; get; }
         public string Timestamp { get; set; }//TODO maybe put in a timestamp, maybe remove the field from the library
 

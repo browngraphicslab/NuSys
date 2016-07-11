@@ -48,11 +48,17 @@ namespace NuSysApp
             }
             var vm = DataContext as LinkEditorTabViewModel;
             var title = linkTitle.Text;
+            HashSet<Keyword> keywords = null;
+            if (Tags.Text != string.Empty)
+            {
+                var tagString = Tags.Text;
+                keywords = new HashSet<Keyword>(tagString.Split(',').Select(sValue => new Keyword(sValue.Trim())));
+            }
+            
             Debug.Assert(content != null && content.ContentID != null);
-            vm?.CreateLink(content.ContentID, title);
+            vm?.CreateLink(content.ContentID, title, keywords);
             linkTitle.Text = "";
-            
-            
+            Tags.Text = "";
         }
 
         private void SortLinkedTo_OnClick(object sender, RoutedEventArgs e)
@@ -78,5 +84,6 @@ namespace NuSysApp
             var vm = DataContext as LinkEditorTabViewModel;
             vm?.DeleteLink(id);
         }
+
     }
 }

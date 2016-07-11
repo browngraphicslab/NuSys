@@ -52,7 +52,7 @@ namespace NuSysApp
             PropertiesToDisplayUnique = new ObservableCollection<string>();
             this.InitializeComponent();
             _dragItem = baseTool.Vm.InitializeDragFilterImage();
-            xPropertiesList.Height = baseTool.Vm.Height - 175;
+            //xPropertiesList.Height = baseTool.Vm.Height - 175;
             _baseTool = baseTool;
         }
 
@@ -182,14 +182,6 @@ namespace NuSysApp
                 _baseTool.Vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
             }
         }
-        public void SetSize(double x, double y)
-        {
-            xPropertiesList.Height = y - ListBoxHeightOffset;
-            this.Height = y - ListBoxHeightOffset;
-            xPropertiesList.Width = x;
-            this.Width = x;
-        }
-
 
     }
 

@@ -49,7 +49,11 @@ namespace NuSysApp
 
         private void LibraryElementModel_OnFavorited(object sender, bool favorited)
         {
-            var element = (sender as LibraryElementController).LibraryElementModel;
+            var element = (sender as LibraryElementController)?.LibraryElementModel;
+            if (element == null)
+            {
+                return;
+            }
             var controller =
                 SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId);
             var template = new LibraryItemTemplate(controller);

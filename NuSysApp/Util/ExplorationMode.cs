@@ -12,63 +12,81 @@ using Windows.UI.Xaml.Media.Animation;
 using MyToolkit.Utilities;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using NuSysApp.Util;
 
 namespace NuSysApp
 {
     /// <summary>
-    /// Implements a prezi-like exploration mode.
+    /// Implements a prezi-like exploration mode. -Zack. K.
     /// </summary>
     class ExplorationMode : IDisposable, IModable
     {
       
-        private ElementViewModel _currentNode;
-        private CompositeTransform _originalTransform;
-        private DispatcherTimer _timer;
-        private Storyboard _storyboard;
-        private SolidColorBrush _backwardColor = Application.Current.Resources["lighterredcolor"] as SolidColorBrush;
-        private SolidColorBrush _forwardColor = Application.Current.Resources["color4"] as SolidColorBrush;
-        private HashSet<LinkController> _linksUsed = new HashSet<LinkController>();
-        public ElementViewModel CurrentNode { get { return _currentNode; } }
-        private RelatedListBox _relatedListBox;
+
+        private ElementViewModel _currentNode;          // current node we're on
+        private RelatedListBox _relatedListBox;         // box of related elements, (i.e. click on tag)
+        // stacks for moving forward and backward in exploration mode
         private Stack<ElementViewModel> _explorationHistory;
         private Stack<ElementViewModel> _explorationFuture;
 
+        // animation variables
+        private CompositeTransform _originalTransform;
+        private DispatcherTimer _timer;
+        private Storyboard _storyboard;
+
+        // Required by IModeable
         public ModeType Mode { get { return ModeType.EXPLORATION;} }
 
         public ExplorationMode(ElementViewModel start)
         {
 
-            if (start == null)
-            {
-                return;
-            }
-            
-          
-            _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromMilliseconds(1);
+            Debug.Assert(start != null);
+
+            _currentNode = start;
+            _explorationHistory = new Stack<ElementViewModel>();
+
+            // Clear the current selection in the session controller, and add the current node to it
+            SessionController.Instance.ActiveFreeFormViewer.Selections.Clear();
+            SelectElement(_currentNode);
+
+            // instantiate animation variables
+            _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(1) };
             _timer.Tick += OnTick;
             _storyboard = new Storyboard();
-            _currentNode = start;
+
+            // copy active free from viewer transform to return back to original view upon exit
             _originalTransform = MakeShallowCopy(SessionController.Instance.ActiveFreeFormViewer.CompositeTransform);
-            _explorationHistory = new Stack<ElementViewModel>();
-            _explorationHistory.Push(start);
-            FullScreen();    
+
+            FullScreen(_currentNode);    
         }
 
-
-
+        /// <summary>
+        /// Redraws the ink on the canvas
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnTick(object sender, object e)
         {
             SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Redraw();
 
-        }  
-
-        public void GoToCurrent()
-        {
-            FullScreen();
         }
 
+        /// <summary>
+        /// From the IModeable Interface
+        /// Pans and zooms the screen to the Current Node
+        /// </summary>
+        public void GoToCurrent()
+        {
+            Debug.Assert(_currentNode != null, "the current node should always be set if we are in exploration mode");
+            FullScreen(_currentNode);
+        }
+
+        /// <summary>
+        /// From the IModeable Interface
+        /// Used to check if the exploration future stack contains any elements
+        /// </summary>
+        /// <returns></returns>
         public bool Next()
         {
             if (_explorationFuture == null || _explorationFuture.Count == 0)
@@ -79,85 +97,89 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Full screen zooms into the next node found
+        /// From the IModeable Interface
+        /// Full screen zooms into the next element from the future stack if any exists
         /// </summary>
         public void MoveToNext()
         {
             if (Next())
             {
                 _explorationHistory.Push(_currentNode);
-                _currentNode.IsSelected = false;
+                DeselectElement(_currentNode);
                 _currentNode = _explorationFuture.Pop();
-                _currentNode.IsSelected = true;
-                FullScreen();
+                SelectElement(_currentNode);
+                FullScreen(_currentNode);
             }
-        }
-
-        public void MoveTo(ElementViewModel evm)
-        {
-            // push the current node if it isn't null
-            if (_currentNode != null)
-            {
-                _explorationHistory.Push(CurrentNode);
-                _currentNode.IsSelected = false;
-            }
-            // reset the exploration future
-            _explorationFuture = null;
-            _currentNode = evm;
-            _currentNode.IsSelected = true;
-            FullScreen();
         }
 
         /// <summary>
-        /// Checks if there are any previous nodes
+        /// Helper method for moving from the element stored in _currentNode to the element passed in as evm
+        /// </summary>
+        /// <param name="evm"></param>
+        public void MoveTo(ElementViewModel evm)
+        {
+            Debug.Assert(evm != null);
+
+            // push the current node if it isn't null
+            if (_currentNode != null)
+            {
+                // reset the exploration future and add to exploration history if the node we are on has changed
+                if (string.Compare(_currentNode.Id, evm.Id) != 0)
+                {
+                    _explorationHistory.Push(_currentNode);
+                    _explorationFuture = null;
+                }
+                DeselectElement(_currentNode);
+            }
+            _currentNode = evm;
+            SelectElement(_currentNode);
+            FullScreen(_currentNode);
+        }
+
+        /// <summary>
+        /// From the IModeable Interface
+        /// Used to check if the exploration history stack contains any elements
         /// </summary>
         /// <returns></returns>
         public bool Previous()
         {
-            return _explorationHistory.Count > 1;
+            return (_explorationHistory != null && _explorationHistory.Count > 0);
         }
 
         /// <summary>
-        /// Full screen zooms into the previous node
+        /// From the IModeable Interface
+        /// Full screen zooms into the next element from the previous stack if any exists
         /// </summary>
         public void MoveToPrevious()
         {
-            if (Previous())
+            // If the previous stack is empty return
+            if (!Previous())
             {
-
-                if (_explorationFuture == null)
-                {
-                    _explorationFuture = new Stack<ElementViewModel>();
-                }
-
-                _explorationFuture.Push(_currentNode);
-                _currentNode.IsSelected = false;
-
-                _currentNode = _explorationHistory.Pop();
-                _currentNode.IsSelected = true;
-                FullScreen();
-
-                
-
-                
+                return;
             }
+
+            // push the current Node to _exploration future
+            if (_explorationFuture == null)
+            {
+                _explorationFuture = new Stack<ElementViewModel>();
+            }
+            _explorationFuture.Push(_currentNode);
+            DeselectElement(_currentNode);
+            // set the current node to the next element from the previous stack and zoom to it
+            _currentNode = _explorationHistory.Pop();
+            SelectElement(_currentNode);
+            FullScreen(_currentNode);
         }
 
+
         /// <summary>
+        /// From the IModeable Interface
         /// Exits presentation mode by resetting the original composite transform properties
         /// </summary>
         public void ExitMode()
         {
-            /*
-            foreach (var link in _linksUsed)
-            {
-                if (link != null)
-                {
-                    link.SetColor(Application.Current.Resources["color4"] as SolidColorBrush);
-                }
-            }*/
             AnimatePresentation(_originalTransform.ScaleX, _originalTransform.CenterX, _originalTransform.CenterY, _originalTransform.TranslateX, _originalTransform.TranslateY);
-           this.HideRelatedListBox();
+           HideRelatedListBox();
         }
 
         /// <summary>
@@ -170,24 +192,39 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Shows the box with elements related--that is, elements with the same tag
+        /// </summary>
+        /// <param name="tag"></param>
+        internal void ShowRelatedElements(string tag)
+        {
+            // Box not on session view, so instatiate a new one and add it
+            if (_relatedListBox == null)
+            {
+                _relatedListBox = new RelatedListBox(tag);
+                SessionController.Instance.SessionView.MainCanvas.Children.Add(_relatedListBox);
+                Canvas.SetTop(_relatedListBox, 300);
+                Canvas.SetLeft(_relatedListBox,200);
+            }
+            // Box already on session view, so update the contents
+            else
+            {
+                _relatedListBox.UpdateTag(tag);
+            }
+        }
+
+        /// <summary>
         /// Will make a full screen appeareance for the passed in element view model. Use this for presentation view.
         /// </summary>
         /// <param name="e"></param>
-
-        private void FullScreen()
+        private void FullScreen(ElementViewModel elementToBeFullScreened)
         {
-            if (_currentNode == null)
-                return;
+            Debug.Assert(elementToBeFullScreened != null);
 
             // Determines tag adjustment by getting the height of the tag container from the view
             double tagAdjustment = 0;
 
-            if (_currentNode == null)
-            {
-                return;
-            }
             var view = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
-                    item => ((ElementViewModel)item.DataContext).Model.Id == _currentNode.Id);
+                    item => (item.DataContext as ElementViewModel)?.Model.Id == elementToBeFullScreened.Id);
 
             if (view.Count() == 0)
             {
@@ -202,11 +239,11 @@ namespace NuSysApp
 
 
             // Define some variables that will be used in future translation/scaling
-            var nodeWidth = _currentNode.Width;
-            var nodeHeight = _currentNode.Height + 40 + tagAdjustment; // 40 for title adjustment
+            var nodeWidth = elementToBeFullScreened.Width;
+            var nodeHeight = elementToBeFullScreened.Height + 40 + tagAdjustment; // 40 for title adjustment
             var sv = SessionController.Instance.SessionView;
-            var x = _currentNode.Model.X + nodeWidth / 2;
-            var y = _currentNode.Model.Y - 40 + nodeHeight / 2;
+            var x = elementToBeFullScreened.Model.X + nodeWidth / 2;
+            var y = elementToBeFullScreened.Model.Y - 40 + nodeHeight / 2;
             var widthAdjustment = sv.ActualWidth / 2;
             var heightAdjustment = sv.ActualHeight / 2;
 
@@ -241,26 +278,6 @@ namespace NuSysApp
 
         }
 
-        /// <summary>
-        /// Shows the box with elements related--that is, elements with the same tag
-        /// </summary>
-        /// <param name="tag"></param>
-        internal void ShowRelatedElements(string tag)
-        {
-            // Box not on session view, so instatiate a new one and add it
-            if (_relatedListBox == null)
-            {
-                _relatedListBox = new RelatedListBox(tag);
-                SessionController.Instance.SessionView.MainCanvas.Children.Add(_relatedListBox);
-                Canvas.SetTop(_relatedListBox, 300);
-                Canvas.SetLeft(_relatedListBox,200);
-            }
-            // Box already on session view, so update the contents
-            else
-            {
-                _relatedListBox.UpdateTag(tag);
-            }
-        }
 
         /// <summary>
         /// Animates the presentation by creating various DoubleAnimations, adding then to the storyboard,
@@ -315,59 +332,6 @@ namespace NuSysApp
 
         }
 
-        /// <summary>
-        /// Explore a link by going to the other side. Using the current node being explored (which is stored as CurrentNode), we can find the node opposite the link.
-        /// </summary>
-        /// <param name="vm"></param>
-        internal void ExploreLink(LinkViewModel vm)
-        {
-            // We will use the in atom or the out atom ID to decide which side of the link to go to
-            string id = vm.LinkModel.InAtomId;
-            if (vm.LinkModel.InAtomId.Equals(_currentNode.Id))
-            {
-                id = vm.LinkModel.OutAtomId;
-            }
-
-            // Find a list of element view models that have that id
-            var vms =
-                    SessionController.Instance.ActiveFreeFormViewer.AllContent.Where(
-                        item => (item.Id == id));
-
-            // Use a helper method to the view model that is connected to this link
-            var opposite = vms.FirstOrDefault(item => this.EvmInLink(item, vm.LinkModel.Id));
-            Debug.Assert(opposite != null);
-            // Move to the found element view model 
-            this.MoveTo(opposite);
-
-            // Make sure the link is deselected
-            //vm.IsSelected = false;
-        /*
-            vm.Color = Application.Current.Resources["color2"] as SolidColorBrush;
-            if (vm.LinkModel.IsPresentationLink)
-            {
-                vm.Color = Application.Current.Resources["color4"] as SolidColorBrush;
-            }*/
-        }
-
-        /// <summary>
-        /// Returns if the passed in element view model is connected to the link, using the passed in ID
-        /// </summary>
-        /// <param name="evm"></param>
-        /// <param name="linkId"></param>
-        /// <returns></returns>
-        private bool EvmInLink(ElementViewModel evm, string linkId)
-        {
-            // Look thru the evm's links
-            foreach (var link in evm.LinkList)
-            {
-                // Return true if there is a link id match
-                if (link.Model.Id == linkId)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
 
         /// <summary>
         /// Produces an animation element to animate a certain property transition using a storyboard
@@ -427,9 +391,43 @@ namespace NuSysApp
             _originalTransform = null;
             _timer = null;
             _storyboard = null;
-            _backwardColor = null;
-            _forwardColor = null;
-            _linksUsed = null;
+        }
+
+
+        /// <summary>
+        /// Helper for highlighting an element view model and adding it to the active free form view selections
+        /// </summary>
+        /// <param name="toBeSelected"></param>
+        private void SelectElement(ElementViewModel toBeSelected)
+        {
+            Debug.Assert(toBeSelected != null);
+
+            // if the session controller currently doesn't have the current element selected, add it
+            if (!SessionController.Instance.ActiveFreeFormViewer.Selections.Contains(toBeSelected))
+            {
+                SessionController.Instance.ActiveFreeFormViewer.Selections.Add(toBeSelected);
+            }
+            
+            // highlight the selection
+            toBeSelected.IsSelected = true;
+        }
+
+        /// <summary>
+        /// Helper for unhighlighting an element view model and removing it from the active free form view selections
+        /// </summary>
+        /// <param name="toBeDeselected"></param>
+        private void DeselectElement(ElementViewModel toBeDeselected)
+        {
+            Debug.Assert(toBeDeselected != null);
+
+            // if the session controller currently has the element selected, remove it
+            if (SessionController.Instance.ActiveFreeFormViewer.Selections.Contains(toBeDeselected))
+            {
+                SessionController.Instance.ActiveFreeFormViewer.Selections.Remove(toBeDeselected);
+            }
+
+            // unhighlight the selection
+            toBeDeselected.IsSelected = false;
         }
     }
 
