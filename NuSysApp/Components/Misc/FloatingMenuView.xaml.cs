@@ -294,11 +294,6 @@ namespace NuSysApp
            
             var contentId = SessionController.Instance.GenerateId();
 
-            
-            metadata = new Dictionary<string, object>();
-            //metadata["node_creation_date"] = DateTime.Now;
-            metadata["node_type"] = elementType + "Node";
-
             dict = new Message();
             dict["width"] = size.Width.ToString();
             dict["height"] = size.Height.ToString();
@@ -308,7 +303,6 @@ namespace NuSysApp
             dict["y"] = (p.Y).ToString();
             dict["contentId"] = contentId;
             dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
-            dict["metadata"] = metadata;
             dict["autoCreate"] = true;
            
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, data == null ? "" : data.ToString(), elementType, dict.ContainsKey("title") ? dict["title"].ToString() : null));

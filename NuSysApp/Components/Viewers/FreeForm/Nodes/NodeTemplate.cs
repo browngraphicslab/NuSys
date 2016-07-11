@@ -162,7 +162,10 @@ namespace NuSysApp
             };
 
             var vm = (ElementViewModel)this.DataContext;
-            vm.Controller.LibraryElementController.UserChanged += ControllerOnUserChanged;
+            if (vm?.Controller?.LibraryElementModel != null)
+            {
+                vm.Controller.LibraryElementController.UserChanged += ControllerOnUserChanged;
+            }
 
             (DataContext as BaseINPC).PropertyChanged += OnPropertyChanged;
             base.OnApplyTemplate();
