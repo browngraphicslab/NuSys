@@ -188,8 +188,8 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Suggested Tags:" Foreground="{StaticResource darkforeground}" FontSize="16" Padding="0,0,5,0"/>
-                                    <ItemsControl x:Name="SuggestedTags" Grid.Column="1" ItemsSource="{Binding SuggestedTags}">
+                                    <TextBlock Text="Suggested Tags:" Foreground="{StaticResource color3}" FontSize="16" Padding="0,0,5,0"/>
+                                    <ItemsControl x:Name="SuggestedTags" Grid.Column="1" ItemsSource="{Binding SuggestedTags}" Foreground="{StaticResource color3}">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <local:WrapPanel/>
