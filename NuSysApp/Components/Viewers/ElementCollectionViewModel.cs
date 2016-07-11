@@ -65,12 +65,6 @@ namespace NuSysApp
             {
                 return;
             }
-            var contentLinks = SessionController.Instance.LinksController.GetLinkedIds(controller.LibraryElementModel.LibraryElementId);
-            foreach (var linkId in contentLinks)
-            {
-                //var link = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
-                //AddVisualLinks(controller,link.LibraryElementId);
-            }
             foreach (var regions in controller.LibraryElementModel.Regions)
             {
                 var regioncontroller = SessionController.Instance.RegionsController.GetRegionController(regions.Id);
