@@ -8,58 +8,13 @@
     mc:Ignorable="d"
 
     IsDoubleTapEnabled="True">
-<!--<<<<<<< HEAD
-
-    <Canvas x:Name="xCanvas" >
-        <StackPanel Orientation="Horizontal">
-            <Button x:Name="xDeleteButton" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color1}" Margin="0,45,5,0"  Click ="Delete_Click" VerticalAlignment="Top">
-                <Image Source="ms-appx:///Assets/node icons/delete.png" Height="20" Width="20"></Image>
-            </Button>
-            <Grid Height="{Binding Height}" Width="{Binding Width}" MinHeight="100" MinWidth="300">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Grid x:Name ="xGrid" Grid.Row ="0" BorderBrush="{StaticResource color2}" BorderThickness="1" Background="White">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid Height="45" Background="{StaticResource color1}">
-                        <TextBlock x:Name="xTitle" TextAlignment="Center" Foreground="{StaticResource color3}"  Text="filter type" Height="22" Grid.Row="0" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
-                    </Grid>
-                    <Grid Name ="xbottompanel" Background="{StaticResource color1}" Padding="0,0,40,0"  Height="50" Grid.Row="2" VerticalAlignment="Center" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta">
-                        <StackPanel Orientation="Horizontal">
-                            <Button x:Name="xPieChartButton" Click="XPieChartButton_OnClick"  Margin="20,0,0,0" Background="Transparent">
-                                <Image Source="ms-appx:///Assets/piegraph bluegreen.png" Height="30" Width="30"></Image>
-                            </Button>
-                            <Button x:Name="xListViewButton" Click="XListViewButton_OnClick"  Margin="20,0,0,0" Background="Transparent">
-                                <Image Source="ms-appx:///Assets/listview bluegreen.png" Height="30" Width="30"></Image>
-                            </Button>
-                            <Button x:Name="xCollectionElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Right" Margin="20,0,0,0"  ManipulationDelta="XFilterElement_OnManipulationDelta">
-                                <StackPanel>
-                                    <Image Source="ms-appx:///Assets/collection icon bluegreen.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                                    <TextBlock Text="Collection" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="11"></TextBlock>
-                                </StackPanel>
-                            </Button>
-                        </StackPanel>
-                    </Grid>
-                </Grid>
-                <Path x:Name="xResizer" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
-                      Height="50" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="50"
-                      Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" ManipulationDelta="Resizer_OnManipulationDelta"/>
-
-            </Grid>
-        </StackPanel>
-=======-->
-    <Canvas>
-        <ListView x:Name="xPropertiesList" CanDrag="True" ManipulationMode="TranslateX, TranslateY" Height="200" Width="Auto" Background="White" SelectionMode="Single" ItemsSource="{x:Bind PropertiesToDisplayUnique}" >
+    <Grid VerticalAlignment="Stretch" Margin="0">
+        <ListView x:Name="xPropertiesList" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" ManipulationMode="TranslateX, TranslateY" Width="Auto" Background="White" SelectionMode="Single" ItemsSource="{x:Bind PropertiesToDisplayUnique}" >
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
                     <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="Padding" Value="10,0,10,0"/>
+                    <Setter Property="Padding" Value="0"/>
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
@@ -70,7 +25,7 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-    </Canvas>
+    </Grid>
 
 
 </local:AnimatableUserControl>

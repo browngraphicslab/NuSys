@@ -37,13 +37,6 @@ namespace NuSysApp
             _dragItem = baseTool.Vm.InitializeDragFilterImage();
         }
 
-        public void SetSize(double width, double height)
-        {
-            this.Height = height - 175;
-            this.Width = width;
-            xPieChart.Height = height - 175;
-            xPieChart.Width = width;
-        }
 
         public void SetProperties(List<string> propertiesList)
         {
