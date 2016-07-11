@@ -93,10 +93,16 @@ namespace NuSysApp
                     presentationlink.InElementId = id1;
                     presentationlink.OutElementId = id2;
                     var vm = new PresentationLinkViewModel(presentationlink);
-                    if (PresentationLinkViewModel.Models == null)
+                    Debug.Assert(PresentationLinkViewModel.Models != null, "this hashset of presentationlinkmodels should be statically instantiated");
+
+                    // If there exists a presentation link between two element models, return and do not create a new one
+                    if (PresentationLinkViewModel.Models.FirstOrDefault(item => item.InElementId == id1 && item.OutElementId == id2) != null ||
+                        PresentationLinkViewModel.Models.FirstOrDefault(item => item.OutElementId == id1 && item.InElementId == id2) != null)
                     {
-                        PresentationLinkViewModel.Models = new HashSet<PresentationLinkModel>();
+                    return;
                     }
+                    
+                    // create a new presentation link
                     PresentationLinkViewModel.Models.Add(presentationlink);
                     new PresentationLinkView(vm);
                 });

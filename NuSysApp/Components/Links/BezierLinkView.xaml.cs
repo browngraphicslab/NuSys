@@ -154,22 +154,6 @@ namespace NuSysApp
             curveInner.Point3 = anchor2;
         }
 
-        private void BezierLink_OnPointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION)
-            {
-                // Handles exploration mode
-                var vm = DataContext as ElementViewModel;
-                if (vm == null)
-                {
-                    return;//TODO HERE WE SHOULD HANDLE THE CASE OF EXPLORING LINKS
-                }
-                Debug.Assert(vm != null);
-                Canvas.SetZIndex(this, -10);
-                SessionController.Instance.SessionView.Explore(vm);
-            }
-        }
-
         private void BezierLink_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var vm = DataContext as LinkViewModel;
