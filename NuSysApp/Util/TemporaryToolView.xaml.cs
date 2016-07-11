@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
@@ -78,10 +79,14 @@ namespace NuSysApp
 
         }
 
-        public void SetViewSelection(string selection)
+        public void SetViewSelection(List<string> selections)
         {
-            xPropertiesList.SelectedItem = selection;
-            if (selection != null)
+            xPropertiesList.SelectedItems.Clear();
+            foreach (var selection in selections)
+            {
+                xPropertiesList.SelectedItems.Add(selection);
+            }
+            if (selections != null && selections.Count  > 0)
             {
                 xPropertiesList.ScrollIntoView(xPropertiesList.SelectedItem);
             }
@@ -104,16 +109,35 @@ namespace NuSysApp
             }
             else
             {
-                _baseTool.Vm.Selection = (((sender as Grid).Children[0] as TextBlock).Text);
+                if (e.PointerDeviceType == PointerDeviceType.Pen)
+                {
+                    if (_baseTool.Vm.Selection != null)
+                    {
+                        var selection = ((sender as Grid).Children[0] as TextBlock).Text;
+                        if (!_baseTool.Vm.Selection.Contains(selection))
+                        {
+                            _baseTool.Vm.Selection.Add(selection);
+                        }
+                        _baseTool.Vm.Selection = _baseTool.Vm.Selection;
+                    }
+                    else
+                    {
+                        _baseTool.Vm.Selection = new List<string> { (((sender as Grid).Children[0] as TextBlock).Text) };
+                    }
+                }
+                else
+                {
+                    _baseTool.Vm.Selection = new List<string> {(((sender as Grid).Children[0] as TextBlock).Text)};
+                }
             }
         }
 
 
         private void xListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            if (_baseTool.Vm.Selection != (((sender as Grid).Children[0] as TextBlock).Text) || _baseTool.Vm.Controller.Model.Selected == false)
+            if (!_baseTool.Vm.Selection.Contains(((sender as Grid).Children[0] as TextBlock).Text) || _baseTool.Vm.Controller.Model.Selected == false)
             {
-                _baseTool.Vm.Selection = (((sender as Grid).Children[0] as TextBlock).Text);
+                _baseTool.Vm.Selection = new List<string> { (((sender as Grid).Children[0] as TextBlock).Text)};
             }
             _baseTool.Vm.OpenDetailView();
         }
@@ -170,8 +194,8 @@ namespace NuSysApp
             _baseTool.getCanvas().Children.Remove(_dragItem);
             if (_currentDragMode == DragMode.Filter)
             {
-                
-                _baseTool.Vm.Selection = (((Grid)sender).Children[0] as TextBlock).Text;
+
+                _baseTool.Vm.Selection = new List<string>() {(((Grid) sender).Children[0] as TextBlock).Text};
 
                 var wvm = SessionController.Instance.ActiveFreeFormViewer;
                 var el = (FrameworkElement)sender;
