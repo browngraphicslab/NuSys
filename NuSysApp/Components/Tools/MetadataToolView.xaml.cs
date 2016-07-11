@@ -111,7 +111,7 @@ namespace NuSysApp
         public void RefreshValueList()
         {
             var vm = (DataContext as MetadataToolViewModel);
-            if (vm.Selection.Item1 != null && vm.Controller.Model.Selected)
+            if (vm?.Selection?.Item1 != null && vm.Controller.Model.Selected)
             {
                 if (!xSearchBox.Text.Equals(""))
                 {

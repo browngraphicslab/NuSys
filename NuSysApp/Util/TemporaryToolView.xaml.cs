@@ -82,7 +82,7 @@ namespace NuSysApp
         public void SetViewSelection(List<string> selections)
         {
             xPropertiesList.SelectedItems.Clear();
-            foreach (var selection in selections)
+            foreach (var selection in selections ?? new List<string>())
             {
                 xPropertiesList.SelectedItems.Add(selection);
             }

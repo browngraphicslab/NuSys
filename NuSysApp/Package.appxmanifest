@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="151be203-7bd2-4ce5-80d2-fe29687cfa91" Publisher="CN=nusys" Version="1.0.75.0" />
+  <Identity Name="151be203-7bd2-4ce5-80d2-fe29687cfa91" Publisher="CN=nusys" Version="1.0.76.0" />
   <mp:PhoneIdentity PhoneProductId="151be203-7bd2-4ce5-80d2-fe29687cfa91" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>NuSys</DisplayName>
@@ -25,10 +25,15 @@
       </uap:VisualElements>
       <Extensions>
         <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="pdf">
+          <uap:FileTypeAssociation Name="nusys">
             <uap:SupportedFileTypes>
-              <uap:FileType>.pdf</uap:FileType>
-              <uap:FileType>.json</uap:FileType>
+              <uap:FileType>.nusys</uap:FileType>
+              <uap:FileType>.txt</uap:FileType>
+              <uap:FileType>.png</uap:FileType>
+              <uap:FileType>.jpg</uap:FileType>
+              <uap:FileType>.pptx#3</uap:FileType>
+              <uap:FileType>.pptx</uap:FileType>
+              <uap:FileType>.docx</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
@@ -40,15 +45,10 @@
           </uap:FileTypeAssociation>
         </uap:Extension>
         <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="nusys">
+          <uap:FileTypeAssociation Name="pdf">
             <uap:SupportedFileTypes>
-              <uap:FileType>.nusys</uap:FileType>
-              <uap:FileType>.txt</uap:FileType>
-              <uap:FileType>.png</uap:FileType>
-              <uap:FileType>.jpg</uap:FileType>
-              <uap:FileType>.pptx#3</uap:FileType>
-              <uap:FileType>.pptx</uap:FileType>
-              <uap:FileType>.docx</uap:FileType>
+              <uap:FileType>.pdf</uap:FileType>
+              <uap:FileType>.json</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>

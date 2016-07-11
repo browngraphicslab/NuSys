@@ -121,7 +121,6 @@ namespace NuSysApp
             var libraryId = controller?.LinkLibraryElementModel?.LibraryElementId;
             Debug.Assert(libraryId != null);
             Debug.Assert(!_contentIdToLinkContentIds.ContainsKey(libraryId));
-
             var inId = controller?.LinkLibraryElementModel?.InAtomId;
             var outId = controller?.LinkLibraryElementModel?.OutAtomId;
             Debug.Assert(inId != null);
