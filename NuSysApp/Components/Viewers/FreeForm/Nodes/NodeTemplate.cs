@@ -528,7 +528,7 @@ namespace NuSysApp
                 {
 
                     // make the title read only if we are in exploration mode
-                    title.IsReadOnly = SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION;
+                    title.IsReadOnly = SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION || SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION;
                     highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 156, 197, 194));
                     highlight.BorderThickness = new Thickness(2);
                     highlight.Background = new SolidColorBrush(Colors.Transparent);
