@@ -104,14 +104,6 @@ namespace NuSysApp
 
             isSearched = (Button) GetTemplateChild("isSearched");
             
-            //inkCanvas = new InqCanvasView(new InqCanvasViewModel((vm.Model as NodeModel).InqCanvas, new Size(vm.Width, vm.Height)));
-
-            //(GetTemplateChild("xContainer") as Grid).Children.Add(inkCanvas);
-
-            //inkCanvas.IsEnabled = false;
-            //inkCanvas.Background = new SolidColorBrush(Colors.Aqua);
-            //Canvas.SetZIndex(inkCanvas, -5);
-
             DuplicateElement = (Button)GetTemplateChild("DuplicateElement");
             Link = (Button)GetTemplateChild("Link");
             PresentationLink = (Button)GetTemplateChild("PresentationLink");
@@ -169,8 +161,8 @@ namespace NuSysApp
                 highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
             };
 
-
-            //vm.Controller.LibraryElementController.UserChanged += ControllerOnUserChanged;
+            var vm = (ElementViewModel)this.DataContext;
+            vm.Controller.LibraryElementController.UserChanged += ControllerOnUserChanged;
 
             (DataContext as BaseINPC).PropertyChanged += OnPropertyChanged;
             base.OnApplyTemplate();
