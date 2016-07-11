@@ -53,22 +53,22 @@ namespace NuSysApp
             switch (BasicToolModel.Filter)
             {
                 case ToolModel.ToolFilterTypeTitle.Title:
-                    return libraryElementModel.Title == BasicToolModel.Selection;
+                    return BasicToolModel.Selection.Contains(libraryElementModel.Title) ;
                     break;
                 case ToolModel.ToolFilterTypeTitle.Type:
-                    return libraryElementModel.Type.ToString().ToLower().Equals(BasicToolModel.Selection.ToLower());
+                    return BasicToolModel.Selection.Select(s => s.ToLower()).Contains(libraryElementModel.Type.ToString().ToLower());
                     break;
                 case ToolModel.ToolFilterTypeTitle.Creator:
-                    return libraryElementModel.Creator == BasicToolModel.Selection;
+                    return BasicToolModel.Selection.Contains(libraryElementModel.Creator);
                     break;
                 case ToolModel.ToolFilterTypeTitle.Date:
-                    return GetDate(libraryElementModel) == BasicToolModel.Selection;
+                    return BasicToolModel.Selection.Contains(GetDate(libraryElementModel));
                     break;
                 case ToolModel.ToolFilterTypeTitle.MetadataKeys:
-                    return libraryElementModel.Metadata?.ContainsKey(BasicToolModel.Selection) ?? false;
+                    return libraryElementModel.Metadata?.Keys?.Any(item => BasicToolModel.Selection.Contains(item)) ?? false;
                     break;
                 case ToolModel.ToolFilterTypeTitle.LastEditedDate:
-                    return GetLastEditedDate(libraryElementModel) == BasicToolModel.Selection;
+                    return BasicToolModel.Selection.Contains(GetLastEditedDate(libraryElementModel));
                     break;
             }
             return false;
@@ -80,10 +80,10 @@ namespace NuSysApp
             SelectionChanged?.Invoke(this);
             FireLibraryIdsChanged();
         }
-        public virtual void SetSelection(string selection)
+        public virtual void SetSelection(List<string> selection)
         {
             BasicToolModel.SetSelection(selection);
-            BasicToolModel.SetSelected(true);
+            BasicToolModel.SetSelected(selection.Count>0);
             BasicToolModel.SetLibraryIds(Filter(GetUpdatedDataList()));
             SelectionChanged?.Invoke(this);
             FireLibraryIdsChanged();

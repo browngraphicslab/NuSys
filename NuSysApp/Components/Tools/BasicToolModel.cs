@@ -11,9 +11,9 @@ namespace NuSysApp
         
 
         public ToolFilterTypeTitle Filter { get; private set; }
-        public  string Selection { get; protected set; }
+        public  List<string> Selection { get; protected set; }
 
-        public void SetSelection(string selection)
+        public void SetSelection(List<string> selection)
         {
             Selection = selection;
         }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+
 namespace NuSysApp
 {
     public class ChartSlice
@@ -19,8 +21,18 @@ namespace NuSysApp
             //PropertiesToDisplayPieChart = new ObservableCollection<ChartSlice>();
             
         }
-        
-        public string Selection { get { return (_controller as BasicToolController).BasicToolModel.Selection; } set { (_controller as BasicToolController).SetSelection(value);} }
+
+        public List<string> Selection
+        {
+            get
+            {
+                return (_controller as BasicToolController).BasicToolModel.Selection;
+            }
+            set
+            {
+                (_controller as BasicToolController).SetSelection(value);
+            }
+        }
 
         public ToolModel.ToolFilterTypeTitle Filter { get { return (_controller as BasicToolController).BasicToolModel.Filter;}  set { (_controller as BasicToolController).SetFilter(value);} }
 
@@ -31,7 +43,7 @@ namespace NuSysApp
             InvokePropertiesToDisplayChanged();
             if ((_controller as BasicToolController).BasicToolModel.Selection != null &&
                 (_controller as BasicToolController).BasicToolModel.Selected == true &&
-                !PropertiesToDisplay.Contains((_controller as BasicToolController).BasicToolModel.Selection))
+                !PropertiesToDisplay.Intersect((_controller as BasicToolController).BasicToolModel.Selection).Any())
             {
                 (_controller as BasicToolController).UnSelect();
                 //temp = new ObservableCollection<string>((_controller as BasicToolController).GetAllProperties());

@@ -78,10 +78,10 @@ namespace NuSysApp
 
         }
 
-        public void SetViewSelection(string selection)
+        public void SetViewSelection(List<string> selection)
         {
             xPropertiesList.SelectedItem = selection;
-            if (selection != null)
+            if (selection != null && selection.Count  > 0)
             {
                 xPropertiesList.ScrollIntoView(xPropertiesList.SelectedItem);
             }
@@ -104,16 +104,16 @@ namespace NuSysApp
             }
             else
             {
-                _baseTool.Vm.Selection = (((sender as Grid).Children[0] as TextBlock).Text);
+                _baseTool.Vm.Selection = new List<string> { (((sender as Grid).Children[0] as TextBlock).Text)};
             }
         }
 
 
         private void xListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            if (_baseTool.Vm.Selection != (((sender as Grid).Children[0] as TextBlock).Text) || _baseTool.Vm.Controller.Model.Selected == false)
+            if (!_baseTool.Vm.Selection.Contains(((sender as Grid).Children[0] as TextBlock).Text) || _baseTool.Vm.Controller.Model.Selected == false)
             {
-                _baseTool.Vm.Selection = (((sender as Grid).Children[0] as TextBlock).Text);
+                _baseTool.Vm.Selection = new List<string> { (((sender as Grid).Children[0] as TextBlock).Text)};
             }
             _baseTool.Vm.OpenDetailView();
         }
@@ -170,8 +170,8 @@ namespace NuSysApp
             _baseTool.getCanvas().Children.Remove(_dragItem);
             if (_currentDragMode == DragMode.Filter)
             {
-                
-                _baseTool.Vm.Selection = (((Grid)sender).Children[0] as TextBlock).Text;
+
+                _baseTool.Vm.Selection = new List<string>() {(((Grid) sender).Children[0] as TextBlock).Text};
 
                 var wvm = SessionController.Instance.ActiveFreeFormViewer;
                 var el = (FrameworkElement)sender;

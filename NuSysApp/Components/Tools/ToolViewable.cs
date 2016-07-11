@@ -8,7 +8,7 @@ namespace NuSysApp.Tools
 
         void Dispose();
 
-        void SetViewSelection(string selection);
+        void SetViewSelection(List<string> selection);
 
     }
 }

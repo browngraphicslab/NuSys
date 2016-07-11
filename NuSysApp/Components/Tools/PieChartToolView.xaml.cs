@@ -63,7 +63,7 @@ namespace NuSysApp
             
         }
 
-        public void SetViewSelection(string selection)
+        public void SetViewSelection(List<string> selection)
         {
             var transparent = new SolidColorBrush(Colors.Transparent);
             if (selection == null)
@@ -140,7 +140,7 @@ namespace NuSysApp
                 return;
             }
             var selected = (KeyValuePair<string, int>)(sender as FrameworkElement).DataContext;
-            _baseTool.Vm.Selection = selected.Key;
+            _baseTool.Vm.Selection = new List<string>() {selected.Key};
             _baseTool.Vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
 
 
@@ -160,16 +160,16 @@ namespace NuSysApp
             }
             else
             {
-                _baseTool.Vm.Selection = selected.Key;
+                _baseTool.Vm.Selection = new List<string>() { selected.Key};
             }
         }
 
         private void Slice_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var selected = (KeyValuePair<string, int>)(sender as FrameworkElement).DataContext;
-            if (_baseTool.Vm.Selection != selected.Key || _baseTool.Vm.Controller.Model.Selected == false)
+            if (!_baseTool.Vm.Selection.Contains(selected.Key) || _baseTool.Vm.Controller.Model.Selected == false)
             {
-                _baseTool.Vm.Selection = selected.Key;
+                _baseTool.Vm.Selection = new List<string>() { selected.Key};
             }
             _baseTool.Vm.OpenDetailView();
         }
