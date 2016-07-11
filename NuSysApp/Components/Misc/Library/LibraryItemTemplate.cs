@@ -30,7 +30,7 @@ namespace NuSysApp
             Title = controller.LibraryElementModel.Title;
             controller.TitleChanged += Controller_TitleChanged;
             ThumbnailUri = controller.SmallIconUri;
-            Timestamp = controller.LibraryElementModel.Timestamp.Substring(0, controller.LibraryElementModel.Timestamp.Length - 3);
+            Timestamp = controller.LibraryElementModel.Timestamp?.Substring(0, controller.LibraryElementModel.Timestamp.Length - 3);
             Type = controller.LibraryElementModel.Type.ToString();
             ContentID = controller.LibraryElementModel.LibraryElementId;
             RegionId = null;

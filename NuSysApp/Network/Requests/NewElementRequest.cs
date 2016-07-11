@@ -122,7 +122,7 @@ namespace NuSysApp
                         throw new InvalidOperationException("This node type is not yet supported");
                 }
 
-                foreach (var tag in controller.LibraryElementModel.Keywords)
+                foreach (var tag in controller?.LibraryElementModel?.Keywords ?? new HashSet<Keyword>())
                 {
                     controller.LibraryElementModel.Keywords.Add(tag);
                 }
