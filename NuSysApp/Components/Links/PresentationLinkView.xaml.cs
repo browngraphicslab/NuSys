@@ -51,8 +51,8 @@ namespace NuSysApp
         private void UpdateControlPoints()
         {
             // don't update the control points if we are in exploration mode or presentation mode
-            if (SessionController.Instance.SessionView.ModeInstance.Mode == ModeType.EXPLORATION ||
-                SessionController.Instance.SessionView.ModeInstance.Mode == ModeType.PRESENTATION)
+            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
+                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
             {
                 return;
             }

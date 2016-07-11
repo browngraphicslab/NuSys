@@ -173,8 +173,8 @@ namespace NuSysApp
 
         private void Title_GotFocus(object sender, RoutedEventArgs e)
         {
-            if (SessionController.Instance.SessionView.ModeInstance.Mode == ModeType.EXPLORATION ||
-                SessionController.Instance.SessionView.ModeInstance.Mode == ModeType.PRESENTATION)
+            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
+                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
             {
                 var tb = sender as TextBox;
                 Debug.Assert(tb != null);
