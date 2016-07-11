@@ -310,37 +310,7 @@ namespace NuSysApp
             return source != null && toCheck != null && source.IndexOf(toCheck, comp) >= 0;
         }
 
-        /// <summary>
-        /// Saves modified keys 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void KeyTextBox_OnPointerExited(object sender, PointerRoutedEventArgs e)
-        {
-
-            var textbox = sender as TextBox;
-            var entry = textbox.DataContext as MetadataEntry;
-            if (!textbox.Text.Equals(""))
-            {
-                entry.Key = textbox.Text;
-            }
-        }
-
-        /// <summary>
-        /// Saves modified values 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ValueTextBox_OnPointerExited(object sender, PointerRoutedEventArgs e)
-        {
-            var textbox = sender as TextBox;
-            var entry = textbox.DataContext as MetadataEntry;
-            if (!textbox.Text.Equals(""))
-            {
-                var keys = textbox.Text.Split(',').Select(sValue => sValue.Trim()).ToArray();
-                entry.Values = keys.ToList();
-            }
-        }
+        
 
         /// <summary>
         /// Finds the text boxes and makes it obvious that you should edit them.
@@ -389,6 +359,11 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void XCheckBox_OnChecked(object sender, RoutedEventArgs e)
         {
+            if (_highlightedTextBoxes == null || _shownButtons == null)
+            {
+                return;
+            }
+
             this.HideSelectionButtonsFromPreviousSelection();
             this.Update();
         }
@@ -416,6 +391,8 @@ namespace NuSysApp
         /// </summary>
         private void HideSelectionButtonsFromPreviousSelection()
         {
+
+            
             foreach (var box in _highlightedTextBoxes)
             {
                 box.Background = null;
@@ -444,5 +421,43 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Saves the new key as the text is edited
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void EditableKeyBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            var textbox = sender as TextBox;
+            var entry = textbox.DataContext as MetadataEntry;
+            if (!textbox.Text.Equals(""))
+            {
+                // Updates local and server metadata entry
+                var newKey = textbox.Text;
+                Metadatable.UpdateMetadata(entry, newKey, entry.Values);
+                entry.Key = newKey;
+            }
+        }
+
+        /// <summary>
+        /// Saves the new value as the text is edited
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void EditableValueBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            var textbox = sender as TextBox;
+            var entry = textbox.DataContext as MetadataEntry;
+            if (!textbox.Text.Equals(""))
+            {
+                // Parses string into words and updates local and server metadata entry
+                var words = textbox.Text.Split(',').Select(sValue => sValue.Trim()).ToArray();
+                var newValues = words.ToList();
+                Metadatable.UpdateMetadata(entry, entry.Key, newValues);
+                entry.Values = newValues;
+            }
+        }
+
+    
     }
 }

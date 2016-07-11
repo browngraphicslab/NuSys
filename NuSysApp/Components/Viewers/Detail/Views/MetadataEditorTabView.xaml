@@ -102,13 +102,13 @@
                                     
                                 </StackPanel>
 
-                                <TextBox  Text="{x:Bind Key}" PlaceholderText="Enter a Key"    Background="{Binding Mutability, Converter={StaticResource brushConverter}}"  PointerExited="KeyTextBox_OnPointerExited" RelativePanel.AlignHorizontalCenterWithPanel="True" BorderThickness="0" IsHitTestVisible="False" ></TextBox>
+                                <TextBox  Name="EditableKeyBox" Text="{x:Bind Key}" PlaceholderText="None"    Background="{Binding Mutability, Converter={StaticResource brushConverter}}"  RelativePanel.AlignHorizontalCenterWithPanel="True" BorderThickness="0" IsHitTestVisible="False" TextChanged="EditableKeyBox_OnTextChanged" ></TextBox>
                               
                             </RelativePanel>
 
 
 
-                            <TextBox Grid.Column="1" Text="{Binding Values, Converter={StaticResource listConverter}}" PlaceholderText="Enter Values"  HorizontalAlignment="Center" HorizontalContentAlignment="Center" BorderThickness="0"   Background="{x:Bind Mutability, Converter={StaticResource brushConverter}}" VerticalAlignment="Center" VerticalContentAlignment="Center" PointerExited="ValueTextBox_OnPointerExited" IsHitTestVisible="False"></TextBox>
+                            <TextBox Grid.Column="1" Name="EditableValueBox" Text="{Binding Values, Converter={StaticResource listConverter}}" PlaceholderText="None"  HorizontalAlignment="Center" HorizontalContentAlignment="Center" BorderThickness="0"   Background="{x:Bind Mutability, Converter={StaticResource brushConverter}}" VerticalAlignment="Center" VerticalContentAlignment="Center" IsHitTestVisible="False" TextChanged="EditableValueBox_OnTextChanged"></TextBox>
                           
                            
                         </Grid>
@@ -116,7 +116,7 @@
                 </ListView.ItemTemplate>
             </ListView>
             
-            <CheckBox x:Name="xCheckBox" HorizontalAlignment="Left" Grid.Row="1" Content="show immutable entries" Checked="XCheckBox_OnChecked" Unchecked="XCheckBox_OnUnchecked" Foreground="White" ></CheckBox>
+            <CheckBox x:Name="xCheckBox" HorizontalAlignment="Left" Grid.Row="1" Content="show immutable entries" Checked="XCheckBox_OnChecked" Unchecked="XCheckBox_OnUnchecked" Foreground="White" IsChecked="True" ></CheckBox>
             
         </Grid>
 
