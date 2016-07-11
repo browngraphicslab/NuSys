@@ -97,8 +97,11 @@ namespace NuSysApp
 
         private void TextChanged(object source, string text)
         {
+            var vm = (TextNodeViewModel)DataContext;
+            vm.TextBindingChanged -= TextChanged;
             if (navigated)
             {
+
                 UpdateText(text);
             }
             else
@@ -106,6 +109,7 @@ namespace NuSysApp
                 TextNodeWebView.NavigationCompleted -= TextNodeWebViewOnNavigationCompleted;
                 TextNodeWebView.NavigationCompleted += TextNodeWebViewOnNavigationCompleted;
             }
+            vm.TextBindingChanged += TextChanged;
         }
 
         private void ControllerOnDisposed(object source, object args)

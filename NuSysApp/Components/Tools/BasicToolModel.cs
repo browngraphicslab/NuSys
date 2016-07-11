@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Web.AtomPub;
 
 namespace NuSysApp
 {
@@ -11,9 +12,14 @@ namespace NuSysApp
         
 
         public ToolFilterTypeTitle Filter { get; private set; }
-        public  List<string> Selection { get; protected set; }
+        public  HashSet<string> Selection { get; protected set; }
 
-        public void SetSelection(List<string> selection)
+        public BasicToolModel()
+        {
+            Selection = new HashSet<string>();
+        }
+
+        public void SetSelection(HashSet<string> selection)
         {
             Selection = selection;
         }

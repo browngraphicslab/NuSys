@@ -21,7 +21,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Border Grid.Row="0"  Name="xParentOperatorGrid" Width="70" Visibility="Collapsed" Height="40" CornerRadius="2,2,0,0" Background="{StaticResource color1}" Tapped="XParentOperatorText_OnTapped" Margin="100,0,40,0">
+            <Border Grid.Row="0"  Name="xParentOperatorGrid" Width="70" Visibility="Collapsed" Height="40" CornerRadius="2,2,0,0" Background="{StaticResource color1}" Tapped="XParentOperatorText_OnTapped" Margin="100,0,100,0">
                 <TextBlock Text="OR" Name="xParentOperatorText" HorizontalAlignment="Center" FontSize="24"  VerticalAlignment="Center"></TextBlock>
             </Border>
             <Grid Grid.Row="1" Name="stack1" Margin="0" VerticalAlignment="Stretch">
@@ -89,12 +89,42 @@
                                 <Border Grid.Row="1"  BorderThickness="0,0,0,1" BorderBrush="{StaticResource color2}">
                                     <TextBox Name="xSearchBox" TextChanged="XSearchBox_OnTextChanged"/>
                                 </Border>
-                                <ListView Grid.Row="2"  x:Name="xMetadataValuesList" BorderBrush="{StaticResource color2}" Margin="0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" BorderThickness="1,1,0,0" ManipulationMode="All" ManipulationStarted ="XList_OnManipulationStarted" Width="200" Background="{StaticResource color1}" SelectionMode="Single" >
+                                <ListView Grid.Row="2"  x:Name="xMetadataValuesList" BorderBrush="{StaticResource color2}" Margin="0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" BorderThickness="1,1,0,0" ManipulationMode="All" ManipulationStarted ="XList_OnManipulationStarted" Width="200" Background="{StaticResource color1}" SelectionMode="Multiple" >
                                     <ListView.ItemContainerStyle>
                                         <Style TargetType="ListViewItem">
                                             <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
                                             <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
                                             <Setter Property="Padding" Value="0"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="ListViewItem">
+                                                        <ListViewItemPresenter
+          ContentTransitions="{TemplateBinding ContentTransitions}"
+          SelectionCheckMarkVisualEnabled="False"
+          CheckBrush="{ThemeResource SystemControlForegroundBaseMediumHighBrush}"
+          CheckBoxBrush="Transparent"
+          DragBackground="{ThemeResource ListViewItemDragBackgroundThemeBrush}"
+          DragForeground="{ThemeResource ListViewItemDragForegroundThemeBrush}"
+          FocusBorderBrush="{ThemeResource SystemControlForegroundAltHighBrush}"
+          FocusSecondaryBorderBrush="{ThemeResource SystemControlForegroundBaseHighBrush}"
+          PlaceholderBackground="{ThemeResource ListViewItemPlaceholderBackgroundThemeBrush}"
+          PointerOverBackground="{ThemeResource SystemControlHighlightListLowBrush}"
+          PointerOverForeground="{ThemeResource SystemControlHighlightAltBaseHighBrush}"
+          SelectedBackground="{ThemeResource SystemControlHighlightListAccentLowBrush}"
+          SelectedForeground="{ThemeResource SystemControlHighlightAltBaseHighBrush}"
+          SelectedPointerOverBackground="{ThemeResource SystemControlHighlightListAccentMediumBrush}"
+          PressedBackground="{ThemeResource SystemControlHighlightListMediumBrush}"
+          SelectedPressedBackground="{ThemeResource SystemControlHighlightListAccentHighBrush}"
+          DisabledOpacity="{ThemeResource ListViewItemDisabledThemeOpacity}"
+          DragOpacity="{ThemeResource ListViewItemDragThemeOpacity}"
+          ReorderHintOffset="{ThemeResource ListViewItemReorderHintThemeOffset}"
+          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+          ContentMargin="{TemplateBinding Padding}"
+          CheckMode="Inline"/>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
                                         </Style>
                                     </ListView.ItemContainerStyle>
                                     <ListView.ItemTemplate>

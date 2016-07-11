@@ -22,7 +22,7 @@ namespace NuSysApp
             
         }
 
-        public List<string> Selection
+        public HashSet<string> Selection
         {
             get
             {
@@ -39,46 +39,25 @@ namespace NuSysApp
         
         public override void ReloadPropertiesToDisplay()
         {
-            PropertiesToDisplay = (_controller as BasicToolController).GetAllProperties();
+            PropertiesToDisplay = new List<string>((_controller as BasicToolController).GetAllProperties().OrderBy(key => !string.IsNullOrEmpty(key) && char.IsNumber(key[0])).ThenBy(key => key));
             InvokePropertiesToDisplayChanged();
             if ((_controller as BasicToolController).BasicToolModel.Selection != null &&
                 (_controller as BasicToolController).BasicToolModel.Selected == true &&
                 !PropertiesToDisplay.Intersect((_controller as BasicToolController).BasicToolModel.Selection).Any())
             {
                 (_controller as BasicToolController).UnSelect();
-                //temp = new ObservableCollection<string>((_controller as BasicToolController).GetAllProperties());
             }
             else if ((_controller as BasicToolController).BasicToolModel.Selected == true)
             {
+                foreach (var item in new List<string>(Selection))
+                {
+                    if (!PropertiesToDisplay.Contains(item))
+                    {
+                        Selection.Remove(item);
+                    }
+                }
                 Selection = Selection;
             }
-            //PieChartDictionary = new Dictionary<string, int>();
-            //PropertiesToDisplay.Clear();
-            //PropertiesToDisplayUnique.Clear();
-            //PropertiesToDisplayPieChart = new ObservableCollection<ChartSlice>();
-            //foreach (var item in temp)
-            //{
-            //    if (item != null)
-            //    {
-            //        PropertiesToDisplay.Add(item);
-            //if (!PieChartDictionary.ContainsKey(item))
-            //{
-            //    PieChartDictionary.Add(item, 1);
-            //    PropertiesToDisplayUnique.Add(item);
-            //}
-            //else
-            //{
-            //    PieChartDictionary[item] = PieChartDictionary[item] + 1;
-            //}
-            //    }
-            //}
-            //foreach (var item in dic)
-            //{
-            //    ChartSlice slice = new ChartSlice();
-            //    slice.Name = item.Key;
-            //    slice.Amount = item.Value;
-            //    PropertiesToDisplayPieChart.Add(slice);
-            //}
 
         }
 

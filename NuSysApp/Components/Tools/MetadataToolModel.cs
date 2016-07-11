@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace NuSysApp
 {
@@ -6,11 +7,15 @@ namespace NuSysApp
     {
 
         public ToolFilterTypeTitle Filter { get; private set; }
-        public Tuple<string, string> Selection { get; protected set; }
+        public Tuple<string, HashSet<string>> Selection { get; protected set; }
 
-        public void SetSelection(Tuple<string, string> selection)
+        public MetadataToolModel()
         {
+            Selection = new Tuple<string, HashSet<string>>(null, new HashSet<string>());
+        }
 
+        public void SetSelection(Tuple<string, HashSet<string>> selection)
+        {
             Selection = selection;
         }
         public void SetFilter(ToolFilterTypeTitle filter)

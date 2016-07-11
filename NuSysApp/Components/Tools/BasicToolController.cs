@@ -75,12 +75,13 @@ namespace NuSysApp
         }
         public override void UnSelect()
         {
+            BasicToolModel.Selection.Clear();
             BasicToolModel.SetSelected(false);
             BasicToolModel.SetLibraryIds(Filter(GetUpdatedDataList()));
             SelectionChanged?.Invoke(this);
             FireLibraryIdsChanged();
         }
-        public virtual void SetSelection(List<string> selection)
+        public virtual void SetSelection(HashSet<string> selection)
         {
             BasicToolModel.SetSelection(selection);
             BasicToolModel.SetSelected(selection.Count>0);

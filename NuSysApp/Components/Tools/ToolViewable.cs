@@ -8,7 +8,7 @@ namespace NuSysApp.Tools
 
         void Dispose();
 
-        void SetViewSelection(List<string> selection);
+        void SetViewSelection(HashSet<string> selection);
 
     }
 }
