@@ -254,8 +254,8 @@ namespace NuSysApp
             if (width > _minWidth && height > _minHeight)
             {
                 vm.Controller.SetSize(width, height);
-                xMetadataKeysList.Height = height - ListBoxHeightOffset;
-                xMetadataValuesList.Height = height - ListBoxHeightOffset;
+                //xMetadataKeysList.Height = height - ListBoxHeightOffset;
+                //xMetadataValuesList.Height = height - ListBoxHeightOffset;
                 xMetadataKeysList.Width = width / 2;
                 xMetadataValuesList.Width = width / 2;
             }
@@ -268,8 +268,8 @@ namespace NuSysApp
             else if (width < _minWidth)
             {
                 vm.Controller.SetSize(this.Width, height);
-                xMetadataKeysList.Height = height - ListBoxHeightOffset;
-                xMetadataValuesList.Height = height - ListBoxHeightOffset;
+                //xMetadataKeysList.Height = height - ListBoxHeightOffset;
+                //xMetadataValuesList.Height = height - ListBoxHeightOffset;
             }
         }
 
@@ -419,6 +419,11 @@ namespace NuSysApp
                 vm.Selection = new Tuple<string, string>(vm.Selection.Item1, ((sender as Grid).Children[0] as TextBlock).Text);
             }
             vm.OpenDetailView();
+        }
+
+        private void XSearchBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

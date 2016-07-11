@@ -10,6 +10,5 @@ namespace NuSysApp.Tools
 
         void SetViewSelection(string selection);
 
-        void SetSize(double width, double height);
     }
 }

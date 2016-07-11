@@ -555,8 +555,8 @@
             </ResourceDictionary>
         </charting:ResourceDictionaryCollection>
     </nuSysApp:AnimatableUserControl.Resources>
-    <Canvas x:Name="xCanvas" HorizontalAlignment="Left">
-        <charting:Chart x:Name="xPieChart" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0" Width="Auto" Height="Auto">
+    <Grid x:Name="xCanvas" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+        <charting:Chart x:Name="xPieChart" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" Margin="0,0,0,0" Width="Auto" Height="Auto">
             <charting:PieSeries x:Name="xPieSeries" Palette="{StaticResource MyStylePalette}"  Margin="0,0,0,0" IndependentValuePath="Key" DependentValuePath="Value" IsSelectionEnabled="True"/>
             <charting:Chart.LegendStyle>
                 <Style TargetType="dataVisualization:Legend">
@@ -607,7 +607,7 @@
         </charting:Chart>
 
             
-    </Canvas>
+    </Grid>
 </nuSysApp:AnimatableUserControl>
 
 
