@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
@@ -78,10 +79,14 @@ namespace NuSysApp
 
         }
 
-        public void SetViewSelection(List<string> selection)
+        public void SetViewSelection(List<string> selections)
         {
-            xPropertiesList.SelectedItem = selection;
-            if (selection != null && selection.Count  > 0)
+            xPropertiesList.SelectedItems.Clear();
+            foreach (var selection in selections)
+            {
+                xPropertiesList.SelectedItems.Add(selection);
+            }
+            if (selections != null && selections.Count  > 0)
             {
                 xPropertiesList.ScrollIntoView(xPropertiesList.SelectedItem);
             }
@@ -104,7 +109,26 @@ namespace NuSysApp
             }
             else
             {
-                _baseTool.Vm.Selection = new List<string> { (((sender as Grid).Children[0] as TextBlock).Text)};
+                if (e.PointerDeviceType == PointerDeviceType.Pen)
+                {
+                    if (_baseTool.Vm.Selection != null)
+                    {
+                        var selection = ((sender as Grid).Children[0] as TextBlock).Text;
+                        if (!_baseTool.Vm.Selection.Contains(selection))
+                        {
+                            _baseTool.Vm.Selection.Add(selection);
+                        }
+                        _baseTool.Vm.Selection = _baseTool.Vm.Selection;
+                    }
+                    else
+                    {
+                        _baseTool.Vm.Selection = new List<string> { (((sender as Grid).Children[0] as TextBlock).Text) };
+                    }
+                }
+                else
+                {
+                    _baseTool.Vm.Selection = new List<string> {(((sender as Grid).Children[0] as TextBlock).Text)};
+                }
             }
         }
 
