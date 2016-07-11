@@ -85,7 +85,7 @@ namespace NuSysApp
             var foo = vms?.ToList();
             var element = foo[0]?.DataContext as ElementViewModel;
             Debug.Assert(element != null);
-            SessionController.Instance.SessionView.Explore(element);
+            SessionController.Instance.SessionView.ExploreSelectedObject(element);
 
         }
 
@@ -113,7 +113,7 @@ namespace NuSysApp
             var vms = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => ((ElementViewModel)item.DataContext).Controller.LibraryElementModel.LibraryElementId == model.LibraryElementId);
             var foo = vms.ToList();
             var element = foo[0].DataContext as ElementViewModel;
-            SessionController.Instance.SessionView.Explore(element);
+            SessionController.Instance.SessionView.ExploreSelectedObject(element);
 
             // Make the list view selection reflect these changes
             xListView.DeselectRange(new ItemIndexRange(xListView.SelectedIndex,1));

@@ -267,6 +267,7 @@ namespace NuSysApp
 
         public void EnterExplorationMode(ElementViewModel em)
         {
+            Debug.Assert(em != null);
             _modeInstance = new ExplorationMode(em);
 
             /* uncomment this and go into exploration mode for a good time :)
@@ -296,29 +297,115 @@ namespace NuSysApp
             SetModeButtons();
         }
 
-        /// <summary>
-        /// Explores (aka zooms in on) the passed in element view model
-        /// </summary>
-        /// <param name="em"></param>
-        public void Explore(ElementViewModel elementViewModel)
+        public void ExploreSelectedObject(ElementViewModel elementViewModel)
         {
+
+            // Only explore if we are in exploration mode
             if (_modeInstance == null || _modeInstance.Mode != ModeType.EXPLORATION)
             {
                 return;
             }
             var exp = _modeInstance as ExplorationMode;
 
-            /*
-            var linkViewModel = elementViewModel as LinkViewModel;
-            if (linkViewModel != null)
+            if (elementViewModel == null)
             {
-                exp?.ExploreLink(linkViewModel);
+                return; // we can't explore something that doesn't exist
             }
-            else
+
+            exp?.MoveTo(elementViewModel);
+            SetModeButtons();
+        }
+
+        /// <summary>
+        /// Gets a data context passed in when an element is clicked
+        /// </summary>
+        /// <param name="datacontext"></param>
+        public void ExploreSelectedObject(object dataContext)
+        {
+
+            // Only explore if we are in exploration mode
+            if (_modeInstance == null || _modeInstance.Mode != ModeType.EXPLORATION)
             {
-                exp?.MoveTo(elementViewModel);
+                return;
             }
-            SetModeButtons();*/
+            var exp = _modeInstance as ExplorationMode;
+
+            if (dataContext == null)
+            {
+                return; // we can't explore something that doesn't exist
+            }
+
+            // take care of exploring presentation links in this if statement
+            if (dataContext is PresentationLinkViewModel)
+            {
+                var presLink = dataContext as PresentationLinkViewModel;
+
+                var atom1 = presLink.Model.InElementViewModel;
+                var atom2 = presLink.Model.OutElementViewModel;
+
+                // if atom1 is currently selected move to atom2
+                if (SessionController.Instance.ActiveFreeFormViewer.Selections.Contains(atom1))
+                {
+                    exp?.MoveTo(atom2);
+                }
+                // else if atom2 is currently selected move to atom1
+                else if (SessionController.Instance.ActiveFreeFormViewer.Selections.Contains(atom2))
+                {
+                    exp?.MoveTo(atom1);
+                }
+                else
+                {
+                    // if we aren't connected to a link just move to a random side
+                    Random rng = new Random();
+                    exp?.MoveTo(rng.NextDouble() > .5 ? atom1 : atom2);
+                }
+            }
+            // take care of exploring links in this statement
+            else if (dataContext is LinkViewModel)
+            {
+                var link = dataContext as LinkViewModel;
+                Debug.Assert(SessionController.Instance.IdToControllers.ContainsKey(link.LinkModel.InAtomId) &&
+                             SessionController.Instance.IdToControllers.ContainsKey(link.LinkModel.OutAtomId));
+
+                var inElementId = link.Controller.InElement.Id;
+                Debug.Assert(inElementId != null);
+                var elementViewModels = SessionController.Instance.ActiveFreeFormViewer.AllContent.Where(elementVM => elementVM.Id == inElementId).ToList();
+                Debug.Assert(elementViewModels != null);
+                Debug.Assert(elementViewModels.Count == 1); // we shouldn't have multiple
+                var atom1 = elementViewModels.First();
+
+                var outElementId = link.Controller.OutElement.Id;
+                Debug.Assert(outElementId != null);
+                elementViewModels = SessionController.Instance.ActiveFreeFormViewer.AllContent.Where(elementVM => elementVM.Id == outElementId).ToList();
+                Debug.Assert(elementViewModels != null);
+                Debug.Assert(elementViewModels.Count == 1); // we shouldn't have multiple
+                var atom2 = elementViewModels.First();
+
+                // if atom1 is currently selected move to atom2
+                if (SessionController.Instance.ActiveFreeFormViewer.Selections.Contains(atom1))
+                {
+                    exp?.MoveTo(atom2);
+                }
+                // else if atom2 is currently selected move to atom1
+                else if (SessionController.Instance.ActiveFreeFormViewer.Selections.Contains(atom2))
+                {
+                    exp?.MoveTo(atom1);
+                }
+                else
+                {
+                    // if we aren't connected to a link just move to a random side
+                    Random rng = new Random();
+                    exp?.MoveTo(rng.NextDouble() > .5 ? atom1 : atom2);
+                }
+
+            }
+            // explore element view models, but not the freeformviewer, that represents a click on the background
+            else if (dataContext is ElementViewModel && !(dataContext is FreeFormViewerViewModel))
+            {
+                exp?.MoveTo(dataContext as ElementViewModel);
+            }
+
+            SetModeButtons();
         }
 
         public void ExitMode()
