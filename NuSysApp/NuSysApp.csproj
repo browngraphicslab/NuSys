@@ -102,8 +102,10 @@
     </Content>
     <Content Include="Assets\add from file dark.png" />
     <Content Include="Assets\audio main menu.png" />
+    <Content Include="Assets\audio.png" />
     <Content Include="Assets\collection icon bluegreen.png" />
     <Content Include="Assets\collection main menu.png" />
+    <Content Include="Assets\collection_1.png" />
     <Content Include="Assets\exploration icon.png" />
     <Content Include="Assets\filter.png" />
     <Content Include="Assets\add from file.png" />
@@ -825,6 +827,7 @@
     <Content Include="Assets\icon_window_search.png" />
     <Content Include="Assets\icon_node_x.png" />
     <Content Include="Assets\icon_node_x2.png" />
+    <Content Include="Assets\pdf.png" />
     <Content Include="Assets\plus_icon.png" />
     <Content Include="Assets\piegraph bluegreen.png" />
     <Content Include="Assets\powerpointIcon.png" />
@@ -846,9 +849,11 @@
     <Content Include="Assets\star_icon.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\text node main menu.png" />
+    <Content Include="Assets\text.png" />
     <Content Include="Assets\tools icon.png" />
     <Content Include="Assets\tool_icon.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="Assets\word.png" />
     <Content Include="Assets\wordIcon.png" />
     <Content Include="Components\Misc\icon_folder.png" />
     <Content Include="Components\TextEditor\app.css" />

@@ -546,7 +546,7 @@ namespace NuSysApp
         public FrameworkElement MakeSuggestedTagBlock(string text)
         {
             var tagContent = new TextBlock() { Text = text };
-            tagContent.Foreground = new SolidColorBrush(Constants.foreground6);
+            tagContent.Foreground = new SolidColorBrush(Constants.color3);
             tagContent.FontStyle = FontStyle.Italic;
             tagContent.HorizontalAlignment = HorizontalAlignment.Stretch;
 
@@ -561,7 +561,7 @@ namespace NuSysApp
             suggestedTagBlock.Height = 30;
             suggestedTagBlock.Padding = new Thickness(5);
             suggestedTagBlock.BorderThickness = new Thickness(0);
-            suggestedTagBlock.Foreground = new SolidColorBrush(Constants.foreground6);
+            suggestedTagBlock.Foreground = new SolidColorBrush(Constants.color3);
             suggestedTagBlock.Margin = new Thickness(5, 2, 2, 5);
             suggestedTagBlock.FontStyle = FontStyle.Italic;
             suggestedTagBlock.Tapped += SuggestedTagBlock_Tapped;

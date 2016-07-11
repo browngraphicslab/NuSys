@@ -116,7 +116,7 @@
                 </ListView.ItemTemplate>
             </ListView>
             
-            <CheckBox x:Name="xCheckBox" HorizontalAlignment="Left" Grid.Row="1" Content="show immutable entries" Checked="XCheckBox_OnChecked" Unchecked="XCheckBox_OnUnchecked" Foreground="White" ></CheckBox>
+            <CheckBox x:Name="xCheckBox" HorizontalAlignment="Left" Grid.Row="1" Content="show immutable entries" Checked="XCheckBox_OnChecked" Unchecked="XCheckBox_OnUnchecked" Foreground="{StaticResource color3}" ></CheckBox>
             
         </Grid>
 
