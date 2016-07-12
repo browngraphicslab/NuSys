@@ -419,7 +419,7 @@ namespace NuSysApp
 
         public virtual void UnPack(Message message)
         {
-            _blockServerInteraction = true;
+            _blockServerInteraction = false;
             if (message.ContainsKey("metadata"))
             {
                 var metadata = message.GetDict<string, MetadataEntry>("metadata");
@@ -440,7 +440,7 @@ namespace NuSysApp
                 TitleChanged?.Invoke(this, message.GetString("title"));
             }
 
-            _blockServerInteraction = false;
+            _blockServerInteraction = true;
         }
 
         public Uri SmallIconUri
