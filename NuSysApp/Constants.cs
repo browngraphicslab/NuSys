@@ -157,6 +157,12 @@ namespace NuSysApp
         public const string NuSysWorkspaceToken = "NuSysWorkspaceToken";
         #endregion Other
 
+        #region InitialTransform
+        public static readonly double InitialCenter = 50000;
+        public static readonly double InitialTranslate = -50000;
+        public static readonly double InitialScale = .85;
+        #endregion InitialTransform
+
         #region StaticMethods
 
         public static bool IsNode(ElementType type)

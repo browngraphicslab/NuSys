@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
 
@@ -37,9 +38,17 @@ namespace NuSysApp
             var model = vm.Model;
             //If same collection, disable enter collection button
             var id = ((GroupDetailHomeTabViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
+
+            // Show the return to origin button if you are currently in the collection
             if (id == SessionController.Instance.ActiveFreeFormViewer.ContentId)
             {
-                EnterCollectionButton.Visibility = Visibility.Collapsed;
+
+                ReturnToOriginButton.Visibility = Visibility.Visible;
+            }
+            // Otherwise, let the user enter the collection
+            else
+            {
+                EnterCollectionButton.Visibility = Visibility.Visible;
             }
 
                 List<Uri> AllowedUris = new List<Uri>();
@@ -217,6 +226,86 @@ namespace NuSysApp
             SessionController.Instance.SessionView.DetailViewerView.Visibility = Visibility.Collapsed;
 
         }
+
+        /// <summary>
+        /// Calls a method to return the camera to the origin
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ReturnToOriginButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            this.ReturnCameraToOrigin();
         }
+
+        /// <summary>
+        /// Returns the camera to the origin using a storyboard
+        /// </summary>
+        private void ReturnCameraToOrigin()
+        {
+            var duration = new Duration(TimeSpan.FromSeconds(1));
+            var storyboard = new Storyboard();
+            storyboard.Duration = duration;
+
+            // Saves the final product as a composite transform and updates other transforms based on this
+            var futureTransform = new CompositeTransform
+            {
+                TranslateX = Constants.InitialTranslate,
+                TranslateY = Constants.InitialTranslate,
+                ScaleX = Constants.InitialScale,
+                ScaleY = Constants.InitialScale,
+                CenterX = Constants.InitialCenter,
+                CenterY = Constants.InitialCenter
+            };
+            SessionController.Instance.SessionView.FreeFormViewer.PanZoom.UpdateTempTransform(futureTransform);
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Transform = futureTransform;
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Redraw();
+
+            // Create a DoubleAnimation for each property to animate
+            var scaleAnimationX = MakeAnimationElement(futureTransform.ScaleX, "ScaleX", duration);
+            var scaleAnimationY = MakeAnimationElement(futureTransform.ScaleY, "ScaleY", duration);
+            var centerAnimationX = MakeAnimationElement(futureTransform.CenterX, "CenterX", duration);
+            var centerAnimationY = MakeAnimationElement(futureTransform.CenterY, "CenterY", duration);
+            var translateAnimationX = MakeAnimationElement(futureTransform.TranslateX, "TranslateX", duration);
+            var translateAnimationY = MakeAnimationElement(futureTransform.TranslateY, "TranslateY", duration);
+            var animationList = new List<DoubleAnimation>(new DoubleAnimation[] { scaleAnimationX, scaleAnimationY, centerAnimationX, centerAnimationY, translateAnimationX, translateAnimationY });
+
+            // Add each animation to the storyboard
+            foreach (var anim in animationList)
+            {
+                storyboard.Children.Add(anim);
+            }
+
+            // Begin the animation.
+            storyboard.Begin();
+        }
+
+        /// <summary>
+        /// Produces an animation element to animate a certain property transition using a storyboard
+        /// </summary>
+        /// <param name="to"></param>
+        /// <param name="name"></param>
+        /// <param name="duration"></param>
+        /// <param name="transform"></param>
+        /// <param name="dependent"></param>
+        /// <returns></returns>
+        private DoubleAnimation MakeAnimationElement(double to, String name, Duration duration,
+            CompositeTransform transform = null, bool dependent = false)
+        {
+
+            if (transform == null)
+            {
+                transform = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
+            }
+
+            var toReturn = new DoubleAnimation();
+            toReturn.EnableDependentAnimation = true;
+            toReturn.Duration = duration;
+            Storyboard.SetTarget(toReturn, transform);
+            Storyboard.SetTargetProperty(toReturn, name);
+            toReturn.To = to;
+            toReturn.EasingFunction = new QuadraticEase();
+            return toReturn;
+        }
+    }
  }
 

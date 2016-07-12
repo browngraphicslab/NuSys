@@ -15,5 +15,7 @@ namespace LdaLibrary
 	    public static readonly int MODEL_STATUS_EST = 1;
 	    public static readonly int MODEL_STATUS_ESTC = 2;
         public static readonly int MODEL_STATUS_INF = 3;
+
+        
     }
 }

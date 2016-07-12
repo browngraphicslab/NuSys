@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.System;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -109,7 +111,10 @@ namespace NuSysApp
 
         private void XSearchBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            RefreshValueList();
+            if (xMetadataValuesList.ItemsSource != null)
+            {
+                RefreshValueList();
+            }
         }
 
         /// <summary>
@@ -118,11 +123,11 @@ namespace NuSysApp
         public void RefreshValueList()
         {
             var vm = (DataContext as MetadataToolViewModel);
-            var filteredList =
-                FilterValuesList(xSearchBox.Text);
             if (vm?.Selection?.Item1 != null && vm.Controller.Model.Selected)
             {
-                    if (!ScrambledEquals(xMetadataValuesList.ItemsSource as IEnumerable<string>,
+                var filteredList =
+                FilterValuesList(xSearchBox.Text);
+                if (!ScrambledEquals(xMetadataValuesList.ItemsSource as IEnumerable<string>,
                         filteredList))
                     {
                         xMetadataValuesList.ItemsSource = filteredList;
@@ -453,7 +458,7 @@ namespace NuSysApp
                 }
                 else if (_currentDragMode == DragMode.Value)
                 {
-                    if (e.PointerDeviceType == PointerDeviceType.Pen)
+                    if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
                     {
                         vm.Selection.Item2.Add((((Grid)sender).Children[0] as TextBlock).Text);
                         vm.Selection = vm.Selection;
@@ -504,7 +509,7 @@ namespace NuSysApp
                 vm.Selection.Item2.Contains(
                     ((sender as Grid).Children[0] as TextBlock).Text))
             {
-                if (e.PointerDeviceType == PointerDeviceType.Pen)
+                if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
                 {
                     vm.Selection.Item2.Remove(((sender as Grid).Children[0] as TextBlock).Text);
                     vm.Selection = vm.Selection;
@@ -520,7 +525,7 @@ namespace NuSysApp
                 Debug.Assert(vm != null);
                 if (xMetadataKeysList.SelectedItems.Count == 1)
                 {
-                    if (e.PointerDeviceType == PointerDeviceType.Pen)
+                    if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
                     {
                         if (vm.Selection != null)
                         {
@@ -546,12 +551,16 @@ namespace NuSysApp
         private void ValueListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var vm = (DataContext as MetadataToolViewModel);
-            if (!vm.Selection.Item2.Contains(((sender as Grid).Children[0] as TextBlock).Text))
+            if (!vm.Selection.Item2.Contains(((sender as Grid).Children[0] as TextBlock).Text) && vm.Selection.Item2.Count == 0)
             {
                 vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
                             new HashSet<string>() { (((Grid)sender).Children[0] as TextBlock).Text });
             }
-            vm.OpenDetailView();
+            if (vm.Selection.Item2.Count == 1 &&
+                vm.Selection.Item2.First().Equals(((sender as Grid).Children[0] as TextBlock).Text))
+            {
+                vm.OpenDetailView();
+            }
         }
 
         

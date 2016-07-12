@@ -9,5 +9,9 @@ namespace NuSysApp
     public interface IDetailViewable
     {
         string TabId();
+
+        void SetTitle(string title);
+
+        event EventHandler<string> TitleChanged;
     }
 }

@@ -16,6 +16,7 @@ using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.System.Threading;
 using Windows.UI;
+using Windows.UI.Xaml;
 using Newtonsoft.Json;
 using NuSysApp.Network.Requests;
 using NuSysApp.Network.Requests.SystemRequests;
@@ -68,15 +69,21 @@ namespace NuSysApp
                 var presentationLinks =
                     SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(
                         atom => atom.DataContext is PresentationLinkViewModel);
+                List<FrameworkElement> toRemove = new List<FrameworkElement>();
                 foreach (var element in presentationLinks)
                 {
-                    var model = ((PresentationLinkViewModel) element.DataContext).Model;
+                    var model = ((PresentationLinkViewModel)element.DataContext).Model;
                     if (model?.InElementId == id1 && model?.OutElementId == id2)
                     {
                         Debug.Assert(PresentationLinkViewModel.Models != null);
-                        PresentationLinkViewModel.Models.Remove(model);
-                        ((PresentationLinkViewModel) element.DataContext).FireDisposed(this, EventArgs.Empty);
+                        toRemove.Add(element);
                     }
+                }
+                foreach (FrameworkElement element in toRemove)
+                {
+                    var model = ((PresentationLinkViewModel)element.DataContext).Model;
+                    PresentationLinkViewModel.Models.Remove(model);
+                    ((PresentationLinkViewModel)element.DataContext).FireDisposed(this, EventArgs.Empty);
                 }
             });
         }
