@@ -68,6 +68,10 @@ namespace NuSysApp
             foreach (var regions in controller?.LibraryElementModel?.Regions ?? new HashSet<Region>()) 
             {
                 var regioncontroller = SessionController.Instance.RegionsController.GetRegionController(regions.Id);
+                if (regioncontroller == null)
+                {
+                    continue;
+                }
                  var cLinks = SessionController.Instance.LinksController.GetLinkedIds(regioncontroller.ContentId);
                 foreach (var linkId in cLinks)
                 {

@@ -99,7 +99,7 @@ namespace NuSysApp
                 //var controller = SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId);
                 //if (controller == null)
                 //{
-                    foreach (var item in ItemList)
+                    foreach (var item in ItemList.ToList())
                     {
                         if (item.ContentID == content.LibraryElementId)
                         {
