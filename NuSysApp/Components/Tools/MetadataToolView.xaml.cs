@@ -123,11 +123,11 @@ namespace NuSysApp
         public void RefreshValueList()
         {
             var vm = (DataContext as MetadataToolViewModel);
-            var filteredList =
-                FilterValuesList(xSearchBox.Text);
             if (vm?.Selection?.Item1 != null && vm.Controller.Model.Selected)
             {
-                    if (!ScrambledEquals(xMetadataValuesList.ItemsSource as IEnumerable<string>,
+                var filteredList =
+                FilterValuesList(xSearchBox.Text);
+                if (!ScrambledEquals(xMetadataValuesList.ItemsSource as IEnumerable<string>,
                         filteredList))
                     {
                         xMetadataValuesList.ItemsSource = filteredList;
