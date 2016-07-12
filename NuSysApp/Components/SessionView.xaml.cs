@@ -743,8 +743,10 @@ namespace NuSysApp
             SessionController.Instance.ActiveFreeFormViewer = freeFormViewerViewModel;
             SessionController.Instance.SessionView = this;
 
-            if (collectionController.LibraryElementModel.Title != null)
-                xWorkspaceTitle.SetText(collectionController.LibraryElementModel.Title);
+            if (collectionController?.LibraryElementModel?.Title != null)
+            {
+                xWorkspaceTitle?.SetText(collectionController.LibraryElementModel.Title);
+            }
 
             xWorkspaceTitle.Foreground = new SolidColorBrush(Windows.UI.Color.FromArgb(150, 189, 204, 212));
             xWorkspaceTitle.FontFamily = new FontFamily("Fira Sans UltraLight");

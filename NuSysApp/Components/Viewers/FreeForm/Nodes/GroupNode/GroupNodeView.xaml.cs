@@ -221,7 +221,6 @@ namespace NuSysApp
                             await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(id);
                     });
                     Visibility = Visibility.Collapsed;
-                    SessionController.Instance.FireEnterNewCollectionEvent();
                     await
                         SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
                             new UnsubscribeFromCollectionRequest(

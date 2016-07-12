@@ -79,7 +79,6 @@ namespace NuSysApp
             Metadata = new ConcurrentDictionary<string, MetadataEntry>(metadata ?? new Dictionary<string, MetadataEntry>());
             Regions = new HashSet<Region>();
             Debug.Assert(!(Type == ElementType.Link && !(this is LinkLibraryElementModel)));
-            SessionController.Instance.OnEnterNewCollection += OnSessionControllerEnterNewCollection;
         }
         //FOR PDF DOWNLOADING  --HACKY AF
         //public static List<string> PDFStrings = new List<string>();

@@ -79,10 +79,6 @@ namespace NuSysApp
             }
         }
 
-        public delegate void EnterNewCollectionEventHandler();
-        public event EnterNewCollectionEventHandler OnEnterNewCollection;
-
-
         public static SessionController Instance
         {
             get
@@ -145,12 +141,6 @@ namespace NuSysApp
             await FileIO.WriteLinesAsync(file, lines);
             */
         }
-
-        public void FireEnterNewCollectionEvent()
-        {
-            OnEnterNewCollection?.Invoke();
-        }
-
         //private int _id = 0;
         public string GenerateId()
         {

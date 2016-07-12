@@ -77,10 +77,6 @@ namespace NuSysApp
                     properties.Visibility = Visibility.Collapsed;
                 });
             };
-            SessionController.Instance.OnEnterNewCollection += delegate
-            {
-                Visibility = Visibility.Collapsed;
-            };
             _searchExportPos = new Point2d(0,0);
         }
 
