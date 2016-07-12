@@ -119,6 +119,13 @@ namespace NuSysApp
             //TODO add in circle links?
         }
 
+        public string GetParentCollectionId()
+        {
+            return InElement.GetParentCollectionId() == OutElement.GetParentCollectionId()
+                ? InElement.GetParentCollectionId()
+                : null;
+        }
+
         /*
         public void UpdateAnchor()
         {

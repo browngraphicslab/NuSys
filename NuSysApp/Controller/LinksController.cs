@@ -305,6 +305,13 @@ namespace NuSysApp
         /// <param name="two"></param>
         private void CreateBezierLinkBetween(ILinkable one, ILinkable two)
         {
+            var oneParentCollectionId = one.GetParentCollectionId();
+            var twoParentCollectionId = two.GetParentCollectionId();
+            if (oneParentCollectionId != twoParentCollectionId || oneParentCollectionId == null)
+            {
+                return;
+            }
+
             var linkLibElemController = GetLinkLibraryElementControllerBetweenLinkables(one, two);
             Debug.Assert(linkLibElemController != null);
             Debug.Assert(one.Id != two.Id);
@@ -313,11 +320,25 @@ namespace NuSysApp
             model.OutAtomId = two.Id;
             var controller = new LinkController(model, linkLibElemController);
             var vm = new LinkViewModel(controller);
-           
+            
+                      
             UITask.Run(async delegate
             {
+                var allContent = SessionController.Instance.ActiveFreeFormViewer.AllContent;
                 var view = new BezierLinkView(vm);
-                SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(view);
+                var collectionViewModel =
+                    allContent.FirstOrDefault(item => ((item as GroupNodeViewModel)?.ContentId == oneParentCollectionId)) as GroupNodeViewModel;
+                if (collectionViewModel != null)
+                {
+                    UITask.Run(async delegate {
+                        collectionViewModel.AtomViewList.Add(view);
+                    });
+                }
+                else if (SessionController.Instance.ActiveFreeFormViewer.ContentId == oneParentCollectionId)
+                {
+                    SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(view);
+                }
+                
             });
         }
 
