@@ -109,7 +109,10 @@ namespace NuSysApp
 
         private void XSearchBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            RefreshValueList();
+            if (xMetadataValuesList.ItemsSource != null)
+            {
+                RefreshValueList();
+            }
         }
 
         /// <summary>
