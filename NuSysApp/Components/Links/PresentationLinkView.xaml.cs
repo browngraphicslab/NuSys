@@ -16,8 +16,10 @@ namespace NuSysApp
 {
     public sealed partial class PresentationLinkView : AnimatableUserControl
     {
+        private bool _isSelected;
         public PresentationLinkView(PresentationLinkViewModel vm)
         {
+            _isSelected = false;
             InitializeComponent();
             Debug.Assert(vm != null);
             DataContext = vm;
@@ -110,5 +112,23 @@ namespace NuSysApp
             var vm = DataContext as PresentationLinkViewModel;
             vm.DeletePresentationLink();
         }
+
+        private void PresentationPointerPressedHandler(object sender, PointerRoutedEventArgs e)
+        {
+            //changing the pres link's selction status
+            _isSelected = !_isSelected;
+            if (_isSelected)
+            {
+                Delete.Visibility = Visibility.Visible;
+                BezierLink.Stroke = new SolidColorBrush(Colors.GreenYellow);
+            }
+            else
+            {
+                Delete.Visibility = Visibility.Collapsed;
+                BezierLink.Stroke = new SolidColorBrush(Colors.YellowGreen);
+            }
+            e.Handled = true;
+        }
+
     }
 }

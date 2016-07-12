@@ -19,7 +19,7 @@
             <converters:BoolToVisibilityConverter x:Key="bConverter"/>
         </ResourceDictionary>
     </converters:AnimatableUserControl.Resources>
-    <Canvas Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}" >
+    <Canvas Visibility="{Binding IsVisible, Converter={StaticResource bConverter}}" PointerPressed ="PresentationPointerPressedHandler">
         <Path x:Name="BezierLink" Stroke="YellowGreen" StrokeThickness="48" Opacity=".30">
             <Path.Data>
                 <GeometryGroup>
@@ -48,7 +48,7 @@
         </Path>
         <Polygon x:Name="arrow" Fill="{StaticResource color4}" Points="0,20 40,0, 40,40"/>
 
-        <Button Margin="0,2,0,2" x:Name="Delete" Visibility="Visible" Click="btnDelete_Click" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
+        <Button Margin="0,2,0,2" x:Name="Delete" Visibility="Collapsed" Click="btnDelete_Click" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
             <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
         </Button>
 
