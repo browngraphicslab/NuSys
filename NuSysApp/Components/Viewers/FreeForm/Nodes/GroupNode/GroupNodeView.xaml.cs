@@ -112,7 +112,7 @@ namespace NuSysApp
         private async void CreateFreeFormView()
         {
             if (freeFormView != null)
-            {
+            { 
                 freeFormView.Visibility = Visibility.Visible;
                 return;
             }

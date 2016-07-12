@@ -197,7 +197,7 @@ namespace NuSysApp
             if (title.Text != newTitle)
             {
                 title.TextChanged -= TitleOnTextChanged;
-                title.Text = vm.Controller.LibraryElementModel.Title;
+                title.Text = newTitle;
                 title.TextChanged += TitleOnTextChanged;
             }
 
