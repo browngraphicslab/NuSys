@@ -122,6 +122,8 @@ namespace NuSysApp
         private ElementViewModel _currentElementViewModel;
         public LibraryElementController CurrentElementController { get; set; }
 
+        public IDetailViewable CurrentDetailViewable { get; set; }
+
         public delegate void TitleChangedHandler(object source, string newTitle);
         public event TitleChangedHandler TitleChanged;
 
@@ -156,7 +158,8 @@ namespace NuSysApp
 
         public void Dispose()
         {
-            CurrentElementController.TitleChanged -= ControllerTitleChanged;
+            CurrentDetailViewable.TitleChanged -= ControllerTitleChanged;
+            
 
             _nodeModel = null;
 
@@ -178,8 +181,13 @@ namespace NuSysApp
                     CurrentElementController.KeywordsChanged -= KeywordsChanged;
                     CurrentElementController.RegionAdded -= AddRegionToList;
                     CurrentElementController.RegionRemoved -= RemoveRegionFromList;
+                    if (CurrentDetailViewable != null)
+                    {
+                        CurrentDetailViewable.TitleChanged -= ControllerTitleChanged;
+                    }
                 }
                 CurrentElementController = controller;
+                CurrentDetailViewable = controller;
                 CurrentElementController.KeywordsChanged += KeywordsChanged;
                 CurrentElementController.RegionAdded += AddRegionToList;
                 CurrentElementController.RegionRemoved += RemoveRegionFromList;
@@ -255,6 +263,7 @@ namespace NuSysApp
             } else if (viewable is RegionController)
             {
                 var controller = viewable as RegionController;
+                CurrentDetailViewable = controller;
                 var regionModel = controller.Model;
                 if (regionModel == null)
                 {
@@ -596,10 +605,13 @@ namespace NuSysApp
 
         public void ChangeControllersTitle(string title)
         {
-            CurrentElementController.TitleChanged -= ControllerTitleChanged;
-            CurrentElementController.SetTitle(title);
-            CurrentElementController.TitleChanged += ControllerTitleChanged;
-   
+            CurrentDetailViewable.TitleChanged -= ControllerTitleChanged;
+            CurrentDetailViewable.SetTitle(title);
+            CurrentDetailViewable.TitleChanged += ControllerTitleChanged;
+
+            Tabs.Remove(CurrentDetailViewable);
+            Tabs.Add(CurrentDetailViewable);
+
             /*
             // TODO make the exploration mode related list box show up
             var button = sender as Button;
