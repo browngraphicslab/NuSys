@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.System;
 using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -105,7 +106,7 @@ namespace NuSysApp
         {
             if (_baseTool.Vm.Selection != null && _baseTool.Vm.Controller.Model.Selected && _baseTool.Vm.Selection.Contains(((sender as Grid).Children[0] as TextBlock).Text))
             {
-                if (e.PointerDeviceType == PointerDeviceType.Pen)
+                if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
                 {
                     _baseTool.Vm.Selection.Remove(((sender as Grid).Children[0] as TextBlock).Text);
                     _baseTool.Vm.Selection = _baseTool.Vm.Selection;
@@ -117,7 +118,7 @@ namespace NuSysApp
             }
             else
             {
-                if (e.PointerDeviceType == PointerDeviceType.Pen)
+                if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
                 {
                     if (_baseTool.Vm.Selection != null)
                     {
@@ -199,7 +200,7 @@ namespace NuSysApp
             _baseTool.getCanvas().Children.Remove(_dragItem);
             if (_currentDragMode == DragMode.Filter)
             {
-                if (e.PointerDeviceType == PointerDeviceType.Pen)
+                if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
                 {
                     _baseTool.Vm.Selection.Add((((Grid) sender).Children[0] as TextBlock).Text);
                     _baseTool.Vm.Selection = _baseTool.Vm.Selection;

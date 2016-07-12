@@ -6,7 +6,9 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.System;
 using Windows.UI;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -140,7 +142,7 @@ namespace NuSysApp
                 return;
             }
             var selected = (KeyValuePair<string, int>)(sender as FrameworkElement).DataContext;
-            if (e.PointerDeviceType == PointerDeviceType.Pen)
+            if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
             {
                 _baseTool.Vm.Selection.Add(selected.Key);
                 _baseTool.Vm.Selection = _baseTool.Vm.Selection;
@@ -164,7 +166,7 @@ namespace NuSysApp
             var selected = (KeyValuePair<string, int>)(sender as FrameworkElement).DataContext;
             if (_baseTool.Vm.Selection != null && _baseTool.Vm.Controller.Model.Selected && _baseTool.Vm.Selection.Contains(selected.Key))
             {
-                if (e.PointerDeviceType == PointerDeviceType.Pen)
+                if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
                 {
                     _baseTool.Vm.Selection.Remove(selected.Key);
                     _baseTool.Vm.Selection = _baseTool.Vm.Selection;
@@ -178,7 +180,7 @@ namespace NuSysApp
             }
             else
             {
-                if (e.PointerDeviceType == PointerDeviceType.Pen)
+                if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
                 {
                     if (_baseTool.Vm.Selection != null)
                     {
