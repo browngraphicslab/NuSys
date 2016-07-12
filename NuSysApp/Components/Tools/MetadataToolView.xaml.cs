@@ -551,12 +551,16 @@ namespace NuSysApp
         private void ValueListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var vm = (DataContext as MetadataToolViewModel);
-            if (!vm.Selection.Item2.Contains(((sender as Grid).Children[0] as TextBlock).Text))
+            if (!vm.Selection.Item2.Contains(((sender as Grid).Children[0] as TextBlock).Text) && vm.Selection.Item2.Count == 0)
             {
                 vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
                             new HashSet<string>() { (((Grid)sender).Children[0] as TextBlock).Text });
             }
-            vm.OpenDetailView();
+            if (vm.Selection.Item2.Count == 1 &&
+                vm.Selection.Item2.First().Equals(((sender as Grid).Children[0] as TextBlock).Text))
+            {
+                vm.OpenDetailView();
+            }
         }
 
         

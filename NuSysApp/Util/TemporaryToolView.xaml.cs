@@ -141,11 +141,15 @@ namespace NuSysApp
 
         private void xListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            if (!_baseTool.Vm.Selection.Contains(((sender as Grid).Children[0] as TextBlock).Text) || _baseTool.Vm.Controller.Model.Selected == false)
+            if (!_baseTool.Vm.Selection.Contains(((sender as Grid).Children[0] as TextBlock).Text) && _baseTool.Vm.Selection.Count == 0|| _baseTool.Vm.Controller.Model.Selected == false)
             {
                 _baseTool.Vm.Selection = new HashSet<string> { (((sender as Grid).Children[0] as TextBlock).Text)};
             }
-            _baseTool.Vm.OpenDetailView();
+            if (_baseTool.Vm.Selection.Count == 1 &&
+                _baseTool.Vm.Selection.First().Equals(((sender as Grid).Children[0] as TextBlock).Text))
+            {
+                _baseTool.Vm.OpenDetailView();
+            }
         }
 
         private async void xListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)

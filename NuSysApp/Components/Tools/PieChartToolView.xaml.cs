@@ -202,11 +202,15 @@ namespace NuSysApp
         private void Slice_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var selected = (KeyValuePair<string, int>)(sender as FrameworkElement).DataContext;
-            if (!_baseTool.Vm.Selection.Contains(selected.Key) || _baseTool.Vm.Controller.Model.Selected == false)
+            if (!_baseTool.Vm.Selection.Contains(selected.Key) &&  _baseTool.Vm.Selection.Count == 0 || _baseTool.Vm.Controller.Model.Selected == false)
             {
                 _baseTool.Vm.Selection = new HashSet<string>() { selected.Key};
             }
-            _baseTool.Vm.OpenDetailView();
+            if (_baseTool.Vm.Selection.Count == 1 &&
+                _baseTool.Vm.Selection.First().Equals(selected.Key))
+            {
+                _baseTool.Vm.OpenDetailView();
+            }
         }
     }
 }
