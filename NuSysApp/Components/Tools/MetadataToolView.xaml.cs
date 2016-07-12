@@ -118,22 +118,14 @@ namespace NuSysApp
         public void RefreshValueList()
         {
             var vm = (DataContext as MetadataToolViewModel);
+            var filteredList =
+                FilterValuesList(xSearchBox.Text);
             if (vm?.Selection?.Item1 != null && vm.Controller.Model.Selected)
             {
-                if (!xSearchBox.Text.Equals(""))
-                {
-                    xMetadataValuesList.ItemsSource = FilterValuesList(xSearchBox.Text).OrderBy(key => !string.IsNullOrEmpty(key) && char.IsNumber(key[0])).ThenBy(key => key);
-                }
-                else
-                {
-
                     if (!ScrambledEquals(xMetadataValuesList.ItemsSource as IEnumerable<string>,
-                        vm.AllMetadataDictionary[vm.Selection.Item1].OrderBy(
-                            key => !string.IsNullOrEmpty(key) && char.IsNumber(key[0])).ThenBy(key => key)))
+                        filteredList))
                     {
-                        xMetadataValuesList.ItemsSource =
-                            vm.AllMetadataDictionary[vm.Selection.Item1].OrderBy(
-                                key => !string.IsNullOrEmpty(key) && char.IsNumber(key[0])).ThenBy(key => key);
+                        xMetadataValuesList.ItemsSource = filteredList;
                         SetValueListVisualSelection();
                         if (xMetadataValuesList.SelectedItems.Count > 0)
                         {
@@ -144,8 +136,6 @@ namespace NuSysApp
                     {
                         SetValueListVisualSelection();
                     }
-
-                }
             }
             else
             {
@@ -186,14 +176,18 @@ namespace NuSysApp
         {
             var filteredValuesList = new List<string>();
             var vm = (DataContext as MetadataToolViewModel);
-            foreach (var item in vm.AllMetadataDictionary[vm.Selection.Item1])
-            {
-                if (item?.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    filteredValuesList.Add(item);
-                }
-            }
-            return filteredValuesList;
+            return
+                vm.AllMetadataDictionary[vm.Selection.Item1].Where(
+                    item => item?.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).ToList().OrderBy(key => !string.IsNullOrEmpty(key) && char.IsNumber(key[0]))
+                    .ThenBy(key => key).ToList();
+            //foreach (var item in vm.AllMetadataDictionary[vm.Selection.Item1])
+            //{
+            //    if (item?.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
+            //    {
+            //        filteredValuesList.Add(item);
+            //    }
+            //}
+            //return filteredValuesList;
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)

@@ -60,7 +60,7 @@
                       Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
                       Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" ManipulationDelta="Resizer_OnManipulationDelta"/>
                 </Grid>
-                <StackPanel Grid.Column="2" Orientation="Vertical">
+                <StackPanel Grid.Column="2" Margin="0,40,0,0"  Orientation="Vertical">
                     <Button x:Name="xCollectionElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Right" Margin="0,0,0,0">
                         <StackPanel>
                             <Image Source="ms-appx:///Assets/collection icon bluegreen.png" Height="28" Width="28" Stretch="Uniform"></Image>
