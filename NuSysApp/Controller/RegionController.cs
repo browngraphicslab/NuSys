@@ -36,8 +36,7 @@ namespace NuSysApp
         }
 
 
-        public delegate void TitleChangedEventHandler(object source, string title);
-        public event TitleChangedEventHandler TitleChanged;
+        public event EventHandler<string> TitleChanged;
         public delegate void RegionUpdatedEventHandler(object source, Region region);
         public event RegionUpdatedEventHandler RegionUpdated;
         public delegate void SelectHandler(RegionController regionController);

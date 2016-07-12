@@ -36,7 +36,6 @@ namespace NuSysApp
         public delegate void RegionAddedEventHandler(object source, RegionController regionController);
         public delegate void RegionRemovedEventHandler(object source, Region region);
         public delegate void MetadataChangedEventHandler(object source);
-        public delegate void TitleChangedEventHandler(object sender, string title);
         public delegate void FavoritedEventHandler(object sender, bool favorited);
         public delegate void LoadedEventHandler(object sender);
         public delegate void DeletedEventHandler(object sender);
@@ -47,7 +46,7 @@ namespace NuSysApp
         public event RegionRemovedEventHandler RegionRemoved;
         public event MetadataChangedEventHandler MetadataChanged;
         public event EventHandler Disposed;
-        public event TitleChangedEventHandler TitleChanged;
+        public event EventHandler<string> TitleChanged;
         public event FavoritedEventHandler Favorited;
         public event DeletedEventHandler Deleted;
         public event KeywordsChangedEventHandler KeywordsChanged;
