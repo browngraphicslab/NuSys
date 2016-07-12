@@ -50,16 +50,10 @@ namespace NuSysApp
             }
             controller.Disposed += OnDisposed;
             controller.Deleted += ControllerOnDeleted;
-            controller.LinksUpdated += ControllerLinksUpdated;
 
             Tags = new ObservableCollection<Button>();
             CircleLinks = new ObservableCollection<LinkCircle>();
             ReadFromModel();
-        }
-
-        private void ControllerLinksUpdated(object source)
-        {
-            UITask.Run(async delegate { CreateCircleLinks(); });
         }
 
         private void ControllerOnAnchorChanged(object sender, Point2d point2D)
@@ -72,10 +66,6 @@ namespace NuSysApp
             CreateTags();
         }
 
-        public void UpdateLinks()
-        {
-            UITask.Run(async delegate { CreateCircleLinks(); });
-        }
         private void ControllerOnDeleted(object source)
         {
 
@@ -146,49 +136,6 @@ namespace NuSysApp
                 CreateTags();
         }
 
-        private void CreateCircleLinks()
-        {
-            if (this is LinkViewModel)
-            {
-                return;
-            }
-            var id = this.Controller.LibraryElementModel?.LibraryElementId;
-            if (id == null)
-            {
-                return;
-            }
-            CircleLinks.Clear();
-            var circleList = SessionController.Instance.LinksController.GetLinkedIds(id);
-            if (circleList == null)
-            {
-                return;
-            }
-            foreach (var circle in circleList)
-            {
-                //sorry about this - should also be in frontend and not in viewmodel
-                var link = SessionController.Instance.ContentController.GetContent(circle) as LinkLibraryElementModel;
-                if (link != null)
-                {
-                    string cid = "";
-                    if (this.ContentId == link.InAtomId)
-                    {
-                        cid = link.OutAtomId;
-                    }
-                    else if (this.ContentId == link.OutAtomId)
-                    {
-                        cid = link.InAtomId;
-                    }
-                    var circlelink = new LinkCircle(circle, cid);
-                    Color color = link.Color;
-                    circlelink.Circle.Fill = new SolidColorBrush(color);
-
-                    CircleLinks.Add(circlelink);
-                }
-
-            }
-
-            RaisePropertyChanged("CircleLinks");
-        }
         private void CreateTags()
         {
             Tags.Clear();
@@ -256,7 +203,6 @@ namespace NuSysApp
             Transform.TranslateY = model.Y;
 
             CreateTags();
-            CreateCircleLinks();
         }
 
         public virtual void WriteToModel()

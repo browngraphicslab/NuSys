@@ -527,6 +527,11 @@ namespace NuSysApp
             _contentIdToLinkContentIds.TryRemove(contentId, out outObj);
         }
 
+        private void RemoveLink(BezierLinkView view)
+        {
+            SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Remove(view);
+        }
+
         //private ILinkable GetLinkableBetweenLinkables(ILinkable one, ILinkable two)
         //{
         //    Debug.Assert(one != null && _linkableIdToLinkIds.ContainsKey(one.Id));

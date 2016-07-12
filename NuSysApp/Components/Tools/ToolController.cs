@@ -45,14 +45,15 @@ namespace NuSysApp
              foreach (var id in new HashSet<string>(SessionController.Instance.ContentController.IdList))
              {
                  var s = SessionController.Instance.ContentController.GetContent(id);
-                 if(s.Creator.ToLower() != "rms" && s.Creator.ToLower() != "rosemary"){
+                 if(s.Creator.ToLower() != "rms" && s.Creator.ToLower() != "rosemary" && s.Type == ElementType.Audio){
                      Task.Run(async delegate
                      {
                          await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteLibraryElementRequest(id));
                      });
                 }
              }
-            */
+             */
+            
 
             //CODE BELOW IS HACKY WAY TO DOWNLOAD ALL THE PDF'S 
             /*
