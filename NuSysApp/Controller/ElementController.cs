@@ -315,5 +315,10 @@ namespace NuSysApp
         {
             LinksUpdated?.Invoke(this);
         }
+
+        public string GetParentCollectionId()
+        {
+            return Model.ParentCollectionId;
+        }
     }
 }

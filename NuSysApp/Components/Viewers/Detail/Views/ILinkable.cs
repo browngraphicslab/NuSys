@@ -13,5 +13,6 @@ namespace NuSysApp
         string Id { get; }
         string ContentId { get; }
         void UpdateCircleLinks();
+        string GetParentCollectionId();
     }
 }
