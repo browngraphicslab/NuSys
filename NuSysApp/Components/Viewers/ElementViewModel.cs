@@ -148,47 +148,54 @@ namespace NuSysApp
 
         private void CreateCircleLinks()
         {
-            if (this is LinkViewModel)
+            var libraryElementId = this.Controller.LibraryElementModel?.LibraryElementId;
+            if (libraryElementId == null)
             {
                 return;
             }
-            var id = this.Controller.LibraryElementModel?.LibraryElementId;
-            if (id == null)
-            {
-                return;
-            }
+
             CircleLinks.Clear();
-            var circleList = SessionController.Instance.LinksController.GetLinkedIds(id);
-            if(circleList == null)
+            // all the link library element ids for links connected to this element view model
+            var linkLibraryElementIds = SessionController.Instance.LinksController.GetLinkedIds(libraryElementId);
+            if(linkLibraryElementIds == null)
             {
                 return;
             }
-            foreach (var circle in circleList)
+            foreach (var linkLibraryElementId in linkLibraryElementIds)
             {
                 //sorry about this - should also be in frontend and not in viewmodel
-                var link = SessionController.Instance.ContentController.GetContent(circle) as LinkLibraryElementModel;
-                if (link != null)
+                var linkLibraryElementModel = SessionController.Instance.ContentController.GetContent(linkLibraryElementId) as LinkLibraryElementModel;
+                Debug.Assert(linkLibraryElementModel != null);
+                if (linkLibraryElementModel != null)
                 {
-                    string cid = "";
-                    if (this.ContentId == link.InAtomId)
+                    string contentId = "";
+                    if (this.ContentId == linkLibraryElementModel.InAtomId)
                     {
-                        cid = link.OutAtomId;
+                        contentId = linkLibraryElementModel.OutAtomId;
                     }
-                    else if (this.ContentId == link.OutAtomId)
+                    else if (this.ContentId == linkLibraryElementModel.OutAtomId)
                     {
-                        cid = link.InAtomId;
+                        contentId = linkLibraryElementModel.InAtomId;
                     }
-                    var circlelink = new LinkCircle(circle, cid);
-                    Color color = link.Color;
+                    var circlelink = new LinkCircle(linkLibraryElementId, contentId);
+
+                    circlelink.Disposed += Circlelink_Disposed;
+
+                    Color color = linkLibraryElementModel.Color;
                     circlelink.Circle.Fill = new SolidColorBrush(color);
 
                     CircleLinks.Add(circlelink);
                 }
                 
             }
-            
-            RaisePropertyChanged("CircleLinks");
         }
+
+        private void Circlelink_Disposed(object sender, EventArgs e)
+        {
+            Debug.Assert(sender is LinkCircle);
+            CircleLinks.Remove(sender as LinkCircle);
+        }
+
         private void CreateTags()
         {
             Tags.Clear();

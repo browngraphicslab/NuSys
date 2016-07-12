@@ -22,9 +22,10 @@ namespace NuSysApp
     public sealed partial class LinkCircle : UserControl
     {
         //link id
-        public string lID;
+        public string LinkLibraryElementId;
         //content id the link is linked to
-        public string cID;
+        public string ContentId;
+        private LibraryElementController _libraryElementController;
         private bool _pinned;
 
         protected bool Pinned
@@ -41,15 +42,17 @@ namespace NuSysApp
         private bool _firstTimeOpened;
         private BitmapImage _bmp;
 
+        public event EventHandler Disposed;
+
         /// <summary>
         /// constructor for link circle.  takes in link-id, content Id
         /// </summary>
-        /// <param name="lID"></param>
-        /// <param name="cID"></param>
-        public LinkCircle(string lID, string cID)
+        /// <param name="linkLibraryElementId"></param>
+        /// <param name="contentId"></param>
+        public LinkCircle(string linkLibraryElementId, string contentId)
         {
-            this.lID = lID;
-            this.cID = cID;
+            this.LinkLibraryElementId = linkLibraryElementId;
+            this.ContentId = contentId;
             //represents if the image has been loaded before
             _firstTimeOpened = false;
             //thickness to make border visible/invisible
@@ -61,16 +64,26 @@ namespace NuSysApp
             border.BorderThickness = _collapsedThickness;
             //thumbnail is not pinned to begin with
             Pinned = false;
-            var libraryElementModel =
-                SessionController.Instance.ContentController.GetLibraryElementController(
-                    SessionController.Instance.RegionsController.GetContentIdOfRegionOrContent(cID));
-            _bmp = new BitmapImage(libraryElementModel.SmallIconUri);
+            //_libraryElementController =
+            //    SessionController.Instance.ContentController.GetLibraryElementController(
+            //        SessionController.Instance.RegionsController.GetContentIdOfRegionOrContent(linkLibraryElementId));
+            _libraryElementController =
+                SessionController.Instance.ContentController.GetLibraryElementController(linkLibraryElementId);
+            _bmp = new BitmapImage(_libraryElementController.SmallIconUri);
+            _libraryElementController.LinkRemoved += LibraryElementController_LinkRemoved; 
+
             thumbnail.ImageOpened += Thumbnail_ImageOpened;
             //centering the thumbnail
             (border.RenderTransform as CompositeTransform).TranslateX -= 10;
             thumbnail.Source = _bmp;
             //this is sort of a bandaid rather than a fix
             Canvas.SetZIndex(thumbnail, 50);
+        }
+
+        private void LibraryElementController_LinkRemoved(object sender, string e)
+        {
+            //_libraryElementController.LinkRemoved -= LibraryElementController_LinkRemoved;
+            Disposed?.Invoke(this, EventArgs.Empty);
         }
 
         private void Thumbnail_ImageOpened(object sender, RoutedEventArgs e)
@@ -100,7 +113,7 @@ namespace NuSysApp
             }
 
             //If links to a region....
-            var regionController = SessionController.Instance.RegionsController.GetRegionController(lID);
+            var regionController = SessionController.Instance.RegionsController.GetRegionController(LinkLibraryElementId);
             if (regionController != null)
             {
                 regionController.Select();

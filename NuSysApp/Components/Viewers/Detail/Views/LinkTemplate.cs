@@ -24,7 +24,7 @@ namespace NuSysApp
 
         public string ID { get; set; }
 
-        public LinkTemplate(LinkLibraryElementController controller, string id)
+        public LinkTemplate(LinkLibraryElementController controller, string detailViewOpenElementContentId)
         {
             Title = "Unnamed Link";
             if (controller.Title != null)
@@ -34,7 +34,7 @@ namespace NuSysApp
             controller.TitleChanged += Controller_TitleChanged;
 
             var linkModel = controller.LinkLibraryElementModel;
-            if (linkModel.InAtomId == id)
+            if (linkModel.InAtomId == detailViewOpenElementContentId)
             {
                 if (SessionController.Instance.RegionsController.IsRegionId(linkModel.OutAtomId))
                 {

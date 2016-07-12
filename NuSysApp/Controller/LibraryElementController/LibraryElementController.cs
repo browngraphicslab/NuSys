@@ -571,9 +571,11 @@ namespace NuSysApp
 
         public void RequestRemoveLink(string linkLibraryElementID)
         {
+            Debug.Assert(SessionController.Instance.LinksController.GetLinkableIdsOfContentIdInstances(linkLibraryElementID).Count() != 0);
+            LinkRemoved?.Invoke(this, linkLibraryElementID);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
                 new DeleteLibraryElementRequest(linkLibraryElementID));
-            LinkRemoved?.Invoke(this, linkLibraryElementID);
+            
 
         }
         public HashSet<LinkLibraryElementController> GetAllLinks()

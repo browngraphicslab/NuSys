@@ -9,7 +9,7 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public class LinkController : ILinkable
+    public class LinkController : ILinkable, INuSysDisposable
     {
         public event EventHandler<Point2d> AnchorChanged;
 
@@ -77,6 +77,8 @@ namespace NuSysApp
             OutElement.AnchorChanged += ChangeAnchor;
             controller.TitleChanged += ChangeTitle;
 
+            controller.Disposed += Dispose;
+
             InElement.Disposed += Dispose;
             OutElement.Disposed += Dispose;
 
@@ -94,7 +96,6 @@ namespace NuSysApp
 
         public void Dispose(object sender, object args)
         {
-            Debug.WriteLine($"LinkControllerId about to be disposed: {this.Id}");
             if (InElement != null)
             {
                 InElement.AnchorChanged -= ChangeAnchor;
@@ -110,6 +111,7 @@ namespace NuSysApp
             if (LibraryElementController != null)
             {
                 LibraryElementController.TitleChanged -= ChangeTitle;
+                LibraryElementController.Disposed -= Dispose;
             }
             Disposed?.Invoke(this, EventArgs.Empty);
         }

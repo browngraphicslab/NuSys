@@ -123,7 +123,7 @@ var Editor = (function () {
             $(links[i]).popover({
                 html: true,
                 placement: 'bottom',
-                content: "<div id = 'buttons'><input type = 'button' value = 'NUSYS' id = 'nusys'><input type = 'button' value = 'BROWSER' id = 'browser'></div>"
+                content: "<div id = 'buttons'><input type = 'button' value = 'NUSYS' detailViewOpenElementContentId = 'nusys'><input type = 'button' value = 'BROWSER' detailViewOpenElementContentId = 'browser'></div>"
             });
 
             links[i].addEventListener("click", function (e) {
