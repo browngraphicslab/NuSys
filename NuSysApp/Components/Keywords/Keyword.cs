@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,12 +21,18 @@ namespace NuSysApp
         {
             Text = text;
         }
+        //defining hash in terms of fields
+       public override int GetHashCode()
+       {
+           return Text.GetHashCode()*17 + Source.GetHashCode();
+       }
         public override bool Equals(object obj)
         {
             if(obj is Keyword)
             {
                 var kw = obj as Keyword;
-                return Text == kw.Text && kw.Source == Source;
+                Debug.WriteLine("here in keyword equals");
+                return Text == kw.Text && kw.Source.Equals(Source);
             }
             return base.Equals(obj);
         }
