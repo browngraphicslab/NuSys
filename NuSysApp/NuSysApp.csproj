@@ -265,6 +265,7 @@
     </Compile>
     <Compile Include="Classas.cs" />
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
+    <Compile Include="Components\IEditable.cs" />
     <Compile Include="Components\InqCanvas2\PhilInqCanvas.xaml.cs">
       <DependentUpon>PhilInqCanvas.xaml</DependentUpon>
     </Compile>
