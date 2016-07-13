@@ -116,8 +116,8 @@ namespace NuSysApp
             controller2?.AddLink(linkController as LinkLibraryElementController);
             if (controller1 != null && controller2 != null)
             {
-                SessionController.Instance.LinksController.CreateVisualLinks(
-                    linkController as LinkLibraryElementController);
+                //SessionController.Instance.LinksController.CreateVisualLinks(
+                //    linkController as LinkLibraryElementController);
             }
         }
     }
