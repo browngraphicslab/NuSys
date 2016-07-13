@@ -116,7 +116,7 @@ namespace NuSysApp
             _searchString = s;
             ItemList.Clear();
 
-            HashSet<string> valids;
+            IEnumerable<string> valids;
             if (string.IsNullOrEmpty(s))
             {
                 valids = SessionController.Instance.ContentController.IdList;

@@ -28,7 +28,7 @@
                             <PathFigure x:Name="pathfigure">
                                 <PathFigure.Segments>
                                     <PathSegmentCollection>
-                                         <BezierSegment x:Name="curve"/>
+                                        <BezierSegment x:Name="curve"/>
                                     </PathSegmentCollection>
                                 </PathFigure.Segments>
                             </PathFigure>

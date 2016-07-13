@@ -171,7 +171,7 @@ namespace NuSysApp
         {
             var vm = DataContext as VideoRegionViewModel;
             xMainRectangle.StrokeThickness = 3;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.Azure);
+            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
             IntervalRectangle.Fill = new SolidColorBrush(Color.FromArgb(255, 219, 151, 179));
             xResizingTriangle.Visibility = Visibility.Collapsed;
             xNameTextBox.Visibility = Visibility.Collapsed;
@@ -187,7 +187,7 @@ namespace NuSysApp
         {
             var vm = DataContext as VideoRegionViewModel;
             xMainRectangle.StrokeThickness = 6;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.DarkBlue);
+            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
             IntervalRectangle.Fill = new SolidColorBrush(Color.FromArgb(255, 152, 26, 77));
             xResizingTriangle.Visibility = Visibility.Visible;
             xNameTextBox.Visibility = Visibility.Visible;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -139,7 +140,8 @@ namespace NuSysApp
             //tags.RenderTransform = t;
 
             tags = (ItemsControl)GetTemplateChild("Tags");
-          
+            tags.Tapped += Tags_Tapped;
+
 
 
             title = (TextBox)GetTemplateChild("xTitle");
@@ -170,6 +172,30 @@ namespace NuSysApp
             (DataContext as BaseINPC).PropertyChanged += OnPropertyChanged;
             base.OnApplyTemplate();
             OnTemplateReady?.Invoke();
+        }
+
+
+
+        private void Tags_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            var selectedTag = (e.OriginalSource as TextBlock)?.Text;
+            if (selectedTag != null)
+            {
+                MetadataToolModel model = new MetadataToolModel();
+                MetadataToolController controller = new MetadataToolController(model);
+                MetadataToolViewModel viewmodel = new MetadataToolViewModel(controller);
+
+                viewmodel.Filter = ToolModel.ToolFilterTypeTitle.AllMetadata;
+
+                controller.SetSelection(new Tuple<string, HashSet<string>>("Keywords", new HashSet<string>() { }));
+
+                var wvm = SessionController.Instance.ActiveFreeFormViewer;
+                var width = SessionController.Instance.SessionView.ActualWidth;
+                var height = SessionController.Instance.SessionView.ActualHeight;
+                var centerpoint = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(new Point(width / 2, height / 2));
+                MetadataToolView view = new MetadataToolView(viewmodel, centerpoint.X, centerpoint.Y);
+                wvm.AtomViewList.Add(view);
+            }
         }
 
         private void OnTagTemplateTapped(object sender, TappedRoutedEventArgs e)

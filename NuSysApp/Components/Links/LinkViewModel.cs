@@ -20,8 +20,9 @@ namespace NuSysApp
         private readonly LinkController _controller;
         private bool _selected;
         private SolidColorBrush _color;
-        private SolidColorBrush _selectedColor = new SolidColorBrush(Colors.Red);
-        private SolidColorBrush _notSelectedColor = new SolidColorBrush(Colors.Blue);
+
+        private SolidColorBrush _selectedColor = new SolidColorBrush( ColorHelper.FromArgb(0xFF, 0x98, 0x1A, 0x4D));
+        private SolidColorBrush _notSelectedColor = new SolidColorBrush(ColorHelper.FromArgb(0xFF,0x11,0x3D,0x40));
 
         public LinkModel LinkModel
         {

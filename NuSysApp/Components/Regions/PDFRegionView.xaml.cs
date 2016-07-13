@@ -111,8 +111,6 @@ namespace NuSysApp
             {
                 return;
             }
-            xMainRectangle.Width = width;
-            xMainRectangle.Height = height;
             vm.Width = width;
             vm.Height = height;
         }
@@ -144,14 +142,12 @@ namespace NuSysApp
 
             if (xMainRectangle.Width + rt.TranslateX + e.Delta.Translation.X <= rightXBound)
             {
-                xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
-                vm.Width = xMainRectangle.Width;
+                vm.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
             }
 
             if (xMainRectangle.Height + rt.TranslateY + e.Delta.Translation.Y <= downYBound)
             {
-                xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
-                vm.Height = xMainRectangle.Height;
+                vm.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
 
             }
 
