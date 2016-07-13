@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI;
+using Windows.UI.Xaml.Controls;
+
 namespace NuSysApp
 { 
     public class LinksController
@@ -250,10 +252,10 @@ namespace NuSysApp
                 Debug.Assert(content.LibraryElementModel is LinkLibraryElementModel);
                 var linkLibraryElementModel = content.LibraryElementModel as LinkLibraryElementModel;
                 
-                Debug.Assert(_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.InAtomId));
-                Debug.Assert(_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.OutAtomId));
-                Debug.Assert(_contentIdToLinkContentIds[linkLibraryElementModel.InAtomId].Contains(libraryElementId));
-                Debug.Assert(_contentIdToLinkContentIds[linkLibraryElementModel.OutAtomId].Contains(libraryElementId));
+                //Debug.Assert(_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.InAtomId));
+                //Debug.Assert(_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.OutAtomId));
+                //Debug.Assert(_contentIdToLinkContentIds[linkLibraryElementModel.InAtomId].Contains(libraryElementId));
+                //Debug.Assert(_contentIdToLinkContentIds[linkLibraryElementModel.OutAtomId].Contains(libraryElementId));
 
                 _contentIdToLinkContentIds[linkLibraryElementModel.InAtomId].Remove(libraryElementId);
                 _contentIdToLinkContentIds[linkLibraryElementModel.OutAtomId].Remove(libraryElementId);
@@ -319,11 +321,10 @@ namespace NuSysApp
             model.InAtomId = one.Id;
             model.OutAtomId = two.Id;
             var controller = new LinkController(model, linkLibElemController);
-            var vm = new LinkViewModel(controller);
-            
-                      
+
             UITask.Run(async delegate
             {
+                var vm = new LinkViewModel(controller);
                 var allContent = SessionController.Instance.ActiveFreeFormViewer.AllContent;
                 var view = new BezierLinkView(vm);
                 var collectionViewModel =
@@ -338,7 +339,10 @@ namespace NuSysApp
                 {
                     SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(view);
                 }
-                
+                //TODO Change ElementCollectionViewModel child added and removed code to take link controllers or element controllers
+                Canvas.SetZIndex(view, -2);
+
+
             });
         }
 

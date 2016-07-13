@@ -37,7 +37,7 @@
                 </PathGeometry>
             </Path.Data>
         </Path>
-        <Path x:Name="BezierLinkInner" Stroke="Red" StrokeThickness="25" CompositeMode="MinBlend" Opacity="0.28" DoubleTapped="BezierLink_OnDoubleTapped">
+        <Path x:Name="BezierLinkInner" Stroke="{Binding Color}" StrokeThickness="25" CompositeMode="MinBlend" Opacity="0.28" DoubleTapped="BezierLink_OnDoubleTapped">
             <Path.Data>
                 <PathGeometry>
                     <PathGeometry.Figures>

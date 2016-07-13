@@ -35,9 +35,6 @@ namespace NuSysApp
 
             //    Annotation.Text = vm.Annotation;
 
- 
-            Canvas.SetZIndex(this, -2);//temporary fix to make sure events are propagated to nodes
-
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
                 UpdateControlPoints();
@@ -81,8 +78,6 @@ namespace NuSysApp
         {
             
             this.UpdateControlPoints();
-
-            Canvas.SetZIndex(this, -10);
 
             var vm = DataContext as LinkViewModel;
 

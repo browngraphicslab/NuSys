@@ -2,15 +2,26 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Windows.UI;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Controller;
 
 namespace NuSysApp
 {
-    public class LinkViewModel : BaseINPC
+    public class LinkViewModel : BaseINPC, IEditable
     {
         public ObservableCollection<LinkController> LinkList{ get; set; }
+
+
+        
+        private string _title;
+        private string _annotation;
+        private readonly LinkController _controller;
+        private bool _selected;
+        private SolidColorBrush _color;
+        private SolidColorBrush _selectedColor = new SolidColorBrush(Colors.Red);
+        private SolidColorBrush _notSelectedColor = new SolidColorBrush(Colors.Blue);
 
         public LinkModel LinkModel
         {
@@ -20,10 +31,8 @@ namespace NuSysApp
                 return Controller.Model;
             }
         }
-        
-        private string _title;
-        private string _annotation;
-        private readonly LinkController _controller;
+
+
         public LinkController Controller {
             get
             {
@@ -54,7 +63,7 @@ namespace NuSysApp
 
             controller.TitleChanged += TitleChanged;
             Title = controller.Title;
-
+            IsSelected = false;
             controller.AnchorChanged += ChangeAnchor;
 
             RaisePropertyChanged("Anchor");
@@ -88,5 +97,53 @@ namespace NuSysApp
             Controller.LibraryElementController.SetTitle(title);
             Controller.TitleChanged += TitleChanged;
         }
+
+        public bool ContainsSelectedLink { get; }
+
+        public SolidColorBrush Color
+        {
+            get { return _color; }
+            set
+            {
+                _color = value;
+                RaisePropertyChanged("Color");
+            }
+        }
+
+        /// <summary>
+        /// From the ISelectable Interface, used to cull the screen, basically if something is null it is always visible
+        ///  but calculating all the points for a link would require a bunch of math.
+        /// </summary>
+        public PointCollection ReferencePoints
+        {
+
+            get { return null; }
+        }
+
+        /// <summary>
+        /// From the ISelectable Interface, used to implement selection in the free form viewer
+        /// </summary>
+        public bool IsSelected
+        {
+            get { return _selected; }
+            set
+            {
+                _selected = value;
+                if (_selected == true)
+                {
+                    Color = _selectedColor;
+                }
+                else
+                {
+                    Color = _notSelectedColor;
+                }
+                RaisePropertyChanged("IsSelected");
+            }
+        }
+
+        /// <summary>
+        /// From the IEditable interface
+        /// </summary>
+        public bool IsEditing { get; set; }
     }
 }

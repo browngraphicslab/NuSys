@@ -127,8 +127,11 @@ namespace NuSysApp
                 //move all selected content if a selected node is moved
                 foreach (var vmodel in SessionController.Instance.ActiveFreeFormViewer.Selections)
                 {
-                    if (!vmodel.IsEditing &&!vmodel.ContainsSelectedLink)
-                        vmodel.Controller.SetPosition(vmodel.Transform.TranslateX + dx, vmodel.Transform.TranslateY + dy);
+                    // we only want to be able to move elementviewmodels, because links are moved by their anchor points, but can be selected now
+                    var elementViewModel = vmodel as ElementViewModel;
+
+                    if (elementViewModel != null && !elementViewModel.IsEditing &&!elementViewModel.ContainsSelectedLink)
+                        elementViewModel.Controller.SetPosition(elementViewModel.Transform.TranslateX + dx, elementViewModel.Transform.TranslateY + dy);
                 }
             }
             else {

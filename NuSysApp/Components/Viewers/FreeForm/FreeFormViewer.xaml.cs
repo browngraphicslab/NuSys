@@ -237,7 +237,7 @@ namespace NuSysApp
             }
             else if (vm.Selections.Count == 1)
             {
-                if (vm.Selections[0].ElementType == ElementType.Collection)
+                if ((vm.Selections[0] as ElementViewModel)?.ElementType == ElementType.Collection)
                     SetViewMode(_simpleEditGroupMode);
                 else
                     SetViewMode(_simpleEditMode);

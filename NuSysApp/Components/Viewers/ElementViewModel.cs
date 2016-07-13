@@ -16,7 +16,7 @@ using NuSysApp.Util;
 
 namespace NuSysApp
 {
-    public class ElementViewModel : BaseINPC, ISelectable
+    public class ElementViewModel : BaseINPC, IEditable
     {
         #region Private Members      
 
