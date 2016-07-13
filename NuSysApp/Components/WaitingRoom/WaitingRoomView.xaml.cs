@@ -38,7 +38,7 @@ namespace NuSysApp
 
         public static bool TEST_LOCAL_BOOLEAN = false;
 
-        public static bool IS_HUB = true;
+        public static bool IS_HUB = false;
 
         private static IEnumerable<Message> _firstLoadList;
         private bool _loggedIn = false;
