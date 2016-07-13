@@ -74,8 +74,10 @@ namespace NuSysApp
 
         internal void DeleteLink(string linkId)
         {
+            // Rmeoves link from the linkTabable open in the DV
             _linkTabable.RequestRemoveLink(linkId);
 
+            //Removes the link from the content at the other end of the Link
             var linkModel = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
             if (linkModel?.InAtomId == _linkTabable.ContentId)
             {
@@ -87,6 +89,7 @@ namespace NuSysApp
                 otherController.RequestRemoveLink(linkId);
             }
 
+            //Create templates to display in the list view
             foreach (var template in LinkTemplates)
             {
                 if (template.ID == linkId)
