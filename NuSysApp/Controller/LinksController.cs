@@ -194,29 +194,6 @@ namespace NuSysApp
             return _contentIdToLinkContentIds[contentId];
         }
 
-        /// <summary>
-        /// Creates the visual links for a given link library element controller
-        /// </summary>
-        /// <param name="linkController"></param>
-        public void CreateVisualLinks(LinkLibraryElementController linkController)
-        {
-            var contentId1 = linkController?.LinkLibraryElementModel?.InAtomId;
-            var contentId2 = linkController?.LinkLibraryElementModel?.OutAtomId;
-            Debug.Assert(contentId1 != null);
-            Debug.Assert(contentId2 != null);
-            if (_contentIdToLinkableIds.ContainsKey(contentId1) && _contentIdToLinkableIds.ContainsKey(contentId2))
-            {            
-                foreach (var visualId1 in _contentIdToLinkableIds[contentId1])
-                {
-                    foreach (var visualId2 in _contentIdToLinkableIds[contentId2])
-                    {
-                        CreateBezierLinkBetween(visualId1, visualId2);   
-                    }
-                }
-                
-            }
-        }
-
         public async Task RequestLink(Message m)
         {
             Debug.Assert(m.ContainsKey("id1"));
