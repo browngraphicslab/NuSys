@@ -1,4 +1,4 @@
-﻿<UserControl MaxHeight="{Binding ContainerHeight}" MaxWidth="{Binding ContainerWidth}"
+﻿<UserControl
     x:Class="NuSysApp.PDFRegionView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -9,7 +9,7 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid x:Name ="xGrid" Width="{Binding Width}" Height="{Binding Height}" MaxHeight="{Binding ContainerHeight}" MaxWidth="{Binding ContainerWidth}" DoubleTapped="XGrid_OnDoubleTapped">
+    <Grid x:Name ="xGrid" Width="{Binding Width}" Height="{Binding Height}" DoubleTapped="XGrid_OnDoubleTapped">
         <Grid.RenderTransform>
             <CompositeTransform x:Name="GridTranform"></CompositeTransform>
         </Grid.RenderTransform>
@@ -18,7 +18,7 @@
 
         <Rectangle x:Name="xMainRectangle"  PointerPressed="xMainRectangle_PointerPressed" Fill="Transparent" ManipulationStarted="RectangleRegionView_ManipulationStarted" 
                    Width="{Binding Width}" Height="{Binding Height}" ManipulationDelta="RectangleRegionView_ManipulationDelta" GotFocus="XMainRectangle_OnGotFocus"
-                    LostFocus="XMainRectangle_OnLostFocus" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" MaxHeight="{Binding ContainerHeight}" MaxWidth="{Binding ContainerWidth}">
+                    LostFocus="XMainRectangle_OnLostFocus" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}">
             <Rectangle.RenderTransform>
                 <CompositeTransform x:Name="RectangleTranform"></CompositeTransform>
             </Rectangle.RenderTransform>
@@ -26,7 +26,7 @@
         <Path x:Name="xResizingTriangle" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" 
               Height="25" Stretch="Fill" HorizontalAlignment="Left" VerticalAlignment="Top" UseLayoutRounding="False" Width="25" Margin="-28,-28,0,0"
               Opacity=".35"  Canvas.ZIndex="20" ManipulationStarted="XResizingTriangle_ManipulationStarted" ManipulationDelta="XResizingTriangle_ManipulationDelta" 
-              Visibility="{Binding Editable,Converter={StaticResource vConverter}}"  ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}">
+              ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}">
             <Path.RenderTransform>
                 <CompositeTransform x:Name="ResizerTransform" TranslateX="{Binding Width}" TranslateY="{Binding Height}">
                 </CompositeTransform>

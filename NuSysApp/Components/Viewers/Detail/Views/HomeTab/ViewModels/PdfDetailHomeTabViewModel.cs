@@ -82,6 +82,7 @@ namespace NuSysApp
             RaisePropertyChanged("ImageSource");
 
 
+
             foreach (var regionView in RegionViews)
             {
                 var model = (regionView.DataContext as PdfRegionViewModel)?.Model;
@@ -116,6 +117,7 @@ namespace NuSysApp
         public async Task FlipLeft()
         {
             await Goto(_pageNumber - 1);
+            /*
             foreach (var regionView in RegionViews)
             {
                 var model = (regionView.DataContext as PdfRegionViewModel)?.Model;
@@ -123,16 +125,19 @@ namespace NuSysApp
                 {
                     regionView.Visibility = Visibility.Collapsed;
                 }
+
                 else
                 {
                     regionView.Visibility = Visibility.Visible;
                 }
             }
+            */
         }
         public async Task FlipRight()
         {
             await Goto(_pageNumber + 1);
             //await LaunchLDA();
+            /*
             foreach (var regionView in RegionViews)
             {
                 var model = (regionView.DataContext as PdfRegionViewModel)?.Model;
@@ -145,6 +150,7 @@ namespace NuSysApp
                     regionView.Visibility = Visibility.Visible;
                 }
             }
+            */
         }
         public async Task LaunchLDA()
         {
@@ -217,7 +223,7 @@ namespace NuSysApp
                 view.Visibility = Visibility.Visible;
             }
 
-            RaisePropertyChanged("RegionViews");
+            //RaisePropertyChanged("RegionViews");
         }
 
 
@@ -289,6 +295,7 @@ namespace NuSysApp
             {
                 _regionsToLoad = new HashSet<Region>();
             }
+            RegionViews.Clear();
             foreach (var regionModel in _regionsToLoad)
             {
                 var pdfRegion = regionModel as PdfRegion;
@@ -302,7 +309,6 @@ namespace NuSysApp
 
                 if (SessionController.Instance.RegionsController.GetRegionController(pdfRegion.Id) == null)
                 {
-                    //Debug.Fail("did not load");
                     regionController = SessionController.Instance.RegionsController.AddRegion(pdfRegion, Controller.LibraryElementModel.LibraryElementId) as PdfRegionController;
                 }
                 else {
