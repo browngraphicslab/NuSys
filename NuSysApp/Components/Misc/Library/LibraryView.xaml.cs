@@ -612,7 +612,7 @@ namespace NuSysApp
             var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(r.X, r.Y, contentId, 300, 300, newCollectionId);
             if (ListContainer.Children[0] == _libraryList)
             {
-                foreach (var libraryItemTemplate in _pageViewModel.ItemList.ToList().GetRange(0, Math.Min(_pageViewModel.ItemList.Count, 10)))
+                foreach (var libraryItemTemplate in _pageViewModel.ItemList.ToList().GetRange(0, Math.Min(_pageViewModel.ItemList.Count, 30)))
                 {
                     var dict = new Message();
                     dict["title"] = libraryItemTemplate?.Title;
@@ -631,7 +631,7 @@ namespace NuSysApp
             }
             else if (ListContainer.Children[0] == _libraryFavorites)
             {
-                foreach (var itemTemplate in _favoritesViewModel.ItemList.ToList().GetRange(0, Math.Min(_favoritesViewModel.ItemList.Count, 10)))
+                foreach (var itemTemplate in _favoritesViewModel.ItemList.ToList().GetRange(0, Math.Min(_favoritesViewModel.ItemList.Count, 30)))
                 {
                     var dict = new Message();
                     dict["title"] = itemTemplate?.Title;

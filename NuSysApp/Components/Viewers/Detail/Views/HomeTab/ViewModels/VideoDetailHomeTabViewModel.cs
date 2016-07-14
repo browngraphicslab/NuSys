@@ -118,6 +118,7 @@ namespace NuSysApp
 
         public override void SetExistingRegions()
         {
+            RegionViews.Clear();
             foreach (var regionModel in _regionsToLoad)
             {
                 var videoRegion = regionModel as VideoRegionModel;

@@ -69,16 +69,20 @@ namespace NuSysApp
                     SessionController.Instance.RegionsController.GetContentIdOfRegionOrContent(contentId));
             _linkLibraryElementController =
                 SessionController.Instance.ContentController.GetLibraryElementController(linkLibraryElementId);
-            _bmp = new BitmapImage(libraryElementController.SmallIconUri);
-            libraryElementController.LinkRemoved += LibraryElementController_LinkRemoved; 
+            if (libraryElementController != null)
+            {
+                _bmp = new BitmapImage(libraryElementController?.SmallIconUri);
 
-            
-            thumbnail.ImageOpened += Thumbnail_ImageOpened;
-            //centering the thumbnail
-            (border.RenderTransform as CompositeTransform).TranslateX -= 10;
-            thumbnail.Source = _bmp;
-            //this is sort of a bandaid rather than a fix
-            Canvas.SetZIndex(thumbnail, 50);
+                libraryElementController.LinkRemoved += LibraryElementController_LinkRemoved;
+
+                thumbnail.ImageOpened += Thumbnail_ImageOpened;
+
+                //centering the thumbnail
+                (border.RenderTransform as CompositeTransform).TranslateX -= 10;
+                thumbnail.Source = _bmp;
+                //this is sort of a bandaid rather than a fix
+                Canvas.SetZIndex(thumbnail, 50);
+            }
         }
 
         private void LibraryElementController_LinkRemoved(object sender, string e)
