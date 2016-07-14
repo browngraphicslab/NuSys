@@ -27,18 +27,15 @@
                     </CompositeTransform>
                 </Path.RenderTransform>
             </Path>
+            <Image x:Name="xDelete" Width="25" Height="25" Margin="0,5,5,0" PointerPressed="xDelete_PointerPressed"  HorizontalAlignment="Right"  VerticalAlignment="Top" Stretch="Uniform" Source="ms-appx:///Assets/icon_delete_color.png"></Image>
 
         </Grid>
 
         <Grid x:Name="xToolBar"  HorizontalAlignment="Left" VerticalAlignment="Top"  Width="{Binding IntervalRegionWidth}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="15"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBox Grid.Column="0" x:Name="xNameTextBox" Height="15" Text="{Binding Name}" TextChanged="xNameTextBox_TextChanged" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,25,0,0"></TextBox>
-            <Image Grid.Column="1" x:Name="xDelete" Width="15" Height="15" PointerPressed="xDelete_PointerPressed"  Stretch="Uniform" Source="ms-appx:///Assets/icon_delete_color.png" Margin="0,25,5,0"></Image>
-
-
+            <TextBox Grid.Column="0" x:Name="xNameTextBox" Width="{Binding IntervalRegionWidth}"  Height="15" Text="{Binding Name}" TextChanged="xNameTextBox_TextChanged" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,25,0,0"></TextBox>
             <Grid.RenderTransform>
                 <CompositeTransform TranslateX="{Binding IntervalStart}" TranslateY="{Binding IntervalRegionTranslateY}"/>
             </Grid.RenderTransform>
@@ -48,7 +45,7 @@
         <Grid.RenderTransform>
             <CompositeTransform TranslateY="{Binding IntervalRegionTranslateY}"></CompositeTransform>
         </Grid.RenderTransform>
-            <Rectangle x:Name="IntervalRectangle" PointerPressed="xMainRectangle_PointerPressed" Width="{Binding IntervalRegionWidth}" Fill="#DB97B3" Height="25"  Opacity=".42" HorizontalAlignment="Left" VerticalAlignment="Top" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" ManipulationDelta="IntervalRectangle_OnManipulationDelta" Tapped="IntervalRectangle_OnTapped">
+            <Rectangle x:Name="IntervalRectangle" PointerPressed="xMainRectangle_PointerPressed" Width="{Binding IntervalRegionWidth}" Fill="#DB97B3" Height="25"  Opacity=".2" HorizontalAlignment="Left" VerticalAlignment="Top" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}" ManipulationDelta="IntervalRectangle_OnManipulationDelta" Tapped="IntervalRectangle_OnTapped">
                 <Rectangle.RenderTransform>
                     <CompositeTransform TranslateX="{Binding IntervalStart}"/>
                 </Rectangle.RenderTransform>

@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI;
@@ -320,7 +321,7 @@ namespace NuSysApp
                                     var m = new Message();
                                     m["id2"] = regiondc.RegionController.Model.Id;
                                     m["id1"] = vm.Controller.LibraryElementController.ContentId;
-                                    SessionController.Instance.LinksController.RequestLink(m);
+                                    await SessionController.Instance.LinksController.RequestLink(m);
                                     UITask.Run(delegate { vm.Controller.UpdateCircleLinks(); });
                                     break;
                                     //     vm.Controller.RequestVisualLinkTo();
