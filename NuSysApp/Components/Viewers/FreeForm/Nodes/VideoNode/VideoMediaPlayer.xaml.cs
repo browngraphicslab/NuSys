@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -93,7 +94,8 @@ namespace NuSysApp
 
         private void OnStop_Click(object sender, TappedRoutedEventArgs e)
         {
-            playbackElement.Pause();
+            playbackElement.Stop();
+            xPlayPauseImg.Source = new BitmapImage(new Uri("ms-appx:///Assets/node icons/icon_play_dark.png"));
             _wasPlaying = false;
 
         }
@@ -106,13 +108,28 @@ namespace NuSysApp
             b.ElementName = "playbackElement";
             b.Path = new PropertyPath("Position.TotalMilliseconds");
             scrubBar.SetBinding(ProgressBar.ValueProperty, b);
-            playbackElement.Play();
-            _wasPlaying = true;
+
+            if (_wasPlaying)
+            {
+                playbackElement.Pause();
+                xPlayPauseImg.Source = new BitmapImage(new Uri("ms-appx:///Assets/node icons/icon_play_dark.png"));
+                _wasPlaying = false;
+
+
+            }
+            else
+            {
+                playbackElement.Play();
+                xPlayPauseImg.Source = new BitmapImage(new Uri("ms-appx:///Assets/node icons/icon_pause_dark.png"));
+                _wasPlaying = true;
+
+            }
         }
 
         public void StopVideo()
         {
             playbackElement.Pause();
+            xPlayPauseImg.Source = new BitmapImage(new Uri("ms-appx:///Assets/node icons/icon_play_dark.png"));
             _wasPlaying = false;
         }
 
@@ -122,11 +139,12 @@ namespace NuSysApp
             scrubBar.Value = 0;
             _wasPlaying = false;
 
-            // e.Handled = true;
+
         }
         private void MediaEnded(object sender, RoutedEventArgs e)
         {
             VideoNodeView_OnJump(new TimeSpan(0));
+            xPlayPauseImg.Source = new BitmapImage(new Uri("ms-appx:///Assets/node icons/icon_play_dark.png"));
             _wasPlaying = false;
 
         }

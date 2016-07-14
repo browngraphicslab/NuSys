@@ -106,7 +106,7 @@ namespace NuSysApp
 
                 if (SessionController.Instance.RegionsController.GetRegionController(audioModel.Id) == null)
                 {
-                    Debug.Fail("did not load");
+                    //Debug.Fail("did not load");
                     regionController = SessionController.Instance.RegionsController.AddRegion(audioModel, elementController.LibraryElementModel.LibraryElementId) as AudioRegionController;
                 }
                 else {

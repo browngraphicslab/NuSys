@@ -17,7 +17,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <MediaElement x:Name="playbackElement" AreTransportControlsEnabled="False"  Loaded="PlaybackElement_Onloaded" AutoPlay="False" MediaOpened="PlaybackElement_MediaOpened"/>
+        <MediaElement x:Name="playbackElement" AreTransportControlsEnabled="False"  Loaded="PlaybackElement_Onloaded" MediaEnded="MediaEnded" AutoPlay="False" MediaOpened="PlaybackElement_MediaOpened"/>
         <ProgressBar x:Name ="scrubBar" Height ="25" PointerReleased="ScrubBar_OnPointerReleased"  Grid.Row="1" Margin="10,10,10,10" Value = "0" Maximum="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan.TotalMilliseconds}" Tapped="SrubBar_OnTapped" PointerMoved="ScrubBar_OnPointerMoved"  Opacity="0.3" />
 
         <Grid Grid.Row="2" HorizontalAlignment="Left">
@@ -29,13 +29,13 @@
         <StackPanel Grid.Row ="3" Orientation="Horizontal" HorizontalAlignment="Center"  Margin="0,28,0,0" VerticalAlignment="Top">
 
             <Button x:Name="play" Tapped="OnPlay_Click" Style="{StaticResource NodeSubMenuItem}">
-                <Image Source="ms-appx:///Assets/node icons/icon_play_dark.png" Height="20"></Image>
+                <Image x:Name="xPlayPauseImg" Source="ms-appx:///Assets/node icons/icon_play_dark.png" Height="20"></Image>
             </Button>
-            <Button x:Name="pause" Tapped ="OnPause_Click" Style="{StaticResource NodeSubMenuItem}">
-                <Image Source="ms-appx:///Assets/node icons/icon_stop_dark.png" Height="15"/>
-            </Button>
-            <Button x:Name="stop" Tapped="OnStop_Click" Style="{StaticResource NodeSubMenuItem}">
-                <Image Source="ms-appx:///Assets/node icons/icon_pause_dark.png" Height="20"></Image>
+            <!--<Button x:Name="pause" Tapped ="OnPause_Click" Style="{StaticResource NodeSubMenuItem}">
+                <Image Source="ms-appx:///Assets/node icons/icon_pause_dark.png" Height="15"/>
+            </Button>-->
+            <Button x:Name="pause" Tapped="OnStop_Click" Style="{StaticResource NodeSubMenuItem}">
+                <Image Source="ms-appx:///Assets/node icons/icon_stop_dark.png" Height="20"></Image>
             </Button>
             <Button Visibility="Collapsed" x:Name="AddTimeBlock" Content="Add Annotation"  Height="39" Width="142"></Button>
         </StackPanel>
