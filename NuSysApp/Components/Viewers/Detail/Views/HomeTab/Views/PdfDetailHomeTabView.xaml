@@ -47,13 +47,15 @@
                     </Button>
                 </Grid>
             </Border>
-            <Rectangle x:Name="AddToCollection" Width="100" Height="100" Fill="Red"
-                   Visibility="{Binding Editable, Converter={StaticResource vConverter}, ConverterParameter=true }"
+            <Border Background="{StaticResource color7}" Height="Auto" Width="130" Padding="5" BorderBrush="{StaticResource color3}" BorderThickness="2" Margin="0,50,0,0"
+                Visibility="{Binding Editable, Converter={StaticResource vConverter}, ConverterParameter=true}">
+                <TextBlock x:Name="AddToCollection" Width="Auto" Height="Auto" Foreground="{StaticResource color3}" Text="Drag To Collection" TextAlignment="Center"
                    PointerPressed="AddToCollection_OnPointerPressed"
                    ManipulationStarted="AddToCollection_OnManipulationStarted"
                    ManipulationDelta="AddToCollection_ManipulationDelta"
                    ManipulationCompleted="AddToCollection_ManipulationCompleted"
                    ManipulationMode="TranslateX,TranslateY"/>
+            </Border>
         </StackPanel>
         <StackPanel Visibility="Collapsed">
             <TextBlock Text="SUGGESTED TAGS" Foreground="{StaticResource foreground6}" FontSize="30" CharacterSpacing="45" Margin="10,15,30,0" Padding="5,0,5,0"></TextBlock>
