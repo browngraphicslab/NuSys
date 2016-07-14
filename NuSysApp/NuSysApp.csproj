@@ -266,6 +266,7 @@
     <Compile Include="Classas.cs" />
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
     <Compile Include="Components\IEditable.cs" />
+    <Compile Include="Components\IExplorable.cs" />
     <Compile Include="Components\InqCanvas2\PhilInqCanvas.xaml.cs">
       <DependentUpon>PhilInqCanvas.xaml</DependentUpon>
     </Compile>
@@ -369,6 +370,7 @@
     <Compile Include="Components\Viewers\Detail\Views\PDFRegionListView.xaml.cs">
       <DependentUpon>PDFRegionListView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Modes\ExploreMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">
       <DependentUpon>AudioMediaPlayer.xaml</DependentUpon>
     </Compile>
