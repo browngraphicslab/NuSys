@@ -95,13 +95,16 @@ namespace NuSysApp
         public ToolViewModel(ToolController toolController)
         {
             _controller = toolController;
-            _controller.ParentsLibraryIdsChanged += ControllerOnParentsLibraryLibraryIdsChanged;
+            _controller.IdsToDisplayChanged += ControllerOnLibraryIdsToDisplayChanged;
             Controller.SizeChanged += OnSizeChanged;
             Controller.LocationChanged += OnLocationChanged;
             Height = 400;
             Width = 260;
         }
 
+        /// <summary>
+        /// Creates a collection from this tools output library ids
+        /// </summary>
         public async void CreateCollection(double x, double y)
         {
             Task.Run(async delegate
@@ -121,7 +124,7 @@ namespace NuSysApp
                 m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Model.LibraryId;
                 var collRequest = new NewElementRequest(m);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(collRequest);
-                foreach (var id in Controller.Model.LibraryIds)
+                foreach (var id in Controller.Model.OutputLibraryIds)
                 {
                     var lem = SessionController.Instance.ContentController.GetContent(id);
                     if (lem == null || lem.Type == ElementType.Link)
@@ -144,13 +147,17 @@ namespace NuSysApp
 
             });
         }
+
+        /// <summary>
+        /// Creates a stack of elements from this tools output library ids
+        /// </summary>
         public async void CreateStack(double x, double y)
         {
             Task.Run(async delegate
             {
                 int i = 0;
                 int offset = 40;
-                foreach (var id in Controller.Model.LibraryIds)
+                foreach (var id in Controller.Model.OutputLibraryIds)
                 {
                     var lem = SessionController.Instance.ContentController.GetContent(id);
                     if (lem == null || lem.Type == ElementType.Link || i > 20)//TODO indicate to user than no more than 20 non-link items will be made
@@ -174,16 +181,23 @@ namespace NuSysApp
 
             });
         }
+
+        /// <summary>
+        /// Opens the detail view of the selected value if possible (i.e. there is only 1 library id selected)
+        /// </summary>
         public void OpenDetailView()
         {
-            if (Controller.Model.LibraryIds.Count == 1)
+            if (Controller.Model.OutputLibraryIds.Count == 1)
             {
-                var lem = SessionController.Instance.ContentController.GetLibraryElementController(Controller.Model.LibraryIds.First());
+                var lem = SessionController.Instance.ContentController.GetLibraryElementController(Controller.Model.OutputLibraryIds.First());
                 SessionController.Instance.SessionView.ShowDetailView(lem);
             }
             
         }
 
+        /// <summary>
+        /// Returns a boolean representing if creating a tool chain from this tool to the passed in tool will create a loop
+        /// </summary>
         public bool CreatesLoop(ToolViewModel toolViewModel)
         {
             bool createsLoop = false;
@@ -211,6 +225,9 @@ namespace NuSysApp
             return createsLoop;
         }
 
+        /// <summary>
+        /// Will either add this tool as a parent if dropped on top of an existing tool, or create a brand new tool filter chooser view. 
+        /// </summary>
         public void FilterIconDropped(IEnumerable<UIElement> hitsStart,  FreeFormViewerViewModel wvm, double x, double y)
         {
             if (hitsStart.Where(uiElem => (uiElem is FrameworkElement) && (uiElem as FrameworkElement).DataContext is ToolViewModel).ToList().Any())
@@ -229,6 +246,9 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        ///creates new filter tool at specified location
+        /// </summary>
         public void AddNewFilterTool(double x, double y, FreeFormViewerViewModel wvm)
         {
             var toolFilter = new ToolFilterView(x, y, this);
@@ -240,6 +260,9 @@ namespace NuSysApp
             wvm.AtomViewList.Add(toolFilterLink);
         }
 
+        /// <summary>
+        ///Adds tool as parent to existing filter picker tool. 
+        /// </summary>
         public void AddFilterToFilterToolView(List<UIElement> hitsStartList, FreeFormViewerViewModel wvm)
         {
             ToolFilterLinkViewModel linkViewModel = new ToolFilterLinkViewModel(this, (hitsStartList.First() as ToolFilterView));
@@ -250,6 +273,9 @@ namespace NuSysApp
             wvm.AtomViewList.Add(linkView);
         }
 
+        /// <summary>
+        ///Adds tool as parent to existing tool. 
+        /// </summary>
         public void AddFilterToExistingTool(List<UIElement> hitsStartList, FreeFormViewerViewModel wvm)
         {
             ToolViewModel toolViewModel = (hitsStartList.First() as AnimatableUserControl).DataContext as ToolViewModel;
@@ -266,6 +292,7 @@ namespace NuSysApp
             }
         }
 
+
         public Image InitializeDragFilterImage()
         {
             Image dragItem = new Image();
@@ -277,19 +304,24 @@ namespace NuSysApp
 
         public void Dispose()
         {
-            _controller.ParentsLibraryIdsChanged -= ControllerOnParentsLibraryLibraryIdsChanged;
+            _controller.IdsToDisplayChanged -= ControllerOnLibraryIdsToDisplayChanged;
             Controller.SizeChanged -= OnSizeChanged;
             Controller.LocationChanged -= OnLocationChanged;
             Controller.Dispose();
         }
 
+        /// <summary>
+        ///Adds this tool as a parent of the passed in tool controller 
+        /// </summary>
         public void AddChildFilter(ToolController controller)
         {
             controller.AddParent(_controller);
-
         }
 
-        private void ControllerOnParentsLibraryLibraryIdsChanged()
+        /// <summary>
+        ///Reloads the properties to to display
+        /// </summary>
+        private void ControllerOnLibraryIdsToDisplayChanged()
         {
             ReloadPropertiesToDisplay();
         }

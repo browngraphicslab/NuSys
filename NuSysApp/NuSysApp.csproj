@@ -325,8 +325,8 @@
     </Compile>
     <Compile Include="Components\Tools\BasicToolController.cs" />
     <Compile Include="Components\Tools\BasicToolModel.cs" />
-    <Compile Include="Components\Tools\BasicToolView.xaml.cs">
-      <DependentUpon>BasicToolView.xaml</DependentUpon>
+    <Compile Include="Components\Tools\ListToolView.xaml.cs">
+      <DependentUpon>ListToolView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Tools\MetadataToolController.cs" />
     <Compile Include="Components\Tools\MetadataToolModel.cs" />
@@ -920,7 +920,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Tools\BasicToolView.xaml">
+    <Page Include="Components\Tools\ListToolView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

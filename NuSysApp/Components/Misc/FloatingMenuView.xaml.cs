@@ -314,7 +314,7 @@ namespace NuSysApp
             else if (_elementType == ElementType.Tools)
             {
 
-                //var tool = new BasicToolView(new ElementViewModel(new ElementController(new ElementModel("")
+                //var tool = new ListToolView(new ElementViewModel(new ElementController(new ElementModel("")
                 //{
                 //    X = pos.X,
                 //    Y = pos.Y,
@@ -324,7 +324,7 @@ namespace NuSysApp
                 //BasicToolModel model = new BasicToolModel();
                 //BasicToolController controller = new BasicToolController(model);
                 //BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
-                //BasicToolView view = new BasicToolView(viewmodel, pos.X, pos.Y);
+                //ListToolView view = new ListToolView(viewmodel, pos.X, pos.Y);
                 ToolFilterView filter = new ToolFilterView(pos.X, pos.Y);
                 //rect.Background = new SolidColorBrush(Colors.Blue);
                 vm.AtomViewList.Add(filter);

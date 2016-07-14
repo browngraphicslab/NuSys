@@ -17,7 +17,7 @@ namespace NuSysApp.Tools
     /// <summary>
     /// Temporary class for a tool that can be dragged and dropped onto the collection
     /// </summary>
-    public sealed partial class BasicToolView : AnimatableUserControl, ToolViewable
+    public sealed partial class ListToolView : AnimatableUserControl, ToolViewable
     {
         //public ObservableCollection<string> PropertiesToDisplay { get; set; }
 
@@ -37,15 +37,17 @@ namespace NuSysApp.Tools
         private double _x;
         private double _y;
         private BaseToolView _baseTool;
-        public BasicToolView(BaseToolView baseTool)
+        public ListToolView(BaseToolView baseTool)
         {
             PropertiesToDisplayUnique = new ObservableCollection<string>();
             this.InitializeComponent();
             _dragItem = baseTool.Vm.InitializeDragFilterImage();
-            //xPropertiesList.Height = baseTool.Vm.Height - 175;
             _baseTool = baseTool;
         }
 
+        /// <summary>
+        ///Clears then individually adds each of the new properties to the PropertiesToDisplayUnique observable collection which is bound to the list view.
+        /// </summary>
         public void SetProperties(List<string> propertiesList)
         {
             HashSet<string> set = new HashSet<string>();
@@ -68,7 +70,10 @@ namespace NuSysApp.Tools
 
         }
 
-        public void SetViewSelection(HashSet<string> selections)
+        /// <summary>
+        ///Sets the visual selection of the list.
+        /// </summary>
+        public void SetVisualSelection(HashSet<string> selections)
         {
             xPropertiesList.SelectedItems.Clear();
             foreach (var selection in selections ?? new HashSet<string>())
@@ -80,9 +85,10 @@ namespace NuSysApp.Tools
                 xPropertiesList.ScrollIntoView(xPropertiesList.SelectedItems.Last());
             }
         }
-        
-        
-        
+
+        /// <summary>
+        ///Sets that starting point for dragging. This is also to make sure that pie chart isn't visually selected once you click on it, because visual selection will always be based on the logcial selection in the model.
+        /// </summary>
         private void xListItem_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             _x = e.GetCurrentPoint(_baseTool.getCanvas()).Position.X - 25;
@@ -90,6 +96,9 @@ namespace NuSysApp.Tools
             e.Handled = true;
         }
 
+        /// <summary>
+        ///When the list item is tapped, set the logical selection based on the type of selection (multi/single).
+        /// </summary>
         private void xListItem_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             if (_baseTool.Vm.Selection != null && _baseTool.Vm.Controller.Model.Selected && _baseTool.Vm.Selection.Contains(((sender as Grid).Children[0] as TextBlock).Text))
@@ -126,7 +135,9 @@ namespace NuSysApp.Tools
             }
         }
 
-
+        /// <summary>
+        ///If the item that was double tapped is the only selected item, attempt to open the detail view.
+        /// </summary>
         private void xListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             if (!_baseTool.Vm.Selection.Contains(((sender as Grid).Children[0] as TextBlock).Text) && _baseTool.Vm.Selection.Count == 0|| _baseTool.Vm.Controller.Model.Selected == false)
@@ -140,6 +151,9 @@ namespace NuSysApp.Tools
             }
         }
 
+        /// <summary>
+        ///Set up drag item
+        /// </summary>
         private async void xListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             if (_baseTool.getCanvas().Children.Contains(_dragItem))
@@ -152,6 +166,9 @@ namespace NuSysApp.Tools
             t.TranslateY = _y;
         }
 
+        /// <summary>
+        ///Either scroll or drag depending on the location of the point.
+        /// </summary>
         private void xListItem_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var el = (FrameworkElement)sender;
@@ -185,8 +202,10 @@ namespace NuSysApp.Tools
             }
         }
 
-        
 
+        /// <summary>
+        ///If the point is located outside the tool, logically set the selection based on selection type (Multi/Single) and either create new tool or add to existing tool
+        /// </summary>
         private async void xListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             _baseTool.getCanvas().Children.Remove(_dragItem);

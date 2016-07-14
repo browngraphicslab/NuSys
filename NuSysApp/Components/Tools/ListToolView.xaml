@@ -1,5 +1,5 @@
 <local:AnimatableUserControl
-    x:Class="NuSysApp.Tools.BasicToolView"
+    x:Class="NuSysApp.Tools.ListToolView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:NuSysApp"

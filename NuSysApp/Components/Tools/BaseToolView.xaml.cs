@@ -40,7 +40,7 @@ namespace NuSysApp
             Vm = vm;
             xTitle.Text = vm.Filter.ToString();
             vm.ReloadPropertiesToDisplay();
-            _toolView = new Tools.BasicToolView(this);
+            _toolView = new Tools.ListToolView(this);
             _toolView.SetProperties(Vm.PropertiesToDisplay);
             xViewTypeGrid.Children.Add((UIElement)_toolView);
             _currentViewMode = ViewMode.List;
@@ -55,6 +55,9 @@ namespace NuSysApp
             xStackElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
         }
 
+        /// <summary>
+        ///If the number of parents is greater than 1, this sets the visibility of the parent operator (AND/OR) grid 
+        /// </summary>
         private void Controller_NumberOfParentsChanged(int numOfParents)
         {
             if (numOfParents > 1)
@@ -74,12 +77,17 @@ namespace NuSysApp
             (DataContext as BasicToolViewModel).Controller.NumberOfParentsChanged -= Controller_NumberOfParentsChanged;
         }
 
+        /// <summary>
+        ///Passes new properties to display to the toolview
+        /// </summary>
         private void Vm_PropertiesToDisplayChanged()
         {
             _toolView.SetProperties(Vm.PropertiesToDisplay);
         }
 
-
+        /// <summary>
+        ///Sets up drag image when collection or stack image is starting to be dragged.
+        /// </summary>
         private async void BtnAddOnManipulationStarting(object sender, PointerRoutedEventArgs args)
         {
             if (xCanvas.Children.Contains(_dragItem))
@@ -99,9 +107,11 @@ namespace NuSysApp
             args.Handled = true;
         }
 
+        /// <summary>
+        ///Moves drag image accordingly
+        /// </summary>
         private void BtnAddOnManipulationDelta(object sender, PointerRoutedEventArgs args)
         {
-
             if (_dragItem == null)
                 return;
             var t = (CompositeTransform)_dragItem.RenderTransform;
@@ -111,6 +121,9 @@ namespace NuSysApp
             args.Handled = true;
         }
 
+        /// <summary>
+        ///Creates a stack or collection based on which element was being dragged.
+        /// </summary>
         private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)
         {
             xCanvas.Children.Remove(_dragItem);
@@ -143,23 +156,32 @@ namespace NuSysApp
             this.Dispose();
         }
 
+        /// <summary>
+        ///Returns the that surrounds this entire element
+        /// </summary>
         public Canvas getCanvas()
         {
             return xCanvas;
         }
 
+        /// <summary>
+        ///Passes new selection to the toolview
+        /// </summary>
         private void OnSelectionChanged(object sender)
         {
             if (Vm.Selection != null && (Vm.Controller as BasicToolController).Model.Selected)
             {
-                _toolView.SetViewSelection(Vm.Selection);
+                _toolView.SetVisualSelection(Vm.Selection);
             }
             else
             {
-                _toolView.SetViewSelection(new HashSet<string>());
+                _toolView.SetVisualSelection(new HashSet<string>());
             }
         }
 
+        /// <summary>
+        ///Resizing tool
+        /// </summary>
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             if (SessionController.Instance.SessionView.IsPenMode)
@@ -184,6 +206,9 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        ///Set size taking into account the min height and min width;
+        /// </summary>
         public void SetSize(double width, double height)
         {
             if (width < _minWidth && height < _minHeight)
@@ -193,24 +218,20 @@ namespace NuSysApp
             if (width > _minWidth && height > _minHeight)
             {
                 (DataContext as BasicToolViewModel).Controller.SetSize(width, height);
-                //xParentOperatorPickerList.Height = height - 175;
-                //xParentOperatorPickerList.Width = width;
-                //_toolView.SetSize(width, height);
             }
             else if (height < _minHeight)
             {
                 (DataContext as BasicToolViewModel).Controller.SetSize(width, this.Height);
-                //_toolView.SetSize(width, this.Height);
-                //xParentOperatorPickerList.Width = width;
             }
             else if (width < _minWidth)
             {
                 (DataContext as BasicToolViewModel).Controller.SetSize(this.Width, height);
-                //_toolView.SetSize(this.Width, height);
-                //xParentOperatorPickerList.Height = height - 175;
             }
         }
 
+        /// <summary>
+        ///Sets a new pie chart view as the tool view
+        /// </summary>
         private void XPieChartButton_OnClick(object sender, RoutedEventArgs e)
         {
             if (_currentViewMode == ViewMode.List)
@@ -224,12 +245,15 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        ///Sets a new list view as the tool view
+        /// </summary>
         private void XListViewButton_OnClick(object sender, RoutedEventArgs e)
         {
             if (_currentViewMode == ViewMode.PieChart)
             {
                 xViewTypeGrid.Children.Remove((UIElement)_toolView);
-                _toolView = new Tools.BasicToolView(this);
+                _toolView = new Tools.ListToolView(this);
                 _toolView.SetProperties(Vm.PropertiesToDisplay);
                 xViewTypeGrid.Children.Add((UIElement)_toolView);
                 _currentViewMode = ViewMode.List;
@@ -237,11 +261,17 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        ///Dragging to move tool.
+        /// </summary>
         private void Tool_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             e.Handled = true;
         }
 
+        /// <summary>
+        ///Dragging to move tool.
+        /// </summary>
         private void Tool_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
 
@@ -258,7 +288,9 @@ namespace NuSysApp
             }
         }
 
-
+        /// <summary>
+        ///Sets the parent operator
+        /// </summary>
         private void XParentOperatorText_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             if (Vm.Controller.Model.ParentOperator == ToolModel.ParentOperatorType.And)
