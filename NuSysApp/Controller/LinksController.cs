@@ -398,8 +398,8 @@ namespace NuSysApp
 
             Debug.Assert(libElemId1 != null && _contentIdToLinkContentIds.ContainsKey(libElemId1));
             Debug.Assert(libElemId2 != null && _contentIdToLinkContentIds.ContainsKey(libElemId2));
-            Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementController(libElemId1) != null);
-            Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementController(libElemId2) != null);
+            //Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementController(libElemId1) != null);
+            //Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementController(libElemId2) != null);
 
 
             var linkLibElemControllersIds1 = _contentIdToLinkContentIds[libElemId1];
