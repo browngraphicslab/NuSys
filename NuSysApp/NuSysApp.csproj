@@ -835,6 +835,7 @@
     <Content Include="Assets\presentation_backward.png" />
     <Content Include="Assets\presentation_forward.png" />
     <Content Include="Assets\record dark.png" />
+    <Content Include="Assets\region icon.png" />
     <Content Include="Assets\resizer.png" />
     <Content Include="Assets\search as collection.png" />
     <Content Include="Assets\SmallLogo.scale-100.png" />

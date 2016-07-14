@@ -223,7 +223,7 @@ namespace NuSysApp
                 view.Visibility = Visibility.Visible;
             }
 
-            //RaisePropertyChanged("RegionViews");
+            RaisePropertyChanged("RegionViews");
         }
 
 

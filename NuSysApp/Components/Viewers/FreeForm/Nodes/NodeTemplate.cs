@@ -140,19 +140,8 @@ namespace NuSysApp
             //tags.RenderTransform = t;
 
             tags = (ItemsControl)GetTemplateChild("Tags");
-            var items = tags.ItemsSource as IEnumerable<Button>;
-            if (items != null)
-            {
-                foreach (var item in items)
-                {
-                    if (item != null)
-                    {
-                        item.Tapped += Tags_Tapped;
-                    }
-                }
-            }
-            
-          
+            tags.Tapped += Tags_Tapped;
+
 
 
             title = (TextBox)GetTemplateChild("xTitle");
@@ -185,19 +174,28 @@ namespace NuSysApp
             OnTemplateReady?.Invoke();
         }
 
+
+
         private void Tags_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            MetadataToolModel model = new MetadataToolModel();
-            MetadataToolController controller = new MetadataToolController(model);
-            MetadataToolViewModel viewmodel = new MetadataToolViewModel(controller);
-            viewmodel.Filter = ToolModel.ToolFilterTypeTitle.AllMetadata;
-            var wvm = SessionController.Instance.ActiveFreeFormViewer;
-            var width = SessionController.Instance.SessionView.ActualWidth;
-            var height = SessionController.Instance.SessionView.ActualHeight;
-            var centerpoint = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(new Point(width / 2, height / 2));
-            MetadataToolView view = new MetadataToolView(viewmodel, centerpoint.X, centerpoint.Y);
-            wvm.AtomViewList.Add(view);
-            controller.SetSelection(new Tuple<string, HashSet<string>>("Keywords", new HashSet<string>() {}));
+            var selectedTag = (e.OriginalSource as TextBlock)?.Text;
+            if (selectedTag != null)
+            {
+                MetadataToolModel model = new MetadataToolModel();
+                MetadataToolController controller = new MetadataToolController(model);
+                MetadataToolViewModel viewmodel = new MetadataToolViewModel(controller);
+
+                viewmodel.Filter = ToolModel.ToolFilterTypeTitle.AllMetadata;
+
+                controller.SetSelection(new Tuple<string, HashSet<string>>("Keywords", new HashSet<string>() { }));
+
+                var wvm = SessionController.Instance.ActiveFreeFormViewer;
+                var width = SessionController.Instance.SessionView.ActualWidth;
+                var height = SessionController.Instance.SessionView.ActualHeight;
+                var centerpoint = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(new Point(width / 2, height / 2));
+                MetadataToolView view = new MetadataToolView(viewmodel, centerpoint.X, centerpoint.Y);
+                wvm.AtomViewList.Add(view);
+            }
         }
 
         private void OnTagTemplateTapped(object sender, TappedRoutedEventArgs e)
