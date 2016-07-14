@@ -20,10 +20,10 @@
                 <Image Source="ms-appx:///Assets/node icons/delete.png" Height="20" Width="20"></Image>
             </Button>
             <Button Grid.Column="1" x:Name="GroupButton" Style="{StaticResource NodeSubMenuItem}" Background="#BDCCD4">
-                <Image Source="ms-appx:///Assets/node icons/icon_new_collection.png" Height="20" Width="20"></Image>
+                <Image Source="ms-appx:///Assets/collection icon bluegreen.png" Height="20" Width="20"></Image>
             </Button>
             <Button Grid.Column="2" x:Name="AdornmentButton" Style="{StaticResource NodeSubMenuItem}" Background="#BDCCD4">
-                <Image Source="ms-appx:///Assets/node icons/icon_new_collection.png" Height="20" Width="20"></Image>
+                <Image Source="ms-appx:///Assets/region icon.png" Height="30" Width="30"></Image>
             </Button>
         </Grid>
 

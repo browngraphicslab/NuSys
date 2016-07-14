@@ -72,19 +72,27 @@ namespace NuSysApp
             }
         }
 
-        internal void DeleteLink(string id)
+        internal void DeleteLink(string linkId)
         {
-            _linkTabable.RequestRemoveLink(id);
+            // Rmeoves link from the linkTabable open in the DV
+            _linkTabable.RequestRemoveLink(linkId);
 
-            //Task.Run(async delegate
-            //{
-            //    var request = new DeleteLibraryElementRequest(id);
-            //    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-            //});
+            //Removes the link from the content at the other end of the Link
+            var linkModel = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
+            if (linkModel?.InAtomId == _linkTabable.ContentId)
+            {
+                var otherController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel?.OutAtomId);
+                otherController.RequestRemoveLink(linkId);
+            } else if (linkModel?.OutAtomId == _linkTabable.ContentId)
+            {
+                var otherController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel?.InAtomId);
+                otherController.RequestRemoveLink(linkId);
+            }
 
+            //Create templates to display in the list view
             foreach (var template in LinkTemplates)
             {
-                if (template.ID == id)
+                if (template.ID == linkId)
                 {
                     LinkTemplates.Remove(template);
                     break;

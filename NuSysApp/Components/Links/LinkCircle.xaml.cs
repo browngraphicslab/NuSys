@@ -25,7 +25,7 @@ namespace NuSysApp
         public string LinkLibraryElementId;
         //content id the link is linked to
         public string ContentId;
-        private LibraryElementController _libraryElementController;
+        private LibraryElementController _linkLibraryElementController;
         private bool _pinned;
 
         protected bool Pinned
@@ -64,14 +64,15 @@ namespace NuSysApp
             border.BorderThickness = _collapsedThickness;
             //thumbnail is not pinned to begin with
             Pinned = false;
-            //_libraryElementController =
-            //    SessionController.Instance.ContentController.GetLibraryElementController(
-            //        SessionController.Instance.RegionsController.GetContentIdOfRegionOrContent(linkLibraryElementId));
-            _libraryElementController =
+            var libraryElementController =
+                SessionController.Instance.ContentController.GetLibraryElementController(
+                    SessionController.Instance.RegionsController.GetContentIdOfRegionOrContent(contentId));
+            _linkLibraryElementController =
                 SessionController.Instance.ContentController.GetLibraryElementController(linkLibraryElementId);
-            _bmp = new BitmapImage(_libraryElementController.SmallIconUri);
-            _libraryElementController.LinkRemoved += LibraryElementController_LinkRemoved; 
+            _bmp = new BitmapImage(libraryElementController.SmallIconUri);
+            libraryElementController.LinkRemoved += LibraryElementController_LinkRemoved; 
 
+            
             thumbnail.ImageOpened += Thumbnail_ImageOpened;
             //centering the thumbnail
             (border.RenderTransform as CompositeTransform).TranslateX -= 10;
@@ -82,7 +83,7 @@ namespace NuSysApp
 
         private void LibraryElementController_LinkRemoved(object sender, string e)
         {
-            //_libraryElementController.LinkRemoved -= LibraryElementController_LinkRemoved;
+            //_linkLibraryElementController.LinkRemoved -= LibraryElementController_LinkRemoved;
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 

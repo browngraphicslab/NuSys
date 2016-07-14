@@ -575,7 +575,6 @@ namespace NuSysApp
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
                 new DeleteLibraryElementRequest(linkLibraryElementID));
             
-
         }
         public HashSet<LinkLibraryElementController> GetAllLinks()
         {
