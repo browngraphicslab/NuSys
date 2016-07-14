@@ -172,6 +172,7 @@ namespace NuSysApp
             var regionController = SessionController.Instance.RegionsController.GetRegionController(ContentId) as IDetailViewable;
             var libraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(ContentId) as IDetailViewable;
             SessionController.Instance.SessionView.ShowDetailView(regionController ?? libraryElementController);
+            e.Handled = true;
         }
     }
 }
