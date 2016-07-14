@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI;
@@ -307,75 +308,25 @@ namespace NuSysApp
                     if (hitsStart2.Any()){
                         foreach (var element in hitsStart2)
                         {
-                            if (element is AudioRegionView)
+                            if ((element as FrameworkElement).DataContext is RegionViewModel) // If there is a region under the drag
                             {
                                 if (_currenDragMode == DragMode.PresentationLink)
                                 {
-                                    AddPresentationLink(dc?.Id,vm?.Id);
+                                    AddPresentationLink(dc?.Id, vm?.Id);
                                 }
                                 else
                                 {
-                                    var region = element as AudioRegionView;
-                                    var regiondc = region.DataContext as AudioRegionViewModel;
+                                    var region = element as FrameworkElement;
+                                    var regiondc = region.DataContext as RegionViewModel;
                                     var m = new Message();
-                                    m["id1"] = regiondc.RegionController.ContentId;
-                                    m["id2"] = vm.Controller.LibraryElementController.ContentId;
-                                    SessionController.Instance.LinksController.RequestLink(m);
-                               //     vm.Controller.RequestVisualLinkTo();
+                                    m["id2"] = regiondc.RegionController.Model.Id;
+                                    m["id1"] = vm.Controller.LibraryElementController.ContentId;
+                                    await SessionController.Instance.LinksController.RequestLink(m);
+                                    UITask.Run(delegate { vm.Controller.UpdateCircleLinks(); });
+                                    break;
+                                    //     vm.Controller.RequestVisualLinkTo();
                                 }
-                            }
-
-                            if (element is VideoRegionView)
-                            {
-                                if (_currenDragMode == DragMode.PresentationLink)
-                                {
-                                    AddPresentationLink(dc?.Id,vm?.Id);
-                                }
-                                else
-                                {
-                                    var region = element as VideoRegionView;
-                                    var regiondc = region.DataContext as VideoRegionViewModel;
-                                    var m = new Message();
-                                    m["id1"] = regiondc.RegionController.ContentId;
-                                    m["id2"] = vm.Controller.LibraryElementController.ContentId;
-                                    SessionController.Instance.LinksController.RequestLink(m);
-                             //       vm.Controller.RequestVisualLinkTo();
-                                }
-                            }
-
-                            if (element is PDFRegionView)
-                            {
-                                if (_currenDragMode == DragMode.PresentationLink)
-                                {
-                                    AddPresentationLink(dc?.Id,vm?.Id);
-                                }
-                                else
-                                {
-                                    var region = element as PDFRegionView;
-                                    var regiondc = region.DataContext as PdfRegionViewModel;
-                                    var m = new Message();
-                                    m["id1"] = regiondc.RegionController.ContentId;
-                                    m["id2"] = vm.Controller.LibraryElementController.ContentId;
-                                    SessionController.Instance.LinksController.RequestLink(m);
-                               //     vm.Controller.RequestVisualLinkTo();
-                                }
-                            }
-                            if (element is ImageRegionView)
-                            {
-                                if (_currenDragMode == DragMode.PresentationLink)
-                                {
-                                    AddPresentationLink(dc?.Id,vm?.Id);
-                                }
-                                else
-                                {
-                                    var region = element as ImageRegionView;
-                                    var regiondc = region.DataContext as ImageRegionViewModel;
-                                    var m = new Message();
-                                    m["id1"] = regiondc.RegionController.ContentId;
-                                    m["id2"] = vm.Controller.LibraryElementController.ContentId;
-                                    SessionController.Instance.LinksController.RequestLink(m);
-                                }
-                            }
+                            }          
                         }
                     }
                     else

@@ -46,7 +46,7 @@ namespace NuSysApp
 
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
-                
+                //vm.Goto(vm.)
             };
 
             //vm.MakeTagList();

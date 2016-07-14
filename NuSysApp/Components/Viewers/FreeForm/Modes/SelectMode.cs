@@ -154,6 +154,13 @@ namespace NuSysApp
                     }
                     else if (vm.ElementType != ElementType.Link)
                     {
+
+                        if (vm.ElementType == ElementType.PDF)
+                        {
+                            var pdfVm = (PdfNodeViewModel)vm;
+                            PdfDetailHomeTabViewModel.InitialPageNumber = pdfVm.CurrentPageNumber;
+                        }
+
                         SessionController.Instance.SessionView.ShowDetailView(vm.Controller.LibraryElementController);
                     }
 
