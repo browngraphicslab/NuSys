@@ -15,6 +15,7 @@
                              Visibility="Visible" HorizontalAlignment ="Stretch" VerticalAlignment="Stretch" IsTapEnabled="True" NavigationStarting="WebView_OnNavigationStarting">
             </WebView>
         </Grid>
+        <Rectangle Width="100" Height="100" Fill="Red"></Rectangle>
     </StackPanel>
 
 </UserControl>

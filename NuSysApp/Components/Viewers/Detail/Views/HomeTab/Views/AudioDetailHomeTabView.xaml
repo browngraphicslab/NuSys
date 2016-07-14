@@ -16,15 +16,19 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch">
-        <Grid VerticalAlignment="Center" >
-        <local:AudioMediaPlayer x:Name="MediaPlayer" PointerPressed="AudioPlayer_PointerPressed"></local:AudioMediaPlayer>
-        <ItemsControl ItemsSource="{Binding RegionViews}">
-        <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-                <Grid/>
-            </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-        </ItemsControl>
-        </Grid>
+        <StackPanel>
+            <Grid VerticalAlignment="Center" >
+                <local:AudioMediaPlayer x:Name="MediaPlayer" PointerPressed="AudioPlayer_PointerPressed"></local:AudioMediaPlayer>
+                <ItemsControl ItemsSource="{Binding RegionViews}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Grid/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </Grid>
+            <Rectangle Width="100" Height="100" Fill="Red"></Rectangle>
+        </StackPanel>
+    
     </Border>
 </UserControl>

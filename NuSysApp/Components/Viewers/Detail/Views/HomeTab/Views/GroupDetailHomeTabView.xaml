@@ -98,7 +98,7 @@
                              Visibility="Collapsed" HorizontalAlignment ="Stretch" VerticalAlignment="Stretch" IsTapEnabled="True">
             </WebView>
         </Grid>
-        
+        <Rectangle Width="100" Height="100" Fill="Red"></Rectangle>
     </StackPanel>
 
 </UserControl>
