@@ -169,8 +169,8 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            //todo take care of updating the link detail viewer
-            throw new NotImplementedException();
+            var vm = DataContext as LinkViewModel;
+            vm?.Controller.RequestDelete();
         }
     }
 }

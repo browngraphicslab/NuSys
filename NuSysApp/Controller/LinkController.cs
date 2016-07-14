@@ -135,5 +135,11 @@ namespace NuSysApp
                 (int)(InElement.Anchor.Y + (Math.Abs(OutElement.Anchor.Y - InElement.Anchor.Y) / 2)));
 
         }*/
+
+        public void RequestDelete()
+        {
+            // this shoudl delete the link
+            throw new NotImplementedException();
+        }
     }
 }
