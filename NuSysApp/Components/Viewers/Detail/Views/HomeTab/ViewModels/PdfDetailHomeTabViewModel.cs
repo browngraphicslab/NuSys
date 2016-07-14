@@ -31,13 +31,16 @@ namespace NuSysApp
         
         private int _pageNumber = 0;
         private MuPDFWinRT.Document _document;
+
+        public static int InitialPageNumber;
         
         public PdfDetailHomeTabViewModel(LibraryElementController controller, HashSet<Region> regionsToLoad) : base(controller, regionsToLoad)
         {
             Controller = controller;
             RegionViews = new ObservableCollection<PDFRegionView>();
             Editable = true;
-           
+
+            _pageNumber = InitialPageNumber;
         }
 
         public override async Task Init()
@@ -45,6 +48,7 @@ namespace NuSysApp
             await Task.Run(async delegate {
                 _document = await MediaUtil.DataToPDF(Controller.LibraryElementModel.Data);
             });
+
             await Goto(_pageNumber);
         }
 
