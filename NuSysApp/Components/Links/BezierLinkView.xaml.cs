@@ -162,15 +162,5 @@ namespace NuSysApp
             }
         }
 
-        /// <summary>
-        /// When the trash can is clicked, delete itself
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btnDelete_Click(object sender, RoutedEventArgs e)
-        {
-            var vm = DataContext as LinkViewModel;
-            vm?.Controller.RequestDelete();
-        }
     }
 }

@@ -56,14 +56,11 @@
         </Path>
         <StackPanel x:Name="TitleContainer" Orientation="Vertical">
             <Grid>
-                
+                <Rectangle x:Name="Rect" Fill="LightGray" Width="260" Height="32" HorizontalAlignment="Left"/>
+
                 <StackPanel Orientation="Horizontal" IsHitTestVisible="{Binding IsSelected}" >
-                    <Button Margin="0,2,0,2" x:Name="Delete" Visibility="{Binding IsSelected, Converter={StaticResource bConverter}}" Click="btnDelete_Click" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
-                        <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
-                    </Button>
-                    <Border x:Name="Rect" Background="LightGray" Width="260" Height="32" HorizontalAlignment="Left">
-                        <TextBox x:Name ="Title" HorizontalAlignment="Stretch" Height="32" VerticalAlignment="Center" Text="{Binding Title}" TextAlignment="Center" GotFocus="Title_GotFocus" LostFocus="Title_LostFocus"/>
-                    </Border>
+                    <TextBox x:Name ="Title" HorizontalAlignment="Stretch" Height="32" VerticalAlignment="Top" Text="{Binding Title}" TextAlignment="Center" GotFocus="Title_GotFocus" LostFocus="Title_LostFocus"/>
+
                 </StackPanel>
             </Grid>
             </StackPanel>

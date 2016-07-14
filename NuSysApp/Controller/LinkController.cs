@@ -136,10 +136,5 @@ namespace NuSysApp
 
         }*/
 
-        public void RequestDelete()
-        {
-            // this shoudl delete the link
-            throw new NotImplementedException();
-        }
     }
 }

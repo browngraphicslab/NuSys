@@ -711,12 +711,18 @@ namespace NuSysApp
         {
             await DisposeCollectionView(_activeFreeFormViewer);
             if (_activeFreeFormViewer != null && mainCanvas.Children.Contains(_activeFreeFormViewer))
+            {
                 mainCanvas.Children.Remove(_activeFreeFormViewer);
+                SessionController.Instance.OnModeChanged -= _activeFreeFormViewer.ChangeMode;
+            }
+
 
 
             var freeFormViewerViewModel = new FreeFormViewerViewModel(collectionController);
 
             _activeFreeFormViewer = new FreeFormViewer(freeFormViewerViewModel);
+            SessionController.Instance.OnModeChanged += _activeFreeFormViewer.ChangeMode;
+
             _activeFreeFormViewer.Width = ActualWidth;
             _activeFreeFormViewer.Height = ActualHeight;
             mainCanvas.Children.Insert(0, _activeFreeFormViewer);

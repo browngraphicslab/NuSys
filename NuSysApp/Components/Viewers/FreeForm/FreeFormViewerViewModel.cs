@@ -18,6 +18,10 @@ namespace NuSysApp
         public delegate void SelectionChangedHandler(object source);
         public event SelectionChangedHandler SelectionChanged;
 
+        public delegate void ModeChangedEventHandler(object source, Options mode);
+
+        public event ModeChangedEventHandler OnModeChanged;
+
         #region Private Members
 
         private CompositeTransform _compositeTransform, _fMTransform;
