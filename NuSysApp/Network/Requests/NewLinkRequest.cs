@@ -114,6 +114,15 @@ namespace NuSysApp
             //Debug.Assert(controller1 != null && controller2 != null && linkController != null && linkController is LinkLibraryElementController);
             controller1?.AddLink(linkController as LinkLibraryElementController);
             controller2?.AddLink(linkController as LinkLibraryElementController);
-        }
+
+
+            if (controller1 != null && controller2 != null)
+            {
+                SessionController.Instance.LinksController.CreateVisualLinks(
+                linkController as LinkLibraryElementController);
+            }
+
+         }
+
     }
 }

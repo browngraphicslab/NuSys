@@ -79,21 +79,6 @@ namespace NuSysApp
             
             this.UpdateControlPoints();
 
-            var vm = DataContext as LinkViewModel;
-
-            if (propertyChangedEventArgs.PropertyName == "IsSelected")
-            {
-                // if the vm is selected make sure title is read only in exploration mode
-                if (false)
-                {
-                    Title.IsReadOnly = SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION;
-                    
-                }
-            }
-            else
-            {
-                //(vm?.Model as LinkModel)?.RectangleModel?.Model.Deselect();
-            }
         }
         
 
@@ -175,6 +160,17 @@ namespace NuSysApp
                 Debug.Assert(tb != null);
                 tb.IsReadOnly = true;
             }
+        }
+
+        /// <summary>
+        /// When the trash can is clicked, delete itself
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            //todo take care of updating the link detail viewer
+            throw new NotImplementedException();
         }
     }
 }

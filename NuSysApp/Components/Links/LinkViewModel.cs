@@ -130,14 +130,8 @@ namespace NuSysApp
             set
             {
                 _selected = value;
-                if (_selected == true)
-                {
-                    Color = _selectedColor;
-                }
-                else
-                {
-                    Color = _notSelectedColor;
-                }
+                // Change the color of the link based on selection
+                Color = _selected == true ? _selectedColor : _notSelectedColor;
                 RaisePropertyChanged("IsSelected");
             }
         }

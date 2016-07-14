@@ -94,7 +94,7 @@ namespace NuSysApp
             AnchorChanged?.Invoke(this, Anchor);
         }
 
-        public void Dispose(object sender, object args)
+        public void Dispose(object sender, EventArgs args)
         {
             if (InElement != null)
             {

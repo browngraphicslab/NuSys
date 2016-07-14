@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Windows.UI;
+using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
-    public class PresentationLinkViewModel : INuSysDisposable
+    public class PresentationLinkViewModel : BaseINPC, INuSysDisposable, ISelectable
     {
 
         // maintain a list of models so that we can use presentation mode
@@ -12,6 +14,11 @@ namespace NuSysApp
 
         private readonly ElementController _inElementController;
         private readonly ElementController _outElementController;
+        private bool _selected;
+        private SolidColorBrush _color;
+
+        private SolidColorBrush _selectedColor = new SolidColorBrush(Colors.YellowGreen);
+        private SolidColorBrush _notSelectedColor = new SolidColorBrush(ColorHelper.FromArgb(0xFF,0xDB, 0x97, 0xB3));
 
         public EventHandler ControlPointsChanged;
         public event EventHandler Disposed;
@@ -48,6 +55,9 @@ namespace NuSysApp
             _inElementController.Disposed += FireDisposed;
             _outElementController.Disposed += FireDisposed;
             Model = model;
+
+            // makes sure that this is instantiated with a not selected color
+            IsSelected = false;
         }
 
         public void FireDisposed(object sender, EventArgs eventArgs)
@@ -69,6 +79,45 @@ namespace NuSysApp
         public void DeletePresentationLink()
         {
             SessionController.Instance.NuSysNetworkSession.RemovePresentationLink(_inElementController.Model.Id, _outElementController.Model.Id);
+        }
+
+        /// <summary>
+        /// From the selectable interface, defines the culling points, if null the link is never culled
+        /// we should find a series of culling points that follow the bezier link curve
+        /// </summary>
+        public PointCollection ReferencePoints
+        {
+            get { return null; }
+        }
+
+        /// <summary>
+        /// From the ISelectable Interface, determines whether the presentation link has been selected
+        /// </summary>
+        public bool IsSelected
+        {
+            get { return _selected; }
+            set
+            {
+                _selected = value;
+                // Change the color of the link based on selection
+                Color = _selected == true ? _selectedColor : _notSelectedColor;
+                RaisePropertyChanged("IsSelected");
+            }
+        }
+
+        /// <summary>
+        /// From the ISelectable interface, probably deprecated
+        /// </summary>
+        public bool ContainsSelectedLink { get; }
+
+        public SolidColorBrush Color
+        {
+            get { return _color; }
+            set
+            {
+                _color = value;
+                RaisePropertyChanged("Color");
+            }
         }
     }
 }

@@ -141,13 +141,17 @@ namespace NuSysApp
                 if (SessionController.Instance.IdToControllers.ContainsKey(presentationlink.InElementId) &&
                     SessionController.Instance.IdToControllers.ContainsKey(presentationlink.OutElementId))
                 {
-                    var vm = new PresentationLinkViewModel(presentationlink);
-                    if (PresentationLinkViewModel.Models == null)
+                    UITask.Run( delegate
                     {
-                        PresentationLinkViewModel.Models = new HashSet<PresentationLinkModel>();
-                    }
-                    PresentationLinkViewModel.Models.Add(presentationlink);
-                    new PresentationLinkView(vm);
+                        var vm = new PresentationLinkViewModel(presentationlink);
+                        if (PresentationLinkViewModel.Models == null)
+                        {
+                            PresentationLinkViewModel.Models = new HashSet<PresentationLinkModel>();
+                        }
+                        PresentationLinkViewModel.Models.Add(presentationlink);
+                        new PresentationLinkView(vm);
+                    });
+
                 }
 
             }

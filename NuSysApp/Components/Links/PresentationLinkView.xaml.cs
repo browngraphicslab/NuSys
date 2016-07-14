@@ -32,6 +32,7 @@ namespace NuSysApp
             {
                 UpdateControlPoints();
             };
+            // TODO this should not add itself to active free form viewer, what about collections in collections!
             SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(this);
         }
 
@@ -42,6 +43,7 @@ namespace NuSysApp
 
         private void OnDisposed(object source, object args)
         {
+            // TODO this should not remove itself from active free form viewer, what about collections in collections!
             SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Remove(this);
             DataContext = null;
         }
