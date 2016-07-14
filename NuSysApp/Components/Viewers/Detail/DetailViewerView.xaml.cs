@@ -168,18 +168,6 @@ namespace NuSysApp
                 Visibility = Visibility.Visible;
             }
 
-            /*
-            //If the element is a PDF, the button to autogenerate tags is made visible.
-            if (controller.LibraryElementModel.Type == ElementType.PDF)
-            {
-                SuggestButton.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                SuggestButton.Visibility = Visibility.Collapsed;
-            }
-            */
-
             //Also, for PDFs the list view of the regions is shown in the Region Editor tab. 
             if (controller.LibraryElementModel.Type == ElementType.PDF)
             {

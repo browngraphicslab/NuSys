@@ -269,6 +269,8 @@ namespace NuSysApp
                 {
                     return false;
                 }
+                CurrentElementController =
+                    SessionController.Instance.ContentController.GetLibraryElementController(controller.ContentId);
                 if (CurrentElementController == null)
                 {
                     return false;

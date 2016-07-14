@@ -179,6 +179,11 @@ namespace NuSysApp
 
         private void Tags_Tapped(object sender, TappedRoutedEventArgs e)
         {
+            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
+                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
+            {
+                return;
+            }
             var selectedTag = (e.OriginalSource as TextBlock)?.Text;
             if (selectedTag != null)
             {
