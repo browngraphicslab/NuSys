@@ -137,7 +137,7 @@ namespace NuSysApp
         private async void LinkButton_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             _doubleTap = false;
-            await Task.Delay(50);
+            await Task.Delay(200);
             if (_doubleTap)
             {
                 return;
