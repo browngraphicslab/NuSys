@@ -40,7 +40,7 @@ namespace NuSysApp
             Vm = vm;
             xTitle.Text = vm.Filter.ToString();
             vm.ReloadPropertiesToDisplay();
-            _toolView = new TemporaryToolView(this);
+            _toolView = new Tools.BasicToolView(this);
             _toolView.SetProperties(Vm.PropertiesToDisplay);
             xViewTypeGrid.Children.Add((UIElement)_toolView);
             _currentViewMode = ViewMode.List;
@@ -229,7 +229,7 @@ namespace NuSysApp
             if (_currentViewMode == ViewMode.PieChart)
             {
                 xViewTypeGrid.Children.Remove((UIElement)_toolView);
-                _toolView = new TemporaryToolView(this);
+                _toolView = new Tools.BasicToolView(this);
                 _toolView.SetProperties(Vm.PropertiesToDisplay);
                 xViewTypeGrid.Children.Add((UIElement)_toolView);
                 _currentViewMode = ViewMode.List;

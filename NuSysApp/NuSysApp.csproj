@@ -325,6 +325,9 @@
     </Compile>
     <Compile Include="Components\Tools\BasicToolController.cs" />
     <Compile Include="Components\Tools\BasicToolModel.cs" />
+    <Compile Include="Components\Tools\BasicToolView.xaml.cs">
+      <DependentUpon>BasicToolView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Tools\MetadataToolController.cs" />
     <Compile Include="Components\Tools\MetadataToolModel.cs" />
     <Compile Include="Components\Tools\MetadataToolView.xaml.cs">
@@ -662,9 +665,6 @@
     <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\Statistics.cs" />
     <Compile Include="Util\Telemetry.cs" />
-    <Compile Include="Util\TemporaryToolView.xaml.cs">
-      <DependentUpon>TemporaryToolView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Util\UITask.cs" />
     <Compile Include="Components\InqCanvas\InqCanvasViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoNodeViewModel.cs" />
@@ -919,6 +919,10 @@
     <Page Include="Components\Tools\BaseToolView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Tools\BasicToolView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Tools\MetadataToolView.xaml">
       <SubType>Designer</SubType>
@@ -1196,10 +1200,6 @@
     <Page Include="Components\WaitingRoom\WaitingRoomView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Util\TemporaryToolView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Util\RelatedListBox.xaml">
       <SubType>Designer</SubType>

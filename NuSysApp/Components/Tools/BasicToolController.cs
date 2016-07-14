@@ -39,6 +39,10 @@ namespace NuSysApp
         {
             return IncludeInFilter;
         }
+
+        /// <summary>
+        /// Given a library ID, this function returns a bool that 
+        /// </summary>
         private bool IncludeInFilter(string libraryId)
         {
             var libraryElementModel = SessionController.Instance.ContentController.GetContent(libraryId);
