@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     >
+    <!-- Deprecated -->
     <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <Button>Enter Collection</Button>
         <Grid x:Name="WebContainer" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent">
@@ -15,7 +16,6 @@
                              Visibility="Visible" HorizontalAlignment ="Stretch" VerticalAlignment="Stretch" IsTapEnabled="True">
             </WebView>
         </Grid>
-        <Rectangle Width="100" Height="100" Fill="Red"></Rectangle>
     </StackPanel>
 
 </UserControl>

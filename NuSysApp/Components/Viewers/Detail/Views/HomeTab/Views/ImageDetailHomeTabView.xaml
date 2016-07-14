@@ -39,6 +39,12 @@
                 </ItemsControl>
             </Grid>
         </Border>
-        <Rectangle Width="100" Height="100" Fill="Red"></Rectangle>
+        <Rectangle x:Name="AddToCollection" Width="100" Height="100" Fill="Red"
+                   Visibility="{Binding Editable, Converter={StaticResource vConverter}, ConverterParameter=true }"
+                   PointerPressed="AddToCollection_OnPointerPressed"
+                   ManipulationStarted="AddToCollection_OnManipulationStarted"
+                   ManipulationDelta="AddToCollection_ManipulationDelta"
+                   ManipulationCompleted="AddToCollection_ManipulationCompleted"
+                   ManipulationMode="TranslateX,TranslateY"/>
     </StackPanel>
 </UserControl>
