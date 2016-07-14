@@ -20,7 +20,11 @@
         <StackPanel  VerticalAlignment="Top" Orientation="Horizontal" Background="#565F6D" Visibility="Collapsed">
             <Button Name="SourceBttn" Foreground="{StaticResource foreground6}" Click="OnGoToSource">GO TO SOURCE</Button>
         </StackPanel>
-        <StackPanel>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
             <Border x:Name="xBorder"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid x:Name="xWrapper" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Image x:Name="xImg" PointerPressed="xImg_PointerPressed" Source="{Binding ImageSource}" Stretch="Uniform">
@@ -47,7 +51,7 @@
                     </Button>
                 </Grid>
             </Border>
-            <Border Background="{StaticResource color7}" Height="Auto" Width="140" Padding="5" BorderBrush="{StaticResource color3}" BorderThickness="2" Margin="0,50,0,0"
+            <Border Grid.Row="1" Background="{StaticResource color7}" Height="Auto" Width="140" Padding="5" BorderBrush="{StaticResource color3}" BorderThickness="2" Margin="0,50,0,0"
                 Visibility="{Binding Editable, Converter={StaticResource vConverter}, ConverterParameter=true}">
                 <TextBlock x:Name="AddToCollection" Width="Auto" Height="Auto" Foreground="{StaticResource color3}" Text="Drag To Collection" TextAlignment="Center"
                    PointerPressed="AddToCollection_OnPointerPressed"
@@ -56,7 +60,7 @@
                    ManipulationCompleted="AddToCollection_ManipulationCompleted"
                    ManipulationMode="TranslateX,TranslateY"/>
             </Border>
-        </StackPanel>
+        </Grid>
         <StackPanel Visibility="Collapsed">
             <TextBlock Text="SUGGESTED TAGS" Foreground="{StaticResource foreground6}" FontSize="30" CharacterSpacing="45" Margin="10,15,30,0" Padding="5,0,5,0"></TextBlock>
             <Line Stroke="{StaticResource color6}" StrokeThickness="1.5" X1="0" Y1="0" X2 ="50" Y2="0" Margin="0,15,0,0"></Line>
