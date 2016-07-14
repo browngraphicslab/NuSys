@@ -791,6 +791,10 @@ namespace NuSysApp
             }
             if (viewable is RegionController)
             {
+                //var libraryElementController =
+                //    SessionController.Instance.ContentController.GetLibraryElementController(
+                //        (viewable as RegionController).ContentId);
+                //await xDetailViewer.ShowElement(libraryElementController , tabToOpenTo);
                 await xDetailViewer.ShowElement(viewable as RegionController, tabToOpenTo);
 
             }
