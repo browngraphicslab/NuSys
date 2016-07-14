@@ -465,6 +465,10 @@ namespace NuSysApp
             _dragItem.Width = 50;
             _dragItem.Height = 50;
             xCanvas.Children.Add(_dragItem);
+            //this code puts the dragitem at the right starting location, but then it doesn't drag in the right location
+            //var loc = args.GetCurrentPoint(_dragItem); 
+            //Canvas.SetLeft(_dragItem, loc.Position.X);
+            //Canvas.SetTop(_dragItem, loc.Position.Y);
             _dragItem.RenderTransform = new CompositeTransform();
             (sender as FrameworkElement).AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta), true);
         }
