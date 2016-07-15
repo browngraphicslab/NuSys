@@ -82,11 +82,11 @@ namespace NuSysApp
             if (linkModel?.InAtomId == _linkTabable.ContentId)
             {
                 var otherController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel?.OutAtomId);
-                otherController.RequestRemoveLink(linkId);
+                otherController?.RequestRemoveLink(linkId);
             } else if (linkModel?.OutAtomId == _linkTabable.ContentId)
             {
                 var otherController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel?.InAtomId);
-                otherController.RequestRemoveLink(linkId);
+                otherController?.RequestRemoveLink(linkId);
             }
 
             //Create templates to display in the list view

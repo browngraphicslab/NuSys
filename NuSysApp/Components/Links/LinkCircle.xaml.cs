@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -41,6 +42,7 @@ namespace NuSysApp
         private Thickness _visibleThickness;
         private bool _firstTimeOpened;
         private BitmapImage _bmp;
+        private bool _doubleTap;
 
         public event EventHandler Disposed;
 
@@ -102,30 +104,6 @@ namespace NuSysApp
             }
         }
 
-        //pins or unpins the thumbnail
-        private async void circlePointerPressedHandler(object sender, RoutedEventArgs e)
-        {
-            Pinned = !Pinned;
-            if (Pinned)
-            {
-                thumbnail.Visibility = Visibility.Visible;
-                border.BorderThickness = _visibleThickness;
-            }
-            else
-            {
-                border.BorderThickness = _collapsedThickness;
-                thumbnail.Visibility = Visibility.Collapsed;
-            }
-
-            //If links to a region....
-            var regionController = SessionController.Instance.RegionsController.GetRegionController(LinkLibraryElementId);
-            if (regionController != null)
-            {
-                regionController.Select();
-            }
-            
-        }
-
         //makes thumbnail visible while pointer is hovering over the circle
         private async void circlePointerEnteredHandler(object sender, RoutedEventArgs e)
         {
@@ -157,6 +135,44 @@ namespace NuSysApp
                 Pinned = !Pinned;
             }
 
+        }
+
+        // pins or unpins the thumbnails
+        private async void LinkButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            _doubleTap = false;
+            await Task.Delay(200);
+            if (_doubleTap)
+            {
+                return;
+            }
+            Pinned = !Pinned;
+            if (Pinned)
+            {
+                thumbnail.Visibility = Visibility.Visible;
+                border.BorderThickness = _visibleThickness;
+            }
+            else
+            {
+                border.BorderThickness = _collapsedThickness;
+                thumbnail.Visibility = Visibility.Collapsed;
+            }
+
+            //If links to a region....
+            var regionController = SessionController.Instance.RegionsController.GetRegionController(LinkLibraryElementId);
+            if (regionController != null)
+            {
+                regionController.Select();
+            }
+        }
+
+        private void LinkButton_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            _doubleTap = true;
+            var regionController = SessionController.Instance.RegionsController.GetRegionController(ContentId) as IDetailViewable;
+            var libraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(ContentId) as IDetailViewable;
+            SessionController.Instance.SessionView.ShowDetailView(regionController ?? libraryElementController);
+            e.Handled = true;
         }
     }
 }
