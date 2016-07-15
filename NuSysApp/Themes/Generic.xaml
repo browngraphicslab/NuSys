@@ -17,10 +17,16 @@
             <Setter.Value>
                 <ControlTemplate TargetType="local:NodeTemplate" >
                     <Canvas>
-                        <Grid x:Name="xFakeBack" Width="{Binding Width}" Height="{Binding Height}" Background="Gold">
+                        <Grid x:Name="xFakeBack" Width="{Binding Width}" Height="{Binding Height}">
                             <Grid.Projection>
                                 <PlaneProjection/>
                             </Grid.Projection>
+                            <Grid.Background>
+                                <ImageBrush ImageSource="../Assets/icon_meta_data_background.jpg" Stretch="Uniform"/>
+                            </Grid.Background>
+                            <Grid.Visibility>
+                                Collapsed
+                            </Grid.Visibility>
                         </Grid>
 
                         <Grid x:Name="xContainer" Width="{Binding Width}" Height="{Binding Height}">
@@ -31,6 +37,9 @@
                             <Grid.Projection>
                                 <PlaneProjection/>
                             </Grid.Projection>
+                            <Grid.Visibility>
+                                Visible
+                            </Grid.Visibility>
                             <Canvas x:Name="xCanvas" Grid.Row="0" Width="{Binding Width}" Height="{Binding Height}">
                                 <Grid x:Name="xTitleContainer" VerticalAlignment="Top" Width="{Binding Width}" >
                                     <Border x:Name="Rect" Background="{StaticResource color6}" BorderBrush="{StaticResource color3}" BorderThickness="1" Width="{Binding Width}"  />

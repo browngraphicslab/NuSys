@@ -171,6 +171,8 @@ namespace NuSysApp
             EasingDoubleKeyFrame frontEnd = new EasingDoubleKeyFrame() { Value = 90, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200)) };
             frontFlipOpenAnimation.KeyFrames.Add(frontStart);
             frontFlipOpenAnimation.KeyFrames.Add(frontEnd);
+            Storyboard.SetTargetProperty(frontFlipOpenAnimation, "(Grid.Projection).(PlaneProjection.RotationY)");
+            Storyboard.SetTarget(frontFlipOpenAnimation, frontGrid);
             _flipOpen.Children.Add(frontFlipOpenAnimation);
 
             DoubleAnimationUsingKeyFrames backFlipOpenAnimation = new DoubleAnimationUsingKeyFrames();
@@ -178,12 +180,33 @@ namespace NuSysApp
             EasingDoubleKeyFrame backEnd = new EasingDoubleKeyFrame() { Value = 0, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 400)) };
             backFlipOpenAnimation.KeyFrames.Add(backStart);
             backFlipOpenAnimation.KeyFrames.Add(backEnd);
+            Storyboard.SetTargetProperty(backFlipOpenAnimation, "(Grid.Projection).(PlaneProjection.RotationY)");
+            Storyboard.SetTarget(backFlipOpenAnimation, backgrid);
             _flipOpen.Children.Add(backFlipOpenAnimation);
 
-            Storyboard.SetTargetProperty(frontFlipOpenAnimation, "(Grid.Projection).(PlaneProjection.RotationY)");
-            Storyboard.SetTargetProperty(backFlipOpenAnimation, "(Grid.Projection).(PlaneProjection.RotationY)");
-            Storyboard.SetTarget(frontFlipOpenAnimation, frontGrid);
-            Storyboard.SetTarget(backFlipOpenAnimation, backgrid);
+            ObjectAnimationUsingKeyFrames frontDissapearsAnimation = new ObjectAnimationUsingKeyFrames();
+            DiscreteObjectKeyFrame frontDissapears = new DiscreteObjectKeyFrame()
+            {
+                Value = Visibility.Collapsed,
+                KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200))
+            };
+            frontDissapearsAnimation.KeyFrames.Add(frontDissapears);
+            Storyboard.SetTargetProperty(frontDissapearsAnimation, "(Grid.Visiblity)");
+            Storyboard.SetTarget(frontDissapearsAnimation, frontGrid);
+            _flipOpen.Children.Add(frontDissapearsAnimation);
+
+            ObjectAnimationUsingKeyFrames backAppearsAnimation = new ObjectAnimationUsingKeyFrames();
+            DiscreteObjectKeyFrame backAppears = new DiscreteObjectKeyFrame()
+            {
+                Value = Visibility.Visible,
+                KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200))
+            };
+            backAppearsAnimation.KeyFrames.Add(backAppears);
+            Storyboard.SetTargetProperty(backAppearsAnimation, "(Grid.Visiblity)");
+            Storyboard.SetTarget(backAppearsAnimation, backgrid);
+            _flipOpen.Children.Add(backAppearsAnimation);
+
+
 
             _flipClose = new Storyboard();
 
@@ -192,19 +215,41 @@ namespace NuSysApp
             EasingDoubleKeyFrame frontCloseEnd = new EasingDoubleKeyFrame() { Value = 0, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 400)) };
             frontFlipCloseAnimation.KeyFrames.Add(frontCloseStart);
             frontFlipCloseAnimation.KeyFrames.Add(frontCloseEnd);
+            Storyboard.SetTargetProperty(frontFlipCloseAnimation, "(Grid.Projection).(PlaneProjection.RotationY)");
+            Storyboard.SetTarget(frontFlipCloseAnimation, frontGrid);
             _flipClose.Children.Add(frontFlipCloseAnimation);
+
 
             DoubleAnimationUsingKeyFrames backFlipCloseAnimation = new DoubleAnimationUsingKeyFrames();
             EasingDoubleKeyFrame backCloseStart = new EasingDoubleKeyFrame() { Value = 0, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 0)) };
             EasingDoubleKeyFrame backCloseEnd = new EasingDoubleKeyFrame() { Value = -90, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200)) };
             backFlipCloseAnimation.KeyFrames.Add(backCloseStart);
             backFlipCloseAnimation.KeyFrames.Add(backCloseEnd);
+            Storyboard.SetTargetProperty(backFlipCloseAnimation, "(Grid.Projection).(PlaneProjection.RotationY)");
+            Storyboard.SetTarget(backFlipCloseAnimation, backgrid);
             _flipClose.Children.Add(backFlipCloseAnimation);
 
-            Storyboard.SetTargetProperty(frontFlipCloseAnimation, "(Grid.Projection).(PlaneProjection.RotationY)");
-            Storyboard.SetTargetProperty(backFlipCloseAnimation, "(Grid.Projection).(PlaneProjection.RotationY)");
-            Storyboard.SetTarget(frontFlipCloseAnimation, frontGrid);
-            Storyboard.SetTarget(backFlipCloseAnimation, backgrid);
+            ObjectAnimationUsingKeyFrames frontAppearsAnimation = new ObjectAnimationUsingKeyFrames();
+            DiscreteObjectKeyFrame frontAppears = new DiscreteObjectKeyFrame()
+            {
+                Value = Visibility.Visible,
+                KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200))
+            };
+            frontAppearsAnimation.KeyFrames.Add(frontAppears);
+            Storyboard.SetTargetProperty(frontAppearsAnimation, "(Grid.Visiblity)");
+            Storyboard.SetTarget(frontAppearsAnimation, frontGrid);
+            _flipClose.Children.Add(frontAppearsAnimation);
+
+            ObjectAnimationUsingKeyFrames backDisappearsAnimation = new ObjectAnimationUsingKeyFrames();
+            DiscreteObjectKeyFrame backDisappears = new DiscreteObjectKeyFrame()
+            {
+                Value = Visibility.Collapsed,
+                KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200))
+            };
+            backDisappearsAnimation.KeyFrames.Add(backDisappears);
+            Storyboard.SetTargetProperty(backDisappearsAnimation, "(Grid.Visiblity)");
+            Storyboard.SetTarget(backDisappearsAnimation, backgrid);
+            _flipClose.Children.Add(backDisappearsAnimation);
             #endregion please ignore
 
             if ((DataContext as ElementViewModel)?.Controller.LibraryElementModel != null)
@@ -229,11 +274,6 @@ namespace NuSysApp
             (DataContext as BaseINPC).PropertyChanged += OnPropertyChanged;
             base.OnApplyTemplate();
             OnTemplateReady?.Invoke();
-        }
-
-        private void BackGrid_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         private void OnFlipperClick(object sender, RoutedEventArgs e)
