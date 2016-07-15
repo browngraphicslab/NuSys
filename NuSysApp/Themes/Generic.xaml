@@ -22,13 +22,12 @@
                                 <PlaneProjection/>
                             </Grid.Projection>
                             <Grid.Background>
-                                <ImageBrush ImageSource="../Assets/icon_meta_data_background.jpg" Stretch="Uniform"/>
+                                <ImageBrush ImageSource="ms-appx:///Assets/icon_meta_data_background.jpg" Stretch="Uniform"/>
                             </Grid.Background>
                             <Grid.Visibility>
                                 Collapsed
                             </Grid.Visibility>
                         </Grid>
-
                         <Grid x:Name="xContainer" Width="{Binding Width}" Height="{Binding Height}">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"></RowDefinition>

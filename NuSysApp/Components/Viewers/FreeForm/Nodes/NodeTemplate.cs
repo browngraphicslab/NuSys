@@ -57,8 +57,11 @@ namespace NuSysApp
 
         //storyboard variables
         private Storyboard _flipOpen;
+        private Storyboard _flipOpenSafe;
         private Storyboard _flipClose;
+        private Storyboard _flipCloseSafe;
         private bool _isFlipped;
+        private Grid _sampleDimensions;
 
         private enum DragMode { Duplicate, Tag, Link, PresentationLink };
         private DragMode _currenDragMode = DragMode.Duplicate;
@@ -159,6 +162,8 @@ namespace NuSysApp
 
             var frontGrid = (GetTemplateChild("xContainer") as Grid);
             var backgrid = (GetTemplateChild("xFakeBack") as Grid);
+            _sampleDimensions = (GetTemplateChild("xContainer") as Grid);
+
             backgrid.PointerPressed += delegate
             {
                 OnFlipperClick(null, new RoutedEventArgs());
@@ -167,8 +172,8 @@ namespace NuSysApp
             _flipOpen = new Storyboard();
 
             DoubleAnimationUsingKeyFrames frontFlipOpenAnimation = new DoubleAnimationUsingKeyFrames();
-            EasingDoubleKeyFrame frontStart = new EasingDoubleKeyFrame() { Value = 0, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0)) };
-            EasingDoubleKeyFrame frontEnd = new EasingDoubleKeyFrame() { Value = 90, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200)) };
+            SplineDoubleKeyFrame frontStart = new SplineDoubleKeyFrame() { Value = 0, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0)) };
+            SplineDoubleKeyFrame frontEnd = new SplineDoubleKeyFrame() { Value = 90, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200)) };
             frontFlipOpenAnimation.KeyFrames.Add(frontStart);
             frontFlipOpenAnimation.KeyFrames.Add(frontEnd);
             Storyboard.SetTargetProperty(frontFlipOpenAnimation, "(Grid.Projection).(PlaneProjection.RotationY)");
@@ -176,8 +181,8 @@ namespace NuSysApp
             _flipOpen.Children.Add(frontFlipOpenAnimation);
 
             DoubleAnimationUsingKeyFrames backFlipOpenAnimation = new DoubleAnimationUsingKeyFrames();
-            EasingDoubleKeyFrame backStart = new EasingDoubleKeyFrame() { Value = -90, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200)) };
-            EasingDoubleKeyFrame backEnd = new EasingDoubleKeyFrame() { Value = 0, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 400)) };
+            SplineDoubleKeyFrame backStart = new SplineDoubleKeyFrame() { Value = -90, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200)) };
+            SplineDoubleKeyFrame backEnd = new SplineDoubleKeyFrame() { Value = 0, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 400)) };
             backFlipOpenAnimation.KeyFrames.Add(backStart);
             backFlipOpenAnimation.KeyFrames.Add(backEnd);
             Storyboard.SetTargetProperty(backFlipOpenAnimation, "(Grid.Projection).(PlaneProjection.RotationY)");
@@ -185,13 +190,13 @@ namespace NuSysApp
             _flipOpen.Children.Add(backFlipOpenAnimation);
 
             ObjectAnimationUsingKeyFrames frontDissapearsAnimation = new ObjectAnimationUsingKeyFrames();
-            DiscreteObjectKeyFrame frontDissapears = new DiscreteObjectKeyFrame()
+            DiscreteObjectKeyFrame frontDisappears = new DiscreteObjectKeyFrame()
             {
                 Value = Visibility.Collapsed,
-                KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200))
+                KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 199))
             };
-            frontDissapearsAnimation.KeyFrames.Add(frontDissapears);
-            Storyboard.SetTargetProperty(frontDissapearsAnimation, "(Grid.Visiblity)");
+            frontDissapearsAnimation.KeyFrames.Add(frontDisappears);
+            Storyboard.SetTargetProperty(frontDissapearsAnimation, "(Grid.Visibility)");
             Storyboard.SetTarget(frontDissapearsAnimation, frontGrid);
             _flipOpen.Children.Add(frontDissapearsAnimation);
 
@@ -199,10 +204,10 @@ namespace NuSysApp
             DiscreteObjectKeyFrame backAppears = new DiscreteObjectKeyFrame()
             {
                 Value = Visibility.Visible,
-                KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200))
+                KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 201))
             };
             backAppearsAnimation.KeyFrames.Add(backAppears);
-            Storyboard.SetTargetProperty(backAppearsAnimation, "(Grid.Visiblity)");
+            Storyboard.SetTargetProperty(backAppearsAnimation, "(Grid.Visibility)");
             Storyboard.SetTarget(backAppearsAnimation, backgrid);
             _flipOpen.Children.Add(backAppearsAnimation);
 
@@ -211,8 +216,8 @@ namespace NuSysApp
             _flipClose = new Storyboard();
 
             DoubleAnimationUsingKeyFrames frontFlipCloseAnimation = new DoubleAnimationUsingKeyFrames();
-            EasingDoubleKeyFrame frontCloseStart = new EasingDoubleKeyFrame() { Value = 90, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200)) };
-            EasingDoubleKeyFrame frontCloseEnd = new EasingDoubleKeyFrame() { Value = 0, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 400)) };
+            SplineDoubleKeyFrame frontCloseStart = new SplineDoubleKeyFrame() { Value = 90, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200)) };
+            SplineDoubleKeyFrame frontCloseEnd = new SplineDoubleKeyFrame() { Value = 0, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 400)) };
             frontFlipCloseAnimation.KeyFrames.Add(frontCloseStart);
             frontFlipCloseAnimation.KeyFrames.Add(frontCloseEnd);
             Storyboard.SetTargetProperty(frontFlipCloseAnimation, "(Grid.Projection).(PlaneProjection.RotationY)");
@@ -221,8 +226,8 @@ namespace NuSysApp
 
 
             DoubleAnimationUsingKeyFrames backFlipCloseAnimation = new DoubleAnimationUsingKeyFrames();
-            EasingDoubleKeyFrame backCloseStart = new EasingDoubleKeyFrame() { Value = 0, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 0)) };
-            EasingDoubleKeyFrame backCloseEnd = new EasingDoubleKeyFrame() { Value = -90, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200)) };
+            SplineDoubleKeyFrame backCloseStart = new SplineDoubleKeyFrame() { Value = 0, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 0)) };
+            SplineDoubleKeyFrame backCloseEnd = new SplineDoubleKeyFrame() { Value = -90, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200)) };
             backFlipCloseAnimation.KeyFrames.Add(backCloseStart);
             backFlipCloseAnimation.KeyFrames.Add(backCloseEnd);
             Storyboard.SetTargetProperty(backFlipCloseAnimation, "(Grid.Projection).(PlaneProjection.RotationY)");
@@ -233,10 +238,10 @@ namespace NuSysApp
             DiscreteObjectKeyFrame frontAppears = new DiscreteObjectKeyFrame()
             {
                 Value = Visibility.Visible,
-                KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200))
+                KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 201))
             };
             frontAppearsAnimation.KeyFrames.Add(frontAppears);
-            Storyboard.SetTargetProperty(frontAppearsAnimation, "(Grid.Visiblity)");
+            Storyboard.SetTargetProperty(frontAppearsAnimation, "(Grid.Visibility)");
             Storyboard.SetTarget(frontAppearsAnimation, frontGrid);
             _flipClose.Children.Add(frontAppearsAnimation);
 
@@ -244,10 +249,11 @@ namespace NuSysApp
             DiscreteObjectKeyFrame backDisappears = new DiscreteObjectKeyFrame()
             {
                 Value = Visibility.Collapsed,
-                KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200))
+                KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 199))
             };
             backDisappearsAnimation.KeyFrames.Add(backDisappears);
-            Storyboard.SetTargetProperty(backDisappearsAnimation, "(Grid.Visiblity)");
+            
+            Storyboard.SetTargetProperty(backDisappearsAnimation, "(Grid.Visibility)");
             Storyboard.SetTarget(backDisappearsAnimation, backgrid);
             _flipClose.Children.Add(backDisappearsAnimation);
             #endregion please ignore
@@ -278,6 +284,11 @@ namespace NuSysApp
 
         private void OnFlipperClick(object sender, RoutedEventArgs e)
         {
+            // perform simple animation
+            if (_sampleDimensions.ActualWidth > 1000)
+            {
+                //return;
+            }
             if (_isFlipped)
             {
                 _isFlipped = false;
