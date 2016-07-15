@@ -14,7 +14,7 @@ namespace NuSysApp
     /// </summary>
     public class FreeFormViewerViewModel : ElementCollectionViewModel
     {
-        private IEditable _currentlyEditing;
+        private ElementViewModel _currentlyEditing;
         public delegate void SelectionChangedHandler(object source);
         public event SelectionChangedHandler SelectionChanged;
 
@@ -22,7 +22,7 @@ namespace NuSysApp
 
         private CompositeTransform _compositeTransform, _fMTransform;
         private ElementViewModel _preparedElementVm;
-        private List<ISelectable> _selections = new List<ISelectable>();
+        private List<ElementViewModel> _selections = new List<ElementViewModel>();
 
         #endregion Private Members
 
@@ -54,9 +54,9 @@ namespace NuSysApp
                 _currentlyEditing = null;
             }
             if (Selections.Count == 1) {
-                if (Selections[0] is IEditable)
+                if (Selections[0] is ElementViewModel)
                 {
-                    _currentlyEditing = (IEditable) Selections[0];
+                    _currentlyEditing = (ElementViewModel) Selections[0];
                     _currentlyEditing.IsEditing = true;
                 }
                 
@@ -184,7 +184,7 @@ namespace NuSysApp
         /// selection and the new selection are linked.
         /// </summary>
         /// <param name="selected"></param>
-        public void AddSelection(ISelectable selected)
+        public void AddSelection(ElementViewModel selected)
         {
             selected.IsSelected = true;
           
@@ -213,7 +213,7 @@ namespace NuSysApp
             SelectionChanged?.Invoke(this);
         }
 
-        public void RemoveSelection(ISelectable selected)
+        public void RemoveSelection(ElementViewModel selected)
         {
             selected.IsSelected = false;
             _selections.Remove(selected);
@@ -264,7 +264,7 @@ namespace NuSysApp
         /// <summary>
         /// This can be IEditable because IEditable extends ISelectable
         /// </summary>
-        public List<ISelectable> Selections { get { return _selections; } } 
+        public List<ElementViewModel> Selections { get { return _selections; } } 
 
         #endregion Public Members
 
