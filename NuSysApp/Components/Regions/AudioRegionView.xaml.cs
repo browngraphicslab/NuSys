@@ -123,7 +123,6 @@ namespace NuSysApp
             _isSingleTap = false;
 
             var vm = DataContext as RegionViewModel;
-            SessionController.Instance.SessionView.ShowDetailView(vm?.LibraryElementController);
             var regionController = vm?.RegionController;
             SessionController.Instance.SessionView.ShowDetailView(regionController);
         }
