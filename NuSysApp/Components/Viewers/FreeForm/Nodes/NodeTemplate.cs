@@ -49,11 +49,16 @@ namespace NuSysApp
         public Button PresentationLink = null;
         public Button PresentationMode = null;
         public Button ExplorationMode = null;
+        public Button Flipper = null;
 
         public Button isSearched = null;
 
-
         private Image _dragItem;
+
+        //storyboard variables
+        private Storyboard _flipOpen;
+        private Storyboard _flipClose;
+        private bool _isFlipped;
 
         private enum DragMode { Duplicate, Tag, Link, PresentationLink };
         private DragMode _currenDragMode = DragMode.Duplicate;
@@ -123,9 +128,7 @@ namespace NuSysApp
             PresentationMode.Click += OnPresentationClick;
 
             ExplorationMode = (Button) GetTemplateChild("ExplorationMode");
-            ExplorationMode.Click += OnExplorationClick;
-
-            
+            ExplorationMode.Click += OnExplorationClick;         
 
             btnDelete = (Button)GetTemplateChild("btnDelete");
             btnDelete.Click += OnBtnDeleteClick;
@@ -143,13 +146,66 @@ namespace NuSysApp
             tags = (ItemsControl)GetTemplateChild("Tags");
             tags.Tapped += Tags_Tapped;
 
-
+            Flipper = (Button) GetTemplateChild("Flipper");
+            Flipper.Click += OnFlipperClick;
 
             title = (TextBox)GetTemplateChild("xTitle");
             title.KeyUp += TitleOnTextChanged;
 
             title.GotFocus += Title_GotFocus;
             title.LostFocus += Title_LostFocus;
+
+            #region please ignore
+
+            var frontGrid = (GetTemplateChild("xContainer") as Grid);
+            var backgrid = (GetTemplateChild("xFakeBack") as Grid);
+            backgrid.PointerPressed += delegate
+            {
+                OnFlipperClick(null, new RoutedEventArgs());
+            };
+
+            _flipOpen = new Storyboard();
+
+            DoubleAnimationUsingKeyFrames frontFlipOpenAnimation = new DoubleAnimationUsingKeyFrames();
+            EasingDoubleKeyFrame frontStart = new EasingDoubleKeyFrame() { Value = 0, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0)) };
+            EasingDoubleKeyFrame frontEnd = new EasingDoubleKeyFrame() { Value = 90, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200)) };
+            frontFlipOpenAnimation.KeyFrames.Add(frontStart);
+            frontFlipOpenAnimation.KeyFrames.Add(frontEnd);
+            _flipOpen.Children.Add(frontFlipOpenAnimation);
+
+            DoubleAnimationUsingKeyFrames backFlipOpenAnimation = new DoubleAnimationUsingKeyFrames();
+            EasingDoubleKeyFrame backStart = new EasingDoubleKeyFrame() { Value = -90, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200)) };
+            EasingDoubleKeyFrame backEnd = new EasingDoubleKeyFrame() { Value = 0, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 400)) };
+            backFlipOpenAnimation.KeyFrames.Add(backStart);
+            backFlipOpenAnimation.KeyFrames.Add(backEnd);
+            _flipOpen.Children.Add(backFlipOpenAnimation);
+
+            Storyboard.SetTargetProperty(frontFlipOpenAnimation, "(Grid.Projection).(PlaneProjection.RotationY)");
+            Storyboard.SetTargetProperty(backFlipOpenAnimation, "(Grid.Projection).(PlaneProjection.RotationY)");
+            Storyboard.SetTarget(frontFlipOpenAnimation, frontGrid);
+            Storyboard.SetTarget(backFlipOpenAnimation, backgrid);
+
+            _flipClose = new Storyboard();
+
+            DoubleAnimationUsingKeyFrames frontFlipCloseAnimation = new DoubleAnimationUsingKeyFrames();
+            EasingDoubleKeyFrame frontCloseStart = new EasingDoubleKeyFrame() { Value = 90, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200)) };
+            EasingDoubleKeyFrame frontCloseEnd = new EasingDoubleKeyFrame() { Value = 0, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 400)) };
+            frontFlipCloseAnimation.KeyFrames.Add(frontCloseStart);
+            frontFlipCloseAnimation.KeyFrames.Add(frontCloseEnd);
+            _flipClose.Children.Add(frontFlipCloseAnimation);
+
+            DoubleAnimationUsingKeyFrames backFlipCloseAnimation = new DoubleAnimationUsingKeyFrames();
+            EasingDoubleKeyFrame backCloseStart = new EasingDoubleKeyFrame() { Value = 0, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 0)) };
+            EasingDoubleKeyFrame backCloseEnd = new EasingDoubleKeyFrame() { Value = -90, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200)) };
+            backFlipCloseAnimation.KeyFrames.Add(backCloseStart);
+            backFlipCloseAnimation.KeyFrames.Add(backCloseEnd);
+            _flipClose.Children.Add(backFlipCloseAnimation);
+
+            Storyboard.SetTargetProperty(frontFlipCloseAnimation, "(Grid.Projection).(PlaneProjection.RotationY)");
+            Storyboard.SetTargetProperty(backFlipCloseAnimation, "(Grid.Projection).(PlaneProjection.RotationY)");
+            Storyboard.SetTarget(frontFlipCloseAnimation, frontGrid);
+            Storyboard.SetTarget(backFlipCloseAnimation, backgrid);
+            #endregion please ignore
 
             if ((DataContext as ElementViewModel)?.Controller.LibraryElementModel != null)
             {
@@ -175,6 +231,24 @@ namespace NuSysApp
             OnTemplateReady?.Invoke();
         }
 
+        private void BackGrid_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnFlipperClick(object sender, RoutedEventArgs e)
+        {
+            if (_isFlipped)
+            {
+                _isFlipped = false;
+                _flipClose.Begin();
+            }
+            else
+            {
+                _isFlipped = true;
+                _flipOpen.Begin();
+            }
+        }
 
 
         private void Tags_Tapped(object sender, TappedRoutedEventArgs e)

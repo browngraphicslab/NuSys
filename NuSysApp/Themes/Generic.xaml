@@ -10,7 +10,6 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="ms-appx:///ResourceDictionary.xaml"/>
     </ResourceDictionary.MergedDictionaries>
-
     <converters:SelectionToColorConverter x:Key="sConverter" />
     <converters:BoolToVisibilityConverter x:Key="vConverter" />
     <Style TargetType="local:NodeTemplate">
@@ -18,11 +17,20 @@
             <Setter.Value>
                 <ControlTemplate TargetType="local:NodeTemplate" >
                     <Canvas>
+                        <Grid x:Name="xFakeBack" Width="{Binding Width}" Height="{Binding Height}" Background="Gold">
+                            <Grid.Projection>
+                                <PlaneProjection/>
+                            </Grid.Projection>
+                        </Grid>
+
                         <Grid x:Name="xContainer" Width="{Binding Width}" Height="{Binding Height}">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"></RowDefinition>
                                 <RowDefinition Height="Auto"></RowDefinition>
                             </Grid.RowDefinitions>
+                            <Grid.Projection>
+                                <PlaneProjection/>
+                            </Grid.Projection>
                             <Canvas x:Name="xCanvas" Grid.Row="0" Width="{Binding Width}" Height="{Binding Height}">
                                 <Grid x:Name="xTitleContainer" VerticalAlignment="Top" Width="{Binding Width}" >
                                     <Border x:Name="Rect" Background="{StaticResource color6}" BorderBrush="{StaticResource color3}" BorderThickness="1" Width="{Binding Width}"  />
@@ -134,8 +142,9 @@
                                             </ItemsControl.ItemsPanel>
                                         </ItemsControl>
                                     </Grid>
+                                    <Button x:Name ="Flipper" Content="Flip this shit" Background="Chartreuse" Foreground="Red"/>
                                 </StackPanel>
-                    </Canvas>
+                            </Canvas>
                         </Grid>
                     </Canvas>
                 </ControlTemplate>
