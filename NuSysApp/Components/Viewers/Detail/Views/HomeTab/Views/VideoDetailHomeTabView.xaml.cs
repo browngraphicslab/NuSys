@@ -35,7 +35,8 @@ namespace NuSysApp
         private List<LinkedTimeBlockViewModel> _timeBlocks;
 
 
-
+        public event ContentLoadedEventHandler ContentLoaded;
+        public delegate void ContentLoadedEventHandler(object sender);
         public VideoDetailHomeTabView(VideoDetailHomeTabViewModel vm)
         {
             this.InitializeComponent();
@@ -69,8 +70,11 @@ namespace NuSysApp
         {
             var vm = DataContext as VideoDetailHomeTabViewModel;
             vm.VideoDuration = VideoMediaPlayer.MediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
-            await Task.Delay(200);
+            //HACKY. DELETE AFTER DEMO
+            await Task.Delay(500);
             vm.SetExistingRegions();
+            ContentLoaded?.Invoke(this);
+            
         }
 
         public void Dispose()

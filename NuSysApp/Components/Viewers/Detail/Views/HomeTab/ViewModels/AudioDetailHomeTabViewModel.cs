@@ -65,7 +65,7 @@ namespace NuSysApp
             vm.Editable = this.Editable;
             var view = new AudioRegionView(vm);
             RegionViews.Add(view);
-            view.OnRegionSeek += View_OnRegionSeek;
+            view.OnRegionSeek += OnRegionSeek;
             RaisePropertyChanged("RegionViews");
         }
 
@@ -133,14 +133,14 @@ namespace NuSysApp
                 var vm = new AudioRegionViewModel(audioRegion, Controller, regionController, this);
                 vm.Editable = this.Editable;
                 var view = new AudioRegionView(vm);
-                view.OnRegionSeek += View_OnRegionSeek;
+                view.OnRegionSeek += OnRegionSeek;
                 RegionViews.Add(view);
 
             }
             RaisePropertyChanged("RegionViews");
         }
 
-        private void View_OnRegionSeek(double time)
+        public void OnRegionSeek(double time)
         {
             OnRegionSeekPassing?.Invoke(time);
         }

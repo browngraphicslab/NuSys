@@ -145,8 +145,8 @@ namespace NuSysApp
 
         private void OnSizeChanged_InvokeTabVMSizeChanged(object source, double left, double width, double height)
         {
-            _regionableRegionTabViewModel.SizeChanged(source, width, height);
-            _regionableHomeTabViewModel.SizeChanged(source, width, height);
+            _regionableRegionTabViewModel?.SizeChanged(source, width, height);
+            _regionableHomeTabViewModel?.SizeChanged(source, width, height);
         }
 
         private void AddRegionToList(object source, RegionController regionController)
@@ -294,16 +294,44 @@ namespace NuSysApp
                 Title = regionModel.Name;
                 _regionableHomeTabViewModel.RegionsToLoad = regionSet; // Only one region (the one selected) will appear in the DV
 
-                if (_regionableHomeTabViewModel is PdfDetailHomeTabViewModel)
+                if (View is PdfDetailHomeTabView)
                 {
-                    (_regionableHomeTabViewModel as PdfDetailHomeTabViewModel).Goto((regionModel as PdfRegion).PageLocation);
+                    (View as PdfDetailHomeTabView).ContentLoaded += delegate
+                    {
+                        _regionableHomeTabViewModel.SetExistingRegions();
+                        (_regionableHomeTabViewModel as PdfDetailHomeTabViewModel).Goto((regionModel as PdfRegion).PageLocation, regionModel);
+                    };
+                }else if(View is ImageDetailHomeTabView)
+                {
+                    (View as ImageDetailHomeTabView).ContentLoaded += delegate
+                    {
+                        _regionableHomeTabViewModel.SetExistingRegions();
+                        (_regionableHomeTabViewModel as ImageDetailHomeTabViewModel).HighlightRegion(regionModel as RectangleRegion);
+                    };
+                }else if(View is AudioDetailHomeTabView)
+                {
+                    (View as AudioDetailHomeTabView).ContentLoaded += delegate
+                    {
+                        _regionableHomeTabViewModel.SetExistingRegions();
+                        (_regionableHomeTabViewModel as AudioDetailHomeTabViewModel).OnRegionSeek((regionModel as TimeRegionModel).Start + 0.01);
+                    };
+                }else if (View is VideoDetailHomeTabView)
+                {
+                    (View as VideoDetailHomeTabView).ContentLoaded += delegate
+                    {
+                        _regionableHomeTabViewModel.SetExistingRegions();
+                        (_regionableHomeTabViewModel as VideoDetailHomeTabViewModel).OnRegionSeek((regionModel as VideoRegionModel).Start + 0.01);
+
+                    };
                 }
+
+                
+
 
                 RaisePropertyChanged("Title");
                 RaisePropertyChanged("View");
                 RaisePropertyChanged("Tags");
                 RaisePropertyChanged("Metadata");
-                RaisePropertyChanged("View");
 
                 AddTab(viewable);
                 return true;
@@ -378,8 +406,8 @@ namespace NuSysApp
 
         public void ChangeRegionsSize(object sender, double width, double height)
         {
-            _regionableRegionTabViewModel.SizeChanged(sender, width, height);
-            _regionableHomeTabViewModel.SizeChanged(sender, width, height);
+            _regionableRegionTabViewModel?.SizeChanged(sender, width, height);
+            _regionableHomeTabViewModel?.SizeChanged(sender, width, height);
         }
 
         private void ControllerTitleChanged(object sender, string title)

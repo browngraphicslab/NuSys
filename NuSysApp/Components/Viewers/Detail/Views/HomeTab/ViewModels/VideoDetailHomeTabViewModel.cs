@@ -50,7 +50,7 @@ namespace NuSysApp
             vm.Editable = this.Editable;
             var view = new VideoRegionView(vm);
             RegionViews.Add(view);
-            view.OnRegionSeek += View_OnRegionSeek;
+            view.OnRegionSeek += OnRegionSeek;
             RaisePropertyChanged("RegionViews");
         }
         public void ScrubBarOnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -139,14 +139,14 @@ namespace NuSysApp
                 var vm = new VideoRegionViewModel(videoRegion, Controller, regionController as VideoRegionController, this);
                 vm.Editable = this.Editable;
                 var view = new VideoRegionView(vm);
-                view.OnRegionSeek += View_OnRegionSeek;
+                view.OnRegionSeek += OnRegionSeek;
                 RegionViews.Add(view);
 
             }
             RaisePropertyChanged("RegionViews");
         }
 
-        private void View_OnRegionSeek(double time)
+        public void OnRegionSeek(double time)
         {
             OnRegionSeekPassing?.Invoke(time);
         }
