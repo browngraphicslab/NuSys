@@ -24,6 +24,7 @@ using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Components.Nodes;
 using NuSysApp.Nodes.AudioNode;
+using Windows.UI.Xaml.Media.Animation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -85,7 +86,6 @@ namespace NuSysApp
         {
             var vm = DataContext as VideoNodeViewModel;
             vm.UpdateRegions();
-
         }
 
         private void MediaPlayer_MediaOpened(object sender, RoutedEventArgs e)
