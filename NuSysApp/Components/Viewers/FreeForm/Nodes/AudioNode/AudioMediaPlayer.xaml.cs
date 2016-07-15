@@ -37,7 +37,9 @@ namespace NuSysApp
             if (MediaElement.CurrentState != MediaElementState.Stopped)
             {
                 MediaElement.Stop();
+                xPlayPauseImg.Source = new BitmapImage(new Uri("ms-appx:///Assets/node icons/icon_play.png"));
                 _wasPlaying = false;
+
 
             }
         }
@@ -47,6 +49,8 @@ namespace NuSysApp
             if (MediaElement.CurrentState != MediaElementState.Paused)
             {
                 MediaElement.Pause();
+                xPlayPauseImg.Source = new BitmapImage(new Uri("ms-appx:///Assets/node icons/icon_play.png"));
+
                 _wasPlaying = false;
 
             }
@@ -54,16 +58,28 @@ namespace NuSysApp
 
         private void Play_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            if (MediaElement.CurrentState != MediaElementState.Playing)
+
+            Binding b = new Binding();
+            b.ElementName = "MediaElement";
+            b.Path = new PropertyPath("Position.TotalMilliseconds");
+            ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
+            if (_wasPlaying)
             {
-                Binding b = new Binding();
-                b.ElementName = "MediaElement";
-                b.Path = new PropertyPath("Position.TotalMilliseconds");
-                ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
+                MediaElement.Pause();
+                xPlayPauseImg.Source = new BitmapImage(new Uri("ms-appx:///Assets/node icons/icon_play.png"));
+                _wasPlaying = false;
+
+
+            }
+            else
+            {
                 MediaElement.Play();
+                xPlayPauseImg.Source = new BitmapImage(new Uri("ms-appx:///Assets/node icons/icon_pause.png"));
                 _wasPlaying = true;
 
             }
+
+            
         }
 
 
@@ -110,11 +126,15 @@ namespace NuSysApp
             if (_wasPlaying)
             {
                 MediaElement.Play();
+                xPlayPauseImg.Source = new BitmapImage(new Uri("ms-appx:///Assets/node icons/icon_pause.png"));
+
 
             }
             else
             {
                 MediaElement.Pause();
+                xPlayPauseImg.Source = new BitmapImage(new Uri("ms-appx:///Assets/node icons/icon_play.png"));
+
 
             }
             ((UIElement)sender).ReleasePointerCapture(e.Pointer);
@@ -171,6 +191,8 @@ namespace NuSysApp
         private void MediaElement_OnMediaEnded(object sender, RoutedEventArgs e)
         {
             Audio_OnJump(new TimeSpan(0));
+            xPlayPauseImg.Source = new BitmapImage(new Uri("ms-appx:///Assets/node icons/icon_play.png"));
+
             _wasPlaying = false;
 
         }

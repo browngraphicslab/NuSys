@@ -43,6 +43,7 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = vm;
             this.Deselect();
+            RegionRectangle.Visibility = Visibility.Collapsed;
         }
         private void Bound1_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
@@ -189,11 +190,12 @@ namespace NuSysApp
             xMainRectangle.StrokeThickness = 6;
             xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
             IntervalRectangle.Fill = new SolidColorBrush(Color.FromArgb(255, 152, 26, 77));
-            xResizingTriangle.Visibility = Visibility.Visible;
             xNameTextBox.Visibility = Visibility.Visible;
             if (vm.Editable)
             {
                 xDelete.Visibility = Visibility.Visible;
+                xResizingTriangle.Visibility = Visibility.Visible;
+
             }
             IntervalRectangle.IsHitTestVisible = false;
 
