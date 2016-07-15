@@ -189,5 +189,20 @@ namespace NuSysApp
             }
             return view.ActualHeight;
         }
+
+        public void HighlightRegion(RectangleRegion rectangleRegion)
+        {
+            if (rectangleRegion == null)
+            {
+                return;
+            }
+            foreach (var view in RegionViews.ToList<ImageRegionView>())
+            {
+                if ((view.DataContext as ImageRegionViewModel).Model.Id == rectangleRegion.Id)
+                {
+                    view.Select();
+                }
+            }
+        }
     }
 }

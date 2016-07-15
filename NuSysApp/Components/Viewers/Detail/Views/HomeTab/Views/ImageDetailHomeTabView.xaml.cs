@@ -26,7 +26,11 @@ namespace NuSysApp
     public sealed partial class ImageDetailHomeTabView : UserControl
         {
             public ImageRegionView SelectedRegion { set; get; }
-            public ImageDetailHomeTabView(ImageDetailHomeTabViewModel vm)
+
+        public event ContentLoadedEventHandler ContentLoaded;
+        public delegate void ContentLoadedEventHandler(object sender);
+
+        public ImageDetailHomeTabView(ImageDetailHomeTabViewModel vm)
             {
                 DataContext = vm;
                 InitializeComponent();
@@ -166,6 +170,7 @@ namespace NuSysApp
         {
             var vm = (ImageDetailHomeTabViewModel)DataContext;
             vm.SetExistingRegions();
+            ContentLoaded?.Invoke(this);
 
         }
     }

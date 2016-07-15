@@ -30,6 +30,9 @@ namespace NuSysApp
         private Line _temporaryLinkVisual;
         private List<AudioRegionViewModel> _timeRegions;
 
+        public event ContentLoadedEventHandler ContentLoaded;
+        public delegate void ContentLoadedEventHandler(object sender);
+
         public AudioMediaPlayer AudioMediaPlayer { get { return MediaPlayer; } }
 
         
@@ -82,6 +85,9 @@ namespace NuSysApp
         {
             var vm = DataContext as AudioDetailHomeTabViewModel;
             vm.Duration = AudioMediaPlayer.MediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
+            vm.SetExistingRegions();
+
+            ContentLoaded?.Invoke(this);
         }
 
         public void StopAudio()

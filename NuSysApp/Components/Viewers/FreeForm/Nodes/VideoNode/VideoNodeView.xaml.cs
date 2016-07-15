@@ -79,10 +79,12 @@ namespace NuSysApp
 
         }
 
-        private void MediaPlayer_MediaOpened(object sender, RoutedEventArgs e)
+        private async void MediaPlayer_MediaOpened(object sender, RoutedEventArgs e)
         {
             var vm = DataContext as VideoNodeViewModel;
             vm.VideoDuration = VideoMediaPlayer.MediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
+            //HACKY DELETE AFTER DEMO
+            await Task.Delay(500);
             vm.UpdateRegions();
 
         }
