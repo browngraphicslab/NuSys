@@ -42,6 +42,7 @@ namespace NuSysApp
         public TextBox title = null;
         public Border highlight = null;
         public ItemsControl tags = null;
+        public ItemsControl backTags = null;
         public TextBlock userName = null;
         public Canvas xCanvas = null;
         public Button DuplicateElement = null;
@@ -49,7 +50,7 @@ namespace NuSysApp
         public Button PresentationLink = null;
         public Button PresentationMode = null;
         public Button ExplorationMode = null;
-        public Button Flipper = null;
+        public Slider FlipSlider = null;
 
         public Button isSearched = null;
 
@@ -57,11 +58,8 @@ namespace NuSysApp
 
         //storyboard variables
         private Storyboard _flipOpen;
-        private Storyboard _flipOpenSafe;
         private Storyboard _flipClose;
-        private Storyboard _flipCloseSafe;
         private bool _isFlipped;
-        private Grid _sampleDimensions;
 
         private enum DragMode { Duplicate, Tag, Link, PresentationLink };
         private DragMode _currenDragMode = DragMode.Duplicate;
@@ -149,8 +147,8 @@ namespace NuSysApp
             tags = (ItemsControl)GetTemplateChild("Tags");
             tags.Tapped += Tags_Tapped;
 
-            Flipper = (Button) GetTemplateChild("Flipper");
-            Flipper.Click += OnFlipperClick;
+            backTags = (ItemsControl)GetTemplateChild("backTags");
+            backTags.Tapped += Tags_Tapped;
 
             title = (TextBox)GetTemplateChild("xTitle");
             title.KeyUp += TitleOnTextChanged;
@@ -162,11 +160,16 @@ namespace NuSysApp
 
             var frontGrid = (GetTemplateChild("xContainer") as Grid);
             var backgrid = (GetTemplateChild("xFakeBack") as Grid);
-            _sampleDimensions = (GetTemplateChild("xContainer") as Grid);
 
-            backgrid.PointerPressed += delegate
+            var backButton = (GetTemplateChild("xShowFrontButton") as Button);
+            backButton.Click += delegate
             {
-                OnFlipperClick(null, new RoutedEventArgs());
+                FlipToBack();
+            };
+            var frontButton = (GetTemplateChild("xShowBackButton") as Button);
+            frontButton.Click += delegate
+            {
+                FlipToBack();
             };
 
             _flipOpen = new Storyboard();
@@ -210,7 +213,6 @@ namespace NuSysApp
             Storyboard.SetTargetProperty(backAppearsAnimation, "(Grid.Visibility)");
             Storyboard.SetTarget(backAppearsAnimation, backgrid);
             _flipOpen.Children.Add(backAppearsAnimation);
-
 
 
             _flipClose = new Storyboard();
@@ -282,13 +284,8 @@ namespace NuSysApp
             OnTemplateReady?.Invoke();
         }
 
-        private void OnFlipperClick(object sender, RoutedEventArgs e)
+        private void FlipToBack()
         {
-            // perform simple animation
-            if (_sampleDimensions.ActualWidth > 1000)
-            {
-                //return;
-            }
             if (_isFlipped)
             {
                 _isFlipped = false;
@@ -298,7 +295,29 @@ namespace NuSysApp
             {
                 _isFlipped = true;
                 _flipOpen.Begin();
+                UITask.Run(async delegate { PopulateLinks(); });
+                //PopulateMetadata();
             }
+        }
+
+        //todo move this to the element view model
+        private void PopulateLinks()
+        {
+            var vm = this.DataContext as ElementViewModel;
+            Debug.Assert(vm != null);
+
+            vm.BackLinks.Clear();
+
+            var controller = vm?.Controller;
+            var currentContentId = controller.ContentId;
+            var attachedLinkIds = SessionController.Instance.LinksController.GetLinkedIds(controller?.ContentId);
+            foreach (var attachedLinkId in attachedLinkIds)
+            {
+                var linkLibraryElementController = SessionController.Instance.LinksController.GetLinkLibraryElementControllerFromLibraryElementId(attachedLinkId);
+                vm.BackLinks.Add(new LinkTemplate(linkLibraryElementController, currentContentId));
+            }
+
+
         }
 
 

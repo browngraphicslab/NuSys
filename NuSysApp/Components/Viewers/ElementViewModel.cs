@@ -54,6 +54,7 @@ namespace NuSysApp
 
             Tags = new ObservableCollection<Button>();
             CircleLinks = new ObservableCollection<LinkCircle>();
+            BackLinks = new ObservableCollection<LinkTemplate>();
             ReadFromModel();
         }
 
@@ -431,6 +432,7 @@ namespace NuSysApp
         public string Title { get; set; }
         public ObservableCollection<Button> Tags { get; set; }
         public ObservableCollection<LinkCircle> CircleLinks { get; set; }
+        public ObservableCollection<LinkTemplate> BackLinks { get; set; }
 
         public ElementController Controller
         {

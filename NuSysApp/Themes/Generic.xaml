@@ -17,16 +17,60 @@
             <Setter.Value>
                 <ControlTemplate TargetType="local:NodeTemplate" >
                     <Canvas>
-                        <Grid x:Name="xFakeBack" Width="{Binding Width}" Height="{Binding Height}">
+                        <Grid x:Name="xFakeBack" Width="{Binding Width}" Height="{Binding Height}" Grid.Background="AliceBlue">
                             <Grid.Projection>
                                 <PlaneProjection/>
                             </Grid.Projection>
-                            <Grid.Background>
-                                <ImageBrush ImageSource="ms-appx:///Assets/icon_meta_data_background.jpg" Stretch="Uniform"/>
-                            </Grid.Background>
                             <Grid.Visibility>
                                 Collapsed
                             </Grid.Visibility>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Pivot x:Name="rootPivot">
+                                <PivotItem Header="Metadata" HorizontalAlignment="Center">
+                                    <!--Pivot content goes here-->
+                                    <TextBlock Text="Content of pivot item 1."/>
+                                </PivotItem>
+                                <PivotItem Header="KeyWords" HorizontalAlignment="Center">
+                                    <ItemsControl x:Name="backTags" VerticalAlignment="Top" ItemsSource="{Binding Tags}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Width="{Binding Width}"/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                    </ItemsControl>
+                                </PivotItem>
+                                <PivotItem Header="Links" HorizontalAlignment="Center">
+                                    <ListView ItemsSource="{Binding BackLinks}" Width="{Binding Width}" HorizontalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollMode="Enabled">
+                                        <ListView.ItemContainerStyle>
+                                            <Style TargetType="ListViewItem">
+                                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                                <Setter Property="Margin" Value="0"/>
+                                                <Setter Property="Padding" Value="0"/>
+                                            </Style>
+                                        </ListView.ItemContainerStyle>
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Text="{Binding Title}" FontWeight="Bold" HorizontalAlignment="Left" Margin="5"/>
+                                                    <TextBlock Text="{Binding LinkedTo}" Grid.Column="1" HorizontalAlignment="Right" Margin="5"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                       </ListView.ItemTemplate>
+                                    </ListView>
+                                </PivotItem>
+                                <PivotItem Header="Regions" HorizontalAlignment="Center">
+                                    <!--Pivot content goes here-->
+                                    <TextBlock Text="Content of pivot item 4."/>
+                                </PivotItem>
+                            </Pivot>
+                            <Button x:Name="xShowFrontButton" Height="30" Grid.Row="1" Width="{Binding Width}" Content="Show Front" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="{StaticResource color3}" Background="{StaticResource color7}" Padding="3" BorderBrush="{StaticResource color3}" BorderThickness="2"/>
                         </Grid>
                         <Grid x:Name="xContainer" Width="{Binding Width}" Height="{Binding Height}">
                             <Grid.RowDefinitions>
@@ -122,8 +166,9 @@
                                     <TextBlock x:Name="xUserName"  Text="" Margin="0,-67.5,0,0" FontSize="22.5"></TextBlock>
                                 </Canvas>
                             </Canvas>
-                            <Canvas Grid.Row="2">
+                            <Canvas Grid.Row="1">
                                 <StackPanel VerticalAlignment ="Bottom">
+                                    <Button x:Name="xShowBackButton" Height="30" Width="{Binding Width}" Content="Show Back" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="{StaticResource color3}" Background="{StaticResource color7}" Padding="3" BorderBrush="{StaticResource color3}" BorderThickness="2"/>
                                     <Grid>
                                         <ItemsControl VerticalAlignment="Bottom" ItemsSource="{Binding CircleLinks}">
                                             <ItemsControl.ItemsPanel>
@@ -138,7 +183,7 @@
                                         </ItemsControl>
                                     </Grid>
                                     <Grid>
-                                        <ItemsControl x:Name="Tags" VerticalAlignment="Bottom" ItemsSource="{Binding Tags}">
+                                        <ItemsControl x:Name="Tags" VerticalAlignment="Bottom" ItemsSource="{Binding NotTags}">
                                             <ItemsControl.ItemsPanel>
                                                 <ItemsPanelTemplate>
                                                     <local:WrapPanel Width="{Binding Width}">
@@ -150,7 +195,6 @@
                                             </ItemsControl.ItemsPanel>
                                         </ItemsControl>
                                     </Grid>
-                                    <Button x:Name ="Flipper" Content="Flip this shit" Background="Chartreuse" Foreground="Red"/>
                                 </StackPanel>
                             </Canvas>
                         </Grid>
