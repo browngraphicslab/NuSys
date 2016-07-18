@@ -33,7 +33,7 @@ namespace NuSysApp
 
         }
 
-        public void Tool_Disposed(string id)
+        public void Tool_Disposed(object sender, string id)
         {
             if (id != "ToolFilterView")
             {

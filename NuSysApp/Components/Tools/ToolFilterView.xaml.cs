@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using NuSysApp.Tools;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -23,11 +24,13 @@ namespace NuSysApp
 
 
         ObservableCollection<ToolModel.ToolFilterTypeTitle> Filters;
+        private HashSet<ToolStartable> _parentToolStartables;
+
         private HashSet<ToolViewModel> _parentToolViewModels;
 
         public delegate void LocationChangedEventHandler(object sender, double x, double y);
         public delegate void SizeChangedEventHandler(object sender, double width, double height);
-        public delegate void DisposedEventHandler(string id);
+        public delegate void DisposedEventHandler(object sender, string id);
 
 
         public event LocationChangedEventHandler LocationChanged;
@@ -73,7 +76,7 @@ namespace NuSysApp
 
         public void Dispose()
         {
-            Disposed?.Invoke("ToolFilterView");
+            Disposed?.Invoke(this, "ToolFilterView");
         }
 
         public void AddParentTool(ToolViewModel parentToolViewModel)
@@ -81,6 +84,13 @@ namespace NuSysApp
             if (parentToolViewModel != null)
             {
                 _parentToolViewModels.Add(parentToolViewModel);
+            }
+        }
+        public void AddParentTool(ToolStartable parentToolStartable)
+        {
+            if (parentToolStartable != null)
+            {
+                _parentToolStartables.Add(parentToolStartable);
             }
         }
 
@@ -95,20 +105,39 @@ namespace NuSysApp
             wvm.AtomViewList.Remove(this);
             this.Dispose();
         }
-
+        public ToolFilterView(double x, double y)
+        {
+            this.InitializeComponent();
+            SetUp(x, y);
+        }
 
         public ToolFilterView(double x, double y, ToolViewModel parentToolViewModel = null)
         {
             this.InitializeComponent();
-            _parentToolViewModels = new HashSet<ToolViewModel>();
+            SetUp(x, y);
             AddParentTool(parentToolViewModel);
+
+        }
+
+
+        public ToolFilterView(double x, double y, ToolStartable parentToolStartable = null)
+        {
+            this.InitializeComponent();
+            SetUp(x, y);
+            AddParentTool(parentToolStartable);
+
+        }
+
+        private void SetUp(double x, double y)
+        {
+            _parentToolViewModels = new HashSet<ToolViewModel>();
+            _parentToolStartables = new HashSet<ToolStartable>();
             this.RenderTransform = new CompositeTransform();
-            SetSize(300,400);
+            SetSize(300, 400);
             _links = new List<ToolFilterLinkView>();
             SetLocation(x, y);
             Filters = new ObservableCollection<ToolModel.ToolFilterTypeTitle>()
             { ToolModel.ToolFilterTypeTitle.Type, ToolModel.ToolFilterTypeTitle.Title,  ToolModel.ToolFilterTypeTitle.Creator,  ToolModel.ToolFilterTypeTitle.Date, ToolModel.ToolFilterTypeTitle.LastEditedDate,  ToolModel.ToolFilterTypeTitle.MetadataKeys, ToolModel.ToolFilterTypeTitle.AllMetadata};
-
         }
 
         private void Tool_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -150,22 +179,32 @@ namespace NuSysApp
             MetadataToolViewModel viewmodel = new MetadataToolViewModel(controller);
             viewmodel.Filter = ToolModel.ToolFilterTypeTitle.AllMetadata;
             MetadataToolView view = new MetadataToolView(viewmodel, (RenderTransform as CompositeTransform).TranslateX, (RenderTransform as CompositeTransform).TranslateY);
+            SetUpParents(controller, viewmodel, wvm);
 
+
+            wvm.AtomViewList.Add(view);
+        }
+
+        private void SetUpParents(ToolController controller, ToolViewModel viewmodel, FreeFormViewerViewModel wvm)
+        {
             if (_parentToolViewModels.Count != 0)
             {
                 foreach (var tool in _parentToolViewModels)
                 {
                     controller.AddParent(tool.Controller);
-                    var linkviewmodel = new ToolLinkViewModel(tool, view.DataContext as ToolViewModel);
+                    var linkviewmodel = new ToolLinkViewModel(tool, viewmodel);
                     var link = new ToolLinkView(linkviewmodel);
                     Canvas.SetZIndex(link, -1);
                     wvm.AtomViewList.Add(link);
                 }
-
-
-
             }
-            wvm.AtomViewList.Add(view);
+            if (_parentToolStartables.Count != 0)
+            {
+                foreach (var toolStartable in _parentToolStartables)
+                {
+                    controller.AddParent(toolStartable);
+                }
+            }
         }
 
         private void CreateBasicToolView(ToolModel.ToolFilterTypeTitle selection, FreeFormViewerViewModel wvm)
@@ -175,19 +214,7 @@ namespace NuSysApp
             BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
             viewmodel.Filter = selection;
             BaseToolView view = new BaseToolView(viewmodel, (RenderTransform as CompositeTransform).TranslateX, (RenderTransform as CompositeTransform).TranslateY);
-
-            if (_parentToolViewModels.Count != 0)
-            {
-                foreach (var tool in _parentToolViewModels)
-                {
-                    controller.AddParent(tool.Controller);
-                    var linkviewmodel = new ToolLinkViewModel(tool, view.DataContext as ToolViewModel);
-                    var link = new ToolLinkView(linkviewmodel);
-                    Canvas.SetZIndex(link, -1);
-                    wvm.AtomViewList.Add(link);
-                }
-
-            }
+            SetUpParents(controller, viewmodel, wvm);
             wvm.AtomViewList.Add(view);
         }
 

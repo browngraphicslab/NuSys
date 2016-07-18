@@ -8,10 +8,11 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using NuSysApp.Tools;
 
 namespace NuSysApp
 {
-    public class GroupNodeViewModel : ElementCollectionViewModel
+    public class GroupNodeViewModel : ElementCollectionViewModel, ToolStartable
     {
 
         public CollectionElementModel.CollectionViewType ActiveCollectionViewType { get; set; }
@@ -20,8 +21,9 @@ namespace NuSysApp
         {
             _nodeViewFactory = new GroupItemThumbFactory();
             ActiveCollectionViewType = (controller.Model as CollectionElementModel).ActiveCollectionViewType;
+            
 
         }
-  
+
     }
 }

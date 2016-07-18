@@ -7,18 +7,17 @@ using System.Text;
 using System.Threading.Tasks;
 using MyToolkit.Utilities;
 using NetTopologySuite.Utilities;
+using NuSysApp.Tools;
 using SharpDX.DirectWrite;
 
 namespace NuSysApp
 {
-    public abstract class ToolController
+    public abstract class ToolController : ToolStartable
     {
-        public static Dictionary<string, ToolController> ToolControllers = new Dictionary<string, ToolController>();
+        public static Dictionary<string, ToolStartable> ToolControllers = new Dictionary<string, ToolStartable>();
 
-        public delegate void OutputLibraryIdsChangedEventHandler(object sender, HashSet<string> libraryIds);
         public delegate void LocationChangedEventHandler(object sender, double x, double y);
         public delegate void SizeChangedEventHandler(object sender, double width, double height);
-        public delegate void DisposedEventHandler(string parentid);
         public delegate void IdsToDisplayChangedEventHandler();
         public delegate void NumberOfParentsChangedEventHandler (int numberOfParents);
 
@@ -26,10 +25,10 @@ namespace NuSysApp
         /// Fires when its library ids change. Its children tools listen to this event on when to refresh the 
         /// properties displayed
         /// </summary>
-        public event OutputLibraryIdsChangedEventHandler OutputLibraryIdsChanged;
+        public event EventHandler<HashSet<string>> OutputLibraryIdsChanged;
         public event LocationChangedEventHandler LocationChanged;
         public event SizeChangedEventHandler SizeChanged;
-        public event DisposedEventHandler Disposed;
+        public event EventHandler<string> Disposed;
         /// <summary>
         /// Fires when the properties to display change (e.g. when a parent tool changes selection). View listens to this for when to show the AND/OR box.
         /// </summary>
@@ -114,6 +113,7 @@ namespace NuSysApp
             });*/
         }
 
+
         public void SetSize(double width, double height)
         {
             SizeChanged?.Invoke(this, width, height);
@@ -122,11 +122,11 @@ namespace NuSysApp
         /// <summary>
         /// Adds a parent to the tool. Listens to the parent's library ids changed event. Refreshes the library ids. Invokes, outputLibraryIdsChanged, parentsLibraryIdsChanged, and numberofParentsChanged.
         /// </summary>
-        public void AddParent(ToolController parentController)
+        public void AddParent(ToolStartable parentController)
         {
             if (parentController != null)
             {
-                if (Model.ParentIds.Add(parentController.Model?.Id))
+                if (Model.ParentIds.Add(parentController.GetID()))
                 {
                     parentController.OutputLibraryIdsChanged += IdsToDiplayChanged;
                     Model.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
@@ -153,7 +153,7 @@ namespace NuSysApp
         /// <summary>
         /// Stops listening to deleted parent events, removes from parent IDS, resets output library ids invokes output ids changed, invokes ids to display changed. Called when the the parent gets deleted.
         /// </summary>
-        public void OnParentDisposed(string parentid)
+        public void OnParentDisposed(object sender, string parentid)
         {
             ToolControllers[parentid].OutputLibraryIdsChanged -= IdsToDiplayChanged;
             Model.ParentIds.Remove(parentid);
@@ -167,9 +167,9 @@ namespace NuSysApp
         /// <summary>
         /// Removes parent controller from the model that is about to be deleted, and stops listening to all its parents event.
         /// </summary>
-        public virtual void RemoveParent(ToolController parentController)
+        public virtual void RemoveParent(ToolStartable parentController)
         {
-            if (Model.RemoveParentId(parentController?.Model?.Id))
+            if (Model.RemoveParentId(parentController?.GetID()))
             {
                 if (parentController != null)
                 {
@@ -180,6 +180,11 @@ namespace NuSysApp
 
         }
 
+        public string GetID()
+        {
+            return Model?.Id;
+        }
+
         public abstract void UnSelect();
 
         /// <summary>
@@ -187,12 +192,12 @@ namespace NuSysApp
         /// </summary>
         public virtual void Dispose()
         {
-            foreach(var parentController in new List<ToolController>(Model.ParentIds.Select(id => ToolControllers.ContainsKey(id) ? ToolControllers[id] : null)))
+            foreach(var parentController in new List<ToolStartable>(Model.ParentIds.Select(id => ToolControllers.ContainsKey(id) ? ToolControllers[id] : null)))
             {
                 RemoveParent(parentController);
             }
-            Disposed?.Invoke(Model.Id);
-            ToolControllers.Remove(Model.Id);
+            Disposed?.Invoke(this, GetID());
+            ToolControllers.Remove(GetID());
         }
 
         /// <summary>
@@ -289,8 +294,8 @@ namespace NuSysApp
             {
                 return SessionController.Instance.ContentController.IdList;
             }
-            IEnumerable<string> list = controllers?.First().Model.OutputLibraryIds;
-            foreach (var enumerable in controllers.Select(controller => controller?.Model.OutputLibraryIds))
+            IEnumerable<string> list = controllers?.First().GetOutputLibraryIds();
+            foreach (var enumerable in controllers.Select(controller => controller.GetOutputLibraryIds()))
             {
                 switch (Model.ParentOperator)
                 {
@@ -305,6 +310,17 @@ namespace NuSysApp
            
             return new HashSet<string>(list);
         }
+
+        public HashSet<string> GetOutputLibraryIds()
+        {
+            return Model.OutputLibraryIds;
+        }
+
+        public HashSet<string> GetParentIds()
+        {
+            return Model.ParentIds;
+        }
+
         public void SetLocation(double x, double y)
         {
             LocationChanged?.Invoke(this, x, y);

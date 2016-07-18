@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -40,7 +40,7 @@ namespace NuSysApp
 
         }
 
-        public void Tool_Disposed(string id)
+        public void Tool_Disposed(object sender, string id)
         {
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
             wvm.AtomViewList.Remove(this);

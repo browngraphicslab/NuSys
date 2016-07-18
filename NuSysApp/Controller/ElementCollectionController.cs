@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NuSysApp.Tools;
 
 namespace NuSysApp
 {
-    public class ElementCollectionController : ElementController
+    public class ElementCollectionController : ElementController, ToolLinkable
     {
 
         public delegate void ChildChangedHandler(object source, ElementController child);
@@ -74,6 +75,9 @@ namespace NuSysApp
             _debouncingDictionary.Add("collectionview", colModel.ActiveCollectionViewType.ToString());
         }
 
-   
+        public void AddListener(ToolLinkViewModel vm)
+        {
+            SizeChanged += vm.
+        }
     }
 }

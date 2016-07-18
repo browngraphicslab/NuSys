@@ -7,6 +7,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using NuSysApp.Tools;
 
 namespace NuSysApp
 {
@@ -201,7 +202,7 @@ namespace NuSysApp
         public bool CreatesLoop(ToolViewModel toolViewModel)
         {
             bool createsLoop = false;
-            var controllers = new List<ToolController>(Controller.Model.ParentIds.Select(item => ToolController.ToolControllers.ContainsKey(item) ? ToolController.ToolControllers[item] : null));
+            var controllers = new List<ToolStartable>(Controller.Model.ParentIds.Select(item => ToolController.ToolControllers.ContainsKey(item) ? ToolController.ToolControllers[item] : null));
 
             while (controllers != null && controllers.Count != 0)
             {
@@ -210,11 +211,11 @@ namespace NuSysApp
                     createsLoop = true;
                     break;
                 }
-                var tempControllers = new List<ToolController>();
+                var tempControllers = new List<ToolStartable>();
                 foreach (var controller in controllers)
                 {
-                    tempControllers = new List<ToolController>(tempControllers.Union(new List<ToolController>(
-                            controller.Model.ParentIds.Select(
+                    tempControllers = new List<ToolStartable>(tempControllers.Union(new List<ToolStartable>(
+                            controller.GetParentIds().Select(
                                 item =>
                                     ToolController.ToolControllers.ContainsKey(item)
                                         ? ToolController.ToolControllers[item]

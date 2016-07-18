@@ -345,12 +345,14 @@
     <Compile Include="Components\Tools\ToolFilterView.xaml.cs">
       <DependentUpon>ToolFilterView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Tools\ToolLinkable.cs" />
     <Compile Include="Components\Tools\ToolLinkView.xaml.cs">
       <DependentUpon>ToolLinkView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Tools\ToolLinkViewModel.cs" />
     <Compile Include="Components\Tools\ToolModel.cs" />
     <Compile Include="Components\Tools\BasicToolViewModel.cs" />
+    <Compile Include="Components\Tools\ToolStartable.cs" />
     <Compile Include="Components\Tools\ToolViewable.cs" />
     <Compile Include="Components\Tools\ToolViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\ILinkTabable.cs" />
