@@ -66,7 +66,6 @@ namespace NuSysApp
             Title = controller.Title;
             IsSelected = false;
             controller.AnchorChanged += ChangeAnchor;
-
             RaisePropertyChanged("Anchor");
         }
 
@@ -98,6 +97,7 @@ namespace NuSysApp
             Controller.LibraryElementController.SetTitle(title);
             Controller.TitleChanged += TitleChanged;
         }
+
 
         public bool ContainsSelectedLink { get; }
 
@@ -140,5 +140,6 @@ namespace NuSysApp
         /// From the IEditable interface
         /// </summary>
         public bool IsEditing { get; set; }
+
     }
 }

@@ -26,9 +26,14 @@ namespace NuSysApp
     public sealed partial class PdfDetailHomeTabView : UserControl
     {
         //private InqCanvasView _inqCanvasView;
+
         private double _x;
         private double _y;
         private string _libraryElementId;
+
+        public event ContentLoadedEventHandler ContentLoaded;
+        public delegate void ContentLoadedEventHandler(object sender);
+
 
         public PdfDetailHomeTabView(PdfDetailHomeTabViewModel vm)
         {
@@ -43,12 +48,14 @@ namespace NuSysApp
 
             //vm.CreateRegionViews();
             DataContext = vm;
-
-            Loaded += async delegate (object sender, RoutedEventArgs args)
+            xImg.ImageOpened += delegate
             {
-                //vm.Goto(vm.)
+                ContentLoaded?.Invoke(this);
             };
-
+            Loaded += delegate
+            {
+                ContentLoaded?.Invoke(this);
+            };
             //vm.MakeTagList();
 
             vm.Controller.Disposed += ControllerOnDisposed;

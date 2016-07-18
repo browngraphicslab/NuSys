@@ -31,8 +31,12 @@ namespace NuSysApp
         private double _y;
         private string _libraryElementId;
 
+        public event ContentLoadedEventHandler ContentLoaded;
+        public delegate void ContentLoadedEventHandler(object sender);
+
         public ImageDetailHomeTabView(ImageDetailHomeTabViewModel vm)
         {
+
             DataContext = vm;
             _libraryElementId = vm.LibraryElementController.ContentId;
             InitializeComponent();
@@ -179,6 +183,7 @@ namespace NuSysApp
         {
             var vm = (ImageDetailHomeTabViewModel) DataContext;
             vm.SetExistingRegions();
+            ContentLoaded?.Invoke(this);
 
         }
 
