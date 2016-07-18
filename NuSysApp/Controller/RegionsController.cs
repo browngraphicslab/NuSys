@@ -62,7 +62,7 @@ namespace NuSysApp
             {
                 return _regionLibraryElementModels[id];
             }
-            Debug.Fail("Should always be in one of the two");
+            //Debug.Fail("Should always be in one of the two");
             return null;
         }
 
