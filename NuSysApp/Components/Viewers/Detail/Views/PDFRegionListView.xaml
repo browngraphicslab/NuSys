@@ -43,7 +43,7 @@
             </ListView.Header>
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="local:Region">
-                    <Grid x:Name="RegionListViewItem" PointerPressed="RegionListViewItem_PointerPressed" HorizontalAlignment="Stretch" Height="30" VerticalAlignment="Center" PointerEntered="XListViewItemGrid_OnPointerEnterExit" PointerExited="XListViewItemGrid_OnPointerEnterExit" >
+                    <Grid x:Name="RegionListViewItem" PointerPressed="RegionListViewItem_PointerPressed" HorizontalAlignment="Stretch" Height="30" VerticalAlignment="Center" PointerEntered="XListViewItemGrid_OnPointerEnterExit" PointerExited="XListViewItemGrid_OnPointerEnterExit" Background="Transparent">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" ></ColumnDefinition>
                             <ColumnDefinition Width="*"></ColumnDefinition>
