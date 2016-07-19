@@ -283,9 +283,6 @@ namespace NuSysApp
                 case Request.RequestType.SetTagsRequest:
                     request = new SetTagsRequest(message);
                     break;
-                case Request.RequestType.ChatDialogRequest:
-                    request = new ChatDialogRequest(message);
-                    break;
                 case Request.RequestType.CreateNewLibrayElementRequest:
                     request = new CreateNewLibraryElementRequest(message);
                     break;

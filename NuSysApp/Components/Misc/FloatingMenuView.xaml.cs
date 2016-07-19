@@ -38,13 +38,11 @@ namespace NuSysApp
         private LibraryView _lib;
         private LibraryElementPropertiesWindow libProp;
         private bool IsPenMode;
-        private bool _isChatVisible;
         private bool checkPointerAdded;
         private CompositeTransform floatingTransform;
 
         public FloatingMenuView()
         {
-            _isChatVisible = false;
             floatingTransform = new CompositeTransform();
             RenderTransform = floatingTransform;
             InitializeComponent();
@@ -53,8 +51,6 @@ namespace NuSysApp
             btnAddNode.Tapped += BtnAddNode_Tapped;
             btnPen.Tapped += BtnPen_Tapped;
             btnSearch.Tapped += BtnSearch_Tapped;
-            btnGlobalChat.Tapped += BtnGlobalChat_Tapped;
-            chatInputBox.KeyDown += ChatInputBox_KeyDown;
              
             libProp = new LibraryElementPropertiesWindow();
             _lib = new LibraryView(new LibraryBucketViewModel(), libProp, this);
@@ -204,33 +200,6 @@ namespace NuSysApp
                 checkPointerAdded = true;
             }
 
-        }
-
-        private void BtnGlobalChat_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            _isChatVisible = !_isChatVisible;
-            if (_isChatVisible)
-            {
-                chatCanvas.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                chatCanvas.Visibility = Visibility.Collapsed;
-            }
-
-        }
-        static void ChatInputBox_KeyDown(object sender, KeyRoutedEventArgs e)
-        {
-            if (e.Key == VirtualKey.Enter)
-            {
-                TextBox senderBox = sender as TextBox;
-                Debug.Assert(senderBox!=null);
-                string text = senderBox.Text;
-                //SessionController.Instance.NuSysNetworkSession.
-                text += "\n";
-                //send text and user to server
-            }
-            e.Handled = true;
         }
 
         private async void BtnAddNodeOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs args)

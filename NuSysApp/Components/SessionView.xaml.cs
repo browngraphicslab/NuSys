@@ -62,10 +62,13 @@ namespace NuSysApp
         #endregion Private Members
 
         private int initChatNotifs;
+        private bool _isChatVisible;
 
         public SessionView()
         {
             this.InitializeComponent();
+
+            _isChatVisible = false;
 
             CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
             CoreWindow.GetForCurrentThread().KeyUp += OnKeyUp;
@@ -959,6 +962,24 @@ namespace NuSysApp
                 exp.HideRelatedListBox();
             }
             
+        }
+
+        public ChatBoxView GetChatBox()
+        {
+            return chatBox;
+        }
+
+        private void ChatBoxButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            _isChatVisible = !_isChatVisible;
+            if (_isChatVisible)
+            {
+                chatBox.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                chatBox.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }

@@ -23,7 +23,7 @@ namespace NuSysApp
             NewContentRequest,
             ChangeContentRequest,
             SetTagsRequest,
-            ChatDialogRequest,
+            ChatRequest,
             CreateNewLibrayElementRequest,
             SubscribeToCollectionRequest,
             UnsubscribeFromCollectionRequest,

@@ -83,16 +83,6 @@
             </StackPanel>
         </Canvas>
         
-        <Canvas x:Name="chatCanvas" Visibility="Collapsed">
-            <Canvas.RenderTransform>
-                <TranslateTransform x:Name="chatCanvasTranform" X="170" Y="70"></TranslateTransform>
-            </Canvas.RenderTransform>
-            <StackPanel Orientation="Vertical">
-                <TextBox x:Name="chatDisplayBox" Height="200" Width="200" IsReadOnly="True"/>
-                <TextBox x:Name="chatInputBox" Height="100" Width="200" IsReadOnly="false" TextWrapping="Wrap"/>
-            </StackPanel>
-        </Canvas>
-        
         <StackPanel x:Name="FloatingMenuPanel" Orientation="Horizontal">
             <StackPanel.RenderTransform>
                 <CompositeTransform/>
@@ -101,7 +91,6 @@
             <local:FloatingMenuButtonView x:Name="btnLibrary" Icon="ms-appx:///Assets/icon_library.png" Caption="" />
             <local:FloatingMenuButtonView x:Name="btnPen" Icon="ms-appx:///Assets/node icons/pen.png" Caption="" Visibility="Collapsed"/>
             <local:FloatingMenuButtonView x:Name="btnSearch" Icon="ms-appx:///Assets/node icons/search_icon.png" Caption=""/>
-            <local:FloatingMenuButtonView x:Name="btnGlobalChat" Icon="ms-appx:///Assets/node icons/text.png" Caption=""/>
         </StackPanel>
     </Canvas>
 </UserControl>
