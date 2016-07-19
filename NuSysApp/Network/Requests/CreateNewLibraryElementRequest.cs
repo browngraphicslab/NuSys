@@ -33,7 +33,7 @@ namespace NuSysApp
             SetServerRequestType(ServerRequestType.Add);
         }
 
-        public override async Task<bool> CheckOutgoingRequest()
+        public override async Task CheckOutgoingRequest()
         {
             SetServerSettings();
             var time = DateTime.UtcNow.ToString();
@@ -65,7 +65,6 @@ namespace NuSysApp
                 }
                 libraryElement.ServerUrl = url;
             }
-            return true;
         }
     }
 }

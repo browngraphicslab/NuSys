@@ -12,7 +12,9 @@
     <Grid>
         <Canvas x:Name="chatCanvas" Visibility="Collapsed">
             <StackPanel Orientation="Vertical">
-                <TextBox x:Name="chatDisplayBox" Height="300" Width="300" IsReadOnly="True"/>
+                <ScrollViewer x:Name="scroller">
+                    <TextBox x:Name="chatDisplayBox" Height="300" Width="300" IsReadOnly="True" AcceptsReturn="True"/>
+                </ScrollViewer>
                 <TextBox x:Name="chatInputBox" Height="75" Width="300" IsReadOnly="false" TextWrapping="Wrap"/>
             </StackPanel>
         </Canvas>

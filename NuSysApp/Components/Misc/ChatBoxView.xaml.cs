@@ -41,6 +41,9 @@ namespace NuSysApp
 
         }
         */
+
+       
+
         private void ChatInputBox_KeyDown(object sender, KeyRoutedEventArgs e)
         {
             if (e.Key == VirtualKey.Enter)
@@ -48,18 +51,46 @@ namespace NuSysApp
                 TextBox senderBox = sender as TextBox;
                 Debug.Assert(senderBox != null);
                 string text = senderBox.Text;
-                senderBox.Text = "";
-                //SessionController.Instance.NuSysNetworkSession.
-                //send text and user to server
-                new ChatRequest(SessionController.Instance.NuSysNetworkSession.NetworkMembers[SessionController.Instance.LocalUserID], text);
+                if (!text.Equals("") && 
+                    SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(SessionController.Instance.LocalUserID))
+                {
+                    senderBox.Text = "";
+                    //SessionController.Instance.NuSysNetworkSession.
+                    //send text and user to server
+                    var request =
+                        new ChatRequest(
+                            SessionController.Instance.NuSysNetworkSession.NetworkMembers[
+                                SessionController.Instance.LocalUserID], text);
+                    SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                }
             }
             //e.Handled = true;
+        }
+
+        public void ScrollToEnd()
+        {
+            scroller.UpdateLayout();
+            scroller.ScrollToVerticalOffset(300);
+        }
+
+        public double ScrollerScrollableHeight
+        {
+            get { return scroller.ScrollableHeight; }
+        }
+
+        public double ScrollerVerticalOffset
+        {
+            get { return scroller.VerticalOffset; }
         }
 
         public string ChatText
         {
             get { return chatDisplayBox.Text; }
-            set { chatDisplayBox.Text = value; }
+        }
+
+        public void AppendText(string s)
+        {
+            chatDisplayBox.Text += s;
         }
 
         public Visibility Visibility

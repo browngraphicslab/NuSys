@@ -12,6 +12,14 @@ namespace NuSysApp
             setServerSettings();
         }
 
+        private void setServerSettings()
+        {
+            SetServerEchoType(ServerEchoType.Everyone);
+            SetServerItemType(ServerItemType.Alias);
+            SetServerIgnore(true);
+            SetServerRequestType(ServerRequestType.Update);
+        }
+
         public ChatRequest(Message m) : base(RequestType.ChatRequest, m)
         {
             setServerSettings();
@@ -23,20 +31,16 @@ namespace NuSysApp
             {
                 var user = SessionController.Instance.NuSysNetworkSession.NetworkMembers[_message.GetString("user")];
                 Debug.Assert(user != null);
-                string oldText = SessionController.Instance.SessionView.GetChatBox().ChatText;
                 var chatMessage = _message.GetString("chat_message");
                 Debug.Assert(chatMessage != null);
                 string withUser = user.Name + ": " + chatMessage + "\n";
-                SessionController.Instance.SessionView.GetChatBox().ChatText = oldText+withUser;
+                ChatBoxView cBox = SessionController.Instance.SessionView.GetChatBox();
+                cBox.AppendText(withUser);
+                if (cBox.ScrollerVerticalOffset == cBox.ScrollerScrollableHeight)
+                {
+                    cBox.ScrollToEnd();
+                }
             }
-        }
-
-        private void setServerSettings()
-        {
-            SetServerEchoType(ServerEchoType.Everyone);
-            SetServerItemType(ServerItemType.Alias);
-            SetServerIgnore(true);
-            SetServerRequestType(ServerRequestType.Update);
         }
 
     }
