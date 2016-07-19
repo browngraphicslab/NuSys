@@ -327,6 +327,9 @@
     </Compile>
     <Compile Include="Components\Tools\BasicToolController.cs" />
     <Compile Include="Components\Tools\BasicToolModel.cs" />
+    <Compile Include="Components\Tools\ListToolView.xaml.cs">
+      <DependentUpon>ListToolView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Tools\MetadataToolController.cs" />
     <Compile Include="Components\Tools\MetadataToolModel.cs" />
     <Compile Include="Components\Tools\MetadataToolView.xaml.cs">
@@ -337,19 +340,17 @@
       <DependentUpon>PieChartToolView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Tools\ToolController.cs" />
-    <Compile Include="Components\Tools\ToolFilterLinkView.xaml.cs">
-      <DependentUpon>ToolFilterLinkView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Tools\ToolFilterLinkViewModel.cs" />
     <Compile Include="Components\Tools\ToolFilterView.xaml.cs">
       <DependentUpon>ToolFilterView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Tools\ToolLinkable.cs" />
     <Compile Include="Components\Tools\ToolLinkView.xaml.cs">
       <DependentUpon>ToolLinkView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Tools\ToolLinkViewModel.cs" />
     <Compile Include="Components\Tools\ToolModel.cs" />
     <Compile Include="Components\Tools\BasicToolViewModel.cs" />
+    <Compile Include="Components\Tools\ToolStartable.cs" />
     <Compile Include="Components\Tools\ToolViewable.cs" />
     <Compile Include="Components\Tools\ToolViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\ILinkTabable.cs" />
@@ -666,9 +667,6 @@
     <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\Statistics.cs" />
     <Compile Include="Util\Telemetry.cs" />
-    <Compile Include="Util\TemporaryToolView.xaml.cs">
-      <DependentUpon>TemporaryToolView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Util\UITask.cs" />
     <Compile Include="Components\InqCanvas\InqCanvasViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoNodeViewModel.cs" />
@@ -924,15 +922,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\Tools\ListToolView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Components\Tools\MetadataToolView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Tools\PieChartToolView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Tools\ToolFilterLinkView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1200,10 +1198,6 @@
     <Page Include="Components\WaitingRoom\WaitingRoomView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Util\TemporaryToolView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Util\RelatedListBox.xaml">
       <SubType>Designer</SubType>
