@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -11,7 +12,7 @@ using NuSysApp.Tools;
 
 namespace NuSysApp
 {
-    public abstract class ToolViewModel : BaseINPC
+    public abstract class ToolViewModel : BaseINPC, ToolLinkable
     {
         public delegate void PropertiesToDisplayChangedEventHandler();
         public event PropertiesToDisplayChangedEventHandler PropertiesToDisplayChanged;
@@ -23,6 +24,15 @@ namespace NuSysApp
         private double _x;
         private double _y;
         private CompositeTransform _transform = new CompositeTransform();
+        public Point2d ToolAnchor { get {return _anchor;} }
+        public event EventHandler<Point2d> ToolAnchorChanged;
+        public event EventHandler<string> Disposed;
+        public ToolStartable GetToolStartable()
+        {
+            return Controller;
+        }
+
+        private Point2d _anchor;
         public double Width
         {
             set
@@ -35,7 +45,6 @@ namespace NuSysApp
                 return _width;
             }
         }
-
         public ObservableCollection<ToolModel.ParentOperatorType> ParentOperatorList = new ObservableCollection<ToolModel.ParentOperatorType>() {ToolModel.ParentOperatorType.And, ToolModel.ParentOperatorType.Or}; 
 
         public void InvokePropertiesToDisplayChanged()
@@ -54,7 +63,6 @@ namespace NuSysApp
                 return _height;
             }
         }
-
         public double X
         {
             set
@@ -95,12 +103,21 @@ namespace NuSysApp
 
         public ToolViewModel(ToolController toolController)
         {
+            CalculateAnchorPoint();
             _controller = toolController;
             _controller.IdsToDisplayChanged += ControllerOnLibraryIdsToDisplayChanged;
             Controller.SizeChanged += OnSizeChanged;
             Controller.LocationChanged += OnLocationChanged;
             Height = 400;
             Width = 260;
+        }
+
+        /// <summary>
+        /// Calculates the tool anchor point of as the top center of the node
+        /// </summary>
+        public void CalculateAnchorPoint()
+        {
+            _anchor = new Point2d(X + Width / 2 + 60, Y + 20);
         }
 
         /// <summary>
@@ -252,13 +269,16 @@ namespace NuSysApp
         /// </summary>
         public void AddNewFilterTool(double x, double y, FreeFormViewerViewModel wvm)
         {
+            
+
             var toolFilter = new ToolFilterView(x, y, this);
-            var toolFilterLinkViewModel = new ToolFilterLinkViewModel(this, toolFilter);
-            var toolFilterLink = new ToolFilterLinkView(toolFilterLinkViewModel);
-            Canvas.SetZIndex(toolFilterLink, Canvas.GetZIndex(toolFilter) - 1);
-            toolFilter.AddLink(toolFilterLink);
+
+            var linkviewmodel = new ToolLinkViewModel(this, toolFilter);
+            var link = new ToolLinkView(linkviewmodel);
+            
+            Canvas.SetZIndex(link, Canvas.GetZIndex(toolFilter) - 1);
             wvm.AtomViewList.Add(toolFilter);
-            wvm.AtomViewList.Add(toolFilterLink);
+            wvm.AtomViewList.Add(link);
         }
 
         /// <summary>
@@ -266,10 +286,10 @@ namespace NuSysApp
         /// </summary>
         public void AddFilterToFilterToolView(List<UIElement> hitsStartList, FreeFormViewerViewModel wvm)
         {
-            ToolFilterLinkViewModel linkViewModel = new ToolFilterLinkViewModel(this, (hitsStartList.First() as ToolFilterView));
-            ToolFilterLinkView linkView = new ToolFilterLinkView(linkViewModel);
+
+            var linkviewmodel = new ToolLinkViewModel(this, (hitsStartList.First() as ToolFilterView));
+            var linkView = new ToolLinkView(linkviewmodel);
             Canvas.SetZIndex(linkView, Canvas.GetZIndex(hitsStartList.First()) - 1);
-            (hitsStartList.First() as ToolFilterView).AddLink(linkView);
             (hitsStartList.First() as ToolFilterView).AddParentTool(this);
             wvm.AtomViewList.Add(linkView);
         }
@@ -293,7 +313,6 @@ namespace NuSysApp
             }
         }
 
-
         public Image InitializeDragFilterImage()
         {
             Image dragItem = new Image();
@@ -309,6 +328,7 @@ namespace NuSysApp
             Controller.SizeChanged -= OnSizeChanged;
             Controller.LocationChanged -= OnLocationChanged;
             Controller.Dispose();
+            Disposed?.Invoke(this, Controller.GetID());
         }
 
         /// <summary>
@@ -333,6 +353,8 @@ namespace NuSysApp
         {
             Width = width;
             Height = height;
+            CalculateAnchorPoint();
+            ToolAnchorChanged?.Invoke(this, _anchor);
         }
 
         public void OnLocationChanged(object sender, double x, double y)
@@ -342,6 +364,11 @@ namespace NuSysApp
             Transform.TranslateX = x;
             Transform.TranslateY = y;
             RaisePropertyChanged("Transform");
+            CalculateAnchorPoint();
+            ToolAnchorChanged?.Invoke(this, _anchor);
+
         }
+
+
     }
 }

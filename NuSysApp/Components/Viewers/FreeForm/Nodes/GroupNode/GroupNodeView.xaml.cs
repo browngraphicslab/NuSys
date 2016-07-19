@@ -74,6 +74,9 @@ namespace NuSysApp
 
         }
 
+        /// <summary>
+        /// Sets up the tool dragging button by adding handlers for manipulation gestures
+        /// </summary>
         private void SetUpToolsBtn()
         {
             _dragItem = new Image();
@@ -83,26 +86,31 @@ namespace NuSysApp
             xBtnTools.ManipulationDelta += BtnAddNodeOnManipulationDelta;
             xBtnTools.ManipulationCompleted += BtnAddNodeOnManipulationCompleted;
         }
-        public async Task AddTool(Point pos, Size size)
-        {
-            var vm = SessionController.Instance.ActiveFreeFormViewer;
-            
-            ToolFilterView filter = new ToolFilterView(pos.X, pos.Y, DataContext as GroupNodeViewModel);
-            vm.AtomViewList.Add(filter);
-            
 
-            
-
-        }
+        /// <summary>
+        /// Handler for when the tool dragging has completed
+        /// </summary>
         private async void BtnAddNodeOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs args)
         {
+
             if (_dragItem == null)
                 return;
             GroupNodeCanvas.Children.Remove(_dragItem);
-            var r = GroupNodeCanvas.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(args.Position.X, args.Position.Y));
-            await AddTool(new Point(r.X, r.Y), new Size(300, 300));
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            var el = this;
+            var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(args.Position);
+            var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(sp.X, sp.Y, 300, 300));
+            var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
+            if (hitsStart.Contains(this))
+            {
+                return;
+            }
+            (DataContext as GroupNodeViewModel).FilterIconDropped(hitsStart, wvm, r.X, r.Y);
         }
 
+        /// <summary>
+        /// Handler for when the tool dragging is in progress
+        /// </summary>
         private void BtnAddNodeOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs args)
         {
             if (_dragItem == null)
@@ -114,6 +122,9 @@ namespace NuSysApp
             args.Handled = true;
         }
 
+        /// <summary>
+        /// Handler for when the tool dragging has started
+        /// </summary>
         private void BtnAddNodeOnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs args)
         {
             if (_dragItem == null)
@@ -125,6 +136,9 @@ namespace NuSysApp
             args.Handled = true;
         }
 
+        /// <summary>
+        /// Handler for when the tool dragging is starting
+        /// </summary>
         private async void BtnAddNodeOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs args)
         {
             if (_dragItem != null && GroupNodeCanvas.Children.Contains(_dragItem))

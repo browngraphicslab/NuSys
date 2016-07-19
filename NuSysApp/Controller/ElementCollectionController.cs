@@ -7,7 +7,7 @@ using NuSysApp.Tools;
 
 namespace NuSysApp
 {
-    public class ElementCollectionController : ElementController, ToolLinkable
+    public class ElementCollectionController : ElementController
     {
 
         public delegate void ChildChangedHandler(object source, ElementController child);
@@ -74,10 +74,6 @@ namespace NuSysApp
 
             _debouncingDictionary.Add("collectionview", colModel.ActiveCollectionViewType.ToString());
         }
-
-        public void AddListener(ToolLinkViewModel vm)
-        {
-            SizeChanged += vm.
-        }
+        
     }
 }

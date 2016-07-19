@@ -19,29 +19,28 @@ using NuSysApp.Tools;
 
 namespace NuSysApp
 {
-    public sealed partial class ToolFilterView : AnimatableUserControl
+    public sealed partial class ToolFilterView : AnimatableUserControl, ToolLinkable
     {
 
-
+        /// <summary>
+        /// The list of filter types available. Display list is bound to this.
+        /// </summary>
         ObservableCollection<ToolModel.ToolFilterTypeTitle> Filters;
-        private HashSet<ToolStartable> _parentToolStartables;
 
-        private HashSet<ToolViewModel> _parentToolViewModels;
+        /// <summary>
+        /// The parents are just held in a list then passed into the new tool when a tool filter type has been chosen. 
+        /// </summary>
+        private HashSet<ToolLinkable> _parentToolStartables;
+        private Point2d _anchor;
 
-        public delegate void LocationChangedEventHandler(object sender, double x, double y);
-        public delegate void SizeChangedEventHandler(object sender, double width, double height);
-        public delegate void DisposedEventHandler(object sender, string id);
-
-
-        public event LocationChangedEventHandler LocationChanged;
-        public event SizeChangedEventHandler SizeChanged;
-        public event DisposedEventHandler Disposed;
-
-
+        /// <summary>
+        /// Anchor point for tool link
+        /// </summary>
+        public Point2d ToolAnchor { get { return _anchor; } }
+        public event EventHandler<Point2d> ToolAnchorChanged;
+        public event EventHandler<string> Disposed;
         private const double MinWidth = 100;
         private const double MinHeight = 300;
-
-        private List<ToolFilterLinkView> _links; 
 
         public double X {
             get { return (RenderTransform as CompositeTransform).TranslateX; }
@@ -51,13 +50,47 @@ namespace NuSysApp
             get { return (RenderTransform as CompositeTransform).TranslateY; }
         }
 
+        public ToolFilterView(double x, double y, ToolLinkable parentToolStartable = null)
+        {
+            this.InitializeComponent();
+            SetUp(x, y);
+            if (parentToolStartable != null)
+            {
+                AddParentTool(parentToolStartable);
+            }
+            CalculateAnchorPoint();
+        }
+
+        /// <summary>
+        /// Since the tool FILTER view can never create a new link, it cannot be started from. So this returns null
+        /// </summary>
+        public ToolStartable GetToolStartable()
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Calculates the tool anchor point of as the top center of the node
+        /// </summary>
+        public void CalculateAnchorPoint()
+        {
+            _anchor = new Point2d(X + Width / 2 + 60, Y + 20);
+        }
+
+        /// <summary>
+        /// Sets location of filter, recalculates anchorpoint and invokes anchorpoint changed
+        /// </summary>
         public void SetLocation(double x, double y)
         {
             (RenderTransform as CompositeTransform).TranslateX = x;
             (RenderTransform as CompositeTransform).TranslateY = y;
-            LocationChanged?.Invoke(this, x, y);
+            CalculateAnchorPoint();
+            ToolAnchorChanged?.Invoke(this, _anchor);
         }
 
+        /// <summary>
+        /// Sets size of filter, recalculates anchorpoint and invokes anchorpoint changed
+        /// </summary>
         public void SetSize(double width, double height)
         {
             Height = height;
@@ -71,7 +104,8 @@ namespace NuSysApp
             xCanvas.Width = width;
             xGrid.Width = width;
             Grid1.Width = width;
-            SizeChanged?.Invoke(this, height, width);
+            CalculateAnchorPoint();
+            ToolAnchorChanged?.Invoke(this, _anchor);
         }
 
         public void Dispose()
@@ -79,24 +113,33 @@ namespace NuSysApp
             Disposed?.Invoke(this, "ToolFilterView");
         }
 
-        public void AddParentTool(ToolViewModel parentToolViewModel)
-        {
-            if (parentToolViewModel != null)
-            {
-                _parentToolViewModels.Add(parentToolViewModel);
-            }
-        }
-        public void AddParentTool(ToolStartable parentToolStartable)
+        /// <summary>
+        /// Adds a parent to the filter's parentToolStartable list
+        /// </summary>
+        public void AddParentTool(ToolLinkable parentToolStartable)
         {
             if (parentToolStartable != null)
             {
+                parentToolStartable.Disposed += ParentToolStartable_Disposed;
                 _parentToolStartables.Add(parentToolStartable);
             }
         }
 
-        public void RemoveParentTool(ToolViewModel parentToolViewModel)
+        /// <summary>
+        /// Remove parent from parent list and remove any event listeners
+        /// </summary>
+        private void ParentToolStartable_Disposed(object sender, string e)
         {
-            _parentToolViewModels.Remove(parentToolViewModel);
+            _parentToolStartables.Remove(sender as ToolLinkable);
+            (sender as ToolLinkable).Disposed -= ParentToolStartable_Disposed;
+        }
+
+        /// <summary>
+        /// Removes parent tool from list of parents
+        /// </summary>
+        public void RemoveParentTool(ToolLinkable parentToolViewModel)
+        {
+            _parentToolStartables.Remove(parentToolViewModel);
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)
@@ -105,46 +148,34 @@ namespace NuSysApp
             wvm.AtomViewList.Remove(this);
             this.Dispose();
         }
-        public ToolFilterView(double x, double y)
-        {
-            this.InitializeComponent();
-            SetUp(x, y);
-        }
-
-        public ToolFilterView(double x, double y, ToolViewModel parentToolViewModel = null)
-        {
-            this.InitializeComponent();
-            SetUp(x, y);
-            AddParentTool(parentToolViewModel);
-
-        }
 
 
-        public ToolFilterView(double x, double y, ToolStartable parentToolStartable = null)
-        {
-            this.InitializeComponent();
-            SetUp(x, y);
-            AddParentTool(parentToolStartable);
+ 
 
-        }
-
+        /// <summary>
+        /// Instatiate variables, set up size, location, and filter types.
+        /// </summary>
         private void SetUp(double x, double y)
         {
-            _parentToolViewModels = new HashSet<ToolViewModel>();
-            _parentToolStartables = new HashSet<ToolStartable>();
+            _parentToolStartables = new HashSet<ToolLinkable>();
             this.RenderTransform = new CompositeTransform();
             SetSize(300, 400);
-            _links = new List<ToolFilterLinkView>();
             SetLocation(x, y);
             Filters = new ObservableCollection<ToolModel.ToolFilterTypeTitle>()
             { ToolModel.ToolFilterTypeTitle.Type, ToolModel.ToolFilterTypeTitle.Title,  ToolModel.ToolFilterTypeTitle.Creator,  ToolModel.ToolFilterTypeTitle.Date, ToolModel.ToolFilterTypeTitle.LastEditedDate,  ToolModel.ToolFilterTypeTitle.MetadataKeys, ToolModel.ToolFilterTypeTitle.AllMetadata};
         }
 
+        /// <summary>
+        /// For moving the tool filter chooser
+        /// </summary>
         private void Tool_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             e.Handled = true;
         }
 
+        /// <summary>
+        /// For moving the tool filter chooser
+        /// </summary>
         private void Tool_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
 
@@ -172,7 +203,10 @@ namespace NuSysApp
             e.Handled = true;
         }
 
-        private void CreateMetadataToolView(FreeFormViewerViewModel wvm)
+        /// <summary>
+        /// Creates and sets up a new metadata tool. Occurs when All Metadata is selected
+        /// </summary>
+        private void CreateMetadataTool(FreeFormViewerViewModel wvm)
         {
             MetadataToolModel model = new MetadataToolModel();
             MetadataToolController controller = new MetadataToolController(model);
@@ -180,34 +214,13 @@ namespace NuSysApp
             viewmodel.Filter = ToolModel.ToolFilterTypeTitle.AllMetadata;
             MetadataToolView view = new MetadataToolView(viewmodel, (RenderTransform as CompositeTransform).TranslateX, (RenderTransform as CompositeTransform).TranslateY);
             SetUpParents(controller, viewmodel, wvm);
-
-
             wvm.AtomViewList.Add(view);
         }
 
-        private void SetUpParents(ToolController controller, ToolViewModel viewmodel, FreeFormViewerViewModel wvm)
-        {
-            if (_parentToolViewModels.Count != 0)
-            {
-                foreach (var tool in _parentToolViewModels)
-                {
-                    controller.AddParent(tool.Controller);
-                    var linkviewmodel = new ToolLinkViewModel(tool, viewmodel);
-                    var link = new ToolLinkView(linkviewmodel);
-                    Canvas.SetZIndex(link, -1);
-                    wvm.AtomViewList.Add(link);
-                }
-            }
-            if (_parentToolStartables.Count != 0)
-            {
-                foreach (var toolStartable in _parentToolStartables)
-                {
-                    controller.AddParent(toolStartable);
-                }
-            }
-        }
-
-        private void CreateBasicToolView(ToolModel.ToolFilterTypeTitle selection, FreeFormViewerViewModel wvm)
+        /// <summary>
+        /// Creates and sets up a new basic tool. Occurs when anything except All Metadata is selected
+        /// </summary>
+        private void CreateBasicTool(ToolModel.ToolFilterTypeTitle selection, FreeFormViewerViewModel wvm)
         {
             BasicToolModel model = new BasicToolModel();
             BasicToolController controller = new BasicToolController(model);
@@ -218,6 +231,27 @@ namespace NuSysApp
             wvm.AtomViewList.Add(view);
         }
 
+        /// <summary>
+        /// Adds the each of the parents in parentToolStartables to the new toolcontroller that was just created
+        /// </summary>
+        private void SetUpParents(ToolController controller, ToolViewModel viewmodel, FreeFormViewerViewModel wvm)
+        {
+            if (_parentToolStartables.Count != 0)
+            {
+                foreach (var tool in _parentToolStartables)
+                {
+                    controller.AddParent(tool.GetToolStartable());
+                    var linkviewmodel = new ToolLinkViewModel(tool, viewmodel);
+                    var link = new ToolLinkView(linkviewmodel);
+                    Canvas.SetZIndex(link, -1);
+                    wvm.AtomViewList.Add(link);
+                }
+            }
+        }
+
+        /// <summary>
+        /// When an item on the filter list is selected, create either a new metadata or basic tool and remove the filter chooser.
+        /// </summary>
         private void XFilterList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (xFilterList.SelectedItems.Count() < 1)
@@ -231,19 +265,19 @@ namespace NuSysApp
 
             if (selection == ToolModel.ToolFilterTypeTitle.AllMetadata)            
             {
-                CreateMetadataToolView(wvm);
+                CreateMetadataTool(wvm);
             }
             else
             {
-                CreateBasicToolView(selection, wvm);
+                CreateBasicTool(selection, wvm);
             }
-            foreach (var link in _links)
-            {
-                wvm.AtomViewList.Remove(link);
-            }
+            Disposed?.Invoke(this, "ToolFilterView");
             wvm.AtomViewList.Remove(this);
         }
 
+        /// <summary>
+        /// For resizing the filter chooser
+        /// </summary>
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             if (SessionController.Instance.SessionView.IsPenMode)
@@ -272,10 +306,6 @@ namespace NuSysApp
             e.Handled = true;
         }
 
-        public void AddLink(ToolFilterLinkView toolFilterLink)
-        {
-            _links.Add(toolFilterLink);
 
-        }
     }
 }

@@ -20,6 +20,9 @@ namespace NuSysApp
         public string Text { get; set; }
         public event EventHandler<HashSet<string>> OutputLibraryIdsChanged;
         public event EventHandler<string> Disposed;
+        /// <summary>
+        /// The unique ID used in the tool startable dictionary
+        /// </summary>
         private string _toolStartableId;
 
         public ObservableCollection<FrameworkElement> AtomViewList { get; set; } 
@@ -117,6 +120,10 @@ namespace NuSysApp
             }
             OutputLibraryIdsChanged?.Invoke(this, GetOutputLibraryIds());
         }
+
+        /// <summary>
+        /// Returns list of elements within the collection as the output library ids
+        /// </summary>
         public HashSet<string> GetOutputLibraryIds()
         {
             var libraryElementIds = new HashSet<string>();
@@ -141,6 +148,9 @@ namespace NuSysApp
             return _toolStartableId;
         }
 
+        /// <summary>
+        /// Returns an empty hashset because a collection has no parents
+        /// </summary>
         public HashSet<string> GetParentIds()
         {
             return new HashSet<string>();

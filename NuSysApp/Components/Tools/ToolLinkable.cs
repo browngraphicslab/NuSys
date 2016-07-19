@@ -4,9 +4,21 @@ namespace NuSysApp.Tools
 {
     public interface ToolLinkable
     {
-        Point2d Anchor { get; }
+        /// <summary>
+        ///The anchor that the tool link uses
+        /// </summary>
+        Point2d ToolAnchor { get; }
 
-        event EventHandler<Point2d> AnchorChanged;
+        /// <summary>
+        ///The event that fires when the node has been repositioned or resized
+        /// </summary>
+        event EventHandler<Point2d> ToolAnchorChanged;
+        event EventHandler<string> Disposed;
+
+        /// <summary>
+        ///Should return the tool startable. If there is none, returns null
+        /// </summary>
+        ToolStartable GetToolStartable();
 
     }
 }
