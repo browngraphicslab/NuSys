@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.System;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
@@ -25,12 +28,18 @@ namespace NuSysApp
     {
         public BasicToolViewModel Vm;
         private Image _dragItem;
+        private Image _dragFilterItem;
         private ToolViewable _toolView;
-        private enum ViewMode { PieChart, List }
+        private enum ViewMode { PieChart, List, BarChart }
         private ViewMode _currentViewMode;
+
+        private enum DragMode { Filter, Scroll };
+        private DragMode _currentDragMode = DragMode.Filter;
 
         private const int _minHeight = 200;
         private const int _minWidth = 200;
+        private double _x;
+        private double _y;
 
         public BaseToolView(BasicToolViewModel vm, double x, double y)
         {
@@ -50,7 +59,7 @@ namespace NuSysApp
             vm.Controller.NumberOfParentsChanged += Controller_NumberOfParentsChanged;
             xCollectionElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             xCollectionElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
-
+            _dragFilterItem = Vm.InitializeDragFilterImage();
             xStackElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             xStackElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
         }
@@ -234,11 +243,10 @@ namespace NuSysApp
         /// </summary>
         private void XPieChartButton_OnClick(object sender, RoutedEventArgs e)
         {
-            if (_currentViewMode == ViewMode.List)
+            if (_currentViewMode != ViewMode.PieChart)
             {
                 xViewTypeGrid.Children.Remove((UIElement)_toolView);
-                //_toolView = new PieChartToolView(this);
-                _toolView = new BarChartToolView(this);
+                _toolView = new PieChartToolView(this);
                 _toolView.SetProperties(Vm.PropertiesToDisplay);
                 xViewTypeGrid.Children.Add((UIElement)_toolView);
                 _currentViewMode = ViewMode.PieChart;
@@ -251,7 +259,7 @@ namespace NuSysApp
         /// </summary>
         private void XListViewButton_OnClick(object sender, RoutedEventArgs e)
         {
-            if (_currentViewMode == ViewMode.PieChart)
+            if (_currentViewMode != ViewMode.List)
             {
                 xViewTypeGrid.Children.Remove((UIElement)_toolView);
                 _toolView = new Tools.ListToolView(this);
@@ -259,6 +267,23 @@ namespace NuSysApp
                 xViewTypeGrid.Children.Add((UIElement)_toolView);
                 _currentViewMode = ViewMode.List;
                 SetSize(this.Width, this.Height);
+            }
+        }
+
+        /// <summary>
+        ///Sets a new bar chart view as the tool view
+        /// </summary>
+        private void XBarChartButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (_currentViewMode != ViewMode.BarChart)
+            {
+                xViewTypeGrid.Children.Remove((UIElement)_toolView);
+                _toolView = new BarChartToolView(this);
+                _toolView.SetProperties(Vm.PropertiesToDisplay);
+                xViewTypeGrid.Children.Add((UIElement)_toolView);
+                _currentViewMode = ViewMode.BarChart;
+                SetSize(400, this.Height);
+                _toolView.SetVisualSelection(Vm.Selection);
             }
         }
 
@@ -305,6 +330,158 @@ namespace NuSysApp
                 xParentOperatorText.Text = "AND";
             }
         }
+
+        /// <summary>
+        /// When an item (e.g list view item, pie slice, bar chart) is tapped, change the selection accordingly
+        /// </summary>
+        /// <param name="selection"></param>
+        /// <param name="type"></param>
+        public void Item_OnTapped(string selection, PointerDeviceType type)
+        {
+
+            if (Vm.Selection != null && Vm.Controller.Model.Selected && Vm.Selection.Contains(selection))
+            {
+                if (type == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
+                {
+                    Vm.Selection.Remove(selection);
+                    Vm.Selection = Vm.Selection;
+                }
+                else
+                {
+                    Vm.Controller.UnSelect();
+                }
+            }
+            else
+            {
+                if (type == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
+                {
+                    if (Vm.Selection != null)
+                    {
+                        Vm.Selection.Add(selection);
+                        Vm.Selection = Vm.Selection;
+                    }
+                    else
+                    {
+                        Vm.Selection = new HashSet<string> { selection };
+                    }
+                }
+                else
+                {
+                    Vm.Selection = new HashSet<string> { selection };
+                }
+            }
+        }
+
+        /// <summary>
+        /// When an item (e.g list view item, pie slice, bar chart) is double tapped, try to open the detail view
+        /// </summary>
+        public void Item_OnDoubleTapped(string selection)
+        {
+            if (!Vm.Selection.Contains(selection) && Vm.Selection.Count == 0 || Vm.Controller.Model.Selected == false)
+            {
+                Vm.Selection = new HashSet<string> { selection };
+            }
+            if (Vm.Selection.Count == 1 &&
+                Vm.Selection.First().Equals(selection))
+            {
+                Vm.OpenDetailView();
+            }
+        }
+
+        /// <summary>
+        ///Set up drag item
+        /// </summary>
+        public void Item_ManipulationStarted()
+        {
+            if (getCanvas().Children.Contains(_dragFilterItem))
+                getCanvas().Children.Remove(_dragFilterItem);
+            _currentDragMode = DragMode.Filter;
+            getCanvas().Children.Add(_dragFilterItem);
+            _dragFilterItem.RenderTransform = new CompositeTransform();
+            var t = (CompositeTransform)_dragFilterItem.RenderTransform;
+            t.TranslateX = _x;
+            t.TranslateY = _y;
+        }
+
+        /// <summary>
+        ///Sets that starting point for dragging. This is also to make sure that list isn't visually selected once you click on it, because visual selection will always be based on the logcial selection in the model.
+        /// </summary>
+        public void Item_PointerPressed(PointerRoutedEventArgs e)
+        {
+            _x = e.GetCurrentPoint(getCanvas()).Position.X - 25;
+            _y = e.GetCurrentPoint(getCanvas()).Position.Y - 25;
+            e.Handled = true;
+        }
+
+        /// <summary>
+        ///Either scroll or drag depending on the location of the point and the origin of the event
+        /// </summary>
+        public void Item_ManipulationDelta(FrameworkElement sender, ManipulationDeltaRoutedEventArgs e, FrameworkElement boundingScrollingElement = null)
+        {
+            var el = (FrameworkElement)sender;
+            if (boundingScrollingElement != null)
+            {
+                var sp = el.TransformToVisual(boundingScrollingElement).TransformPoint(e.Position);
+                if (sp.X < boundingScrollingElement.ActualWidth && sp.X > 0 && sp.Y > 0 && sp.Y < boundingScrollingElement.ActualHeight)
+                {
+                    Border border = (Border)VisualTreeHelper.GetChild(boundingScrollingElement, 0);
+                    ScrollViewer scrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
+                    if (scrollViewer != null)
+                    {
+                        scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta.Translation.Y);
+                    }
+                    if (_currentDragMode == DragMode.Filter)
+                    {
+                        _dragFilterItem.Visibility = Visibility.Collapsed;
+                        _currentDragMode = DragMode.Scroll;
+                    }
+                }
+                else if (_currentDragMode == DragMode.Scroll)
+                {
+                    _dragFilterItem.Visibility = Visibility.Visible;
+                    _currentDragMode = DragMode.Filter;
+                }
+            }
+            
+            if ((_dragFilterItem.RenderTransform as CompositeTransform) != null)
+            {
+                var t = (CompositeTransform)_dragFilterItem.RenderTransform;
+                var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
+                var p = e.Position;
+                t.TranslateX += e.Delta.Translation.X / zoom;
+                t.TranslateY += e.Delta.Translation.Y / zoom;
+            }
+        }
+
+        /// <summary>
+        ///If the point is located outside the tool, logically set the selection based on selection type (Multi/Single) and either create new tool or add to existing tool
+        /// </summary>
+        public void Item_ManipulationCompleted(object sender, string selection, ManipulationCompletedRoutedEventArgs e)
+        {
+            getCanvas().Children.Remove(_dragFilterItem);
+            if (_currentDragMode == DragMode.Filter)
+            {
+                if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
+                {
+                    Vm.Selection.Add(selection);
+                    Vm.Selection = Vm.Selection;
+                }
+                else
+                {
+                    Vm.Selection = new HashSet<string>() { selection };
+                }
+
+                var wvm = SessionController.Instance.ActiveFreeFormViewer;
+                var el = (FrameworkElement)sender;
+                var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
+                var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(sp.X, sp.Y, 300, 300));
+                var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
+
+                Vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
+            }
+        }
+
+
     }
 
 }

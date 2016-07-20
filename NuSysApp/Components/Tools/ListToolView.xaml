@@ -10,7 +10,7 @@
 
    
     <Grid VerticalAlignment="Stretch" Margin="0">
-        <ListView x:Name="xPropertiesList" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" ManipulationMode="TranslateX, TranslateY" Width="Auto" Background="White" SelectionMode="Multiple"  ItemsSource="{x:Bind PropertiesToDisplayUnique}" >
+        <ListView x:Name="xPropertiesList" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" ManipulationMode="TranslateX, TranslateY" Width="Auto" Background="White" SelectionMode="Multiple"  ItemsSource="{x:Bind PropertiesToDisplayUnique}" Loaded="XPropertiesList_OnLoaded" >
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property= "VerticalContentAlignment" Value="Stretch"/>

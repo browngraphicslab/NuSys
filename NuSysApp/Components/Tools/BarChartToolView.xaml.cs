@@ -173,10 +173,12 @@ namespace NuSysApp
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            
         }
 
-        // used to set the visual selection
+        /// <summary>
+        /// used to set the visual selection
+        /// </summary>
         public void SetVisualSelection(HashSet<string> selection)
         {
             foreach (var item in _barChartItemDictionary)
@@ -225,114 +227,53 @@ namespace NuSysApp
         /// </summary>
         private void xListItem_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            _x = e.GetCurrentPoint(_baseTool.getCanvas()).Position.X - 25;
-            _y = e.GetCurrentPoint(_baseTool.getCanvas()).Position.Y - 25;
-            e.Handled = true;
+            _baseTool.Item_PointerPressed(e);
         }
 
         private void xBarChartItem_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             var selection = ((sender as FrameworkElement)?.DataContext as BarChartItemViewModel)?.Title;
-
-            if (_baseTool.Vm.Selection != null && _baseTool.Vm.Controller.Model.Selected && _baseTool.Vm.Selection.Contains(selection))
-            {
-                if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
-                {
-                    _baseTool.Vm.Selection.Remove(selection);
-                    _baseTool.Vm.Selection = _baseTool.Vm.Selection;
-                }
-                else
-                {
-                    _baseTool.Vm.Controller.UnSelect();
-                }
-            }
-            else
-            {
-                if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
-                {
-                    if (_baseTool.Vm.Selection != null)
-                    {
-                        _baseTool.Vm.Selection.Add(selection);
-                        _baseTool.Vm.Selection = _baseTool.Vm.Selection;
-                    }
-                    else
-                    {
-                        _baseTool.Vm.Selection = new HashSet<string> { selection };
-                    }
-                }
-                else
-                {
-                    _baseTool.Vm.Selection = new HashSet<string> { selection };
-                }
-            }
+            _baseTool.Item_OnTapped(selection, e.PointerDeviceType);
+            //if (_baseTool.Vm.Selection != null && _baseTool.Vm.Controller.Model.Selected && _baseTool.Vm.Selection.Contains(selection))
+            //{
+            //    if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
+            //    {
+            //        _baseTool.Vm.Selection.Remove(selection);
+            //        _baseTool.Vm.Selection = _baseTool.Vm.Selection;
+            //    }
+            //    else
+            //    {
+            //        _baseTool.Vm.Controller.UnSelect();
+            //    }
+            //}
+            //else
+            //{
+            //    if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
+            //    {
+            //        if (_baseTool.Vm.Selection != null)
+            //        {
+            //            _baseTool.Vm.Selection.Add(selection);
+            //            _baseTool.Vm.Selection = _baseTool.Vm.Selection;
+            //        }
+            //        else
+            //        {
+            //            _baseTool.Vm.Selection = new HashSet<string> { selection };
+            //        }
+            //    }
+            //    else
+            //    {
+            //        _baseTool.Vm.Selection = new HashSet<string> { selection };
+            //    }
+            //}
         }
-
         
-
-
-
-
-        ///// <summary>
-        /////When the list item is tapped, set the logical selection based on the type of selection (multi/single).
-        ///// </summary>
-        //private void xListItem_OnTapped(object sender, TappedRoutedEventArgs e)
-        //{
-        //    var selection = ((sender as FrameworkElement)?.DataContext as BarChartItemViewModel)?.Title;
-
-        //    Debug.Assert(selection!= null);
-
-        //    if (_baseTool.Vm.Selection != null && _baseTool.Vm.Controller.Model.Selected && _baseTool.Vm.Selection.Contains(selection))
-        //    {
-        //        if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
-        //        {
-        //            _baseTool.Vm.Selection.Remove(selection);
-        //            _baseTool.Vm.Selection = _baseTool.Vm.Selection;
-        //        }
-        //        else
-        //        {
-        //            _baseTool.Vm.Controller.UnSelect();
-        //        }
-        //    }
-        //    else
-        //    {
-        //        if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
-        //        {
-        //            if (_baseTool.Vm.Selection != null)
-        //            {
-        //                _baseTool.Vm.Selection.Add(selection);
-        //                _baseTool.Vm.Selection = _baseTool.Vm.Selection;
-        //            }
-        //            else
-        //            {
-        //                _baseTool.Vm.Selection = new HashSet<string> { selection };
-        //            }
-        //        }
-        //        else
-        //        {
-        //            _baseTool.Vm.Selection = new HashSet<string> { selection };
-        //        }
-        //    }
-        //}
-
-
-
         /// <summary>
         ///If the item that was double tapped is the only selected item, attempt to open the detail view.
         /// </summary>
         private void xListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var selection = ((sender as Grid)?.DataContext as BarChartItemViewModel)?.Title;
-
-
-            if (!_baseTool.Vm.Selection.Contains(selection) && _baseTool.Vm.Selection.Count == 0 || _baseTool.Vm.Controller.Model.Selected == false)
-            {
-                _baseTool.Vm.Selection = new HashSet<string> { selection };
-            }
-            if (_baseTool.Vm.Selection.Count == 1 &&
-                _baseTool.Vm.Selection.First().Equals(selection)) 
-            {
-                _baseTool.Vm.OpenDetailView();
-            }
+            _baseTool.Item_OnDoubleTapped(selection);
         }
 
         /// <summary>
@@ -340,64 +281,24 @@ namespace NuSysApp
         /// </summary>
         private async void xListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            if (_baseTool.getCanvas().Children.Contains(_dragItem))
-                _baseTool.getCanvas().Children.Remove(_dragItem);
-            _currentDragMode = DragMode.Filter;
-            _baseTool.getCanvas().Children.Add(_dragItem);
-            _dragItem.RenderTransform = new CompositeTransform();
-            var t = (CompositeTransform)_dragItem.RenderTransform;
-            t.TranslateX = _x;
-            t.TranslateY = _y;
+            _baseTool.Item_ManipulationStarted();
         }
 
         /// <summary>
-        ///Either scroll or drag depending on the location of the point.
+        /// If the sender is the bar chart item, there is no scrolling adjustment to worry about. If the sender 
+        /// is the grid in the list view, then adjust the scrolling.
         /// </summary>
         private void xListItem_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             if (sender is BarChartItem)
             {
-                Item_ManipulationDelta((FrameworkElement) sender, e, sender as FrameworkElement);
+                _baseTool.Item_ManipulationDelta((FrameworkElement) sender, e);
             }
             else
             {
-                Item_ManipulationDelta((FrameworkElement)sender, e, xBarChartLegend);
+                _baseTool.Item_ManipulationDelta((FrameworkElement)sender, e, xBarChartLegend);
             }
         }
-
-        public void Item_ManipulationDelta(FrameworkElement sender, ManipulationDeltaRoutedEventArgs e, FrameworkElement boundingElement)
-        {
-            var el = (FrameworkElement)sender;
-            var sp = el.TransformToVisual(boundingElement).TransformPoint(e.Position);
-            if (sp.X < boundingElement.ActualWidth && sp.X > 0 && sp.Y > 0 && sp.Y < boundingElement.ActualHeight)
-            {
-                Border border = (Border)VisualTreeHelper.GetChild(xBarChartLegend, 0);
-                ScrollViewer scrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
-                if (scrollViewer != null)
-                {
-                    scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta.Translation.Y);
-                }
-                if (_currentDragMode == DragMode.Filter)
-                {
-                    _dragItem.Visibility = Visibility.Collapsed;
-                    _currentDragMode = DragMode.Scroll;
-                }
-            }
-            else if (_currentDragMode == DragMode.Scroll)
-            {
-                _dragItem.Visibility = Visibility.Visible;
-                _currentDragMode = DragMode.Filter;
-            }
-            if ((_dragItem.RenderTransform as CompositeTransform) != null)
-            {
-                var t = (CompositeTransform)_dragItem.RenderTransform;
-                var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
-                var p = e.Position;
-                t.TranslateX += e.Delta.Translation.X / zoom;
-                t.TranslateY += e.Delta.Translation.Y / zoom;
-            }
-        }
-
 
         /// <summary>
         ///If the point is located outside the tool, logically set the selection based on selection type (Multi/Single) and either create new tool or add to existing tool
@@ -405,27 +306,7 @@ namespace NuSysApp
         private async void xListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             var selection = ((sender as FrameworkElement)?.DataContext as BarChartItemViewModel)?.Title;
-            _baseTool.getCanvas().Children.Remove(_dragItem);
-            if (_currentDragMode == DragMode.Filter)
-            {
-                if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
-                {
-                    _baseTool.Vm.Selection.Add(selection);
-                    _baseTool.Vm.Selection = _baseTool.Vm.Selection;
-                }
-                else
-                {
-                    _baseTool.Vm.Selection = new HashSet<string>() { selection };
-                }
-
-                var wvm = SessionController.Instance.ActiveFreeFormViewer;
-                var el = (FrameworkElement)sender;
-                var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
-                var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(sp.X, sp.Y, 300, 300));
-                var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
-
-                _baseTool.Vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
-            }
+            _baseTool.Item_ManipulationCompleted(sender, selection, e);
         }
 
     }
