@@ -4,12 +4,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using Windows.UI.Text;
 using Windows.UI.Xaml.Media;
 
 namespace NuSysApp.Components.Tools
 {
     public class BarChartItemViewModel : BaseINPC
     {
+
+        private bool _isSelected;
+        private SolidColorBrush _color;
+        public SolidColorBrush SelectedColor;
+        public SolidColorBrush NotSelectedColor;
+        private double _height;
+        private string _title;
+        private int _count;
+        private SolidColorBrush _listSelectedItemColor = new SolidColorBrush(Colors.LightGray);
+        private SolidColorBrush _listNotSelectedItemColor = new SolidColorBrush(Colors.Transparent);
+        private SolidColorBrush _listItemColor;
+        private FontWeight _listFontWeight;
+
         public BarChartItemViewModel(KeyValuePair<string, int> title_count, Color color)
         {           
             NotSelectedColor = new SolidColorBrush(color);
@@ -20,15 +34,25 @@ namespace NuSysApp.Components.Tools
             Count = title_count.Value;
         }
 
-        private bool _isSelected;
-        private SolidColorBrush _color;
-        public  SolidColorBrush SelectedColor;
-        public SolidColorBrush NotSelectedColor;
-        private double _height;
-        private string _title;
-        private int _count;
+        public SolidColorBrush ListItemColor
+        {
+            get { return _listItemColor; }
+            set
+            {
+                _listItemColor = value;
+                RaisePropertyChanged("ListItemColor");
+            }
+        }
 
-
+        public FontWeight ListFontWeight
+        {
+            get { return _listFontWeight; }
+            set
+            {
+                _listFontWeight = value;
+                RaisePropertyChanged("ListFontWeight");
+            }
+        }
 
         public int Count
         {
@@ -62,10 +86,14 @@ namespace NuSysApp.Components.Tools
                 if (value)
                 {
                     Color = SelectedColor;
+                    ListItemColor = _listSelectedItemColor;
+                    ListFontWeight = FontWeights.Bold;
                 }
                 else
                 {
                     Color = NotSelectedColor;
+                    ListItemColor = _listNotSelectedItemColor;
+                    ListFontWeight = FontWeights.Normal;
                 }
                 RaisePropertyChanged("IsSelected");
             }

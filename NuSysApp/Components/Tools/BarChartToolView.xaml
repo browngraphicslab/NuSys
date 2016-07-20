@@ -11,34 +11,44 @@
     <Grid x:Name="xMainGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*" MaxWidth="300"/>
         </Grid.ColumnDefinitions>
         <Grid x:Name="xBarChart" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0" SizeChanged="XBarChart_OnSizeChanged"/>
-        <ListView x:Name="xBarChartLegend" Grid.Column="1" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" ManipulationMode="TranslateX, TranslateY" Width="Auto" Background="White" SelectionMode="Multiple"  ItemsSource="{x:Bind BarChartLegendItems}" >
+        <ListView x:Name="xBarChartLegend" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MinWidth="100"
+                  BorderThickness="2,0,0,0" BorderBrush="{StaticResource color2}"
+                  ManipulationMode="TranslateX, TranslateY" Width="Auto" Background="White" SelectionMode="Multiple"  ItemsSource="{x:Bind BarChartLegendItems}" >
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
                     <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="Padding" Value="10,0,10,0"/>
+                    <Setter Property="Padding" Value="0"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="ListViewItem">
                                 <ListViewItemPresenter
-          ContentTransitions="{TemplateBinding ContentTransitions}"
-          SelectionCheckMarkVisualEnabled="False"
-          CheckBrush="{ThemeResource SystemControlForegroundBaseMediumHighBrush}"
-          CheckBoxBrush="Transparent"
-          DragBackground="{ThemeResource ListViewItemDragBackgroundThemeBrush}"
-          DragForeground="{ThemeResource ListViewItemDragForegroundThemeBrush}"
-          FocusBorderBrush="{ThemeResource SystemControlForegroundAltHighBrush}"
-          FocusSecondaryBorderBrush="{ThemeResource SystemControlForegroundBaseHighBrush}"          
-          DisabledOpacity="{ThemeResource ListViewItemDisabledThemeOpacity}"
-          DragOpacity="{ThemeResource ListViewItemDragThemeOpacity}"
-          ReorderHintOffset="{ThemeResource ListViewItemReorderHintThemeOffset}"
-          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-          ContentMargin="{TemplateBinding Padding}"
-          CheckMode="Inline"/>
+                    ContentTransitions="{TemplateBinding ContentTransitions}"
+                  SelectionCheckMarkVisualEnabled="False"
+                  CheckBrush="{ThemeResource SystemControlForegroundBaseMediumHighBrush}"
+                  CheckBoxBrush="Transparent"
+                  DragBackground="{ThemeResource ListViewItemDragBackgroundThemeBrush}"
+                  DragForeground="{ThemeResource ListViewItemDragForegroundThemeBrush}"
+                  FocusBorderBrush="{ThemeResource SystemControlForegroundAltHighBrush}"
+                  FocusSecondaryBorderBrush="{ThemeResource SystemControlForegroundBaseHighBrush}"
+                  PlaceholderBackground="{ThemeResource ListViewItemPlaceholderBackgroundThemeBrush}"
+                  PointerOverBackground="{ThemeResource SystemControlHighlightListLowBrush}"
+                  PointerOverForeground="{ThemeResource SystemControlHighlightAltBaseHighBrush}"
+                  SelectedBackground="{ThemeResource SystemControlHighlightListAccentLowBrush}"
+                  SelectedForeground="{ThemeResource SystemControlHighlightAltBaseHighBrush}"
+                  SelectedPointerOverBackground="{ThemeResource SystemControlHighlightListAccentMediumBrush}"
+                  PressedBackground="{ThemeResource SystemControlHighlightListMediumBrush}"
+                  SelectedPressedBackground="{ThemeResource SystemControlHighlightListAccentHighBrush}"
+                  DisabledOpacity="{ThemeResource ListViewItemDisabledThemeOpacity}"
+                  DragOpacity="{ThemeResource ListViewItemDragThemeOpacity}"
+                  ReorderHintOffset="{ThemeResource ListViewItemReorderHintThemeOffset}"
+                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                  ContentMargin="{TemplateBinding Padding}"
+                  CheckMode="Inline"/>
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
@@ -46,8 +56,11 @@
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid x:Name="xGridListItem" Background="{Binding Color}" DoubleTapped ="xListItem_OnDoubleTapped" Tapped="xListItem_OnTapped"  PointerPressed="xListItem_PointerPressed"  Width="Auto" ManipulationMode="All" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
-                        <TextBlock Text="{Binding Path=Title}"  Foreground="{StaticResource color3}" VerticalAlignment="Center" Width="Auto" />
+                    <Grid x:Name="xGridListItem" Background="{Binding Path=ListItemColor}"
+                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                          DoubleTapped ="xListItem_OnDoubleTapped" Tapped="xBarChartItem_OnTapped"  PointerPressed="xListItem_PointerPressed" 
+                          ManipulationMode="All" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
+                        <TextBlock Text="{Binding Path=Title}" FontWeight="{Binding Path=ListFontWeight}" Foreground="{Binding Path=Color}" VerticalAlignment="Center" HorizontalAlignment="Left" Width="Auto" Margin="25,0,0,0"/>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

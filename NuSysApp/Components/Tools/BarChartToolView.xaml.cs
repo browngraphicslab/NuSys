@@ -78,17 +78,25 @@ namespace NuSysApp
                     }
                 }
             }
+
+            // populates all the visual elements in the bar chart
             SetData();
         }
 
+        /// <summary>
+        /// Populates all the visual elements in the barchart
+        /// </summary>
         private void SetData()
         {
+
+            // reset the visual elements to zero
             _maxValue = 0;
             _barChartItemDictionary.Clear();
             BarChartLegendItems.Clear();
             xBarChart.Children.Clear();
             xBarChart.ColumnDefinitions.Clear();
 
+            // populate all the visual elements from the data in BarChartDictionary
             int i = 0;
             foreach (var kvp in BarChartDictionary)
             {
@@ -110,6 +118,8 @@ namespace NuSysApp
                 item.ManipulationCompleted += xListItem_ManipulationCompleted;
                 Grid.SetColumn(item, i);
                 xBarChart.Children.Add(item);
+
+                // tae care of mappings
                 _barChartItemDictionary.Add(kvp.Key, item);
                 BarChartLegendItems.Add(vm);
                 i++;
@@ -117,6 +127,9 @@ namespace NuSysApp
 
             // create a space between the tallest column and the top
             _maxValue *= 1.1;
+
+            // set the height of the bars in the bar chart
+            SetBarChartBarHeights();
         }
         
         /// <summary>
@@ -179,11 +192,22 @@ namespace NuSysApp
                 Debug.Assert(dataContext != null);
                 dataContext.IsSelected = true;
             }
-
         }
 
-
+        /// <summary>
+        /// Used to set the heights of elemnts in the bar chart when the bar chart changes size
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void XBarChart_OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            SetBarChartBarHeights();
+        }
+
+        /// <summary>
+        /// Sets the heights of the bars in the bar chart
+        /// </summary>
+        private void SetBarChartBarHeights()
         {
             int i = 0;
             foreach (var uiElement in xBarChart.Children)
@@ -191,48 +215,10 @@ namespace NuSysApp
                 var item = uiElement as BarChartItem;
                 var itemDataContext = item?.DataContext as BarChartItemViewModel;
                 Debug.Assert(itemDataContext != null);
-                itemDataContext.Height = (itemDataContext.Count/_maxValue)*xBarChart.ActualHeight;
+                itemDataContext.Height = (itemDataContext.Count / _maxValue) * xBarChart.ActualHeight;
                 i++;
             }
         }
-
-        private void xBarChartItem_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-            var selection = ((sender as BarChartItem)?.DataContext as BarChartItemViewModel)?.Title;
-
-            if (_baseTool.Vm.Selection != null && _baseTool.Vm.Controller.Model.Selected && _baseTool.Vm.Selection.Contains(selection))
-            {
-                if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
-                {
-                    _baseTool.Vm.Selection.Remove(selection);
-                    _baseTool.Vm.Selection = _baseTool.Vm.Selection;
-                }
-                else
-                {
-                    _baseTool.Vm.Controller.UnSelect();
-                }
-            }
-            else
-            {
-                if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
-                {
-                    if (_baseTool.Vm.Selection != null)
-                    {
-                        _baseTool.Vm.Selection.Add(selection);
-                        _baseTool.Vm.Selection = _baseTool.Vm.Selection;
-                    }
-                    else
-                    {
-                        _baseTool.Vm.Selection = new HashSet<string> { selection };
-                    }
-                }
-                else
-                {
-                    _baseTool.Vm.Selection = new HashSet<string> { selection };
-                }
-            }
-        }
-
 
         /// <summary>
         ///Sets that starting point for dragging. This is also to make sure that list isn't visually selected once you click on it, because visual selection will always be based on the logcial selection in the model.
@@ -244,14 +230,9 @@ namespace NuSysApp
             e.Handled = true;
         }
 
-        /// <summary>
-        ///When the list item is tapped, set the logical selection based on the type of selection (multi/single).
-        /// </summary>
-        private void xListItem_OnTapped(object sender, TappedRoutedEventArgs e)
+        private void xBarChartItem_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             var selection = ((sender as FrameworkElement)?.DataContext as BarChartItemViewModel)?.Title;
-
-            Debug.Assert(selection!= null);
 
             if (_baseTool.Vm.Selection != null && _baseTool.Vm.Controller.Model.Selected && _baseTool.Vm.Selection.Contains(selection))
             {
@@ -285,6 +266,55 @@ namespace NuSysApp
                 }
             }
         }
+
+        
+
+
+
+
+        ///// <summary>
+        /////When the list item is tapped, set the logical selection based on the type of selection (multi/single).
+        ///// </summary>
+        //private void xListItem_OnTapped(object sender, TappedRoutedEventArgs e)
+        //{
+        //    var selection = ((sender as FrameworkElement)?.DataContext as BarChartItemViewModel)?.Title;
+
+        //    Debug.Assert(selection!= null);
+
+        //    if (_baseTool.Vm.Selection != null && _baseTool.Vm.Controller.Model.Selected && _baseTool.Vm.Selection.Contains(selection))
+        //    {
+        //        if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
+        //        {
+        //            _baseTool.Vm.Selection.Remove(selection);
+        //            _baseTool.Vm.Selection = _baseTool.Vm.Selection;
+        //        }
+        //        else
+        //        {
+        //            _baseTool.Vm.Controller.UnSelect();
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
+        //        {
+        //            if (_baseTool.Vm.Selection != null)
+        //            {
+        //                _baseTool.Vm.Selection.Add(selection);
+        //                _baseTool.Vm.Selection = _baseTool.Vm.Selection;
+        //            }
+        //            else
+        //            {
+        //                _baseTool.Vm.Selection = new HashSet<string> { selection };
+        //            }
+        //        }
+        //        else
+        //        {
+        //            _baseTool.Vm.Selection = new HashSet<string> { selection };
+        //        }
+        //    }
+        //}
+
+
 
         /// <summary>
         ///If the item that was double tapped is the only selected item, attempt to open the detail view.
