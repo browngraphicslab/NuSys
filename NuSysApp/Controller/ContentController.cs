@@ -17,7 +17,7 @@ namespace NuSysApp
         private ConcurrentDictionary<string, LibraryElementModel> _contents = new ConcurrentDictionary<string, LibraryElementModel>();
         private ConcurrentDictionary<string, LibraryElementController> _contentControllers = new ConcurrentDictionary<string, LibraryElementController>();
         //private Dictionary<string, ManualResetEvent> _waitingNodeCreations = new Dictionary<string, ManualResetEvent>(); 
-
+        private ConcurrentDictionary<string, ContentDataModel> _contentDataModels = new ConcurrentDictionary<string, ContentDataModel>(); 
         public delegate void NewContentEventHandler(LibraryElementModel element);
         public event NewContentEventHandler OnNewContent;
 
@@ -32,11 +32,40 @@ namespace NuSysApp
         {
             get { return new HashSet<string>(_contents.Keys); }
         }
-        public LibraryElementModel GetContent(string id)
+        public LibraryElementModel GetLibraryElementModel(string id)
         {
             Debug.Assert(id != null);
             return _contents.ContainsKey(id) ? _contents[id] : null;
         }
+
+        public bool ContentExists(string contentId)
+        {
+            Debug.Assert(contentId != null);
+            return _contentDataModels.ContainsKey(contentId);
+        }
+
+        public bool AddContentDataModel(string contentId, string data)
+        {
+            Debug.Assert(contentId != null);
+            if (_contentDataModels.ContainsKey(contentId))
+            {
+                return false;
+            }
+            _contentDataModels.TryAdd(contentId, new ContentDataModel(contentId, data));
+            return true;
+        }
+
+        /// <summary>
+        /// returns null if the content doesn't exist
+        /// </summary>
+        /// <param name="contentId"></param>
+        /// <returns></returns>
+        public ContentDataModel GetContentDataModel(string contentId)
+        {
+            Debug.Assert(contentId != null);
+            return _contentDataModels.ContainsKey(contentId) ? _contentDataModels[contentId] : null;
+        }
+
         public LibraryElementController GetLibraryElementController(string id)
         {
             if (id == null)
@@ -80,16 +109,6 @@ namespace NuSysApp
             _contents.TryRemove(model.LibraryElementId, out removedElement);
             OnElementDelete?.Invoke(model);
             return true;
-        }
-        public string OverWrite(LibraryElementModel model)
-        {
-            if (!String.IsNullOrEmpty(model.LibraryElementId))
-            {
-                _contents[model.LibraryElementId] = model;
-                _contentControllers[model.LibraryElementId] = LibraryElementControllerFactory.CreateFromModel(model);
-                return model.LibraryElementId;
-            }
-            return null;
         }
     }
 }

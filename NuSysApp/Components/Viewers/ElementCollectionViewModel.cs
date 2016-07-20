@@ -65,7 +65,7 @@ namespace NuSysApp
             {
                 return;
             }
-            foreach (var regions in controller?.LibraryElementModel?.Regions ?? new HashSet<Region>()) 
+        /*    foreach (var regions in controller?.LibraryElementModel?.Regions ?? new HashSet<Region>()) 
             {
                 RegionController regionController;
 
@@ -77,13 +77,13 @@ namespace NuSysApp
                 {
                     regionController = SessionController.Instance.RegionsController.GetRegionController(regions.Id);
                 }
-                var cLinks = SessionController.Instance.LinksController.GetLinkedIds(regionController.ContentId);
+                var cLinks = SessionController.Instance.LinksController.GetLinkedIds(regionController.LibraryId);
                 foreach (var linkId in cLinks)
                 {
-                    var link = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
+                    var link = SessionController.Instance.ContentController.GetLibraryElementModel(linkId) as LinkLibraryElementModel;
                     //AddVisualLinks(regioncontroller, controller, link.LibraryElementId);
                 }
-            }
+            }*/
             controller.Deleted += OnChildDeleted;
         }
         

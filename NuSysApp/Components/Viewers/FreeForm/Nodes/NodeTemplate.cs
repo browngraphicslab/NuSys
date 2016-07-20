@@ -319,8 +319,8 @@ namespace NuSysApp
                                     var region = element as FrameworkElement;
                                     var regiondc = region.DataContext as RegionViewModel;
                                     var m = new Message();
-                                    m["id2"] = regiondc.RegionController.Model.Id;
-                                    m["id1"] = vm.Controller.LibraryElementController.ContentId;
+                                    m["id2"] = regiondc.LibraryElementController.LibraryElementModel.LibraryElementId;
+                                    m["id1"] = vm.Controller.LibraryElementController.LibraryId;
                                     await SessionController.Instance.LinksController.RequestLink(m);
                                     UITask.Run(delegate { vm.Controller.UpdateCircleLinks(); });
                                     break;

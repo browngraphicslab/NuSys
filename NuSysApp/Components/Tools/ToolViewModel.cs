@@ -123,7 +123,7 @@ namespace NuSysApp
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(collRequest);
                 foreach (var id in Controller.Model.LibraryIds)
                 {
-                    var lem = SessionController.Instance.ContentController.GetContent(id);
+                    var lem = SessionController.Instance.ContentController.GetLibraryElementModel(id);
                     if (lem == null || lem.Type == ElementType.Link)
                     {
                         continue;
@@ -152,7 +152,7 @@ namespace NuSysApp
                 int offset = 40;
                 foreach (var id in Controller.Model.LibraryIds)
                 {
-                    var lem = SessionController.Instance.ContentController.GetContent(id);
+                    var lem = SessionController.Instance.ContentController.GetLibraryElementModel(id);
                     if (lem == null || lem.Type == ElementType.Link || i > 20)//TODO indicate to user than no more than 20 non-link items will be made
                     {
                         continue;

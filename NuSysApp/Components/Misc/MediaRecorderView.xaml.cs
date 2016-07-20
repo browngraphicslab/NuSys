@@ -211,7 +211,7 @@ namespace NuSysApp
            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
 
             // var vm = (TextNodeViewModel) DataContext;
-            // await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(vm.ContentId, Convert.ToBase64String(data)));
+            // await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(vm.LibraryId, Convert.ToBase64String(data)));
             RecordingStopped?.Invoke(this);
         }
 

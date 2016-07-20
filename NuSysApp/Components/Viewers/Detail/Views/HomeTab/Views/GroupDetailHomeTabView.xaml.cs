@@ -149,7 +149,7 @@ namespace NuSysApp
             {
                 var node = sendable.Model;
                 var groups = (List<string>) node.GetMetaData("groups");
-                if (groups.Contains(vm.ContentId))
+                if (groups.Contains(vm.LibraryId))
                 {
                     modelList.Add(node);
                 }
@@ -157,7 +157,7 @@ namespace NuSysApp
 
             foreach (var model in modelList)
             {
-                var nodeModel = SessionController.Instance.IdToSendables[model.ContentId];
+                var nodeModel = SessionController.Instance.IdToSendables[model.LibraryId];
                 var view = await _factory.CreateFromSendable(nodeModel.Model, null);
                 var viewVm = (ElementViewModel)view.DataContext;
                 view.RenderTransform = new CompositeTransform();
@@ -203,7 +203,7 @@ namespace NuSysApp
             {
                 UITask.Run(async delegate
                 {
-                    var content = SessionController.Instance.ContentController.GetContent(id);
+                    var content = SessionController.Instance.ContentController.GetLibraryElementModel(id);
                     if (content != null && content.Type == ElementType.Collection)
                     {
                         List<Message> messages = new List<Message>();

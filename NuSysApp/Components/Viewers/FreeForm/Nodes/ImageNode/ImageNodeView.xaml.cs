@@ -48,11 +48,13 @@ namespace NuSysApp
 
             vm.Controller.Disposed += ControllerOnDisposed;
             SizeChanged += ImageNodeView_SizeChanged;
+
+            vm.LibraryElementController.RegionAdded += xClippedGrid.AddNewRegion;
         }
 
         private void ViewLoaded(object sender, RoutedEventArgs e)
         {
-            _vm.CreateRegionViews();
+       //     _vm.CreateRegionViews();
         }
 
         private void ImageNodeView_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -67,13 +69,13 @@ namespace NuSysApp
 
         public async Task onGoTo(Region region)
         {
-            foreach (var reg in _vm.Regions)
+      /*      foreach (var reg in _vm.Regions)
             {
                 if ((reg.DataContext as ImageRegionViewModel).Model.Id == region.Id)
                 {
                     reg.Select();
                 }
-            }
+            }*/
         }
 
         private void ControllerOnDisposed(object source, object args)

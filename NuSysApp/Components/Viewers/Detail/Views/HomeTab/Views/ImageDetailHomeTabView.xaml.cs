@@ -1,4 +1,4 @@
-﻿using NuSysApp.Util;
+﻿ using NuSysApp.Util;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,6 +26,7 @@ namespace NuSysApp
     public sealed partial class ImageDetailHomeTabView : UserControl
         {
             public ImageRegionView SelectedRegion { set; get; }
+            public Grid ImageGrid { get { return xImageGrid; } }
             public ImageDetailHomeTabView(ImageDetailHomeTabViewModel vm)
             {
                 DataContext = vm;

@@ -44,7 +44,7 @@ namespace NuSysApp
             /*
              foreach (var id in new HashSet<string>(SessionController.Instance.ContentController.IdList))
              {
-                 var s = SessionController.Instance.ContentController.GetContent(id);
+                 var s = SessionController.Instance.ContentController.GetLibraryElementModel(id);
                  if(s.Creator.ToLower() != "rms" && s.Creator.ToLower() != "rosemary"){
                      Task.Run(async delegate
                      {
@@ -63,15 +63,15 @@ namespace NuSysApp
                 foreach (var id in LibraryElementModel.PDFStrings)
                 {
                     Debug.WriteLine((double)i++ / (double)LibraryElementModel.PDFStrings.Count);
-                    if (SessionController.Instance.ContentController.GetContent(id) != null &&
-                        SessionController.Instance.ContentController.GetContent(id).Type == ElementType.PDF)
+                    if (SessionController.Instance.ContentController.GetLibraryElementModel(id) != null &&
+                        SessionController.Instance.ContentController.GetLibraryElementModel(id).Type == ElementType.PDF)
                     {
                         await Task.Run(async delegate
                         {
                             await SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(id);
                             try
                             {
-                                var lem = SessionController.Instance.ContentController.GetContent(id);
+                                var lem = SessionController.Instance.ContentController.GetLibraryElementModel(id);
                                 var document = await MediaUtil.DataToPDF(lem.Data);
                                 lem.Data = null;
                                 string data = "";

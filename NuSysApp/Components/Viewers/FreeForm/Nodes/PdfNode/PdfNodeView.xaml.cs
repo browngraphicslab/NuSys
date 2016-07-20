@@ -38,7 +38,7 @@ namespace NuSysApp
         private void PdfNodeView_Loaded(object sender, RoutedEventArgs e)
         {
             var vm = DataContext as PdfNodeViewModel;
-            vm.CreatePdfRegionViews();
+        //    vm.CreatePdfRegionViews();
         }
 
         private void PdfNodeView_SizeChanged(object sender, SizeChangedEventArgs e)

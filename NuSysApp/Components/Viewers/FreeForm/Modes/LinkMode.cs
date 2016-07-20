@@ -61,7 +61,7 @@ namespace NuSysApp {
             if (startVm == null || endVm == null || startVm == endVm || startVm.Id == endVm.Id || startVm.LinkList.Contains( endVm.Controller) || endVm.LinkList.Contains(startVm.Controller))
                 return;*/
 
-        //    startVm.Controller.RequestLinkTo(endVm.ContentId);
+        //    startVm.Controller.RequestLinkTo(endVm.LibraryId);
 
             lineModel.Delete();
             

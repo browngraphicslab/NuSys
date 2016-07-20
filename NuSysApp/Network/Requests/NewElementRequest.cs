@@ -37,7 +37,7 @@ namespace NuSysApp
             ElementModel elementModel = null;
             ElementController controller = null;
 
-            var libraryElement = SessionController.Instance.ContentController.GetContent(libraryId);
+            var libraryElement = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId);
             if (libraryElement == null)
             {
                 libraryElement = LibraryElementModelFactory.CreateFromMessage(_message);
@@ -131,7 +131,7 @@ namespace NuSysApp
                 SessionController.Instance.IdToControllers[id] = controller;
 
                 var parentCollectionLibraryElement =
-                    (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(creator);
+                    (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetLibraryElementModel(creator);
                 parentCollectionLibraryElement.AddChild(id);
 
                 if (parentCollectionLibraryElement.LibraryElementId ==
