@@ -31,15 +31,7 @@
           DragBackground="{ThemeResource ListViewItemDragBackgroundThemeBrush}"
           DragForeground="{ThemeResource ListViewItemDragForegroundThemeBrush}"
           FocusBorderBrush="{ThemeResource SystemControlForegroundAltHighBrush}"
-          FocusSecondaryBorderBrush="{ThemeResource SystemControlForegroundBaseHighBrush}"
-          PlaceholderBackground="{ThemeResource ListViewItemPlaceholderBackgroundThemeBrush}"
-          PointerOverBackground="{ThemeResource SystemControlHighlightListLowBrush}"
-          PointerOverForeground="{ThemeResource SystemControlHighlightAltBaseHighBrush}"
-          SelectedBackground="{ThemeResource SystemControlHighlightListAccentLowBrush}"
-          SelectedForeground="{ThemeResource SystemControlHighlightAltBaseHighBrush}"
-          SelectedPointerOverBackground="{ThemeResource SystemControlHighlightListAccentMediumBrush}"
-          PressedBackground="{ThemeResource SystemControlHighlightListMediumBrush}"
-          SelectedPressedBackground="{ThemeResource SystemControlHighlightListAccentHighBrush}"
+          FocusSecondaryBorderBrush="{ThemeResource SystemControlForegroundBaseHighBrush}"          
           DisabledOpacity="{ThemeResource ListViewItemDisabledThemeOpacity}"
           DragOpacity="{ThemeResource ListViewItemDragThemeOpacity}"
           ReorderHintOffset="{ThemeResource ListViewItemReorderHintThemeOffset}"
@@ -54,8 +46,8 @@
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid x:Name="xGridListItem" Background="Transparent" DoubleTapped ="xListItem_OnDoubleTapped" Tapped="xListItem_OnTapped"  PointerPressed="xListItem_PointerPressed"  Width="Auto" ManipulationMode="All" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
-                        <TextBlock Text="{Binding Path=Title}" Foreground="{StaticResource color3}" VerticalAlignment="Center" Width="Auto" />
+                    <Grid x:Name="xGridListItem" Background="{Binding Color}" DoubleTapped ="xListItem_OnDoubleTapped" Tapped="xListItem_OnTapped"  PointerPressed="xListItem_PointerPressed"  Width="Auto" ManipulationMode="All" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
+                        <TextBlock Text="{Binding Path=Title}"  Foreground="{StaticResource color3}" VerticalAlignment="Center" Width="Auto" />
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
