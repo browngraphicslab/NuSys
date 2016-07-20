@@ -237,7 +237,8 @@ namespace NuSysApp
             if (_currentViewMode == ViewMode.List)
             {
                 xViewTypeGrid.Children.Remove((UIElement)_toolView);
-                _toolView = new PieChartToolView(this);
+                //_toolView = new PieChartToolView(this);
+                _toolView = new BarChartToolView(this);
                 _toolView.SetProperties(Vm.PropertiesToDisplay);
                 xViewTypeGrid.Children.Add((UIElement)_toolView);
                 _currentViewMode = ViewMode.PieChart;

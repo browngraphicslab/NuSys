@@ -34,6 +34,8 @@ namespace NuSysApp.Tools
         private const int ListBoxHeightOffset = 175;
         public ObservableCollection<string> PropertiesToDisplayUnique { get; set; } 
 
+
+        // for dragging
         private double _x;
         private double _y;
         private BaseToolView _baseTool;
@@ -87,7 +89,7 @@ namespace NuSysApp.Tools
         }
 
         /// <summary>
-        ///Sets that starting point for dragging. This is also to make sure that pie chart isn't visually selected once you click on it, because visual selection will always be based on the logcial selection in the model.
+        ///Sets that starting point for dragging. This is also to make sure that list isn't visually selected once you click on it, because visual selection will always be based on the logcial selection in the model.
         /// </summary>
         private void xListItem_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
