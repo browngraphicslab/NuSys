@@ -87,6 +87,7 @@ namespace NuSysApp
             _barChartItemDictionary.Clear();
             BarChartLegendItems.Clear();
             xBarChart.Children.Clear();
+            xBarChart.ColumnDefinitions.Clear();
 
             int i = 0;
             foreach (var kvp in BarChartDictionary)
@@ -102,6 +103,11 @@ namespace NuSysApp
                 var vm = new BarChartItemViewModel(kvp, GetColor(kvp.Key));
                 var item = new BarChartItem(vm);
                 item.Tapped += xBarChartItem_OnTapped;
+                item.PointerPressed += xListItem_PointerPressed;
+                item.ManipulationMode = ManipulationModes.All;
+                item.ManipulationStarted += xListItem_ManipulationStarted;
+                item.ManipulationDelta += xListItem_ManipulationDelta;
+                item.ManipulationCompleted += xListItem_ManipulationCompleted;
                 Grid.SetColumn(item, i);
                 xBarChart.Children.Add(item);
                 _barChartItemDictionary.Add(kvp.Key, item);
@@ -243,7 +249,8 @@ namespace NuSysApp
         /// </summary>
         private void xListItem_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            var selection = ((sender as Grid)?.DataContext as BarChartItemViewModel)?.Title;
+            var selection = ((sender as FrameworkElement)?.DataContext as BarChartItemViewModel)?.Title;
+
             Debug.Assert(selection!= null);
 
             if (_baseTool.Vm.Selection != null && _baseTool.Vm.Controller.Model.Selected && _baseTool.Vm.Selection.Contains(selection))
@@ -318,9 +325,21 @@ namespace NuSysApp
         /// </summary>
         private void xListItem_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+            if (sender is BarChartItem)
+            {
+                Item_ManipulationDelta((FrameworkElement) sender, e, sender as FrameworkElement);
+            }
+            else
+            {
+                Item_ManipulationDelta((FrameworkElement)sender, e, xBarChartLegend);
+            }
+        }
+
+        public void Item_ManipulationDelta(FrameworkElement sender, ManipulationDeltaRoutedEventArgs e, FrameworkElement boundingElement)
+        {
             var el = (FrameworkElement)sender;
-            var sp = el.TransformToVisual(xBarChartLegend).TransformPoint(e.Position);
-            if (sp.X < ActualWidth && sp.X > 0 && sp.Y > 0 && sp.Y < _baseTool.getCanvas().ActualHeight)
+            var sp = el.TransformToVisual(boundingElement).TransformPoint(e.Position);
+            if (sp.X < boundingElement.ActualWidth && sp.X > 0 && sp.Y > 0 && sp.Y < boundingElement.ActualHeight)
             {
                 Border border = (Border)VisualTreeHelper.GetChild(xBarChartLegend, 0);
                 ScrollViewer scrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
@@ -355,17 +374,18 @@ namespace NuSysApp
         /// </summary>
         private async void xListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
+            var selection = ((sender as FrameworkElement)?.DataContext as BarChartItemViewModel)?.Title;
             _baseTool.getCanvas().Children.Remove(_dragItem);
             if (_currentDragMode == DragMode.Filter)
             {
                 if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
                 {
-                    _baseTool.Vm.Selection.Add((((Grid)sender).Children[0] as TextBlock).Text);
+                    _baseTool.Vm.Selection.Add(selection);
                     _baseTool.Vm.Selection = _baseTool.Vm.Selection;
                 }
                 else
                 {
-                    _baseTool.Vm.Selection = new HashSet<string>() { (((Grid)sender).Children[0] as TextBlock).Text };
+                    _baseTool.Vm.Selection = new HashSet<string>() { selection };
                 }
 
                 var wvm = SessionController.Instance.ActiveFreeFormViewer;
