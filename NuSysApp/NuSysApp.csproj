@@ -734,7 +734,7 @@
     <Compile Include="Util\AudioCapture.cs" />
     <Compile Include="Util\Clip.cs" />
     <Compile Include="Util\Command.cs" />
-    <Compile Include="Constants.cs" />
+    <Compile Include="Util\Constants.cs" />
     <Compile Include="Components\Cortana\Cortana.cs" />
     <Compile Include="Components\Cortana\CortanaContinuousRecognition.cs" />
     <Compile Include="Components\Cortana\CortanaPopup.xaml.cs">

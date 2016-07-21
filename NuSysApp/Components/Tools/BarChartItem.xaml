@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="300"
-    d:DesignWidth="400" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+    d:DesignWidth="400" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" ManipulationMode="TranslateX, TranslateY">
 
     <Rectangle x:Name="xRectangle" Fill="{Binding Color}" HorizontalAlignment="Stretch" Height="{Binding Height}" VerticalAlignment="Bottom"
                PointerPressed="XRectangle_OnPointerPressed" PointerEntered="XRectangle_OnPointerEntered" PointerExited="XRectangle_OnPointerExited" Tapped="XRectangle_OnTapped"/>

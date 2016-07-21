@@ -11,6 +11,7 @@ using Windows.Foundation.Collections;
 using Windows.System;
 using Windows.UI;
 using Windows.UI.Core;
+using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -56,10 +57,45 @@ namespace NuSysApp
             BarChartLegendItems = new ObservableCollection<BarChartItemViewModel>();
 
             _dragItem = baseTool.Vm.InitializeDragFilterImage();
+            xInkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen;
+            xInkCanvas.InkPresenter.InputProcessingConfiguration.RightDragAction = InkInputRightDragAction.LeaveUnprocessed;
+            xInkCanvas.InkPresenter.StrokeInput.StrokeEnded += StrokeInput_StrokeEnded;
+            xInkCanvas.InkPresenter.StrokesCollected += InkPresenter_StrokesCollected;
+        }
+
+        private void InkPresenter_StrokesCollected(InkPresenter sender, InkStrokesCollectedEventArgs args)
+        {
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            var el = xInkCanvas;
+            foreach (InkStroke stroke in args.Strokes)
+            {
+                var points = stroke.GetInkPoints();
+                foreach (InkPoint point in points)
+                {
+                    var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(point.Position);
+                    var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
+                    var y =
+                        hitsStart.Where(
+                            uiElem =>
+                                (uiElem is FrameworkElement) &&
+                                (uiElem as FrameworkElement).DataContext is BarChartItemViewModel).ToList();
+                    if (y.Count() > 0)
+                    {
+                        var selection = ((y.First() as FrameworkElement)?.DataContext as BarChartItemViewModel)?.Title;
+                        _baseTool.Vm.Selection.Add(selection);
+                    }
+                }
+            }
+            xInkCanvas.InkPresenter.StrokeContainer.Clear();
+            _baseTool.Vm.Selection = _baseTool.Vm.Selection;
 
         }
 
-
+        private void StrokeInput_StrokeEnded(InkStrokeInput sender, PointerEventArgs args)
+        {
+            var strokes = xInkCanvas.InkPresenter.StrokeContainer.GetStrokes();
+        }
+        
         // pass in a list of all the properties to show in the graph
         public void SetProperties(List<string> propertiesList)
         {
@@ -112,7 +148,7 @@ namespace NuSysApp
                 var item = new BarChartItem(vm);
                 item.Tapped += xBarChartItem_OnTapped;
                 item.PointerPressed += xListItem_PointerPressed;
-                item.ManipulationMode = ManipulationModes.All;
+                //item.ManipulationMode = ManipulationModes.All;
                 item.ManipulationStarted += xListItem_ManipulationStarted;
                 item.ManipulationDelta += xListItem_ManipulationDelta;
                 item.ManipulationCompleted += xListItem_ManipulationCompleted;

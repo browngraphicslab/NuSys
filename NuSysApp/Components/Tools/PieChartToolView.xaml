@@ -16,7 +16,7 @@
     <nuSysApp:AnimatableUserControl.Resources>
         <ControlTemplate x:Key="MyPieDataPointTemplate"
                     TargetType="charting:PieDataPoint">
-            <Grid Tapped="Slice_OnTapped" DoubleTapped="Slice_OnDoubleTapped"  PointerPressed="Slice_OnPointerPressed" ManipulationMode="All" ManipulationStarted="PieSlice_ManipulationStarted" ManipulationDelta="PieSlice_ManipulationDelta" ManipulationCompleted="PieSlice_ManipulationCompleted"
+            <Grid Tapped="Slice_OnTapped" DoubleTapped="Slice_OnDoubleTapped"  PointerPressed="Slice_OnPointerPressed" ManipulationMode="TranslateX, TranslateY" ManipulationStarted="PieSlice_ManipulationStarted" ManipulationDelta="PieSlice_ManipulationDelta" ManipulationCompleted="PieSlice_ManipulationCompleted"
                         x:Name="Root"
                         Opacity="0">
                 <VisualStateManager.VisualStateGroups>

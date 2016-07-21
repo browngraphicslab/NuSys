@@ -13,7 +13,8 @@
             <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="*" MaxWidth="300"/>
         </Grid.ColumnDefinitions>
-        <Grid x:Name="xBarChart" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0" SizeChanged="XBarChart_OnSizeChanged"/>
+        <Grid x:Name="xBarChart" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Column="0" Margin="0" SizeChanged="XBarChart_OnSizeChanged"/>
+        <InkCanvas x:Name="xInkCanvas" IsHitTestVisible="False"></InkCanvas>
         <ListView x:Name="xBarChartLegend" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MinWidth="100"
                   BorderThickness="2,0,0,0" BorderBrush="{StaticResource color2}"
                   ManipulationMode="TranslateX, TranslateY" Width="Auto" Background="White" SelectionMode="Multiple"  ItemsSource="{x:Bind BarChartLegendItems}" >
@@ -59,7 +60,7 @@
                     <Grid x:Name="xGridListItem" Background="{Binding Path=ListItemColor}"
                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                           DoubleTapped ="xListItem_OnDoubleTapped" Tapped="xBarChartItem_OnTapped"  PointerPressed="xListItem_PointerPressed" 
-                          ManipulationMode="All" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
+                          ManipulationMode="TranslateX, TranslateY" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
                         <TextBlock Text="{Binding Path=Title}" FontWeight="{Binding Path=ListFontWeight}" Foreground="{Binding Path=Color}" VerticalAlignment="Center" HorizontalAlignment="Left" Width="Auto" Margin="25,0,0,0"/>
                     </Grid>
                 </DataTemplate>
