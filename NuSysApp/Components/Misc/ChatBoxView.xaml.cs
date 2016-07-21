@@ -34,7 +34,7 @@ namespace NuSysApp
                 TextBox senderBox = sender as TextBox;
                 Debug.Assert(senderBox != null);
                 string text = senderBox.Text;
-                //there have been a few times where NetworkMembers did no contain LocalUserID
+                //there have been a few times where NetworkMembers did not contain LocalUserID
                 //something to look out for
                 if (!text.Equals("") && 
                     SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(SessionController.Instance.LocalUserID))
