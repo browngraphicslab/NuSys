@@ -47,6 +47,7 @@ namespace NuSysApp
             Redraw();
         }
 
+        //deprecated - not being fired when adornments are made 7/21/2016
         public InkStroke AddAdorment(IEnumerable<InkPoint> points, Color color, bool fireEvent = true)
         {
             var stroke = strokeBuilder.CreateStrokeFromInkPoints(points, Matrix3x2.Identity);
