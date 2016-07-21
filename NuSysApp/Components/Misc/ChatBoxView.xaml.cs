@@ -69,10 +69,11 @@ namespace NuSysApp
 
         public void ScrollToEnd()
         {
-            scroller.UpdateLayout();
-            scroller.ScrollToVerticalOffset(300);
+            //scroller.UpdateLayout();
+            chatDisplayListView.ScrollIntoView(chatDisplayListView.Items[chatDisplayListView.Items.Count-1], ScrollIntoViewAlignment.Leading);
+            //scroller.ScrollToVerticalOffset(-10); //scroller.ScrollableHeight - 300);
         }
-
+        /*
         public double ScrollerScrollableHeight
         {
             get { return scroller.ScrollableHeight; }
@@ -82,15 +83,22 @@ namespace NuSysApp
         {
             get { return scroller.VerticalOffset; }
         }
-
+        */
+        /*
         public string ChatText
         {
-            get { return chatDisplayBox.Text; }
+            get { return chatDisplayListView.Text; }
         }
-
+        */
         public void AppendText(string s)
         {
-            chatDisplayBox.Text += s;
+            TextBlock block = new TextBlock();
+            block.TextWrapping = TextWrapping.Wrap;
+            block.Text = s;
+            block.Width = 280;
+            block.Margin = new Thickness(0,2,0,0);
+            chatDisplayListView.Items.Add(block);
+            ScrollToEnd();
         }
 
         public Visibility Visibility

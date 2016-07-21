@@ -33,13 +33,9 @@ namespace NuSysApp
                 Debug.Assert(user != null);
                 var chatMessage = _message.GetString("chat_message");
                 Debug.Assert(chatMessage != null);
-                string withUser = user.Name + ": " + chatMessage + "\n";
+                string withUser = user.Name + ": " + chatMessage;
                 ChatBoxView cBox = SessionController.Instance.SessionView.GetChatBox();
                 cBox.AppendText(withUser);
-                if (cBox.ScrollerVerticalOffset == cBox.ScrollerScrollableHeight)
-                {
-                    cBox.ScrollToEnd();
-                }
             }
         }
 

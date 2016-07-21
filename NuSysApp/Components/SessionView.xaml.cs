@@ -67,6 +67,13 @@ namespace NuSysApp
         public SessionView()
         {
             this.InitializeComponent();
+            var bounds = Window.Current.Bounds;
+            var height = bounds.Height;
+            var width = bounds.Width;
+            Canvas.SetLeft(ChatBox, width - 300 - 10);
+            Canvas.SetTop(ChatBox, height - 375 - 10 - 50);
+            Canvas.SetLeft(ChatBoxButton, width - 10 - 50);
+            Canvas.SetTop(ChatBoxButton, height - 10 - 50);
 
             _isChatVisible = false;
 
@@ -966,7 +973,7 @@ namespace NuSysApp
 
         public ChatBoxView GetChatBox()
         {
-            return chatBox;
+            return ChatBox;
         }
 
         private void ChatBoxButton_OnClick(object sender, RoutedEventArgs e)
@@ -974,11 +981,11 @@ namespace NuSysApp
             _isChatVisible = !_isChatVisible;
             if (_isChatVisible)
             {
-                chatBox.Visibility = Visibility.Visible;
+                ChatBox.Visibility = Visibility.Visible;
             }
             else
             {
-                chatBox.Visibility = Visibility.Collapsed;
+                ChatBox.Visibility = Visibility.Collapsed;
             }
         }
     }
