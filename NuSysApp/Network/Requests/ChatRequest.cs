@@ -7,6 +7,8 @@ namespace NuSysApp
     {
         public ChatRequest(NetworkUser user, string chatMessage) : base(RequestType.ChatRequest)
         {
+            Debug.Assert(chatMessage != null);
+            Debug.Assert(user != null);
             _message["chat_message"] = chatMessage;
             _message["user"] = user.ID;
             setServerSettings();
@@ -14,8 +16,10 @@ namespace NuSysApp
 
         private void setServerSettings()
         {
+            //all clients need to listen for it
             SetServerEchoType(ServerEchoType.Everyone);
             SetServerItemType(ServerItemType.Alias);
+            //server doesn't have to do anything except give the request to all clients
             SetServerIgnore(true);
             SetServerRequestType(ServerRequestType.Update);
         }
@@ -33,9 +37,9 @@ namespace NuSysApp
                 Debug.Assert(user != null);
                 var chatMessage = _message.GetString("chat_message");
                 Debug.Assert(chatMessage != null);
-                string withUser = user.Name + ": " + chatMessage;
+                string userAndMessage = user.Name + ": " + chatMessage;
                 ChatBoxView cBox = SessionController.Instance.SessionView.GetChatBox();
-                cBox.AppendText(withUser);
+                cBox.AppendText(userAndMessage);
             }
         }
 

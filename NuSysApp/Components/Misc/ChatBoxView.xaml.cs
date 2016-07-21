@@ -26,23 +26,6 @@ namespace NuSysApp
             this.InitializeComponent();
             chatInputBox.KeyDown += ChatInputBox_KeyDown;
         }
-        /*
-        private void BtnGlobalChat_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            _isChatVisible = !_isChatVisible;
-            if (_isChatVisible)
-            {
-                chatCanvas.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                chatCanvas.Visibility = Visibility.Collapsed;
-            }
-
-        }
-        */
-
-       
 
         private void ChatInputBox_KeyDown(object sender, KeyRoutedEventArgs e)
         {
@@ -51,6 +34,8 @@ namespace NuSysApp
                 TextBox senderBox = sender as TextBox;
                 Debug.Assert(senderBox != null);
                 string text = senderBox.Text;
+                //there have been a few times where NetworkMembers did no contain LocalUserID
+                //something to look out for
                 if (!text.Equals("") && 
                     SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(SessionController.Instance.LocalUserID))
                 {
@@ -64,32 +49,24 @@ namespace NuSysApp
                     SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
                 }
             }
+            //if it gets handled, for whatever reason, you can't type in the chatbox
             //e.Handled = true;
         }
 
+        /// <summary>
+        /// scrolls to the bottom of the ListView
+        /// </summary>
         public void ScrollToEnd()
         {
-            //scroller.UpdateLayout();
+            //scroll to the most recently added item in the list
             chatDisplayListView.ScrollIntoView(chatDisplayListView.Items[chatDisplayListView.Items.Count-1], ScrollIntoViewAlignment.Leading);
-            //scroller.ScrollToVerticalOffset(-10); //scroller.ScrollableHeight - 300);
-        }
-        /*
-        public double ScrollerScrollableHeight
-        {
-            get { return scroller.ScrollableHeight; }
         }
 
-        public double ScrollerVerticalOffset
-        {
-            get { return scroller.VerticalOffset; }
-        }
-        */
-        /*
-        public string ChatText
-        {
-            get { return chatDisplayListView.Text; }
-        }
-        */
+        /// <summary>
+        /// adds string s to the bottom of the chat box by creating a new textblock from string s
+        /// and adding that to the bottom of the ListView
+        /// </summary>
+        /// <param name="s"></param>
         public void AppendText(string s)
         {
             TextBlock block = new TextBlock();
