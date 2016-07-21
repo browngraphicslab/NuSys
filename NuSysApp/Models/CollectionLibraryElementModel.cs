@@ -21,6 +21,8 @@ namespace NuSysApp
 
         public delegate void ChildRemovedEventHandler(string id);
         public event ChildRemovedEventHandler OnChildRemoved;
+        public bool IsFinite { get; set; }
+        public bool HasShape { get; set; }
 
         public CollectionLibraryElementModel(string id, Dictionary<String, MetadataEntry> metadata = null, string contentName = null, bool favorited = false) : base(id, ElementType.Collection, metadata, contentName)
         {

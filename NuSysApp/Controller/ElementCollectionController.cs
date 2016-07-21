@@ -74,6 +74,25 @@ namespace NuSysApp
 
             _debouncingDictionary.Add("collectionview", colModel.ActiveCollectionViewType.ToString());
         }
-        
+
+        /// <summary>
+        /// Sets whether or not the collection is finite
+        /// </summary>
+        /// <param name="isFinite"></param>
+        public void SetFinite(bool isFinite)
+        {
+            var colModel = Model as CollectionElementModel;
+            if (colModel == null)
+            {
+                return;
+            }
+            colModel.CollectionLibraryElementModel.IsFinite = isFinite;
+        }
+
+        public void SetHasShape(bool hasShape)
+        {
+            
+        }
+
     }
 }
