@@ -1,4 +1,4 @@
-﻿<UserControl
+﻿\<UserControl
     x:Class="NuSysApp.ImageDetailHomeTabView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -17,41 +17,24 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <Border x:Name="xBorder" BorderBrush="{StaticResource color6}"   HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <Grid x:Name="totalStackPanel" >
-                <StackPanel x:Name="buttons" Orientation="Vertical" Background="{StaticResource color3}" VerticalAlignment="Top" HorizontalAlignment="Stretch"  Height="30" Visibility="Collapsed">
-                    <Button Click="ButtonBase_OnClick" Foreground="{StaticResource foreground6}" Background="Transparent">INK</Button>
-                    <Button Name="SourceBttn" Foreground="{StaticResource foreground6}" Click="OnGoToSource" Background="Transparent">GO TO SOURCE</Button>
-                </StackPanel>
-                <Image x:Name="xImg" PointerPressed="xImg_PointerPressed" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Center" >
-                    <Image.Source>
-                        <BitmapImage x:Name="hi" ImageOpened="BitmapImage_ImageOpened" UriSource="{Binding Path=Image}"></BitmapImage>
-                    </Image.Source>
-                </Image>
 
-                <ItemsControl ItemsSource="{Binding RegionViews}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <Canvas/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
+    <Border x:Name="xBorder" BorderBrush="{StaticResource color6}"   HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid x:Name="totalStackPanel" >
+            <StackPanel x:Name="buttons" Orientation="Vertical" Background="{StaticResource color3}" VerticalAlignment="Top" HorizontalAlignment="Stretch"  Height="30" Visibility="Collapsed">
+                <Button Click="ButtonBase_OnClick" Foreground="{StaticResource foreground6}" Background="Transparent">INK</Button>
+                <Button Name="SourceBttn" Foreground="{StaticResource foreground6}" Click="OnGoToSource" Background="Transparent">GO TO SOURCE</Button>
+            </StackPanel>
+            <Grid x:Name="xImageGrid">
+                <local:ClippedGridWrapper>
+                    <local:ClippedGridWrapper.FullContent>
+                        <Image x:Name="xImg" PointerPressed="xImg_PointerPressed" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Center" >
+                            <Image.Source>
+                                <BitmapImage x:Name="hi" ImageOpened="BitmapImage_ImageOpened" UriSource="{Binding Path=Image}"></BitmapImage>
+                            </Image.Source>
+                        </Image>
+                    </local:ClippedGridWrapper.FullContent>
+                </local:ClippedGridWrapper>
             </Grid>
-        </Border>
-        <Border Grid.Row="1" Background="{StaticResource color7}" Height="Auto" Width="140" Padding="5" BorderBrush="{StaticResource color3}" BorderThickness="2" Margin="0,50,0,0"
-                Visibility="{Binding Editable, Converter={StaticResource vConverter}, ConverterParameter=true}">
-            <TextBlock x:Name="AddToCollection" Width="Auto" Height="Auto" Foreground="{StaticResource color3}" Text="Drag To Collection" TextAlignment="Center"
-                   PointerPressed="AddToCollection_OnPointerPressed"
-                   ManipulationStarted="AddToCollection_OnManipulationStarted"
-                   ManipulationDelta="AddToCollection_ManipulationDelta"
-                   ManipulationCompleted="AddToCollection_ManipulationCompleted"
-                   ManipulationMode="TranslateX,TranslateY"/>
-        </Border>
-    </Grid>
+        </Grid>
+    </Border>
 </UserControl>
-

@@ -1,4 +1,4 @@
-﻿ using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -33,45 +33,41 @@ namespace NuSysApp
                 UpdateControlPoints();
             };
 
-            vm.InTool.Disposed += Tool_Disposed;
-            vm.OutTool.Disposed += Tool_Disposed;
+            vm.InToolController.Disposed += Tool_Disposed;
+            vm.OutToolController.Disposed += Tool_Disposed;
+
+
+
         }
 
-        /// <summary>
-        /// When either tool the link is connected to is deleted, remove the link, and remove and listeners.
-        /// </summary>
-        public void Tool_Disposed(object sender, string id)
+        public void Tool_Disposed(string id)
         {
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
             wvm.AtomViewList.Remove(this);
             (DataContext as ToolLinkViewModel).Dispose();
-            (DataContext as ToolLinkViewModel).InTool.Disposed -= Tool_Disposed;
-            (DataContext as ToolLinkViewModel).OutTool.Disposed -= Tool_Disposed;
+            (DataContext as ToolLinkViewModel).InToolController.Disposed -= Tool_Disposed;
+            (DataContext as ToolLinkViewModel).OutToolController.Disposed -= Tool_Disposed;
         }
 
-        /// <summary>
-        /// When either of the tool linkables on either end change its anchor point, reposition the link.
-        /// </summary>
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             this.UpdateControlPoints();
         }
 
-        /// <summary>
-        /// Update links control points as the anchor points of the in and out tool linkables
-        /// </summary>
         private void UpdateControlPoints()
         {
             this.UpdateEndPoints();
             this.UpdateArrow();
-            
+
+
             var vm = (ToolLinkViewModel)this.DataContext;
 
             var inToolVM = vm.InTool;
             var outToolVM = vm.OutTool;
             
-            var anchor1 = inToolVM.ToolAnchor;
-            var anchor2 = outToolVM.ToolAnchor;
+
+            var anchor1 = new Point(inToolVM.X + inToolVM.Width / 2 + 60, inToolVM.Y + 20);
+            var anchor2 = new Point(outToolVM.X + outToolVM.Width / 2 + 60, outToolVM.Y + 20);
 
             var distanceX = anchor1.X - anchor2.X;
             var distanceY = anchor1.Y - anchor2.Y;
@@ -80,11 +76,9 @@ namespace NuSysApp
             curve.Point1 = new Point(anchor2.X + distanceX / 2, anchor1.Y);
             curveInner.Point2 = new Point(anchor1.X - distanceX / 2, anchor2.Y);
             curveInner.Point1 = new Point(anchor2.X + distanceX / 2, anchor1.Y);
-        }
 
-        /// <summary>
-        /// Updates the arrow of the link
-        /// </summary>
+
+        }
         private void UpdateArrow()
         {
             var center = new Point((pathfigure.StartPoint.X + curve.Point3.X) / 2.0, (pathfigure.StartPoint.Y + curve.Point3.Y) / 2.0);
@@ -98,25 +92,34 @@ namespace NuSysApp
             arrow.RenderTransform = tranformGroup;
         }
 
-        /// <summary>
-        /// Updates end points
-        /// </summary>
         private void UpdateEndPoints()
         {
             var vm = (ToolLinkViewModel)this.DataContext;
 
             var inToolVM = vm.InTool;
             var outToolVM = vm.OutTool;
-            
-            var anchor1 = inToolVM.ToolAnchor;
-            var anchor2 = outToolVM.ToolAnchor;
+
+            var anchor1 = new Point(inToolVM.X + inToolVM.Width / 2 + 60, inToolVM.Y + 20);
+            var anchor2 = new Point(outToolVM.X + outToolVM.Width / 2 + 60, outToolVM.Y + 20);
+
 
             pathfigure.StartPoint = anchor1;
             curve.Point3 = anchor2;
 
             pathfigureInner.StartPoint = anchor1;
             curveInner.Point3 = anchor2;
+
         }
 
+
+        private void Delete_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Annotation_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

@@ -40,9 +40,7 @@ namespace NuSysApp
             _dragItem = baseTool.Vm.InitializeDragFilterImage();
         }
 
-        /// <summary>
-        ///Creates a new dictionary from properties list and sets it as the pie series item source
-        /// </summary>
+
         public void SetProperties(List<string> propertiesList)
         {
             PieChartDictionary = new Dictionary<string, int>();
@@ -68,10 +66,7 @@ namespace NuSysApp
             
         }
 
-        /// <summary>
-        ///Sets the visual selection of the pie legend
-        /// </summary>
-        public void SetVisualSelection(HashSet<string> selection)
+        public void SetViewSelection(HashSet<string> selection)
         {
             var transparent = new SolidColorBrush(Colors.Transparent);
             if (selection == null)
@@ -80,7 +75,15 @@ namespace NuSysApp
                 {
                     item.Background = transparent;
                 }
+                //xPieSeries.SelectedItem = null;
                 return;
+            }
+            foreach (KeyValuePair<string, int> item in xPieSeries.ItemsSource)
+            {
+                //if (item.Key != null && selection.Contains(item.Key))
+                //{
+                //    xPieSeries.SelectedItem = item;
+                //}
             }
             foreach (LegendItem item in xPieChart.LegendItems)
             {
@@ -96,9 +99,7 @@ namespace NuSysApp
 
         }
 
-        /// <summary>
-        ///Set up drag item
-        /// </summary>
+
         private async void PieSlice_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             if (_baseTool.getCanvas().Children.Contains(_dragItem))
@@ -112,9 +113,6 @@ namespace NuSysApp
             t.TranslateY = sp.Y - _dragItem.ActualWidth / 2;
         }
 
-        /// <summary>
-        ///Move drag item accordingly
-        /// </summary>
         private void PieSlice_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             if ((_dragItem.RenderTransform as CompositeTransform) != null)
@@ -129,9 +127,6 @@ namespace NuSysApp
             }
         }
 
-        /// <summary>
-        ///If the point is located outside the tool, logically set the selection based on selection type (Multi/Single) and either create new tool or add to existing tool
-        /// </summary>
         private async void PieSlice_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             _baseTool.getCanvas().Children.Remove(_dragItem);
@@ -161,17 +156,11 @@ namespace NuSysApp
 
         }
 
-        /// <summary>
-        ///This is to make sure that pie chart isn't visually selected once you click on it, because visual selection will always be based on the logcial selection in the model.
-        /// </summary>
         private void Slice_OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
             e.Handled = true;
         }
 
-        /// <summary>
-        ///When the slice is tapped, set the logical selection based on the type of selection (multi/single).
-        /// </summary>
         private void Slice_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             var selected = (KeyValuePair<string, int>)(sender as FrameworkElement).DataContext;
@@ -210,9 +199,6 @@ namespace NuSysApp
             }
         }
 
-        /// <summary>
-        ///If the item that was double tapped is the only selected item, attempt to open the detail view.
-        /// </summary>
         private void Slice_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var selected = (KeyValuePair<string, int>)(sender as FrameworkElement).DataContext;

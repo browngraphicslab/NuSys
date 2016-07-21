@@ -200,7 +200,7 @@ namespace NuSysApp
         //                m["height"] = 400;
         //                m["nodeType"] = element.NodeType.ToString();
         //                m["autoCreate"] = true;
-        //                m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.ContentId };
+        //                m["creators"] = new List<string>() { SessionController.Instance.ActiveWorkspace.LibraryId };
 
         //                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewNodeRequest(m));
         //            }
@@ -441,7 +441,7 @@ namespace NuSysApp
             {
                 if (elementType != ElementType.Collection)
                 {
-                    var element = SessionController.Instance.ContentController.GetContent(libraryId);
+                    var element = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId);
                     var dict = new Message();
                     Dictionary<string, object> metadata;
 

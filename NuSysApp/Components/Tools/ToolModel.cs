@@ -28,10 +28,7 @@ namespace NuSysApp
 
         public ParentOperatorType ParentOperator { get; private set; }
 
-        /// <summary>
-        /// The output library IDs represent the list of elements that should be included in its children tools.
-        /// </summary>
-        public HashSet<string> OutputLibraryIds { get; private set; }
+        public HashSet<string> LibraryIds { get; private set; }
         public HashSet<string> ParentIds { get; private set; }
         public bool Selected { get; private set; }
         public string Id { get; set; }
@@ -39,7 +36,7 @@ namespace NuSysApp
         {
             Id = SessionController.Instance.GenerateId();
             ParentIds = new HashSet<string>();
-            OutputLibraryIds = new HashSet<string>();
+            LibraryIds = new HashSet<string>();
             ParentOperator = ParentOperatorType.Or;
         }
 
@@ -48,28 +45,28 @@ namespace NuSysApp
             ParentOperator = parentOperator;
         }
 
-        public void SetOutputLibraryIds(HashSet<string> libraryIds)
+        public void SetLibraryIds(HashSet<string> libraryIds)
         {
-            OutputLibraryIds = libraryIds;
-            OutputLibraryIds = OutputLibraryIds ?? new HashSet<string>();
+            LibraryIds = libraryIds;
+            LibraryIds = LibraryIds ?? new HashSet<string>();
         }
 
-        public bool AddOutputLibraryId(string libraryId)
+        public bool AddLibraryId(string libraryId)
         {
-            OutputLibraryIds = OutputLibraryIds ?? new HashSet<string>();
-            if (libraryId != null && OutputLibraryIds.Contains(libraryId))
+            LibraryIds = LibraryIds ?? new HashSet<string>();
+            if (libraryId != null && LibraryIds.Contains(libraryId))
             {
                 return false;
             }
-            OutputLibraryIds.Add(libraryId);
+            LibraryIds.Add(libraryId);
             return true;
         }
-        public bool RemoveOutputLibraryId(string libraryId)
+        public bool RemoveLibraryId(string libraryId)
         {
-            OutputLibraryIds = OutputLibraryIds ?? new HashSet<string>();
-            if (libraryId != null && OutputLibraryIds.Contains(libraryId))
+            LibraryIds = LibraryIds ?? new HashSet<string>();
+            if (libraryId != null && LibraryIds.Contains(libraryId))
             {
-                OutputLibraryIds.Remove(libraryId);
+                LibraryIds.Remove(libraryId);
                 return true;
             }
             return false;

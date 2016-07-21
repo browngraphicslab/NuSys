@@ -12,23 +12,31 @@ namespace NuSysApp
     }
     public class BasicToolViewModel : ToolViewModel
     {
-        /// <summary>
-        ///This is the list of items to display
-        /// </summary>
-        public List<string> PropertiesToDisplay { get; set; }
-
-        public HashSet<string> Selection { get {return (_controller as BasicToolController).BasicToolModel.Selection;} set {(_controller as BasicToolController).SetSelection(value); } }
-
-        public ToolModel.ToolFilterTypeTitle Filter { get { return (_controller as BasicToolController).BasicToolModel.Filter; } set { (_controller as BasicToolController).SetFilter(value); } }
 
         public BasicToolViewModel(BasicToolController toolController) : base(toolController)
         {
+            
             PropertiesToDisplay = new List<string>();
+            //PropertiesToDisplayUnique = new ObservableCollection<string>();
+            //PropertiesToDisplayPieChart = new ObservableCollection<ChartSlice>();
+            
         }
 
-        /// <summary>
-        ///reloads PropertiesToDisplay List. Also sets the selection based on if ther new PropertiesToDisplay contains previous selection. Invokes properties to display changed.
-        /// </summary>
+        public HashSet<string> Selection
+        {
+            get
+            {
+                return (_controller as BasicToolController).BasicToolModel.Selection;
+            }
+            set
+            {
+                (_controller as BasicToolController).SetSelection(value);
+            }
+        }
+
+        public ToolModel.ToolFilterTypeTitle Filter { get { return (_controller as BasicToolController).BasicToolModel.Filter;}  set { (_controller as BasicToolController).SetFilter(value);} }
+
+        
         public override void ReloadPropertiesToDisplay()
         {
             PropertiesToDisplay = new List<string>((_controller as BasicToolController).GetAllProperties().OrderBy(key => !string.IsNullOrEmpty(key) && char.IsNumber(key[0])).ThenBy(key => key));
@@ -50,6 +58,17 @@ namespace NuSysApp
                 }
                 Selection = Selection;
             }
+
         }
+
+
+        //public Dictionary<string, int> PieChartDictionary { get; set; }
+
+        public List<string> PropertiesToDisplay { get; set; }
+
+        //public ObservableCollection<string> PropertiesToDisplayUnique { get; set; }
+
+        //public ObservableCollection<ChartSlice> PropertiesToDisplayPieChart { get; set; } 
+
     }
 }

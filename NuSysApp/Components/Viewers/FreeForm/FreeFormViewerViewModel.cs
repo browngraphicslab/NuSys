@@ -14,25 +14,21 @@ namespace NuSysApp
     /// </summary>
     public class FreeFormViewerViewModel : ElementCollectionViewModel
     {
-        private IEditable _currentlyEditing;
+        private ElementViewModel _currentlyEditing;
         public delegate void SelectionChangedHandler(object source);
         public event SelectionChangedHandler SelectionChanged;
-
-        public delegate void ModeChangedEventHandler(object source, Options mode);
-
-        public event ModeChangedEventHandler OnModeChanged;
 
         #region Private Members
 
         private CompositeTransform _compositeTransform, _fMTransform;
         private ElementViewModel _preparedElementVm;
-        private List<ISelectable> _selections = new List<ISelectable>();
+        private List<ElementViewModel> _selections = new List<ElementViewModel>();
 
         #endregion Private Members
 
         public FreeFormViewerViewModel(ElementCollectionController controller) : base(controller)
         {
-            MultiSelectedAtomViewModels = new List<ISelectable>();
+            MultiSelectedAtomViewModels = new List<ElementViewModel>();
 
             SelectionChanged += OnSelectionChanged;
 
@@ -57,14 +53,9 @@ namespace NuSysApp
                 _currentlyEditing.IsEditing = false;
                 _currentlyEditing = null;
             }
-            if (Selections.Count == 1) {
-                if (Selections[0] is IEditable)
-                {
-                    _currentlyEditing = (IEditable) Selections[0];
-                    _currentlyEditing.IsEditing = true;
-                }
-                
-                
+            if (Selections.Count == 1) { 
+                _currentlyEditing = Selections[0];
+                _currentlyEditing.IsEditing = true;
             }
         }
 
@@ -188,7 +179,7 @@ namespace NuSysApp
         /// selection and the new selection are linked.
         /// </summary>
         /// <param name="selected"></param>
-        public void AddSelection(ISelectable selected)
+        public void AddSelection(ElementViewModel selected)
         {
             selected.IsSelected = true;
           
@@ -199,25 +190,16 @@ namespace NuSysApp
             if (!selectedElements.Any())
                 return;
 
+            var libElemModel = ((ElementViewModel)selectedElements.First().DataContext).Controller.LibraryElementModel;
 
-            // set the z indexing if the libElemModel is a ElementViewModel
-            var libElemModel = (selectedElements.First().DataContext as ElementViewModel)?.Controller.LibraryElementController.LibraryElementModel;
-            // If we've selected an element view model
-            if (libElemModel != null)
-            {
+            if (libElemModel?.Type != ElementType.Link)
                 Canvas.SetZIndex(selectedElements.First(), NodeManipulationMode._zIndexCounter++);
-            }
-            else // we've selected something else
-            {
-                Canvas.SetZIndex(selectedElements.First(), -2);
-            }
-            
          
 
             SelectionChanged?.Invoke(this);
         }
 
-        public void RemoveSelection(ISelectable selected)
+        public void RemoveSelection(ElementViewModel selected)
         {
             selected.IsSelected = false;
             _selections.Remove(selected);
@@ -249,7 +231,7 @@ namespace NuSysApp
         #region Public Members
 
 
-        public List<ISelectable> MultiSelectedAtomViewModels { get; private set; }
+        public List<ElementViewModel> MultiSelectedAtomViewModels { get; private set; }
 
         public CompositeTransform CompositeTransform
         {
@@ -265,10 +247,7 @@ namespace NuSysApp
             }
         }
         
-        /// <summary>
-        /// This can be IEditable because IEditable extends ISelectable
-        /// </summary>
-        public List<ISelectable> Selections { get { return _selections; } } 
+        public List<ElementViewModel> Selections { get { return _selections; } } 
 
         #endregion Public Members
 

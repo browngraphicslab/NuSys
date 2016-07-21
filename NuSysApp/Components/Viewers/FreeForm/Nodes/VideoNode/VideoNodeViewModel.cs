@@ -26,48 +26,6 @@ namespace NuSysApp
 
         public delegate void OnRegionSeekPassingHandler(double time);
         public event OnRegionSeekPassingHandler OnRegionSeekPassing;
-        public ObservableCollection<VideoRegionView> RegionViews
-        {
-            get
-            {
-                _regionViews.Clear();
-                var elementController = Controller.LibraryElementController;
-                var regionHashSet = elementController.LibraryElementModel.Regions;
-
-                if (regionHashSet == null)
-                {
-                    return _regionViews;
-                }
-
-                foreach (var model in regionHashSet)
-                {
-                    var videoRegionModel = model as VideoRegionModel;
-                    if (videoRegionModel == null)
-                    {
-                        return _regionViews;
-                    }
-                    VideoRegionController regionController;
-                    if (SessionController.Instance.RegionsController.GetRegionController(videoRegionModel.Id) == null)
-                    {
-                        regionController = SessionController.Instance.RegionsController.AddRegion(videoRegionModel, Controller.LibraryElementModel.LibraryElementId) as VideoRegionController;
-                    }
-                    else
-                    {
-                        regionController = SessionController.Instance.RegionsController.GetRegionController(videoRegionModel.Id) as VideoRegionController;
-                    }
-                    Debug.Assert(regionController is VideoRegionController);
-                    regionController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
-                    var viewmodel = new VideoRegionViewModel(videoRegionModel, elementController, regionController as VideoRegionController, this);
-                    viewmodel.Editable = false;
-                    var view = new VideoRegionView(viewmodel);
-                    view.OnRegionSeek += View_OnRegionSeek;
-                    _regionViews.Add(view);
-                }
-                return _regionViews;
-
-            }
-        }
-
         private void View_OnRegionSeek(double time)
         {
             OnRegionSeekPassing?.Invoke(time);
@@ -93,27 +51,22 @@ namespace NuSysApp
 
         private void LibraryElementControllerOnRegionRemoved(object source, Region region)
         {
-            RaisePropertyChanged("RegionViews");
         }
 
         private void LibraryElementController_Loaded(object sender)
         {
-            RaisePropertyChanged("RegionViews");
         }
 
         private void Controller_SizeChanged(object source, double width, double height)
         {
-            RaisePropertyChanged("RegionViews");
         }
 
         private void LibraryElementControllerOnRegionUpdated(object source, Region region)
         {
-            RaisePropertyChanged("RegionViews");
         }
 
         private void LibraryElementControllerOnRegionAdded(object source, RegionController regionController)
         {
-            RaisePropertyChanged("RegionViews");
         }
 
         public override void Dispose()

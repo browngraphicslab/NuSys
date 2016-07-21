@@ -11,7 +11,9 @@ namespace NuSysApp
         protected AbstractWorkspaceViewMode(FrameworkElement view)
         {
             _view = view;
-        }   
+        }
+
+       
             
         public abstract Task Activate();
         public abstract Task Deactivate();

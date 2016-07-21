@@ -139,7 +139,7 @@ namespace NuSysApp
 
             var lastLine = _lines.Last();
             var secondLastLine = _lines[_lines.Count - 2];
-            foreach (var otherLine in _lines.Where(l => l.ContentId != line.ContentId && l.ContentId != lastLine.ContentId && l.ContentId != secondLastLine.ContentId))
+            foreach (var otherLine in _lines.Where(l => l.LibraryId != line.LibraryId && l.LibraryId != lastLine.LibraryId && l.LibraryId != secondLastLine.LibraryId))
             {
                 var innerRect = Geometry.PointCollecionToBoundingRect(otherLine.Points.ToList());
                 innerRect.X *= Constants.MaxCanvasSize;
@@ -191,7 +191,7 @@ namespace NuSysApp
             m["nodeType"] = ElementType.Tag.ToString();
             m["titleSuggestions"] = titles;
             m["autoCreate"] = true;
-            m["creators"] = new List<string>() { SessionController.Instance.ActiveFreeFormViewer.ContentId };
+            m["creators"] = new List<string>() { SessionController.Instance.ActiveFreeFormViewer.LibraryId };
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
 

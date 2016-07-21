@@ -15,11 +15,20 @@ namespace NuSysApp
         public event TimeChangeHandler OnTimeChange;
 
 
-        public TimeRegionModel(string name, double start, double end) : base(name)
+        public TimeRegionModel(string id) : base(id,ElementType.AudioRegion)
         {
-            Start = start;
-            End = end;
-            Type = RegionType.Time;
+        }
+        public override async Task UnPack(Message message)
+        {
+            if (message.ContainsKey("start"))
+            {
+                Start = message.GetDouble("start");
+            }
+            if (message.ContainsKey("end"))
+            {
+                End = message.GetDouble("end");
+            }
+            await base.UnPack(message);
         }
     }
 }

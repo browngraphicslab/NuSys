@@ -4,36 +4,67 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media;
-using NuSysApp.Tools;
 
 namespace NuSysApp
 {
     public class ToolLinkViewModel : BaseINPC
     {
-        public ToolLinkable InTool;
-        public ToolLinkable OutTool;
 
-        public ToolLinkViewModel(ToolLinkable inTool, ToolLinkable outTool)
+        public ToolController InToolController;
+        public ToolController OutToolController;
+
+        public ToolViewModel InTool;
+        public ToolViewModel OutTool;
+
+
+
+        //public LinkModel LinkModel { get; }
+        //private SolidColorBrush _defaultColor;
+        public ToolLinkViewModel(ToolViewModel inTool, ToolViewModel outTool)
         {
+            //InToolController
             InTool = inTool;
             OutTool = outTool;
             
-            InTool.ToolAnchorChanged += ToolToolAnchorChanged;
-            OutTool.ToolAnchorChanged += ToolToolAnchorChanged;
-        }
 
-        /// <summary>
-        /// When either tool linkable anchors change, let the view know.
-        /// </summary>
-        private void ToolToolAnchorChanged(object sender, Point2d e)
-        {
-            RaisePropertyChanged("Anchor");
+            InToolController = inTool.Controller;
+            OutToolController = outTool.Controller;
+
+            InToolController.LocationChanged += InToolController_LocationChanged; ;
+            OutToolController.LocationChanged += OutToolController_LocationChanged; ;
+            InToolController.SizeChanged += OutElementControllerOnSizeChanged;
+            OutToolController.SizeChanged += OutElementControllerOnSizeChanged;
+
+            
+
         }
 
         public void Dispose()
         {
-            InTool.ToolAnchorChanged -= ToolToolAnchorChanged;
-            OutTool.ToolAnchorChanged -= ToolToolAnchorChanged; 
+            InToolController.LocationChanged -= InToolController_LocationChanged; ;
+            OutToolController.LocationChanged -= OutToolController_LocationChanged; ;
+            InToolController.SizeChanged -= OutElementControllerOnSizeChanged;
+            OutToolController.SizeChanged -= OutElementControllerOnSizeChanged;
+        }
+
+        private void OutToolController_LocationChanged(object sender, double x, double y)
+        {
+            RaisePropertyChanged("Anchor");
+        }
+
+        private void InToolController_LocationChanged(object sender, double x, double y)
+        {
+            RaisePropertyChanged("Anchor");
+        }
+
+        private void OutElementControllerOnSizeChanged(object source, double width, double height)
+        {
+            RaisePropertyChanged("Anchor");
+        }
+
+        private void InElementControllerOnPositionChanged(object source, double x, double y, double dx, double dy)
+        {
+            RaisePropertyChanged("Anchor");
         }
     }
 }

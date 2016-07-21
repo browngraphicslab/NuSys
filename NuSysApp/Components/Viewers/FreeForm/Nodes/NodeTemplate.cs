@@ -179,11 +179,6 @@ namespace NuSysApp
 
         private void Tags_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
-                SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.PRESENTATION)
-            {
-                return;
-            }
             var selectedTag = (e.OriginalSource as TextBlock)?.Text;
             if (selectedTag != null)
             {
@@ -324,8 +319,8 @@ namespace NuSysApp
                                     var region = element as FrameworkElement;
                                     var regiondc = region.DataContext as RegionViewModel;
                                     var m = new Message();
-                                    m["id2"] = regiondc.RegionController.Model.Id;
-                                    m["id1"] = vm.Controller.LibraryElementController.ContentId;
+                                    m["id2"] = regiondc.LibraryElementController.LibraryElementModel.LibraryElementId;
+                                    m["id1"] = vm.Controller.LibraryElementController.LibraryId;
                                     await SessionController.Instance.LinksController.RequestLink(m);
                                     UITask.Run(delegate { vm.Controller.UpdateCircleLinks(); });
                                     break;
@@ -466,7 +461,6 @@ namespace NuSysApp
             highlight.Visibility = Visibility.Collapsed;
 
             sv.EnterExplorationMode(vm);
-            SessionController.Instance.SwitchMode(Options.Exploration);
         }
 
         private void OnResizerManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)

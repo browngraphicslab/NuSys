@@ -180,7 +180,6 @@ namespace NuSysApp
         {
             AnimatePresentation(_originalTransform.ScaleX, _originalTransform.CenterX, _originalTransform.CenterY, _originalTransform.TranslateX, _originalTransform.TranslateY);
            HideRelatedListBox();
-            SessionController.Instance.SwitchMode(Options.SelectNode);
         }
 
         /// <summary>

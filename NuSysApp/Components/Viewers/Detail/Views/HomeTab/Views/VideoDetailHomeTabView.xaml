@@ -16,48 +16,35 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-            <Grid x:Name="grid">
-                <!--<TextBlock x:Name="MessageBox" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>-->
-                <Grid.Resources>
-                    <local:PositionToStringConverter x:Key="PositionToStringConverter"/>
-                </Grid.Resources>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <CaptureElement x:Name="preview"/>
-                <Grid>
-                    <local:VideoMediaPlayer x:Name="VideoMediaPlayer" PointerPressed="MediaPlayer_PointerPressed"></local:VideoMediaPlayer>
-                    <ItemsControl ItemsSource="{Binding RegionViews}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <Canvas/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
-                </Grid>
-                <GridView Visibility="Collapsed" x:Name ="ThumbnailGrid" Grid.Row ="4" Background ="CadetBlue" Height = "{Binding ElementName=grid, Path=ActualHeight}"  Margin="10,10,10,10" VerticalAlignment="Stretch" />
-
+    <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid x:Name="grid">
+            <!--<TextBlock x:Name="MessageBox" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>-->
+            <Grid.Resources>
+                <local:PositionToStringConverter x:Key="PositionToStringConverter"/>
+            </Grid.Resources>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <CaptureElement x:Name="preview"/>
+            <Grid>
+                <local:VideoMediaPlayer x:Name="VideoMediaPlayer" PointerPressed="MediaPlayer_PointerPressed"> </local:VideoMediaPlayer>
+                <ItemsControl ItemsSource="{Binding RegionViews}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
             </Grid>
-        </Border>
-        <Border Grid.Row="1" Background="{StaticResource color7}" Height="Auto" Width="140" Padding="5" BorderBrush="{StaticResource color3}" BorderThickness="2" Margin="0,50,0,0"
-                Visibility="{Binding Editable, Converter={StaticResource vConverter}, ConverterParameter=true}">
-            <TextBlock x:Name="AddToCollection" Width="Auto" Height="Auto" Foreground="{StaticResource color3}" Text="Drag To Collection" TextAlignment="Center"
-                   PointerPressed="AddToCollection_OnPointerPressed"
-                   ManipulationStarted="AddToCollection_OnManipulationStarted"
-                   ManipulationDelta="AddToCollection_ManipulationDelta"
-                   ManipulationCompleted="AddToCollection_ManipulationCompleted"
-                   ManipulationMode="TranslateX,TranslateY"/>
-        </Border>
-    </Grid>
+            <GridView Visibility="Collapsed" x:Name ="ThumbnailGrid" Grid.Row ="4" Background ="CadetBlue" Height = "{Binding ElementName=grid, Path=ActualHeight}"  Margin="10,10,10,10" VerticalAlignment="Stretch" />
+
+
+        </Grid>
+
+    </Border>
 </UserControl>

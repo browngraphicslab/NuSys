@@ -35,6 +35,9 @@ namespace NuSysApp
 
             //    Annotation.Text = vm.Annotation;
 
+ 
+            Canvas.SetZIndex(this, -2);//temporary fix to make sure events are propagated to nodes
+
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
                 UpdateControlPoints();
@@ -79,6 +82,23 @@ namespace NuSysApp
             
             this.UpdateControlPoints();
 
+            Canvas.SetZIndex(this, -10);
+
+            var vm = DataContext as LinkViewModel;
+
+            if (propertyChangedEventArgs.PropertyName == "IsSelected")
+            {
+                // if the vm is selected make sure title is read only in exploration mode
+                if (false)
+                {
+                    Title.IsReadOnly = SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION;
+                    
+                }
+            }
+            else
+            {
+                //(vm?.Model as LinkModel)?.RectangleModel?.Model.Deselect();
+            }
         }
         
 
@@ -161,6 +181,5 @@ namespace NuSysApp
                 tb.IsReadOnly = true;
             }
         }
-
     }
 }

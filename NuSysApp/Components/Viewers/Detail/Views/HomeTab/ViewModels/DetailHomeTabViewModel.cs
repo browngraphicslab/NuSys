@@ -9,7 +9,6 @@ namespace NuSysApp
     public abstract class DetailHomeTabViewModel : Regionable<Region>
     {
         private LibraryElementController _libraryElementController;
-        private bool _editable;
 
         public delegate void TitleChangedEventHandler(object source, string title);
         public event TitleChangedEventHandler TitleChanged;
@@ -27,17 +26,8 @@ namespace NuSysApp
             }
         }
 
-
-        public bool Editable
-        {
-            get { return _editable; }
-            set
-            {
-                _editable = value;
-                RaisePropertyChanged("Editable");
-            }
-        }
-        public DetailHomeTabViewModel(LibraryElementController controller, HashSet<Region> regionsToLoad)
+        public bool Editable { set; get; }
+        public DetailHomeTabViewModel(LibraryElementController controller)
         {
 
             _libraryElementController = controller;

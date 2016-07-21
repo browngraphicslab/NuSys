@@ -14,7 +14,7 @@ namespace NuSysApp
         public string Annotation { get; private set; }
 
         private LinkLibraryElementController _controller;
-        public LinkHomeTabViewModel(LinkLibraryElementController controller, HashSet<Region> regionsToLoad) : base(controller, regionsToLoad)
+        public LinkHomeTabViewModel(LinkLibraryElementController controller) : base(controller)
         {
             _controller = controller;
             var linkModel = controller.LinkLibraryElementModel;
@@ -104,7 +104,7 @@ namespace NuSysApp
             //throw new NotImplementedException();
         }
 
-        public override Region GetNewRegion()
+        public override Message GetNewRegionMessage()
         {
             return null;
             //throw new NotImplementedException();

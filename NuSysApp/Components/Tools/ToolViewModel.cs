@@ -3,16 +3,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-using NuSysApp.Tools;
 
 namespace NuSysApp
 {
-    public abstract class ToolViewModel : BaseINPC, ToolLinkable
+    public abstract class ToolViewModel : BaseINPC
     {
         public delegate void PropertiesToDisplayChangedEventHandler();
         public event PropertiesToDisplayChangedEventHandler PropertiesToDisplayChanged;
@@ -24,15 +22,6 @@ namespace NuSysApp
         private double _x;
         private double _y;
         private CompositeTransform _transform = new CompositeTransform();
-        public Point2d ToolAnchor { get {return _anchor;} }
-        public event EventHandler<Point2d> ToolAnchorChanged;
-        public event EventHandler<string> Disposed;
-        public ToolStartable GetToolStartable()
-        {
-            return Controller;
-        }
-
-        private Point2d _anchor;
         public double Width
         {
             set
@@ -45,6 +34,7 @@ namespace NuSysApp
                 return _width;
             }
         }
+
         public ObservableCollection<ToolModel.ParentOperatorType> ParentOperatorList = new ObservableCollection<ToolModel.ParentOperatorType>() {ToolModel.ParentOperatorType.And, ToolModel.ParentOperatorType.Or}; 
 
         public void InvokePropertiesToDisplayChanged()
@@ -63,6 +53,7 @@ namespace NuSysApp
                 return _height;
             }
         }
+
         public double X
         {
             set
@@ -103,26 +94,14 @@ namespace NuSysApp
 
         public ToolViewModel(ToolController toolController)
         {
-            CalculateAnchorPoint();
             _controller = toolController;
-            _controller.IdsToDisplayChanged += ControllerOnLibraryIdsToDisplayChanged;
+            _controller.ParentsLibraryIdsChanged += ControllerOnParentsLibraryLibraryIdsChanged;
             Controller.SizeChanged += OnSizeChanged;
             Controller.LocationChanged += OnLocationChanged;
             Height = 400;
             Width = 260;
         }
 
-        /// <summary>
-        /// Calculates the tool anchor point of as the top center of the node
-        /// </summary>
-        public void CalculateAnchorPoint()
-        {
-            _anchor = new Point2d(X + Width / 2 + 60, Y + 20);
-        }
-
-        /// <summary>
-        /// Creates a collection from this tools output library ids
-        /// </summary>
         public async void CreateCollection(double x, double y)
         {
             Task.Run(async delegate
@@ -142,9 +121,9 @@ namespace NuSysApp
                 m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Model.LibraryId;
                 var collRequest = new NewElementRequest(m);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(collRequest);
-                foreach (var id in Controller.Model.OutputLibraryIds)
+                foreach (var id in Controller.Model.LibraryIds)
                 {
-                    var lem = SessionController.Instance.ContentController.GetContent(id);
+                    var lem = SessionController.Instance.ContentController.GetLibraryElementModel(id);
                     if (lem == null || lem.Type == ElementType.Link)
                     {
                         continue;
@@ -165,19 +144,15 @@ namespace NuSysApp
 
             });
         }
-
-        /// <summary>
-        /// Creates a stack of elements from this tools output library ids
-        /// </summary>
         public async void CreateStack(double x, double y)
         {
             Task.Run(async delegate
             {
                 int i = 0;
                 int offset = 40;
-                foreach (var id in Controller.Model.OutputLibraryIds)
+                foreach (var id in Controller.Model.LibraryIds)
                 {
-                    var lem = SessionController.Instance.ContentController.GetContent(id);
+                    var lem = SessionController.Instance.ContentController.GetLibraryElementModel(id);
                     if (lem == null || lem.Type == ElementType.Link || i > 20)//TODO indicate to user than no more than 20 non-link items will be made
                     {
                         continue;
@@ -199,27 +174,20 @@ namespace NuSysApp
 
             });
         }
-
-        /// <summary>
-        /// Opens the detail view of the selected value if possible (i.e. there is only 1 library id selected)
-        /// </summary>
         public void OpenDetailView()
         {
-            if (Controller.Model.OutputLibraryIds.Count == 1)
+            if (Controller.Model.LibraryIds.Count == 1)
             {
-                var lem = SessionController.Instance.ContentController.GetLibraryElementController(Controller.Model.OutputLibraryIds.First());
+                var lem = SessionController.Instance.ContentController.GetLibraryElementController(Controller.Model.LibraryIds.First());
                 SessionController.Instance.SessionView.ShowDetailView(lem);
             }
             
         }
 
-        /// <summary>
-        /// Returns a boolean representing if creating a tool chain from this tool to the passed in tool will create a loop
-        /// </summary>
         public bool CreatesLoop(ToolViewModel toolViewModel)
         {
             bool createsLoop = false;
-            var controllers = new List<ToolStartable>(Controller.Model.ParentIds.Select(item => ToolController.ToolControllers.ContainsKey(item) ? ToolController.ToolControllers[item] : null));
+            var controllers = new List<ToolController>(Controller.Model.ParentIds.Select(item => ToolController.ToolControllers.ContainsKey(item) ? ToolController.ToolControllers[item] : null));
 
             while (controllers != null && controllers.Count != 0)
             {
@@ -228,11 +196,11 @@ namespace NuSysApp
                     createsLoop = true;
                     break;
                 }
-                var tempControllers = new List<ToolStartable>();
+                var tempControllers = new List<ToolController>();
                 foreach (var controller in controllers)
                 {
-                    tempControllers = new List<ToolStartable>(tempControllers.Union(new List<ToolStartable>(
-                            controller.GetParentIds().Select(
+                    tempControllers = new List<ToolController>(tempControllers.Union(new List<ToolController>(
+                            controller.Model.ParentIds.Select(
                                 item =>
                                     ToolController.ToolControllers.ContainsKey(item)
                                         ? ToolController.ToolControllers[item]
@@ -243,9 +211,6 @@ namespace NuSysApp
             return createsLoop;
         }
 
-        /// <summary>
-        /// Will either add this tool as a parent if dropped on top of an existing tool, or create a brand new tool filter chooser view. 
-        /// </summary>
         public void FilterIconDropped(IEnumerable<UIElement> hitsStart,  FreeFormViewerViewModel wvm, double x, double y)
         {
             if (hitsStart.Where(uiElem => (uiElem is FrameworkElement) && (uiElem as FrameworkElement).DataContext is ToolViewModel).ToList().Any())
@@ -264,39 +229,27 @@ namespace NuSysApp
             }
         }
 
-        /// <summary>
-        ///creates new filter tool at specified location
-        /// </summary>
         public void AddNewFilterTool(double x, double y, FreeFormViewerViewModel wvm)
         {
-            
-
             var toolFilter = new ToolFilterView(x, y, this);
-
-            var linkviewmodel = new ToolLinkViewModel(this, toolFilter);
-            var link = new ToolLinkView(linkviewmodel);
-            
-            Canvas.SetZIndex(link, Canvas.GetZIndex(toolFilter) - 1);
+            var toolFilterLinkViewModel = new ToolFilterLinkViewModel(this, toolFilter);
+            var toolFilterLink = new ToolFilterLinkView(toolFilterLinkViewModel);
+            Canvas.SetZIndex(toolFilterLink, Canvas.GetZIndex(toolFilter) - 1);
+            toolFilter.AddLink(toolFilterLink);
             wvm.AtomViewList.Add(toolFilter);
-            wvm.AtomViewList.Add(link);
+            wvm.AtomViewList.Add(toolFilterLink);
         }
 
-        /// <summary>
-        ///Adds tool as parent to existing filter picker tool. 
-        /// </summary>
         public void AddFilterToFilterToolView(List<UIElement> hitsStartList, FreeFormViewerViewModel wvm)
         {
-
-            var linkviewmodel = new ToolLinkViewModel(this, (hitsStartList.First() as ToolFilterView));
-            var linkView = new ToolLinkView(linkviewmodel);
+            ToolFilterLinkViewModel linkViewModel = new ToolFilterLinkViewModel(this, (hitsStartList.First() as ToolFilterView));
+            ToolFilterLinkView linkView = new ToolFilterLinkView(linkViewModel);
             Canvas.SetZIndex(linkView, Canvas.GetZIndex(hitsStartList.First()) - 1);
+            (hitsStartList.First() as ToolFilterView).AddLink(linkView);
             (hitsStartList.First() as ToolFilterView).AddParentTool(this);
             wvm.AtomViewList.Add(linkView);
         }
 
-        /// <summary>
-        ///Adds tool as parent to existing tool. 
-        /// </summary>
         public void AddFilterToExistingTool(List<UIElement> hitsStartList, FreeFormViewerViewModel wvm)
         {
             ToolViewModel toolViewModel = (hitsStartList.First() as AnimatableUserControl).DataContext as ToolViewModel;
@@ -324,25 +277,19 @@ namespace NuSysApp
 
         public void Dispose()
         {
-            _controller.IdsToDisplayChanged -= ControllerOnLibraryIdsToDisplayChanged;
+            _controller.ParentsLibraryIdsChanged -= ControllerOnParentsLibraryLibraryIdsChanged;
             Controller.SizeChanged -= OnSizeChanged;
             Controller.LocationChanged -= OnLocationChanged;
             Controller.Dispose();
-            Disposed?.Invoke(this, Controller.GetID());
         }
 
-        /// <summary>
-        ///Adds this tool as a parent of the passed in tool controller 
-        /// </summary>
         public void AddChildFilter(ToolController controller)
         {
             controller.AddParent(_controller);
+
         }
 
-        /// <summary>
-        ///Reloads the properties to to display
-        /// </summary>
-        private void ControllerOnLibraryIdsToDisplayChanged()
+        private void ControllerOnParentsLibraryLibraryIdsChanged()
         {
             ReloadPropertiesToDisplay();
         }
@@ -353,8 +300,6 @@ namespace NuSysApp
         {
             Width = width;
             Height = height;
-            CalculateAnchorPoint();
-            ToolAnchorChanged?.Invoke(this, _anchor);
         }
 
         public void OnLocationChanged(object sender, double x, double y)
@@ -364,11 +309,6 @@ namespace NuSysApp
             Transform.TranslateX = x;
             Transform.TranslateY = y;
             RaisePropertyChanged("Transform");
-            CalculateAnchorPoint();
-            ToolAnchorChanged?.Invoke(this, _anchor);
-
         }
-
-
     }
 }

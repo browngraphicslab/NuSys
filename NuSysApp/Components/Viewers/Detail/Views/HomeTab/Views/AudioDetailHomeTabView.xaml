@@ -15,33 +15,16 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch">
-
-            <Grid VerticalAlignment="Center" >
-                <local:AudioMediaPlayer x:Name="MediaPlayer" PointerPressed="AudioPlayer_PointerPressed"></local:AudioMediaPlayer>
-                <ItemsControl ItemsSource="{Binding RegionViews}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <Grid/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
-            </Grid>
-        </Border>
-        <Border Grid.Row="1" Background="{StaticResource color7}" Height="Auto" Width="140" Padding="5" BorderBrush="{StaticResource color3}" BorderThickness="2" Margin="0,50,0,0"
-            Visibility="{Binding Editable, Converter={StaticResource vConverter}, ConverterParameter=true}">
-            <TextBlock x:Name="AddToCollection" Width="Auto" Height="Auto" Foreground="{StaticResource color3}" Text="Drag To Collection" TextAlignment="Center"
-                PointerPressed="AddToCollection_OnPointerPressed"
-                ManipulationStarted="AddToCollection_OnManipulationStarted"
-                ManipulationDelta="AddToCollection_ManipulationDelta"
-                ManipulationCompleted="AddToCollection_ManipulationCompleted"
-                ManipulationMode="TranslateX,TranslateY"/>
-        </Border>
-    </Grid>
-
+    <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch">
+        <Grid VerticalAlignment="Center" >
+        <local:AudioMediaPlayer x:Name="MediaPlayer" PointerPressed="AudioPlayer_PointerPressed"></local:AudioMediaPlayer>
+        <ItemsControl ItemsSource="{Binding RegionViews}">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <Grid/>
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        </ItemsControl>
+        </Grid>
+    </Border>
 </UserControl>

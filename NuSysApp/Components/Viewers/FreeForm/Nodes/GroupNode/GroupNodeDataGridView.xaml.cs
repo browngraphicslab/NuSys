@@ -142,7 +142,7 @@ namespace NuSysApp
                 return;
             }
 
-            // the list item template has an element controller id, use that to get the library element Model ContentId
+            // the list item template has an element controller id, use that to get the library element Model LibraryId
             ElementController elementController;
             SessionController.Instance.IdToControllers.TryGetValue(groupNodeDataGridInfo.Id, out elementController);
             var libraryElementModelId = elementController?.LibraryElementModel.LibraryElementId;

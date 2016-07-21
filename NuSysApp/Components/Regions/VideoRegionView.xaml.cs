@@ -38,11 +38,15 @@ namespace NuSysApp
         public bool Selected { get; set; }
 
 
-        public VideoRegionView(VideoRegionViewModel vm)
+        public VideoRegionView(VideoRegionViewModel vm, ClippedGridWrapper grid)
         {
             this.InitializeComponent();
             this.DataContext = vm;
             this.Deselect();
+
+            
+
+            grid.XClippedGrid.Children.Add(this);
         }
         private void Bound1_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
@@ -162,7 +166,7 @@ namespace NuSysApp
             if (!Selected)
             {
                 this.Select();
-                OnRegionSeek?.Invoke(((this.DataContext as VideoRegionViewModel).RegionController.Model as VideoRegionModel).Start + 0.001);
+                OnRegionSeek?.Invoke(((this.DataContext as VideoRegionViewModel).LibraryElementController.LibraryElementModel as VideoRegionModel).Start + 0.001);
 
             }
             e.Handled = true;
@@ -228,7 +232,8 @@ namespace NuSysApp
             _isSingleTap = false;
 
             var vm = DataContext as RegionViewModel;
-            var regionController = vm?.RegionController;
+            SessionController.Instance.SessionView.ShowDetailView(vm?.LibraryElementController);
+            var regionController = vm?.LibraryElementController;
             SessionController.Instance.SessionView.ShowDetailView(regionController);
         }
 
@@ -236,7 +241,7 @@ namespace NuSysApp
         {
             var vm = DataContext as VideoRegionViewModel;
             vm.Name = (sender as TextBox).Text;
-            vm.RegionController.SetTitle(vm.Name);
+            vm.LibraryElementController.SetTitle(vm.Name);
         }
 
         private async void IntervalRectangle_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -248,7 +253,7 @@ namespace NuSysApp
 
             if (!Selected)
             {
-                OnRegionSeek?.Invoke(((this.DataContext as VideoRegionViewModel).RegionController.Model as VideoRegionModel).Start + 0.001);
+                OnRegionSeek?.Invoke(((this.DataContext as VideoRegionViewModel).LibraryElementController.LibraryElementModel as VideoRegionModel).Start + 0.001);
             }
 
 
@@ -265,7 +270,7 @@ namespace NuSysApp
             }
            
             var libraryElementController = vm.LibraryElementController;
-            libraryElementController.RemoveRegion(vm.RegionController.Model);
+            libraryElementController.RemoveRegion(vm.LibraryElementController.LibraryElementModel as Region);
 
 
         }

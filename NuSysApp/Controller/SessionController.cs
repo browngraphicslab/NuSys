@@ -20,10 +20,6 @@ namespace NuSysApp
     {
         public delegate void WorkspaceChangedHandler(object source, FreeFormViewerViewModel freeFormViewer);
 
-        public delegate void ModeChangedEventHandler(object source, Options mode);
-
-        public event ModeChangedEventHandler OnModeChanged;
-
         private static readonly object _syncRoot = new Object();
         private static SessionController _instance = new SessionController();
         private FreeFormViewerViewModel _activeFreeFormViewer;
@@ -150,11 +146,6 @@ namespace NuSysApp
         {
             //return _id++.ToString();
             return Guid.NewGuid().ToString("N");
-        }
-
-        public void SwitchMode(Options mode)
-        {
-            OnModeChanged?.Invoke(this, mode);
         }
 
         #region Speech Recognition

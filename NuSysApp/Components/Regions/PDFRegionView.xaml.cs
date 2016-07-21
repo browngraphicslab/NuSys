@@ -30,7 +30,7 @@ namespace NuSysApp
         public bool Selected {private set; get; }
 
 
-        public PDFRegionView(PdfRegionViewModel regionVM)
+        public PDFRegionView(PdfRegionViewModel regionVM, ClippedGridWrapper grid)
         {
             
             this.InitializeComponent();
@@ -70,6 +70,8 @@ namespace NuSysApp
 
             _tx = composite.TranslateX;
             _ty = composite.TranslateY;
+
+            grid.XClippedGrid.Children.Add(this);
         }
 
 
@@ -292,7 +294,8 @@ namespace NuSysApp
         private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var vm = DataContext as RegionViewModel;
-            var regionController = vm?.RegionController;
+            //SessionController.Instance.SessionView.ShowDetailView(vm?.LibraryElementController);
+            var regionController = vm?.LibraryElementController;
             SessionController.Instance.SessionView.ShowDetailView(regionController);
         }
 
@@ -308,7 +311,7 @@ namespace NuSysApp
             }
 
             var libraryElementController = vm.LibraryElementController;
-            libraryElementController.RemoveRegion(vm.RegionController.Model);
+            libraryElementController.RemoveRegion(vm.LibraryElementController.LibraryElementModel as Region);
 
 
         }

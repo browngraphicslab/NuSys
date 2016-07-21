@@ -15,6 +15,5 @@ namespace NuSysApp
             Debug.Assert(model != null);
             LinkLibraryElementModel = model;
         }
-
     }
 }

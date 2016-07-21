@@ -94,7 +94,7 @@ namespace NuSysApp
             AnchorChanged?.Invoke(this, Anchor);
         }
 
-        public void Dispose(object sender, EventArgs args)
+        public void Dispose(object sender, object args)
         {
             if (InElement != null)
             {
@@ -135,6 +135,5 @@ namespace NuSysApp
                 (int)(InElement.Anchor.Y + (Math.Abs(OutElement.Anchor.Y - InElement.Anchor.Y) / 2)));
 
         }*/
-
     }
 }

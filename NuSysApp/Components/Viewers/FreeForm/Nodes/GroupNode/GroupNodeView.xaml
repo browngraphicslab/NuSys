@@ -46,10 +46,7 @@
             <Button Margin="0,0,0,0" x:Name="EnterButton" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
                 <Image Source="ms-appx:///Assets/node icons/icon_enter.png"  Height="28" Stretch="Uniform"></Image>
             </Button>
-            <Grid x:Name="xBtnTools" Width="60" Height="60" Margin="10,0,10,0" Background="Transparent">
-                    <TextBlock Margin="0,0,0,12" Text="Tools" TextAlignment="Center" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="{StaticResource color3}" ></TextBlock>
-                    <Image Height="30" Margin="0,5,0,0"   Source="ms-appx:///Assets/tools icon.png" ></Image>
-            </Grid>
+
 
             </StackPanel>
             
@@ -64,6 +61,7 @@
         </Grid>
 
                 <Grid x:Name="ExpandedGrid" Background="Transparent" Width="{Binding Width}" Height="{Binding Height}" VerticalAlignment="Top" HorizontalAlignment="Left">
+
 
         </Grid>
 

@@ -11,7 +11,7 @@ namespace NuSysApp
 
         Task RequestAddNewLink(string idToLinkTo, string title);
         void RequestRemoveLink(string linkID);
-        string ContentId { get; }
+        string LibraryId { get; }
         event EventHandler<LinkLibraryElementController> LinkAdded;
         event EventHandler<string> LinkRemoved;
         HashSet<LinkLibraryElementController> GetAllLinks();

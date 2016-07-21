@@ -18,7 +18,7 @@ namespace NuSysApp
             LibraryElementModel model;
 
             var id = message.GetString("id");
-            if (SessionController.Instance.ContentController.GetContent(id) == null)
+            if (SessionController.Instance.ContentController.GetLibraryElementModel(id) == null)
             {
                 var title = message.GetString("title");
                 Dictionary<string, MetadataEntry> metadata = new Dictionary<string, MetadataEntry>();
@@ -42,6 +42,19 @@ namespace NuSysApp
                         var id2 = message.Get("id2");
 
                         model = new LinkLibraryElementModel(id1, id2, id);
+                        break;
+                    case ElementType.ImageRegion:
+                        model = new RectangleRegion(id, ElementType.ImageRegion);
+                        break;
+                    case ElementType.VideoRegion:
+                        model = new VideoRegionModel(id);
+
+                        break;
+                    case ElementType.AudioRegion:
+                        model = new TimeRegionModel(id);
+                        break;
+                    case ElementType.PdfRegion:
+                        model = new PdfRegion(id);
                         break;
                     default:
                         model = new LibraryElementModel(id, type, metadata, title, favorited);
