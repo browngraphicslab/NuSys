@@ -15,7 +15,7 @@
         </Grid.ColumnDefinitions>
         <Grid x:Name="xBarChart" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0" SizeChanged="XBarChart_OnSizeChanged"/>
         <ListView x:Name="xBarChartLegend" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MinWidth="100"
-                  BorderThickness="2,0,0,0" BorderBrush="{StaticResource color2}"
+                  BorderThickness="2,0,0,0" BorderBrush="{StaticResource color1}"
                   ManipulationMode="TranslateX, TranslateY" Width="Auto" Background="White" SelectionMode="Multiple"  ItemsSource="{x:Bind BarChartLegendItems}" >
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">

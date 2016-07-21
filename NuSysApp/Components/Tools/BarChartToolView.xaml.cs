@@ -234,37 +234,7 @@ namespace NuSysApp
         {
             var selection = ((sender as FrameworkElement)?.DataContext as BarChartItemViewModel)?.Title;
             _baseTool.Item_OnTapped(selection, e.PointerDeviceType);
-            //if (_baseTool.Vm.Selection != null && _baseTool.Vm.Controller.Model.Selected && _baseTool.Vm.Selection.Contains(selection))
-            //{
-            //    if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
-            //    {
-            //        _baseTool.Vm.Selection.Remove(selection);
-            //        _baseTool.Vm.Selection = _baseTool.Vm.Selection;
-            //    }
-            //    else
-            //    {
-            //        _baseTool.Vm.Controller.UnSelect();
-            //    }
-            //}
-            //else
-            //{
-            //    if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
-            //    {
-            //        if (_baseTool.Vm.Selection != null)
-            //        {
-            //            _baseTool.Vm.Selection.Add(selection);
-            //            _baseTool.Vm.Selection = _baseTool.Vm.Selection;
-            //        }
-            //        else
-            //        {
-            //            _baseTool.Vm.Selection = new HashSet<string> { selection };
-            //        }
-            //    }
-            //    else
-            //    {
-            //        _baseTool.Vm.Selection = new HashSet<string> { selection };
-            //    }
-            //}
+          
         }
         
         /// <summary>

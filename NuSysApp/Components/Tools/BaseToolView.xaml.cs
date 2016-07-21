@@ -401,6 +401,8 @@ namespace NuSysApp
             var t = (CompositeTransform)_dragFilterItem.RenderTransform;
             t.TranslateX = _x;
             t.TranslateY = _y;
+            _dragFilterItem.Visibility = Visibility.Visible;
+
         }
 
         /// <summary>
