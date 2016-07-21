@@ -16,7 +16,7 @@
         <Grid x:Name="xBarChart" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Column="0" Margin="0" SizeChanged="XBarChart_OnSizeChanged"/>
         <InkCanvas x:Name="xInkCanvas" IsHitTestVisible="False"></InkCanvas>
         <ListView x:Name="xBarChartLegend" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MinWidth="100"
-                  BorderThickness="2,0,0,0" BorderBrush="{StaticResource color2}"
+                  BorderThickness="2,0,0,0" BorderBrush="{StaticResource color1}"
                   ManipulationMode="TranslateX, TranslateY" Width="Auto" Background="White" SelectionMode="Multiple"  ItemsSource="{x:Bind BarChartLegendItems}" >
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
