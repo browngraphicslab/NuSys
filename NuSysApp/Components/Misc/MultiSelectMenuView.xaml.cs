@@ -84,10 +84,18 @@ namespace NuSysApp
             elementMsg["type"] = ElementType.Collection;
             elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             elementMsg["id"] = newCollectionId;
+            elementMsg["color"] = Colors.Red;
+            elementMsg["points"] = Stroke.GetInkPoints();
+
+            // Removes the ink from the canvas
+            var req = InkStorage.CreateRemoveInkRequest(new InkWrapper(Stroke, "ink"));
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.RemoveStroke(Stroke);
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Search Results"));
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
+
+            
 
             //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
 
