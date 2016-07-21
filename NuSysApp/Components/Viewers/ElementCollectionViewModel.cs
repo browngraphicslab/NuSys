@@ -32,8 +32,8 @@ namespace NuSysApp
         {
             controller.ChildAdded += OnChildAdded;
             controller.ChildRemoved += OnChildRemoved;
-            //(controller.LibraryElementModel as CollectionLibraryElementModel).OnLinkAdded += OnOnLinkAdded;
-            //(controller.LibraryElementModel as CollectionLibraryElementModel).OnLinkRemoved += ElementCollectionViewModel_OnLinkRemoved;
+            //(libraryElementController.LibraryElementModel as CollectionLibraryElementModel).OnLinkAdded += OnOnLinkAdded;
+            //(libraryElementController.LibraryElementModel as CollectionLibraryElementModel).OnLinkRemoved += ElementCollectionViewModel_OnLinkRemoved;
             Text = controller.LibraryElementModel?.Data;
 
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
@@ -81,21 +81,21 @@ namespace NuSysApp
             }
             foreach (var regions in controller?.LibraryElementModel?.Regions ?? new HashSet<Region>()) 
             {
-                RegionController regionController;
+                RegionLibraryElementController regionLibraryElementController;
 
                 if (SessionController.Instance.RegionsController.GetRegionController(regions.Id) == null)
                 {
-                    regionController = SessionController.Instance.RegionsController.AddRegion(regions, controller.LibraryElementModel.LibraryElementId);
+                    regionLibraryElementController = SessionController.Instance.RegionsController.AddRegion(regions, controller.LibraryElementModel.LibraryElementId);
                 }
                 else
                 {
-                    regionController = SessionController.Instance.RegionsController.GetRegionController(regions.Id);
+                    regionLibraryElementController = SessionController.Instance.RegionsController.GetRegionController(regions.Id);
                 }
-                var cLinks = SessionController.Instance.LinksController.GetLinkedIds(regionController.ContentId);
+                var cLinks = SessionController.Instance.LinksController.GetLinkedIds(regionLibraryElementController.ContentId);
                 foreach (var linkId in cLinks)
                 {
                     var link = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
-                    //AddVisualLinks(regioncontroller, controller, link.LibraryElementId);
+                    //AddVisualLinks(regioncontroller, libraryElementController, link.LibraryElementId);
                 }
             }
             controller.Deleted += OnChildDeleted;

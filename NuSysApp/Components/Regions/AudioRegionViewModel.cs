@@ -81,7 +81,7 @@ namespace NuSysApp
 
         private bool _editable;
 
-        public AudioRegionViewModel(TimeRegionModel model, LibraryElementController controller, AudioRegionController regionController, Sizeable sizeable) : base(model,controller, regionController, sizeable)
+        public AudioRegionViewModel(TimeRegionModel model, LibraryElementController controller, AudioRegionLibraryElementController regionLibraryElementController, Sizeable sizeable) : base(model,controller, regionLibraryElementController, sizeable)
         {
             ContainerSizeChanged += BaseSizeChanged;
             RegionWidth = (model.End-model.Start)*sizeable.GetWidth();
@@ -93,9 +93,9 @@ namespace NuSysApp
             RightHandleY2 = 110; //+ contentView.ActualHeight;
             Name = Model.Name;
 
-            regionController.RegionUpdated += RegionController_RegionUpdated;
-            regionController.TimeChanged += RegionController_TimeChanged;
-            regionController.TitleChanged += RegionController_TitleChanged;
+            regionLibraryElementController.RegionUpdated += RegionController_RegionUpdated;
+            regionLibraryElementController.TimeChanged += RegionController_TimeChanged;
+            regionLibraryElementController.TitleChanged += RegionController_TitleChanged;
 
         }
 
@@ -148,7 +148,7 @@ namespace NuSysApp
         public void SetNewPoints(double Start, double End)
         {
             var model = Model as TimeRegionModel;
-            var audioRegionController = RegionController as AudioRegionController;
+            var audioRegionController = RegionLibraryElementController as AudioRegionLibraryElementController;
             if (model == null)
             {
                 return;

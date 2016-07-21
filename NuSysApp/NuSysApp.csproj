@@ -380,21 +380,22 @@
       <DependentUpon>VideoMediaPlayer.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\RecordingNodeViewModel.cs" />
-    <Compile Include="Controller\AudioRegionController.cs" />
+    <Compile Include="Controller\AudioRegionLibraryElementController.cs" />
     <Compile Include="Controller\LibraryElementController\LibraryElementControllerFactory.cs" />
     <Compile Include="Controller\LibraryElementController\LinkLibraryElementController.cs" />
     <Compile Include="Controller\LibraryElementController\WordNodeLibraryElementController.cs" />
     <Compile Include="Controller\LinksController.cs" />
     <Compile Include="Controller\RecordingNodeController.cs" />
-    <Compile Include="Controller\RectangleRegionController.cs" />
-    <Compile Include="Controller\PdfRegionController.cs" />
-    <Compile Include="Controller\RegionController.cs" />
+    <Compile Include="Controller\RectangleRegionLibraryElementController.cs" />
+    <Compile Include="Controller\PdfRegionLibraryElementController.cs" />
+    <Compile Include="Controller\RegionLibraryElementController.cs" />
     <Compile Include="Controller\RegionControllerFactory.cs" />
     <Compile Include="Controller\RegionsController.cs" />
-    <Compile Include="Controller\VideoRegionController.cs" />
+    <Compile Include="Controller\VideoRegionLibraryElementController.cs" />
     <Compile Include="Converters\BoolToManipulationModeConverter.cs" />
     <Compile Include="Converters\ListToStringConverter.cs" />
     <Compile Include="Converters\MutabilityToBrushConverter.cs" />
+    <Compile Include="Models\ContentDataModel.cs" />
     <Compile Include="Models\LibraryElementModelFactory.cs" />
     <Compile Include="Models\LinkLibraryElementModel.cs" />
     <Compile Include="Models\PresentationLinkModel.cs" />

@@ -123,7 +123,7 @@ namespace NuSysApp
             _isSingleTap = false;
 
             var vm = DataContext as RegionViewModel;
-            var regionController = vm?.RegionController;
+            var regionController = vm?.RegionLibraryElementController;
             SessionController.Instance.SessionView.ShowDetailView(regionController);
         }
 
@@ -141,7 +141,7 @@ namespace NuSysApp
         {
             var vm = DataContext as AudioRegionViewModel;
             vm.Name = (sender as TextBox).Text;
-            vm.RegionController.SetTitle(vm.Name);
+            vm.RegionLibraryElementController.SetTitle(vm.Name);
         }
 
         private void xDelete_PointerPressed(object sender, PointerRoutedEventArgs e)
@@ -155,7 +155,7 @@ namespace NuSysApp
             }
 
             var libraryElementController = vm.LibraryElementController;
-            libraryElementController.RemoveRegion(vm.RegionController.Model);
+            libraryElementController.RemoveRegion(vm.RegionLibraryElementController.Model);
 
 
         }
@@ -170,7 +170,7 @@ namespace NuSysApp
 
             if (!Selected)
             {
-                OnRegionSeek?.Invoke(((DataContext as AudioRegionViewModel).RegionController.Model as TimeRegionModel).Start + 0.01);
+                OnRegionSeek?.Invoke(((DataContext as AudioRegionViewModel).RegionLibraryElementController.Model as TimeRegionModel).Start + 0.01);
             }
 
             e.Handled = true;

@@ -75,7 +75,7 @@ namespace NuSysApp
         public event LocationChangedEventHandler LocationChanged;
 
 
-        public ImageRegionViewModel(RectangleRegion model, LibraryElementController libraryElementController, RectangleRegionController regionController, Sizeable sizeable) : base(model,libraryElementController, regionController,sizeable)
+        public ImageRegionViewModel(RectangleRegion model, LibraryElementController libraryElementController, RectangleRegionLibraryElementController regionLibraryElementController, Sizeable sizeable) : base(model,libraryElementController, regionLibraryElementController,sizeable)
         {
             if (model == null)
             {
@@ -87,10 +87,10 @@ namespace NuSysApp
             Height = model.Height * ContainerHeight;
             Width = model.Width * ContainerWidth;
 
-            regionController.SizeChanged += RegionController_SizeChanged;
-            regionController.LocationChanged += RegionController_LocationChanged;
-            regionController.TitleChanged += RegionController_TitleChanged;
-            regionController.OnSelect += RegionController_OnSelect;
+            regionLibraryElementController.SizeChanged += RegionController_SizeChanged;
+            regionLibraryElementController.LocationChanged += RegionController_LocationChanged;
+            regionLibraryElementController.TitleChanged += RegionController_TitleChanged;
+            regionLibraryElementController.OnSelect += RegionController_OnSelect;
             Name = Model.Name;
             Editable = true;
             Selected = false;
@@ -99,7 +99,7 @@ namespace NuSysApp
         }
 
         //Not currently implemented
-        private void RegionController_OnSelect(RegionController regionController)
+        private void RegionController_OnSelect(RegionLibraryElementController regionLibraryElementController)
         {
             RaisePropertyChanged("Selected");
             Selected = true;
@@ -186,7 +186,7 @@ namespace NuSysApp
 
             var tlp = new Point(normalTopLeftX, normalTopLeftY);
 
-            (RegionController as RectangleRegionController).SetLocation(tlp);
+            (RegionLibraryElementController as RectangleRegionLibraryElementController).SetLocation(tlp);
         }
 
         public void SetNewSize(double width, double height)
@@ -201,13 +201,14 @@ namespace NuSysApp
 
             
 
-            (RegionController as RectangleRegionController).SetSize(normalWidth, normalHeight);
+            (RegionLibraryElementController as RectangleRegionLibraryElementController).SetHeight(normalHeight);
+            (RegionLibraryElementController as RectangleRegionLibraryElementController).SetWidth(normalWidth);
         }
 
         public void SetNewName(string text)
         {
             Name = text;
-            RegionController.SetTitle(Name);
+            RegionLibraryElementController.SetTitle(Name);
         }
     }
 }

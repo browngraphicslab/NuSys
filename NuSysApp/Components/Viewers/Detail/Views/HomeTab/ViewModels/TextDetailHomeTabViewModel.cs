@@ -23,7 +23,7 @@ namespace NuSysApp
             TextChanged?.Invoke(source,data);
         }
 
-        public override void AddRegion(object sender, RegionController controller)
+        public override void AddRegion(object sender, RegionLibraryElementController libraryElementController)
         {
             //throw new NotImplementedException();
         }

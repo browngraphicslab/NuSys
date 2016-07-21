@@ -54,14 +54,14 @@ namespace NuSysApp
         
 
 
-        public override void AddRegion(object sender, RegionController controller)
+        public override void AddRegion(object sender, RegionLibraryElementController libraryElementController)
         {
-            var audioRegion = controller.Model as TimeRegionModel;
+            var audioRegion = libraryElementController.Model as TimeRegionModel;
             if (audioRegion == null)
             {
                 return;
             }
-            var vm = new AudioRegionViewModel(audioRegion, Controller, controller as AudioRegionController, this);
+            var vm = new AudioRegionViewModel(audioRegion, Controller, libraryElementController as AudioRegionLibraryElementController, this);
             vm.Editable = this.Editable;
             var view = new AudioRegionView(vm);
             RegionViews.Add(view);
@@ -121,16 +121,16 @@ namespace NuSysApp
                 {
                     return;
                 }
-                AudioRegionController regionController;
+                AudioRegionLibraryElementController regionLibraryElementController;
                 if (SessionController.Instance.RegionsController.GetRegionController(audioRegion.Id) == null)
                 {
                     //Debug.Fail("Did not load");
-                    regionController = SessionController.Instance.RegionsController.AddRegion(audioRegion, Controller.LibraryElementModel.LibraryElementId) as AudioRegionController;
+                    regionLibraryElementController = SessionController.Instance.RegionsController.AddRegion(audioRegion, Controller.LibraryElementModel.LibraryElementId) as AudioRegionLibraryElementController;
                     }
                 else {
-                    regionController = SessionController.Instance.RegionsController.GetRegionController(audioRegion.Id) as AudioRegionController;
+                    regionLibraryElementController = SessionController.Instance.RegionsController.GetRegionController(audioRegion.Id) as AudioRegionLibraryElementController;
                 }
-                var vm = new AudioRegionViewModel(audioRegion, Controller, regionController, this);
+                var vm = new AudioRegionViewModel(audioRegion, Controller, regionLibraryElementController, this);
                 vm.Editable = this.Editable;
                 var view = new AudioRegionView(vm);
                 view.OnRegionSeek += OnRegionSeek;

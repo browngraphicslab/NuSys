@@ -45,9 +45,9 @@ namespace NuSysApp
            
         }
 
-        public override void AddRegion(object sender, RegionController regionController)
+        public override void AddRegion(object sender, RegionLibraryElementController regionLibraryElementController)
         {
-            var rectRegionController = regionController as RectangleRegionController;
+            var rectRegionController = regionLibraryElementController as RectangleRegionLibraryElementController;
             var imageRegion = rectRegionController.Model as RectangleRegion;
             if (imageRegion == null)
             {
@@ -136,22 +136,22 @@ namespace NuSysApp
                 {
                     return;
                 }
-                RectangleRegionController regionController;
+                RectangleRegionLibraryElementController regionLibraryElementController;
 
 
 
                 if (SessionController.Instance.RegionsController.GetRegionController(imageRegion.Id) == null)
                 {
                     Debug.Fail("Did not load");
-                    regionController = SessionController.Instance.RegionsController.AddRegion(imageRegion, LibraryElementController.LibraryElementModel.LibraryElementId) as RectangleRegionController;
+                    regionLibraryElementController = SessionController.Instance.RegionsController.AddRegion(imageRegion, LibraryElementController.LibraryElementModel.LibraryElementId) as RectangleRegionLibraryElementController;
                 }
                 else {
-                    regionController = SessionController.Instance.RegionsController.GetRegionController(imageRegion.Id) as RectangleRegionController;
+                    regionLibraryElementController = SessionController.Instance.RegionsController.GetRegionController(imageRegion.Id) as RectangleRegionLibraryElementController;
                 }
 
 
-                //var regionController = new RegionController(imageRengion);
-                var vm = new ImageRegionViewModel(imageRegion, LibraryElementController, regionController, this);
+                //var RegionLibraryElementController = new RegionLibraryElementController(imageRengion);
+                var vm = new ImageRegionViewModel(imageRegion, LibraryElementController, regionLibraryElementController, this);
                 if (!Editable)
                     vm.Editable = false;
 

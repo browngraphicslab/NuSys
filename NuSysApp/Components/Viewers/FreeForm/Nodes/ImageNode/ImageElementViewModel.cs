@@ -64,18 +64,18 @@ namespace NuSysApp
             foreach (var model in regionHashSet)
             {
                 var imageModel = model as RectangleRegion;
-                RectangleRegionController regionController;
+                RectangleRegionLibraryElementController regionLibraryElementController;
                 if (SessionController.Instance.RegionsController.GetRegionController(imageModel.Id) == null)
                 {
                     //Debug.Fail("Did not load");
-                    regionController = SessionController.Instance.RegionsController.AddRegion(imageModel, LibraryElementController.LibraryElementModel.LibraryElementId) as RectangleRegionController;
+                    regionLibraryElementController = SessionController.Instance.RegionsController.AddRegion(imageModel, LibraryElementController.LibraryElementModel.LibraryElementId) as RectangleRegionLibraryElementController;
                 }
                 else {
-                    regionController = SessionController.Instance.RegionsController.GetRegionController(imageModel.Id) as RectangleRegionController;
+                    regionLibraryElementController = SessionController.Instance.RegionsController.GetRegionController(imageModel.Id) as RectangleRegionLibraryElementController;
                 }
 
 
-                var viewmodel = new ImageRegionViewModel(imageModel, elementController, regionController, this);
+                var viewmodel = new ImageRegionViewModel(imageModel, elementController, regionLibraryElementController, this);
                 viewmodel.Editable = false;
                 var view = new ImageRegionView(viewmodel);
                 Regions.Add(view);
@@ -87,9 +87,9 @@ namespace NuSysApp
 
         }
 
-        private void LibraryElementControllerOnRegionAdded(object source, RegionController regionController)
+        private void LibraryElementControllerOnRegionAdded(object source, RegionLibraryElementController regionLibraryElementController)
         {
-            var rectRegionController = regionController as RectangleRegionController;
+            var rectRegionController = regionLibraryElementController as RectangleRegionLibraryElementController;
             var imageRegion = rectRegionController?.Model as RectangleRegion;
             if (imageRegion == null)
             {

@@ -244,10 +244,10 @@ namespace NuSysApp
         /// <summary>
         /// Update the link view whenever a region is added
         /// </summary>
-        /// <param name="regionController"></param>
-        private void RegionsController_OnNewRegion(RegionController regionController)
+        /// <param name="regionLibraryElementController"></param>
+        private void RegionsController_OnNewRegion(RegionLibraryElementController regionLibraryElementController)
         {
-            var libraryElementTemplate = new LibraryItemTemplate(regionController);
+            var libraryElementTemplate = new LibraryItemTemplate(regionLibraryElementController);
             UITask.Run(delegate {
                 LibraryElements.Add(libraryElementTemplate);
             });

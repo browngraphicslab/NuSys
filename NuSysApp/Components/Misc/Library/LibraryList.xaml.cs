@@ -402,7 +402,7 @@ namespace NuSysApp
             var itemTemplate = (sender as Grid)?.DataContext as LibraryItemTemplate;
             // get the library element model using the content id
             var element = SessionController.Instance.ContentController.GetContent(itemTemplate?.ContentID);
-            // get the library element controller using the library element id
+            // get the library element libraryElementController using the library element id
             var controller =
                 SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId);
             // show the detail viewer

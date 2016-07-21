@@ -12,13 +12,13 @@ namespace NuSysApp
     {
 
 
-        public delegate void NewRegionEventHandler(RegionController regionController);
+        public delegate void NewRegionEventHandler(RegionLibraryElementController regionLibraryElementController);
         /// <summary>
         /// Fired every time a region is added
         /// </summary>
         public event NewRegionEventHandler OnNewRegion;
 
-        private ConcurrentDictionary<string, RegionController> _regionControllers = new ConcurrentDictionary<string, RegionController>();
+        private ConcurrentDictionary<string, RegionLibraryElementController> _regionControllers = new ConcurrentDictionary<string, RegionLibraryElementController>();
 
     
         //returns the library element model id for a region id
@@ -30,7 +30,7 @@ namespace NuSysApp
             get { return _regionLibraryElementModels; }
         }
 
-        public RegionController GetRegionController(string id)
+        public RegionLibraryElementController GetRegionController(string id)
         {
             if (id == null)
             {
@@ -71,7 +71,7 @@ namespace NuSysApp
             return id != null && _regionLibraryElementModels.ContainsKey(id);
         }
 
-        public RegionController AddRegion(Region regionModel, string contentId)
+        public RegionLibraryElementController AddRegion(Region regionModel, string contentId)
         {
             Debug.Assert(regionModel != null);
             var regionController = _regionControllerFactory.CreateFromSendable(regionModel, contentId);
@@ -93,18 +93,18 @@ namespace NuSysApp
 
         }
 
-        public string Add(RegionController regionController, string contentId)
+        public string Add(RegionLibraryElementController regionLibraryElementController, string contentId)
         {
-            if (regionController == null)
+            if (regionLibraryElementController == null)
             {
                 return null;
             }
-            var regionModel = regionController.Model;
+            var regionModel = regionLibraryElementController.Model;
             _regionLibraryElementModels.TryAdd(regionModel.Id, contentId);
             if (!_regionControllers.ContainsKey(regionModel.Id))
             {
-                _regionControllers.TryAdd(regionModel.Id, regionController);
-                OnNewRegion?.Invoke(regionController);
+                _regionControllers.TryAdd(regionModel.Id, regionLibraryElementController);
+                OnNewRegion?.Invoke(regionLibraryElementController);
 
                 return regionModel.Id;
             }
@@ -140,8 +140,8 @@ namespace NuSysApp
                     }
 
                     /*
-                    var regionController = _regionControllerFactory.CreateFromSendable(regionModel, libraryElementModel.LibraryElementId);
-                    Add(regionController, libraryElementModel.LibraryElementId);
+                    var RegionLibraryElementController = _regionControllerFactory.CreateFromSendable(regionModel, libraryElementModel.LibraryElementId);
+                    Add(RegionLibraryElementController, libraryElementModel.LibraryElementId);
                     */
                 }
             }

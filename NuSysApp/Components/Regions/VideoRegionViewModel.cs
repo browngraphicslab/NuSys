@@ -134,13 +134,13 @@ namespace NuSysApp
                 RaisePropertyChanged("TopLeft");
             }
         }
-        public VideoRegionViewModel(VideoRegionModel model, LibraryElementController controller, VideoRegionController regionController,Sizeable sizeable) : base(model,controller, regionController,sizeable)
+        public VideoRegionViewModel(VideoRegionModel model, LibraryElementController controller, VideoRegionLibraryElementController regionLibraryElementController,Sizeable sizeable) : base(model,controller, regionLibraryElementController,sizeable)
         {
             ContainerSizeChanged += BaseSizeChanged;
-            regionController.SizeChanged += SizeChanged;
-            regionController.LocationChanged += LocationChanged;
-            regionController.IntervalChanged += IntervalChanged;
-            regionController.TitleChanged += TitleChanged;
+            regionLibraryElementController.SizeChanged += SizeChanged;
+            regionLibraryElementController.LocationChanged += LocationChanged;
+            regionLibraryElementController.IntervalChanged += IntervalChanged;
+            regionLibraryElementController.TitleChanged += TitleChanged;
             _height = (model.Height);
             _width = (model.Width);
             _topLeftPoint = new Point(model.TopLeftPoint.X , model.TopLeftPoint.Y );
@@ -192,13 +192,13 @@ namespace NuSysApp
         public void SetIntervalStart(double start)
         {
             var newstart = Math.Max(0, start-_progressbarMargin);
-            var controller = RegionController as VideoRegionController;
+            var controller = RegionLibraryElementController as VideoRegionLibraryElementController;
             controller?.SetStartTime(newstart / (ContainerViewModel.GetWidth()-2*_progressbarMargin));
         }
         public void SetIntervalEnd(double end)
         {
             var newEnd = Math.Max(0, end-_progressbarMargin);
-            var controller = RegionController as VideoRegionController;
+            var controller = RegionLibraryElementController as VideoRegionLibraryElementController;
             controller?.SetEndTime(newEnd / (ContainerViewModel.GetWidth()-2*_progressbarMargin));
         }
         
@@ -206,13 +206,14 @@ namespace NuSysApp
         {
             var h = Math.Max(0,height);
             var w = Math.Max(0, width);
-            var controller = RegionController as VideoRegionController;
-            controller?.SetSize(w / ContainerViewModel.GetWidth(), h / ContainerViewModel.GetHeight());
+            var controller = RegionLibraryElementController as VideoRegionLibraryElementController;
+            controller?.SetHeight(h / ContainerViewModel.GetHeight());
+            controller?.SetWidth(w / ContainerViewModel.GetWidth());
         }
 
         public void SetRegionLocation(Point topLeft)
         {
-            var controller = RegionController as VideoRegionController;
+            var controller = RegionLibraryElementController as VideoRegionLibraryElementController;
             controller?.SetLocation(new Point(topLeft.X / ContainerViewModel.GetWidth(), topLeft.Y / ContainerViewModel.GetHeight()));
         }
     }

@@ -84,7 +84,7 @@ namespace NuSysApp
             _controller.SetContentData(text); 
         }
 
-        public override void AddRegion(object sender, RegionController regionController)
+        public override void AddRegion(object sender, RegionLibraryElementController regionLibraryElementController)
         {
             //throw new NotImplementedException();
         }

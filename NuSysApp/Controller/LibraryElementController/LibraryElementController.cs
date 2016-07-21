@@ -19,7 +19,7 @@ namespace NuSysApp
         private LibraryElementModel _libraryElementModel;
         private bool _loading = false;
         private RegionControllerFactory _regionControllerFactory = new RegionControllerFactory();
-        private bool _blockServerInteraction = false;
+        protected bool _blockServerInteraction = false;
         public string Title {
             get
             {
@@ -33,7 +33,7 @@ namespace NuSysApp
         
         #region Events
         public delegate void ContentChangedEventHandler(object source, string contentData);
-        public delegate void RegionAddedEventHandler(object source, RegionController regionController);
+        public delegate void RegionAddedEventHandler(object source, RegionLibraryElementController regionLibraryElementController);
         public delegate void RegionRemovedEventHandler(object source, Region region);
         public delegate void MetadataChangedEventHandler(object source);
         public delegate void FavoritedEventHandler(object sender, bool favorited);
@@ -72,7 +72,7 @@ namespace NuSysApp
         public bool IsLoaded { get; private set; }
 
         /// <summary>
-        /// Constuctor just takes in the library element model it will be controller
+        /// Constuctor just takes in the library element model it will be libraryElementController
         /// </summary>
         /// 
         public LibraryElementController(LibraryElementModel libraryElementModel)
@@ -115,7 +115,7 @@ namespace NuSysApp
             var regionController = SessionController.Instance.RegionsController.AddRegion(region, this.LibraryElementModel.LibraryElementId);
             /*
             var factory = new RegionControllerFactory();
-            var regionController = factory.CreateFromSendable(region, this.LibraryElementModel.LibraryElementId);
+            var RegionLibraryElementController = factory.CreateFromSendable(region, this.LibraryElementModel.LibraryElementId);
             */
             RegionAdded?.Invoke(this, regionController);
             SessionController.Instance.NuSysNetworkSession.AddRegionToContent(LibraryElementModel.LibraryElementId, region);
@@ -269,8 +269,8 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// This will change make the content controller remove the library element model and this controller
-        /// then it will fire the deleted event and dispose of this controller
+        /// This will change make the content libraryElementController remove the library element model and this libraryElementController
+        /// then it will fire the deleted event and dispose of this libraryElementController
         /// </summary>
         public void Delete()
         {

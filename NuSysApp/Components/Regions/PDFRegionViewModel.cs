@@ -75,7 +75,7 @@ namespace NuSysApp
 
         public delegate void LocationChangedEventHandler(object sender, Point topLeft);
         public event LocationChangedEventHandler LocationChanged;
-        public PdfRegionViewModel(PdfRegion model, LibraryElementController elementController, PdfRegionController regionController, Sizeable sizeable) : base(model, elementController, regionController, sizeable)
+        public PdfRegionViewModel(PdfRegion model, LibraryElementController elementController, PdfRegionLibraryElementController regionLibraryElementController, Sizeable sizeable) : base(model, elementController, regionLibraryElementController, sizeable)
         {
             if (model == null)
             {
@@ -87,12 +87,12 @@ namespace NuSysApp
             ContainerWidth = sizeable.GetWidth();
             Height = model.Height * ContainerHeight;
             Width = model.Width * ContainerWidth;
-            //RegionController.RegionUpdated += RegionUpdated;
+            //RegionLibraryElementController.RegionUpdated += RegionUpdated;
 
 
-            regionController.SizeChanged += RegionController_SizeChanged;
-            regionController.LocationChanged += RegionController_LocationChanged;
-            regionController.TitleChanged += RegionController_TitleChanged;
+            regionLibraryElementController.SizeChanged += RegionController_SizeChanged;
+            regionLibraryElementController.LocationChanged += RegionController_LocationChanged;
+            regionLibraryElementController.TitleChanged += RegionController_TitleChanged;
 
 
             Name = Model.Name;
@@ -198,8 +198,8 @@ namespace NuSysApp
 
             //model.TopLeftPoint = new Point(normalTopLeftX, normalTopLeftY);
             //model.BottomRightPoint = new Point(normalBottomRightX, normalBottomRightY);
-            //RegionController.UpdateRegion(Model);
-            var pdfRegionController = RegionController as PdfRegionController;
+            //RegionLibraryElementController.UpdateRegion(Model);
+            var pdfRegionController = RegionLibraryElementController as PdfRegionLibraryElementController;
             pdfRegionController?.SetLocation(new Point(normalTopLeftX, normalTopLeftY));
             pdfRegionController?.SetSize(normalWidth, normalHeight);
         }
@@ -218,7 +218,7 @@ namespace NuSysApp
             //model.BottomRightPoint = new Point(normalBottomRightX, normalBottomRightY);
 
 
-            (RegionController as PdfRegionController).SetLocation(model.TopLeftPoint);
+            (RegionLibraryElementController as PdfRegionLibraryElementController).SetLocation(model.TopLeftPoint);
         }
 
         public void SetNewSize(double width, double height)
@@ -233,13 +233,13 @@ namespace NuSysApp
 
 
 
-            (RegionController as PdfRegionController).SetSize(normalWidth, normalHeight);
+            (RegionLibraryElementController as PdfRegionLibraryElementController).SetSize(normalWidth, normalHeight);
         }
 
         public void SetNewName(string text)
         {
             Name = text;
-            RegionController.SetTitle(Name);
+            RegionLibraryElementController.SetTitle(Name);
         }
     }
 }

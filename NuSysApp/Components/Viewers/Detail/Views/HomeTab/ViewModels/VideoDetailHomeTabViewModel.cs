@@ -38,10 +38,10 @@ namespace NuSysApp
             SetExistingRegions();
         }
 
-        public override void AddRegion(object sender, RegionController controller)
+        public override void AddRegion(object sender, RegionLibraryElementController libraryElementController)
         {
-            var videoRegion = controller?.Model as VideoRegionModel;
-            var videoRegionController = controller as VideoRegionController;
+            var videoRegion = libraryElementController?.Model as VideoRegionModel;
+            var videoRegionController = libraryElementController as VideoRegionLibraryElementController;
             if (videoRegion == null || videoRegionController == null)
             {
                 return;
@@ -126,17 +126,17 @@ namespace NuSysApp
                 {
                     return;
                 }
-                VideoRegionController regionController;
+                VideoRegionLibraryElementController regionLibraryElementController;
                 if (SessionController.Instance.RegionsController.GetRegionController(regionModel.Id) == null)
                 {
-                    regionController = SessionController.Instance.RegionsController.AddRegion(regionModel, Controller.LibraryElementModel.LibraryElementId) as VideoRegionController;
+                    regionLibraryElementController = SessionController.Instance.RegionsController.AddRegion(regionModel, Controller.LibraryElementModel.LibraryElementId) as VideoRegionLibraryElementController;
                 }
                 else
                 {
-                    regionController = SessionController.Instance.RegionsController.GetRegionController(regionModel.Id) as VideoRegionController;
+                    regionLibraryElementController = SessionController.Instance.RegionsController.GetRegionController(regionModel.Id) as VideoRegionLibraryElementController;
                 }
-                Debug.Assert(regionController is VideoRegionController);
-                var vm = new VideoRegionViewModel(videoRegion, Controller, regionController as VideoRegionController, this);
+                Debug.Assert(regionLibraryElementController is VideoRegionLibraryElementController);
+                var vm = new VideoRegionViewModel(videoRegion, Controller, regionLibraryElementController as VideoRegionLibraryElementController, this);
                 vm.Editable = this.Editable;
                 var view = new VideoRegionView(vm);
                 view.OnRegionSeek += OnRegionSeek;

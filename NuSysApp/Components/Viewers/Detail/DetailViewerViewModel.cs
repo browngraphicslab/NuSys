@@ -149,9 +149,9 @@ namespace NuSysApp
             _regionableHomeTabViewModel?.SizeChanged(source, width, height);
         }
 
-        private void AddRegionToList(object source, RegionController regionController)
+        private void AddRegionToList(object source, RegionLibraryElementController regionLibraryElementController)
         {
-            RegionCollection.Add(regionController.Model);
+            RegionCollection.Add(regionLibraryElementController.Model);
             RaisePropertyChanged("OrderedRegionCollection");
 
         }
@@ -260,9 +260,9 @@ namespace NuSysApp
 
                 AddTab(viewable);
                 return true;
-            } else if (viewable is RegionController)
+            } else if (viewable is RegionLibraryElementController)
             {
-                var controller = viewable as RegionController;
+                var controller = viewable as RegionLibraryElementController;
                 CurrentDetailViewable = controller;
                 var regionModel = controller.Model;
                 if (regionModel == null)

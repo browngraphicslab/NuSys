@@ -17,13 +17,39 @@ namespace NuSysApp
     public class LibraryElementModel : BaseINPC
     {
         public HashSet<Keyword> Keywords {get; set; }
-        public HashSet<Region> Regions { get; set; }
 
         public ElementType Type { get; set; }
 
-        public string Data{ get;set; }
+        public string Data
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(ContentId))
+                {
+                    return null;
+                }
+                var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(ContentId);
+                Debug.Assert(contentDataModel != null);
+
+                return contentDataModel.Data;
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(ContentId))
+                {
+                    return;
+                }
+                if (!SessionController.Instance.ContentController.ContentExists(ContentId))
+                {
+                    SessionController.Instance.ContentController.AddContentDataModel(ContentId, value);
+                }
+                SessionController.Instance.ContentController.GetContentDataModel(ContentId)?.SetData(value);
+            }
+        }
 
         public string LibraryElementId { get; set; }
+        public string ContentId { get; set; }
+
         public string Title { get; set; }
 
         public bool Favorited { set; get; }
@@ -68,16 +94,15 @@ namespace NuSysApp
                 return metadata;
             }
         }
-        public LibraryElementModel(string id, ElementType elementType, Dictionary<string, MetadataEntry> metadata = null, string contentName = null, bool favorited = false)
+        public LibraryElementModel(string libraryElementId, ElementType elementType, Dictionary<string, MetadataEntry> metadata = null, string contentName = null, bool favorited = false)
         {
             Data = null;
-            LibraryElementId = id;
+            LibraryElementId = libraryElementId;
             Title = contentName;
             Type = elementType;
             Favorited = favorited;
             Keywords = new HashSet<Keyword>();
             Metadata = new ConcurrentDictionary<string, MetadataEntry>(metadata ?? new Dictionary<string, MetadataEntry>());
-            Regions = new HashSet<Region>();
             Debug.Assert(!(Type == ElementType.Link && !(this is LinkLibraryElementModel)));
         }
         //FOR PDF DOWNLOADING  --HACKY AF
@@ -93,10 +118,11 @@ namespace NuSysApp
             {
                 Keywords = new HashSet<Keyword>(message.GetList<Keyword>("keywords"));
             }
-            if (message.ContainsKey("regions"))
-            {
-                Regions = new HashSet<Region>(message.GetList<Region>("regions"));
-            }
+            // unused for now
+            //if (message.ContainsKey("regions"))
+            //{
+            //    Regions = new HashSet<Region>(message.GetList<Region>("regions"));
+            //}
             if (message.GetString("small_thumbnail_url") != null)
             {
                 SmallIconUrl = message.GetString("small_thumbnail_url");

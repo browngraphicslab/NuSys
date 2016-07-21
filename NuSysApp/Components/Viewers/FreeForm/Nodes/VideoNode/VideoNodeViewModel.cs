@@ -46,18 +46,18 @@ namespace NuSysApp
                     {
                         return _regionViews;
                     }
-                    VideoRegionController regionController;
+                    VideoRegionLibraryElementController regionLibraryElementController;
                     if (SessionController.Instance.RegionsController.GetRegionController(videoRegionModel.Id) == null)
                     {
-                        regionController = SessionController.Instance.RegionsController.AddRegion(videoRegionModel, Controller.LibraryElementModel.LibraryElementId) as VideoRegionController;
+                        regionLibraryElementController = SessionController.Instance.RegionsController.AddRegion(videoRegionModel, Controller.LibraryElementModel.LibraryElementId) as VideoRegionLibraryElementController;
                     }
                     else
                     {
-                        regionController = SessionController.Instance.RegionsController.GetRegionController(videoRegionModel.Id) as VideoRegionController;
+                        regionLibraryElementController = SessionController.Instance.RegionsController.GetRegionController(videoRegionModel.Id) as VideoRegionLibraryElementController;
                     }
-                    Debug.Assert(regionController is VideoRegionController);
-                    regionController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
-                    var viewmodel = new VideoRegionViewModel(videoRegionModel, elementController, regionController as VideoRegionController, this);
+                    Debug.Assert(regionLibraryElementController is VideoRegionLibraryElementController);
+                    regionLibraryElementController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
+                    var viewmodel = new VideoRegionViewModel(videoRegionModel, elementController, regionLibraryElementController as VideoRegionLibraryElementController, this);
                     viewmodel.Editable = false;
                     var view = new VideoRegionView(viewmodel);
                     view.OnRegionSeek += View_OnRegionSeek;
@@ -111,7 +111,7 @@ namespace NuSysApp
             RaisePropertyChanged("RegionViews");
         }
 
-        private void LibraryElementControllerOnRegionAdded(object source, RegionController regionController)
+        private void LibraryElementControllerOnRegionAdded(object source, RegionLibraryElementController regionLibraryElementController)
         {
             RaisePropertyChanged("RegionViews");
         }

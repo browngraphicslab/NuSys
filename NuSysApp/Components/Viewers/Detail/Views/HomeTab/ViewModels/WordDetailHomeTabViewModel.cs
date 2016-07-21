@@ -124,7 +124,7 @@ namespace NuSysApp
             });
         }
 
-        public override void AddRegion(object sender, RegionController regionController)
+        public override void AddRegion(object sender, RegionLibraryElementController regionLibraryElementController)
         {
         }
 

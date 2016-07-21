@@ -339,7 +339,7 @@ namespace NuSysApp
             }
 
             var libraryElementController = vm.LibraryElementController;
-            libraryElementController.RemoveRegion(vm.RegionController.Model);
+            libraryElementController.RemoveRegion(vm.RegionLibraryElementController.Model);
 
 
         }
@@ -347,7 +347,7 @@ namespace NuSysApp
         private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var vm = DataContext as RegionViewModel;
-            var regionController = vm?.RegionController;
+            var regionController = vm?.RegionLibraryElementController;
             SessionController.Instance.SessionView.ShowDetailView(regionController);
         }
 

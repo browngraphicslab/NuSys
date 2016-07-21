@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Newtonsoft.Json;
 
 namespace NuSysApp
@@ -158,8 +159,11 @@ namespace NuSysApp
         public List<List<T>> GetNestedList<T>(string key)
         {
             return ContainsKey(key) ? JsonConvert.DeserializeObject<List<List<T>>>(Get(key)) : null;
-        } 
-
+        }
+        public Point GetPoint(string key, Point defaultValue = new Point())
+        {
+            return ContainsKey(key) ? JsonConvert.DeserializeObject<Point>(Get(key)) : defaultValue;
+        }
         public bool ContainsKey(string key)
         {
             return _dict.ContainsKey(key);

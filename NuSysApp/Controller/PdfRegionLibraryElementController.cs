@@ -8,7 +8,7 @@ using Windows.Foundation;
 
 namespace NuSysApp
 {
-    public class PdfRegionController : RectangleRegionController
+    public class PdfRegionLibraryElementController : RectangleRegionLibraryElementController
     {
         public delegate void PageLocationChangedEventHandler(object sender, int pageLocation);
 
@@ -21,7 +21,7 @@ namespace NuSysApp
         public event SizeChangedEventHandler SizeChanged;
         public delegate void SizeChangedEventHandler(object sender, double width, double height);
 
-        public PdfRegionController(PdfRegion model) : base(model)
+        public PdfRegionLibraryElementController(PdfRegion model) : base(model)
         {
         }
 

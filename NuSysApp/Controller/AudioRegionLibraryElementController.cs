@@ -7,7 +7,7 @@ using Windows.Foundation;
 
 namespace NuSysApp
 {
-    public class AudioRegionController : RegionController
+    public class AudioRegionLibraryElementController : RegionLibraryElementController
     {
         public event RegionTimeChangedEventHandler TimeChanged;
         public delegate void RegionTimeChangedEventHandler(object sender, double start, double end);
@@ -16,7 +16,7 @@ namespace NuSysApp
         {
             get { return base.Model  as TimeRegionModel;}
         }
-        public AudioRegionController(TimeRegionModel model) : base(model)
+        public AudioRegionLibraryElementController(TimeRegionModel model) : base(model)
         {
 
         }

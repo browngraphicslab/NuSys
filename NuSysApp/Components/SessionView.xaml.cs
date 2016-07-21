@@ -789,9 +789,9 @@ namespace NuSysApp
             {
                 return;
             }
-            if (viewable is RegionController)
+            if (viewable is RegionLibraryElementController)
             {
-                await xDetailViewer.ShowElement(viewable as RegionController, tabToOpenTo);
+                await xDetailViewer.ShowElement(viewable as RegionLibraryElementController, tabToOpenTo);
 
             }
             else if (viewable is LibraryElementController)

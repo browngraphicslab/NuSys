@@ -301,7 +301,7 @@ namespace NuSysApp
             {
                 var dict = new Dictionary<string, object>();
                 dict["data"] = region;
-                dict["id"] = region.Id;
+                dict["id"] = region.LibraryElementId;
                 dict["contentId"] = contentId;
                 var data = await SendDictionaryToServer("addregion", dict);
                 try
@@ -322,7 +322,7 @@ namespace NuSysApp
             {
                 var dict = new Dictionary<string, object>();
                 dict["data"] = region;
-                dict["id"] = region.Id;
+                dict["id"] = region.LibraryElementId;
                 var data = await SendDictionaryToServer("removeregion", dict);
                 try
                 {
@@ -342,7 +342,7 @@ namespace NuSysApp
             {
                 var dict = new Dictionary<string, object>();
                 dict["data"] = region;
-                dict["id"] = region.Id;
+                dict["id"] = region.LibraryElementId;
                 var data = await SendDictionaryToServer("updateregion", dict);
                 try
                 {
@@ -557,23 +557,20 @@ namespace NuSysApp
             Region region = null;
             switch (regionintermediate.Type)
             {
-                case Region.RegionType.Rectangle:
+                case ElementType.ImageRegion:
                     region = JsonConvert.DeserializeObject<RectangleRegion>(regionString, settings);
                     break;
-                case Region.RegionType.Compound:
-                    region = JsonConvert.DeserializeObject<CompoundRegion>(regionString, settings);
-                    break;
-                case Region.RegionType.Time:
+                case ElementType.AudioRegion:
                     region = JsonConvert.DeserializeObject<TimeRegionModel>(regionString, settings);
                     break;
-                case Region.RegionType.Pdf:
+                case ElementType.PdfRegion:
                     region = JsonConvert.DeserializeObject<PdfRegion>(regionString, settings);
                     break;
-                case Region.RegionType.Video:
+                case ElementType.VideoRegion:
                     region = JsonConvert.DeserializeObject<VideoRegionModel>(regionString, settings);
                     break;
             }
-            if (contentId != null && SessionController.Instance.RegionsController.GetRegionController(region?.Id) == null)
+            if (contentId != null && SessionController.Instance.RegionsController.GetRegionController(region?.LibraryElementId) == null)
             {
                 var controller = new RegionControllerFactory().CreateFromSendable(region, contentId);
             }
@@ -792,7 +789,7 @@ namespace NuSysApp
         }
         private class RegionIntermediate
         {
-            public Region.RegionType Type;
+            public ElementType Type;
         }
         public class IncomingDataReaderException : Exception
         {

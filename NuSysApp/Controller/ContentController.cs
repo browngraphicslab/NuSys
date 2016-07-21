@@ -16,7 +16,8 @@ namespace NuSysApp
     {
         private ConcurrentDictionary<string, LibraryElementModel> _contents = new ConcurrentDictionary<string, LibraryElementModel>();
         private ConcurrentDictionary<string, LibraryElementController> _contentControllers = new ConcurrentDictionary<string, LibraryElementController>();
-        //private Dictionary<string, ManualResetEvent> _waitingNodeCreations = new Dictionary<string, ManualResetEvent>(); 
+        //private Dictionary<string, ManualResetEvent> _waitingNodeCreations = new Dictionary<string, ManualResetEvent>();
+        private ConcurrentDictionary<string, ContentDataModel> _contentDataModels = new ConcurrentDictionary<string, ContentDataModel>();
 
         public delegate void NewContentEventHandler(LibraryElementModel element);
         public event NewContentEventHandler OnNewContent;
@@ -90,6 +91,35 @@ namespace NuSysApp
                 return model.LibraryElementId;
             }
             return null;
+        }
+
+
+        /// <summary>
+        /// returns null if the content doesn't exist
+        /// </summary>
+        /// <param name="contentId"></param>
+        /// <returns></returns>
+        public ContentDataModel GetContentDataModel(string contentId)
+        {
+            Debug.Assert(contentId != null);
+            return _contentDataModels.ContainsKey(contentId) ? _contentDataModels[contentId] : null;
+        }
+        public bool AddContentDataModel(string contentId, string data)
+        {
+            Debug.Assert(contentId != null);
+            Debug.Assert(data != null);
+            if (_contentDataModels.ContainsKey(contentId))
+            {
+                return false;
+            }
+            _contentDataModels.TryAdd(contentId, new ContentDataModel(contentId, data));
+            return true;
+        }
+
+        public bool ContentExists(string contentId)
+        {
+            Debug.Assert(contentId != null);
+            return _contentDataModels.ContainsKey(contentId);
         }
     }
 }
