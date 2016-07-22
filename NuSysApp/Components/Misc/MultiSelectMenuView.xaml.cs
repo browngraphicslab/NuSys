@@ -30,7 +30,7 @@ namespace NuSysApp
         public static Color SelectedColor { get; set; }
 
         public bool Finite { get; set; }
-        public PointCollection Points { get; set; }
+        public List<Windows.Foundation.Point> Points { get; set; }
 
         public MultiSelectMenuView()
         {
@@ -42,7 +42,7 @@ namespace NuSysApp
 
             SelectedColor = Colors.Black;
             Finite = false;
-            Points = new PointCollection();
+            Points = new List<Windows.Foundation.Point>();
         }
 
         public void Show()

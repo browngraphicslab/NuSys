@@ -25,7 +25,7 @@ namespace NuSysApp
         public delegate void ChildRemovedEventHandler(string id);
         public event ChildRemovedEventHandler OnChildRemoved;
         public bool IsFinite { get; set; }
-        public PointCollection Shape { get; set; }
+        public List<Windows.Foundation.Point> Shape { get; set; }
 
         public CollectionLibraryElementModel(string id, Dictionary<String, MetadataEntry> metadata = null, string contentName = null, bool favorited = false) : base(id, ElementType.Collection, metadata, contentName)
         {
