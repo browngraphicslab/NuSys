@@ -25,7 +25,7 @@ namespace NuSysApp
             SetServerItemType(ServerItemType.Content);
             SetServerRequestType(ServerRequestType.Remove);
         }
-        public override async Task<bool> CheckOutgoingRequest()
+        public override async Task CheckOutgoingRequest()
         {
             if (!_message.ContainsKey("id"))
             {
@@ -53,7 +53,6 @@ namespace NuSysApp
                     }
                 }
             });
-            return true;
         }
         public override async Task ExecuteRequestFunction()
         {

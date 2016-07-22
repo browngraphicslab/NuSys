@@ -28,10 +28,9 @@ namespace NuSysApp
 
         public SystemRequest(Message m) : base(m){}
 
-        public override async Task<bool> CheckOutgoingRequest()
+        public override async Task CheckOutgoingRequest()
         {
             _message["system_request_type"] = _systemRequestType.ToString();
-            return true;
         }
         public virtual async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, ServerClient serverClient) { }
 

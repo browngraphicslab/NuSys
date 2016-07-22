@@ -15,7 +15,7 @@ namespace NuSysApp
             SetServerRequestType(ServerRequestType.Add);
         }
 
-        public override async Task<bool> CheckOutgoingRequest()
+        public override async Task CheckOutgoingRequest()
         {
             if (!_message.ContainsKey("id"))
             {
@@ -25,7 +25,6 @@ namespace NuSysApp
             {
                 throw new NewNodeRequestException("New Node requests require messages with at least 'contentId'");
             }
-            return true;
         }
 
         public override async Task ExecuteRequestFunction()
