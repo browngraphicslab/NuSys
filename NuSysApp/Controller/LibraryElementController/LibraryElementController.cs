@@ -408,7 +408,7 @@ namespace NuSysApp
             }
             if (message.ContainsKey("title"))
             {
-                SetTitle(message.GetString(Title));
+                SetTitle(message.GetString("title"));
             }
 
             if (message.ContainsKey("keywords"))

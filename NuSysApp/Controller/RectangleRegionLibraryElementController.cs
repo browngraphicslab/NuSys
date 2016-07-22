@@ -30,35 +30,31 @@ namespace NuSysApp
 
         public void SetHeight(double height)
         {
-            if (_blockServerInteraction)
-            {
-                return;
-            }
-
             RectangleRegionModel.Height = height;
             SizeChanged?.Invoke(this, RectangleRegionModel.Width, RectangleRegionModel.Height);
-            _debouncingDictionary.Add("rectangle_height", height);
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("rectangle_height", height);
+            }
         }
         public void SetWidth(double width)
         {
-            if (_blockServerInteraction)
-            {
-                return;
-            }
-
             RectangleRegionModel.Width = width;
             SizeChanged?.Invoke(this, RectangleRegionModel.Width, RectangleRegionModel.Height);
-            _debouncingDictionary.Add("rectangle_width", width);
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("rectangle_width", width);
+            }
         }
         public void SetLocation(Point topLeft)
         {
-            if (_blockServerInteraction)
-            {
-                return;
-            }
+
             RectangleRegionModel.TopLeftPoint = new Point(Math.Max(0.001, topLeft.X), Math.Max(0.001, topLeft.Y));
             LocationChanged?.Invoke(this, RectangleRegionModel.TopLeftPoint);
-            _debouncingDictionary.Add("rectangle_location", RectangleRegionModel.TopLeftPoint);
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("rectangle_location", RectangleRegionModel.TopLeftPoint);
+            }
         }
 
         /// <summary>

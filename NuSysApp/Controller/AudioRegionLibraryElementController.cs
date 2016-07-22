@@ -24,14 +24,19 @@ namespace NuSysApp
         {
             AudioRegionModel.Start = startTime;
             TimeChanged?.Invoke(this, AudioRegionModel.Start, AudioRegionModel.End);
-            _debouncingDictionary.Add("start", AudioRegionModel.Start);
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("start", AudioRegionModel.Start);
+            }
         }
         public void SetEndTime(double endTime)
         {
             AudioRegionModel.End = endTime;
             TimeChanged?.Invoke(this, AudioRegionModel.Start, AudioRegionModel.End);
-            _debouncingDictionary.Add("end", AudioRegionModel.Start);
-
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("end", AudioRegionModel.Start);
+            }
         }
         public override void UnPack(Message message)
         {

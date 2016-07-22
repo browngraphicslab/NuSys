@@ -28,14 +28,19 @@ namespace NuSysApp
         {
             VideoRegionModel.Start = startTime;
             IntervalChanged?.Invoke(this, VideoRegionModel.Start, VideoRegionModel.End);
-            _debouncingDictionary.Add("start",VideoRegionModel.Start);
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("start", VideoRegionModel.Start);
+            }
         }
         public void SetEndTime(double endTime)
         {
             VideoRegionModel.End = endTime;
             IntervalChanged?.Invoke(this, VideoRegionModel.Start, VideoRegionModel.End);
-            _debouncingDictionary.Add("end", VideoRegionModel.Start);
-
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("end", VideoRegionModel.Start);
+            }
         }
 
         public override void UnPack(Message message)
