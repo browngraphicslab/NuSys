@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -15,6 +16,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
+using Microsoft.Graphics.Canvas.Geometry;
+using NetTopologySuite.Geometries;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -26,6 +29,9 @@ namespace NuSysApp
 
         public static Color SelectedColor { get; set; }
 
+        public bool Finite { get; set; }
+        public PointCollection Points { get; set; }
+
         public MultiSelectMenuView()
         {
             this.InitializeComponent();
@@ -35,6 +41,8 @@ namespace NuSysApp
             AdornmentButton.Tapped += AdormentButtonClick;
 
             SelectedColor = Colors.Black;
+            Finite = false;
+            Points = new PointCollection();
         }
 
         public void Show()
@@ -69,24 +77,6 @@ namespace NuSysApp
 
             var t = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
 
-            var elementMsg = new Message();
-            elementMsg["metadata"] = metadata;
-            elementMsg["width"] = bb.Width;
-            elementMsg["height"] = bb.Height;
-            elementMsg["locationX"] = t.TranslateX;
-            elementMsg["locationY"] = t.TranslateY;
-            elementMsg["centerX"] = t.CenterX;
-            elementMsg["centerY"] = t.CenterY;
-            elementMsg["zoom"] = t.ScaleX;
-            elementMsg["x"] = bb.X;
-            elementMsg["y"] = bb.Y;
-            elementMsg["contentId"] = contentId;
-            elementMsg["type"] = ElementType.Collection;
-            elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
-            elementMsg["id"] = newCollectionId;
-            elementMsg["color"] = Colors.Red;
-            elementMsg["points"] = Stroke.GetInkPoints();
-
             // Removes the ink from the canvas
             var req = InkStorage.CreateRemoveInkRequest(new InkWrapper(Stroke, "ink"));
             SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.RemoveStroke(Stroke);
@@ -102,13 +92,16 @@ namespace NuSysApp
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
 
+            // make a pointcollection that will be the "shape" property of the collection (use pointcollection or list?)
+            var inkpoints = Stroke.GetInkPoints().ToArray();
+            foreach (var i in inkpoints)
+            {
+                Points.Add(i.Position);
+            }
+
+            //here, settings should also be passed in as parameters
+            var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(bb.X, bb.Y, contentId, Finite, Points, bb.Width, bb.Height, newCollectionId, CollectionElementModel.CollectionViewType.FreeForm);
             
-
-            //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
-
-            var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(bb.X, bb.Y, contentId, bb.Width, bb.Height, newCollectionId, CollectionElementModel.CollectionViewType.FreeForm);
-
-           
             foreach (var vm in selections.ToArray())
             {
                 if (vm is ElementViewModel)

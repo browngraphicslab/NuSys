@@ -319,9 +319,10 @@ namespace NuSysApp
                 }
                 else
                 {
+                    var collection = SessionController.Instance.ContentController.GetContent(libraryId) as CollectionLibraryElementModel;
                     await
-                        StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, libraryId, size.Width,
-                            size.Height);
+                        StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, libraryId, collection.IsFinite,
+                            collection.Shape, size.Width, size.Height);
                 }
             });
         }

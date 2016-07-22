@@ -466,9 +466,10 @@ namespace NuSysApp
                 }
                 else
                 {
+                    var collection = SessionController.Instance.ContentController.GetContent(libraryId) as CollectionLibraryElementModel;
                     await
-                        StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, libraryId, size.Width,
-                            size.Height);
+                        StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, libraryId, collection.IsFinite, 
+                            collection.Shape, size.Width, size.Height);
                 }
             });
 
@@ -609,7 +610,7 @@ namespace NuSysApp
 
             //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
 
-            var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(r.X, r.Y, contentId, 300, 300, newCollectionId);
+            var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(r.X, r.Y, contentId, false, null, 300, 300, newCollectionId);
             if (ListContainer.Children[0] == _libraryList)
             {
                 foreach (var libraryItemTemplate in _pageViewModel.ItemList.ToList().GetRange(0, Math.Min(_pageViewModel.ItemList.Count, 30)))
