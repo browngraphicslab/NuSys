@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.System;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
@@ -17,15 +19,39 @@ namespace NuSysApp
         //private DispatcherTimer _timer;
         private FreeFormViewer _cview;
         private CompositeTransform _tempTransform;
+        private bool _shiftIsDown;
 
         private List<UIElement> _allElements = new List<UIElement>();
 
         public PanZoomMode(FrameworkElement view) : base(view)
         {
             _cview = view as FreeFormViewer;
-       
+            CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
+            CoreWindow.GetForCurrentThread().KeyUp += OnKeyUp;
         }
-    
+        /// <summary>
+        /// Resets the virtual key once any key is released
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnKeyUp(CoreWindow sender, KeyEventArgs args)
+        {
+            _shiftIsDown = false;
+        }
+
+        /// <summary>
+        /// Keeps track of the currently pressed key
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnKeyDown(CoreWindow sender, KeyEventArgs args)
+        {
+            if (args.VirtualKey == VirtualKey.Shift)
+            {
+                _shiftIsDown = true;
+            }
+        }
+
         public void UpdateTempTransform( CompositeTransform compositeTransform )
         {
 
@@ -116,7 +142,7 @@ namespace NuSysApp
 
         private void OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen)
+            if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen || _shiftIsDown)
                 return;
          //   _timer.Tick -= OnTick;
          //   _timer.Tick += OnTick;
@@ -125,7 +151,7 @@ namespace NuSysApp
 
         private void ViewOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen)
+            if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen || _shiftIsDown)
                 return;
        //     _timer.Stop();
        //     _timer.Tick -= OnTick;
@@ -187,7 +213,7 @@ namespace NuSysApp
 
         protected void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen)
+            if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen || _shiftIsDown)
                 return;
 
             if (!(((FrameworkElement)e.OriginalSource).DataContext is FreeFormViewerViewModel))
