@@ -60,7 +60,7 @@
                     <Grid x:Name="xGridListItem" Background="{Binding Path=ListItemColor}"
                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                           DoubleTapped ="xListItem_OnDoubleTapped" Tapped="xBarChartItem_OnTapped"  PointerPressed="xListItem_PointerPressed" 
-                          ManipulationMode="TranslateX, TranslateY" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
+                          ManipulationMode="TranslateX, TranslateY, TranslateInertia" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
                         <TextBlock Text="{Binding Path=Title}" FontWeight="{Binding Path=ListFontWeight}" Foreground="{Binding Path=Color}" VerticalAlignment="Center" HorizontalAlignment="Left" Width="Auto" Margin="25,0,0,0"/>
                     </Grid>
                 </DataTemplate>

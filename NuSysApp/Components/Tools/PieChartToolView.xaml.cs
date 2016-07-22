@@ -102,7 +102,7 @@ namespace NuSysApp
         /// </summary>
         private async void PieSlice_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            _baseTool.Item_ManipulationStarted();
+            _baseTool.Item_ManipulationStarted(sender);
         }
 
         /// <summary>

@@ -50,7 +50,7 @@
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid x:Name="xGridListItem" Background="Transparent" DoubleTapped ="xListItem_OnDoubleTapped" Tapped="xListItem_OnTapped"  PointerPressed="xListItem_PointerPressed"  Width="Auto" ManipulationMode="TranslateX, TranslateY" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
+                    <Grid x:Name="xGridListItem" Background="Transparent" DoubleTapped ="xListItem_OnDoubleTapped" Tapped="xListItem_OnTapped"  PointerPressed="xListItem_PointerPressed"  Width="Auto" ManipulationMode="TranslateX, TranslateY, TranslateInertia" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
                         <TextBlock Text="{Binding}" Foreground="{StaticResource color3}" VerticalAlignment="Center" Width="Auto" />
                     </Grid>
                 </DataTemplate>

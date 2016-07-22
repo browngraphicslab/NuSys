@@ -119,7 +119,7 @@ namespace NuSysApp.Tools
         /// </summary>
         private async void xListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            _baseTool.Item_ManipulationStarted();
+            _baseTool.Item_ManipulationStarted(sender);
         }
 
         /// <summary>

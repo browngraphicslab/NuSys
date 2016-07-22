@@ -33,9 +33,11 @@ namespace NuSysApp
         private enum ViewMode { PieChart, List, BarChart }
         private ViewMode _currentViewMode;
 
+
         private enum DragMode { Filter, Scroll };
         private DragMode _currentDragMode = DragMode.Filter;
-
+        private bool _draggedOutside;
+        private object currentManipultaionSender;
         private const int _minHeight = 200;
         private const int _minWidth = 200;
         private double _x;
@@ -62,6 +64,7 @@ namespace NuSysApp
             _dragFilterItem = Vm.InitializeDragFilterImage();
             xStackElement.AddHandler(PointerPressedEvent, new PointerEventHandler(BtnAddOnManipulationStarting), true);
             xStackElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(BtnAddOnManipulationCompleted), true);
+            _draggedOutside = false;
         }
 
         /// <summary>
@@ -391,7 +394,7 @@ namespace NuSysApp
         /// <summary>
         ///Set up drag item
         /// </summary>
-        public void Item_ManipulationStarted()
+        public void Item_ManipulationStarted(object sender)
         {
             if (getCanvas().Children.Contains(_dragFilterItem))
                 getCanvas().Children.Remove(_dragFilterItem);
@@ -402,6 +405,9 @@ namespace NuSysApp
             t.TranslateX = _x;
             t.TranslateY = _y;
             _dragFilterItem.Visibility = Visibility.Visible;
+            _draggedOutside = false;
+            //not a great way of doing this. find out if there is a way to STOP all manipulation events once a new manipulation event has started.
+            currentManipultaionSender = sender;
 
         }
 
@@ -421,10 +427,21 @@ namespace NuSysApp
         public void Item_ManipulationDelta(FrameworkElement sender, ManipulationDeltaRoutedEventArgs e, FrameworkElement boundingScrollingElement = null)
         {
             var el = (FrameworkElement)sender;
+            
             if (boundingScrollingElement != null)
             {
                 var sp = el.TransformToVisual(boundingScrollingElement).TransformPoint(e.Position);
-                if (sp.X < boundingScrollingElement.ActualWidth && sp.X > 0 && sp.Y > 0 && sp.Y < boundingScrollingElement.ActualHeight)
+                if (sp.Y > 0 && sp.Y < boundingScrollingElement.ActualHeight && (sp.X > boundingScrollingElement.ActualWidth || sp.X < 0))
+                {
+                    _draggedOutside = true;
+                    _dragFilterItem.Visibility = Visibility.Visible;
+                    _currentDragMode = DragMode.Filter;
+                }
+                else if (_draggedOutside == true && e.IsInertial)
+                {
+                    e.Complete();
+                }
+                else if (_draggedOutside == false)
                 {
                     Border border = (Border)VisualTreeHelper.GetChild(boundingScrollingElement, 0);
                     ScrollViewer scrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
@@ -438,14 +455,28 @@ namespace NuSysApp
                         _currentDragMode = DragMode.Scroll;
                     }
                 }
-                else if (_currentDragMode == DragMode.Scroll)
-                {
-                    _dragFilterItem.Visibility = Visibility.Visible;
-                    _currentDragMode = DragMode.Filter;
-                }
+                //if (sp.X < boundingScrollingElement.ActualWidth && sp.X > 0 && sp.Y > 0 && sp.Y < boundingScrollingElement.ActualHeight)
+                //{
+                //    Border border = (Border)VisualTreeHelper.GetChild(boundingScrollingElement, 0);
+                //    ScrollViewer scrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
+                //    if (scrollViewer != null)
+                //    {
+                //        scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta.Translation.Y);
+                //    }
+                //    if (_currentDragMode == DragMode.Filter)
+                //    {
+                //        _dragFilterItem.Visibility = Visibility.Collapsed;
+                //        _currentDragMode = DragMode.Scroll;
+                //    }
+                //}
+                //else if (_currentDragMode == DragMode.Scroll)
+                //{
+                //    _dragFilterItem.Visibility = Visibility.Visible;
+                //    _currentDragMode = DragMode.Filter;
+                //}
             }
             
-            if ((_dragFilterItem.RenderTransform as CompositeTransform) != null)
+            if ((_dragFilterItem.RenderTransform as CompositeTransform) != null && e.IsInertial == false)
             {
                 var t = (CompositeTransform)_dragFilterItem.RenderTransform;
                 var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
@@ -461,7 +492,7 @@ namespace NuSysApp
         public void Item_ManipulationCompleted(object sender, string selection, ManipulationCompletedRoutedEventArgs e)
         {
             getCanvas().Children.Remove(_dragFilterItem);
-            if (_currentDragMode == DragMode.Filter)
+            if (_currentDragMode == DragMode.Filter && currentManipultaionSender == sender)
             {
                 if (Vm.Selection.Contains(selection) || e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
                 {
