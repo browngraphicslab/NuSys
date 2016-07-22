@@ -60,6 +60,7 @@ namespace NuSysApp
                         await elementModel.UnPack(_message);
                         controller = new TextNodeController((TextElementModel)elementModel);
                         break;
+                    case ElementType.ImageRegion:
                     case ElementType.Image:
                         elementModel = new ImageElementModel(id);
                         await elementModel.UnPack(_message);

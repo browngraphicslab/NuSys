@@ -379,6 +379,9 @@
     <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoMediaPlayer.xaml.cs">
       <DependentUpon>VideoMediaPlayer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Wrapper\RectangleWrapper.xaml.cs">
+      <DependentUpon>RectangleWrapper.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Viewers\RecordingNodeViewModel.cs" />
     <Compile Include="Controller\AudioRegionLibraryElementController.cs" />
     <Compile Include="Controller\LibraryElementController\LibraryElementControllerFactory.cs" />
@@ -1141,6 +1144,10 @@
     <Page Include="Components\Viewers\FreeForm\Nodes\WordNode\WordNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Wrapper\RectangleWrapper.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\Search\SearchView.xaml">
       <SubType>Designer</SubType>

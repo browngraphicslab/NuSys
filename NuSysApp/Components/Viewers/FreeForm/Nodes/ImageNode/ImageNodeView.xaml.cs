@@ -37,6 +37,7 @@ namespace NuSysApp
             _vm.View = this;
            
             InitializeComponent();
+            
             DataContext = vm;
             _drawingRegion = false;
             TempRegion = new Rectangle();
@@ -53,6 +54,7 @@ namespace NuSysApp
         private void ViewLoaded(object sender, RoutedEventArgs e)
         {
             _vm.CreateRegionViews();
+            xClippingWrapper.Controller = _vm.LibraryElementController;
         }
 
         private void ImageNodeView_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -63,6 +65,7 @@ namespace NuSysApp
             if (vm == null)
                 return;
             vm.SizeChanged(this, xImage.ActualWidth, xImage.ActualHeight);
+            xClippingWrapper.Controller = _vm.LibraryElementController;
         }
 
         public async Task onGoTo(Region region)
@@ -120,7 +123,7 @@ namespace NuSysApp
             if (_drawingRegion)
             {
                 Debug.WriteLine("here");
-                Canvas.Children.Add(TempRegion);
+                //Canvas.Children.Add(TempRegion);
                 Canvas.SetLeft(TempRegion, e.GetCurrentPoint((UIElement) sender).Position.X);
                 Canvas.SetTop(TempRegion, e.GetCurrentPoint((UIElement)sender).Position.Y);
                 TempRegion.Opacity = 1;
@@ -149,7 +152,7 @@ namespace NuSysApp
                 attributes.Add("topRatio", topRatio);
 
                 // works?
-                Canvas.Children.Remove(TempRegion);
+                //Canvas.Children.Remove(TempRegion);
                 TempRegion.Height = 0;
                 TempRegion.Width = 0;
 
