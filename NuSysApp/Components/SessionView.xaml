@@ -73,7 +73,7 @@
                 <Image Source="ms-appx:///Assets/snapshot_icon.png" Width="25" Height="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
             </Button>
             <Button x:Name="ChatBoxButton" Click="ChatBoxButton_OnClick" Style="{StaticResource CircleButton}" Background="{StaticResource color4}" Width="50" Height="50" >
-                <Image Source="ms-appx:///Assets/text.png" Width="25" Height="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+                <Image Source="ms-appx:///Assets/icon_chat.png" Width="25" Height="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
             </Button>
             <local:ChatBoxView x:Name ="ChatBox" Visibility="Collapsed"></local:ChatBoxView>
             <local:LibraryDragElement x:Name="LibraryDraggingNode" Visibility="Collapsed"></local:LibraryDragElement>
