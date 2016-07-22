@@ -212,7 +212,7 @@ namespace NuSysApp
                 return;
             }
 
-            base.SetSize(width, height);
+            base.SetSize(width, width * GetRatio());
 
             //SetSize(width, height);
         }

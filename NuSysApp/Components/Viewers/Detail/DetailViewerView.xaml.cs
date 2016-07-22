@@ -533,7 +533,7 @@ namespace NuSysApp
                 {
                     case 0:
                         vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Home);
-                        await Task.Delay(42);
+                        await Task.Delay(43);
                         var home = vm.View.DataContext as DetailHomeTabViewModel;
                         home.SetExistingRegions();
                         break;
@@ -545,7 +545,7 @@ namespace NuSysApp
                         break;
                     case 3:
                         vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Regions);
-                        await Task.Delay(42);
+                        await Task.Delay(43);
                         var region = vm.RegionView.DataContext as DetailHomeTabViewModel;
                         region.SetExistingRegions();
                         break;

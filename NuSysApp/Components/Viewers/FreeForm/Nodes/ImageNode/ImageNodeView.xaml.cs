@@ -53,7 +53,6 @@ namespace NuSysApp
 
         private void ViewLoaded(object sender, RoutedEventArgs e)
         {
-            _vm.CreateRegionViews();
             xClippingWrapper.Controller = _vm.LibraryElementController;
         }
 
@@ -61,22 +60,7 @@ namespace NuSysApp
         {
 
             var vm = DataContext as ImageElementViewModel;
-
-            if (vm == null)
-                return;
-            vm.SizeChanged(this, xImage.ActualWidth, xImage.ActualHeight);
-            xClippingWrapper.Controller = _vm.LibraryElementController;
-        }
-
-        public async Task onGoTo(Region region)
-        {
-            foreach (var reg in _vm.Regions)
-            {
-                if ((reg.DataContext as ImageRegionViewModel).Model.LibraryElementId == region.LibraryElementId)
-                {
-                    reg.Select();
-                }
-            }
+            vm?.SizeChanged(this, xImage.ActualWidth, xImage.ActualHeight);
         }
 
         private void ControllerOnDisposed(object source, object args)

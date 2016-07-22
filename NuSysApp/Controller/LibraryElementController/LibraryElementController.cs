@@ -490,15 +490,19 @@ namespace NuSysApp
             string extension = "";
             switch (_libraryElementModel.Type)
             {
+                case ElementType.PdfRegion:
                 case ElementType.PDF:
                     extension = ".pdf";
                     break;
                 case ElementType.Video:
+                case ElementType.VideoRegion:
                     extension = ".mp4";
                     break;
+                case ElementType.AudioRegion:
                 case ElementType.Audio:
                     extension = ".mp3";
                     break;
+                case ElementType.ImageRegion:
                 case ElementType.Image:
                     extension = ".jpg";
                     break;
@@ -508,7 +512,8 @@ namespace NuSysApp
             {
                 url = _libraryElementModel.ServerUrl;
             }
-            return new Uri("http://" + WaitingRoomView.ServerName + "/" + url);
+            var uri = new Uri("http://" + WaitingRoomView.ServerName + "/" + url);
+            return uri;
         }
         public LibraryElementModel LibraryElementModel
         {

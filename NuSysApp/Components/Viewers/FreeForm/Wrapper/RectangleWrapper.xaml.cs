@@ -70,26 +70,55 @@ namespace NuSysApp
 
         private void XClippingGrid_OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
-          
-          //  throw new NotImplementedException();
-        }
-        private void ProcessLibraryElementController()
-        {
-            Debug.Assert(Controller != null);
+
+            if (Controller == null)
+            {
+                return;
+            }
             var type = Controller.LibraryElementModel.Type;
 
-            if(Constants.IsRegionType(type))
+            if (Constants.IsRegionType(type))
             {
                 // region implementation
                 var regionModel = (Controller as RectangleRegionLibraryElementController).LibraryElementModel as RectangleRegion;
                 var rect = new Rect(regionModel.TopLeftPoint.X * this.ActualWidth, regionModel.TopLeftPoint.Y * this.ActualHeight,
-                    regionModel.Width * this.ActualWidth,regionModel.Height * this.ActualHeight);
+                    regionModel.Width * this.ActualWidth, regionModel.Height * this.ActualHeight);
                 xClippingRectangle.Rect = rect;
-            } else
+
+                var compositeTransform = xClippingCompositeTransform;
+                compositeTransform.TranslateX = -regionModel.TopLeftPoint.X*this.ActualWidth * 1/regionModel.Width;
+                compositeTransform.TranslateY = -regionModel.TopLeftPoint.Y * this.ActualHeight * 1/regionModel.Height;
+
+
+            }
+            else
             {
-                var rect = new Rect(0,0,this.ActualWidth,this.ActualHeight);
+                var rect = new Rect(0, 0, this.ActualWidth, this.ActualHeight);
                 xClippingRectangle.Rect = rect;
             }
+
+            
+
+        }
+
+        private void ProcessLibraryElementController()
+        {
+
+            Debug.Assert(Controller != null);
+            var type = Controller.LibraryElementModel.Type;
+
+            if (Constants.IsRegionType(type))
+            {
+
+                var scaleX = 1 / (Controller.LibraryElementModel as RectangleRegion).Width;
+                var scaleY = 1 / (Controller.LibraryElementModel as RectangleRegion).Height;
+
+                var compositeTransform = xClippingCompositeTransform;
+                compositeTransform.ScaleX = scaleX;
+                compositeTransform.ScaleY = scaleY;
+                xClippingCompositeTransform = compositeTransform;
+            }
+
 
         }
 

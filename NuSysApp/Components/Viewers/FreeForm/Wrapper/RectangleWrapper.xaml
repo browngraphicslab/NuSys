@@ -9,9 +9,15 @@
     d:DesignWidth="400">
 
     <Grid x:Name="xClippingGrid" SizeChanged="XClippingGrid_OnSizeChanged">
-        <ContentPresenter x:Name="xClippingContent">
+        
+        <ContentPresenter x:Name="xClippingContent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+            <ContentPresenter.RenderTransform>
+                <CompositeTransform x:Name="xClippingCompositeTransform"/>
+            </ContentPresenter.RenderTransform>
             <ContentPresenter.Clip>
-                <RectangleGeometry x:Name="xClippingRectangle" />
+                <RectangleGeometry x:Name="xClippingRectangle">
+                    
+                </RectangleGeometry>
             </ContentPresenter.Clip>
         </ContentPresenter>
     </Grid>

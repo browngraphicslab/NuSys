@@ -17,54 +17,14 @@ namespace NuSysApp
     public class ImageElementViewModel : ElementViewModel, Sizeable
     {
    
-        public ObservableCollection<ImageRegionView> Regions { private set; get; }
         public Sizeable View { get; set; }
 
         public LibraryElementController LibraryElementController{get { return Controller.LibraryElementController; }}
         public ImageElementViewModel(ElementController controller) : base(controller)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));       
-            Regions = new ObservableCollection<ImageRegionView>();
-            this.CreateRegionViews();
         }
 
-        private void LibraryElementControllerOnRegionRemoved(object source, Region region)
-        {
-            var imageRegion = region as RectangleRegion;
-            if (imageRegion == null)
-            {
-                return;
-            }
-
-            foreach (var regionView in Regions.ToList<ImageRegionView>())
-            {
-                if ((regionView.DataContext as ImageRegionViewModel).Model.LibraryElementId == imageRegion.LibraryElementId)
-                    Regions.Remove(regionView);
-            }
-            
-
-            RaisePropertyChanged("Regions");
-        }
-
-        public void CreateRegionViews(){
-            Regions.Clear();
-
-            var regionLibraryElementIds =
-                SessionController.Instance.RegionsController.GetRegionLibraryElementIds(Controller.LibraryElementModel.LibraryElementId);
-            foreach (var regionLibraryElementId in regionLibraryElementIds)
-            {
-                var regionLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementId) as RectangleRegionLibraryElementController;
-
-                Debug.Assert(regionLibraryElementController != null);
-                Debug.Assert(regionLibraryElementController.LibraryElementModel is RectangleRegion);
-
-                var viewmodel = new ImageRegionViewModel(regionLibraryElementController.LibraryElementModel as RectangleRegion, regionLibraryElementController, this);
-                viewmodel.Editable = false;
-                var view = new ImageRegionView(viewmodel);
-                Regions.Add(view);
-            }
-            RaisePropertyChanged("Regions");
-        }
         public void SizeChanged(object sender, double width, double height)
         {
 
@@ -75,7 +35,10 @@ namespace NuSysApp
             {
                 Controller.LibraryElementController.Loaded -= LibraryElementModelOnOnLoaded;
             }
-            Image.ImageOpened -= UpdateSizeFromModel;
+            if (Image != null)
+            {
+                Image.ImageOpened -= UpdateSizeFromModel;
+            }
         }
 
         public BitmapImage Image { get; set; }
@@ -99,9 +62,6 @@ namespace NuSysApp
         private async void LibraryElementModelOnOnLoaded(object sender)
         {
             await DisplayImage();
-            this.CreateRegionViews();
-
-
         }
 
         private async Task DisplayImage()
@@ -131,7 +91,17 @@ namespace NuSysApp
         }*/
         public override double GetRatio()
         {
-            return Image == null ? 1 :(double)Image.PixelHeight / (double)Image.PixelWidth;
+            if (Image == null)
+            {
+                return 1;
+            }
+            if (LibraryElementController.LibraryElementModel is RectangleRegion)
+            {
+                var rect = LibraryElementController.LibraryElementModel as RectangleRegion;
+                return rect.Height/rect.Width;
+            }
+            return (double)Image.PixelHeight / (double)Image.PixelWidth;
+            
         }
         protected override void OnSizeChanged(object source, double width, double height)
         {
@@ -142,17 +112,7 @@ namespace NuSysApp
                 return;
             }
 
-            SetSize(width,height);
-
-            var newHeight = View.GetHeight();
-            var newWidth = View.GetWidth();
-
-            foreach (var rv in Regions)
-            {
-                var regionViewViewModel = rv.DataContext as RegionViewModel;
-                regionViewViewModel?.ChangeSize(this, width, height);
-            }
-
+            SetSize(width,width * GetRatio());
         }
 
         public double GetWidth()
@@ -165,16 +125,6 @@ namespace NuSysApp
         {
             return Height;
 
-        }
-
-        public double GetViewWidth()
-        {
-            throw new NotImplementedException();
-        }
-
-        public double GetViewHeight()
-        {
-            throw new NotImplementedException();
         }
     }
 }
