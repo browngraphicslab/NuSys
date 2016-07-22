@@ -23,14 +23,13 @@ namespace NuSysApp
                 return null;
             }
             
-            return _libraryElementIdToRegionLibraryElementIds.ContainsKey(libraryElementId) ? _libraryElementIdToRegionLibraryElementIds[libraryElementId] : null;
+            return _libraryElementIdToRegionLibraryElementIds.ContainsKey(libraryElementId) ? _libraryElementIdToRegionLibraryElementIds[libraryElementId] : new HashSet<string>();
         }
         
         /// <summary>
         /// to be called when we make the regon library element model.  Adds it to dictionaries
         /// </summary>
         /// <param name="regionModel"></param>
-
         public void AddRegion(Region regionModel)
         {
             Debug.Assert(regionModel != null);

@@ -85,13 +85,12 @@ namespace NuSysApp
         /// </summary>
         public void SetContentData (string contentData)
         {
-            if (_blockServerInteraction)// we dont need to update server since the serve initiated this change
-            {
-                return;
-            }
             _libraryElementModel.Data = contentData;
             ContentChanged?.Invoke(this, contentData);
-            _debouncingDictionary.Add("data", contentData);
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("data", contentData);
+            }
         }
 
         /// <summary>
@@ -100,14 +99,12 @@ namespace NuSysApp
         /// </summary>
         public void SetTitle(string title)
         {
-            if (_blockServerInteraction)
-            {
-                return;
-            }
             _libraryElementModel.Title = title;
             TitleChanged?.Invoke(this, title);
-            _debouncingDictionary.Add("title", title);
-            Title = title;
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("title", title);
+            }
         }
 
         /// <summary>
@@ -118,7 +115,10 @@ namespace NuSysApp
         {
             _libraryElementModel.Favorited = favorited;
             Favorited?.Invoke(this, favorited);
-            _debouncingDictionary.Add("favorited", favorited); 
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("favorited", favorited);
+            }
         }
 
         /// <summary>
@@ -127,13 +127,21 @@ namespace NuSysApp
         /// </summary>
         private void ChangeMetadata(Dictionary<string,MetadataEntry> metadata)
         {
-            if (_blockServerInteraction)
-            {
-                return;
-            }
+            
             LibraryElementModel.SetMetadata(metadata);
             MetadataChanged?.Invoke(this);
-            _debouncingDictionary.Add("metadata", LibraryElementModel.Metadata);
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("metadata", LibraryElementModel.Metadata);
+            }
+        }
+        /// <summary>
+        /// will prevent the controller from updating the server at all if true
+        /// </summary>
+        /// <param name="blockServerUpdates"></param>
+        protected void SetBlockServerBoolean(bool blockServerUpdates)
+        {
+            _blockServerInteraction = blockServerUpdates;
         }
 
         /// <summary>
@@ -250,7 +258,10 @@ namespace NuSysApp
         {
             _libraryElementModel.Keywords = keywords;
             KeywordsChanged?.Invoke(this, keywords);
-            _debouncingDictionary.Add("keywords", keywords);
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("keywords", keywords);
+            }
         }
 
         /// <summary>
@@ -261,7 +272,10 @@ namespace NuSysApp
         {
             _libraryElementModel.Keywords.Add(keyword);
             KeywordsChanged?.Invoke(this, _libraryElementModel.Keywords);
-            _debouncingDictionary.Add("keywords", _libraryElementModel.Keywords);
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("keywords", _libraryElementModel.Keywords);
+            }
         }
 
         /// <summary>
@@ -280,7 +294,10 @@ namespace NuSysApp
             }
             //_libraryElementModel.Keywords.Remove(keyword);
             KeywordsChanged?.Invoke(this, _libraryElementModel.Keywords);
-            _debouncingDictionary.Add("keywords", _libraryElementModel.Keywords);
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("keywords", _libraryElementModel.Keywords);
+            }
         }
 
         /// <summary>
@@ -376,7 +393,7 @@ namespace NuSysApp
 
         public virtual void UnPack(Message message)
         {
-            _blockServerInteraction = true;
+            SetBlockServerBoolean(true);
             if (message.ContainsKey("metadata"))
             {
                 var metadata = message.GetDict<string, MetadataEntry>("metadata");
@@ -387,17 +404,43 @@ namespace NuSysApp
             }
             if (message.ContainsKey("data"))
             {
-                var data = message.GetString("data");
-                LibraryElementModel.Data = data;
-                ContentChanged?.Invoke(this, data);
+                SetContentData(message.GetString("data"));
             }
             if (message.ContainsKey("title"))
             {
-                LibraryElementModel.Title = message.GetString("title");
-                TitleChanged?.Invoke(this, message.GetString("title"));
+                SetTitle(message.GetString(Title));
             }
 
-            _blockServerInteraction = false;
+            if (message.ContainsKey("keywords"))
+            {
+                SetKeywords(message.GetHashSet<Keyword>("keywords"));
+            }
+            if (message.GetString("small_thumbnail_url") != null)
+            {
+                LibraryElementModel.SmallIconUrl = message.GetString("small_thumbnail_url");
+            }
+            if (message.GetString("medium_thumbnail_url") != null)
+            {
+                LibraryElementModel.MediumIconUrl = message.GetString("medium_thumbnail_url");
+            }
+            if (message.GetString("large_thumbnail_url") != null)
+            {
+                LibraryElementModel.LargeIconUrl = message.GetString("large_thumbnail_url");
+            }
+            if (message.GetString("creator_user_id") != null)
+            {
+                LibraryElementModel.Creator = message.GetString("creator_user_id");
+            }
+            if (message.GetString("library_element_creation_timestamp") != null)
+            {
+                LibraryElementModel.Timestamp = message.GetString("library_element_creation_timestamp");
+            }
+            if (message.GetString("server_url") != null)
+            {
+                LibraryElementModel.ServerUrl = message.GetString("server_url");
+            }
+            //TODO set regions maybe
+            SetBlockServerBoolean(false);
         }
 
         public Uri SmallIconUri
@@ -510,7 +553,7 @@ namespace NuSysApp
         {
             LinkAdded?.Invoke(this, linkController);
         }
-
+        
         //public void RemoveLink(LinkLibraryElementController linkController)
         //{
         //    LinkRemoved?.Invoke(this, linkController.ContentId);

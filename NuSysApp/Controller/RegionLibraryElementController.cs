@@ -33,7 +33,6 @@ namespace NuSysApp
 
 
         private bool _selected;
-        private bool _blockServerUpdates;
         public RegionLibraryElementController(Region model): base(model)
         {
 
@@ -56,12 +55,6 @@ namespace NuSysApp
         //    Model.Metadata.Add(entry.Key,entry);
         //    return true;
         //}
-
-        protected void SetBlockServerBoolean(bool blockServerUpdates)
-        {
-            _blockServerUpdates = blockServerUpdates;
-        }
-        
 
         public void Select()
         {

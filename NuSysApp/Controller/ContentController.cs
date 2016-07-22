@@ -61,6 +61,9 @@ namespace NuSysApp
                 _contents.TryAdd(model.LibraryElementId, model);
                 var controller = LibraryElementControllerFactory.CreateFromModel(model);
                 _contentControllers.TryAdd(model.LibraryElementId, controller);
+
+
+
                 Debug.WriteLine("content directly added with ID: " + model.LibraryElementId);
                 OnNewContent?.Invoke(model);
                 return model.LibraryElementId;
@@ -107,7 +110,6 @@ namespace NuSysApp
         public bool AddContentDataModel(string contentId, string data)
         {
             Debug.Assert(contentId != null);
-            Debug.Assert(data != null);
             if (_contentDataModels.ContainsKey(contentId))
             {
                 return false;

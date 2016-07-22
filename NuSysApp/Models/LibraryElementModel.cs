@@ -24,38 +24,38 @@ namespace NuSysApp
         {
             get
             {
-                if (string.IsNullOrEmpty(ContentId))
+                if (string.IsNullOrEmpty(ContentDataModelId))
                 {
                     return null;
                 }
-                var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(ContentId);
+                var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(ContentDataModelId);
                 Debug.Assert(contentDataModel != null);
 
                 return contentDataModel.Data;
             }
             set
             {
-                if (string.IsNullOrEmpty(ContentId))
+                if (string.IsNullOrEmpty(ContentDataModelId))
                 {
                     return;
                 }
-                if (!SessionController.Instance.ContentController.ContentExists(ContentId))
+                if (!SessionController.Instance.ContentController.ContentExists(ContentDataModelId))
                 {
-                    SessionController.Instance.ContentController.AddContentDataModel(ContentId, value);
+                    SessionController.Instance.ContentController.AddContentDataModel(ContentDataModelId, value);
                 }
-                SessionController.Instance.ContentController.GetContentDataModel(ContentId)?.SetData(value);
+                SessionController.Instance.ContentController.GetContentDataModel(ContentDataModelId)?.SetData(value);
             }
         }
 
         public string LibraryElementId { get; set; }
-        public string ContentId { get; set; }
+        public string ContentDataModelId { get; set; }
 
         public string Title { get; set; }
 
         public bool Favorited { set; get; }
-        public string LargeIconUrl { get; private set; }
-        public string MediumIconUrl { get; private set; }
-        public string SmallIconUrl { get; private set; }
+        public string LargeIconUrl { get; set; }
+        public string MediumIconUrl { get; set; }
+        public string SmallIconUrl { get; set; }
         public ConcurrentDictionary<string, MetadataEntry> Metadata {
             get;
             set; }
@@ -96,8 +96,9 @@ namespace NuSysApp
         }
         public LibraryElementModel(string libraryElementId, ElementType elementType, Dictionary<string, MetadataEntry> metadata = null, string contentName = null, bool favorited = false)
         {
-            Data = null;
+            ContentDataModelId = libraryElementId;
             LibraryElementId = libraryElementId;
+            Data = null;
             Title = contentName;
             Type = elementType;
             Favorited = favorited;
@@ -108,52 +109,6 @@ namespace NuSysApp
         //FOR PDF DOWNLOADING  --HACKY AF
         //public static List<string> PDFStrings = new List<string>();
 
-        public virtual async Task UnPack(Message message)
-        {
-            if (message.GetString("title") != null)
-            {
-                Title = message.GetString("title");
-            }
-            if (message.ContainsKey("keywords"))
-            {
-                Keywords = new HashSet<Keyword>(message.GetList<Keyword>("keywords"));
-            }
-            // unused for now
-            //if (message.ContainsKey("regions"))
-            //{
-            //    Regions = new HashSet<Region>(message.GetList<Region>("regions"));
-            //}
-            if (message.GetString("small_thumbnail_url") != null)
-            {
-                SmallIconUrl = message.GetString("small_thumbnail_url");
-            }
-            if (message.GetString("medium_thumbnail_url") != null)
-            {
-                MediumIconUrl = message.GetString("medium_thumbnail_url");
-            }
-            if (message.GetString("large_thumbnail_url") != null)
-            {
-                LargeIconUrl = message.GetString("large_thumbnail_url");
-            }
-            if (message.GetString("creator_user_id") != null)
-            {
-                Creator = message.GetString("creator_user_id");
-            }
-            if (message.GetString("library_element_creation_timestamp") != null)
-            {
-                Timestamp = message.GetString("library_element_creation_timestamp");
-            }
-            if (message.GetString("server_url") != null)
-            {
-                ServerUrl = message.GetString("server_url");
-            }
-            //TO DOWNLOAD PDFS
-            /*
-            if (Type == ElementType.PDF)
-            {
-                PDFStrings.Add(LibraryElementId);
-            }*/
-        }
         protected virtual void OnSessionControllerEnterNewCollection()
         {
             Data = null;

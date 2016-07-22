@@ -60,8 +60,11 @@ namespace NuSysApp
                         break;
                 }
 
-                model.UnPack(message);
+                
                 SessionController.Instance.ContentController.Add(model);
+                var controller = SessionController.Instance.ContentController.GetLibraryElementController(id);
+                Debug.Assert(controller != null);
+                controller.UnPack(message);
                 if (Constants.IsRegionType(type))
                 {
                     Debug.Assert(model is Region);

@@ -220,7 +220,7 @@ namespace NuSysApp
                         }
                     }
                     var message = new Message(dict);
-                    await SessionController.Instance.ContentController.GetContent(id).UnPack(message);
+                    SessionController.Instance.ContentController.GetLibraryElementController(id).UnPack(message);
                 });
             }
         }

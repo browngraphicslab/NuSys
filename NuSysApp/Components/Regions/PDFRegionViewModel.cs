@@ -135,7 +135,7 @@ namespace NuSysApp
         /*
         private void RegionUpdated(object source, Region region)
         {
-            if (region.ContentId != Model.ContentId)
+            if (region.ContentId != Model.ContentDataModelId)
             {
                 return;
             }

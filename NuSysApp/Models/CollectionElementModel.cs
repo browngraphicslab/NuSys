@@ -25,10 +25,6 @@ namespace NuSysApp
 
         }
 
-
-
-      
-
         public override async Task UnPack(Message props)
         {
             if (props.ContainsKey("collectionview"))
@@ -36,8 +32,6 @@ namespace NuSysApp
                 string t = props.GetString("collectionview");
                 ActiveCollectionViewType = (CollectionViewType)Enum.Parse(typeof(CollectionViewType), t);
             }
-
-         
             await base.UnPack(props);
         }
     }
