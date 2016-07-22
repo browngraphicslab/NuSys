@@ -33,8 +33,6 @@ namespace NuSysApp
         
         #region Events
         public delegate void ContentChangedEventHandler(object source, string contentData);
-        public delegate void RegionAddedEventHandler(object source, RegionLibraryElementController regionLibraryElementController);
-        public delegate void RegionRemovedEventHandler(object source, Region region);
         public delegate void MetadataChangedEventHandler(object source);
         public delegate void FavoritedEventHandler(object sender, bool favorited);
         public delegate void LoadedEventHandler(object sender);
@@ -42,8 +40,6 @@ namespace NuSysApp
         public delegate void NetworkUserChangedEventHandler(object source, NetworkUser user);
         public delegate void KeywordsChangedEventHandler(object sender, HashSet<Keyword> keywords);
         public event ContentChangedEventHandler ContentChanged;
-        public event RegionAddedEventHandler RegionAdded;
-        public event RegionRemovedEventHandler RegionRemoved;
         public event MetadataChangedEventHandler MetadataChanged;
         public event EventHandler Disposed;
         public event EventHandler<string> TitleChanged;
@@ -98,40 +94,6 @@ namespace NuSysApp
             _debouncingDictionary.Add("data", contentData);
         }
 
-        /// <summary>
-        /// This will ADD a region to the library element model and will update the server accordingly
-        /// It will then fire an even notfying all listeners of the new region added
-        /// </summary>
-        public void AddRegion(Region region)
-        {
-            if (_libraryElementModel.Regions == null)
-            {
-                _libraryElementModel.Regions = new HashSet<Region>();
-            }
-
-
-            _libraryElementModel.Regions.Add(region);
-
-            var regionController = SessionController.Instance.RegionsController.AddRegion(region, this.LibraryElementModel.LibraryElementId);
-            /*
-            var factory = new RegionControllerFactory();
-            var RegionLibraryElementController = factory.CreateFromSendable(region, this.LibraryElementModel.LibraryElementId);
-            */
-            RegionAdded?.Invoke(this, regionController);
-            SessionController.Instance.NuSysNetworkSession.AddRegionToContent(LibraryElementModel.LibraryElementId, region);
-        }
-
-        /// <summary>
-        /// This will REMOVE a region to the library element model and will update the server accordingly
-        /// It will then fire an even notfying all listeners of the old region that was deleted
-        /// The entire list of regions can be refetched from the library element model directly if needed
-        /// </summary>
-        public void RemoveRegion(Region region)
-        {
-            _libraryElementModel.Regions.Remove(region);
-            RegionRemoved?.Invoke(this, region);
-            SessionController.Instance.NuSysNetworkSession.RemoveRegionFromContent(region);
-        }
         /// <summary>
         /// This will change the library element model's title and update the server.  
         /// Then it will fire an event notifying all listeners of the change
@@ -331,10 +293,6 @@ namespace NuSysApp
             {
                 _libraryElementModel.Data = e.Data;
                 ContentChanged?.Invoke(this,e.Data);
-            }
-            if (e.RegionStrings != null)
-            {
-                _libraryElementModel.Regions = e.RegionStrings;
             }
             //_libraryElementModel.InkLinkes = e.InkStrings;
 

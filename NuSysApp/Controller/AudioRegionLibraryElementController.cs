@@ -12,20 +12,40 @@ namespace NuSysApp
         public event RegionTimeChangedEventHandler TimeChanged;
         public delegate void RegionTimeChangedEventHandler(object sender, double start, double end);
 
-        public TimeRegionModel Model
+        public AudioRegionModel AudioRegionModel
         {
-            get { return base.Model  as TimeRegionModel;}
+            get { return base.LibraryElementModel  as AudioRegionModel;}
         }
-        public AudioRegionLibraryElementController(TimeRegionModel model) : base(model)
+        public AudioRegionLibraryElementController(AudioRegionModel model) : base(model)
         {
 
         }
-        public void ChangeEndPoints(double start, double end)
+        public void SetStartTime(double startTime)
         {
-            Model.Start = start;
-            Model.End = end;
-            TimeChanged?.Invoke(this, start, end);
-            UpdateServer();
+            AudioRegionModel.Start = startTime;
+            TimeChanged?.Invoke(this, AudioRegionModel.Start, AudioRegionModel.End);
+            _debouncingDictionary.Add("start", AudioRegionModel.Start);
+        }
+        public void SetEndTime(double endTime)
+        {
+            AudioRegionModel.End = endTime;
+            TimeChanged?.Invoke(this, AudioRegionModel.Start, AudioRegionModel.End);
+            _debouncingDictionary.Add("end", AudioRegionModel.Start);
+
+        }
+        public override void UnPack(Message message)
+        {
+            SetBlockServerBoolean(true);
+            if (message.ContainsKey("start"))
+            {
+                SetStartTime(message.GetDouble("start"));
+            }
+            if (message.ContainsKey("end"))
+            {
+                SetEndTime(message.GetDouble("end"));
+            }
+            base.UnPack(message);
+            SetBlockServerBoolean(false);
         }
     }
 }

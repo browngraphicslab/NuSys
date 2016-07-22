@@ -134,7 +134,7 @@ namespace NuSysApp
                 RaisePropertyChanged("TopLeft");
             }
         }
-        public VideoRegionViewModel(VideoRegionModel model, LibraryElementController controller, VideoRegionLibraryElementController regionLibraryElementController,Sizeable sizeable) : base(model,controller, regionLibraryElementController,sizeable)
+        public VideoRegionViewModel(VideoRegionModel model, VideoRegionLibraryElementController regionLibraryElementController,Sizeable sizeable) : base(model, regionLibraryElementController,sizeable)
         {
             ContainerSizeChanged += BaseSizeChanged;
             regionLibraryElementController.SizeChanged += SizeChanged;
@@ -149,7 +149,7 @@ namespace NuSysApp
             _intervalRegionWidth = _intervalEnd - _intervalStart;
             _intervalRegionTranslateY = 1;
 
-            Name = Model.Name;
+            Name = Model.Title;
 
             Editable = true;
         }

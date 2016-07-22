@@ -104,7 +104,7 @@ namespace NuSysApp
 
         public void DisplayRegion(Region region)
         {
-//            var rectangleRegion = (TimeRegionModel)region;
+//            var rectangleRegion = (AudioRegionModel)region;
 //
 //            var displayedRegion = new AudioRegionView(new AudioRegionViewModel(rectangleRegion,this));
 //            displayedRegion.OnSelected += DisplayedRegion_OnSelected;
@@ -400,7 +400,7 @@ namespace NuSysApp
                     grid.Children.Add(line);
                     timeBlockVM.setUpHandlers(line.getLine());
 
-                    AudioRegionViewModel vm = new AudioRegionViewModel((TimeRegionModel)(DataContext as AudioNodeViewModel).Controller.LibraryElementModel.Regions.Last(), scrubBar);
+                    AudioRegionViewModel vm = new AudioRegionViewModel((AudioRegionModel)(DataContext as AudioNodeViewModel).Controller.LibraryElementModel.Regions.Last(), scrubBar);
                     AudioRegionView region = new AudioRegionView(vm);
                     _timeRegions.Add(vm);
                     grid.Children.Add(region);

@@ -41,86 +41,37 @@ namespace NuSysApp
 
             RegionViews = new ObservableCollection<PDFRegionView>();
             this.CreatePdfRegionViews();
-            
-            Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
-            Controller.LibraryElementController.RegionRemoved += LibraryElementController_RegionRemoved; 
-            
         }
-
-        private void LibraryElementController_RegionRemoved(object source, Region region)
-        {
-            var pdfRegion = region as PdfRegion;
-            if (pdfRegion == null)
-            {
-                return;
-            }
-            foreach (var regionView in RegionViews.ToList<PDFRegionView>())
-            {
-                if ((regionView.DataContext as PdfRegionViewModel).Model.Id == pdfRegion.Id)
-                    RegionViews.Remove(regionView);
-            }
-            RaisePropertyChanged("RegionViews");
-        }
-
-        private void LibraryElementControllerOnRegionAdded(object source, RegionLibraryElementController regionLibraryElementController)
-        {
-            var pdfRegion = regionLibraryElementController?.Model as PdfRegion;
-            var pdfRegionController = regionLibraryElementController as PdfRegionLibraryElementController;
-            if (pdfRegion == null)
-            {
-                return;
-            }
-            var vm = new PdfRegionViewModel(pdfRegion, Controller.LibraryElementController, pdfRegionController, this);
-            vm.Editable = false;
-            var view = new PDFRegionView(vm);
-            //pdfRegionController.PageLocationChanged += PdfRegionControllerOnPageLocationChanged;
-
-            if (pdfRegion.PageLocation != CurrentPageNumber)
-            {
-                view.Visibility = Visibility.Collapsed;
-            }
-            RegionViews.Add(view);
-            RaisePropertyChanged("RegionViews");
-        }
+       
         
         public void CreatePdfRegionViews()
         {
-            var elementController = Controller.LibraryElementController;
 
-
-            if (Controller.LibraryElementModel.Regions == null)
-            {
-                return;
-            }
             RegionViews.Clear();
-            foreach (var regionModel in Controller.LibraryElementModel.Regions)
+
+            var regionsLibraryElementIds =
+                SessionController.Instance.RegionsController.GetRegionLibraryElementIds(
+                    Controller.LibraryElementModel.LibraryElementId);
+            foreach (var regionLibraryElementId in regionsLibraryElementIds)
             {
+                var regionLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementId) as PdfRegionLibraryElementController;
+                Debug.Assert(regionLibraryElementController != null);
+                Debug.Assert(regionLibraryElementController.LibraryElementModel is PdfRegionModel);
+                var vm = new PdfRegionViewModel(regionLibraryElementController.LibraryElementModel as PdfRegionModel, regionLibraryElementController, this);
 
-                var pdfRegion = regionModel as PdfRegion;
-                PdfRegionLibraryElementController regionLibraryElementController;
-                if (SessionController.Instance.RegionsController.GetRegionController(pdfRegion.Id) == null)
-                {
-                    //Debug.Fail("Did not load");
-                    regionLibraryElementController = SessionController.Instance.RegionsController.AddRegion(pdfRegion, Controller.LibraryElementModel.LibraryElementId) as PdfRegionLibraryElementController;
-                }
-                else {
-                    regionLibraryElementController = SessionController.Instance.RegionsController.GetRegionController(pdfRegion.Id) as PdfRegionLibraryElementController;
-                }
-
-
-                var vm = new PdfRegionViewModel(pdfRegion, elementController, regionLibraryElementController, this);
-                vm.Editable = false;
                 var view = new PDFRegionView(vm);
-                if (pdfRegion.PageLocation != CurrentPageNumber)
+
+                if ((regionLibraryElementController.LibraryElementModel as PdfRegionModel).PageLocation != CurrentPageNumber)
                 {
                     view.Visibility = Visibility.Collapsed;
                 }
+                vm.Editable = false;
                 RegionViews.Add(view);
 
             }
+
             RaisePropertyChanged("RegionViews");
-
-
+            
         }
         
 
@@ -198,7 +149,7 @@ namespace NuSysApp
             foreach (var regionView in RegionViews)
             {
                 var model = (regionView.DataContext as PdfRegionViewModel)?.Model;
-                if ((model as PdfRegion).PageLocation != CurrentPageNumber)
+                if ((model as PdfRegionModel).PageLocation != CurrentPageNumber)
                 {
                     regionView.Visibility = Visibility.Collapsed;
                 }

@@ -23,10 +23,6 @@ namespace NuSysApp
         public delegate void MessageRecievedEventHandler(Message message);
         public event MessageRecievedEventHandler OnMessageRecieved;
 
-        public delegate void RegionUpdatedEventHandler(string id, Region region);
-        public event RegionUpdatedEventHandler OnRegionUpdated;
-
-
         public delegate void ClientDroppedEventHandler(string id);
         public event ClientDroppedEventHandler OnClientDrop;//todo add this in, and onclientconnection event
 
@@ -130,11 +126,6 @@ namespace NuSysApp
                                 case "remove_user":
                                     id = (string)dict["user_id"];
                                     OnClientDrop?.Invoke(id);
-                                    break;
-                                case "region_update":
-                                    id = (string) dict["region_id"];
-                                    Region region = GetRegionFromString(dict["region_string"] as string);
-                                    OnRegionUpdated?.Invoke(id, region);
                                     break;
                                 case "content_update":
                                     id = dict["id"] as string;
@@ -397,15 +388,8 @@ namespace NuSysApp
                     try
                     {
                         var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(data, settings);
-
-                        var regionStrings = dict.ContainsKey("regions") ? JsonConvert.DeserializeObject<List<string>>(dict["regions"].ToString(), settings) : new List<string>();
-                        var regions = new HashSet<Region>();
-                        foreach (var rs in regionStrings)
-                        {
-                            regions.Add(GetRegionFromString(rs, contentId));
-                        }
                         var inks = dict.ContainsKey("inks") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["inks"].ToString()) : null;
-                        var args = new LoadContentEventArgs(null,regions,inks);
+                        var args = new LoadContentEventArgs(null,inks);
                         return args;
                     }
                     catch (Exception boolParsException)
@@ -482,13 +466,6 @@ namespace NuSysApp
 
             var id = (string)dict["id"];
 
-            var regionStrings = dict.ContainsKey("regions") ? JsonConvert.DeserializeObject<List<string>>(dict["regions"].ToString(), settings) : new List<string>();
-            var regions = new HashSet<Region>();
-            foreach (var rs in regionStrings)
-            {
-                regions.Add(GetRegionFromString(rs, id));
-            }
-
             var inks = dict.ContainsKey("inks") ? JsonConvert.DeserializeObject<HashSet<string>>(dict["inks"].ToString()) : null;
 
             if (NeededLibraryDataIDs.Contains(id))
@@ -539,42 +516,11 @@ namespace NuSysApp
             {
                 await UITask.Run(async delegate
                 {
-                    var args = new LoadContentEventArgs(contentData, regions, inks);
+                    var args = new LoadContentEventArgs(contentData, inks);
                     SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId)
                         .Load(args);
                 });
             }
-        }
-
-        private Region GetRegionFromString(string regionString, string contentId = null)
-        {
-            if (regionString == null)
-            {
-                return null;
-            }
-            JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-            var regionintermediate = JsonConvert.DeserializeObject<RegionIntermediate>(regionString);
-            Region region = null;
-            switch (regionintermediate.Type)
-            {
-                case ElementType.ImageRegion:
-                    region = JsonConvert.DeserializeObject<RectangleRegion>(regionString, settings);
-                    break;
-                case ElementType.AudioRegion:
-                    region = JsonConvert.DeserializeObject<TimeRegionModel>(regionString, settings);
-                    break;
-                case ElementType.PdfRegion:
-                    region = JsonConvert.DeserializeObject<PdfRegion>(regionString, settings);
-                    break;
-                case ElementType.VideoRegion:
-                    region = JsonConvert.DeserializeObject<VideoRegionModel>(regionString, settings);
-                    break;
-            }
-            if (contentId != null && SessionController.Instance.RegionsController.GetRegionController(region?.LibraryElementId) == null)
-            {
-                var controller = new RegionControllerFactory().CreateFromSendable(region, contentId);
-            }
-            return region;
         }
         public async Task SendDictionaryToServer(Dictionary<string, string> dict)
         {
@@ -786,10 +732,6 @@ namespace NuSysApp
         {
             public S m_Item1 { get; set; }
             public T m_Item2 { get; set; }
-        }
-        private class RegionIntermediate
-        {
-            public ElementType Type;
         }
         public class IncomingDataReaderException : Exception
         {

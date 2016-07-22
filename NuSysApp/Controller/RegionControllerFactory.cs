@@ -11,28 +11,29 @@ namespace NuSysApp
     // Factories are awesome 
     public class RegionControllerFactory
     {
-        public RegionLibraryElementController CreateFromSendable(Region regionModel, string contentId)
+        public RegionLibraryElementController CreateFromSendable(Region regionModel)
         {
             RegionLibraryElementController libraryElementController = null;
 
             switch (regionModel.Type)
             {
-                case Region.RegionType.Rectangle:
+                case ElementType.ImageRegion:
                     var imageModel = regionModel as RectangleRegion;
                     libraryElementController = new RectangleRegionLibraryElementController(imageModel);
                     break;
-                case Region.RegionType.Pdf:
-                    var pdfModel = regionModel as PdfRegion;
+                case ElementType.PdfRegion:
+                    var pdfModel = regionModel as PdfRegionModel;
                     libraryElementController = new PdfRegionLibraryElementController(pdfModel);
                     break;
-                case Region.RegionType.Time:
-                    var audioModel = regionModel as TimeRegionModel;
+                case ElementType.AudioRegion:
+                    var audioModel = regionModel as AudioRegionModel;
                     libraryElementController = new AudioRegionLibraryElementController(audioModel);
                     break;
-                case Region.RegionType.Video:
+                case ElementType.VideoRegion:
                     Debug.Assert(regionModel is VideoRegionModel);
                     libraryElementController = new VideoRegionLibraryElementController(regionModel as VideoRegionModel);
                     break;
+                
                 
             }
             if (libraryElementController == null)

@@ -18,7 +18,7 @@ namespace NuSysApp
 
         public abstract void SetExistingRegions();
 
-        public abstract Region GetNewRegion();
+        public abstract Message GetNewRegionMessage();
 
     }
 }

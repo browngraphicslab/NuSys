@@ -42,7 +42,7 @@ namespace NuSysApp
             ThumbnailUri = libraryElementController.SmallIconUri;
             Timestamp = libraryElementController.LibraryElementModel.Timestamp.Substring(0, libraryElementController.LibraryElementModel.Timestamp.Length - 3);
             Type = libraryElementController.LibraryElementModel.Type.ToString();
-            ContentID = libraryElementController.Model.Id;
+            ContentID = libraryElementController.LibraryElementModel.LibraryElementId;
         }
 
         private void Controller_TitleChanged(object sender, string title)

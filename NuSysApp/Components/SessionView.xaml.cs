@@ -101,7 +101,6 @@ namespace NuSysApp
 
         private async void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
-            await SessionController.Instance.RegionsController.Load();
             SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += NewNetworkUser;
 
             var l = WaitingRoomView.GetFirstLoadList();

@@ -370,18 +370,6 @@ namespace NuSysApp
             }
         }
 */
-        public void CreateTimeBlock(TimeSpan start, TimeSpan end)
-        {
-            //LinkedTimeBlockModel model = new LinkedTimeBlockModel(start, end);
-            //LinkedTimeBlockViewModel link = new LinkedTimeBlockViewModel(model, ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan, scrubBar);
-            //(DataContext as AudioNodeViewModel).AddLinkTimeModel(model);
-
-            TimeRegionModel regionModel = new TimeRegionModel("newRegion", start.TotalMilliseconds, end.TotalMilliseconds);
- //           AudioRegionViewModel regionVM = new AudioRegionViewModel(regionModel, scrubBar);
-            (DataContext as AudioNodeViewModel).AddTimeRegion(regionModel);
-
-        }
-
         public void ReSaveLinkModels()
         {
             (DataContext as ElementViewModel).Controller.SaveTimeBlock();

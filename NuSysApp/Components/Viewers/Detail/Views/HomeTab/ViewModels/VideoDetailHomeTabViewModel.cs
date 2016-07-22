@@ -18,7 +18,7 @@ namespace NuSysApp
         public LibraryElementController Controller { get; }
         public ObservableCollection<VideoRegionView> RegionViews { set; get; }
         
-        public VideoDetailHomeTabViewModel(LibraryElementController controller, HashSet<Region> regionsToLoad) :  base(controller, regionsToLoad)
+        public VideoDetailHomeTabViewModel(LibraryElementController controller) :  base(controller)
         {
             Controller = controller;
             RegionViews = new ObservableCollection<VideoRegionView>();
@@ -40,13 +40,13 @@ namespace NuSysApp
 
         public override void AddRegion(object sender, RegionLibraryElementController libraryElementController)
         {
-            var videoRegion = libraryElementController?.Model as VideoRegionModel;
+            var videoRegion = libraryElementController?.LibraryElementModel as VideoRegionModel;
             var videoRegionController = libraryElementController as VideoRegionLibraryElementController;
             if (videoRegion == null || videoRegionController == null)
             {
                 return;
             }
-            var vm = new VideoRegionViewModel(videoRegion, Controller, videoRegionController, this);
+            var vm = new VideoRegionViewModel(videoRegion, videoRegionController, this);
             vm.Editable = this.Editable;
             var view = new VideoRegionView(vm);
             RegionViews.Add(view);
@@ -84,7 +84,7 @@ namespace NuSysApp
 
             foreach (var regionView in RegionViews.ToList<VideoRegionView>())
             {
-                if ((regionView.DataContext as VideoRegionViewModel).Model.Id == videoRegion.Id)
+                if ((regionView.DataContext as VideoRegionViewModel).Model.LibraryElementId == videoRegion.LibraryElementId)
                     RegionViews.Remove(regionView);
             }
 
@@ -118,25 +118,16 @@ namespace NuSysApp
 
         public override void SetExistingRegions()
         {
+
             RegionViews.Clear();
-            foreach (var regionModel in _regionsToLoad)
+            foreach (var regionId in SessionController.Instance.RegionsController.GetRegionLibraryElementIds(Controller.LibraryElementModel.LibraryElementId))
             {
-                var videoRegion = regionModel as VideoRegionModel;
-                if (videoRegion == null)
+                var videoRegionController = SessionController.Instance.ContentController.GetLibraryElementController(regionId) as VideoRegionLibraryElementController;
+                if (videoRegionController == null)
                 {
                     return;
                 }
-                VideoRegionLibraryElementController regionLibraryElementController;
-                if (SessionController.Instance.RegionsController.GetRegionController(regionModel.Id) == null)
-                {
-                    regionLibraryElementController = SessionController.Instance.RegionsController.AddRegion(regionModel, Controller.LibraryElementModel.LibraryElementId) as VideoRegionLibraryElementController;
-                }
-                else
-                {
-                    regionLibraryElementController = SessionController.Instance.RegionsController.GetRegionController(regionModel.Id) as VideoRegionLibraryElementController;
-                }
-                Debug.Assert(regionLibraryElementController is VideoRegionLibraryElementController);
-                var vm = new VideoRegionViewModel(videoRegion, Controller, regionLibraryElementController as VideoRegionLibraryElementController, this);
+                var vm = new VideoRegionViewModel(videoRegionController.VideoRegionModel, videoRegionController, this);
                 vm.Editable = this.Editable;
                 var view = new VideoRegionView(vm);
                 view.OnRegionSeek += OnRegionSeek;
@@ -144,6 +135,7 @@ namespace NuSysApp
 
             }
             RaisePropertyChanged("RegionViews");
+            
         }
 
         public void OnRegionSeek(double time)
@@ -151,20 +143,15 @@ namespace NuSysApp
             OnRegionSeekPassing?.Invoke(time);
         }
 
-        public override Region GetNewRegion()
+        public override Message GetNewRegionMessage()
         {
-            var region = new VideoRegionModel(new Point(.25,.25), new Point(.75, .75) );
-            return region;
-        }
-
-        public double GetViewWidth()
-        {
-            throw new NotImplementedException();
-        }
-
-        public double GetViewHeight()
-        {
-            throw new NotImplementedException();
+            var m = new Message();
+            m["rectangle_location"] = new Point(.25, .25);
+            m["rectangle_width"] = .5;
+            m["rectangle_height"] = .5;
+            m["start"] = .25;
+            m["end"] = .75;
+            return m;
         }
     }
 }

@@ -33,8 +33,7 @@ namespace NuSysApp
 
         private double _imageWidth;
         
-        //public Boolean Editable { get; set; }
-        public ImageDetailHomeTabViewModel(LibraryElementController controller, HashSet<Region> regionsToLoad) : base(controller, regionsToLoad)
+        public ImageDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
             LibraryElementController = controller;
             Model = controller.LibraryElementModel;
@@ -48,12 +47,12 @@ namespace NuSysApp
         public override void AddRegion(object sender, RegionLibraryElementController regionLibraryElementController)
         {
             var rectRegionController = regionLibraryElementController as RectangleRegionLibraryElementController;
-            var imageRegion = rectRegionController.Model as RectangleRegion;
+            var imageRegion = rectRegionController?.LibraryElementModel as RectangleRegion;
             if (imageRegion == null)
             {
                 return;
             }
-            var vm = new ImageRegionViewModel(imageRegion, LibraryElementController, rectRegionController, this);
+            var vm = new ImageRegionViewModel(imageRegion, rectRegionController, this);
             if (!Editable)
                 vm.Editable = false;
             var view = new ImageRegionView(vm);
@@ -122,40 +121,19 @@ namespace NuSysApp
         }
         public override void SetExistingRegions()
         {
-            if (RegionsToLoad == null)
-            {
-                return;
-            }
-
             RegionViews.Clear();
 
-            foreach (var regionModel in RegionsToLoad)
+            var regionsLibraryElementIds=
+                SessionController.Instance.RegionsController.GetRegionLibraryElementIds(
+                    LibraryElementController.LibraryElementModel.LibraryElementId);
+            foreach (var regionLibraryElementId in regionsLibraryElementIds)
             {
-                var imageRegion = regionModel as RectangleRegion;
-                if (imageRegion == null)
-                {
-                    return;
-                }
-                RectangleRegionLibraryElementController regionLibraryElementController;
-
-
-
-                if (SessionController.Instance.RegionsController.GetRegionController(imageRegion.Id) == null)
-                {
-                    Debug.Fail("Did not load");
-                    regionLibraryElementController = SessionController.Instance.RegionsController.AddRegion(imageRegion, LibraryElementController.LibraryElementModel.LibraryElementId) as RectangleRegionLibraryElementController;
-                }
-                else {
-                    regionLibraryElementController = SessionController.Instance.RegionsController.GetRegionController(imageRegion.Id) as RectangleRegionLibraryElementController;
-                }
-
-
-                //var RegionLibraryElementController = new RegionLibraryElementController(imageRengion);
-                var vm = new ImageRegionViewModel(imageRegion, LibraryElementController, regionLibraryElementController, this);
+                var regionLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementId) as RectangleRegionLibraryElementController;
+                Debug.Assert(regionLibraryElementController != null);
+                Debug.Assert(regionLibraryElementController.LibraryElementModel is RectangleRegion);
+                var vm = new ImageRegionViewModel(regionLibraryElementController.LibraryElementModel as RectangleRegion, regionLibraryElementController, this);
                 if (!Editable)
                     vm.Editable = false;
-
-                
                 var view = new ImageRegionView(vm);
                 RegionViews.Add(view);
 
@@ -163,10 +141,13 @@ namespace NuSysApp
             RaisePropertyChanged("RegionViews");
         }
 
-        public override Region GetNewRegion()
+        public override Message GetNewRegionMessage()
         {
-            var region = new RectangleRegion(new Point(.25, .25), new Point(.75, .75));
-            return region;
+            var m = new Message();
+            m["rectangle_location"] = new Point(.25, .25);
+            m["rectangle_width"] = .5;
+            m["rectangle_height"] = .5;
+            return m;
         }
 
 
@@ -198,7 +179,7 @@ namespace NuSysApp
             }
             foreach (var view in RegionViews.ToList<ImageRegionView>())
             {
-                if ((view.DataContext as ImageRegionViewModel).Model.Id == rectangleRegion.Id)
+                if ((view.DataContext as ImageRegionViewModel).Model.LibraryElementId == rectangleRegion.LibraryElementId)
                 {
                     view.Select();
                 }

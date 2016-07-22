@@ -99,11 +99,11 @@ namespace NuSysApp
                 if (CurrentElementController.LibraryElementModel.Type == ElementType.PDF)
                 {
                     var list = RegionCollection.ToList<Region>();
-                    var orderedList = (list.OrderBy(a => (a as PdfRegion).PageLocation)).ToList<Region>();
+                    var orderedList = (list.OrderBy(a => (a as PdfRegionModel).PageLocation)).ToList<Region>();
                     var collection = new ObservableCollection<Region>();
                     foreach (var region in orderedList)
                     {
-                        //(region as PdfRegion).PageLocation += 1;
+                        //(region as PdfRegionModel).PageLocation += 1;
                         collection.Add(region);
                         
 
@@ -149,13 +149,6 @@ namespace NuSysApp
             _regionableHomeTabViewModel?.SizeChanged(source, width, height);
         }
 
-        private void AddRegionToList(object source, RegionLibraryElementController regionLibraryElementController)
-        {
-            RegionCollection.Add(regionLibraryElementController.Model);
-            RaisePropertyChanged("OrderedRegionCollection");
-
-        }
-
         public void Dispose()
         {
             CurrentDetailViewable.TitleChanged -= ControllerTitleChanged;
@@ -179,8 +172,6 @@ namespace NuSysApp
                 if (CurrentElementController != null)
                 {
                     CurrentElementController.KeywordsChanged -= KeywordsChanged;
-                    CurrentElementController.RegionAdded -= AddRegionToList;
-                    CurrentElementController.RegionRemoved -= RemoveRegionFromList;
                     if (CurrentDetailViewable != null)
                     {
                         CurrentDetailViewable.TitleChanged -= ControllerTitleChanged;
@@ -189,30 +180,28 @@ namespace NuSysApp
                 CurrentElementController = controller;
                 CurrentDetailViewable = controller;
                 CurrentElementController.KeywordsChanged += KeywordsChanged;
-                CurrentElementController.RegionAdded += AddRegionToList;
-                CurrentElementController.RegionRemoved += RemoveRegionFromList;
 
                 RegionCollection.Clear();
 
-                var regions = CurrentElementController.LibraryElementModel.Regions;
+                var regions = SessionController.Instance.RegionsController.GetRegionLibraryElementIds(CurrentElementController.LibraryElementModel.LibraryElementId);
 
                 if (regions?.Count > 0)
                 {
-                    foreach (var region in CurrentElementController.LibraryElementModel.Regions)
+                    foreach (var regionLibraryId in regions)
                     {
-                        RegionCollection.Add(region);
-                        var regionController = SessionController.Instance.RegionsController.GetRegionController(region.Id);
+                        Debug.Assert(SessionController.Instance.ContentController.GetContent(regionLibraryId) is Region);
+                        RegionCollection.Add(SessionController.Instance.ContentController.GetContent(regionLibraryId) as Region);
                     }
                 }
                 RaisePropertyChanged("OrderedRegionCollection");
 
-                View = await _viewHomeTabViewFactory.CreateFromSendable(controller, regions);
+                View = await _viewHomeTabViewFactory.CreateFromSendable(controller);
                 if (View == null)
                 {
                     return false;
                 }
 
-                RegionView = await _viewHomeTabViewFactory.CreateFromSendable(controller, regions);
+                RegionView = await _viewHomeTabViewFactory.CreateFromSendable(controller);
                 if (RegionView == null)
                 {
                     return false;
@@ -223,10 +212,6 @@ namespace NuSysApp
                 _regionableRegionTabViewModel.Editable = true;
                 _regionableHomeTabViewModel = View.DataContext as DetailHomeTabViewModel;
                 _regionableHomeTabViewModel.Editable = false;
-
-                _regionableHomeTabViewModel.RegionsToLoad = controller.LibraryElementModel.Regions; // Sets the regions that need to be loaded
-                _regionableRegionTabViewModel.RegionsToLoad = controller.LibraryElementModel.Regions;
-
 
                 RaisePropertyChanged("View");
                 RaisePropertyChanged("RegionView");
@@ -260,7 +245,7 @@ namespace NuSysApp
 
                 AddTab(viewable);
                 return true;
-            } else if (viewable is RegionLibraryElementController)
+            }/* else if (viewable is RegionLibraryElementController)
             {
                 var controller = viewable as RegionLibraryElementController;
                 CurrentDetailViewable = controller;
@@ -299,7 +284,7 @@ namespace NuSysApp
                     (View as PdfDetailHomeTabView).ContentLoaded += delegate
                     {
                         _regionableHomeTabViewModel.SetExistingRegions();
-                        (_regionableHomeTabViewModel as PdfDetailHomeTabViewModel).Goto((regionModel as PdfRegion).PageLocation, regionModel);
+                        (_regionableHomeTabViewModel as PdfDetailHomeTabViewModel).Goto((regionModel as PdfRegionModel).PageLocation, regionModel);
                     };
                 }else if(View is ImageDetailHomeTabView)
                 {
@@ -313,7 +298,7 @@ namespace NuSysApp
                     (View as AudioDetailHomeTabView).ContentLoaded += delegate
                     {
                         _regionableHomeTabViewModel.SetExistingRegions();
-                        (_regionableHomeTabViewModel as AudioDetailHomeTabViewModel).OnRegionSeek((regionModel as TimeRegionModel).Start + 0.01);
+                        (_regionableHomeTabViewModel as AudioDetailHomeTabViewModel).OnRegionSeek((regionModel as AudioRegionModel).Start + 0.01);
                     };
                 }else if (View is VideoDetailHomeTabView)
                 {
@@ -338,8 +323,8 @@ namespace NuSysApp
             } else
             {
                 return false;
-            }
-            
+            }*/
+            return false;
         }
 
 
@@ -371,26 +356,7 @@ namespace NuSysApp
             TabHeight = TabPaneHeight/Tabs.Count;
             Tabs = _tabs;
         }
-
-
-        private void RemoveRegionFromList(object source, Region region)
-        {
-
-
-            foreach (var model in RegionCollection.ToList<Region>())
-            {
-                if ((model.Id == region.Id))
-                    {
-                    RegionCollection.Remove(model);
-                }
-            }
-            RaisePropertyChanged("OrderedRegionCollection");
-
-        }
-
-
-
-   
+        
 
         private void KeywordsChanged(object sender, HashSet<Keyword> keywords)
         {

@@ -31,40 +31,22 @@ namespace NuSysApp
             get
             {
                 _regionViews.Clear();
-                var elementController = Controller.LibraryElementController;
-                var regionHashSet = elementController.LibraryElementModel.Regions;
-
-                if (regionHashSet == null)
+                foreach (var regionId in SessionController.Instance.RegionsController.GetRegionLibraryElementIds(Controller.LibraryElementModel.LibraryElementId))
                 {
-                    return _regionViews;
-                }
-
-                foreach (var model in regionHashSet)
-                {
-                    var videoRegionModel = model as VideoRegionModel;
-                    if (videoRegionModel == null)
+                    var videoRegionController = SessionController.Instance.ContentController.GetLibraryElementController(regionId) as VideoRegionLibraryElementController;
+                    if (videoRegionController == null)
                     {
                         return _regionViews;
                     }
-                    VideoRegionLibraryElementController regionLibraryElementController;
-                    if (SessionController.Instance.RegionsController.GetRegionController(videoRegionModel.Id) == null)
-                    {
-                        regionLibraryElementController = SessionController.Instance.RegionsController.AddRegion(videoRegionModel, Controller.LibraryElementModel.LibraryElementId) as VideoRegionLibraryElementController;
-                    }
-                    else
-                    {
-                        regionLibraryElementController = SessionController.Instance.RegionsController.GetRegionController(videoRegionModel.Id) as VideoRegionLibraryElementController;
-                    }
-                    Debug.Assert(regionLibraryElementController is VideoRegionLibraryElementController);
-                    regionLibraryElementController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
-                    var viewmodel = new VideoRegionViewModel(videoRegionModel, elementController, regionLibraryElementController as VideoRegionLibraryElementController, this);
-                    viewmodel.Editable = false;
-                    var view = new VideoRegionView(viewmodel);
+                    var vm = new VideoRegionViewModel(videoRegionController.VideoRegionModel, videoRegionController, this);
+                    vm.Editable = false;
+                    var view = new VideoRegionView(vm);
                     view.OnRegionSeek += View_OnRegionSeek;
                     _regionViews.Add(view);
+
                 }
                 return _regionViews;
-
+                
             }
         }
 
@@ -78,8 +60,6 @@ namespace NuSysApp
         public VideoNodeViewModel(ElementController controller) : base(controller)
         {
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
-            Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
-            Controller.LibraryElementController.RegionRemoved += LibraryElementControllerOnRegionRemoved;
             //Controller.LibraryElementController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
             Controller.SizeChanged += Controller_SizeChanged;
             Controller.LibraryElementController.Loaded += LibraryElementController_Loaded;
@@ -87,11 +67,6 @@ namespace NuSysApp
         }
         //Eventually, we will refactor video regions to be more like audio/image/pdf so we don' thave to do this.
         public void UpdateRegions()
-        {
-            RaisePropertyChanged("RegionViews");
-        }
-
-        private void LibraryElementControllerOnRegionRemoved(object source, Region region)
         {
             RaisePropertyChanged("RegionViews");
         }
@@ -105,16 +80,7 @@ namespace NuSysApp
         {
             RaisePropertyChanged("RegionViews");
         }
-
-        private void LibraryElementControllerOnRegionUpdated(object source, Region region)
-        {
-            RaisePropertyChanged("RegionViews");
-        }
-
-        private void LibraryElementControllerOnRegionAdded(object source, RegionLibraryElementController regionLibraryElementController)
-        {
-            RaisePropertyChanged("RegionViews");
-        }
+       
 
         public override void Dispose()
         {

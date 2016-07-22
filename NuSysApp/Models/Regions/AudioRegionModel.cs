@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class TimeRegionModel: Region
+    public class AudioRegionModel: Region
     {
         public double Start { set; get; }
         public double End { set; get; }
@@ -15,11 +15,8 @@ namespace NuSysApp
         public event TimeChangeHandler OnTimeChange;
 
 
-        public TimeRegionModel(string name, double start, double end) : base(name)
+        public AudioRegionModel(string libraryId) : base(libraryId, ElementType.AudioRegion)
         {
-            Start = start;
-            End = end;
-            Type = RegionType.Time;
         }
     }
 }

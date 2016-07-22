@@ -264,10 +264,9 @@ namespace NuSysApp
                 return;
             }
            
-            var libraryElementController = vm.LibraryElementController;
-            libraryElementController.RemoveRegion(vm.RegionLibraryElementController.LibraryElementModel as Region);
-
-
+            var libraryElementController = vm.RegionLibraryElementController;
+            // TODO Put in delete region request
+            
         }
     }
 }

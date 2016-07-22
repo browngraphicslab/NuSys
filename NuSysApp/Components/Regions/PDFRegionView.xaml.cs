@@ -36,7 +36,7 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = regionVM;
             this.Deselect();
-            var model = regionVM.Model as PdfRegion;
+            var model = regionVM.Model as PdfRegionModel;
             if (model == null)
             {
                 return;
@@ -307,10 +307,8 @@ namespace NuSysApp
                 return;
             }
 
-            var libraryElementController = vm.LibraryElementController;
-            libraryElementController.RemoveRegion(vm.RegionLibraryElementController.Model);
-
-
+            var libraryElementController = vm.RegionLibraryElementController;
+            //TODO add in delte region request aka delete library element request
         }
 
         private void xNameTextBox_TextChanged(object sender, TextChangedEventArgs e)

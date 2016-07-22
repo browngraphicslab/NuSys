@@ -75,7 +75,7 @@ namespace NuSysApp
 
         public delegate void LocationChangedEventHandler(object sender, Point topLeft);
         public event LocationChangedEventHandler LocationChanged;
-        public PdfRegionViewModel(PdfRegion model, LibraryElementController elementController, PdfRegionLibraryElementController regionLibraryElementController, Sizeable sizeable) : base(model, elementController, regionLibraryElementController, sizeable)
+        public PdfRegionViewModel(PdfRegionModel model, PdfRegionLibraryElementController regionLibraryElementController, Sizeable sizeable) : base(model, regionLibraryElementController, sizeable)
         {
             if (model == null)
             {
@@ -95,7 +95,7 @@ namespace NuSysApp
             regionLibraryElementController.TitleChanged += RegionController_TitleChanged;
 
 
-            Name = Model.Name;
+            Name = Model.Title;
 
             Editable = true;
 
@@ -108,7 +108,7 @@ namespace NuSysApp
 
         private void RegionController_LocationChanged(object sender, Point topLeft)
         {
-            var model = Model as PdfRegion;
+            var model = Model as PdfRegionModel;
             if (model == null)
             {
                 return;
@@ -122,7 +122,7 @@ namespace NuSysApp
 
         private void RegionController_SizeChanged(object sender, double width, double height)
         {
-            var model = Model as PdfRegion;
+            var model = Model as PdfRegionModel;
             if (model == null)
             {
                 return;
@@ -139,7 +139,7 @@ namespace NuSysApp
             {
                 return;
             }
-            var model = Model as PdfRegion;
+            var model = Model as PdfRegionModel;
             if (model == null)
             {
                 return;
@@ -159,7 +159,7 @@ namespace NuSysApp
         private void BaseSizeChanged(object sender, double width, double height)
         {
 
-            var model = Model as PdfRegion;
+            var model = Model as PdfRegionModel;
             if (model == null)
             {
                 return;
@@ -183,7 +183,7 @@ namespace NuSysApp
 
         public void SetNewPoints(Point topLeft, Point bottomRight)
         {
-            var model = Model as PdfRegion;
+            var model = Model as PdfRegionModel;
             if (model == null)
             {
                 return;
@@ -206,7 +206,7 @@ namespace NuSysApp
 
         public void SetNewLocation(Point topLeft)
         {
-            var model = Model as PdfRegion;
+            var model = Model as PdfRegionModel;
             if (model == null)
             {
                 return;
@@ -223,7 +223,7 @@ namespace NuSysApp
 
         public void SetNewSize(double width, double height)
         {
-            var model = Model as PdfRegion;
+            var model = Model as PdfRegionModel;
             if (model == null)
             {
                 return;

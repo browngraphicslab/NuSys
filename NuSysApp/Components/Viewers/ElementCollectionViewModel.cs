@@ -79,25 +79,6 @@ namespace NuSysApp
             {
                 return;
             }
-            foreach (var regions in controller?.LibraryElementModel?.Regions ?? new HashSet<Region>()) 
-            {
-                RegionLibraryElementController regionLibraryElementController;
-
-                if (SessionController.Instance.RegionsController.GetRegionController(regions.Id) == null)
-                {
-                    regionLibraryElementController = SessionController.Instance.RegionsController.AddRegion(regions, controller.LibraryElementModel.LibraryElementId);
-                }
-                else
-                {
-                    regionLibraryElementController = SessionController.Instance.RegionsController.GetRegionController(regions.Id);
-                }
-                var cLinks = SessionController.Instance.LinksController.GetLinkedIds(regionLibraryElementController.ContentId);
-                foreach (var linkId in cLinks)
-                {
-                    var link = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
-                    //AddVisualLinks(regioncontroller, libraryElementController, link.LibraryElementId);
-                }
-            }
             controller.Deleted += OnChildDeleted;
         }
         

@@ -14,6 +14,27 @@ namespace NuSysApp
             LibraryElementController controller;
             switch (model.Type)
             {
+                case ElementType.ImageRegion:
+                    var imageModel = model as RectangleRegion;
+                    Debug.Assert(imageModel != null);
+                    controller = new RectangleRegionLibraryElementController(imageModel);
+                    break;
+                case ElementType.PdfRegion:
+                    var pdfModel = model as PdfRegionModel;
+                    Debug.Assert(pdfModel != null);
+                    controller = new PdfRegionLibraryElementController(pdfModel);
+                    break;
+                case ElementType.AudioRegion:
+                    var audioModel = model as AudioRegionModel;
+                    Debug.Assert(audioModel != null);
+                    controller = new AudioRegionLibraryElementController(audioModel);
+                    break;
+                case ElementType.VideoRegion:
+                    var videoModel = model as VideoRegionModel;
+                    Debug.Assert(videoModel != null);
+                    controller = new VideoRegionLibraryElementController(videoModel);
+                    break;
+
                 case ElementType.Word:
                     //Do debug.asserts above the controller instantiation to make sure the model types are correct
                     controller = new WordNodeLibraryElementController(model);

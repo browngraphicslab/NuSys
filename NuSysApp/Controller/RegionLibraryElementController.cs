@@ -13,8 +13,6 @@ namespace NuSysApp
     public class RegionLibraryElementController : LibraryElementController
     {
         public event EventHandler<string> TitleChanged;
-        public delegate void RegionUpdatedEventHandler(object source, Region region);
-        public event RegionUpdatedEventHandler RegionUpdated;
         public delegate void SelectHandler(RegionLibraryElementController regionLibraryElementController);
         public event SelectHandler OnSelect;
         public delegate void DeselectHandler(RegionLibraryElementController regionLibraryElementController);
@@ -24,7 +22,14 @@ namespace NuSysApp
         public delegate void MetadataChangedEventHandler(object source);
         public event MetadataChangedEventHandler MetadataChanged;
 
-
+        public Region RegionModel
+        {
+            get
+            {
+                Debug.Assert(LibraryElementModel is Region);
+                return LibraryElementModel as Region;
+            }
+        }
 
 
         private bool _selected;
@@ -78,6 +83,10 @@ namespace NuSysApp
         public override void UnPack(Message message)
         { 
             SetBlockServerBoolean(true);//this is a must otherwise infinite loops will occur
+            if (message.ContainsKey("clipping_parent_library_id"))
+            {
+                RegionModel.ClippingParentId = message.GetString("clipping_parent_library_id");
+            }
             base.UnPack(message);
             SetBlockServerBoolean(false);//THIS is a must otherwise changes wont be saved
         }

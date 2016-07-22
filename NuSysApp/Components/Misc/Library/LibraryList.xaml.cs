@@ -248,7 +248,7 @@ namespace NuSysApp
         private void ListView_OnItemClick(object sender, ItemClickEventArgs e)
         {
             return;
-            
+            /*
             var listItem = sender as ListView;
             
             var regionsPanel = listItem?.FindName("RegionsPanel") as Grid;
@@ -286,7 +286,7 @@ namespace NuSysApp
             }
 
             regionsPanel.Visibility = Visibility.Visible;
-            
+            */
         }
 
 
@@ -320,7 +320,9 @@ namespace NuSysApp
             }
             var elementModel = SessionController.Instance.ContentController.GetContent(elementTemplate?.ContentID);
 
-            if (elementModel?.Regions == null || elementModel?.Regions.Count == 0)
+            var regionIds = SessionController.Instance.RegionsController.GetRegionLibraryElementIds(elementModel.LibraryElementId);
+
+            if (regionIds == null || regionIds.Count == 0)
             {
                 regionsPanel?.RowDefinitions.Add(new RowDefinition());
                 var textBox = new TextBlock();
@@ -347,10 +349,11 @@ namespace NuSysApp
             Grid.SetColumn(regionTextBox, 1);
 
             var count = 1;
+            
 
-            foreach (var regionModel in elementModel.Regions)
+            foreach (var regionId in regionIds)
             {
-                var regionController = SessionController.Instance.RegionsController.GetRegionController(regionModel.Id);
+                var regionController = SessionController.Instance.ContentController.GetLibraryElementController(regionId);
                 var row = new RowDefinition();
                 row.Height = GridLength.Auto;
                 regionsPanel?.RowDefinitions.Add(row);
@@ -360,10 +363,10 @@ namespace NuSysApp
                 regionButton.Foreground = new SolidColorBrush(Color.FromArgb(255, 17, 61, 64));
                 regionButton.Margin = new Thickness(140,0,0,2);
                 regionButton.MinWidth = 250;
-                regionButton.Content = regionModel.Name;
+                regionButton.Content = regionController.LibraryElementModel.Title;
                 regionController.TitleChanged += delegate
                 {
-                    regionButton.Content = regionController.Model.Name;
+                    regionButton.Content = regionController.LibraryElementModel.Title;
                 };
                 regionButton.FontSize = 13;
                 if (regionButton.IsPointerOver)
@@ -374,7 +377,7 @@ namespace NuSysApp
                 }
                 regionButton.DoubleTapped += delegate
                 {
-                    var controller = SessionController.Instance.RegionsController.GetRegionController(regionModel.Id);
+                    var controller = SessionController.Instance.ContentController.GetLibraryElementController(regionId);
                     SessionController.Instance.SessionView.ShowDetailView(controller);
                 };
                 regionButton.AddHandler(PointerPressedEvent, new PointerEventHandler(regionButton_PointerPressed), true);

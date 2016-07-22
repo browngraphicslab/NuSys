@@ -26,12 +26,6 @@ namespace NuSysApp
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));       
             Regions = new ObservableCollection<ImageRegionView>();
             this.CreateRegionViews();
-
-            Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
-            Controller.LibraryElementController.RegionRemoved += LibraryElementControllerOnRegionRemoved;
-
-
-
         }
 
         private void LibraryElementControllerOnRegionRemoved(object source, Region region)
@@ -44,7 +38,7 @@ namespace NuSysApp
 
             foreach (var regionView in Regions.ToList<ImageRegionView>())
             {
-                if ((regionView.DataContext as ImageRegionViewModel).Model.Id == imageRegion.Id)
+                if ((regionView.DataContext as ImageRegionViewModel).Model.LibraryElementId == imageRegion.LibraryElementId)
                     Regions.Remove(regionView);
             }
             
@@ -53,29 +47,18 @@ namespace NuSysApp
         }
 
         public void CreateRegionViews(){
-            var elementController = Controller.LibraryElementController;
-            var regionHashSet = elementController.LibraryElementModel.Regions;
-
-            if (regionHashSet == null)
-                return ;
-
             Regions.Clear();
 
-            foreach (var model in regionHashSet)
+            var regionLibraryElementIds =
+                SessionController.Instance.RegionsController.GetRegionLibraryElementIds(Controller.LibraryElementModel.LibraryElementId);
+            foreach (var regionLibraryElementId in regionLibraryElementIds)
             {
-                var imageModel = model as RectangleRegion;
-                RectangleRegionLibraryElementController regionLibraryElementController;
-                if (SessionController.Instance.RegionsController.GetRegionController(imageModel.Id) == null)
-                {
-                    //Debug.Fail("Did not load");
-                    regionLibraryElementController = SessionController.Instance.RegionsController.AddRegion(imageModel, LibraryElementController.LibraryElementModel.LibraryElementId) as RectangleRegionLibraryElementController;
-                }
-                else {
-                    regionLibraryElementController = SessionController.Instance.RegionsController.GetRegionController(imageModel.Id) as RectangleRegionLibraryElementController;
-                }
+                var regionLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementId) as RectangleRegionLibraryElementController;
 
+                Debug.Assert(regionLibraryElementController != null);
+                Debug.Assert(regionLibraryElementController.LibraryElementModel is RectangleRegion);
 
-                var viewmodel = new ImageRegionViewModel(imageModel, elementController, regionLibraryElementController, this);
+                var viewmodel = new ImageRegionViewModel(regionLibraryElementController.LibraryElementModel as RectangleRegion, regionLibraryElementController, this);
                 viewmodel.Editable = false;
                 var view = new ImageRegionView(viewmodel);
                 Regions.Add(view);
@@ -86,22 +69,6 @@ namespace NuSysApp
         {
 
         }
-
-        private void LibraryElementControllerOnRegionAdded(object source, RegionLibraryElementController regionLibraryElementController)
-        {
-            var rectRegionController = regionLibraryElementController as RectangleRegionLibraryElementController;
-            var imageRegion = rectRegionController?.Model as RectangleRegion;
-            if (imageRegion == null)
-            {
-                return;
-            }
-            var vm = new ImageRegionViewModel(imageRegion, Controller.LibraryElementController, rectRegionController, this);
-            var view = new ImageRegionView(vm);
-            vm.Editable = false;
-            Regions.Add(view);
-            RaisePropertyChanged("Regions");
-        }
-
         public override void Dispose()
         {
             if (Controller != null)

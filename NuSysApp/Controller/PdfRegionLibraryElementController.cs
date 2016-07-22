@@ -11,54 +11,34 @@ namespace NuSysApp
     public class PdfRegionLibraryElementController : RectangleRegionLibraryElementController
     {
         public delegate void PageLocationChangedEventHandler(object sender, int pageLocation);
-
         public event PageLocationChangedEventHandler PageLocationChanged;
 
+        public PdfRegionModel PdfRegionModel
+        {
+            get
+            {
+                return base.LibraryElementModel as PdfRegionModel;
+            }
+        }
 
-        public event LocationChangedEventHandler LocationChanged;
-        public delegate void LocationChangedEventHandler(object sender, Point topLeft);
-
-        public event SizeChangedEventHandler SizeChanged;
-        public delegate void SizeChangedEventHandler(object sender, double width, double height);
-
-        public PdfRegionLibraryElementController(PdfRegion model) : base(model)
+        public PdfRegionLibraryElementController(PdfRegionModel model) : base(model)
         {
         }
 
         public void SetPageLocation(int page)
         {
-            var pdfRegion = Model as PdfRegion;
-            if (pdfRegion == null)
-            {
-                return;
-            }
-            pdfRegion.PageLocation = page;
+            PdfRegionModel.PageLocation = page;
             PageLocationChanged?.Invoke(this, page);
         }
 
-        public void SetSize(double width, double height)
-        {
-            Model.Width = width;
-            Model.Height = height;
-            SizeChanged?.Invoke(this, width, height);
-            UpdateServer();
-        }
-        public void SetLocation(Point topLeft)
-        {
-            Model.TopLeftPoint = new Point(Math.Max(0.001, topLeft.X), Math.Max(0.001, topLeft.Y));
-            LocationChanged?.Invoke(this, Model.TopLeftPoint);
-            UpdateServer();
-        }
-
-        public override void UnPack(Region region)
+        public override void UnPack(Message message)
         {
             SetBlockServerBoolean(true);
-            var r = region as PdfRegion;
-            if (r != null)
+            if (message.ContainsKey("page_location"))
             {
-                SetPageLocation(r.PageLocation);
+                SetPageLocation(message.GetInt("page_location", 1));
             }
-            base.UnPack(region);
+            base.UnPack(message);
             SetBlockServerBoolean(false);
         }
     }

@@ -154,8 +154,7 @@ namespace NuSysApp
                 return;
             }
 
-            var libraryElementController = vm.LibraryElementController;
-            libraryElementController.RemoveRegion(vm.RegionLibraryElementController.Model);
+            //todo ADD IN remove region request
 
 
         }
@@ -170,7 +169,7 @@ namespace NuSysApp
 
             if (!Selected)
             {
-                OnRegionSeek?.Invoke(((DataContext as AudioRegionViewModel).RegionLibraryElementController.Model as TimeRegionModel).Start + 0.01);
+                OnRegionSeek?.Invoke(((DataContext as AudioRegionViewModel).RegionLibraryElementController.LibraryElementModel as AudioRegionModel).Start + 0.01);
             }
 
             e.Handled = true;

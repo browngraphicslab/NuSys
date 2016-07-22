@@ -75,7 +75,7 @@ namespace NuSysApp
         public event LocationChangedEventHandler LocationChanged;
 
 
-        public ImageRegionViewModel(RectangleRegion model, LibraryElementController libraryElementController, RectangleRegionLibraryElementController regionLibraryElementController, Sizeable sizeable) : base(model,libraryElementController, regionLibraryElementController,sizeable)
+        public ImageRegionViewModel(RectangleRegion model, RectangleRegionLibraryElementController regionLibraryElementController, Sizeable sizeable) : base(model, regionLibraryElementController,sizeable)
         {
             if (model == null)
             {
@@ -91,7 +91,7 @@ namespace NuSysApp
             regionLibraryElementController.LocationChanged += RegionController_LocationChanged;
             regionLibraryElementController.TitleChanged += RegionController_TitleChanged;
             regionLibraryElementController.OnSelect += RegionController_OnSelect;
-            Name = Model.Name;
+            Name = Model.Title;
             Editable = true;
             Selected = false;
 

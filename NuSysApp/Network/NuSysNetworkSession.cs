@@ -55,7 +55,6 @@ namespace NuSysApp
             _serverClient.OnClientDrop += ClientDrop;
             _serverClient.OnContentAvailable += ContentAvailable;
             _serverClient.OnClientJoined += AddNetworkUser;
-            _serverClient.OnRegionUpdated += RegionUpdated;
             _serverClient.OnContentUpdated += ContentUpdated;
             _serverClient.PresentationLinkAdded += PresentationLinkAdded;
             _serverClient.PresentationLinkRemoved += PresentationLinkRemoved;
@@ -361,14 +360,7 @@ namespace NuSysApp
         {
             controller.UnPack(message);
         }
-        private void RegionUpdated(string id, Region region)
-        {
-            UITask.Run(delegate
-            {
-                var controller = SessionController.Instance.RegionsController.GetRegionController(id);
-                controller?.UnPack(region);
-            });
-        }
+        
         public async Task<List<Message>> GetCollectionAsElementMessages(string id)
         {
             return await _serverClient.GetWorkspaceAsElementMessages(id);
@@ -547,13 +539,13 @@ namespace NuSysApp
 
         public async Task UpdateRegion(Region region)
         {
-            if (region == null || _regionUpdateDebounceList.Contains(region.Id))
+            if (region == null || _regionUpdateDebounceList.Contains(region.LibraryElementId))
             {
                 return;
             }
-            _regionUpdateDebounceList.Add(region.Id);
+            _regionUpdateDebounceList.Add(region.LibraryElementId);
             await Task.Delay(300);
-            _regionUpdateDebounceList.Remove(region.Id);
+            _regionUpdateDebounceList.Remove(region.LibraryElementId);
             await _serverClient.UpdateRegion(region);
         }
     }

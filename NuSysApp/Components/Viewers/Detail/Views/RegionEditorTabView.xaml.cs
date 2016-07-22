@@ -44,60 +44,38 @@ namespace NuSysApp
                 return;
             }
             var detailHomeTabViewModel = vm.RegionView.DataContext as DetailHomeTabViewModel;
-            Region region = null;
+            Message message = null;
+            ElementType type = ElementType.ImageRegion;
             switch (vm.CurrentElementController.LibraryElementModel.Type)
             {
                 case ElementType.Image:
-                    region = detailHomeTabViewModel?.GetNewRegion();
+                    message = detailHomeTabViewModel?.GetNewRegionMessage();
+                    type = ElementType.ImageRegion;
                     break;
                 case ElementType.Audio:
-                    region = detailHomeTabViewModel?.GetNewRegion();
+                    message = detailHomeTabViewModel?.GetNewRegionMessage();
+                    type = ElementType.AudioRegion;
                     break;
                 case ElementType.Video:
-                    region = detailHomeTabViewModel?.GetNewRegion();
-                    break;
-                case ElementType.Collection:
-                    return;
-
-                    break;
-                case ElementType.Text:
-                    return;
-
+                    message = detailHomeTabViewModel?.GetNewRegionMessage();
+                    type  = ElementType.VideoRegion;
                     break;
                 case ElementType.PDF:
-                    region = detailHomeTabViewModel?.GetNewRegion();
+                    message = detailHomeTabViewModel?.GetNewRegionMessage();
+                    type = ElementType.PdfRegion;
                     break;
-                case ElementType.Word:
-                    return;
                 default:
-                    region = null;
+                    message = null;
                     break;
             }
-
-            vm.CurrentElementController.AddRegion(region);
+            Debug.Assert(message != null);
+            message["id"] = SessionController.Instance.GenerateId();
+            message["title"] = "Region " + vm.CurrentElementController.Title;
+            message["type"] = type.ToString();
+            message["clipping_parent_library_id"] = vm.CurrentElementController.LibraryElementModel.LibraryElementId;
+            var request = new CreateNewLibraryElementRequest(message);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }
-
-        private void KeyTextBox_OnPointerExited(object sender, PointerRoutedEventArgs e)
-        {
-
-        }
-
-        private void DeleteRegion_Clicked(object sender, RoutedEventArgs e)
-        {
-            var vm = DetailViewerView.DataContext as DetailViewerViewModel;
-            if (vm == null)
-            {
-                return;
-            }
-            var button = sender as Button;
-            var region = button.DataContext as Region;
-
-            vm.CurrentElementController.RemoveRegion(region);
-            
-        }
-
-
-
 
         public void ShowListView(bool visible, ElementType type)
         {

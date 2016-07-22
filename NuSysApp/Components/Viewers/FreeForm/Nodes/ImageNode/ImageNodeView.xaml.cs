@@ -69,7 +69,7 @@ namespace NuSysApp
         {
             foreach (var reg in _vm.Regions)
             {
-                if ((reg.DataContext as ImageRegionViewModel).Model.Id == region.Id)
+                if ((reg.DataContext as ImageRegionViewModel).Model.LibraryElementId == region.LibraryElementId)
                 {
                     reg.Select();
                 }

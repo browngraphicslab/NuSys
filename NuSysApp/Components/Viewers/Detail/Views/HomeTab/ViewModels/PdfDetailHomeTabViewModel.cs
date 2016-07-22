@@ -34,7 +34,7 @@ namespace NuSysApp
 
         public static int InitialPageNumber;
         
-        public PdfDetailHomeTabViewModel(LibraryElementController controller, HashSet<Region> regionsToLoad) : base(controller, regionsToLoad)
+        public PdfDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
             Controller = controller;
             RegionViews = new ObservableCollection<PDFRegionView>();
@@ -90,7 +90,7 @@ namespace NuSysApp
             foreach (var regionView in RegionViews)
             {
                 var model = (regionView.DataContext as PdfRegionViewModel)?.Model;
-                if ((model as PdfRegion).PageLocation != _pageNumber)
+                if ((model as PdfRegionModel).PageLocation != _pageNumber)
                 {
                     regionView.Visibility = Visibility.Collapsed;
                     regionView.Deselect();
@@ -101,7 +101,7 @@ namespace NuSysApp
                     regionView.Visibility = Visibility.Visible;
                     if (region != null)
                     {
-                        if (model.Id == region.Id)
+                        if (model?.LibraryElementId == region.LibraryElementId)
                         {
                             regionView.Select();
                         }
@@ -125,7 +125,7 @@ namespace NuSysApp
             foreach (var regionView in RegionViews)
             {
                 var model = (regionView.DataContext as PdfRegionViewModel)?.Model;
-                if ((model as PdfRegion).PageLocation != _pageNumber)
+                if ((model as PdfRegionModel).PageLocation != _pageNumber)
                 {
                     regionView.Visibility = Visibility.Collapsed;
                 }
@@ -145,7 +145,7 @@ namespace NuSysApp
             foreach (var regionView in RegionViews)
             {
                 var model = (regionView.DataContext as PdfRegionViewModel)?.Model;
-                if ((model as PdfRegion).PageLocation != _pageNumber)
+                if ((model as PdfRegionModel).PageLocation != _pageNumber)
                 {
                     regionView.Visibility = Visibility.Collapsed;
                 }
@@ -202,14 +202,14 @@ namespace NuSysApp
 
         public override void AddRegion(object sender, RegionLibraryElementController regionLibraryElementController)
         {
-            var pdfRegion = regionLibraryElementController.Model as PdfRegion;
+            var pdfRegion = regionLibraryElementController.LibraryElementModel as PdfRegionModel;
             if (pdfRegion == null)
             {
                 return;
             }
             var pdfRegionController = regionLibraryElementController as PdfRegionLibraryElementController;
             //pdfRegionController?.SetPageLocation(_pageNumber);
-            var vm = new PdfRegionViewModel(pdfRegion, Controller, pdfRegionController, this);
+            var vm = new PdfRegionViewModel(pdfRegion, pdfRegionController, this);
             if (!Editable)
                 vm.Editable = false;
 
@@ -233,7 +233,7 @@ namespace NuSysApp
 
         public override void RemoveRegion(object sender, Region displayedRegion)
         {
-            var imageRegion = displayedRegion as PdfRegion;
+            var imageRegion = displayedRegion as PdfRegionModel;
             if (imageRegion == null)
             {
                 return;
@@ -241,7 +241,7 @@ namespace NuSysApp
 
             foreach (var regionView in RegionViews.ToList<PDFRegionView>())
             {
-                if ((regionView.DataContext as PdfRegionViewModel).Model.Id == imageRegion.Id)
+                if ((regionView.DataContext as PdfRegionViewModel).Model.LibraryElementId == imageRegion.LibraryElementId)
                     RegionViews.Remove(regionView);
             }
 
@@ -295,51 +295,41 @@ namespace NuSysApp
 
         public override void SetExistingRegions()
         {
-            if (_regionsToLoad == null)
-            {
-                _regionsToLoad = new HashSet<Region>();
-            }
+            
             RegionViews.Clear();
-            foreach (var regionModel in _regionsToLoad)
+
+            var regionsLibraryElementIds =
+                SessionController.Instance.RegionsController.GetRegionLibraryElementIds(
+                    Controller.LibraryElementModel.LibraryElementId);
+            foreach (var regionLibraryElementId in regionsLibraryElementIds)
             {
-                var pdfRegion = regionModel as PdfRegion;
-                if (pdfRegion == null)
-                {
-                    return;
-                }
-                PdfRegionLibraryElementController regionLibraryElementController;
-
-
-
-                if (SessionController.Instance.RegionsController.GetRegionController(pdfRegion.Id) == null)
-                {
-                    regionLibraryElementController = SessionController.Instance.RegionsController.AddRegion(pdfRegion, Controller.LibraryElementModel.LibraryElementId) as PdfRegionLibraryElementController;
-                }
-                else {
-                    regionLibraryElementController = SessionController.Instance.RegionsController.GetRegionController(pdfRegion.Id) as PdfRegionLibraryElementController;
-                }
-
-
-
-
-                var vm = new PdfRegionViewModel(pdfRegion, Controller, regionLibraryElementController, this);
+                var regionLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementId) as PdfRegionLibraryElementController;
+                Debug.Assert(regionLibraryElementController != null);
+                Debug.Assert(regionLibraryElementController.LibraryElementModel is PdfRegionModel);
+                var vm = new PdfRegionViewModel(regionLibraryElementController.LibraryElementModel as PdfRegionModel, regionLibraryElementController, this);
+                
                 var view = new PDFRegionView(vm);
-                if (pdfRegion.PageLocation != _pageNumber)
+                
+                if ((regionLibraryElementController.LibraryElementModel as PdfRegionModel).PageLocation != _pageNumber)
                 {
                     view.Visibility = Visibility.Collapsed;
                 }
                 vm.Editable = Editable;
-
                 RegionViews.Add(view);
-                
+
             }
+
             RaisePropertyChanged("RegionViews");
         }
 
-        public override Region GetNewRegion()
+        public override Message GetNewRegionMessage()
         {
-            var region = new PdfRegion(new Point(.25, .25), new Point(.75, .75), _pageNumber);
-            return region;
+            var m = new Message();
+            m["rectangle_location"] = new Point(.25, .25);
+            m["rectangle_width"] = .5;
+            m["rectangle_height"] = .5;
+            m["page_location"] = _pageNumber;
+            return m;
         }
 
         public double GetViewHeight()

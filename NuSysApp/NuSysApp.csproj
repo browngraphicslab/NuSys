@@ -399,8 +399,8 @@
     <Compile Include="Models\LibraryElementModelFactory.cs" />
     <Compile Include="Models\LinkLibraryElementModel.cs" />
     <Compile Include="Models\PresentationLinkModel.cs" />
-    <Compile Include="Models\Regions\PDFRegion.cs" />
-    <Compile Include="Models\Regions\TimeRegionModel.cs" />
+    <Compile Include="Models\Regions\PdfRegionModel.cs" />
+    <Compile Include="Models\Regions\AudioRegionModel.cs" />
     <Compile Include="Components\Viewers\Detail\Regionable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\AudioDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\DetailHomeTabViewModel.cs" />
@@ -595,7 +595,6 @@
     <Compile Include="Models\CollectionLibraryElementModel.cs" />
     <Compile Include="Models\CollectionElementModel.cs" />
     <Compile Include="Models\PowerpointNodeModel.cs" />
-    <Compile Include="Models\Regions\CompoundRegion.cs" />
     <Compile Include="Models\Regions\RectangleRegion.cs" />
     <Compile Include="Models\Regions\Region.cs" />
     <Compile Include="Models\Regions\VideoRegionModel.cs" />
