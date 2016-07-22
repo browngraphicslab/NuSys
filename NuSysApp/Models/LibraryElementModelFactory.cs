@@ -14,7 +14,16 @@ namespace NuSysApp
         public static LibraryElementModel CreateFromMessage(Message message)
         {
             Debug.Assert(message.ContainsKey("type"));
-            var type = (ElementType)Enum.Parse(typeof(ElementType),message.GetString("type"), true);
+            ElementType type = ElementType.Area;
+            try
+            {
+                type = (ElementType) Enum.Parse(typeof (ElementType), message.GetString("type"), true);
+            }
+            catch (Exception e)
+            {
+                var req = new DeleteLibraryElementRequest(message.GetString("id"));
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(req);
+            }
             LibraryElementModel model;
 
             var id = message.GetString("id");

@@ -340,6 +340,8 @@ namespace NuSysApp
                         await Task.Run(async delegate
                         {
                             var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
+                            //var req = new DeleteLibraryElementRequest("bddeec5295c1429eb383fecb8b9daf2f");
+                            //SessionController.Instance.NuSysNetworkSession.ExecuteRequest(req);
                             foreach (var kvp in dictionaries)
                             {
                                 try

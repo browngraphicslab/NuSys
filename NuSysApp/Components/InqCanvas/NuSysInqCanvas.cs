@@ -8,10 +8,12 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using System.Numerics;
 using Windows.UI;
+using Windows.UI.Core;
 using Windows.UI.Input.Inking;
 using Microsoft.Graphics.Canvas.Geometry;
 using NetTopologySuite.Geometries;
 using Windows.UI.Xaml.Input;
+using Windows.System;
 
 namespace NuSysApp
 {
@@ -20,6 +22,7 @@ namespace NuSysApp
         public delegate void AdornmentEventHandler(WetDryInkCanvas canvas, InkStroke adornment);
         public event AdornmentEventHandler AdornmentAdded;
         public event AdornmentEventHandler AdornmentRemoved;
+        private bool _shiftIsDown;
 
 
         private List<Color> _colors = new List<Color>();
@@ -28,6 +31,31 @@ namespace NuSysApp
 
         public NuSysInqCanvas(CanvasControl wetCanvas, CanvasControl dryCanvas) : base(wetCanvas, dryCanvas)
         {
+            CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
+            CoreWindow.GetForCurrentThread().KeyUp += OnKeyUp;
+            _shiftIsDown = false;
+        }
+        /// <summary>
+        /// Resets the virtual key once any key is released
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnKeyUp(CoreWindow sender, KeyEventArgs args)
+        {
+            _shiftIsDown = false;
+        }
+
+        /// <summary>
+        /// Keeps track of the currently pressed key
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnKeyDown(CoreWindow sender, KeyEventArgs args)
+        {
+            if (args.VirtualKey == VirtualKey.Shift)
+            {
+                _shiftIsDown = true;
+            }
         }
 
         public void RemoveAdorment(InkStroke inkStroke, bool fireEvent = true)
@@ -91,7 +119,7 @@ namespace NuSysApp
 
         protected override void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            if (e.Pointer.PointerDeviceType != Windows.Devices.Input.PointerDeviceType.Pen)
+            if (!(_shiftIsDown||e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen))
                 return;
    //         bool isEraser = e.GetCurrentPoint(null).Properties.IsEraser;
             base.OnPointerReleased(sender, e);
