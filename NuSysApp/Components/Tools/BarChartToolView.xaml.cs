@@ -22,6 +22,7 @@ using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Components.Tools;
 using NuSysApp.Tools;
+using WinRTXamlToolkit.Controls.Extensions;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -59,42 +60,115 @@ namespace NuSysApp
             _dragItem = baseTool.Vm.InitializeDragFilterImage();
             xInkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen;
             xInkCanvas.InkPresenter.InputProcessingConfiguration.RightDragAction = InkInputRightDragAction.LeaveUnprocessed;
-            xInkCanvas.InkPresenter.StrokeInput.StrokeEnded += StrokeInput_StrokeEnded;
             xInkCanvas.InkPresenter.StrokesCollected += InkPresenter_StrokesCollected;
         }
+
+        /// <summary>
+        /// Given a list of ink points, returns the maximum and minimum x coordinates as a tuple where minx is item 1 and maxX is item 2
+        /// </summary>
+        /// <param name="inkPoints"></param>
+        /// <returns></returns>
+        private Tuple<double, double> GetMinMaxXValues(IEnumerable<InkPoint> inkPoints)
+        {
+            var minX = xBarChart.ActualWidth;
+            var maxX = 0.0;
+            foreach (InkPoint point in inkPoints)
+            {
+                if (point.Position.X < minX)
+                {
+                    minX = point.Position.X;
+                }
+                if (point.Position.X > maxX)
+                {
+                    maxX = point.Position.X;
+                }
+            }
+            return new Tuple<double, double>(minX, maxX);
+        } 
 
         private void InkPresenter_StrokesCollected(InkPresenter sender, InkStrokesCollectedEventArgs args)
         {
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
             var el = xInkCanvas;
+            var listOfBarsHit = new List<BarChartItemViewModel>();
+            bool allSelected = true;
             foreach (InkStroke stroke in args.Strokes)
             {
-                var points = stroke.GetInkPoints();
-                foreach (InkPoint point in points)
+                var minMaxXTuple = GetMinMaxXValues(stroke.GetInkPoints());
+                var currentPointToCheck = new Point(minMaxXTuple.Item1, this.ActualHeight - 1);
+                var columnWidth = xBarChart.ColumnDefinitions[0].ActualWidth;
+                while (currentPointToCheck.X < minMaxXTuple.Item2)
                 {
-                    var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(point.Position);
+                    var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(currentPointToCheck);
                     var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
                     var y =
                         hitsStart.Where(
                             uiElem =>
                                 (uiElem is FrameworkElement) &&
                                 (uiElem as FrameworkElement).DataContext is BarChartItemViewModel).ToList();
-                    if (y.Count() > 0)
+                    if (y.Any())
                     {
-                        var selection = ((y.First() as FrameworkElement)?.DataContext as BarChartItemViewModel)?.Title;
-                        _baseTool.Vm.Selection.Add(selection);
+                        var barVm = ((y.First() as FrameworkElement)?.DataContext as BarChartItemViewModel);
+                        listOfBarsHit.Add(barVm);
+                        var selectionString = barVm?.Title;
+
+                        //If any of the bars hit was unselected, just select the unselected bars. 
+                        //If all bars were already selected, then allSelected will remain true which will cause
+                        //all the bars that were hit to be deselected.
+                        if (!_baseTool.Vm.Selection.Contains(selectionString))
+                        {
+                            allSelected = false;
+                            _baseTool.Vm.Selection.Add(selectionString);
+                        }
                     }
+                    currentPointToCheck = new Point(currentPointToCheck.X + columnWidth, currentPointToCheck.Y);
+                }
+                //Checks if each point intersects with a bar chart item
+                //foreach (InkPoint point in points)
+                //{
+                //    //Creates a new point using the x of the stroke point and the bottom of the bar chart
+                //    //so you can draw ontop of a bar and still select that bar.
+                //    Point bottomPoint = new Point(point.Position.X, this.ActualHeight - 1);
+                //    var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(bottomPoint);
+                //    var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
+                //    var y =
+                //        hitsStart.Where(
+                //            uiElem =>
+                //                (uiElem is FrameworkElement) &&
+                //                (uiElem as FrameworkElement).DataContext is BarChartItemViewModel).ToList();
+                //    if (y.Any())
+                //    {
+                //        var barVm = ((y.First() as FrameworkElement)?.DataContext as BarChartItemViewModel);
+                //        listOfBarsHit.Add(barVm);
+                //        var selectionString = barVm?.Title;
+
+                //        //If any of the bars hit was unselected, just select the unselected bars. 
+                //        //If all bars were already selected, then allSelected will remain true which will cause
+                //        //all the bars that were hit to be deselected.
+                //        if (!_baseTool.Vm.Selection.Contains(selectionString))
+                //        {
+                //            allSelected = false;
+                //            _baseTool.Vm.Selection.Add(selectionString);
+                //        }
+                //    }
+                //}
+            }
+            //deselect all the bars that were hit
+            if (allSelected == true)
+            {
+                foreach (var bar in listOfBarsHit)
+                {
+                    var selectionString = bar?.Title;
+                    _baseTool.Vm.Selection.Remove(selectionString);
                 }
             }
-            xInkCanvas.InkPresenter.StrokeContainer.Clear();
+            //refresh the selection so the selection changed event fires
             _baseTool.Vm.Selection = _baseTool.Vm.Selection;
+            //clear all the strokes in the ink container
+            xInkCanvas.InkPresenter.StrokeContainer.Clear();
 
         }
 
-        private void StrokeInput_StrokeEnded(InkStrokeInput sender, PointerEventArgs args)
-        {
-            var strokes = xInkCanvas.InkPresenter.StrokeContainer.GetStrokes();
-        }
         
         // pass in a list of all the properties to show in the graph
         public void SetProperties(List<string> propertiesList)
@@ -136,7 +210,6 @@ namespace NuSysApp
             int i = 0;
             foreach (var kvp in BarChartDictionary)
             {
-
                 // add all the columns to the barchart and find the height of the maximum column
                 var columnDefinition = new ColumnDefinition();
                 columnDefinition.Width = new GridLength(1, GridUnitType.Star);
@@ -146,16 +219,11 @@ namespace NuSysApp
                 // ad the barchart items to the bar chart
                 var vm = new BarChartItemViewModel(kvp, GetColor(kvp.Key));
                 var item = new BarChartItem(vm);
-                item.Tapped += xBarChartItem_OnTapped;
-                item.PointerPressed += xListItem_PointerPressed;
-                //item.ManipulationMode = ManipulationModes.All;
-                item.ManipulationStarted += xListItem_ManipulationStarted;
-                item.ManipulationDelta += xListItem_ManipulationDelta;
-                item.ManipulationCompleted += xListItem_ManipulationCompleted;
+                SetUpBarChartItemHandlers(item);
                 Grid.SetColumn(item, i);
                 xBarChart.Children.Add(item);
 
-                // tae care of mappings
+                // take care of mappings
                 _barChartItemDictionary.Add(kvp.Key, item);
                 BarChartLegendItems.Add(vm);
                 i++;
@@ -166,6 +234,15 @@ namespace NuSysApp
 
             // set the height of the bars in the bar chart
             SetBarChartBarHeights();
+        }
+
+        public void SetUpBarChartItemHandlers(BarChartItem item)
+        {
+            item.Tapped += xBarChartItem_OnTapped;
+            item.PointerPressed += xListItem_PointerPressed;
+            item.ManipulationStarted += xListItem_ManipulationStarted;
+            item.ManipulationDelta += xListItem_ManipulationDelta;
+            item.ManipulationCompleted += xListItem_ManipulationCompleted;
         }
         
         /// <summary>

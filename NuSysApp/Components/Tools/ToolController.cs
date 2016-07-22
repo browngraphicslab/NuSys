@@ -238,7 +238,9 @@ namespace NuSysApp
             {
                 return DateTime.UtcNow.ToStartOfDay().ToString();
             }
-            return DateTime.Parse(libraryElementModel.Timestamp).ToStartOfDay().ToString();
+            var time = DateTime.Parse(libraryElementModel.Timestamp);
+            var date = time.ToStartOfDay().Add(new TimeSpan(0,time.Hour,0,0));
+            return date.ToLocalTime().ToString();
         }
 
         /// <summary>

@@ -463,7 +463,7 @@ namespace NuSysApp
             getCanvas().Children.Remove(_dragFilterItem);
             if (_currentDragMode == DragMode.Filter)
             {
-                if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
+                if (Vm.Selection.Contains(selection) || e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
                 {
                     Vm.Selection.Add(selection);
                     Vm.Selection = Vm.Selection;
