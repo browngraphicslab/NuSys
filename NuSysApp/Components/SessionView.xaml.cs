@@ -70,8 +70,8 @@ namespace NuSysApp
             var bounds = Window.Current.Bounds;
             var height = bounds.Height;
             var width = bounds.Width;
-            Canvas.SetLeft(ChatBox, width - 300 - 10);
-            Canvas.SetTop(ChatBox, height - 375 - 10 - 50);
+            Canvas.SetLeft(xChatBox, width - 300 - 10);
+            Canvas.SetTop(xChatBox, height - 375 - 10 - 50);
             Canvas.SetLeft(ChatBoxButton, width - 10 - 50);
             Canvas.SetTop(ChatBoxButton, height - 10 - 50);
 
@@ -129,6 +129,7 @@ namespace NuSysApp
             xDetailViewer.DataContext = new DetailViewerViewModel();
             xSearchViewer.DataContext = new SearchViewModel();
             xSpeechToTextBox.DataContext = new SpeechToTextViewModel();
+            xChatBox.DataContext = new ChatBoxViewModel();
 
             var xRegionEditorView = (RegionEditorTabView)xDetailViewer.FindName("xRegionEditorView");
             xRegionEditorView.DataContext = xDetailViewer.DataContext;
@@ -973,7 +974,7 @@ namespace NuSysApp
 
         public ChatBoxView GetChatBox()
         {
-            return ChatBox;
+            return xChatBox;
         }
 
         private void ChatBoxButton_OnClick(object sender, RoutedEventArgs e)
@@ -981,11 +982,11 @@ namespace NuSysApp
             _isChatVisible = !_isChatVisible;
             if (_isChatVisible)
             {
-                ChatBox.Visibility = Visibility.Visible;
+                xChatBox.Visibility = Visibility.Visible;
             }
             else
             {
-                ChatBox.Visibility = Visibility.Collapsed;
+                xChatBox.Visibility = Visibility.Collapsed;
             }
         }
     }

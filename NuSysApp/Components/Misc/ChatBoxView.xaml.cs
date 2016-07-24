@@ -25,8 +25,18 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             chatInputBox.KeyDown += ChatInputBox_KeyDown;
-        }
 
+
+
+
+            DataContextChanged += delegate (FrameworkElement sender, DataContextChangedEventArgs args)
+            {
+                if (!(DataContext is ChatBoxViewModel))
+                    return;
+                var vm = (ChatBoxViewModel) DataContext;
+                vm.MakeMessageList();
+            };
+        }
         private void ChatInputBox_KeyDown(object sender, KeyRoutedEventArgs e)
         {
             if (e.Key == VirtualKey.Enter)
@@ -53,6 +63,17 @@ namespace NuSysApp
             //e.Handled = true;
         }
 
+        public void AppendText(NetworkUser user, string message)
+        {
+            var vm = DataContext as ChatBoxViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+            vm.AddMessage(user, message);
+            ScrollToEnd();
+        }
+
         /// <summary>
         /// scrolls to the bottom of the ListView
         /// </summary>
@@ -62,21 +83,7 @@ namespace NuSysApp
             chatDisplayListView.ScrollIntoView(chatDisplayListView.Items[chatDisplayListView.Items.Count-1], ScrollIntoViewAlignment.Leading);
         }
 
-        /// <summary>
-        /// adds string s to the bottom of the chat box by creating a new textblock from string s
-        /// and adding that to the bottom of the ListView
-        /// </summary>
-        /// <param name="s"></param>
-        public void AppendText(string s)
-        {
-            TextBlock block = new TextBlock();
-            block.TextWrapping = TextWrapping.Wrap;
-            block.Text = s;
-            block.Width = 280;
-            block.Margin = new Thickness(0,2,0,0);
-            chatDisplayListView.Items.Add(block);
-            ScrollToEnd();
-        }
+
 
         public Visibility Visibility
         {

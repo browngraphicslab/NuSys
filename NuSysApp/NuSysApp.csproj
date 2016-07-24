@@ -285,6 +285,8 @@
     <Compile Include="Components\Misc\ChatBoxView.xaml.cs">
       <DependentUpon>ChatBoxView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Misc\ChatBoxViewModel.cs" />
+    <Compile Include="Components\Misc\ChatMessageTemplate.cs" />
     <Compile Include="Components\Misc\Library\LibraryFavorites.xaml.cs">
       <DependentUpon>LibraryFavorites.xaml</DependentUpon>
     </Compile>

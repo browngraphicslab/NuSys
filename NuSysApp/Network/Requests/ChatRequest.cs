@@ -40,13 +40,13 @@ namespace NuSysApp
                 Debug.Assert(chatMessage != null);
                 string userAndMessage = user.Name + ": " + chatMessage;
                 ChatBoxView cBox = SessionController.Instance.SessionView.GetChatBox();
-                cBox.AppendText(userAndMessage);
+                cBox.AppendText(user, chatMessage);
                 string[] chatArr = chatMessage.Split(' ');
                 if (Array.IndexOf(chatArr,"hey") >-1 || Array.IndexOf(chatArr, "Hey") > -1 
                     || Array.IndexOf(chatArr, "hi") > -1 || Array.IndexOf(chatArr, "Hi") > -1)
                 {
-                    string another = "slackbot: I only say hi to good coders";
-                    cBox.AppendText(another);
+                    string another = "I only say hi to good coders";
+                    cBox.AppendText(new NetworkUser("slackbot"), another);
                 }
             }
         }
