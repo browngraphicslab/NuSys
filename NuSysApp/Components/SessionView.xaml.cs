@@ -539,7 +539,7 @@ namespace NuSysApp
                 {
                     continue;
                 }
-                var libraryModel = SessionController.Instance.ContentController.GetContent(libraryId);
+                var libraryModel = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId);
                 if (libraryModel == null)
                 {
                     if (msg.ContainsKey("id"))
@@ -648,7 +648,7 @@ namespace NuSysApp
             var libraryId = message.GetString("contentId");
             var id = message.GetString("id");
             Debug.WriteLine("making element: " + id);
-            var libraryModel = SessionController.Instance.ContentController.GetContent(libraryId);
+            var libraryModel = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId);
             if (libraryModel == null)
             {
                 messagesLeft.Remove(id);

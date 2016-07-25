@@ -50,7 +50,7 @@ namespace NuSysApp
         {
             this.UpdateControlPoints();
         }
-        
+
 
         private void UpdateControlPoints()
         {

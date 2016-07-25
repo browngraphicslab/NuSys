@@ -23,7 +23,7 @@ namespace NuSysApp
         public delegate void MessageRecievedEventHandler(Message message);
         public event MessageRecievedEventHandler OnMessageRecieved;
 
-        public delegate void RegionUpdatedEventHandler(string id, Region region);
+        public delegate void RegionUpdatedEventHandler(string id, Message message);
         public event RegionUpdatedEventHandler OnRegionUpdated;
 
 
@@ -132,9 +132,9 @@ namespace NuSysApp
                                     OnClientDrop?.Invoke(id);
                                     break;
                                 case "region_update":
-                                    id = (string) dict["region_id"];
-                                    Region region = GetRegionFromString(dict["region_string"] as string);
-                                    OnRegionUpdated?.Invoke(id, region);
+                                  //  id = (string) dict["region_id"];
+                                  //  Region region = JsonConvert.DeserializeObject<Message>(dict["region_string"] as string);
+                                  //  OnRegionUpdated?.Invoke(id, region);
                                     break;
                                 case "content_update":
                                     id = dict["id"] as string;
@@ -301,7 +301,7 @@ namespace NuSysApp
             {
                 var dict = new Dictionary<string, object>();
                 dict["data"] = region;
-                dict["id"] = region.Id;
+                dict["id"] = region.LibraryElementId;
                 dict["contentId"] = contentId;
                 var data = await SendDictionaryToServer("addregion", dict);
                 try
@@ -322,7 +322,7 @@ namespace NuSysApp
             {
                 var dict = new Dictionary<string, object>();
                 dict["data"] = region;
-                dict["id"] = region.Id;
+                dict["id"] = region.LibraryElementId;
                 var data = await SendDictionaryToServer("removeregion", dict);
                 try
                 {
@@ -342,7 +342,7 @@ namespace NuSysApp
             {
                 var dict = new Dictionary<string, object>();
                 dict["data"] = region;
-                dict["id"] = region.Id;
+                dict["id"] = region.LibraryElementId;
                 var data = await SendDictionaryToServer("updateregion", dict);
                 try
                 {
@@ -447,7 +447,7 @@ namespace NuSysApp
                         data = await responseContent.ReadAsStringAsync();
                     }
 
-                    if (SessionController.Instance.ContentController.GetContent(libraryId) != null && SessionController.Instance.ContentController.GetContent(libraryId).Type == ElementType.Video)
+                    if (SessionController.Instance.ContentController.GetLibraryElementModel(libraryId) != null && SessionController.Instance.ContentController.GetLibraryElementModel(libraryId).Type == ElementType.Video)
                     {
                         if (data == "{}")
                         {
@@ -520,7 +520,7 @@ namespace NuSysApp
                     m["data"] = inkline;
                     m["id"] = inkid;
                     var model =
-                        SessionController.Instance.ContentController.GetContent(libraryId) as
+                        SessionController.Instance.ContentController.GetLibraryElementModel(libraryId) as
                             CollectionLibraryElementModel;
                     if (!model.InkLines.Contains(inkid))
                     {
@@ -530,7 +530,7 @@ namespace NuSysApp
                 }
             }
 
-            LibraryElementModel content = SessionController.Instance.ContentController.GetContent(libraryId);
+            LibraryElementModel content = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId);
             if (content == null)
             {
                 content = LibraryElementModelFactory.CreateFromMessage(new Message(dict));
@@ -557,23 +557,20 @@ namespace NuSysApp
             Region region = null;
             switch (regionintermediate.Type)
             {
-                case Region.RegionType.Rectangle:
+                case ElementType.ImageRegion:
                     region = JsonConvert.DeserializeObject<RectangleRegion>(regionString, settings);
                     break;
-                case Region.RegionType.Compound:
-                    region = JsonConvert.DeserializeObject<CompoundRegion>(regionString, settings);
-                    break;
-                case Region.RegionType.Time:
+                case ElementType.AudioRegion:
                     region = JsonConvert.DeserializeObject<TimeRegionModel>(regionString, settings);
                     break;
-                case Region.RegionType.Pdf:
+                case ElementType.PdfRegion:
                     region = JsonConvert.DeserializeObject<PdfRegion>(regionString, settings);
                     break;
-                case Region.RegionType.Video:
+                case ElementType.VideoRegion:
                     region = JsonConvert.DeserializeObject<VideoRegionModel>(regionString, settings);
                     break;
             }
-            if (contentId != null && SessionController.Instance.RegionsController.GetRegionController(region?.Id) == null)
+            if (contentId != null && SessionController.Instance.RegionsController.GetRegionController(region?.LibraryElementId) == null)
             {
                 var controller = new RegionControllerFactory().CreateFromSendable(region, contentId);
             }
@@ -792,7 +789,7 @@ namespace NuSysApp
         }
         private class RegionIntermediate
         {
-            public Region.RegionType Type;
+            public ElementType Type;
         }
         public class IncomingDataReaderException : Exception
         {

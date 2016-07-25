@@ -13,41 +13,41 @@ namespace NuSysApp
 {
     public class DetailViewHomeTabViewFactory
     {
-        public async Task<UserControl> CreateFromSendable(LibraryElementController controller, HashSet<Region> regionsToLoad)
+        public async Task<UserControl> CreateFromSendable(LibraryElementController controller)
         {
             UserControl view = null;
 
             switch (controller.LibraryElementModel.Type)
             {
                 case ElementType.Text:
-                    view = new TextDetailHomeTabView(new TextDetailHomeTabViewModel(controller, regionsToLoad));
+                    view = new TextDetailHomeTabView(new TextDetailHomeTabViewModel(controller));
                     break;
                 case ElementType.Image:
-                    view = new ImageDetailHomeTabView(new ImageDetailHomeTabViewModel(controller, regionsToLoad));
+                    view = new ImageDetailHomeTabView(new ImageDetailHomeTabViewModel(controller));
                     break;
                 case ElementType.Word:
-                    view = new WordDetailHomeTabView(new WordDetailHomeTabViewModel(controller, regionsToLoad));
+                    view = new WordDetailHomeTabView(new WordDetailHomeTabViewModel(controller));
                     break;
                 case ElementType.Powerpoint:
                     //view = new PowerpointDetailView(new PowerpointNodeViewModel(controller));
                     break;
                 case ElementType.PDF:
-                    view = new PdfDetailHomeTabView(new PdfDetailHomeTabViewModel(controller, regionsToLoad));
+                    view = new PdfDetailHomeTabView(new PdfDetailHomeTabViewModel(controller));
                     break;
                 case ElementType.Web:
                     //view = new WebDetailView(new WebNodeViewModel(controller));
                     break;
                 case ElementType.Video:
-                    view = new VideoDetailHomeTabView(new VideoDetailHomeTabViewModel(controller, regionsToLoad));
+                    view = new VideoDetailHomeTabView(new VideoDetailHomeTabViewModel(controller));
                     break;
                 case ElementType.Audio:
-                    view = new AudioDetailHomeTabView(new AudioDetailHomeTabViewModel(controller, regionsToLoad));
+                    view = new AudioDetailHomeTabView(new AudioDetailHomeTabViewModel(controller));
                     break;
                 case ElementType.Collection:
-                    view = new GroupDetailHomeTabView(new GroupDetailHomeTabViewModel(controller, regionsToLoad));
+                    view = new GroupDetailHomeTabView(new GroupDetailHomeTabViewModel(controller));
                     break;
                 case ElementType.Link:
-                    view = new LinkDetailHomeTabView(new LinkHomeTabViewModel(controller as LinkLibraryElementController, regionsToLoad));
+                    view = new LinkDetailHomeTabView(new LinkHomeTabViewModel(controller as LinkLibraryElementController));
                     break;
             }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,39 +16,70 @@ namespace NuSysApp
         public event SizeChangedEventHandler SizeChanged;
         public delegate void SizeChangedEventHandler(object sender, double width, double height);
 
-        public RectangleRegion Model
+        public RectangleRegion RectangleRegionModel
         {
-            get { return base.Model  as RectangleRegion;}
+            get
+            {
+                Debug.Assert(LibraryElementModel is RectangleRegion);
+                return LibraryElementModel  as RectangleRegion;
+            }
         }
         public RectangleRegionController(RectangleRegion model) : base(model)
         {
         }
 
-        public void SetSize(double width, double height)
+        public void SetHeight(double height)
         {
-            Model.Width = width;
-            Model.Height = height;
-            SizeChanged?.Invoke(this,width,height);
-            UpdateServer();
+            if (_blockServerInteraction)
+            {
+                return;
+            }
+            
+            RectangleRegionModel.Height = height;
+            SizeChanged?.Invoke(this, RectangleRegionModel.Width, RectangleRegionModel.Height);
+            _debouncingDictionary.Add("rectangle_height", height);
+        }
+
+        public void SetWidth(double width)
+        {
+            if (_blockServerInteraction)
+            {
+                return;
+            }
+            RectangleRegionModel.Width = width;
+            SizeChanged?.Invoke(this, RectangleRegionModel.Width, RectangleRegionModel.Height);
+            _debouncingDictionary.Add("rectangle_width", width);
         }
         public void SetLocation(Point topLeft)
         {
-            Model.TopLeftPoint = new Point(Math.Max(0.001, topLeft.X), Math.Max(0.001, topLeft.Y));
-            LocationChanged?.Invoke(this, Model.TopLeftPoint);
-            UpdateServer();
+            if (_blockServerInteraction || topLeft == null)
+            {
+                return;
+            }
+            RectangleRegionModel.TopLeftPoint = new Point(Math.Max(0.001, topLeft.X), Math.Max(0.001, topLeft.Y));
+            LocationChanged?.Invoke(this, RectangleRegionModel.TopLeftPoint);
+            _debouncingDictionary.Add("rectangle_top_left_point", RectangleRegionModel.TopLeftPoint);
         }
 
-        public override void UnPack(Region region)
+        public override void UnPack(Message message)
         {
-            SetBlockServerBoolean(true);
-            var r = region as RectangleRegion;
-            if (r != null)
+            SetBlockServerInteraction(true);
+
+            if (message.ContainsKey("rectangle_width"))
             {
-                SetLocation(r.TopLeftPoint);
-                SetSize(r.Width,r.Height);
+                SetWidth(message.GetDouble("rectangle_width"));
             }
-            base.UnPack(region);
-            SetBlockServerBoolean(false);
+            if (message.ContainsKey("rectangle_height"))
+            {
+                SetHeight(message.GetDouble("rectangle_height"));
+            }
+            if (message.ContainsKey("rectangle_top_left_point"))
+            {
+                SetLocation(message.GetPoint("rectangle_top_left_point"));
+            }
+
+            base.UnPack(message);
+            SetBlockServerInteraction(false);
         }
     }
 }

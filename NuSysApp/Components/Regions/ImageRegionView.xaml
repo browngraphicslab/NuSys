@@ -29,8 +29,11 @@
                 </CompositeTransform>
             </Path.RenderTransform>
         </Path>
-
-        <Image x:Name="xDelete" Width="25" Height="25" Margin="0,5,5,0" PointerPressed="xDelete_PointerPressed"  HorizontalAlignment="Right"  VerticalAlignment="Top" Stretch="Uniform" Source="ms-appx:///Assets/icon_delete_color.png"></Image>
+        <local:ClippedGridWrapper>
+            <local:ClippedGridWrapper.FullContent>
+                <Image x:Name="xDelete" Width="25" Height="25" Margin="0,5,5,0" PointerPressed="xDelete_PointerPressed"  HorizontalAlignment="Right"  VerticalAlignment="Top" Stretch="Uniform" Source="ms-appx:///Assets/icon_delete_color.png"></Image>
+            </local:ClippedGridWrapper.FullContent>
+        </local:ClippedGridWrapper>
 
     </Grid>
 </UserControl>

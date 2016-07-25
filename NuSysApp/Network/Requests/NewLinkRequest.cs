@@ -99,7 +99,7 @@ namespace NuSysApp
 
             //var link = LibraryElementModelFactory.CreateFromMessage(_message);
 
-            var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(creator);
+            var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetLibraryElementModel(creator);
             parentCollectionLibraryElement.AddChild(id);
             
             AddLinks(id1,id2,id);

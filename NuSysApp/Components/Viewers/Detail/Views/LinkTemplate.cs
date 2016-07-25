@@ -44,7 +44,7 @@ namespace NuSysApp
                 }
                 else if(SessionController.Instance.LinksController.IsContentId(linkModel.OutAtomId))
                 {
-                    var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.OutAtomId);
+                    var libraryElementModel = SessionController.Instance.ContentController.GetLibraryElementModel(linkModel.OutAtomId);
                     Debug.Assert(libraryElementModel != null);
                     LinkedTo = libraryElementModel.Title;
                 }
@@ -60,7 +60,7 @@ namespace NuSysApp
                 }
                 else if (SessionController.Instance.LinksController.IsContentId(linkModel.InAtomId))
                 {
-                    var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.InAtomId);
+                    var libraryElementModel = SessionController.Instance.ContentController.GetLibraryElementModel(linkModel.InAtomId);
                     Debug.Assert(libraryElementModel != null);
                     LinkedTo = libraryElementModel.Title;
                 }

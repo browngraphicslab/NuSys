@@ -196,7 +196,7 @@ namespace NuSysApp
                 //        if (!isContained && r.Contains(point))
                 //        {
                 //            isContained = true;
-                //            //NetworkConnector.Instance.RequestDeleteSendable(model.ContentId);
+                //            //NetworkConnector.Instance.RequestDeleteSendable(model.LibraryId);
                 //            selectedLines.Add(newModel);
                 //        }
                 //    }

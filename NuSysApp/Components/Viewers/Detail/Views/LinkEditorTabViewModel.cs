@@ -78,15 +78,15 @@ namespace NuSysApp
             _linkTabable.RequestRemoveLink(linkId);
 
             //Removes the link from the content at the other end of the Link
-            var linkModel = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
-            if (linkModel?.InAtomId == _linkTabable.ContentId)
+            var linkModel = SessionController.Instance.ContentController.GetLibraryElementModel(linkId) as LinkLibraryElementModel;
+            if (linkModel?.InAtomId == _linkTabable.LibraryId)
             {
                 var otherController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel?.OutAtomId);
-                otherController.RequestRemoveLink(linkId);
-            } else if (linkModel?.OutAtomId == _linkTabable.ContentId)
+                otherController?.RequestRemoveLink(linkId);
+            } else if (linkModel?.OutAtomId == _linkTabable.LibraryId)
             {
                 var otherController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel?.InAtomId);
-                otherController.RequestRemoveLink(linkId);
+                otherController?.RequestRemoveLink(linkId);
             }
 
             //Create templates to display in the list view
@@ -106,10 +106,10 @@ namespace NuSysApp
             {
                 return;
             }
-            if (_linkTabable.ContentId == link.LinkLibraryElementModel.InAtomId ||
-                _linkTabable.ContentId == link.LinkLibraryElementModel.OutAtomId)
+            if (_linkTabable.LibraryId == link.LinkLibraryElementModel.InAtomId ||
+                _linkTabable.LibraryId == link.LinkLibraryElementModel.OutAtomId)
             {
-                var template = new LinkTemplate(link, _linkTabable.ContentId);
+                var template = new LinkTemplate(link, _linkTabable.LibraryId);
                 UITask.Run(async delegate {
                     LinkTemplates.Add(template);
                 });
@@ -141,7 +141,7 @@ namespace NuSysApp
             _linkTabable = linkTabable;
             foreach (var controller in linkTabable.GetAllLinks())
             {
-                var template = new LinkTemplate(controller, linkTabable.ContentId);
+                var template = new LinkTemplate(controller, linkTabable.LibraryId);
                 LinkTemplates.Add(template);
             }
             _linkTabable.LinkAdded += LinkTabableLinkAdded;
@@ -169,7 +169,7 @@ namespace NuSysApp
             {
                 return;
             }
-            var template = new LinkTemplate(controller, _linkTabable.ContentId);
+            var template = new LinkTemplate(controller, _linkTabable.LibraryId);
             UITask.Run(delegate {
             foreach (var existingTemplate in LinkTemplates)
             {
@@ -209,16 +209,16 @@ namespace NuSysApp
             _linkTabable.LinkAdded -= LinkTabableLinkAdded;
             await _linkTabable.RequestAddNewLink(idToLinkTo, title);
             var newLinkController = SessionController.Instance.LinksController.GetLinkLibraryElementControllerBetweenContent(
-                _linkTabable.ContentId, idToLinkTo);
+                _linkTabable.LibraryId, idToLinkTo);
             if (newLinkController != null)
             {
-                var template = new LinkTemplate(newLinkController, _linkTabable.ContentId);
+                var template = new LinkTemplate(newLinkController, _linkTabable.LibraryId);
                 if (keywords != null)
                 {
                     newLinkController.SetKeywords(keywords);
                 }
                 LinkTemplates.Add(template);
-                //var linkId = SessionController.Instance.LinksController.GetLinkIdBetween(_linkTabable.ContentId, idToLinkTo);
+                //var linkId = SessionController.Instance.LinksController.GetLinkIdBetween(_linkTabable.LibraryId, idToLinkTo);
                 //var linkController = SessionController.Instance.ContentController.GetLibraryElementController(linkId) as LinkLibraryElementController;
                 //linkController?.SetTitle(title);
                 _linkTabable.LinkAdded += LinkTabableLinkAdded;

@@ -19,7 +19,7 @@ namespace NuSysApp
         private LibraryElementModel _libraryElementModel;
         private bool _loading = false;
         private RegionControllerFactory _regionControllerFactory = new RegionControllerFactory();
-        private bool _blockServerInteraction = false;
+        protected bool _blockServerInteraction = false;
         public string Title {
             get
             {
@@ -27,7 +27,7 @@ namespace NuSysApp
             }
             set
             {
-                LibraryElementModel.Title = value;
+                SetTitle(value);
             } 
         }
         
@@ -98,28 +98,8 @@ namespace NuSysApp
             _debouncingDictionary.Add("data", contentData);
         }
 
-        /// <summary>
-        /// This will ADD a region to the library element model and will update the server accordingly
-        /// It will then fire an even notfying all listeners of the new region added
-        /// </summary>
-        public void AddRegion(Region region)
-        {
-            if (_libraryElementModel.Regions == null)
-            {
-                _libraryElementModel.Regions = new HashSet<Region>();
-            }
 
 
-            _libraryElementModel.Regions.Add(region);
-
-            var regionController = SessionController.Instance.RegionsController.AddRegion(region, this.LibraryElementModel.LibraryElementId);
-            /*
-            var factory = new RegionControllerFactory();
-            var regionController = factory.CreateFromSendable(region, this.LibraryElementModel.LibraryElementId);
-            */
-            RegionAdded?.Invoke(this, regionController);
-            SessionController.Instance.NuSysNetworkSession.AddRegionToContent(LibraryElementModel.LibraryElementId, region);
-        }
 
         /// <summary>
         /// This will REMOVE a region to the library element model and will update the server accordingly
@@ -128,9 +108,9 @@ namespace NuSysApp
         /// </summary>
         public void RemoveRegion(Region region)
         {
-            _libraryElementModel.Regions.Remove(region);
+        //    _liraryElementModel.Regions.Remove(region);
             RegionRemoved?.Invoke(this, region);
-            SessionController.Instance.NuSysNetworkSession.RemoveRegionFromContent(region);
+        //    SessionController.Instance.NuSysNetworkSession.RemoveRegionFromContent(region);
         }
         /// <summary>
         /// This will change the library element model's title and update the server.  
@@ -334,7 +314,7 @@ namespace NuSysApp
             }
             if (e.RegionStrings != null)
             {
-                _libraryElementModel.Regions = e.RegionStrings;
+      //          _libraryElementModel.Regions = e.RegionStrings;
             }
             //_libraryElementModel.InkLinkes = e.InkStrings;
 
@@ -442,6 +422,14 @@ namespace NuSysApp
             _blockServerInteraction = false;
         }
 
+        /// <summary>
+        /// call duirng unpack methods to prevent infinite loops
+        /// </summary>
+        /// <param name="blockSendingToServer"></param>
+        protected void SetBlockServerInteraction(bool blockSendingToServer)
+        {
+            _blockServerInteraction = blockSendingToServer;
+        }
         public Uri SmallIconUri
         {
             get
@@ -529,7 +517,7 @@ namespace NuSysApp
             get { return _loading || IsLoaded; }
         }
 
-        public string ContentId
+        public string LibraryId
         {
             get
             {
@@ -555,7 +543,7 @@ namespace NuSysApp
 
         //public void RemoveLink(LinkLibraryElementController linkController)
         //{
-        //    LinkRemoved?.Invoke(this, linkController.ContentId);
+        //    LinkRemoved?.Invoke(this, linkController.LibraryId);
         //}
 
         #region Linking methods

@@ -30,7 +30,7 @@ namespace NuSysApp
 
         public bool Selected {private set; get; }
 
-        public ImageRegionView(ImageRegionViewModel vm)
+        public ImageRegionView(ImageRegionViewModel vm, ClippedGridWrapper grid)
         {
             this.InitializeComponent();
             this.DataContext = vm;
@@ -70,8 +70,8 @@ namespace NuSysApp
 
             _tx = composite.TranslateX;
             _ty = composite.TranslateY;
-
-
+            grid.XClippedGrid.Children.Add(this);
+            //grid.XClippedGrid.SizeChanged += ChangeSize;
 
         }
 
@@ -339,7 +339,7 @@ namespace NuSysApp
             }
 
             var libraryElementController = vm.LibraryElementController;
-            libraryElementController.RemoveRegion(vm.RegionController.Model);
+            libraryElementController.RemoveRegion(vm.LibraryElementController.LibraryElementModel as RectangleRegion);
 
 
         }
@@ -348,7 +348,7 @@ namespace NuSysApp
         {
             var vm = DataContext as RegionViewModel;
             SessionController.Instance.SessionView.ShowDetailView(vm?.LibraryElementController);
-            var regionController = vm?.RegionController;
+            var regionController = vm?.LibraryElementController;
             SessionController.Instance.SessionView.ShowDetailView(regionController);
         }
 

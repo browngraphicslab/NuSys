@@ -19,7 +19,7 @@ namespace NuSysApp
 
         private int _pageNumber = 0;
         private MuPDFWinRT.Document _document;
-        public WordDetailHomeTabViewModel(LibraryElementController controller, HashSet<Region> regionsToLoad) : base(controller, regionsToLoad)
+        public WordDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
             Controller = controller;
             Editable = true;
@@ -151,7 +151,7 @@ namespace NuSysApp
             
         }
 
-        public override Region GetNewRegion()
+        public override Message GetNewRegionMessage()
         {
             throw new NotImplementedException();
         }

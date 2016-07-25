@@ -265,6 +265,8 @@
     </Compile>
     <Compile Include="Classas.cs" />
     <Compile Include="Components\ContentImporter\ContentImporter.cs" />
+    <Compile Include="Components\IEditable.cs" />
+    <Compile Include="Components\IExplorable.cs" />
     <Compile Include="Components\InqCanvas2\PhilInqCanvas.xaml.cs">
       <DependentUpon>PhilInqCanvas.xaml</DependentUpon>
     </Compile>
@@ -281,6 +283,9 @@
     <Compile Include="Components\Links\PresentationLinkViewModel.cs" />
     <Compile Include="Components\LoadingScreen.xaml.cs">
       <DependentUpon>LoadingScreen.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\ClippedGridWrapper.xaml.cs">
+      <DependentUpon>ClippedGridWrapper.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\Library\LibraryFavorites.xaml.cs">
       <DependentUpon>LibraryFavorites.xaml</DependentUpon>
@@ -325,6 +330,9 @@
     </Compile>
     <Compile Include="Components\Tools\BasicToolController.cs" />
     <Compile Include="Components\Tools\BasicToolModel.cs" />
+    <Compile Include="Components\Tools\ListToolView.xaml.cs">
+      <DependentUpon>ListToolView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Tools\MetadataToolController.cs" />
     <Compile Include="Components\Tools\MetadataToolModel.cs" />
     <Compile Include="Components\Tools\MetadataToolView.xaml.cs">
@@ -335,25 +343,26 @@
       <DependentUpon>PieChartToolView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Tools\ToolController.cs" />
-    <Compile Include="Components\Tools\ToolFilterLinkView.xaml.cs">
-      <DependentUpon>ToolFilterLinkView.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Components\Tools\ToolFilterLinkView.xaml.cs" />
     <Compile Include="Components\Tools\ToolFilterLinkViewModel.cs" />
     <Compile Include="Components\Tools\ToolFilterView.xaml.cs">
       <DependentUpon>ToolFilterView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Tools\ToolLinkable.cs" />
     <Compile Include="Components\Tools\ToolLinkView.xaml.cs">
       <DependentUpon>ToolLinkView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Tools\ToolLinkViewModel.cs" />
     <Compile Include="Components\Tools\ToolModel.cs" />
     <Compile Include="Components\Tools\BasicToolViewModel.cs" />
+    <Compile Include="Components\Tools\ToolStartable.cs" />
     <Compile Include="Components\Tools\ToolViewable.cs" />
     <Compile Include="Components\Tools\ToolViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\ILinkTabable.cs" />
     <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
     <Compile Include="Components\Viewers\Detail\Sizeable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\LinkHomeTabViewModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\DetailHomeTabView.cs" />
     <Compile Include="Components\Viewers\Detail\Views\IDetailViewable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\WordDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml.cs">
@@ -368,6 +377,7 @@
     <Compile Include="Components\Viewers\Detail\Views\PDFRegionListView.xaml.cs">
       <DependentUpon>PDFRegionListView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Modes\ExploreMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">
       <DependentUpon>AudioMediaPlayer.xaml</DependentUpon>
     </Compile>
@@ -390,6 +400,7 @@
     <Compile Include="Converters\BoolToManipulationModeConverter.cs" />
     <Compile Include="Converters\ListToStringConverter.cs" />
     <Compile Include="Converters\MutabilityToBrushConverter.cs" />
+    <Compile Include="Models\ContentDataModel.cs" />
     <Compile Include="Models\LibraryElementModelFactory.cs" />
     <Compile Include="Models\LinkLibraryElementModel.cs" />
     <Compile Include="Models\PresentationLinkModel.cs" />
@@ -589,7 +600,6 @@
     <Compile Include="Models\CollectionLibraryElementModel.cs" />
     <Compile Include="Models\CollectionElementModel.cs" />
     <Compile Include="Models\PowerpointNodeModel.cs" />
-    <Compile Include="Models\Regions\CompoundRegion.cs" />
     <Compile Include="Models\Regions\RectangleRegion.cs" />
     <Compile Include="Models\Regions\Region.cs" />
     <Compile Include="Models\Regions\VideoRegionModel.cs" />
@@ -662,9 +672,7 @@
     <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\Statistics.cs" />
     <Compile Include="Util\Telemetry.cs" />
-    <Compile Include="Util\TemporaryToolView.xaml.cs">
-      <DependentUpon>TemporaryToolView.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Util\TemporaryToolView.xaml.cs" />
     <Compile Include="Util\UITask.cs" />
     <Compile Include="Components\InqCanvas\InqCanvasViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoNodeViewModel.cs" />
@@ -884,6 +892,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\Misc\ClippedGridWrapper.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Components\Misc\Library\LibraryFavorites.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -920,6 +932,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\Tools\ListToolView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Components\Tools\MetadataToolView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -929,8 +945,8 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Tools\ToolFilterLinkView.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Tools\ToolFilterView.xaml">
       <SubType>Designer</SubType>
@@ -1197,13 +1213,13 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Util\TemporaryToolView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Util\RelatedListBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Util\TemporaryToolView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

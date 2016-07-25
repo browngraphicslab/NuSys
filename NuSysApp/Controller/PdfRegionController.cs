@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using LdaLibrary;
 
 
 namespace NuSysApp
@@ -21,45 +23,44 @@ namespace NuSysApp
         public event SizeChangedEventHandler SizeChanged;
         public delegate void SizeChangedEventHandler(object sender, double width, double height);
 
+        public PdfRegion PdfRegionModel
+        {
+            get
+            {
+                Debug.Assert(LibraryElementModel is PdfRegion);
+                return LibraryElementModel as PdfRegion;
+            }
+        }
+
         public PdfRegionController(PdfRegion model) : base(model)
         {
         }
 
         public void SetPageLocation(int page)
         {
-            var pdfRegion = Model as PdfRegion;
+            if (_blockServerInteraction)
+            {
+                return;
+            }
+            var pdfRegion = PdfRegionModel as PdfRegion;
             if (pdfRegion == null)
             {
                 return;
             }
             pdfRegion.PageLocation = page;
             PageLocationChanged?.Invoke(this, page);
+            _debouncingDictionary.Add("page_location", page);
         }
 
-        public void SetSize(double width, double height)
+        public override void UnPack(Message message)
         {
-            Model.Width = width;
-            Model.Height = height;
-            SizeChanged?.Invoke(this, width, height);
-            UpdateServer();
-        }
-        public void SetLocation(Point topLeft)
-        {
-            Model.TopLeftPoint = new Point(Math.Max(0.001, topLeft.X), Math.Max(0.001, topLeft.Y));
-            LocationChanged?.Invoke(this, Model.TopLeftPoint);
-            UpdateServer();
-        }
-
-        public override void UnPack(Region region)
-        {
-            SetBlockServerBoolean(true);
-            var r = region as PdfRegion;
-            if (r != null)
+            SetBlockServerInteraction(true);
+            if (message.ContainsKey("page_location"))
             {
-                SetPageLocation(r.PageLocation);
+                SetPageLocation(message.GetInt("page_location"));
             }
-            base.UnPack(region);
-            SetBlockServerBoolean(false);
+            base.UnPack(message);
+            SetBlockServerInteraction(false);
         }
     }
 }

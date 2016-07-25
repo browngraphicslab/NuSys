@@ -63,12 +63,6 @@ namespace NuSysApp
             Children.Remove(elementController.Model.Id);
         }
 
-        protected override void OnSessionControllerEnterNewCollection()
-        {
-            _children.Clear();
-            base.OnSessionControllerEnterNewCollection();
-        }
-
         public bool RemoveChild(string id)
         {
             if (_children.Contains(id))

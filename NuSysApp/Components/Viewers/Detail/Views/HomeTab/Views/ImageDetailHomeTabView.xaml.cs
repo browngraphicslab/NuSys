@@ -1,4 +1,4 @@
-﻿using NuSysApp.Util;
+﻿ using NuSysApp.Util;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,6 +26,7 @@ namespace NuSysApp
     public sealed partial class ImageDetailHomeTabView : UserControl
         {
             public ImageRegionView SelectedRegion { set; get; }
+            public Grid ImageGrid { get { return xImageGrid; } }
             public ImageDetailHomeTabView(ImageDetailHomeTabViewModel vm)
             {
                 DataContext = vm;
@@ -155,11 +156,11 @@ namespace NuSysApp
 
         private void xImg_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            var vm = DataContext as ImageDetailHomeTabViewModel;
+         /*   var vm = DataContext as ImageDetailHomeTabViewModel;
             foreach (var regionView in vm.RegionViews)
             {
                 regionView.Deselect();
-            }
+            }*/
         }
 
         private void BitmapImage_ImageOpened(object sender, RoutedEventArgs e)

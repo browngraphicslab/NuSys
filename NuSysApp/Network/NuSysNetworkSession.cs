@@ -181,7 +181,7 @@ namespace NuSysApp
                 }
 
                 UITask.Run(async delegate {
-                    if (SessionController.Instance.ContentController.GetContent(id) != null)
+                    if (SessionController.Instance.ContentController.GetLibraryElementModel(id) != null)
                     {
                         var controller = SessionController.Instance.ContentController.GetLibraryElementController(id);
                         //Debug.Assert(title != null);
@@ -214,14 +214,14 @@ namespace NuSysApp
                     if (dict.ContainsKey("favorited"))
                     {
                         bool favorited = bool.Parse(dict["favorited"].ToString());
-                        var model = SessionController.Instance.ContentController.GetContent(id);
+                        var model = SessionController.Instance.ContentController.GetLibraryElementModel(id);
                         if (model != null)
                         {
                             model.Favorited = favorited;
                         }
                     }
                     var message = new Message(dict);
-                    await SessionController.Instance.ContentController.GetContent(id).UnPack(message);
+                    await SessionController.Instance.ContentController.GetLibraryElementModel(id).UnPack(message);
                 });
             }
         }
@@ -361,12 +361,12 @@ namespace NuSysApp
         {
             controller.UnPack(message);
         }
-        private void RegionUpdated(string id, Region region)
+        private void RegionUpdated(string id, Message message)
         {
             UITask.Run(delegate
             {
                 var controller = SessionController.Instance.RegionsController.GetRegionController(id);
-                controller?.UnPack(region);
+                controller?.UnPack(message);
             });
         }
         public async Task<List<Message>> GetCollectionAsElementMessages(string id)
@@ -401,7 +401,7 @@ namespace NuSysApp
         }
         public async Task FetchLibraryElementData(string id)
         {
-            if (SessionController.Instance.ContentController.GetContent(id)?.Type == ElementType.PDF && SessionController.Instance.ContentController.GetLibraryElementController(id) != null && !SessionController.Instance.ContentController.GetLibraryElementController(id).IsLoaded)
+            if (SessionController.Instance.ContentController.GetLibraryElementModel(id)?.Type == ElementType.PDF && SessionController.Instance.ContentController.GetLibraryElementController(id) != null && !SessionController.Instance.ContentController.GetLibraryElementController(id).IsLoaded)
             {
                 bool fileExists = await CachePDF.isFilePresent(id);
 
@@ -420,7 +420,7 @@ namespace NuSysApp
                 else
                 {
                     await _serverClient.FetchLibraryElementData(id);
-                    var data = SessionController.Instance.ContentController.GetContent(id).Data;
+                    var data = SessionController.Instance.ContentController.GetLibraryElementModel(id).Data;
 
                     CachePDF.createWriteFile(id, data); //save the data
                 }
@@ -483,7 +483,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Returns a mapping of regionID to LibraryElement ContentId of its parent
+        /// Returns a mapping of regionID to LibraryElement LibraryId of its parent
         /// </summary>
         /// <param name="collectionContentId"></param>
         /// <returns></returns>
@@ -520,7 +520,7 @@ namespace NuSysApp
         }
         /// <summary>
         /// Will fetch and return a hashset of presentation links for a given collection
-        /// the presentation links ID's will be elementModel ContentId's
+        /// the presentation links ID's will be elementModel LibraryId's
         /// </summary>
         /// <param name="contentId"></param>
         /// <returns></returns>
@@ -528,32 +528,18 @@ namespace NuSysApp
         {
             return await _serverClient.GetPresentationLinks(contentId);
         }
-        public async Task<bool> AddRegionToContent(string contentId, Region region)
-        {
-            if (contentId == null || region == null)
-            {
-                return false;
-            }
-            return await _serverClient.AddRegionToContent(contentId, region);
-        }
-        public async Task<bool> RemoveRegionFromContent(Region region)
-        {
-            if (region == null)
-            {
-                return false;
-            }
-            return await _serverClient.RemoveRegionFromContent(region);
-        }
+
+
 
         public async Task UpdateRegion(Region region)
         {
-            if (region == null || _regionUpdateDebounceList.Contains(region.Id))
+            if (region == null || _regionUpdateDebounceList.Contains(region.LibraryElementId))
             {
                 return;
             }
-            _regionUpdateDebounceList.Add(region.Id);
+            _regionUpdateDebounceList.Add(region.LibraryElementId);
             await Task.Delay(300);
-            _regionUpdateDebounceList.Remove(region.Id);
+            _regionUpdateDebounceList.Remove(region.LibraryElementId);
             await _serverClient.UpdateRegion(region);
         }
     }

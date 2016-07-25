@@ -168,10 +168,10 @@ namespace NuSysApp
         private void xImg_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             var vm = DataContext as PdfDetailHomeTabViewModel;
-            foreach (var regionView in vm.RegionViews)
+          /*  foreach (var regionView in vm.RegionViews)
             {
                 regionView.Deselect();
-            }
+            }*/
         }
 
     }

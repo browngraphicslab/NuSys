@@ -27,7 +27,7 @@ namespace NuSysApp
         }
 
         public bool Editable { set; get; }
-        public DetailHomeTabViewModel(LibraryElementController controller, HashSet<Region> regionsToLoad)
+        public DetailHomeTabViewModel(LibraryElementController controller)
         {
 
             _libraryElementController = controller;

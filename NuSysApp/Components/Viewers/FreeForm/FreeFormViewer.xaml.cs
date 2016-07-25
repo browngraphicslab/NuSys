@@ -62,7 +62,7 @@ namespace NuSysApp
                 _inqCanvas.AdornmentAdded += AdormnentAdded;
                 _inqCanvas.AdornmentRemoved += AdornmentRemoved;
 
-                var collectionModel = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(vm.Controller.LibraryElementModel.LibraryElementId);
+                var collectionModel = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetLibraryElementModel(vm.Controller.LibraryElementModel.LibraryElementId);
 
               
 

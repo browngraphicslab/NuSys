@@ -52,7 +52,7 @@ namespace NuSysApp
         public TemporaryToolView(BaseToolView baseTool)
         {
             PropertiesToDisplayUnique = new ObservableCollection<string>();
-            this.InitializeComponent();
+           // this.InitializeComponent();
             _dragItem = baseTool.Vm.InitializeDragFilterImage();
             //xPropertiesList.Height = baseTool.Vm.Height - 175;
             _baseTool = baseTool;

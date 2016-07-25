@@ -19,7 +19,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
-    public sealed partial class AudioRegionView
+    public sealed partial class AudioRegionView : UserControl
     {
         private bool _toggleManipulation;
         public delegate void RegionSelectedEventHandler(object sender, bool selected);
@@ -31,12 +31,14 @@ namespace NuSysApp
 
         private bool _isSingleTap;
 
-        public AudioRegionView(AudioRegionViewModel vm)
+        public AudioRegionView(AudioRegionViewModel vm,ClippedGridWrapper grid)
         {
             this.InitializeComponent();
             this.DataContext = vm;
             this.Deselect();
             _toggleManipulation = false;
+
+            grid.XClippedGrid.Children.Add(this);
 
 
         }
@@ -124,7 +126,7 @@ namespace NuSysApp
 
             var vm = DataContext as RegionViewModel;
             SessionController.Instance.SessionView.ShowDetailView(vm?.LibraryElementController);
-            var regionController = vm?.RegionController;
+            var regionController = vm?.LibraryElementController;
             SessionController.Instance.SessionView.ShowDetailView(regionController);
         }
 
@@ -142,7 +144,7 @@ namespace NuSysApp
         {
             var vm = DataContext as AudioRegionViewModel;
             vm.Name = (sender as TextBox).Text;
-            vm.RegionController.SetTitle(vm.Name);
+            vm.LibraryElementController.SetTitle(vm.Name);
         }
 
         private void xDelete_PointerPressed(object sender, PointerRoutedEventArgs e)
@@ -156,7 +158,7 @@ namespace NuSysApp
             }
 
             var libraryElementController = vm.LibraryElementController;
-            libraryElementController.RemoveRegion(vm.RegionController.Model);
+            libraryElementController.RemoveRegion(vm.LibraryElementController.LibraryElementModel as Region);
 
 
         }
@@ -171,7 +173,7 @@ namespace NuSysApp
 
             if (!Selected)
             {
-                OnRegionSeek?.Invoke(((DataContext as AudioRegionViewModel).RegionController.Model as TimeRegionModel).Start + 0.01);
+                OnRegionSeek?.Invoke(((DataContext as AudioRegionViewModel).LibraryElementController.LibraryElementModel as TimeRegionModel).Start + 0.01);
             }
 
             e.Handled = true;

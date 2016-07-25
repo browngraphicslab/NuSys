@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,20 +13,44 @@ namespace NuSysApp
         public event RegionTimeChangedEventHandler TimeChanged;
         public delegate void RegionTimeChangedEventHandler(object sender, double start, double end);
 
-        public TimeRegionModel Model
+        public TimeRegionModel AudioRegionModel
         {
-            get { return base.Model  as TimeRegionModel;}
+            get
+            {
+                Debug.Assert(LibraryElementModel is TimeRegionModel);
+                return LibraryElementModel as TimeRegionModel;
+            }
         }
         public AudioRegionController(TimeRegionModel model) : base(model)
         {
 
         }
-        public void ChangeEndPoints(double start, double end)
+        public void SetStartTime(double startTime)
         {
-            Model.Start = start;
-            Model.End = end;
-            TimeChanged?.Invoke(this, start, end);
-            UpdateServer();
+            AudioRegionModel.Start = startTime;
+            TimeChanged?.Invoke(this, AudioRegionModel.Start, AudioRegionModel.End);
+            _debouncingDictionary.Add("start", startTime);
+        }
+        public void SetEndTime(double endTime)
+        {
+            AudioRegionModel.End = endTime;
+            TimeChanged?.Invoke(this, AudioRegionModel.Start, AudioRegionModel.End);
+            _debouncingDictionary.Add("end", endTime);
+        }
+
+        public override void UnPack(Message message)
+        {
+            SetBlockServerInteraction(true);
+            if (message.ContainsKey("start"))
+            {
+                SetStartTime(message.GetDouble("start"));
+            }
+            if (message.ContainsKey("end"))
+            {
+                SetEndTime(message.GetDouble("end"));
+            }
+            base.UnPack(message);
+            SetBlockServerInteraction(false);
         }
     }
 }

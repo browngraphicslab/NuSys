@@ -99,7 +99,7 @@ namespace NuSysApp
                 {
                     continue;
                 }
-                var linkables = GetInstancesOfContent(libraryElementController.ContentId);
+                var linkables = GetInstancesOfContent(libraryElementController.LibraryId);
                 foreach (var link in linkables)
                 {
                     CreateBezierLinkBetween(linkable, link);
@@ -109,11 +109,11 @@ namespace NuSysApp
 
         public bool IsContentId(string id)
         {
-            return id != null && SessionController.Instance.ContentController.GetContent(id) != null;
+            return id != null && SessionController.Instance.ContentController.GetLibraryElementModel(id) != null;
         }
 
         /// <summary>
-        /// Add the link library element controller's library ContentId to the hashset for both endpoint ids' keys
+        /// Add the link library element controller's library LibraryId to the hashset for both endpoint ids' keys
         /// </summary>
         /// <param name="controller"></param>
         public void AddLinkLibraryElementController(LinkLibraryElementController controller)
@@ -222,8 +222,8 @@ namespace NuSysApp
             // don't create a link between two library element models, if there is already a link
             // element controller between them
             if(
-                SessionController.Instance.ContentController.GetContent(m.GetString("id1")) != null &&
-                SessionController.Instance.ContentController.GetContent(m.GetString("id2")) != null &&
+                SessionController.Instance.ContentController.GetLibraryElementModel(m.GetString("id1")) != null &&
+                SessionController.Instance.ContentController.GetLibraryElementModel(m.GetString("id2")) != null &&
                 GetLinkLibraryElementControllerBetweenContent(m.GetString("id1"), m.GetString("id2")) != null)
             {
                 return;
@@ -259,7 +259,7 @@ namespace NuSysApp
                 _contentIdToLinkContentIds[linkLibraryElementModel.OutAtomId].Remove(libraryElementId);
             }
 
-            DisposeContent(content.ContentId);
+            DisposeContent(content.LibraryId);
         }
 
         /// <summary>
@@ -427,7 +427,7 @@ namespace NuSysApp
             LinkLibraryElementController linkController)
         {
             Debug.Assert(libraryElementId != null);
-            Debug.Assert(SessionController.Instance.ContentController.GetContent(libraryElementId) != null);
+            Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementModel(libraryElementId) != null);
 
             var inId = linkController?.LinkLibraryElementModel?.InAtomId;
             var outId = linkController?.LinkLibraryElementModel?.OutAtomId;

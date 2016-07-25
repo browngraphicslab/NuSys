@@ -42,7 +42,7 @@ namespace NuSysApp
 
         private bool IncludeInFilter(string libraryId)
         {
-            var libraryElementModel = SessionController.Instance.ContentController.GetContent(libraryId);
+            var libraryElementModel = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId);
             if (libraryElementModel == null)
             {
                 return false;
