@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:NuSysApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     mc:Ignorable="d"  
     Background="Transparent"
     >
@@ -72,12 +72,13 @@
             <Button x:Name="SnapshotButton" Click="SnapshotButton_OnClick" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource CircleButton}" Background="{StaticResource color4}" Width="50" Height="50" Margin="10,10,0,0">
                 <Image Source="ms-appx:///Assets/snapshot_icon.png" Width="25" Height="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
             </Button>
+            <Button x:Name="ChatBoxButton" Click="ChatBoxButton_OnClick" Style="{StaticResource CircleButton}" Background="{StaticResource color4}" Width="50" Height="50" >
+                <Image Source="ms-appx:///Assets/icon_chat.png" Width="25" Height="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+            </Button>
+            <local:ChatBoxView x:Name ="xChatBox" Visibility="Collapsed"></local:ChatBoxView>
             <local:LibraryDragElement x:Name="LibraryDraggingNode" Visibility="Collapsed"></local:LibraryDragElement>
             <Image Name="DraggingGraphImage" Source="ms-appx:///Assets/icon_new_workspace.png" Width="0" Height="0"></Image>
             <local:ChatPopupView x:Name="ChatPopup" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="5,0,0,50"></local:ChatPopupView >
-
-
-
 
             <local:FloatingMenuView x:Name="xFloatingMenu" Canvas.Left="120" Canvas.Top="125"/>
 

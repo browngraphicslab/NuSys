@@ -15,15 +15,15 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    
+
     <Canvas x:Name="xWrapper" Background="Transparent"  HorizontalAlignment="Left" Visibility="Visible">
         <Canvas x:Name="xAddNodeMenu" Width="400">
             <Canvas.RenderTransform>
                 <TranslateTransform x:Name="addMenuTransform" X="-165" Y="-130"></TranslateTransform>
             </Canvas.RenderTransform>
-        <Image Source="ms-appx:///Assets/menububble2.png" Width="400">
+            <Image Source="ms-appx:///Assets/menububble2.png" Width="400">
 
-        </Image>
+            </Image>
 
             <StackPanel>
                 <StackPanel.RenderTransform>
@@ -36,8 +36,8 @@
                             <Canvas.RenderTransform>
                                 <ScaleTransform ScaleX="2" ScaleY="2"></ScaleTransform>
                             </Canvas.RenderTransform>-->
-                            <Image Source="/Assets/audio main menu.png" Height="30" Margin="0,5,0,0"></Image>
-                            <!--<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path4706" Fill="{StaticResource color3}" Data="M 13.341 3.579 C 12.994 3.106 12.51 2.552 11.979 2.021 11.448 1.49 10.894 1.006 10.421 0.659 9.615 0.068 9.224 0 9 0 L 1.25 0 C 0.561 0 0 0.561 0 1.25 l 0 13.5 C 0 15.439 0.561 16 1.25 16 l 11.5 0 C 13.439 16 14 15.439 14 14.75 L 14 5 C 14 4.776 13.932 4.385 13.341 3.579 l 0 0 0 0 z m -2.07 -0.85 c 0.48 0.48 0.856 0.912 1.134 1.271 l -2.406 0 0 -2.405 c 0.359 0.278 0.792 0.654 1.271 1.134 l 0 0 0 0 z M 13 14.75 C 13 14.886 12.886 15 12.75 15 L 1.25 15 C 1.115 15 1 14.886 1 14.75 L 1 1.25 C 1 1.115 1.115 1 1.25 1 1.25 1 8.999 1 9 1 L 9 4.5 C 9 4.776 9.224 5 9.5 5 l 3.5 0 0 9.75 z"/>
+                        <Image Source="/Assets/audio main menu.png" Height="30" Margin="0,5,0,0"></Image>
+                        <!--<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path4706" Fill="{StaticResource color3}" Data="M 13.341 3.579 C 12.994 3.106 12.51 2.552 11.979 2.021 11.448 1.49 10.894 1.006 10.421 0.659 9.615 0.068 9.224 0 9 0 L 1.25 0 C 0.561 0 0 0.561 0 1.25 l 0 13.5 C 0 15.439 0.561 16 1.25 16 l 11.5 0 C 13.439 16 14 15.439 14 14.75 L 14 5 C 14 4.776 13.932 4.385 13.341 3.579 l 0 0 0 0 z m -2.07 -0.85 c 0.48 0.48 0.856 0.912 1.134 1.271 l -2.406 0 0 -2.405 c 0.359 0.278 0.792 0.654 1.271 1.134 l 0 0 0 0 z M 13 14.75 C 13 14.886 12.886 15 12.75 15 L 1.25 15 C 1.115 15 1 14.886 1 14.75 L 1 1.25 C 1 1.115 1.115 1 1.25 1 1.25 1 8.999 1 9 1 L 9 4.5 C 9 4.776 9.224 5 9.5 5 l 3.5 0 0 9.75 z"/>
                             <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path4708" Fill="{StaticResource color3}" Data="M 3 8 8 8 8 13 3 13 3 8 Z"/>
                             <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path4710" Fill="{StaticResource color3}" Data="m 8 10 3 -2 0 5 -3 -2 z"/>-->
                         <!--</Canvas>-->
@@ -49,7 +49,7 @@
                                 <ScaleTransform ScaleX="2" ScaleY="2"></ScaleTransform>
                             </Canvas.RenderTransform>-->
                         <Image Source="/Assets/text node main menu.png" Height="30" Margin="0,5,0,0"></Image>
-                            <!--<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path4150" Fill="{StaticResource color3}" Data="M 13.341 3.579 C 12.994 3.106 12.51 2.552 11.979 2.021 11.448 1.49 10.894 1.006 10.421 0.659 9.615 0.068 9.224 0 9 0 L 1.25 0 C 0.561 0 0 0.561 0 1.25 l 0 13.5 C 0 15.439 0.561 16 1.25 16 l 11.5 0 C 13.439 16 14 15.439 14 14.75 L 14 5 C 14 4.776 13.932 4.385 13.341 3.579 Z m -2.07 -0.85 c 0.48 0.48 0.856 0.912 1.134 1.271 l -2.406 0 0 -2.405 c 0.359 0.278 0.792 0.654 1.271 1.134 z M 13 14.75 C 13 14.886 12.886 15 12.75 15 L 1.25 15 C 1.115 15 1 14.886 1 14.75 L 1 1.25 C 1 1.115 1.115 1 1.25 1 1.25 1 8.999 1 9 1 L 9 4.5 C 9 4.776 9.224 5 9.5 5 l 3.5 0 0 9.75 z"/>
+                        <!--<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path4150" Fill="{StaticResource color3}" Data="M 13.341 3.579 C 12.994 3.106 12.51 2.552 11.979 2.021 11.448 1.49 10.894 1.006 10.421 0.659 9.615 0.068 9.224 0 9 0 L 1.25 0 C 0.561 0 0 0.561 0 1.25 l 0 13.5 C 0 15.439 0.561 16 1.25 16 l 11.5 0 C 13.439 16 14 15.439 14 14.75 L 14 5 C 14 4.776 13.932 4.385 13.341 3.579 Z m -2.07 -0.85 c 0.48 0.48 0.856 0.912 1.134 1.271 l -2.406 0 0 -2.405 c 0.359 0.278 0.792 0.654 1.271 1.134 z M 13 14.75 C 13 14.886 12.886 15 12.75 15 L 1.25 15 C 1.115 15 1 14.886 1 14.75 L 1 1.25 C 1 1.115 1.115 1 1.25 1 1.25 1 8.999 1 9 1 L 9 4.5 C 9 4.776 9.224 5 9.5 5 l 3.5 0 0 9.75 z"/>
                             <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path4152" Fill="{StaticResource color3}" Data="m 10.5 13 -7 0 C 3.224 13 3 12.776 3 12.5 3 12.224 3.224 12 3.5 12 l 7 0 c 0.276 0 0.5 0.224 0.5 0.5 0 0.276 -0.224 0.5 -0.5 0.5 z"/>
                             <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path4154" Fill="{StaticResource color3}" Data="m 10.5 11 -7 0 C 3.224 11 3 10.776 3 10.5 3 10.224 3.224 10 3.5 10 l 7 0 c 0.276 0 0.5 0.224 0.5 0.5 0 0.276 -0.224 0.5 -0.5 0.5 z"/>
                             <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path4156" Fill="{StaticResource color3}" Data="m 10.5 9 -7 0 C 3.224 9 3 8.776 3 8.5 3 8.224 3.224 8 3.5 8 l 7 0 C 10.776 8 11 8.224 11 8.5 11 8.776 10.776 9 10.5 9 Z"/>-->
@@ -62,7 +62,7 @@
                                 <ScaleTransform ScaleX="2" ScaleY="2"></ScaleTransform>
                             </Canvas.RenderTransform>-->
                         <Image Source="/Assets/collection main menu.png" Height="30" Margin="0,5,0,0"></Image>
-                            <!--<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path4138" Fill="{StaticResource color3}" Data="M 13.341 5.579 C 12.994 5.106 12.51 4.552 11.979 4.021 11.448 3.49 10.894 3.006 10.421 2.659 9.615 2.068 9.224 2 9 2 L 3.25 2 C 2.561 2 2 2.561 2 3.25 l 0 11.5 C 2 15.439 2.561 16 3.25 16 l 9.5 0 C 13.439 16 14 15.439 14 14.75 L 14 7 C 14 6.776 13.932 6.385 13.341 5.579 Z m -2.07 -0.85 c 0.48 0.48 0.856 0.912 1.134 1.271 l -2.406 0 0 -2.405 c 0.359 0.278 0.792 0.654 1.271 1.134 l 0 0 z M 13 14.75 C 13 14.886 12.886 15 12.75 15 l -9.5 0 C 3.114 15 3 14.886 3 14.75 L 3 3.25 C 3 3.115 3.114 3 3.25 3 3.25 3 8.999 3 9 3 L 9 6.5 C 9 6.776 9.224 7 9.5 7 l 3.5 0 0 7.75 z"/>
+                        <!--<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path4138" Fill="{StaticResource color3}" Data="M 13.341 5.579 C 12.994 5.106 12.51 4.552 11.979 4.021 11.448 3.49 10.894 3.006 10.421 2.659 9.615 2.068 9.224 2 9 2 L 3.25 2 C 2.561 2 2 2.561 2 3.25 l 0 11.5 C 2 15.439 2.561 16 3.25 16 l 9.5 0 C 13.439 16 14 15.439 14 14.75 L 14 7 C 14 6.776 13.932 6.385 13.341 5.579 Z m -2.07 -0.85 c 0.48 0.48 0.856 0.912 1.134 1.271 l -2.406 0 0 -2.405 c 0.359 0.278 0.792 0.654 1.271 1.134 l 0 0 z M 13 14.75 C 13 14.886 12.886 15 12.75 15 l -9.5 0 C 3.114 15 3 14.886 3 14.75 L 3 3.25 C 3 3.115 3.114 3 3.25 3 3.25 3 8.999 3 9 3 L 9 6.5 C 9 6.776 9.224 7 9.5 7 l 3.5 0 0 7.75 z"/>
                             <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path4140" Fill="{StaticResource color3}" Data="M 8.421 0.659 C 7.615 0.068 7.224 0 7 0 L 1.25 0 C 0.561 0 0 0.561 0 1.25 l 0 11.5 c 0 0.604 0.43 1.109 1 1.225 L 1 1.25 C 1 1.115 1.115 1 1.25 1 L 8.857 1 C 8.706 0.876 8.56 0.762 8.42 0.659 Z"/>-->
                         <!--</Canvas>-->
                     </Grid>
@@ -73,7 +73,7 @@
                                 <ScaleTransform ScaleX="2" ScaleY="2"></ScaleTransform>
                             </Canvas.RenderTransform>-->
 
-                            <Image Height="30" Margin="0,5,0,0"   Source="ms-appx:///Assets/tools icon.png" ></Image>                            
+                        <Image Height="30" Margin="0,5,0,0"   Source="ms-appx:///Assets/tools icon.png" ></Image>
                         <!--</Canvas>-->
                     </Grid>
                 </StackPanel>
@@ -82,7 +82,7 @@
                 </StackPanel>
             </StackPanel>
         </Canvas>
-
+        
         <StackPanel x:Name="FloatingMenuPanel" Orientation="Horizontal">
             <StackPanel.RenderTransform>
                 <CompositeTransform/>

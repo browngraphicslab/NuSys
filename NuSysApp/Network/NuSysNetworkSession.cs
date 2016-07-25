@@ -86,7 +86,7 @@ namespace NuSysApp
                 }
             });
         }
-    
+
 
         private void PresentationLinkAdded(object sender, string id1, string id2)
         {
@@ -105,9 +105,9 @@ namespace NuSysApp
                     if (PresentationLinkViewModel.Models.FirstOrDefault(item => item.InElementId == id1 && item.OutElementId == id2) != null ||
                         PresentationLinkViewModel.Models.FirstOrDefault(item => item.OutElementId == id1 && item.InElementId == id2) != null)
                     {
-                    return;
+                        return;
                     }
-                    
+
                     // create a new presentation link
                     PresentationLinkViewModel.Models.Add(presentationlink);
                     new PresentationLinkView(vm);
@@ -127,29 +127,28 @@ namespace NuSysApp
         {
             await Task.Run(async delegate {
                 //if CheckOutgoingRequest created a valid thing
-                if (await request.CheckOutgoingRequest())
+                await request.CheckOutgoingRequest();
+                Message message = request.GetFinalMessage();
+
+                if (request.WaitForRequestReturn())
                 {
-                    Message message = request.GetFinalMessage();
+                    ManualResetEvent mre = new ManualResetEvent(false);
+                    string requestID = SessionController.Instance.GenerateId();
+                    _requestEventDictionary[requestID] = mre;
 
-                    if (request.WaitForRequestReturn())
+                    message["system_local_request_id"] = requestID;
+
+                    await _serverClient.SendMessageToServer(message);
+                    if (_requestEventDictionary.ContainsKey(requestID))
                     {
-                        ManualResetEvent mre = new ManualResetEvent(false);
-                        string requestID = SessionController.Instance.GenerateId();
-                        _requestEventDictionary[requestID] = mre;
-
-                        message["system_local_request_id"] = requestID;
-
-                        await _serverClient.SendMessageToServer(message);
-                        if (_requestEventDictionary.ContainsKey(requestID))
-                        {
-                            mre.WaitOne();
-                        }
-                    }
-                    else
-                    {
-                        await _serverClient.SendMessageToServer(message);
+                        mre.WaitOne();
                     }
                 }
+                else
+                {
+                    await _serverClient.SendMessageToServer(message);
+                }
+
             });
         }
 
@@ -282,9 +281,6 @@ namespace NuSysApp
                 case Request.RequestType.SetTagsRequest:
                     request = new SetTagsRequest(message);
                     break;
-                case Request.RequestType.ChatDialogRequest:
-                    request = new ChatDialogRequest(message);
-                    break;
                 case Request.RequestType.CreateNewLibrayElementRequest:
                     request = new CreateNewLibraryElementRequest(message);
                     break;
@@ -296,6 +292,9 @@ namespace NuSysApp
                     break;
                 case Request.RequestType.RemoveInkRequest:
                     request = new RemoveInkRequest(message);
+                    break;
+                case Request.RequestType.ChatRequest:
+                    request = new ChatRequest(message);
                     break;
                 default:
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
