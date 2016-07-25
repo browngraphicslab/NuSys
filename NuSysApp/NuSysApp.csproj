@@ -327,6 +327,13 @@
     </Compile>
     <Compile Include="Components\Regions\PDFRegionViewModel.cs" />
     <Compile Include="Components\Regions\RegionViewModel.cs" />
+    <Compile Include="Components\Tools\BarChartItem.xaml.cs">
+      <DependentUpon>BarChartItem.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Tools\BarChartItemViewModel.cs" />
+    <Compile Include="Components\Tools\BarChartToolView.xaml.cs">
+      <DependentUpon>BarChartToolView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Tools\BaseToolView.xaml.cs">
       <DependentUpon>BaseToolView.xaml</DependentUpon>
     </Compile>
@@ -735,7 +742,7 @@
     <Compile Include="Util\AudioCapture.cs" />
     <Compile Include="Util\Clip.cs" />
     <Compile Include="Util\Command.cs" />
-    <Compile Include="Constants.cs" />
+    <Compile Include="Util\Constants.cs" />
     <Compile Include="Components\Cortana\Cortana.cs" />
     <Compile Include="Components\Cortana\CortanaContinuousRecognition.cs" />
     <Compile Include="Components\Cortana\CortanaPopup.xaml.cs">
@@ -927,6 +934,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Regions\PDFRegionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Tools\BarChartItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Tools\BarChartToolView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

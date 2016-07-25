@@ -1,4 +1,5 @@
 ﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -101,15 +102,7 @@ namespace NuSysApp
         /// </summary>
         private async void PieSlice_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            if (_baseTool.getCanvas().Children.Contains(_dragItem))
-                _baseTool.getCanvas().Children.Remove(_dragItem);
-            _baseTool.getCanvas().Children.Add(_dragItem);
-            _dragItem.RenderTransform = new CompositeTransform();
-            var t = (CompositeTransform)_dragItem.RenderTransform;
-            var el = (FrameworkElement)sender;
-            var sp = el.TransformToVisual(_baseTool.getCanvas()).TransformPoint(e.Position);
-            t.TranslateX = sp.X - _dragItem.ActualWidth/2;
-            t.TranslateY = sp.Y - _dragItem.ActualWidth / 2;
+            _baseTool.Item_ManipulationStarted(sender);
         }
 
         /// <summary>
@@ -117,16 +110,7 @@ namespace NuSysApp
         /// </summary>
         private void PieSlice_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            if ((_dragItem.RenderTransform as CompositeTransform) != null)
-            {
-
-                var t = (CompositeTransform)_dragItem.RenderTransform;
-                var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
-
-                var p = e.Position;
-                t.TranslateX += e.Delta.Translation.X / zoom;
-                t.TranslateY += e.Delta.Translation.Y / zoom;
-            }
+            _baseTool.Item_ManipulationDelta(sender as FrameworkElement, e);
         }
 
         /// <summary>
@@ -134,31 +118,8 @@ namespace NuSysApp
         /// </summary>
         private async void PieSlice_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            _baseTool.getCanvas().Children.Remove(_dragItem);
-
-            var wvm = SessionController.Instance.ActiveFreeFormViewer;
-            var el = (FrameworkElement)sender;
-            var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
-            var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(sp.X, sp.Y, 300, 300));
-
-            var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
-            if (hitsStart.Contains(this))
-            {
-                return;
-            }
-            var selected = (KeyValuePair<string, int>)(sender as FrameworkElement).DataContext;
-            if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
-            {
-                _baseTool.Vm.Selection.Add(selected.Key);
-                _baseTool.Vm.Selection = _baseTool.Vm.Selection;
-            }
-            else
-            {
-                _baseTool.Vm.Selection = new HashSet<string>() { selected.Key};
-            }
-            _baseTool.Vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
-
-
+            var selected = ((KeyValuePair<string, int>)(sender as FrameworkElement).DataContext).Key;
+            _baseTool.Item_ManipulationCompleted(sender, selected, e);
         }
 
         /// <summary>
@@ -166,7 +127,8 @@ namespace NuSysApp
         /// </summary>
         private void Slice_OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            e.Handled = true;
+            _baseTool.Item_PointerPressed(e);
+            //e.Handled = true;
         }
 
         /// <summary>
@@ -174,40 +136,8 @@ namespace NuSysApp
         /// </summary>
         private void Slice_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            var selected = (KeyValuePair<string, int>)(sender as FrameworkElement).DataContext;
-            if (_baseTool.Vm.Selection != null && _baseTool.Vm.Controller.Model.Selected && _baseTool.Vm.Selection.Contains(selected.Key))
-            {
-                if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
-                {
-                    _baseTool.Vm.Selection.Remove(selected.Key);
-                    _baseTool.Vm.Selection = _baseTool.Vm.Selection;
-                }
-                else
-                {
-                    _baseTool.Vm.Selection.Clear();
-                    _baseTool.Vm.Controller.UnSelect();
-
-                }
-            }
-            else
-            {
-                if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
-                {
-                    if (_baseTool.Vm.Selection != null)
-                    {
-                        _baseTool.Vm.Selection.Add(selected.Key);
-                        _baseTool.Vm.Selection = _baseTool.Vm.Selection;
-                    }
-                    else
-                    {
-                        _baseTool.Vm.Selection = new HashSet<string> { selected.Key };
-                    }
-                }
-                else
-                {
-                    _baseTool.Vm.Selection = new HashSet<string> { selected.Key };
-                }
-            }
+            var selected = ((KeyValuePair<string, int>)(sender as FrameworkElement).DataContext).Key;
+            _baseTool.Item_OnTapped(selected, e.PointerDeviceType);
         }
 
         /// <summary>
@@ -215,16 +145,16 @@ namespace NuSysApp
         /// </summary>
         private void Slice_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            var selected = (KeyValuePair<string, int>)(sender as FrameworkElement).DataContext;
-            if (!_baseTool.Vm.Selection.Contains(selected.Key) &&  _baseTool.Vm.Selection.Count == 0 || _baseTool.Vm.Controller.Model.Selected == false)
-            {
-                _baseTool.Vm.Selection = new HashSet<string>() { selected.Key};
-            }
-            if (_baseTool.Vm.Selection.Count == 1 &&
-                _baseTool.Vm.Selection.First().Equals(selected.Key))
-            {
-                _baseTool.Vm.OpenDetailView();
-            }
+            var selected = ((KeyValuePair<string, int>)(sender as FrameworkElement).DataContext).Key;
+            _baseTool.Item_OnDoubleTapped(selected);
+        }
+
+        /// <summary>
+        /// When the list loads, set the visual selection based on the tool models logical selection
+        /// </summary>
+        private void XPieChart_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            SetVisualSelection(_baseTool.Vm.Selection);
         }
     }
 }

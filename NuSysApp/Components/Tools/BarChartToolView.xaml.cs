@@ -22,6 +22,7 @@ using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Components.Tools;
 using NuSysApp.Tools;
+using WinRTXamlToolkit.Controls.Extensions;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -39,7 +40,6 @@ namespace NuSysApp
 
         // the data context for the list view
         public ObservableCollection<BarChartItemViewModel> BarChartLegendItems;
-       
         // dragging variables
         private double _x;
         private double _y;
@@ -47,30 +47,96 @@ namespace NuSysApp
         private enum DragMode { Filter, Scroll };
         private BarChartToolView.DragMode _currentDragMode = BarChartToolView.DragMode.Filter;
 
-        // inking variables
-        private InkPresenter _inkPresenter;
-
         public BarChartToolView(BaseToolView baseTool)
         {
             this.InitializeComponent();
             _baseTool = baseTool;
             _barChartItemDictionary = new Dictionary<string, BarChartItem>();
             BarChartLegendItems = new ObservableCollection<BarChartItemViewModel>();
-
-
-
             _dragItem = baseTool.Vm.InitializeDragFilterImage();
+            xInkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen;
+            xInkCanvas.InkPresenter.InputProcessingConfiguration.RightDragAction = InkInputRightDragAction.LeaveUnprocessed;
+            xInkCanvas.InkPresenter.StrokesCollected += InkPresenter_StrokesCollected;
+        }
 
-            // Set initial ink stroke attributes.
-            _inkPresenter = xInkCanvas.InkPresenter;
-            InkDrawingAttributes drawingAttributes = new InkDrawingAttributes();
-            drawingAttributes.Color = Windows.UI.Colors.Black;
-            drawingAttributes.IgnorePressure = false;
-            drawingAttributes.FitToCurve = true;
-            xInkCanvas.InkPresenter.UpdateDefaultDrawingAttributes(drawingAttributes);
+        /// <summary>
+        /// Given a list of ink points, returns the maximum and minimum x coordinates as a tuple where minx is item 1 and maxX is item 2
+        /// </summary>
+        /// <param name="inkPoints"></param>
+        /// <returns></returns>
+        private Tuple<double, double> GetMinMaxXValues(IEnumerable<InkPoint> inkPoints)
+        {
+            var minX = xBarChart.ActualWidth;
+            var maxX = 0.0;
+            foreach (InkPoint point in inkPoints)
+            {
+                if (point.Position.X < minX)
+                {
+                    minX = point.Position.X;
+                }
+                if (point.Position.X > maxX)
+                {
+                    maxX = point.Position.X;
+                }
+            }
+            return new Tuple<double, double>(minX, maxX);
+        } 
+
+        private void InkPresenter_StrokesCollected(InkPresenter sender, InkStrokesCollectedEventArgs args)
+        {
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            var el = xInkCanvas;
+            var listOfBarsHit = new List<BarChartItemViewModel>();
+            bool allSelected = true;
+            foreach (InkStroke stroke in args.Strokes)
+            {
+                var minMaxXTuple = GetMinMaxXValues(stroke.GetInkPoints());
+                var currentPointToCheck = new Point(minMaxXTuple.Item1, xBarChart.RowDefinitions[0].ActualHeight - 1);
+                var columnWidth = xBarChart.ColumnDefinitions[0].ActualWidth;
+                while (currentPointToCheck.X < minMaxXTuple.Item2 + (columnWidth-(minMaxXTuple.Item2 % columnWidth)))
+                {
+                    var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(currentPointToCheck);
+                    var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
+                    var y =
+                        hitsStart.Where(
+                            uiElem =>
+                                (uiElem is FrameworkElement) &&
+                                (uiElem as FrameworkElement).DataContext is BarChartItemViewModel).ToList();
+                    if (y.Any())
+                    {
+                        var barVm = ((y.First() as FrameworkElement)?.DataContext as BarChartItemViewModel);
+                        listOfBarsHit.Add(barVm);
+                        var selectionString = barVm?.Title;
+
+                        //If any of the bars hit was unselected, just select the unselected bars. 
+                        //If all bars were already selected, then allSelected will remain true which will cause
+                        //all the bars that were hit to be deselected.
+                        if (!_baseTool.Vm.Selection.Contains(selectionString))
+                        {
+                            allSelected = false;
+                            _baseTool.Vm.Selection.Add(selectionString);
+                        }
+                    }
+                    currentPointToCheck = new Point(currentPointToCheck.X + columnWidth, currentPointToCheck.Y);
+                }
+            }
+            //deselect all the bars that were hit
+            if (allSelected == true)
+            {
+                foreach (var bar in listOfBarsHit)
+                {
+                    var selectionString = bar?.Title;
+                    _baseTool.Vm.Selection.Remove(selectionString);
+                }
+            }
+            //refresh the selection so the selection changed event fires
+            _baseTool.Vm.Selection = _baseTool.Vm.Selection;
+            //clear all the strokes in the ink container
+            xInkCanvas.InkPresenter.StrokeContainer.Clear();
 
         }
 
+        
 
         // pass in a list of all the properties to show in the graph
         public void SetProperties(List<string> propertiesList)
@@ -112,7 +178,6 @@ namespace NuSysApp
             int i = 0;
             foreach (var kvp in BarChartDictionary)
             {
-
                 // add all the columns to the barchart and find the height of the maximum column
                 var columnDefinition = new ColumnDefinition();
                 columnDefinition.Width = new GridLength(1, GridUnitType.Star);
@@ -122,16 +187,21 @@ namespace NuSysApp
                 // ad the barchart items to the bar chart
                 var vm = new BarChartItemViewModel(kvp, GetColor(kvp.Key));
                 var item = new BarChartItem(vm);
-                item.Tapped += xBarChartItem_OnTapped;
-                item.PointerPressed += xListItem_PointerPressed;
-                item.ManipulationMode = ManipulationModes.All;
-                item.ManipulationStarted += xListItem_ManipulationStarted;
-                item.ManipulationDelta += xListItem_ManipulationDelta;
-                item.ManipulationCompleted += xListItem_ManipulationCompleted;
+                SetUpBarChartItemHandlers(item);
                 Grid.SetColumn(item, i);
+                Grid.SetRow(item, 0);
                 xBarChart.Children.Add(item);
 
-                // tae care of mappings
+                //set up axis labels
+                var label = new TextBlock();
+                label.Text = kvp.Key;
+                Grid.SetColumn(label, i);
+                Grid.SetRow(label, 1);
+                label.TextWrapping = TextWrapping.WrapWholeWords;
+                label.TextAlignment = TextAlignment.Center;
+                xBarChart.Children.Add(label);
+
+                // take care of mappings
                 _barChartItemDictionary.Add(kvp.Key, item);
                 BarChartLegendItems.Add(vm);
                 i++;
@@ -142,6 +212,14 @@ namespace NuSysApp
 
             // set the height of the bars in the bar chart
             SetBarChartBarHeights();
+        }
+        public void SetUpBarChartItemHandlers(BarChartItem item)
+        {
+            item.Tapped += xBarChartItem_OnTapped;
+            item.PointerPressed += xListItem_PointerPressed;
+            item.ManipulationStarted += xListItem_ManipulationStarted;
+            item.ManipulationDelta += xListItem_ManipulationDelta;
+            item.ManipulationCompleted += xListItem_ManipulationCompleted;
         }
         
         /// <summary>
@@ -223,14 +301,15 @@ namespace NuSysApp
         /// </summary>
         private void SetBarChartBarHeights()
         {
-            int i = 0;
             foreach (var uiElement in xBarChart.Children)
             {
                 var item = uiElement as BarChartItem;
                 var itemDataContext = item?.DataContext as BarChartItemViewModel;
-                Debug.Assert(itemDataContext != null);
-                itemDataContext.Height = (itemDataContext.Count / _maxValue) * xBarChart.ActualHeight;
-                i++;
+                //Debug.Assert(itemDataContext != null);
+                if (itemDataContext != null)
+                {
+                    itemDataContext.Height = (itemDataContext.Count / _maxValue) * xBarChart.RowDefinitions[0].ActualHeight;
+                }
             }
         }
 
@@ -262,8 +341,8 @@ namespace NuSysApp
         ///Set up drag item
         /// </summary>
         private async void xListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
-        {
-            _baseTool.Item_ManipulationStarted();
+        { 
+            _baseTool.Item_ManipulationStarted(sender);
         }
 
         /// <summary>
