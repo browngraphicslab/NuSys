@@ -54,10 +54,12 @@ namespace NuSysApp
 
         private async Task Send()
         {
+            /*
             var text = TextBox.Text;
             var request = new ChatDialogRequest(text);
             TextBox.Text = "";
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            */
         }
 
         public ObservableCollection<DialogBlock> getTexts()

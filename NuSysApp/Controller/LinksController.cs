@@ -108,11 +108,7 @@ namespace NuSysApp
                 }
             }
         }
-
-        public bool IsContentId(string id)
-        {
-            return id != null && SessionController.Instance.ContentController.GetContent(id) != null;
-        }
+        
 
         /// <summary>
         /// Add the link library element controller's library ContentId to the hashset for both endpoint ids' keys

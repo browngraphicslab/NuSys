@@ -11,14 +11,14 @@ namespace NuSysApp
         public LibraryElementController Controller { get; }
 
         public LibraryElementModel Model { get; }
-        public GroupDetailHomeTabViewModel(LibraryElementController controller, HashSet<Region> regionsToLoad) : base(controller, regionsToLoad)
+        public GroupDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
             Controller = controller;
             Model = controller.LibraryElementModel;
             
         }
 
-        public override void AddRegion(object sender, RegionController controller)
+        public override void AddRegion(object sender, RegionLibraryElementController libraryElementController)
         {
             throw new NotImplementedException();
         }
@@ -38,7 +38,7 @@ namespace NuSysApp
             //throw new NotImplementedException();
         }
 
-        public override Region GetNewRegion()
+        public override Message GetNewRegionMessage()
         {
             throw new NotImplementedException();
         }

@@ -30,7 +30,7 @@ namespace NuSysApp
         {
             get
             {
-                var model = Model as TimeRegionModel;
+                var model = Model as AudioRegionModel;
                 return ContainerViewModel.GetWidth() * model.Start;
             } 
         }
@@ -41,7 +41,7 @@ namespace NuSysApp
         {
             get
             {
-                var model = Model as TimeRegionModel;
+                var model = Model as AudioRegionModel;
                 return ContainerViewModel.GetWidth() * model.End;
             } 
         }
@@ -81,7 +81,7 @@ namespace NuSysApp
 
         private bool _editable;
 
-        public AudioRegionViewModel(TimeRegionModel model, LibraryElementController controller, AudioRegionController regionController, Sizeable sizeable) : base(model,controller, regionController, sizeable)
+        public AudioRegionViewModel(AudioRegionModel model, AudioRegionLibraryElementController regionLibraryElementController, Sizeable sizeable) : base(model, regionLibraryElementController, sizeable)
         {
             ContainerSizeChanged += BaseSizeChanged;
             RegionWidth = (model.End-model.Start)*sizeable.GetWidth();
@@ -91,17 +91,16 @@ namespace NuSysApp
             LefthandleY2 = 110; //+ contentView.ActualHeight;
             RightHandleY1 = 10;
             RightHandleY2 = 110; //+ contentView.ActualHeight;
-            Name = Model.Name;
+            Name = Model.Title;
 
-            regionController.RegionUpdated += RegionController_RegionUpdated;
-            regionController.TimeChanged += RegionController_TimeChanged;
-            regionController.TitleChanged += RegionController_TitleChanged;
+            regionLibraryElementController.TimeChanged += RegionController_TimeChanged;
+            regionLibraryElementController.TitleChanged += RegionController_TitleChanged;
 
         }
 
         private void RegionController_TimeChanged(object sender, double start, double end)
         {
-            var model = Model as TimeRegionModel;
+            var model = Model as AudioRegionModel;
             model.Start = start;
             model.End = end;
             RegionWidth = (model.End - model.Start) * ContainerViewModel.GetWidth();
@@ -112,20 +111,6 @@ namespace NuSysApp
 
         }
 
-        private void RegionController_RegionUpdated(object source, Region region)
-        {
-            /*
-            var model = region as TimeRegionModel;
-            RegionWidth = (model.End - model.Start) * ContainerViewModel.GetWidth();
-            RegionHeight = ContainerViewModel.GetHeight();
-
-            RaisePropertyChanged("RegionWidth");
-            */
-
-        }
-            //RaisePropertyChanged("Height");
-            //RaisePropertyChanged("Width");        }
-
         private void RegionController_TitleChanged(object source, string title)
         {
             Name = title;
@@ -133,7 +118,7 @@ namespace NuSysApp
 
         private void BaseSizeChanged(object sender, double width, double height)
         {
-            var model = Model as TimeRegionModel;
+            var model = Model as AudioRegionModel;
             if (model == null)
             {
                 return;
@@ -147,8 +132,8 @@ namespace NuSysApp
 
         public void SetNewPoints(double Start, double End)
         {
-            var model = Model as TimeRegionModel;
-            var audioRegionController = RegionController as AudioRegionController;
+            var model = Model as AudioRegionModel;
+            var audioRegionController = RegionLibraryElementController as AudioRegionLibraryElementController;
             if (model == null)
             {
                 return;
@@ -156,7 +141,9 @@ namespace NuSysApp
             model.Start += Start / ContainerViewModel.GetWidth();
             model.End += End / ContainerViewModel.GetWidth();
             RegionWidth = (model.End - model.Start)*ContainerViewModel.GetWidth();
-            audioRegionController.ChangeEndPoints(model.Start, model.End);
+
+            audioRegionController.SetEndTime(model.End);
+            audioRegionController.SetStartTime(model.Start);
 
             RaisePropertyChanged("LeftHandleX");
             RaisePropertyChanged("RightHandleX");
@@ -173,13 +160,13 @@ namespace NuSysApp
         //private double _detailx1;
         //private double _detailx2;
 
-        //public TimeRegionModel Model { get; set; }
+        //public AudioRegionModel Model { get; set; }
 
         //public double Detailx2 { get { return _detailx2; } set { _detailx2 = value; RaisePropertyChanged("Detailx2"); } }
 
         //public double Detailx1 { get { return _detailx1; } set { _detailx1 = value; RaisePropertyChanged("Detailx1"); } }
 
-        //public AudioRegionViewModel(TimeRegionModel model, ProgressBar scrubBar)
+        //public AudioRegionViewModel(AudioRegionModel model, ProgressBar scrubBar)
         //{
             
         //    _scrubBar = scrubBar;

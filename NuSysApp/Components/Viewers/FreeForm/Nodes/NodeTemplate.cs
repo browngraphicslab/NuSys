@@ -324,7 +324,7 @@ namespace NuSysApp
                                     var region = element as FrameworkElement;
                                     var regiondc = region.DataContext as RegionViewModel;
                                     var m = new Message();
-                                    m["id2"] = regiondc.RegionController.Model.Id;
+                                    m["id2"] = regiondc.RegionLibraryElementController.LibraryElementModel.LibraryElementId;
                                     m["id1"] = vm.Controller.LibraryElementController.ContentId;
                                     await SessionController.Instance.LinksController.RequestLink(m);
                                     UITask.Run(delegate { vm.Controller.UpdateCircleLinks(); });
@@ -481,15 +481,7 @@ namespace NuSysApp
             var resizeY = vm.Model.Height + e.Delta.Translation.Y / zoom;
             if (resizeY > 0 && resizeX > 0)
             {
-                var ratio = vm.GetRatio();
-                if(ratio == 1.01010101)
-                {
-                    vm.Controller.SetSize(resizeX, resizeY);
-                }
-                else
-                {
-                    vm.Controller.SetSize(resizeX, resizeX * ratio);
-                }
+                vm.Controller.SetSize(resizeX, resizeY);
             }
             //   inkCanvas.Width = vm.Width;
             //   inkCanvas.Height = vm.Height;

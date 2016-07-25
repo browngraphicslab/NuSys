@@ -31,6 +31,7 @@ namespace NuSysApp
                 case ElementType.Tag:
                     view = new LabelNodeView(new LabelNodeViewModel((ElementController)controller));
                     break;
+                case ElementType.ImageRegion:
                 case ElementType.Image:
                     view = new ImageNodeView(new ImageElementViewModel(controller));
                     break;

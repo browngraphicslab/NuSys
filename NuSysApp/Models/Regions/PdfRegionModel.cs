@@ -7,14 +7,12 @@ using Windows.Foundation;
 
 namespace NuSysApp
 {
-    public class PdfRegion : RectangleRegion 
+    public class PdfRegionModel : RectangleRegion 
     {
 
         public int PageLocation { get; set; }
-        public PdfRegion(Point p1, Point p2, int pageLocation, string name = "Untitled Region") : base(p1,p2,name)
+        public PdfRegionModel(string libraryId) : base(libraryId, ElementType.PdfRegion)
         {
-            PageLocation = pageLocation;
-            Type = RegionType.Pdf;
         }
     }
 }

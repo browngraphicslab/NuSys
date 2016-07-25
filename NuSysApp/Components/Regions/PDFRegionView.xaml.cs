@@ -36,7 +36,7 @@ namespace NuSysApp
             this.InitializeComponent();
             this.DataContext = regionVM;
             this.Deselect();
-            var model = regionVM.Model as PdfRegion;
+            var model = regionVM.Model as PdfRegionModel;
             if (model == null)
             {
                 return;
@@ -292,7 +292,7 @@ namespace NuSysApp
         private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var vm = DataContext as RegionViewModel;
-            var regionController = vm?.RegionController;
+            var regionController = vm?.RegionLibraryElementController;
             SessionController.Instance.SessionView.ShowDetailView(regionController);
         }
 
@@ -307,10 +307,8 @@ namespace NuSysApp
                 return;
             }
 
-            var libraryElementController = vm.LibraryElementController;
-            libraryElementController.RemoveRegion(vm.RegionController.Model);
-
-
+            var libraryElementController = vm.RegionLibraryElementController;
+            //TODO add in delte region request aka delete library element request
         }
 
         private void xNameTextBox_TextChanged(object sender, TextChangedEventArgs e)

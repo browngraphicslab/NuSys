@@ -17,19 +17,18 @@ namespace NuSysApp
         public ObservableCollection<AudioRegionView> RegionViews { set; get; }
         public delegate void OnRegionSeekPassingHandler(double time);
         public event OnRegionSeekPassingHandler OnRegionSeekPassing;
-        public AudioDetailHomeTabViewModel(LibraryElementController controller, HashSet<Region> regionsToLoad) : base(controller, regionsToLoad)
+        public AudioDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
             Controller = controller;
             Regions = new ObservableCollection<Region>();
             RegionViews = new ObservableCollection<AudioRegionView>();
-            _regionsToLoad = regionsToLoad;
             
         }
         public void RegionAdded(Region newRegion, AudioDetailHomeTabView contentview)
         {
             //var rectangle = JsonConvert.DeserializeObject<Region>(newRegion.ToString());
            // Regions.Add(newRegion);
-            //RegionViews.Add(new AudioRegionView(new AudioRegionViewModel(newRegion as TimeRegionModel, contentview)));
+            //RegionViews.Add(new AudioRegionView(new AudioRegionViewModel(newRegion as AudioRegionModel, contentview)));
             //RaisePropertyChanged("RegionViews");
         }
         
@@ -38,8 +37,8 @@ namespace NuSysApp
             double position = e.NewValue / Duration;
             foreach (var regionview in RegionViews)
             {
-                if (((regionview.DataContext as AudioRegionViewModel).Model as TimeRegionModel).Start <= position &&
-                    ((regionview.DataContext as AudioRegionViewModel).Model as TimeRegionModel).End >= position)
+                if (((regionview.DataContext as AudioRegionViewModel).Model as AudioRegionModel).Start <= position &&
+                    ((regionview.DataContext as AudioRegionViewModel).Model as AudioRegionModel).End >= position)
                 {
                     //regionview.Visibility = Visibility.Visible;
                     regionview.Select();
@@ -54,14 +53,14 @@ namespace NuSysApp
         
 
 
-        public override void AddRegion(object sender, RegionController controller)
+        public override void AddRegion(object sender, RegionLibraryElementController libraryElementController)
         {
-            var audioRegion = controller.Model as TimeRegionModel;
+            var audioRegion = libraryElementController.LibraryElementModel as AudioRegionModel;
             if (audioRegion == null)
             {
                 return;
             }
-            var vm = new AudioRegionViewModel(audioRegion, Controller, controller as AudioRegionController, this);
+            var vm = new AudioRegionViewModel(audioRegion, libraryElementController as AudioRegionLibraryElementController, this);
             vm.Editable = this.Editable;
             var view = new AudioRegionView(vm);
             RegionViews.Add(view);
@@ -71,7 +70,7 @@ namespace NuSysApp
 
         public override void RemoveRegion(object sender, Region displayedRegion)
         {
-            var audioRegion = displayedRegion as TimeRegionModel;
+            var audioRegion = displayedRegion as AudioRegionModel;
             if (audioRegion == null)
             {
                 return;
@@ -79,7 +78,7 @@ namespace NuSysApp
 
             foreach (var regionView in RegionViews.ToList<AudioRegionView>())
             {
-                if ((regionView.DataContext as AudioRegionViewModel).Model.Id == audioRegion.Id)
+                if ((regionView.DataContext as AudioRegionViewModel)?.Model.LibraryElementId == audioRegion.LibraryElementId)
                     RegionViews.Remove(regionView);
             }
 
@@ -109,28 +108,16 @@ namespace NuSysApp
 
         public override void SetExistingRegions()
         {
-            if (_regionsToLoad == null)
-            {
-                return;
-            }
+
             RegionViews.Clear();
-            foreach (var regionModel in _regionsToLoad)
+            foreach (var regionId in SessionController.Instance.RegionsController.GetRegionLibraryElementIds(Controller.LibraryElementModel.LibraryElementId))
             {
-                var audioRegion = regionModel as TimeRegionModel;
-                if (audioRegion == null)
+                var audioRegionController = SessionController.Instance.ContentController.GetLibraryElementController(regionId) as AudioRegionLibraryElementController;
+                if (audioRegionController == null)
                 {
                     return;
                 }
-                AudioRegionController regionController;
-                if (SessionController.Instance.RegionsController.GetRegionController(audioRegion.Id) == null)
-                {
-                    //Debug.Fail("Did not load");
-                    regionController = SessionController.Instance.RegionsController.AddRegion(audioRegion, Controller.LibraryElementModel.LibraryElementId) as AudioRegionController;
-                    }
-                else {
-                    regionController = SessionController.Instance.RegionsController.GetRegionController(audioRegion.Id) as AudioRegionController;
-                }
-                var vm = new AudioRegionViewModel(audioRegion, Controller, regionController, this);
+                var vm = new AudioRegionViewModel(audioRegionController.AudioRegionModel, audioRegionController, this);
                 vm.Editable = this.Editable;
                 var view = new AudioRegionView(vm);
                 view.OnRegionSeek += OnRegionSeek;
@@ -145,10 +132,12 @@ namespace NuSysApp
             OnRegionSeekPassing?.Invoke(time);
         }
 
-        public override Region GetNewRegion()
+        public override Message GetNewRegionMessage()
         {
-            var region = new TimeRegionModel("Untitled Region", 0.25, 0.75);
-            return region;
+            var m = new Message();
+            m["start"] = .25;
+            m["end"] = .75;
+            return m;
         }
 
         public double GetViewWidth()

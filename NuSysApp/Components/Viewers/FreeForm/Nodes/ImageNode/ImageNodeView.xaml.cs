@@ -37,6 +37,7 @@ namespace NuSysApp
             _vm.View = this;
            
             InitializeComponent();
+            
             DataContext = vm;
             _drawingRegion = false;
             TempRegion = new Rectangle();
@@ -52,28 +53,14 @@ namespace NuSysApp
 
         private void ViewLoaded(object sender, RoutedEventArgs e)
         {
-            _vm.CreateRegionViews();
+            xClippingWrapper.Controller = _vm.LibraryElementController;
         }
 
         private void ImageNodeView_SizeChanged(object sender, SizeChangedEventArgs e)
         {
 
             var vm = DataContext as ImageElementViewModel;
-
-            if (vm == null)
-                return;
-            vm.SizeChanged(this, xImage.ActualWidth, xImage.ActualHeight);
-        }
-
-        public async Task onGoTo(Region region)
-        {
-            foreach (var reg in _vm.Regions)
-            {
-                if ((reg.DataContext as ImageRegionViewModel).Model.Id == region.Id)
-                {
-                    reg.Select();
-                }
-            }
+            vm?.SizeChanged(this, xImage.ActualWidth, xImage.ActualHeight);
         }
 
         private void ControllerOnDisposed(object source, object args)
@@ -120,7 +107,7 @@ namespace NuSysApp
             if (_drawingRegion)
             {
                 Debug.WriteLine("here");
-                Canvas.Children.Add(TempRegion);
+                //Canvas.Children.Add(TempRegion);
                 Canvas.SetLeft(TempRegion, e.GetCurrentPoint((UIElement) sender).Position.X);
                 Canvas.SetTop(TempRegion, e.GetCurrentPoint((UIElement)sender).Position.Y);
                 TempRegion.Opacity = 1;
@@ -149,7 +136,7 @@ namespace NuSysApp
                 attributes.Add("topRatio", topRatio);
 
                 // works?
-                Canvas.Children.Remove(TempRegion);
+                //Canvas.Children.Remove(TempRegion);
                 TempRegion.Height = 0;
                 TempRegion.Width = 0;
 
@@ -186,16 +173,6 @@ namespace NuSysApp
         public double GetHeight()
         {
             return xImage.ActualHeight;
-        }
-
-        public double GetViewWidth()
-        {
-            throw new NotImplementedException();
-        }
-
-        public double GetViewHeight()
-        {
-            throw new NotImplementedException();
         }
     }
 }

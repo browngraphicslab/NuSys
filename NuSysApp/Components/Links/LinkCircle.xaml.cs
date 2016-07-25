@@ -67,8 +67,7 @@ namespace NuSysApp
             //thumbnail is not pinned to begin with
             Pinned = false;
             var libraryElementController =
-                SessionController.Instance.ContentController.GetLibraryElementController(
-                    SessionController.Instance.RegionsController.GetContentIdOfRegionOrContent(contentId));
+                SessionController.Instance.ContentController.GetLibraryElementController(contentId);
             _linkLibraryElementController =
                 SessionController.Instance.ContentController.GetLibraryElementController(linkLibraryElementId);
             if (libraryElementController != null)
@@ -159,7 +158,7 @@ namespace NuSysApp
             }
 
             //If links to a region....
-            var regionController = SessionController.Instance.RegionsController.GetRegionController(LinkLibraryElementId);
+            var regionController = SessionController.Instance.ContentController.GetLibraryElementController(LinkLibraryElementId) as RegionLibraryElementController;
             if (regionController != null)
             {
                 regionController.Select();
@@ -169,7 +168,7 @@ namespace NuSysApp
         private void LinkButton_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             _doubleTap = true;
-            var regionController = SessionController.Instance.RegionsController.GetRegionController(ContentId) as IDetailViewable;
+            var regionController = SessionController.Instance.ContentController.GetLibraryElementController(ContentId) as IDetailViewable;
             var libraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(ContentId) as IDetailViewable;
             SessionController.Instance.SessionView.ShowDetailView(regionController ?? libraryElementController);
             e.Handled = true;

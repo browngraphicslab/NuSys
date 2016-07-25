@@ -19,7 +19,7 @@ namespace NuSysApp
         private LibraryElementModel _libraryElementModel;
         private bool _loading = false;
         private RegionControllerFactory _regionControllerFactory = new RegionControllerFactory();
-        private bool _blockServerInteraction = false;
+        protected bool _blockServerInteraction = false;
         public string Title {
             get
             {
@@ -33,8 +33,6 @@ namespace NuSysApp
         
         #region Events
         public delegate void ContentChangedEventHandler(object source, string contentData);
-        public delegate void RegionAddedEventHandler(object source, RegionController regionController);
-        public delegate void RegionRemovedEventHandler(object source, Region region);
         public delegate void MetadataChangedEventHandler(object source);
         public delegate void FavoritedEventHandler(object sender, bool favorited);
         public delegate void LoadedEventHandler(object sender);
@@ -42,8 +40,6 @@ namespace NuSysApp
         public delegate void NetworkUserChangedEventHandler(object source, NetworkUser user);
         public delegate void KeywordsChangedEventHandler(object sender, HashSet<Keyword> keywords);
         public event ContentChangedEventHandler ContentChanged;
-        public event RegionAddedEventHandler RegionAdded;
-        public event RegionRemovedEventHandler RegionRemoved;
         public event MetadataChangedEventHandler MetadataChanged;
         public event EventHandler Disposed;
         public event EventHandler<string> TitleChanged;
@@ -72,7 +68,7 @@ namespace NuSysApp
         public bool IsLoaded { get; private set; }
 
         /// <summary>
-        /// Constuctor just takes in the library element model it will be controller
+        /// Constuctor just takes in the library element model it will be libraryElementController
         /// </summary>
         /// 
         public LibraryElementController(LibraryElementModel libraryElementModel)
@@ -89,63 +85,26 @@ namespace NuSysApp
         /// </summary>
         public void SetContentData (string contentData)
         {
-            if (_blockServerInteraction)// we dont need to update server since the serve initiated this change
-            {
-                return;
-            }
             _libraryElementModel.Data = contentData;
             ContentChanged?.Invoke(this, contentData);
-            _debouncingDictionary.Add("data", contentData);
-        }
-
-        /// <summary>
-        /// This will ADD a region to the library element model and will update the server accordingly
-        /// It will then fire an even notfying all listeners of the new region added
-        /// </summary>
-        public void AddRegion(Region region)
-        {
-            if (_libraryElementModel.Regions == null)
+            if (!_blockServerInteraction)
             {
-                _libraryElementModel.Regions = new HashSet<Region>();
+                _debouncingDictionary.Add("data", contentData);
             }
-
-
-            _libraryElementModel.Regions.Add(region);
-
-            var regionController = SessionController.Instance.RegionsController.AddRegion(region, this.LibraryElementModel.LibraryElementId);
-            /*
-            var factory = new RegionControllerFactory();
-            var regionController = factory.CreateFromSendable(region, this.LibraryElementModel.LibraryElementId);
-            */
-            RegionAdded?.Invoke(this, regionController);
-            SessionController.Instance.NuSysNetworkSession.AddRegionToContent(LibraryElementModel.LibraryElementId, region);
         }
 
-        /// <summary>
-        /// This will REMOVE a region to the library element model and will update the server accordingly
-        /// It will then fire an even notfying all listeners of the old region that was deleted
-        /// The entire list of regions can be refetched from the library element model directly if needed
-        /// </summary>
-        public void RemoveRegion(Region region)
-        {
-            _libraryElementModel.Regions.Remove(region);
-            RegionRemoved?.Invoke(this, region);
-            SessionController.Instance.NuSysNetworkSession.RemoveRegionFromContent(region);
-        }
         /// <summary>
         /// This will change the library element model's title and update the server.  
         /// Then it will fire an event notifying all listeners of the change
         /// </summary>
         public void SetTitle(string title)
         {
-            if (_blockServerInteraction)
-            {
-                return;
-            }
             _libraryElementModel.Title = title;
             TitleChanged?.Invoke(this, title);
-            _debouncingDictionary.Add("title", title);
-            Title = title;
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("title", title);
+            }
         }
 
         /// <summary>
@@ -156,7 +115,10 @@ namespace NuSysApp
         {
             _libraryElementModel.Favorited = favorited;
             Favorited?.Invoke(this, favorited);
-            _debouncingDictionary.Add("favorited", favorited); 
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("favorited", favorited);
+            }
         }
 
         /// <summary>
@@ -165,13 +127,21 @@ namespace NuSysApp
         /// </summary>
         private void ChangeMetadata(Dictionary<string,MetadataEntry> metadata)
         {
-            if (_blockServerInteraction)
-            {
-                return;
-            }
+            
             LibraryElementModel.SetMetadata(metadata);
             MetadataChanged?.Invoke(this);
-            _debouncingDictionary.Add("metadata", LibraryElementModel.Metadata);
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("metadata", LibraryElementModel.Metadata);
+            }
+        }
+        /// <summary>
+        /// will prevent the controller from updating the server at all if true
+        /// </summary>
+        /// <param name="blockServerUpdates"></param>
+        protected void SetBlockServerBoolean(bool blockServerUpdates)
+        {
+            _blockServerInteraction = blockServerUpdates;
         }
 
         /// <summary>
@@ -269,8 +239,8 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// This will change make the content controller remove the library element model and this controller
-        /// then it will fire the deleted event and dispose of this controller
+        /// This will change make the content libraryElementController remove the library element model and this libraryElementController
+        /// then it will fire the deleted event and dispose of this libraryElementController
         /// </summary>
         public void Delete()
         {
@@ -288,7 +258,10 @@ namespace NuSysApp
         {
             _libraryElementModel.Keywords = keywords;
             KeywordsChanged?.Invoke(this, keywords);
-            _debouncingDictionary.Add("keywords", keywords);
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("keywords", keywords);
+            }
         }
 
         /// <summary>
@@ -299,7 +272,10 @@ namespace NuSysApp
         {
             _libraryElementModel.Keywords.Add(keyword);
             KeywordsChanged?.Invoke(this, _libraryElementModel.Keywords);
-            _debouncingDictionary.Add("keywords", _libraryElementModel.Keywords);
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("keywords", _libraryElementModel.Keywords);
+            }
         }
 
         /// <summary>
@@ -318,7 +294,10 @@ namespace NuSysApp
             }
             //_libraryElementModel.Keywords.Remove(keyword);
             KeywordsChanged?.Invoke(this, _libraryElementModel.Keywords);
-            _debouncingDictionary.Add("keywords", _libraryElementModel.Keywords);
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("keywords", _libraryElementModel.Keywords);
+            }
         }
 
         /// <summary>
@@ -331,10 +310,6 @@ namespace NuSysApp
             {
                 _libraryElementModel.Data = e.Data;
                 ContentChanged?.Invoke(this,e.Data);
-            }
-            if (e.RegionStrings != null)
-            {
-                _libraryElementModel.Regions = e.RegionStrings;
             }
             //_libraryElementModel.InkLinkes = e.InkStrings;
 
@@ -418,7 +393,7 @@ namespace NuSysApp
 
         public virtual void UnPack(Message message)
         {
-            _blockServerInteraction = true;
+            SetBlockServerBoolean(true);
             if (message.ContainsKey("metadata"))
             {
                 var metadata = message.GetDict<string, MetadataEntry>("metadata");
@@ -429,17 +404,43 @@ namespace NuSysApp
             }
             if (message.ContainsKey("data"))
             {
-                var data = message.GetString("data");
-                LibraryElementModel.Data = data;
-                ContentChanged?.Invoke(this, data);
+                SetContentData(message.GetString("data"));
             }
             if (message.ContainsKey("title"))
             {
-                LibraryElementModel.Title = message.GetString("title");
-                TitleChanged?.Invoke(this, message.GetString("title"));
+                SetTitle(message.GetString("title"));
             }
 
-            _blockServerInteraction = false;
+            if (message.ContainsKey("keywords"))
+            {
+                SetKeywords(message.GetHashSet<Keyword>("keywords"));
+            }
+            if (message.GetString("small_thumbnail_url") != null)
+            {
+                LibraryElementModel.SmallIconUrl = message.GetString("small_thumbnail_url");
+            }
+            if (message.GetString("medium_thumbnail_url") != null)
+            {
+                LibraryElementModel.MediumIconUrl = message.GetString("medium_thumbnail_url");
+            }
+            if (message.GetString("large_thumbnail_url") != null)
+            {
+                LibraryElementModel.LargeIconUrl = message.GetString("large_thumbnail_url");
+            }
+            if (message.GetString("creator_user_id") != null)
+            {
+                LibraryElementModel.Creator = message.GetString("creator_user_id");
+            }
+            if (message.GetString("library_element_creation_timestamp") != null)
+            {
+                LibraryElementModel.Timestamp = message.GetString("library_element_creation_timestamp");
+            }
+            if (message.GetString("server_url") != null)
+            {
+                LibraryElementModel.ServerUrl = message.GetString("server_url");
+            }
+            //TODO set regions maybe
+            SetBlockServerBoolean(false);
         }
 
         public Uri SmallIconUri
@@ -489,15 +490,19 @@ namespace NuSysApp
             string extension = "";
             switch (_libraryElementModel.Type)
             {
+                case ElementType.PdfRegion:
                 case ElementType.PDF:
                     extension = ".pdf";
                     break;
                 case ElementType.Video:
+                case ElementType.VideoRegion:
                     extension = ".mp4";
                     break;
+                case ElementType.AudioRegion:
                 case ElementType.Audio:
                     extension = ".mp3";
                     break;
+                case ElementType.ImageRegion:
                 case ElementType.Image:
                     extension = ".jpg";
                     break;
@@ -507,7 +512,8 @@ namespace NuSysApp
             {
                 url = _libraryElementModel.ServerUrl;
             }
-            return new Uri("http://" + WaitingRoomView.ServerName + "/" + url);
+            var uri = new Uri("http://" + WaitingRoomView.ServerName + "/" + url);
+            return uri;
         }
         public LibraryElementModel LibraryElementModel
         {
@@ -552,7 +558,7 @@ namespace NuSysApp
         {
             LinkAdded?.Invoke(this, linkController);
         }
-
+        
         //public void RemoveLink(LinkLibraryElementController linkController)
         //{
         //    LinkRemoved?.Invoke(this, linkController.ContentId);

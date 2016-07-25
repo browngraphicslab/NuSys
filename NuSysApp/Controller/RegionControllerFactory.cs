@@ -11,37 +11,38 @@ namespace NuSysApp
     // Factories are awesome 
     public class RegionControllerFactory
     {
-        public RegionController CreateFromSendable(Region regionModel, string contentId)
+        public RegionLibraryElementController CreateFromSendable(Region regionModel)
         {
-            RegionController controller = null;
+            RegionLibraryElementController libraryElementController = null;
 
             switch (regionModel.Type)
             {
-                case Region.RegionType.Rectangle:
+                case ElementType.ImageRegion:
                     var imageModel = regionModel as RectangleRegion;
-                    controller = new RectangleRegionController(imageModel);
+                    libraryElementController = new RectangleRegionLibraryElementController(imageModel);
                     break;
-                case Region.RegionType.Pdf:
-                    var pdfModel = regionModel as PdfRegion;
-                    controller = new PdfRegionController(pdfModel);
+                case ElementType.PdfRegion:
+                    var pdfModel = regionModel as PdfRegionModel;
+                    libraryElementController = new PdfRegionLibraryElementController(pdfModel);
                     break;
-                case Region.RegionType.Time:
-                    var audioModel = regionModel as TimeRegionModel;
-                    controller = new AudioRegionController(audioModel);
+                case ElementType.AudioRegion:
+                    var audioModel = regionModel as AudioRegionModel;
+                    libraryElementController = new AudioRegionLibraryElementController(audioModel);
                     break;
-                case Region.RegionType.Video:
+                case ElementType.VideoRegion:
                     Debug.Assert(regionModel is VideoRegionModel);
-                    controller = new VideoRegionController(regionModel as VideoRegionModel);
+                    libraryElementController = new VideoRegionLibraryElementController(regionModel as VideoRegionModel);
                     break;
                 
+                
             }
-            if (controller == null)
+            if (libraryElementController == null)
             {
                 return null;
             }
 
-            //SessionController.Instance.RegionsController.Add(controller, contentId);
-            return controller;
+            //SessionController.Instance.RegionsController.Add(libraryElementController, contentId);
+            return libraryElementController;
         }
     }
 }

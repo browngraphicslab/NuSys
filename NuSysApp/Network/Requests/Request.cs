@@ -23,7 +23,7 @@ namespace NuSysApp
             NewContentRequest,
             ChangeContentRequest,
             SetTagsRequest,
-            ChatDialogRequest,
+            ChatRequest,
             CreateNewLibrayElementRequest,
             SubscribeToCollectionRequest,
             UnsubscribeFromCollectionRequest,
@@ -173,10 +173,7 @@ namespace NuSysApp
             }
         }
 
-        public virtual async Task<bool> CheckOutgoingRequest()
-        {
-            return true;
-        }//for anything you want to check right before execution
+        public virtual async Task CheckOutgoingRequest(){}//for anything you want to check right before execution
 
         //the function to be executed per the request
         public virtual async Task ExecuteRequestFunction() { }

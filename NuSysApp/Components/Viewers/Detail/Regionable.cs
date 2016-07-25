@@ -11,14 +11,14 @@ namespace NuSysApp
     {
         public UserControl View;
 
-        public abstract void AddRegion(object sender, RegionController regionController);
+        public abstract void AddRegion(object sender, RegionLibraryElementController regionLibraryElementController);
 
         public abstract void RemoveRegion(object sender, T displayedRegion);
         public abstract void SizeChanged(object sender, double width, double height);
 
         public abstract void SetExistingRegions();
 
-        public abstract Region GetNewRegion();
+        public abstract Message GetNewRegionMessage();
 
     }
 }

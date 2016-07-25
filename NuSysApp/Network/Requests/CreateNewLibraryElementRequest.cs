@@ -33,7 +33,7 @@ namespace NuSysApp
             SetServerRequestType(ServerRequestType.Add);
         }
 
-        public override async Task<bool> CheckOutgoingRequest()
+        public override async Task CheckOutgoingRequest()
         {
             SetServerSettings();
             var time = DateTime.UtcNow.ToString();
@@ -47,7 +47,7 @@ namespace NuSysApp
 
             ElementType type = (ElementType) Enum.Parse(typeof(ElementType), (string) _message["type"], true);
 
-            LibraryElementModel libraryElement = LibraryElementModelFactory.CreateFromMessage(_message);
+            LibraryElementModel libraryElement = LibraryElementModelFactory.CreateFromMessage(new Message(_message.GetSerialized()));
             if (libraryElement != null)
             {
                 SessionController.Instance.ContentController.Add(libraryElement);
@@ -65,7 +65,6 @@ namespace NuSysApp
                 }
                 libraryElement.ServerUrl = url;
             }
-            return true;
         }
     }
 }
