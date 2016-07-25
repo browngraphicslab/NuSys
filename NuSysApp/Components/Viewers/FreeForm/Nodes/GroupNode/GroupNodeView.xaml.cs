@@ -205,6 +205,7 @@ namespace NuSysApp
             await fvm.CreateChildren();
             freeFormView = new AreaNodeView(fvm);
             ExpandedGrid.Children.Add(freeFormView);
+            
             freeFormView.Visibility = Visibility.Visible;
         }
 

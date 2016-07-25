@@ -69,7 +69,7 @@ namespace NuSysApp
             var newNodes = newItems;
             foreach (var n in newNodes)
             {
-                var userControl = (UserControl) n;
+                var userControl = (FrameworkElement) n;
                 if (userControl.DataContext is ElementViewModel) { 
                     userControl.ManipulationMode = ManipulationModes.All;
                     userControl.ManipulationDelta += OnManipulationDelta;
