@@ -22,6 +22,7 @@ namespace NuSysApp
                 case ElementType.Text:
                     view = new TextDetailHomeTabView(new TextDetailHomeTabViewModel(controller));
                     break;
+                case ElementType.ImageRegion:
                 case ElementType.Image:
                     view = new ImageDetailHomeTabView(new ImageDetailHomeTabViewModel(controller));
                     break;

@@ -119,9 +119,7 @@ namespace NuSysApp
                 return;
             }
 
-
             var denormalizedTopLeft = new Point(model.TopLeftPoint.X * ContainerViewModel.GetWidth(), model.TopLeftPoint.Y * ContainerViewModel.GetHeight());
-
             LocationChanged?.Invoke(this, denormalizedTopLeft);
 
         }
@@ -129,8 +127,6 @@ namespace NuSysApp
         
         private void RegionController_SizeChanged(object sender, double width, double height)
         {
-            
-
             var model = Model as RectangleRegion;
             if (model == null)
             {
@@ -198,8 +194,6 @@ namespace NuSysApp
             }
             var normalWidth = width / ContainerViewModel.GetWidth();
             var normalHeight = height / ContainerViewModel.GetHeight();
-
-            
 
             (RegionLibraryElementController as RectangleRegionLibraryElementController).SetHeight(normalHeight);
             (RegionLibraryElementController as RectangleRegionLibraryElementController).SetWidth(normalWidth);

@@ -81,7 +81,6 @@ namespace NuSysApp
 
         public override void SizeChanged(object sender, double width, double height)
         {
-           
             if (!Editable)
             {
                 Debug.WriteLine("The detail view size is: " + width);

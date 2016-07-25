@@ -10,7 +10,7 @@
 
     <Grid x:Name="xClippingGrid" SizeChanged="XClippingGrid_OnSizeChanged">
         
-        <ContentPresenter x:Name="xClippingContent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+        <ContentPresenter x:Name="xClippingContent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <ContentPresenter.RenderTransform>
                 <CompositeTransform x:Name="xClippingCompositeTransform"/>
             </ContentPresenter.RenderTransform>

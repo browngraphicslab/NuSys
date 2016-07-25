@@ -151,6 +151,11 @@ namespace NuSysApp
         // But its slick - sahil "slick" mishra
 
         // Your code is actually slick - Luke "literally crying" Murray
+        private void XClippingContent_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            Debug.Assert(Controller != null);
+            SessionController.Instance.SessionView.DetailViewerView.ShowElement(Controller);
+        }
     }
 
 
