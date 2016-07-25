@@ -89,8 +89,7 @@ namespace NuSysApp
                 SessionController.Instance.SessionView.ExploreSelectedObject(frameWorkElemToBeExplored.DataContext);
             }
 
-
-            var dc = ((FrameworkElement)e.OriginalSource).DataContext as ElementViewModel;
+            var dc = ((FrameworkElement)e.OriginalSource).DataContext as ISelectable;
             if (dc == null)
             {
                 return;

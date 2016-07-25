@@ -44,21 +44,17 @@ namespace NuSysApp
                 return;
             }
             var detailHomeTabViewModel = vm.RegionView.DataContext as DetailHomeTabViewModel;
-            Message m = new Message();
-            ElementType type = ElementType.None;
+            Region region = null;
             switch (vm.CurrentElementController.LibraryElementModel.Type)
             {
                 case ElementType.Image:
-                    m = detailHomeTabViewModel?.GetNewRegionMessage();
-                    type = ElementType.ImageRegion;
+                    region = detailHomeTabViewModel?.GetNewRegion();
                     break;
                 case ElementType.Audio:
-                    m = detailHomeTabViewModel?.GetNewRegionMessage();
-                    type = ElementType.AudioRegion;
+                    region = detailHomeTabViewModel?.GetNewRegion();
                     break;
                 case ElementType.Video:
-                    m = detailHomeTabViewModel?.GetNewRegionMessage();
-                    type = ElementType.VideoRegion;
+                    region = detailHomeTabViewModel?.GetNewRegion();
                     break;
                 case ElementType.Collection:
                     return;
@@ -69,24 +65,16 @@ namespace NuSysApp
 
                     break;
                 case ElementType.PDF:
-                    m = detailHomeTabViewModel?.GetNewRegionMessage();
-                    type = ElementType.VideoRegion;
+                    region = detailHomeTabViewModel?.GetNewRegion();
                     break;
                 case ElementType.Word:
                     return;
                 default:
-                    m = null;
+                    region = null;
                     break;
             }
 
-            Debug.Assert(m != null);
-            Debug.Assert(type != ElementType.None);
-            m["type"] = type.ToString();
-            m["contentId"] = vm.CurrentElementController.LibraryElementModel.ContentId;
-            m["clipping_parent_library_id"] = vm.CurrentElementController.LibraryId;
-            m["id"] = SessionController.Instance.GenerateId();
-            var request = new CreateNewLibraryElementRequest(m);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            vm.CurrentElementController.AddRegion(region);
         }
 
         private void KeyTextBox_OnPointerExited(object sender, PointerRoutedEventArgs e)

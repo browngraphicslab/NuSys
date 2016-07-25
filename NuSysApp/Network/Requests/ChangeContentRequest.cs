@@ -38,7 +38,7 @@ namespace NuSysApp
 
         public override async Task ExecuteRequestFunction()
         {
-            LibraryElementModel content = SessionController.Instance.ContentController.GetLibraryElementModel(_message.GetString("contentId"));
+            LibraryElementModel content = SessionController.Instance.ContentController.GetContent(_message.GetString("contentId"));
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId);
             controller.UnPack(_message);
             if (_message.ContainsKey("favorited"))

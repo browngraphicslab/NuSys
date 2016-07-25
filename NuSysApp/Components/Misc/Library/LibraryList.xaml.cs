@@ -117,6 +117,18 @@ namespace NuSysApp
             _x = e.GetCurrentPoint(view).Position.X-25;
             _y = e.GetCurrentPoint(view).Position.Y-25;
         }
+
+        /// <summary>
+        /// This is really just setting the instantation point for dragging and dropping list items
+        /// because they can be dragged and dropped from anywhere on the template
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void regionButton_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            LibraryListItem_OnPointerPressed(sender, e);
+        }
+
         private async void Sort_Button_Click(object sender, RoutedEventArgs e)
         {
             var btnStr = ((Button) sender).Content.ToString();
@@ -129,7 +141,7 @@ namespace NuSysApp
         private void LibraryListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
-            LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(itemTemplate.ContentID);
+            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(itemTemplate.ContentID);
 
 
             if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element.LibraryElementId) || (element.Type == ElementType.Link))
@@ -163,7 +175,7 @@ namespace NuSysApp
         private void LibraryListItem_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
-            LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(itemTemplate.ContentID);
+            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(itemTemplate.ContentID);
 
             
             // get the pointer point position, and upper left corner of the libary in relation to the sessionview
@@ -215,7 +227,7 @@ namespace NuSysApp
         private async void LibraryListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
-            LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(itemTemplate.ContentID);
+            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(itemTemplate.ContentID);
             if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
             {
                 e.Handled = true;
@@ -252,7 +264,7 @@ namespace NuSysApp
             var elementModel = ListView.SelectedItem as LibraryElementModel;
             var count = 0;
 
-/*            if (elementModel?.Regions == null)
+            if (elementModel?.Regions == null)
             {
                 regionsPanel?.RowDefinitions.Add(new RowDefinition());
                 var textBox = new TextBlock();
@@ -261,11 +273,9 @@ namespace NuSysApp
                 Grid.SetRow(textBox, 0);
                 regionsPanel.Visibility = Visibility.Visible;
                 return;
-            }*/
-
-            //TODO ACTUALLY MAKE THIS WORK
+            }
            
-            /*foreach (var regionModel in elementModel.Regions)
+            foreach (var regionModel in elementModel.Regions)
             {
                 regionsPanel?.RowDefinitions.Add(new RowDefinition());
                 var textBox = new TextBlock();
@@ -276,7 +286,7 @@ namespace NuSysApp
             }
 
             regionsPanel.Visibility = Visibility.Visible;
-            */
+            
         }
 
 
@@ -308,9 +318,9 @@ namespace NuSysApp
             {
                 return;
             }
-            var elementModel = SessionController.Instance.ContentController.GetLibraryElementModel(elementTemplate?.ContentID);
+            var elementModel = SessionController.Instance.ContentController.GetContent(elementTemplate?.ContentID);
 
-            /*if (elementModel?.Regions == null || elementModel?.Regions.Count == 0)
+            if (elementModel?.Regions == null || elementModel?.Regions.Count == 0)
             {
                 regionsPanel?.RowDefinitions.Add(new RowDefinition());
                 var textBox = new TextBlock();
@@ -344,34 +354,34 @@ namespace NuSysApp
                 var row = new RowDefinition();
                 row.Height = GridLength.Auto;
                 regionsPanel?.RowDefinitions.Add(row);
-                var textBox = new Button();
-                textBox.HorizontalAlignment = HorizontalAlignment.Right;
-                textBox.Background = new SolidColorBrush(Color.FromArgb(255, 199, 222, 222));
-                textBox.Foreground = new SolidColorBrush(Color.FromArgb(255, 17, 61, 64));
-                textBox.Margin = new Thickness(140,0,0,2);
-                textBox.MinWidth = 250;
-                textBox.Content = regionModel.Name;
+                var regionButton = new Button();
+                regionButton.HorizontalAlignment = HorizontalAlignment.Right;
+                regionButton.Background = new SolidColorBrush(Color.FromArgb(255, 199, 222, 222));
+                regionButton.Foreground = new SolidColorBrush(Color.FromArgb(255, 17, 61, 64));
+                regionButton.Margin = new Thickness(140,0,0,2);
+                regionButton.MinWidth = 250;
+                regionButton.Content = regionModel.Name;
                 regionController.TitleChanged += delegate
                 {
-                    textBox.Content = regionController.Model.Name;
+                    regionButton.Content = regionController.Model.Name;
                 };
-                textBox.FontSize = 13;
-                if (textBox.IsPointerOver)
+                regionButton.FontSize = 13;
+                if (regionButton.IsPointerOver)
                 {
-                    textBox.Background = new SolidColorBrush(Colors.White);
-                    textBox.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 199, 222, 222));
-                    textBox.BorderThickness = new Thickness(1);
+                    regionButton.Background = new SolidColorBrush(Colors.White);
+                    regionButton.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 199, 222, 222));
+                    regionButton.BorderThickness = new Thickness(1);
                 }
-                textBox.DoubleTapped += delegate
+                regionButton.DoubleTapped += delegate
                 {
-                    SessionController.Instance.SessionView.ShowDetailView(SessionController.Instance.ContentController.GetLibraryElementController(elementModel.LibraryElementId));
                     var controller = SessionController.Instance.RegionsController.GetRegionController(regionModel.Id);
                     SessionController.Instance.SessionView.ShowDetailView(controller);
                 };
-                regionsPanel?.Children.Add(textBox);
-                textBox.HorizontalAlignment = HorizontalAlignment.Left;
-                Grid.SetColumn(textBox, 1);
-                Grid.SetRow(textBox, count);
+                regionButton.AddHandler(PointerPressedEvent, new PointerEventHandler(regionButton_PointerPressed), true);
+                regionsPanel?.Children.Add(regionButton);
+                regionButton.HorizontalAlignment = HorizontalAlignment.Left;
+                Grid.SetColumn(regionButton, 1);
+                Grid.SetRow(regionButton, count);
                 count++;
             }
             regionsPanel.Width = listItem.ActualWidth;
@@ -380,7 +390,7 @@ namespace NuSysApp
             ListView.SelectionChanged += delegate
             {
                 regionsPanel.Visibility = Visibility.Collapsed;
-            };*/
+            };
         }
 
         private void HeaderPanel_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
@@ -391,7 +401,7 @@ namespace NuSysApp
             // get the item template from the sender
             var itemTemplate = (sender as Grid)?.DataContext as LibraryItemTemplate;
             // get the library element model using the content id
-            var element = SessionController.Instance.ContentController.GetLibraryElementModel(itemTemplate?.ContentID);
+            var element = SessionController.Instance.ContentController.GetContent(itemTemplate?.ContentID);
             // get the library element controller using the library element id
             var controller =
                 SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId);

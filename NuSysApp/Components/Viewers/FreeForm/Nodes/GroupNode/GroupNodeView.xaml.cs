@@ -33,6 +33,7 @@ namespace NuSysApp
         private GroupNodeExpandedView expandedView;
         private GroupNodeDataGridView dataGridView;
         private AreaNodeView freeFormView;
+        private Image _dragItem;
 
 
         private Storyboard _circleAnim;
@@ -69,8 +70,91 @@ namespace NuSysApp
             EnterButton.AddHandler(TappedEvent,
                 new TappedEventHandler(MenuDetailButton_Tapped), true);
 
+            SetUpToolsBtn();
+
         }
 
+        /// <summary>
+        /// Sets up the tool dragging button by adding handlers for manipulation gestures
+        /// </summary>
+        private void SetUpToolsBtn()
+        {
+            _dragItem = new Image();
+            xBtnTools.ManipulationMode = ManipulationModes.All;
+            xBtnTools.ManipulationStarting += BtnAddNodeOnManipulationStarting;
+            xBtnTools.ManipulationStarted += BtnAddNodeOnManipulationStarted;
+            xBtnTools.ManipulationDelta += BtnAddNodeOnManipulationDelta;
+            xBtnTools.ManipulationCompleted += BtnAddNodeOnManipulationCompleted;
+        }
+
+        /// <summary>
+        /// Handler for when the tool dragging has completed
+        /// </summary>
+        private async void BtnAddNodeOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs args)
+        {
+
+            if (_dragItem == null)
+                return;
+            GroupNodeCanvas.Children.Remove(_dragItem);
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            var el = this;
+            var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(args.Position);
+            var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(sp.X, sp.Y, 300, 300));
+            var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
+            if (hitsStart.Contains(this))
+            {
+                return;
+            }
+            (DataContext as GroupNodeViewModel).FilterIconDropped(hitsStart, wvm, r.X, r.Y);
+        }
+
+        /// <summary>
+        /// Handler for when the tool dragging is in progress
+        /// </summary>
+        private void BtnAddNodeOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs args)
+        {
+            if (_dragItem == null)
+                return;
+            var t = (CompositeTransform)_dragItem.RenderTransform;
+            var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
+            t.TranslateX += args.Delta.Translation.X / zoom;
+            t.TranslateY += args.Delta.Translation.Y / zoom;
+            args.Handled = true;
+        }
+
+        /// <summary>
+        /// Handler for when the tool dragging has started
+        /// </summary>
+        private void BtnAddNodeOnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs args)
+        {
+            if (_dragItem == null)
+                return;
+            _dragItem.Opacity = 0.5;
+            var t = (CompositeTransform)_dragItem.RenderTransform;
+            t.TranslateX += args.Position.X - _dragItem.ActualWidth / 2;
+            t.TranslateY += args.Position.Y - _dragItem.ActualHeight / 2;
+            args.Handled = true;
+        }
+
+        /// <summary>
+        /// Handler for when the tool dragging is starting
+        /// </summary>
+        private async void BtnAddNodeOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs args)
+        {
+            if (_dragItem != null && GroupNodeCanvas.Children.Contains(_dragItem))
+                GroupNodeCanvas.Children.Remove(_dragItem);
+            args.Container = GroupNodeCanvas;
+            var bmp = new RenderTargetBitmap();
+            await bmp.RenderAsync((UIElement)sender);
+            var img = new Image();
+            img.Opacity = 0;
+            var t = new CompositeTransform();
+            img.RenderTransform = new CompositeTransform();
+            img.Source = bmp;
+            _dragItem = img;
+            GroupNodeCanvas.Children.Add(_dragItem);
+            args.Handled = true;
+        }
         private void OnCollectionViewChanged(object source, CollectionElementModel.CollectionViewType type)
         {
             SwitchView(type);
@@ -211,7 +295,7 @@ namespace NuSysApp
             else if (tb.Name == "EnterButton")
             {
                 var id = vm.Controller.LibraryElementModel.LibraryElementId;
-                var content = SessionController.Instance.ContentController.GetLibraryElementModel(id);
+                var content = SessionController.Instance.ContentController.GetContent(id);
                 if (content != null && content.Type == ElementType.Collection)
                 {
                     List<Message> messages = new List<Message>();

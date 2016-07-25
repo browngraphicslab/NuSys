@@ -354,7 +354,7 @@ namespace NuSysApp
             {
                 if (elementType != ElementType.Collection)
                 {
-                    var element = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId);
+                    var element = SessionController.Instance.ContentController.GetContent(libraryId);
                     var dict = new Message();
                     Dictionary<string, object> metadata;
 

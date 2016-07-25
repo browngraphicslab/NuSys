@@ -16,7 +16,7 @@ namespace NuSysApp
         {
             get
             {
-                return LibraryElementModel as VideoRegionModel;
+                return base.Model as VideoRegionModel;
             }
         }
         public VideoRegionController(VideoRegionModel model) : base(model)
@@ -28,28 +28,26 @@ namespace NuSysApp
         {
             VideoRegionModel.Start = startTime;
             IntervalChanged?.Invoke(this, VideoRegionModel.Start, VideoRegionModel.End);
-            _debouncingDictionary.Add("start", startTime);
+            UpdateServer();
         }
         public void SetEndTime(double endTime)
         {
             VideoRegionModel.End = endTime;
             IntervalChanged?.Invoke(this, VideoRegionModel.Start, VideoRegionModel.End);
-            _debouncingDictionary.Add("end", endTime);
+            UpdateServer();
         }
 
-        public override void UnPack(Message message)
+        public override void UnPack(Region region)
         {
-            SetBlockServerInteraction(true);
-            if (message.ContainsKey("start"))
+            SetBlockServerBoolean(true);
+            var r = region as VideoRegionModel;
+            if (r != null)
             {
-                SetStartTime(message.GetDouble("start"));
+                SetStartTime(r.Start);
+                SetEndTime(r.End);
             }
-            if (message.ContainsKey("end"))
-            {
-                SetEndTime(message.GetDouble("end"));
-            }
-            base.UnPack(message);
-            SetBlockServerInteraction(false);
+            base.UnPack(region);
+            SetBlockServerBoolean(false);
         }
     }
 }

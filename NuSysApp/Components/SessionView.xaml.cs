@@ -141,13 +141,17 @@ namespace NuSysApp
                 if (SessionController.Instance.IdToControllers.ContainsKey(presentationlink.InElementId) &&
                     SessionController.Instance.IdToControllers.ContainsKey(presentationlink.OutElementId))
                 {
-                    var vm = new PresentationLinkViewModel(presentationlink);
-                    if (PresentationLinkViewModel.Models == null)
+                    UITask.Run( delegate
                     {
-                        PresentationLinkViewModel.Models = new HashSet<PresentationLinkModel>();
-                    }
-                    PresentationLinkViewModel.Models.Add(presentationlink);
-                    new PresentationLinkView(vm);
+                        var vm = new PresentationLinkViewModel(presentationlink);
+                        if (PresentationLinkViewModel.Models == null)
+                        {
+                            PresentationLinkViewModel.Models = new HashSet<PresentationLinkModel>();
+                        }
+                        PresentationLinkViewModel.Models.Add(presentationlink);
+                        new PresentationLinkView(vm);
+                    });
+
                 }
 
             }
@@ -539,7 +543,7 @@ namespace NuSysApp
                 {
                     continue;
                 }
-                var libraryModel = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId);
+                var libraryModel = SessionController.Instance.ContentController.GetContent(libraryId);
                 if (libraryModel == null)
                 {
                     if (msg.ContainsKey("id"))
@@ -556,28 +560,7 @@ namespace NuSysApp
             await Task.Run(async delegate {
                 await MakeCollection(new Dictionary<string, Message>(dict), true, 2);
             });
-            await Task.Run(async delegate
-            {
-                var i = SessionController.Instance;
-                foreach (var elementId in dict.Keys)
-                {
-                    string id = null;
-                    if (SessionController.Instance.IdToControllers.ContainsKey(elementId))
-                    {
-                        id = SessionController.Instance.IdToControllers[elementId].ContentId;
-                    }
-                    if (id != null && i.ContentController.GetLibraryElementController(id) != null)
-                    {
-                        foreach (var linkId in i.LinksController.GetLinkedIds(id))
-                        {
-                            Debug.Assert(
-                                i.ContentController.GetLibraryElementController(linkId) is LinkLibraryElementController);
-                            i.LinksController.CreateVisualLinks(
-                                i.ContentController.GetLibraryElementController(linkId) as LinkLibraryElementController);
-                        }
-                    }
-                }
-            });
+
 
             Debug.WriteLine("done joining collection: " + collectionId);
 
@@ -648,7 +631,7 @@ namespace NuSysApp
             var libraryId = message.GetString("contentId");
             var id = message.GetString("id");
             Debug.WriteLine("making element: " + id);
-            var libraryModel = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId);
+            var libraryModel = SessionController.Instance.ContentController.GetContent(libraryId);
             if (libraryModel == null)
             {
                 messagesLeft.Remove(id);
@@ -728,12 +711,18 @@ namespace NuSysApp
         {
             await DisposeCollectionView(_activeFreeFormViewer);
             if (_activeFreeFormViewer != null && mainCanvas.Children.Contains(_activeFreeFormViewer))
+            {
                 mainCanvas.Children.Remove(_activeFreeFormViewer);
+                SessionController.Instance.OnModeChanged -= _activeFreeFormViewer.ChangeMode;
+            }
+
 
 
             var freeFormViewerViewModel = new FreeFormViewerViewModel(collectionController);
 
             _activeFreeFormViewer = new FreeFormViewer(freeFormViewerViewModel);
+            SessionController.Instance.OnModeChanged += _activeFreeFormViewer.ChangeMode;
+
             _activeFreeFormViewer.Width = ActualWidth;
             _activeFreeFormViewer.Height = ActualHeight;
             mainCanvas.Children.Insert(0, _activeFreeFormViewer);

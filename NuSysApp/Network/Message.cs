@@ -6,7 +6,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Windows.Foundation;
 
 namespace NuSysApp
 {
@@ -138,11 +137,7 @@ namespace NuSysApp
             var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             return ContainsKey(key) ? JsonConvert.DeserializeObject<HashSet<T>>(Get(key), settings) : def;
         }
-        public Point GetPoint(string key, Point def = new Point())
-        {
-            var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-            return ContainsKey(key) ? JsonConvert.DeserializeObject<Point>(Get(key), settings) : def;
-        }
+
 
         public Dictionary<T, K> GetDict<T, K>(string key)
         {

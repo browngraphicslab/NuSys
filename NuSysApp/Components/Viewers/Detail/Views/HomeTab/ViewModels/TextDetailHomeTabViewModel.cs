@@ -12,7 +12,7 @@ namespace NuSysApp
         public event TextChangedHandler TextChanged;
 
         public LibraryElementController Controller { get; }
-        public TextDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
+        public TextDetailHomeTabViewModel(LibraryElementController controller, HashSet<Region> regionsToLoad) : base(controller, regionsToLoad)
         {
             Controller = controller;
             controller.ContentChanged += ContentChanged;
@@ -43,7 +43,7 @@ namespace NuSysApp
 
         }
 
-        public override Message GetNewRegionMessage()
+        public override Region GetNewRegion()
         {
             return null;
         }

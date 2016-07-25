@@ -37,12 +37,15 @@ namespace NuSysApp
         {
             MetadataToolModel.SetFilter(filter);
             FilterChanged?.Invoke(this, filter);
-            FireLibraryIdsChanged();
+            FireOutputLibraryIdsChanged();
         }
 
+        /// <summary>
+        /// Given a library ID, this function returns a bool on whether or not this property should be included in its output library ids based on the filter and the selection
+        /// </summary>
         private bool IncludeInFilter(string libraryId)
         {
-            var libraryElementModel = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId);
+            var libraryElementModel = SessionController.Instance.ContentController.GetContent(libraryId);
             if (libraryElementModel == null)
             {
                 return false;
@@ -67,23 +70,34 @@ namespace NuSysApp
             }
             return false;
         }
+
+        /// <summary>
+        /// Sets the Selected boolean to false, clears the current selection tuple, and invokes the selection changed event. Then refreshes its output library ids now that there is no selection and invokes the output library ids changed event
+        /// </summary>
         public override void UnSelect()
         {
             MetadataToolModel.SetSelection(new Tuple<string, HashSet<string>>(null, new HashSet<string>()));
             MetadataToolModel.SetSelected(false);
-            MetadataToolModel.SetLibraryIds(Filter(GetUpdatedDataList()));
+            MetadataToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
             SelectionChanged?.Invoke(this);
-            FireLibraryIdsChanged();
+            FireOutputLibraryIdsChanged();
         }
+
+        /// <summary>
+        /// Sets the Selection, and invokes the selection changed event. Then refreshes its output library ids now that there is a new selection and invokes the output library ids changed event
+        /// </summary>
         public virtual void SetSelection(Tuple<string, HashSet<string>> selection)
         {
             MetadataToolModel.SetSelection(selection);
             MetadataToolModel.SetSelected(true);
-            MetadataToolModel.SetLibraryIds(Filter(GetUpdatedDataList()));
+            MetadataToolModel.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
             SelectionChanged?.Invoke(this);
-            FireLibraryIdsChanged();
+            FireOutputLibraryIdsChanged();
         }
 
+        /// <summary>
+        /// Returns the dictionary (from key to set of values) to display
+        /// </summary>
         public Dictionary<string, HashSet<string>> GetAllMetadata()
         {
             var libraryElementControllers = GetUpdatedDataList().Select(id => SessionController.Instance.ContentController.GetLibraryElementController(id));

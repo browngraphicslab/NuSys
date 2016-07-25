@@ -28,7 +28,7 @@
                             <PathFigure x:Name="pathfigure">
                                 <PathFigure.Segments>
                                     <PathSegmentCollection>
-                                         <BezierSegment x:Name="curve"/>
+                                        <BezierSegment x:Name="curve"/>
                                     </PathSegmentCollection>
                                 </PathFigure.Segments>
                             </PathFigure>
@@ -37,7 +37,7 @@
                 </PathGeometry>
             </Path.Data>
         </Path>
-        <Path x:Name="BezierLinkInner" Stroke="{StaticResource color3}" StrokeThickness="25" CompositeMode="MinBlend" Opacity="0.28" DoubleTapped="BezierLink_OnDoubleTapped">
+        <Path x:Name="BezierLinkInner" Stroke="{Binding Color}" StrokeThickness="25" CompositeMode="MinBlend" Opacity="0.28" DoubleTapped="BezierLink_OnDoubleTapped">
             <Path.Data>
                 <PathGeometry>
                     <PathGeometry.Figures>
@@ -61,6 +61,6 @@
                     <TextBox x:Name ="Title" HorizontalAlignment="Stretch" Height="32" VerticalAlignment="Top" Text="{Binding Title}" TextAlignment="Center" GotFocus="Title_GotFocus" LostFocus="Title_LostFocus"/>
                 </StackPanel>
             </Grid>
-            </StackPanel>
+        </StackPanel>
     </Canvas>
 </converters:AnimatableUserControl>

@@ -13,7 +13,7 @@ namespace NuSysApp
         
         public TextNodeController(TextElementModel model) : base(model)
         {
-            if (SessionController.Instance.ContentController.GetLibraryElementModel(Model.LibraryId) != null)
+            if (SessionController.Instance.ContentController.GetContent(Model.LibraryId) != null)
             {
                 LibraryElementController.ContentChanged += ContentChanged;
             }
@@ -21,14 +21,14 @@ namespace NuSysApp
 
         private void ContentChanged(object originalSenderViewModel, string newData)
         {
-            var content = SessionController.Instance.ContentController.GetLibraryElementModel(Model.LibraryId);
+            var content = SessionController.Instance.ContentController.GetContent(Model.LibraryId);
             TextChanged?.Invoke(this, content.Data);
         }
 
         public override void Dispose()
         {
            
-            if (SessionController.Instance.ContentController.GetLibraryElementModel(Model.LibraryId) != null)
+            if (SessionController.Instance.ContentController.GetContent(Model.LibraryId) != null)
             {
                 LibraryElementController.ContentChanged -= ContentChanged;
             }

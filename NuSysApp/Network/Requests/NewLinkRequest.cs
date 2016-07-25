@@ -99,7 +99,7 @@ namespace NuSysApp
 
             //var link = LibraryElementModelFactory.CreateFromMessage(_message);
 
-            var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetLibraryElementModel(creator);
+            var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(creator);
             parentCollectionLibraryElement.AddChild(id);
             
             AddLinks(id1,id2,id);
@@ -114,11 +114,15 @@ namespace NuSysApp
             //Debug.Assert(controller1 != null && controller2 != null && linkController != null && linkController is LinkLibraryElementController);
             controller1?.AddLink(linkController as LinkLibraryElementController);
             controller2?.AddLink(linkController as LinkLibraryElementController);
+
+
             if (controller1 != null && controller2 != null)
             {
                 SessionController.Instance.LinksController.CreateVisualLinks(
-                    linkController as LinkLibraryElementController);
+                linkController as LinkLibraryElementController);
             }
-        }
+
+         }
+
     }
 }

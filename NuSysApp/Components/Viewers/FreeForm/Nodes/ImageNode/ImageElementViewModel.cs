@@ -17,18 +17,18 @@ namespace NuSysApp
     public class ImageElementViewModel : ElementViewModel, Sizeable
     {
    
-      //  public ObservableCollection<ImageRegionView> Regions { private set; get; }
+        public ObservableCollection<ImageRegionView> Regions { private set; get; }
         public Sizeable View { get; set; }
 
         public LibraryElementController LibraryElementController{get { return Controller.LibraryElementController; }}
         public ImageElementViewModel(ElementController controller) : base(controller)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));       
-         //   Regions = new ObservableCollection<ImageRegionView>();
-       //     this.CreateRegionViews();
+            Regions = new ObservableCollection<ImageRegionView>();
+            this.CreateRegionViews();
 
-        //    Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
-        //    Controller.LibraryElementController.RegionRemoved += LibraryElementControllerOnRegionRemoved;
+            Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
+            Controller.LibraryElementController.RegionRemoved += LibraryElementControllerOnRegionRemoved;
 
 
 
@@ -36,7 +36,7 @@ namespace NuSysApp
 
         private void LibraryElementControllerOnRegionRemoved(object source, Region region)
         {
-          /*  var imageRegion = region as RectangleRegion;
+            var imageRegion = region as RectangleRegion;
             if (imageRegion == null)
             {
                 return;
@@ -44,18 +44,63 @@ namespace NuSysApp
 
             foreach (var regionView in Regions.ToList<ImageRegionView>())
             {
-                if ((regionView.DataContext as ImageRegionViewModel).Model.LibraryElementId == imageRegion.LibraryElementId)
+                if ((regionView.DataContext as ImageRegionViewModel).Model.Id == imageRegion.Id)
                     Regions.Remove(regionView);
             }
             
 
-            RaisePropertyChanged("Regions");*/
+            RaisePropertyChanged("Regions");
+        }
+
+        public void CreateRegionViews(){
+            var elementController = Controller.LibraryElementController;
+            var regionHashSet = elementController.LibraryElementModel.Regions;
+
+            if (regionHashSet == null)
+                return ;
+
+            Regions.Clear();
+
+            foreach (var model in regionHashSet)
+            {
+                var imageModel = model as RectangleRegion;
+                RectangleRegionController regionController;
+                if (SessionController.Instance.RegionsController.GetRegionController(imageModel.Id) == null)
+                {
+                    //Debug.Fail("Did not load");
+                    regionController = SessionController.Instance.RegionsController.AddRegion(imageModel, LibraryElementController.LibraryElementModel.LibraryElementId) as RectangleRegionController;
+                }
+                else {
+                    regionController = SessionController.Instance.RegionsController.GetRegionController(imageModel.Id) as RectangleRegionController;
+                }
+
+
+                var viewmodel = new ImageRegionViewModel(imageModel, elementController, regionController, this);
+                viewmodel.Editable = false;
+                var view = new ImageRegionView(viewmodel);
+                Regions.Add(view);
+            }
+            RaisePropertyChanged("Regions");
         }
         public void SizeChanged(object sender, double width, double height)
         {
 
         }
 
+        private void LibraryElementControllerOnRegionAdded(object source, RegionController regionController)
+        {
+            var rectRegionController = regionController as RectangleRegionController;
+            var imageRegion = rectRegionController?.Model as RectangleRegion;
+            if (imageRegion == null)
+            {
+                return;
+            }
+            var vm = new ImageRegionViewModel(imageRegion, Controller.LibraryElementController, rectRegionController, this);
+            var view = new ImageRegionView(vm);
+            vm.Editable = false;
+            Regions.Add(view);
+            RaisePropertyChanged("Regions");
+        }
 
         public override void Dispose()
         {
@@ -87,7 +132,7 @@ namespace NuSysApp
         private async void LibraryElementModelOnOnLoaded(object sender)
         {
             await DisplayImage();
-       //     this.CreateRegionViews();
+            this.CreateRegionViews();
 
 
         }
@@ -135,11 +180,11 @@ namespace NuSysApp
             var newHeight = View.GetHeight();
             var newWidth = View.GetWidth();
 
-       /*    foreach (var rv in Regions)
+            foreach (var rv in Regions)
             {
                 var regionViewViewModel = rv.DataContext as RegionViewModel;
                 regionViewViewModel?.ChangeSize(this, width, height);
-            }*/
+            }
 
         }
 

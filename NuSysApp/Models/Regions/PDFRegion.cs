@@ -11,16 +11,10 @@ namespace NuSysApp
     {
 
         public int PageLocation { get; set; }
-        public PdfRegion(string id) : base(id,ElementType.PdfRegion)
+        public PdfRegion(Point p1, Point p2, int pageLocation, string name = "Untitled Region") : base(p1,p2,name)
         {
-        }
-        public override async Task UnPack(Message message)
-        {
-            if (message.ContainsKey("page_location"))
-            {
-                PageLocation = message.GetInt("page_location");
-            }
-            await base.UnPack(message);
+            PageLocation = pageLocation;
+            Type = RegionType.Pdf;
         }
     }
 }

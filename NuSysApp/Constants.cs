@@ -183,7 +183,7 @@ namespace NuSysApp
             }
             return
                 GetTimestampTicksOfLibraryElementModel(
-                    SessionController.Instance.ContentController.GetLibraryElementModel(template.ContentID));
+                    SessionController.Instance.ContentController.GetContent(template.ContentID));
         }
         public static long GetTimestampTicksOfLibraryElementModel(LibraryElementModel model)
         {

@@ -58,7 +58,7 @@ namespace NuSysApp
                 Visibility = Visibility.Collapsed;
                 return;
             }
-            var bb = Geometry.NodesToBoudingRect(selections.Where(v =>  !(v is LinkViewModel)).ToList());       
+            var bb = Geometry.NodesToBoudingRect(selections.Where(v =>  (v is ElementViewModel)).Select(item=> item as ElementViewModel).ToList());       
 
             var metadata = new Dictionary<string, object>();
             metadata["node_creation_date"] = DateTime.Now;
@@ -96,29 +96,34 @@ namespace NuSysApp
            
             foreach (var vm in selections.ToArray())
             {
-                if (vm.ElementType == ElementType.Link)
-                    continue;
-                var libraryElementModel = vm.Controller.LibraryElementModel;
-                var dict = new Message();
-                dict["title"] = libraryElementModel?.Title;
-                dict["width"] = vm.Width;
-                dict["height"] = vm.Height;
-                dict["type"] = libraryElementModel.Type.ToString();
-                dict["x"] = vm.Transform.TranslateX - bb.X + Constants.MaxCanvasSize/2.0;
-                dict["y"] = vm.Transform.TranslateY - bb.Y + Constants.MaxCanvasSize / 2.0;
-                dict["contentId"] = libraryElementModel.LibraryElementId;
-                dict["metadata"] = metadata;
-                dict["autoCreate"] = true;
-                dict["creator"] = controller.LibraryElementModel.LibraryElementId;
-
-                if (vm is PdfNodeViewModel)
+                if (vm is ElementViewModel)
                 {
-                    dict["page"] = (vm as PdfNodeViewModel).CurrentPageNumber;
-                }
+                    var elementViewModel = vm as ElementViewModel;
 
-                var request = new NewElementRequest(dict);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-                vm.Controller.RequestDelete();
+                    var libraryElementModel = elementViewModel.Controller.LibraryElementModel;
+                    var dict = new Message();
+                    dict["title"] = libraryElementModel?.Title;
+                    dict["width"] = elementViewModel.Width;
+                    dict["height"] = elementViewModel.Height;
+                    dict["type"] = libraryElementModel.Type.ToString();
+                    dict["x"] = elementViewModel.Transform.TranslateX - bb.X + Constants.MaxCanvasSize / 2.0;
+                    dict["y"] = elementViewModel.Transform.TranslateY - bb.Y + Constants.MaxCanvasSize / 2.0;
+                    dict["contentId"] = libraryElementModel.LibraryElementId;
+                    dict["metadata"] = metadata;
+                    dict["autoCreate"] = true;
+                    dict["creator"] = controller.LibraryElementModel.LibraryElementId;
+
+                    if (elementViewModel is PdfNodeViewModel)
+                    {
+                        dict["page"] = (elementViewModel as PdfNodeViewModel).CurrentPageNumber;
+                    }
+
+                    var request = new NewElementRequest(dict);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                    elementViewModel.Controller.RequestDelete();
+                }
+                // do something with links here
+                
             }
 
             Visibility = Visibility.Collapsed;
@@ -126,7 +131,7 @@ namespace NuSysApp
 
         private void DeleteButtonOnClick(object sender, RoutedEventArgs routedEventArgs)
         {
-            var selections = SessionController.Instance.ActiveFreeFormViewer.Selections;
+            var selections = SessionController.Instance.ActiveFreeFormViewer.Selections.OfType<ElementViewModel>();
             foreach (var elementViewModel in selections)
             {
                 elementViewModel.Controller.RequestDelete();

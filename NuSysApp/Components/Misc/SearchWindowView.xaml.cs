@@ -50,7 +50,7 @@ namespace NuSysApp
         {
             var vm = (SearchResultItem)((FrameworkElement) sender).DataContext;
             // TODO: refactor
-            //SessionController.Instance.ActiveFreeFormViewer.MoveToNode(vm.LibraryId);
+            //SessionController.Instance.ActiveFreeFormViewer.MoveToNode(vm.ContentId);
         }
     }
 }

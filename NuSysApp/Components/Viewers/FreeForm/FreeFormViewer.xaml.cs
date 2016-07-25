@@ -38,6 +38,8 @@ namespace NuSysApp
         private GlobalInkMode _globalInkMode;
         private AbstractWorkspaceViewMode _prevMode;
         private NuSysInqCanvas _inqCanvas;
+        private ExploreMode _exploreMode;
+        private MultiMode _explorationMode;
 
         public Brush CanvasColor
         {
@@ -62,7 +64,7 @@ namespace NuSysApp
                 _inqCanvas.AdornmentAdded += AdormnentAdded;
                 _inqCanvas.AdornmentRemoved += AdornmentRemoved;
 
-                var collectionModel = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetLibraryElementModel(vm.Controller.LibraryElementModel.LibraryElementId);
+                var collectionModel = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(vm.Controller.LibraryElementModel.LibraryElementId);
 
               
 
@@ -93,6 +95,7 @@ namespace NuSysApp
                 _selectMode = new SelectMode(this);
                 _floatingMenuMode = new FloatingMenuMode(this);
                 _globalInkMode = new GlobalInkMode(this);
+                _exploreMode = new ExploreMode(this);
 
                 _tagMode = new TagNodeMode(this);
                 _linkMode = new LinkMode(this);
@@ -100,6 +103,7 @@ namespace NuSysApp
                 _mainMode = new MultiMode(this, _panZoomMode, _selectMode, _nodeManipulationMode, _gestureMode, _createGroupMode, _floatingMenuMode);
                 _simpleEditMode = new MultiMode(this, _panZoomMode, _selectMode, _nodeManipulationMode, _floatingMenuMode);
                 _simpleEditGroupMode = new MultiMode(this,  _panZoomMode, _selectMode, _floatingMenuMode);
+                _explorationMode = new MultiMode(this, _panZoomMode, _exploreMode);
 
                 SwitchMode(Options.SelectNode, false);
 
@@ -237,7 +241,7 @@ namespace NuSysApp
             }
             else if (vm.Selections.Count == 1)
             {
-                if (vm.Selections[0].ElementType == ElementType.Collection)
+                if ((vm.Selections[0] as ElementViewModel)?.ElementType == ElementType.Collection)
                     SetViewMode(_simpleEditGroupMode);
                 else
                     SetViewMode(_simpleEditMode);
@@ -305,6 +309,9 @@ namespace NuSysApp
                 case Options.PenGlobalInk:
                   //  await SetViewMode(_globalInkMode);
                     break;
+                case Options.Exploration:
+                    SetViewMode(_explorationMode);
+                    break;
             }
         }
 
@@ -316,5 +323,10 @@ namespace NuSysApp
 
 
         public SelectMode SelectMode { get { return _selectMode; } }
+
+        public void ChangeMode(object source, Options mode)
+        {
+            SwitchMode(mode, false);
+        }
     }
 }

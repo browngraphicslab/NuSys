@@ -17,19 +17,19 @@ namespace NuSysApp
 
             switch (regionModel.Type)
             {
-                case ElementType.ImageRegion:
+                case Region.RegionType.Rectangle:
                     var imageModel = regionModel as RectangleRegion;
                     controller = new RectangleRegionController(imageModel);
                     break;
-                case ElementType.PdfRegion:
+                case Region.RegionType.Pdf:
                     var pdfModel = regionModel as PdfRegion;
                     controller = new PdfRegionController(pdfModel);
                     break;
-                case ElementType.AudioRegion:
+                case Region.RegionType.Time:
                     var audioModel = regionModel as TimeRegionModel;
                     controller = new AudioRegionController(audioModel);
                     break;
-                case ElementType.VideoRegion:
+                case Region.RegionType.Video:
                     Debug.Assert(regionModel is VideoRegionModel);
                     controller = new VideoRegionController(regionModel as VideoRegionModel);
                     break;

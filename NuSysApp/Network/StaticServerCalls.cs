@@ -12,7 +12,7 @@ namespace NuSysApp
         {
             string libraryId = SessionController.Instance.ActiveFreeFormViewer.Controller.Model.LibraryId;
             return await SessionController.Instance.NuSysNetworkSession.DuplicateLibraryElement(libraryId) != null;
-            var collectionLibraryModel = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId) as CollectionLibraryElementModel;
+            var collectionLibraryModel = SessionController.Instance.ContentController.GetContent(libraryId) as CollectionLibraryElementModel;
             if (collectionLibraryModel == null)
             {
                 return false;
@@ -74,7 +74,7 @@ namespace NuSysApp
                     {
                         await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(m));
                         var newNodeContentId = m.GetString("contentId");
-                        if (SessionController.Instance.ContentController.GetLibraryElementModel(newNodeContentId) == null)
+                        if (SessionController.Instance.ContentController.GetContent(newNodeContentId) == null)
                         {
                             Task.Run(async delegate
                             {

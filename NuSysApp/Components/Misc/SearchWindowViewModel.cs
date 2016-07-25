@@ -49,7 +49,7 @@ namespace NuSysApp
             foreach (var atomModel in found)
             {
                 var title = atomModel.Title == "" ? "Unnamed Node" : atomModel.Title;
-                SearchResults.Add(new SearchResultItem {LibraryId = atomModel.LibraryId, Name = title});
+                SearchResults.Add(new SearchResultItem {ContentId = atomModel.ContentId, Name = title});
             }
             */
         }

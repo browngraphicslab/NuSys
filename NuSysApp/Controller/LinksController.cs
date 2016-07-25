@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI;
+using Windows.UI.Xaml.Controls;
+
 namespace NuSysApp
 { 
     public class LinksController
@@ -99,7 +101,7 @@ namespace NuSysApp
                 {
                     continue;
                 }
-                var linkables = GetInstancesOfContent(libraryElementController.LibraryId);
+                var linkables = GetInstancesOfContent(libraryElementController.ContentId);
                 foreach (var link in linkables)
                 {
                     CreateBezierLinkBetween(linkable, link);
@@ -109,11 +111,11 @@ namespace NuSysApp
 
         public bool IsContentId(string id)
         {
-            return id != null && SessionController.Instance.ContentController.GetLibraryElementModel(id) != null;
+            return id != null && SessionController.Instance.ContentController.GetContent(id) != null;
         }
 
         /// <summary>
-        /// Add the link library element controller's library LibraryId to the hashset for both endpoint ids' keys
+        /// Add the link library element controller's library ContentId to the hashset for both endpoint ids' keys
         /// </summary>
         /// <param name="controller"></param>
         public void AddLinkLibraryElementController(LinkLibraryElementController controller)
@@ -192,29 +194,6 @@ namespace NuSysApp
             return _contentIdToLinkContentIds[contentId];
         }
 
-        /// <summary>
-        /// Creates the visual links for a given link library element controller
-        /// </summary>
-        /// <param name="linkController"></param>
-        public void CreateVisualLinks(LinkLibraryElementController linkController)
-        {
-            var contentId1 = linkController?.LinkLibraryElementModel?.InAtomId;
-            var contentId2 = linkController?.LinkLibraryElementModel?.OutAtomId;
-            Debug.Assert(contentId1 != null);
-            Debug.Assert(contentId2 != null);
-            if (_contentIdToLinkableIds.ContainsKey(contentId1) && _contentIdToLinkableIds.ContainsKey(contentId2))
-            {            
-                foreach (var visualId1 in _contentIdToLinkableIds[contentId1])
-                {
-                    foreach (var visualId2 in _contentIdToLinkableIds[contentId2])
-                    {
-                        CreateBezierLinkBetween(visualId1, visualId2);   
-                    }
-                }
-                
-            }
-        }
-
         public async Task RequestLink(Message m)
         {
             Debug.Assert(m.ContainsKey("id1"));
@@ -222,8 +201,8 @@ namespace NuSysApp
             // don't create a link between two library element models, if there is already a link
             // element controller between them
             if(
-                SessionController.Instance.ContentController.GetLibraryElementModel(m.GetString("id1")) != null &&
-                SessionController.Instance.ContentController.GetLibraryElementModel(m.GetString("id2")) != null &&
+                SessionController.Instance.ContentController.GetContent(m.GetString("id1")) != null &&
+                SessionController.Instance.ContentController.GetContent(m.GetString("id2")) != null &&
                 GetLinkLibraryElementControllerBetweenContent(m.GetString("id1"), m.GetString("id2")) != null)
             {
                 return;
@@ -250,16 +229,16 @@ namespace NuSysApp
                 Debug.Assert(content.LibraryElementModel is LinkLibraryElementModel);
                 var linkLibraryElementModel = content.LibraryElementModel as LinkLibraryElementModel;
                 
-                Debug.Assert(_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.InAtomId));
-                Debug.Assert(_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.OutAtomId));
-                Debug.Assert(_contentIdToLinkContentIds[linkLibraryElementModel.InAtomId].Contains(libraryElementId));
-                Debug.Assert(_contentIdToLinkContentIds[linkLibraryElementModel.OutAtomId].Contains(libraryElementId));
+                //Debug.Assert(_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.InAtomId));
+                //Debug.Assert(_contentIdToLinkContentIds.ContainsKey(linkLibraryElementModel.OutAtomId));
+                //Debug.Assert(_contentIdToLinkContentIds[linkLibraryElementModel.InAtomId].Contains(libraryElementId));
+                //Debug.Assert(_contentIdToLinkContentIds[linkLibraryElementModel.OutAtomId].Contains(libraryElementId));
 
                 _contentIdToLinkContentIds[linkLibraryElementModel.InAtomId].Remove(libraryElementId);
                 _contentIdToLinkContentIds[linkLibraryElementModel.OutAtomId].Remove(libraryElementId);
             }
 
-            DisposeContent(content.LibraryId);
+            DisposeContent(content.ContentId);
         }
 
         /// <summary>
@@ -319,11 +298,10 @@ namespace NuSysApp
             model.InAtomId = one.Id;
             model.OutAtomId = two.Id;
             var controller = new LinkController(model, linkLibElemController);
-            var vm = new LinkViewModel(controller);
-            
-                      
+
             UITask.Run(async delegate
             {
+                var vm = new LinkViewModel(controller);
                 var allContent = SessionController.Instance.ActiveFreeFormViewer.AllContent;
                 var view = new BezierLinkView(vm);
                 var collectionViewModel =
@@ -338,9 +316,36 @@ namespace NuSysApp
                 {
                     SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(view);
                 }
-                
+                //TODO Change ElementCollectionViewModel child added and removed code to take link controllers or element controllers
+                Canvas.SetZIndex(view, -2);
             });
         }
+
+
+         /// <summary>
+         /// Creates the visual links for a given link library element controller
+         /// </summary>
+         /// <param name="linkController"></param>
+         public void CreateVisualLinks(LinkLibraryElementController linkController)
+         {
+             var contentId1 = linkController?.LinkLibraryElementModel?.InAtomId;
+             var contentId2 = linkController?.LinkLibraryElementModel?.OutAtomId;
+             Debug.Assert(contentId1 != null);
+             Debug.Assert(contentId2 != null);
+             if (_contentIdToLinkableIds.ContainsKey(contentId1) && _contentIdToLinkableIds.ContainsKey(contentId2))
+             {
+                 foreach (var visualId1 in _contentIdToLinkableIds[contentId1])
+                 {
+                     foreach (var visualId2 in _contentIdToLinkableIds[contentId2])
+                     {
+                         CreateBezierLinkBetween(visualId1, visualId2);
+                     }
+                 }
+ 
+             }
+         }
+
+
 
         /// <summary>
         /// Gets the ILinkable for each LinkableId and calls createbezierlinkbetween
@@ -427,7 +432,7 @@ namespace NuSysApp
             LinkLibraryElementController linkController)
         {
             Debug.Assert(libraryElementId != null);
-            Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementModel(libraryElementId) != null);
+            Debug.Assert(SessionController.Instance.ContentController.GetContent(libraryElementId) != null);
 
             var inId = linkController?.LinkLibraryElementModel?.InAtomId;
             var outId = linkController?.LinkLibraryElementModel?.OutAtomId;

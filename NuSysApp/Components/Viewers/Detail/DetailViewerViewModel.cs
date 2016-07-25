@@ -90,9 +90,32 @@ namespace NuSysApp
 
         public ObservableCollection<StackPanel> Metadata { get; set; }
 
-   //     public ObservableCollection<Region> RegionCollection { set; get; }
+        public ObservableCollection<Region> RegionCollection { set; get; }
 
+        public ObservableCollection<Region> OrderedRegionCollection
+        {
+            get
+            {
+                if (CurrentElementController.LibraryElementModel.Type == ElementType.PDF)
+                {
+                    var list = RegionCollection.ToList<Region>();
+                    var orderedList = (list.OrderBy(a => (a as PdfRegion).PageLocation)).ToList<Region>();
+                    var collection = new ObservableCollection<Region>();
+                    foreach (var region in orderedList)
+                    {
+                        //(region as PdfRegion).PageLocation += 1;
+                        collection.Add(region);
+                        
 
+                    }
+                    return collection;
+                }
+                else
+                {
+                    return new ObservableCollection<Region>();
+                }
+            }
+        }
         private DetailHomeTabViewModel _regionableRegionTabViewModel;
         private DetailHomeTabViewModel _regionableHomeTabViewModel;
 
@@ -113,6 +136,7 @@ namespace NuSysApp
             Tags = new ObservableCollection<FrameworkElement>();
             SuggestedTags = new ObservableCollection<FrameworkElement>();
             Metadata = new ObservableCollection<StackPanel>();
+            RegionCollection = new ObservableCollection<Region>();
             Tabs = new ObservableCollection<IDetailViewable>();
             //  TabVisibility = Visibility.Collapsed;
 
@@ -121,13 +145,13 @@ namespace NuSysApp
 
         private void OnSizeChanged_InvokeTabVMSizeChanged(object source, double left, double width, double height)
         {
-            _regionableRegionTabViewModel.SizeChanged(source, width, height);
-            _regionableHomeTabViewModel.SizeChanged(source, width, height);
+            _regionableRegionTabViewModel?.SizeChanged(source, width, height);
+            _regionableHomeTabViewModel?.SizeChanged(source, width, height);
         }
 
         private void AddRegionToList(object source, RegionController regionController)
         {
-          //  RegionCollection.Add(regionController.LibraryElementModel);
+            RegionCollection.Add(regionController.Model);
             RaisePropertyChanged("OrderedRegionCollection");
 
         }
@@ -168,10 +192,11 @@ namespace NuSysApp
                 CurrentElementController.RegionAdded += AddRegionToList;
                 CurrentElementController.RegionRemoved += RemoveRegionFromList;
 
+                RegionCollection.Clear();
 
-             //   var regions = CurrentElementController.LibraryElementModel.Regions;
+                var regions = CurrentElementController.LibraryElementModel.Regions;
 
-            /*    if (regions?.Count > 0)
+                if (regions?.Count > 0)
                 {
                     foreach (var region in CurrentElementController.LibraryElementModel.Regions)
                     {
@@ -191,7 +216,7 @@ namespace NuSysApp
                 if (RegionView == null)
                 {
                     return false;
-                }*/
+                }
 
 
                 _regionableRegionTabViewModel = RegionView.DataContext as DetailHomeTabViewModel;
@@ -199,8 +224,8 @@ namespace NuSysApp
                 _regionableHomeTabViewModel = View.DataContext as DetailHomeTabViewModel;
                 _regionableHomeTabViewModel.Editable = false;
 
-          //      _regionableHomeTabViewModel.RegionsToLoad = controller.LibraryElementModel.Regions; // Sets the regions that need to be loaded
-          //      _regionableRegionTabViewModel.RegionsToLoad = controller.LibraryElementModel.Regions;
+                _regionableHomeTabViewModel.RegionsToLoad = controller.LibraryElementModel.Regions; // Sets the regions that need to be loaded
+                _regionableRegionTabViewModel.RegionsToLoad = controller.LibraryElementModel.Regions;
 
 
                 RaisePropertyChanged("View");
@@ -239,23 +264,25 @@ namespace NuSysApp
             {
                 var controller = viewable as RegionController;
                 CurrentDetailViewable = controller;
-                var regionModel = controller.LibraryElementModel;
+                var regionModel = controller.Model;
                 if (regionModel == null)
                 {
                     return false;
                 }
+                CurrentElementController =
+                    SessionController.Instance.ContentController.GetLibraryElementController(controller.ContentId);
                 if (CurrentElementController == null)
                 {
                     return false;
                 }
-                View = await _viewHomeTabViewFactory.CreateFromSendable(CurrentElementController);
+                View = await _viewHomeTabViewFactory.CreateFromSendable(CurrentElementController, CurrentElementController.LibraryElementModel.Regions);
                 if (View == null)
                 {
                     return false;
                 }
 
-             //   var regionSet = new HashSet<Region>();
-             //   regionSet.Add(regionModel);
+                var regionSet = new HashSet<Region>();
+                regionSet.Add(regionModel);
                 
                 _regionableHomeTabViewModel = View.DataContext as DetailHomeTabViewModel;
                 _regionableHomeTabViewModel.Editable = false;
@@ -264,19 +291,47 @@ namespace NuSysApp
                 
                 SizeChanged += (sender, left, width, height) => _regionableHomeTabViewModel.SizeChanged(sender, width, height);
                 
-              //  Title = regionModel.Name;
-             //   _regionableHomeTabViewModel.RegionsToLoad = regionSet; // Only one region (the one selected) will appear in the DV
+                Title = regionModel.Name;
+                _regionableHomeTabViewModel.RegionsToLoad = regionSet; // Only one region (the one selected) will appear in the DV
 
-                if (_regionableHomeTabViewModel is PdfDetailHomeTabViewModel)
+                if (View is PdfDetailHomeTabView)
                 {
-                    (_regionableHomeTabViewModel as PdfDetailHomeTabViewModel).Goto((regionModel as PdfRegion).PageLocation);
+                    (View as PdfDetailHomeTabView).ContentLoaded += delegate
+                    {
+                        _regionableHomeTabViewModel.SetExistingRegions();
+                        (_regionableHomeTabViewModel as PdfDetailHomeTabViewModel).Goto((regionModel as PdfRegion).PageLocation, regionModel);
+                    };
+                }else if(View is ImageDetailHomeTabView)
+                {
+                    (View as ImageDetailHomeTabView).ContentLoaded += delegate
+                    {
+                        _regionableHomeTabViewModel.SetExistingRegions();
+                        (_regionableHomeTabViewModel as ImageDetailHomeTabViewModel).HighlightRegion(regionModel as RectangleRegion);
+                    };
+                }else if(View is AudioDetailHomeTabView)
+                {
+                    (View as AudioDetailHomeTabView).ContentLoaded += delegate
+                    {
+                        _regionableHomeTabViewModel.SetExistingRegions();
+                        (_regionableHomeTabViewModel as AudioDetailHomeTabViewModel).OnRegionSeek((regionModel as TimeRegionModel).Start + 0.01);
+                    };
+                }else if (View is VideoDetailHomeTabView)
+                {
+                    (View as VideoDetailHomeTabView).ContentLoaded += delegate
+                    {
+                        _regionableHomeTabViewModel.SetExistingRegions();
+                        (_regionableHomeTabViewModel as VideoDetailHomeTabViewModel).OnRegionSeek((regionModel as VideoRegionModel).Start + 0.01);
+
+                    };
                 }
+
+                
+
 
                 RaisePropertyChanged("Title");
                 RaisePropertyChanged("View");
                 RaisePropertyChanged("Tags");
                 RaisePropertyChanged("Metadata");
-                RaisePropertyChanged("View");
 
                 AddTab(viewable);
                 return true;
@@ -322,7 +377,7 @@ namespace NuSysApp
         {
 
 
-        /*    foreach (var model in RegionCollection.ToList<Region>())
+            foreach (var model in RegionCollection.ToList<Region>())
             {
                 if ((model.Id == region.Id))
                     {
@@ -330,7 +385,7 @@ namespace NuSysApp
                 }
             }
             RaisePropertyChanged("OrderedRegionCollection");
-            */
+
         }
 
 
@@ -351,8 +406,8 @@ namespace NuSysApp
 
         public void ChangeRegionsSize(object sender, double width, double height)
         {
-            _regionableRegionTabViewModel.SizeChanged(sender, width, height);
-            _regionableHomeTabViewModel.SizeChanged(sender, width, height);
+            _regionableRegionTabViewModel?.SizeChanged(sender, width, height);
+            _regionableHomeTabViewModel?.SizeChanged(sender, width, height);
         }
 
         private void ControllerTitleChanged(object sender, string title)
@@ -410,14 +465,14 @@ namespace NuSysApp
                     suggestedTags.AddRange(new HashSet<string>(kvp.Value.Values));
                 }
                 var linksController = SessionController.Instance.LinksController;
-                foreach (var linkId in linksController.GetLinkedIds(CurrentElementController?.LibraryId))
+                foreach (var linkId in linksController.GetLinkedIds(CurrentElementController?.ContentId))
                 {
                     var linkController = linksController.GetLinkLibraryElementControllerFromLibraryElementId(linkId);
                     if (linkController == null)
                     {
                         continue;
                     }
-                    var opposite = linksController.GetOppositeLibraryElementModel(CurrentElementController?.LibraryId, linkController);
+                    var opposite = linksController.GetOppositeLibraryElementModel(CurrentElementController?.ContentId, linkController);
                     if (opposite?.LibraryElementModel == null)
                     {
                         continue;

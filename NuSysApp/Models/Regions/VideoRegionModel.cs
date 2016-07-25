@@ -9,22 +9,14 @@ namespace NuSysApp
 {
     public class VideoRegionModel : RectangleRegion
     {
-        public VideoRegionModel(string id) : base(id, ElementType.VideoRegion)
+        public VideoRegionModel(Point topLeft, Point bottomRight, double start = .25, double end = .75, string name="Untitled Region") : base(topLeft, bottomRight, name)
         {
+            Start = start;
+            End = end;
+            Type = RegionType.Video; 
         }
         public double Start { get; set; }
         public double End { get; set; }
-        public override async Task UnPack(Message message)
-        {
-            if (message.ContainsKey("start"))
-            {
-                Start = message.GetDouble("start");
-            }
-            if (message.ContainsKey("end"))
-            {
-                End = message.GetDouble("end");
-            }
-            await base.UnPack(message);
-        }
+
     }
 }

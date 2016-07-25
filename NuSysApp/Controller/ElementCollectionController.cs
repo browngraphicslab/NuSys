@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NuSysApp.Tools;
 
 namespace NuSysApp
 {
@@ -18,7 +19,7 @@ namespace NuSysApp
 
         public ElementCollectionController(ElementModel model) : base(model)
         {
-            var contentModel = SessionController.Instance.ContentController.GetLibraryElementModel(model.LibraryId);
+            var contentModel = SessionController.Instance.ContentController.GetContent(model.LibraryId);
             if (contentModel != null)
             {
                 ((CollectionLibraryElementModel) contentModel).OnChildAdded += AddChildById;
@@ -30,7 +31,7 @@ namespace NuSysApp
 
         private void OnDisposed(object source, object args)
         {
-            var contentModel = SessionController.Instance.ContentController.GetLibraryElementModel(Model.LibraryId);
+            var contentModel = SessionController.Instance.ContentController.GetContent(Model.LibraryId);
             if (contentModel != null)
             {
                 ((CollectionLibraryElementModel)contentModel).OnChildAdded -= AddChildById;
@@ -73,7 +74,6 @@ namespace NuSysApp
 
             _debouncingDictionary.Add("collectionview", colModel.ActiveCollectionViewType.ToString());
         }
-
-   
+        
     }
 }

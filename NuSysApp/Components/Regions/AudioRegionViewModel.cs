@@ -81,7 +81,7 @@ namespace NuSysApp
 
         private bool _editable;
 
-        public AudioRegionViewModel(TimeRegionModel model, AudioRegionController controller, Sizeable sizeable) : base(model,controller, sizeable)
+        public AudioRegionViewModel(TimeRegionModel model, LibraryElementController controller, AudioRegionController regionController, Sizeable sizeable) : base(model,controller, regionController, sizeable)
         {
             ContainerSizeChanged += BaseSizeChanged;
             RegionWidth = (model.End-model.Start)*sizeable.GetWidth();
@@ -91,10 +91,11 @@ namespace NuSysApp
             LefthandleY2 = 110; //+ contentView.ActualHeight;
             RightHandleY1 = 10;
             RightHandleY2 = 110; //+ contentView.ActualHeight;
-            Name = Model.Title;
+            Name = Model.Name;
 
-            controller.TimeChanged += RegionController_TimeChanged;
-            controller.TitleChanged += RegionController_TitleChanged;
+            regionController.RegionUpdated += RegionController_RegionUpdated;
+            regionController.TimeChanged += RegionController_TimeChanged;
+            regionController.TitleChanged += RegionController_TitleChanged;
 
         }
 
@@ -147,7 +148,7 @@ namespace NuSysApp
         public void SetNewPoints(double Start, double End)
         {
             var model = Model as TimeRegionModel;
-            var audioRegionController = LibraryElementController as AudioRegionController;
+            var audioRegionController = RegionController as AudioRegionController;
             if (model == null)
             {
                 return;
@@ -155,8 +156,7 @@ namespace NuSysApp
             model.Start += Start / ContainerViewModel.GetWidth();
             model.End += End / ContainerViewModel.GetWidth();
             RegionWidth = (model.End - model.Start)*ContainerViewModel.GetWidth();
-            audioRegionController.SetStartTime(model.Start);
-            audioRegionController.SetEndTime(model.End);
+            audioRegionController.ChangeEndPoints(model.Start, model.End);
 
             RaisePropertyChanged("LeftHandleX");
             RaisePropertyChanged("RightHandleX");

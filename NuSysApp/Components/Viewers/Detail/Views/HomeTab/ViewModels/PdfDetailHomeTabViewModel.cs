@@ -26,6 +26,7 @@ namespace NuSysApp
     public class PdfDetailHomeTabViewModel : DetailHomeTabViewModel, Sizeable
     {
         public LibraryElementController Controller { get; }
+        public ObservableCollection<PDFRegionView> RegionViews { set; get; }
         public WriteableBitmap ImageSource { get; set; }
         
         private int _pageNumber = 0;
@@ -33,9 +34,10 @@ namespace NuSysApp
 
         public static int InitialPageNumber;
         
-        public PdfDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
+        public PdfDetailHomeTabViewModel(LibraryElementController controller, HashSet<Region> regionsToLoad) : base(controller, regionsToLoad)
         {
             Controller = controller;
+            RegionViews = new ObservableCollection<PDFRegionView>();
             Editable = true;
 
             _pageNumber = InitialPageNumber;
@@ -85,7 +87,7 @@ namespace NuSysApp
 
 
 
-          /*  foreach (var regionView in RegionViews)
+            foreach (var regionView in RegionViews)
             {
                 var model = (regionView.DataContext as PdfRegionViewModel)?.Model;
                 if ((model as PdfRegion).PageLocation != _pageNumber)
@@ -110,7 +112,7 @@ namespace NuSysApp
                         }
                     }
                 }
-            }*/
+            }
 
 
 
@@ -198,11 +200,40 @@ namespace NuSysApp
             });
         }
 
+        public override void AddRegion(object sender, RegionController regionController)
+        {
+            var pdfRegion = regionController.Model as PdfRegion;
+            if (pdfRegion == null)
+            {
+                return;
+            }
+            var pdfRegionController = regionController as PdfRegionController;
+            //pdfRegionController?.SetPageLocation(_pageNumber);
+            var vm = new PdfRegionViewModel(pdfRegion, Controller, pdfRegionController, this);
+            if (!Editable)
+                vm.Editable = false;
+
+            var view = new PDFRegionView(vm);
+            
+            RegionViews.Add(view);
+
+
+            if (pdfRegion.PageLocation != _pageNumber)
+            {
+                view.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                view.Visibility = Visibility.Visible;
+            }
+
+            RaisePropertyChanged("RegionViews");
+        }
 
 
         public override void RemoveRegion(object sender, Region displayedRegion)
         {
-            /*var imageRegion = displayedRegion as PdfRegion;
+            var imageRegion = displayedRegion as PdfRegion;
             if (imageRegion == null)
             {
                 return;
@@ -210,23 +241,23 @@ namespace NuSysApp
 
             foreach (var regionView in RegionViews.ToList<PDFRegionView>())
             {
-                if ((regionView.DataContext as PdfRegionViewModel).Model.LibraryElementId == imageRegion.LibraryElementId)
+                if ((regionView.DataContext as PdfRegionViewModel).Model.Id == imageRegion.Id)
                     RegionViews.Remove(regionView);
             }
 
-            RaisePropertyChanged("RegionViews");*/
+            RaisePropertyChanged("RegionViews");
         }
 
         public override void SizeChanged(object sender, double width, double height)
         {
-          /*  var newHeight = this.GetHeight();
+            var newHeight = this.GetHeight();
             var newWidth = this.GetWidth();
 
             foreach (var rv in RegionViews)
             {
                 var regionViewViewModel = rv.DataContext as RegionViewModel;
                 regionViewViewModel?.ChangeSize(sender, newWidth, newHeight);
-            }*/
+            }
         }
 
         public double GetHeight()
@@ -261,14 +292,54 @@ namespace NuSysApp
             //return view.ActualWidth;
             return view.ActualWidth;
         }
-        public override Message GetNewRegionMessage()
+
+        public override void SetExistingRegions()
         {
-            Message m = new Message();
-            m["rectangle_top_left_point"] = new Point(.25, .25);
-            m["rectangle_width"] = 0.5;
-            m["rectangle_height"] = 0.5;
-            m["page_location"] = _pageNumber;
-            return m; 
+            if (_regionsToLoad == null)
+            {
+                _regionsToLoad = new HashSet<Region>();
+            }
+            RegionViews.Clear();
+            foreach (var regionModel in _regionsToLoad)
+            {
+                var pdfRegion = regionModel as PdfRegion;
+                if (pdfRegion == null)
+                {
+                    return;
+                }
+                PdfRegionController regionController;
+
+
+
+                if (SessionController.Instance.RegionsController.GetRegionController(pdfRegion.Id) == null)
+                {
+                    regionController = SessionController.Instance.RegionsController.AddRegion(pdfRegion, Controller.LibraryElementModel.LibraryElementId) as PdfRegionController;
+                }
+                else {
+                    regionController = SessionController.Instance.RegionsController.GetRegionController(pdfRegion.Id) as PdfRegionController;
+                }
+
+
+
+
+                var vm = new PdfRegionViewModel(pdfRegion, Controller, regionController, this);
+                var view = new PDFRegionView(vm);
+                if (pdfRegion.PageLocation != _pageNumber)
+                {
+                    view.Visibility = Visibility.Collapsed;
+                }
+                vm.Editable = Editable;
+
+                RegionViews.Add(view);
+                
+            }
+            RaisePropertyChanged("RegionViews");
+        }
+
+        public override Region GetNewRegion()
+        {
+            var region = new PdfRegion(new Point(.25, .25), new Point(.75, .75), _pageNumber);
+            return region;
         }
 
         public double GetViewHeight()
@@ -280,16 +351,6 @@ namespace NuSysApp
             }
             //return view.ActualWidth;
             return view.ActualHeight;
-        }
-
-        public override void AddRegion(object sender, RegionController regionController)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void SetExistingRegions()
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -54,7 +54,7 @@ namespace NuSysApp
         public string GetContentIdOfRegionOrContent(string id)
         {
             Debug.Assert(id != null);
-            if (SessionController.Instance.ContentController.GetLibraryElementModel(id) != null)
+            if (SessionController.Instance.ContentController.GetContent(id) != null)
             {
                 return id;
             }
@@ -65,16 +65,6 @@ namespace NuSysApp
             //Debug.Fail("Should always be in one of the two");
             return null;
         }
-        /// <summary>
-        /// Returns a hashset of regions where the region's clipping parent is that of the id that is sent in
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public IEnumerable<Region> RegionsfromLibraryElementId(string id)
-        {
-            return SessionController.Instance.ContentController.ContentValues.Where(
-                e => e is Region && (e as Region).ClippingParentLibraryId == id).Select(r=> r as Region);
-        } 
 
         public bool IsRegionId(string id)
         {
@@ -85,10 +75,10 @@ namespace NuSysApp
         {
             Debug.Assert(regionModel != null);
             var regionController = _regionControllerFactory.CreateFromSendable(regionModel, contentId);
-            _regionLibraryElementModels.TryAdd(regionModel.LibraryElementId, contentId);
-            if (!_regionControllers.ContainsKey(regionModel.LibraryElementId))
+            _regionLibraryElementModels.TryAdd(regionModel.Id, contentId);
+            if (!_regionControllers.ContainsKey(regionModel.Id))
             {
-                _regionControllers.TryAdd(regionModel.LibraryElementId, regionController);
+                _regionControllers.TryAdd(regionModel.Id, regionController);
                 OnNewRegion?.Invoke(regionController);
 
                 return regionController;
@@ -109,21 +99,21 @@ namespace NuSysApp
             {
                 return null;
             }
-            var regionModel = regionController.LibraryElementModel;
-            _regionLibraryElementModels.TryAdd(regionModel.LibraryElementId, contentId);
-            if (!_regionControllers.ContainsKey(regionModel.LibraryElementId))
+            var regionModel = regionController.Model;
+            _regionLibraryElementModels.TryAdd(regionModel.Id, contentId);
+            if (!_regionControllers.ContainsKey(regionModel.Id))
             {
-                _regionControllers.TryAdd(regionModel.LibraryElementId, regionController);
+                _regionControllers.TryAdd(regionModel.Id, regionController);
                 OnNewRegion?.Invoke(regionController);
 
-                return regionModel.LibraryElementId;
+                return regionModel.Id;
             }
             else
             {
                 //THIS IS THE CAUSE OF HALF OUR REGIONS PROBLEMS
                 //throw new Exception("TRIED TO ADD A SECOND REGION CONTROLLER");
                 Debug.Fail("^^ stop commenting this out");
-                return regionModel.LibraryElementId;
+                return regionModel.Id;
             }
             return null;
         }
@@ -141,8 +131,8 @@ namespace NuSysApp
                 var libraryElementModel =
                     SessionController.Instance.ContentController.GetLibraryElementController(
                         _regionLibraryElementModels[regionId])?.LibraryElementModel;
-//                var regionHashSet = libraryElementModel?.Regions;
-  /*              foreach (var regionModel in regionHashSet ?? new HashSet<Region>())
+                var regionHashSet = libraryElementModel?.Regions;
+                foreach (var regionModel in regionHashSet ?? new HashSet<Region>())
                 {
                     if (SessionController.Instance.RegionsController.GetRegionController(regionModel.Id) == null)
                     {
@@ -153,7 +143,7 @@ namespace NuSysApp
                     var regionController = _regionControllerFactory.CreateFromSendable(regionModel, libraryElementModel.LibraryElementId);
                     Add(regionController, libraryElementModel.LibraryElementId);
                     */
-                //}
+                }
             }
 
         }

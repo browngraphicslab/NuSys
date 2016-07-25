@@ -414,7 +414,7 @@
 ////                    props["type"] = "node";
 ////                    props["id"] = id;
 ////                    if (!props.ContainsKey("creator"))
-////                        props["creator"] = SessionController.Instance.ActiveWorkspace.LibraryId;
+////                        props["creator"] = SessionController.Instance.ActiveWorkspace.ContentId;
 
 ////                    props["contentId"] = contentId;
 
@@ -530,7 +530,7 @@
 ////                props["id2"] = id2;
 ////                props["type"] = "link";
 ////                props["id"] = id;
-////                props["creator"] = SessionController.Instance.ActiveWorkspace.LibraryId;
+////                props["creator"] = SessionController.Instance.ActiveWorkspace.ContentId;
 
 ////                if (callback != null)
 ////                {
@@ -1038,15 +1038,15 @@
 //        double.TryParse(props["y"], out y);
 //    }
 
-//    var workspaceId = SessionController.Instance.ActiveWorkspace.LibraryId;
+//    var workspaceId = SessionController.Instance.ActiveWorkspace.ContentId;
 
 //    await UITask.Run(async () =>
 //    {
 //        if (node2 is NodeContainerModel)
 //        {
-//            node1.Creator.Add(node2.LibraryId);
+//            node1.Creator.Add(node2.ContentId);
 //            var prevGroups1 = (List<string>)node1.GetMetaData("groups");
-//            prevGroups1.Add(node2.LibraryId);
+//            prevGroups1.Add(node2.ContentId);
 //            node1.SetMetaData("groups", prevGroups1);
 //            await (node2 as NodeContainerModel).AddChild(node1);
 
@@ -1253,7 +1253,7 @@
 ////                        !set.ContainsKey(((LinkModel)s).OutAtomID)))
 ////                    {
 ////                        list.AddLast(s);
-////                        set.Remove(s.LibraryId);
+////                        set.Remove(s.ContentId);
 ////                    }
 ////                }
 ////                if (SessionController.Instance.IdToSendables.Count > 0)

@@ -5,26 +5,51 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
-using SharpDX.Multimedia;
 
 namespace NuSysApp
 {
-    public abstract class Region : LibraryElementModel
+    public abstract class Region  
     {
-        public string ClippingParentLibraryId { get; private set; }
+        public enum RegionType
+        {
+            Rectangle,
+            Time,
+            Compound,
+            Video,
+            Pdf
+        }
+        public RegionType Type { get; set; }
+        public string Name { get; set; }
+        public string Id { get; set; }
+        public ConcurrentDictionary<string, MetadataEntry> Metadata { get; set; }
+        public Region(string name = "Untitled Region", Dictionary<string, MetadataEntry> metadata = null)
+        {
+            Id = SessionController.Instance.GenerateId();
+            Name = name;
+            Metadata = new ConcurrentDictionary<string, MetadataEntry>(metadata ?? new Dictionary<string, MetadataEntry>());
+            AddDefaultMetadata();
+
+        }
         
-        public Region(string id, ElementType elementType) : base(id, elementType)
+        private void AddDefaultMetadata()
         {
-
-        }
-
-        public override async Task UnPack(Message message)
-        {
-            if (message.GetString("clipping_parent_library_id") != null)
+            //Add immutable data to the dictionary; this can then be displayed in the Metadata Editor
+            
+            if (!Metadata.ContainsKey("Title"))
             {
-                ClippingParentLibraryId = message.GetString("clipping_parent_library_id");
+                Metadata.TryAdd("Title", new MetadataEntry("Title", new List<string> { Name }, MetadataMutability.IMMUTABLE));
             }
-            await base.UnPack(message);
+            if (!Metadata.ContainsKey("Type"))
+            {
+                Metadata.TryAdd("Type", new MetadataEntry("Type", new List<string> { Type.ToString() + "Region" }, MetadataMutability.IMMUTABLE));
+            }
         }
+
+        public void SetMetadata(Dictionary<string, MetadataEntry> metadata)
+        {
+            Metadata = new ConcurrentDictionary<string, MetadataEntry>(metadata);
+            AddDefaultMetadata();
+        }
+
     }
 }

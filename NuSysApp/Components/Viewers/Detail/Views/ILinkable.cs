@@ -9,10 +9,15 @@ namespace NuSysApp
     public interface ILinkable : INuSysDisposable
     {
         Point2d Anchor { get; }
+
         event EventHandler<Point2d> AnchorChanged;
+
         string Id { get; }
+
         string ContentId { get; }
+
         void UpdateCircleLinks();
+
         string GetParentCollectionId();
     }
 }

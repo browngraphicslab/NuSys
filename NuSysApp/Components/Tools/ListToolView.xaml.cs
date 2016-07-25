@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Windows.Devices.Input;
@@ -232,10 +231,6 @@ namespace NuSysApp.Tools
             }
         }
 
-        public void SetViewSelection(HashSet<string> selection)
-        {
-            throw new NotImplementedException();
-        }
     }
 
 }

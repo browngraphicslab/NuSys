@@ -56,7 +56,42 @@ namespace NuSysApp
 
         }
 
+        private void AddRegion_Clicked(object sender, RoutedEventArgs e)
+        {
+            var vm = DetailViewerView.DataContext as DetailViewerViewModel;
+            if (vm == null)
+            {
+                return;
+            }
+            var detailHomeTabViewModel = vm.RegionView.DataContext as DetailHomeTabViewModel;
+            Region region = null;
+            switch (vm.CurrentElementController.LibraryElementModel.Type)
+            {
+                case ElementType.Image:
+                    region = detailHomeTabViewModel?.GetNewRegion();
+                    break;
+                case ElementType.Audio:
+                    region = detailHomeTabViewModel?.GetNewRegion();
+                    break;
+                case ElementType.Video:
+                    region = detailHomeTabViewModel?.GetNewRegion();
+                    break;
+                case ElementType.Collection:
 
+                    break;
+                case ElementType.Text:
+
+                    break;
+                case ElementType.PDF:
+                    region = detailHomeTabViewModel?.GetNewRegion();
+                    break;
+                default:
+                    region = null;
+                    break;
+            }
+
+            vm.CurrentElementController.AddRegion(region);
+        }
 
 
     }

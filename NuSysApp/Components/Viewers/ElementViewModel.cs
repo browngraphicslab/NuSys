@@ -16,7 +16,7 @@ using NuSysApp.Util;
 
 namespace NuSysApp
 {
-    public class ElementViewModel : BaseINPC, ISelectable
+    public class ElementViewModel : BaseINPC, IEditable
     {
         #region Private Members      
 
@@ -164,7 +164,7 @@ namespace NuSysApp
             foreach (var linkLibraryElementId in linkLibraryElementIds)
             {
                 //sorry about this - should also be in frontend and not in viewmodel
-                var linkLibraryElementModel = SessionController.Instance.ContentController.GetLibraryElementModel(linkLibraryElementId) as LinkLibraryElementModel;
+                var linkLibraryElementModel = SessionController.Instance.ContentController.GetContent(linkLibraryElementId) as LinkLibraryElementModel;
                 Debug.Assert(linkLibraryElementModel != null);
                 if (linkLibraryElementModel != null)
                 {

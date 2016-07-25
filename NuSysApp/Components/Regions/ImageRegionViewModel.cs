@@ -75,7 +75,7 @@ namespace NuSysApp
         public event LocationChangedEventHandler LocationChanged;
 
 
-        public ImageRegionViewModel(RectangleRegion model, RectangleRegionController controller,Sizeable sizeable) : base(model,controller,sizeable)
+        public ImageRegionViewModel(RectangleRegion model, LibraryElementController libraryElementController, RectangleRegionController regionController, Sizeable sizeable) : base(model,libraryElementController, regionController,sizeable)
         {
             if (model == null)
             {
@@ -87,11 +87,11 @@ namespace NuSysApp
             Height = model.Height * ContainerHeight;
             Width = model.Width * ContainerWidth;
 
-            controller.SizeChanged += RegionController_SizeChanged;
-            controller.LocationChanged += RegionController_LocationChanged;
-            controller.TitleChanged += RegionController_TitleChanged;
-            controller.OnSelect += RegionController_OnSelect;
-            Name = Model.Title;
+            regionController.SizeChanged += RegionController_SizeChanged;
+            regionController.LocationChanged += RegionController_LocationChanged;
+            regionController.TitleChanged += RegionController_TitleChanged;
+            regionController.OnSelect += RegionController_OnSelect;
+            Name = Model.Name;
             Editable = true;
             Selected = false;
 
@@ -186,7 +186,7 @@ namespace NuSysApp
 
             var tlp = new Point(normalTopLeftX, normalTopLeftY);
 
-            (LibraryElementController as RectangleRegionController).SetLocation(tlp);
+            (RegionController as RectangleRegionController).SetLocation(tlp);
         }
 
         public void SetNewSize(double width, double height)
@@ -200,15 +200,14 @@ namespace NuSysApp
             var normalHeight = height / ContainerViewModel.GetHeight();
 
             
-            Debug.Assert(LibraryElementController is RectangleRegionController);
-            (LibraryElementController as RectangleRegionController).SetWidth(normalWidth);
-            (LibraryElementController as RectangleRegionController).SetHeight(normalHeight);
+
+            (RegionController as RectangleRegionController).SetSize(normalWidth, normalHeight);
         }
 
         public void SetNewName(string text)
         {
             Name = text;
-            LibraryElementController.SetTitle(Name);
+            RegionController.SetTitle(Name);
         }
     }
 }

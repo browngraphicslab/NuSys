@@ -23,7 +23,7 @@
     "System.Security.Cryptography.Algorithms": "4.0.0-beta-23516",
     "win2D.uwp": "1.1.0",
     "WinRTXamlToolkit.Controls.DataVisualization.UWP": "2.0.0"
-  },
+  }
   "frameworks": {
     "uap10.0": {}
   },

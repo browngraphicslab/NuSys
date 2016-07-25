@@ -19,13 +19,15 @@ namespace NuSysApp
         public event SizeChangedEventHandler ContainerSizeChanged;
 
         #endregion Public variables
-        public RegionController LibraryElementController;
+        public LibraryElementController LibraryElementController;
+        public RegionController RegionController;
 
-        public RegionViewModel(Region model, RegionController controller, Sizeable sizeable)
+        public RegionViewModel(Region model, LibraryElementController controller, RegionController regionController, Sizeable sizeable)
         {
             Model = model;
             LibraryElementController = controller;
-            ContainerViewModel = sizeable;//TODO GET RID OF SIZEABLE
+            ContainerViewModel = sizeable;
+            RegionController = regionController;
         }
 
         public void ChangeSize(object sender, double width, double height)
