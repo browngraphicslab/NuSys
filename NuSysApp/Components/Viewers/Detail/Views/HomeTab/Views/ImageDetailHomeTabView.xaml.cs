@@ -173,10 +173,10 @@ namespace NuSysApp
         private void xImg_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             var vm = DataContext as ImageDetailHomeTabViewModel;
-            foreach (var regionView in vm.RegionViews)
-            {
-                regionView.Deselect();
-            }
+            //foreach (var regionView in vm.RegionViews)
+            //{
+            //    regionView.Deselect();
+            //}
         }
 
         private void BitmapImage_ImageOpened(object sender, RoutedEventArgs e)

@@ -49,8 +49,8 @@ namespace NuSysApp
             vm.LocationChanged += ChangeLocation;
 
 
-            var parentWidth = vm.ContainerViewModel.GetWidth();
-            var parentHeight = vm.ContainerViewModel.GetHeight();
+            var parentWidth = vm.ContainerWidth;
+            var parentHeight = vm.ContainerHeight;
             
             composite.TranslateX = model.TopLeftPoint.X * parentWidth;
             composite.TranslateY = model.TopLeftPoint.Y * parentHeight;
@@ -58,7 +58,7 @@ namespace NuSysApp
             vm.Height = (model.Height) * parentHeight;
 
             //If in detail view, adjust to the right to account for difference between view and actual image.
-            if (vm.ContainerViewModel is ImageDetailHomeTabViewModel)
+       /*     if (vm.ContainerViewModel is ImageDetailHomeTabViewModel)
             {
                 var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
 
@@ -66,12 +66,10 @@ namespace NuSysApp
                 var verticalMargin = (ivm.GetViewHeight() - parentHeight)/2;
                 composite.TranslateX += horizontalMargin;
                 composite.TranslateY += verticalMargin;
-            }
+            }*/
 
             _tx = composite.TranslateX;
             _ty = composite.TranslateY;
-
-
 
         }
 
@@ -95,14 +93,14 @@ namespace NuSysApp
             composite.TranslateY = topLeft.Y;
 
             //If in detail view, adjust to the right to account for difference between view and actual image.
-            if (vm.ContainerViewModel is ImageDetailHomeTabViewModel)
+       /*     if (vm.ContainerViewModel is ImageDetailHomeTabViewModel)
             {
                 var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
                 var horizontalMargin = (ivm.GetViewWidth() - ivm.GetWidth())/ 2;
                 var verticalMargin = (ivm.GetViewHeight() - ivm.GetHeight()) / 2;
                 composite.TranslateX += horizontalMargin;
                 composite.TranslateY += verticalMargin;
-            }
+            }*/
         }
         /// <summary>
         /// Changes size of view according to element that contains it.
@@ -162,14 +160,14 @@ namespace NuSysApp
             }
 
             //Because editing is done only in region editor tab, this is probably safe to cast.
-            var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
+            var ivm = vm.RectangleWrapper as RectangleWrapper;
             if (ivm == null)
             {
                 return;
             }
 
-            var horizontalMargin = (ivm.GetViewWidth() - ivm.GetWidth()) / 2;
-            var verticalMargin = (ivm.GetViewHeight() - ivm.GetHeight())/ 2;
+            var horizontalMargin =  ivm.GetWidth();
+            var verticalMargin = ivm.GetHeight();
 
             var leftXBound = horizontalMargin;
             var rightXBound = horizontalMargin + ivm.GetWidth();
@@ -221,9 +219,9 @@ namespace NuSysApp
                 return;
             }
 
-            var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
-            var horizontalMargin = (ivm.GetViewWidth() - ivm.GetWidth())/2;
-            var verticalMargin = (ivm.GetViewHeight() - ivm.GetHeight())/2;
+            var ivm = vm.RectangleWrapper as RectangleWrapper;
+            var horizontalMargin =ivm.GetWidth();
+            var verticalMargin = ivm.GetHeight();
 
             var leftXBound = horizontalMargin;
             var rightXBound = horizontalMargin + ivm.GetWidth() - vm.Width;

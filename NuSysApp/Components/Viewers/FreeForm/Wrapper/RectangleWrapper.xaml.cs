@@ -94,26 +94,33 @@ namespace NuSysApp
                 return;
             }
             var type = Controller.LibraryElementModel.Type;
-
+            var contentView = xClippingContent;
+            Debug.Assert(contentView != null);
             if (Constants.IsRegionType(type))
             {
                 
                 var regionModel = (Controller as RectangleRegionLibraryElementController).LibraryElementModel as RectangleRegion;
                 // creates a clipping rectangle using parameters topleftX, topleftY, width, height
                 // the regionModel Width and points are all normalized
-                var rect = new Rect(regionModel.TopLeftPoint.X * this.ActualWidth, regionModel.TopLeftPoint.Y * this.ActualHeight,
-                    regionModel.Width * this.ActualWidth, regionModel.Height * this.ActualHeight);
+                var rect = new Rect(regionModel.TopLeftPoint.X * contentView.ActualWidth, regionModel.TopLeftPoint.Y * contentView.ActualHeight,
+                    regionModel.Width * contentView.ActualWidth, regionModel.Height * contentView.ActualHeight);
                 xClippingRectangle.Rect = rect;
+
+                var scaleX = 1 / (Controller.LibraryElementModel as RectangleRegion).Width;
+                var scaleY = 1 / (Controller.LibraryElementModel as RectangleRegion).Height;
 
                 // shifts the clipped rectangle so its upper left corner is in the upper left corner of the node
                 var compositeTransform = xClippingCompositeTransform;
-                compositeTransform.TranslateX = -regionModel.TopLeftPoint.X*this.ActualWidth * 1/regionModel.Width;
-                compositeTransform.TranslateY = -regionModel.TopLeftPoint.Y * this.ActualHeight * 1/regionModel.Height;
+                compositeTransform.TranslateX = -regionModel.TopLeftPoint.X* contentView.ActualWidth * 1/regionModel.Width;
+                compositeTransform.TranslateY = -regionModel.TopLeftPoint.Y * contentView.ActualHeight * 1/regionModel.Height;
+                compositeTransform.ScaleX = scaleX;
+                compositeTransform.ScaleY = scaleY;
+                xClippingCompositeTransform = compositeTransform;
             }
             else
             {
                 // since we aren't in a rectangle, the clipping rectangle contains the entire image
-                var rect = new Rect(0, 0, this.ActualWidth, this.ActualHeight);
+                var rect = new Rect(0, 0, contentView.ActualWidth, contentView.ActualHeight);
                 xClippingRectangle.Rect = rect;
             }
         }
@@ -139,10 +146,42 @@ namespace NuSysApp
                 compositeTransform.ScaleY = scaleY;
                 xClippingCompositeTransform = compositeTransform;
             }
+            var regionsLibraryElementIds =
+                SessionController.Instance.RegionsController.GetRegionLibraryElementIds(
+                    Controller.LibraryElementModel.LibraryElementId);
 
-
+            if (regionsLibraryElementIds == null)
+            {
+                return;
+            }
+            foreach (var regionId in regionsLibraryElementIds)
+            {
+                var regionLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(regionId) as RectangleRegionLibraryElementController;
+                Debug.Assert(regionLibraryElementController != null);
+                Debug.Assert(regionLibraryElementController.LibraryElementModel is RectangleRegion);
+                var vm = new ImageRegionViewModel(regionLibraryElementController.LibraryElementModel as RectangleRegion,
+                    regionLibraryElementController, this);
+            //    if (!Editable)
+            //        vm.Editable = false;
+                var view = new ImageRegionView(vm);
+                view.SizeChanged += XClippingGrid_OnSizeChanged;
+                xClippingGrid.Children.Add(view);
+            }
         }
 
+
+        private void xClippingContent_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+
+        }
+        public double GetWidth()
+        {
+            return xClippingGrid.Width;
+        }
+        public double GetHeight()
+        {
+            return xClippingGrid.Height;
+        }
 
         // My code is slick yo - Sahil, July 2016
 
