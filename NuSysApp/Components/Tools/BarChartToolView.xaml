@@ -9,11 +9,17 @@
     d:DesignWidth="400">
 
     <Grid x:Name="xMainGrid">
+        
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="*" MaxWidth="300"/>
         </Grid.ColumnDefinitions>
-        <Grid x:Name="xBarChart" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Column="0" Margin="0" SizeChanged="XBarChart_OnSizeChanged"/>
+        <Grid x:Name="xBarChart" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Column="0" Margin="0" SizeChanged="XBarChart_OnSizeChanged">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+        </Grid>
         <InkCanvas x:Name="xInkCanvas" IsHitTestVisible="False"></InkCanvas>
         <ListView x:Name="xBarChartLegend" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MinWidth="100"
                   BorderThickness="2,0,0,0" BorderBrush="{StaticResource color1}"
@@ -66,6 +72,7 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        
     </Grid>
 
 </UserControl>

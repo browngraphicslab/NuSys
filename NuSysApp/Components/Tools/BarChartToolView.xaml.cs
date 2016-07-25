@@ -95,9 +95,9 @@ namespace NuSysApp
             foreach (InkStroke stroke in args.Strokes)
             {
                 var minMaxXTuple = GetMinMaxXValues(stroke.GetInkPoints());
-                var currentPointToCheck = new Point(minMaxXTuple.Item1, this.ActualHeight - 1);
+                var currentPointToCheck = new Point(minMaxXTuple.Item1, xBarChart.RowDefinitions[0].ActualHeight - 1);
                 var columnWidth = xBarChart.ColumnDefinitions[0].ActualWidth;
-                while (currentPointToCheck.X < minMaxXTuple.Item2)
+                while (currentPointToCheck.X < minMaxXTuple.Item2 + (columnWidth-(minMaxXTuple.Item2 % columnWidth)))
                 {
                     var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(currentPointToCheck);
                     var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
@@ -123,35 +123,6 @@ namespace NuSysApp
                     }
                     currentPointToCheck = new Point(currentPointToCheck.X + columnWidth, currentPointToCheck.Y);
                 }
-                //Checks if each point intersects with a bar chart item
-                //foreach (InkPoint point in points)
-                //{
-                //    //Creates a new point using the x of the stroke point and the bottom of the bar chart
-                //    //so you can draw ontop of a bar and still select that bar.
-                //    Point bottomPoint = new Point(point.Position.X, this.ActualHeight - 1);
-                //    var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(bottomPoint);
-                //    var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
-                //    var y =
-                //        hitsStart.Where(
-                //            uiElem =>
-                //                (uiElem is FrameworkElement) &&
-                //                (uiElem as FrameworkElement).DataContext is BarChartItemViewModel).ToList();
-                //    if (y.Any())
-                //    {
-                //        var barVm = ((y.First() as FrameworkElement)?.DataContext as BarChartItemViewModel);
-                //        listOfBarsHit.Add(barVm);
-                //        var selectionString = barVm?.Title;
-
-                //        //If any of the bars hit was unselected, just select the unselected bars. 
-                //        //If all bars were already selected, then allSelected will remain true which will cause
-                //        //all the bars that were hit to be deselected.
-                //        if (!_baseTool.Vm.Selection.Contains(selectionString))
-                //        {
-                //            allSelected = false;
-                //            _baseTool.Vm.Selection.Add(selectionString);
-                //        }
-                //    }
-                //}
             }
             //deselect all the bars that were hit
             if (allSelected == true)
@@ -221,7 +192,17 @@ namespace NuSysApp
                 var item = new BarChartItem(vm);
                 SetUpBarChartItemHandlers(item);
                 Grid.SetColumn(item, i);
+                Grid.SetRow(item, 0);
                 xBarChart.Children.Add(item);
+
+                //set up axis labels
+                var label = new TextBlock();
+                label.Text = kvp.Key;
+                Grid.SetColumn(label, i);
+                Grid.SetRow(label, 1);
+                label.TextWrapping = TextWrapping.WrapWholeWords;
+                label.TextAlignment = TextAlignment.Center;
+                xBarChart.Children.Add(label);
 
                 // take care of mappings
                 _barChartItemDictionary.Add(kvp.Key, item);
@@ -324,14 +305,17 @@ namespace NuSysApp
         /// </summary>
         private void SetBarChartBarHeights()
         {
-            int i = 0;
+            //int i = 0;
             foreach (var uiElement in xBarChart.Children)
             {
                 var item = uiElement as BarChartItem;
                 var itemDataContext = item?.DataContext as BarChartItemViewModel;
-                Debug.Assert(itemDataContext != null);
-                itemDataContext.Height = (itemDataContext.Count / _maxValue) * xBarChart.ActualHeight;
-                i++;
+                //Debug.Assert(itemDataContext != null);
+                if (itemDataContext != null)
+                {
+                    itemDataContext.Height = (itemDataContext.Count / _maxValue) * xBarChart.RowDefinitions[0].ActualHeight;
+                }
+                //i++;
             }
         }
 
