@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.UI;
 using Microsoft.Graphics.Canvas.Geometry;
+using NuSysApp.Components.NuSysRender;
 
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -41,6 +42,8 @@ namespace NuSysApp
         private ExploreMode _exploreMode;
         private MultiMode _explorationMode;
 
+        private NuSysRenderer _nusysRenderer;
+
         public Brush CanvasColor
         {
             get { return xInqCanvasContainer.Background; }
@@ -57,6 +60,9 @@ namespace NuSysApp
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
+
+                _nusysRenderer = new NuSysRenderer(xRenderCanvas);
+
                 _inqCanvas = new NuSysInqCanvas(wetCanvas, dryCanvas);
                 _inqCanvas.Transform = vm.CompositeTransform;
                 _inqCanvas.InkStrokeAdded += InkStrokedAdded;

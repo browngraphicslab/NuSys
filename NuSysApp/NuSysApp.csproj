@@ -303,6 +303,7 @@
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\TextInputBlockViewModel.cs" />
+    <Compile Include="Components\NuSysRender\NuSysRenderer.cs" />
     <Compile Include="Components\Regions\VideoRegionView.xaml.cs">
       <DependentUpon>VideoRegionView.xaml</DependentUpon>
     </Compile>
