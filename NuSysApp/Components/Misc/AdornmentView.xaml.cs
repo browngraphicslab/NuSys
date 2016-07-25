@@ -19,11 +19,38 @@ namespace NuSysApp.Components.Misc
 {
     public sealed partial class AdornmentView : AnimatableUserControl
     {
-        public AdornmentView()
+        public AdornmentView(List<Windows.Foundation.Point> shapePoints)
         {
             this.InitializeComponent();
             (Adornment.RenderTransform as CompositeTransform).TranslateX = 50000;
             (Adornment.RenderTransform as CompositeTransform).TranslateY = 50000;
+
+            
+
+            // Search for the left and top most point
+            var leftMost = Double.PositiveInfinity;
+            var topMost = Double.PositiveInfinity;
+            foreach (var point in shapePoints)
+            {
+                if (point.X < leftMost)
+                {
+                    leftMost = point.X;
+                }
+                if (point.Y < topMost)
+                {
+                    topMost = point.Y;
+                }
+
+            }
+
+            // Adjust and add points to the collection
+            var col = new PointCollection();
+            foreach (var point in shapePoints)
+            {
+                var adjustedPt = new Point(point.X-leftMost, point.Y-topMost);
+                col.Add(adjustedPt);
+            }
+            Adornment.Points = col;
         }
     }
 }

@@ -11,10 +11,11 @@
     >
 
     <Grid>
-        <Polygon Name="Adornment" Fill="Green" Points="0,0 500,0 250,500" Opacity=".5">
+        <Polygon Name="Adornment" Fill="Green" >
             <Polygon.RenderTransform>
                 <CompositeTransform></CompositeTransform>
             </Polygon.RenderTransform>
+            
         </Polygon>
     </Grid>
 </local:AnimatableUserControl>

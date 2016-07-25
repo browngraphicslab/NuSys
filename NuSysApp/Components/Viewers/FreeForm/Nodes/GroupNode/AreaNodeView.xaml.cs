@@ -50,9 +50,11 @@ namespace NuSysApp
             _dragOutMode = new DragOutMode(this);
             _dragOutMode.Activate();
 
-           // vm.AtomViewList.Add(new Windows.UI.Xaml.Shapes.Ellipse() {Width = 700, Height = 500, Fill = new SolidColorBrush(Colors.Red
+            // vm.AtomViewList.Add(new Windows.UI.Xaml.Shapes.Ellipse() {Width = 700, Height = 500, Fill = new SolidColorBrush(Colors.Red
             //    ) });
-            vm.AtomViewList.Add(new AdornmentView());
+            var shapePoints = vm.Model.ShapePoints;
+            vm.AtomViewList.Add(new AdornmentView(shapePoints));
+            
         }
 
 

@@ -34,6 +34,8 @@ namespace NuSysApp
 
         public string ParentCollectionId { get; set; }
 
+        public List<Windows.Foundation.Point> ShapePoints { get; set; } 
+
         // TODO: Move color to higher level type
 
         public SolidColorBrush Color
@@ -142,6 +144,7 @@ namespace NuSysApp
             }
 
             dict.Add("inqLines", lines);
+            dict.Add("points", ShapePoints);
             return dict;
         }
 
@@ -182,6 +185,10 @@ namespace NuSysApp
             if (props.ContainsKey("creator"))
             {
                 ParentCollectionId = props.GetString("creator", ParentCollectionId);
+            }
+            if (props.ContainsKey("points"))
+            {
+                ShapePoints = props.GetList<Windows.Foundation.Point>("points");
             }
 
             InqCanvas.UnPack(props);

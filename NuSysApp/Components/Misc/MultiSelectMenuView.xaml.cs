@@ -66,7 +66,8 @@ namespace NuSysApp
                 Visibility = Visibility.Collapsed;
                 return;
             }
-            var bb = Geometry.NodesToBoudingRect(selections.Where(v =>  (v is ElementViewModel)).Select(item=> item as ElementViewModel).ToList());       
+            //var bb = Geometry.NodesToBoudingRect(selections.Where(v =>  (v is ElementViewModel)).Select(item=> item as ElementViewModel).ToList());       
+            var bb = Stroke.BoundingRect;
 
             var metadata = new Dictionary<string, object>();
             metadata["node_creation_date"] = DateTime.Now;
@@ -88,7 +89,7 @@ namespace NuSysApp
             deleteMsg["inklines"] = new HashSet<string>(model.InkLines);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(deleteMsg));
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Search Results"));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Nu Collection Beyotch!"));
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
 
