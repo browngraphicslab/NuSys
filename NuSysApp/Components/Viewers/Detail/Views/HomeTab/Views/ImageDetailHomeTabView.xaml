@@ -38,15 +38,6 @@
                         </Image>
                     </local:RectangleWrapper.Content>
                 </local:RectangleWrapper>
-                
-
-                <ItemsControl ItemsSource="{Binding RegionViews}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <Canvas/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
             </Grid>
         </Border>
         <Border Grid.Row="1" Background="{StaticResource color7}" Height="Auto" Width="140" Padding="5" BorderBrush="{StaticResource color3}" BorderThickness="2" Margin="0,50,0,0"

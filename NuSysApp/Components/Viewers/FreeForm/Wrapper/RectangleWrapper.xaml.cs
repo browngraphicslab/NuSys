@@ -146,10 +146,11 @@ namespace NuSysApp
                 compositeTransform.ScaleY = scaleY;
                 xClippingCompositeTransform = compositeTransform;
             }
+            xClippingCanvas.Items.Clear();
             var regionsLibraryElementIds =
                 SessionController.Instance.RegionsController.GetRegionLibraryElementIds(
                     Controller.LibraryElementModel.LibraryElementId);
-
+            var ParentDC = DataContext as DetailHomeTabViewModel;
             if (regionsLibraryElementIds == null)
             {
                 return;
@@ -161,11 +162,12 @@ namespace NuSysApp
                 Debug.Assert(regionLibraryElementController.LibraryElementModel is RectangleRegion);
                 var vm = new ImageRegionViewModel(regionLibraryElementController.LibraryElementModel as RectangleRegion,
                     regionLibraryElementController, this);
-            //    if (!Editable)
-            //        vm.Editable = false;
+
+                vm.Editable = false;
+                if (ParentDC != null)
+                    vm.Editable = ParentDC.Editable;
                 var view = new ImageRegionView(vm);
-                view.SizeChanged += XClippingGrid_OnSizeChanged;
-                xClippingGrid.Children.Add(view);
+                xClippingCanvas.Items.Add(view);
             }
         }
 

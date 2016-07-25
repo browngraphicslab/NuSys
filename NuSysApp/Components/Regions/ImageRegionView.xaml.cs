@@ -45,7 +45,7 @@ namespace NuSysApp
             this.RenderTransform = composite;
 
             vm.PropertyChanged += PropertyChanged;
-            vm.SizeChanged += ChangeSize;
+            //vm.SizeChanged += ChangeSize;
             vm.LocationChanged += ChangeLocation;
 
 
@@ -118,8 +118,6 @@ namespace NuSysApp
                 return;
             }
 
-            xMainRectangle.Width = width;
-            xMainRectangle.Height = height;
 
             vm.Width = width;
             vm.Height = height;
@@ -166,8 +164,8 @@ namespace NuSysApp
                 return;
             }
 
-            var horizontalMargin = (ivm.GetViewWidth() - ivm.GetWidth()) / 2;
-            var verticalMargin = (ivm.GetViewHeight() - ivm.GetHeight()) / 2;
+            var horizontalMargin = 0;// (ivm.GetViewWidth() - ivm.GetWidth()) / 2;
+            var verticalMargin = 0;// (ivm.GetViewHeight() - ivm.GetHeight()) / 2;
 
             var leftXBound = horizontalMargin;
             var rightXBound = horizontalMargin + ivm.GetWidth();
@@ -177,22 +175,22 @@ namespace NuSysApp
 
 
             //CHANGE IN WIDTH
-            if (xMainRectangle.Width + rt.TranslateX + e.Delta.Translation.X <= rightXBound)
+            if (vm.Width + rt.TranslateX + e.Delta.Translation.X <= rightXBound)
             {
-                xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
-                vm.Width = xMainRectangle.Width;
+               // xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
+                vm.Width = Math.Max(vm.Width + e.Delta.Translation.X, 25);
 
             }
             //CHANGE IN HEIGHT
             
-            if (xMainRectangle.Height + rt.TranslateY + e.Delta.Translation.Y <= downYBound)
+            if (vm.Height + rt.TranslateY + e.Delta.Translation.Y <= downYBound)
             {
-                xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
-                vm.Height = xMainRectangle.Height;
+             //   xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
+                vm.Height = Math.Max(vm.Height + e.Delta.Translation.Y, 25);
             }
 
             //Updates viewmodel
-            vm.SetNewSize(xMainRectangle.Width, xMainRectangle.Height);
+            vm.SetNewSize(vm.Width, vm.Height);
 
     
         }
@@ -220,8 +218,8 @@ namespace NuSysApp
             }
 
             var ivm = vm.RectangleWrapper as RectangleWrapper;
-            var horizontalMargin = (-ivm.GetWidth() + ivm.GetViewWidth())/2;
-            var verticalMargin = (-ivm.GetHeight() + ivm.GetViewHeight())/2;
+            var horizontalMargin = 0;// (-ivm.GetWidth() + ivm.GetViewWidth())/2;
+            var verticalMargin = 0;// (-ivm.GetHeight() + ivm.GetViewHeight())/2;
 
             var leftXBound = horizontalMargin;
             var rightXBound = horizontalMargin + ivm.GetWidth() - vm.Width;
