@@ -65,8 +65,6 @@ namespace NuSysApp
         public bool Selected { set; get; }
         public double OriginalHeight { get; set; }
         public double OriginalWidth { get; set; }
-        public double ContainerHeight { get; set; }
-        public double ContainerWidth { get; set; }
         public RectangleWrapper RectangleWrapper { get; set; } 
 
         public delegate void SizeChangedEventHandler(object sender, double width, double height);
@@ -98,8 +96,8 @@ namespace NuSysApp
         private void RectangleWrapper_SizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)
         {
             var model = this.RegionLibraryElementController.LibraryElementModel as RectangleRegion;
-            ContainerHeight = e.NewSize.Height;
-            ContainerWidth = e.NewSize.Width;
+            var ContainerHeight = RectangleWrapper.GetHeight();
+            var ContainerWidth = RectangleWrapper.GetWidth();
             Height = model.Height * ContainerHeight;
             Width = model.Width * ContainerWidth;
         }
@@ -125,9 +123,7 @@ namespace NuSysApp
                 return;
             }
 
-
             var denormalizedTopLeft = new Point(model.TopLeftPoint.X * RectangleWrapper.GetWidth(), model.TopLeftPoint.Y * RectangleWrapper.GetHeight());
-
             LocationChanged?.Invoke(this, denormalizedTopLeft);
 
         }
@@ -135,8 +131,6 @@ namespace NuSysApp
         
         private void RegionController_SizeChanged(object sender, double width, double height)
         {
-            
-
             var model = Model as RectangleRegion;
             if (model == null)
             {
@@ -204,8 +198,6 @@ namespace NuSysApp
             }
             var normalWidth = width / RectangleWrapper.GetWidth();
             var normalHeight = height / RectangleWrapper.GetHeight();
-
-            
 
             (RegionLibraryElementController as RectangleRegionLibraryElementController).SetHeight(normalHeight);
             (RegionLibraryElementController as RectangleRegionLibraryElementController).SetWidth(normalWidth);

@@ -49,8 +49,8 @@ namespace NuSysApp
             vm.LocationChanged += ChangeLocation;
 
 
-            var parentWidth = vm.ContainerWidth;
-            var parentHeight = vm.ContainerHeight;
+            var parentWidth = vm.RectangleWrapper.GetWidth();
+            var parentHeight = vm.RectangleWrapper.GetHeight();
             
             composite.TranslateX = model.TopLeftPoint.X * parentWidth;
             composite.TranslateY = model.TopLeftPoint.Y * parentHeight;
@@ -166,8 +166,8 @@ namespace NuSysApp
                 return;
             }
 
-            var horizontalMargin =  ivm.GetWidth();
-            var verticalMargin = ivm.GetHeight();
+            var horizontalMargin = (ivm.GetViewWidth() - ivm.GetWidth()) / 2;
+            var verticalMargin = (ivm.GetViewHeight() - ivm.GetHeight()) / 2;
 
             var leftXBound = horizontalMargin;
             var rightXBound = horizontalMargin + ivm.GetWidth();
@@ -220,8 +220,8 @@ namespace NuSysApp
             }
 
             var ivm = vm.RectangleWrapper as RectangleWrapper;
-            var horizontalMargin =ivm.GetWidth();
-            var verticalMargin = ivm.GetHeight();
+            var horizontalMargin = (-ivm.GetWidth() + ivm.GetViewWidth())/2;
+            var verticalMargin = (-ivm.GetHeight() + ivm.GetViewHeight())/2;
 
             var leftXBound = horizontalMargin;
             var rightXBound = horizontalMargin + ivm.GetWidth() - vm.Width;
@@ -254,7 +254,7 @@ namespace NuSysApp
             }
             else if (_ty > downYBound)
             {
-                rt.TranslateY = vm.ContainerHeight - vm.OriginalHeight;
+                rt.TranslateY = vm.RectangleWrapper.GetHeight() - vm.OriginalHeight;
             }
             else
             {

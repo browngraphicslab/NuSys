@@ -8,9 +8,10 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid x:Name="xClippingGrid" SizeChanged="XClippingGrid_OnSizeChanged">
+    <Grid x:Name="xClippingGrid" SizeChanged="XClippingGrid_OnSizeChanged"  VerticalAlignment="Center" HorizontalAlignment="Center" Background="Azure">
         
-        <ContentPresenter x:Name="xClippingContent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SizeChanged="xClippingContent_SizeChanged">
+
+        <ContentPresenter x:Name="xClippingContent" HorizontalAlignment="Center" VerticalAlignment="Center">
             <ContentPresenter.RenderTransform>
                 <CompositeTransform x:Name="xClippingCompositeTransform"/>
             </ContentPresenter.RenderTransform>

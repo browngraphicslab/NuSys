@@ -36,7 +36,6 @@ namespace NuSysApp
 
         public ImageDetailHomeTabView(ImageDetailHomeTabViewModel vm)
         {
-
             DataContext = vm;
             _libraryElementId = vm.LibraryElementController.ContentId;
             InitializeComponent();
@@ -50,15 +49,12 @@ namespace NuSysApp
             //{
             //    SourceBttn.Visibility = Visibility.Collapsed;
             //}
-
-
-
+            
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
             vm.PropertyChanged += PropertyChanged;
             vm.View = this;
 
-
-
+            xClippingWrapper.Controller = vm.LibraryElementController;
         }
 
         public void RefreshRegions()
@@ -184,7 +180,7 @@ namespace NuSysApp
             var vm = (ImageDetailHomeTabViewModel) DataContext;
             vm.SetExistingRegions();
             ContentLoaded?.Invoke(this);
-
+            xClippingWrapper.Controller = vm.LibraryElementController;
         }
 
 #region addToCollection
@@ -328,5 +324,10 @@ namespace NuSysApp
 
 #endregion addToCollection
 
+        private void XImg_OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var vm = (ImageDetailHomeTabViewModel)DataContext;
+            xClippingWrapper.Controller = vm.LibraryElementController;
+        }
     }
 }

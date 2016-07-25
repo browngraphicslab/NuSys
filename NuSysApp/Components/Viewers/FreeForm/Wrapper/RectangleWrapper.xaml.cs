@@ -169,20 +169,22 @@ namespace NuSysApp
             }
         }
 
-
-        private void xClippingContent_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-
-        }
         public double GetWidth()
         {
-            return xClippingGrid.Width;
+            return xClippingGrid.ActualWidth;
         }
         public double GetHeight()
         {
-            return xClippingGrid.Height;
+            return xClippingGrid.ActualHeight;
         }
-
+        public double GetViewWidth()
+        {
+            return xClippingContent.ActualWidth;
+        }
+        public double GetViewHeight()
+        {
+            return xClippingContent.ActualHeight;
+        }
         // My code is slick yo - Sahil, July 2016
 
         // Why is this so broken - everybody else
@@ -190,6 +192,11 @@ namespace NuSysApp
         // But its slick - sahil "slick" mishra
 
         // Your code is actually slick - Luke "literally crying" Murray
+        private void XClippingContent_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            Debug.Assert(Controller != null);
+            SessionController.Instance.SessionView.DetailViewerView.ShowElement(Controller);
+        }
     }
 
 

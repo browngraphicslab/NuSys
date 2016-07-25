@@ -28,11 +28,17 @@
                     <Button Click="ButtonBase_OnClick" Foreground="{StaticResource foreground6}" Background="Transparent">INK</Button>
                     <Button Name="SourceBttn" Foreground="{StaticResource foreground6}" Click="OnGoToSource" Background="Transparent">GO TO SOURCE</Button>
                 </StackPanel>
-                <Image x:Name="xImg" PointerPressed="xImg_PointerPressed" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Center" >
-                    <Image.Source>
-                        <BitmapImage x:Name="hi" ImageOpened="BitmapImage_ImageOpened" UriSource="{Binding Path=Image}"></BitmapImage>
-                    </Image.Source>
-                </Image>
+
+                <local:RectangleWrapper x:Name="xClippingWrapper">
+                    <local:RectangleWrapper.Content>
+                        <Image x:Name="xImg" PointerPressed="xImg_PointerPressed" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" SizeChanged="XImg_OnSizeChanged">
+                            <Image.Source>
+                                <BitmapImage x:Name="sourceImage" ImageOpened="BitmapImage_ImageOpened" UriSource="{Binding Image}"/>
+                            </Image.Source>
+                        </Image>
+                    </local:RectangleWrapper.Content>
+                </local:RectangleWrapper>
+                
 
                 <ItemsControl ItemsSource="{Binding RegionViews}">
                     <ItemsControl.ItemsPanel>

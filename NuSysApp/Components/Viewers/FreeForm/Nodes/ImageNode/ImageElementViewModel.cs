@@ -78,17 +78,17 @@ namespace NuSysApp
             var ratio = (double)Image.PixelHeight / (double)Image.PixelWidth;
             Controller.SetSize(Controller.Model.Width, Controller.Model.Width * ratio);
         }
-        /*
-        public override void SetSize(double width, double height)
-        {
-            if (Image == null)
-            {
-                return;
-            }
+        
+        //public override void SetSize(double width, double height)
+        //{
+        //    if (Image == null)
+        //    {
+        //        return;
+        //    }
 
-            var ratio = (double)Image.PixelHeight / (double)Image.PixelWidth;
-            base.SetSize(width, width * ratio);
-        }*/
+        //    var ratio = (double)Image.PixelHeight / (double)Image.PixelWidth;
+        //    base.SetSize(width, width * ratio);
+        //}
         public override double GetRatio()
         {
             if (Image == null)
