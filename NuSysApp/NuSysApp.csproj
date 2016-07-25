@@ -103,6 +103,7 @@
     <Content Include="Assets\add from file dark.png" />
     <Content Include="Assets\audio main menu.png" />
     <Content Include="Assets\audio.png" />
+    <Content Include="Assets\BadgeLogo.scale-200.png" />
     <Content Include="Assets\collection icon bluegreen.png" />
     <Content Include="Assets\collection main menu.png" />
     <Content Include="Assets\collection_1.png" />
@@ -1208,8 +1209,19 @@
     <SDKReference Include="Microsoft.VCLibs, Version=14.0">
       <Name>Visual C++ 2015 Runtime for Universal Windows Platform Apps</Name>
     </SDKReference>
+    <SDKReference Include="WindowsDesktop, Version=10.0.10586.0">
+      <Name>Windows Desktop Extensions for the UWP</Name>
+    </SDKReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BgTasks\BgTasks.csproj">
+      <Project>{64866830-e3f0-45a7-be72-0e3ae4e341de}</Project>
+      <Name>BgTasks</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CommModule\CommModule.csproj">
+      <Project>{cd9491ce-2eee-4315-b53e-f625a2615f03}</Project>
+      <Name>CommModule</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LdaLibrary\LdaLibrary.csproj">
       <Project>{70229fb2-2d64-49dc-8b44-9faad76dd4e3}</Project>
       <Name>LdaLibrary</Name>
@@ -1226,39 +1238,6 @@
     <Reference Include="Microsoft.Vbe.Interop">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio 14.0\Visual Studio Tools for Office\PIA\Office15\Microsoft.Vbe.Interop.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="SharpDX">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.D3DCompiler">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.D3DCompiler.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct2D1">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Direct2D1.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D11">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Direct3D11.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D11.Effects">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Direct3D11.Effects.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D12">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Direct3D12.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.DXGI">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.DXGI.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Mathematics">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.Mathematics.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.MediaFoundation">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.MediaFoundation.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.XAudio2">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.XAudio2.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.XInput">
-      <HintPath>..\..\..\..\Downloads\Bin\StoreApp\SharpDX.XInput.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
