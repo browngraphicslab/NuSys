@@ -14,7 +14,6 @@ namespace NusysServer
         public static readonly string SERVER_REQUEST_ITEM_TYPE_STRING = "server_item_type";
         public static readonly string SERVER_REQUEST_ECHO_TYPE_STRING = "server_echo_type";
         public static readonly string FROM_SERVER_MESSAGE_INDICATOR_STRING = "server_indication_from_server";
-        public static readonly string REQUEST_TYPE_STRING = "request_type";
 
         public static string LOGIN_REQUEST_STRING = "login_request";
 

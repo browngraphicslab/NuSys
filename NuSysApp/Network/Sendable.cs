@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
-    // TODO: remove BASEINPC
     public abstract class Sendable
     {
 

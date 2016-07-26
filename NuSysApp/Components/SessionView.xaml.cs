@@ -19,7 +19,7 @@ using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
-
+using NusysIntermediate;
 using NuSysApp.Util;
 
 namespace NuSysApp
@@ -62,10 +62,20 @@ namespace NuSysApp
         #endregion Private Members
 
         private int initChatNotifs;
+        private bool _isChatVisible;
 
         public SessionView()
         {
             this.InitializeComponent();
+            var bounds = Window.Current.Bounds;
+            var height = bounds.Height;
+            var width = bounds.Width;
+            Canvas.SetLeft(xChatBox, width - 300 - 10);
+            Canvas.SetTop(xChatBox, height - 375 - 10 - 50);
+            Canvas.SetLeft(ChatBoxButton, width - 10 - 50);
+            Canvas.SetTop(ChatBoxButton, height - 10 - 50);
+
+            _isChatVisible = false;
 
             CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
             CoreWindow.GetForCurrentThread().KeyUp += OnKeyUp;
@@ -118,6 +128,7 @@ namespace NuSysApp
             xDetailViewer.DataContext = new DetailViewerViewModel();
             xSearchViewer.DataContext = new SearchViewModel();
             xSpeechToTextBox.DataContext = new SpeechToTextViewModel();
+            xChatBox.DataContext = new ChatBoxViewModel();
 
             var xRegionEditorView = (RegionEditorTabView)xDetailViewer.FindName("xRegionEditorView");
             xRegionEditorView.DataContext = xDetailViewer.DataContext;
@@ -639,7 +650,7 @@ namespace NuSysApp
             var type = libraryModel.Type;
             switch (type)
             {
-                case ElementType.Collection:
+                case NusysConstants.ElementType.Collection:
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(message));
                     Task.Run(async delegate
                     {
@@ -656,7 +667,7 @@ namespace NuSysApp
                         await MakeCollection(subMessagesLeft, levelsLeft > 1, levelsLeft - 1);
                     }
                     break;
-                case ElementType.Link:
+                case NusysConstants.ElementType.Link:
                     break;/*
                     var id1 = message.GetString("id1");
                     var id2 = message.GetString("id2");
@@ -947,6 +958,24 @@ namespace NuSysApp
                 exp.HideRelatedListBox();
             }
             
+        }
+
+        public ChatBoxView GetChatBox()
+        {
+            return xChatBox;
+        }
+
+        private void ChatBoxButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            _isChatVisible = !_isChatVisible;
+            if (_isChatVisible)
+            {
+                xChatBox.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                xChatBox.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }

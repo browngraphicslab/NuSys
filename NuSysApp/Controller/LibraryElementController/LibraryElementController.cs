@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using NusysConstants;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -327,26 +327,26 @@ namespace NuSysApp
                 }
                 switch (LibraryElementModel.Type)
                 {
-                    case ElementType.Image:
-                    case ElementType.Video:
+                    case NusysConstants.ElementType.Image:
+                    case NusysConstants.ElementType.Video:
                         return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_large.jpg");
                         break;
-                    case ElementType.PDF:
+                    case NusysConstants.ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
                         break;
-                    case ElementType.Audio:
+                    case NusysConstants.ElementType.Audio:
                         return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
                         break;
-                    case ElementType.Text:
+                    case NusysConstants.ElementType.Text:
                         return new Uri("ms-appx:///Assets/library_thumbnails/text.png");
                         break;
-                    case ElementType.Collection:
+                    case NusysConstants.ElementType.Collection:
                         return new Uri("ms-appx:///Assets/library_thumbnails/collection_1.png");
                         break;
-                    case ElementType.Word:
+                    case NusysConstants.ElementType.Word:
                         return new Uri("ms-appx:///Assets/library_thumbnails/word.png");
                         break;
-                    case ElementType.Link:
+                    case NusysConstants.ElementType.Link:
                         return new Uri("ms-appx:///Assets/library_thumbnails/link.png");
                         break;
                     default:
@@ -364,26 +364,26 @@ namespace NuSysApp
                 }
                 switch (LibraryElementModel.Type)
                 {
-                    case ElementType.Image:
-                    case ElementType.Video:
+                    case NusysConstants.ElementType.Image:
+                    case NusysConstants.ElementType.Video:
                         return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_medium.jpg");
                         break;
-                    case ElementType.PDF:
+                    case NusysConstants.ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
                         break;
-                    case ElementType.Audio:
+                    case NusysConstants.ElementType.Audio:
                         return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
                         break;
-                    case ElementType.Text:
+                    case NusysConstants.ElementType.Text:
                         return new Uri("ms-appx:///Assets/library_thumbnails/text.png");
                         break;
-                    case ElementType.Collection:
+                    case NusysConstants.ElementType.Collection:
                         return new Uri("ms-appx:///Assets/library_thumbnails/collection_1.png");
                         break;
-                    case ElementType.Word:
+                    case NusysConstants.ElementType.Word:
                         return new Uri("ms-appx:///Assets/library_thumbnails/word.png");
                         break;
-                    case ElementType.Link:
+                    case NusysConstants.ElementType.Link:
                         return new Uri("ms-appx:///Assets/library_thumbnails/link.png");
                         break;
                     default:
@@ -454,26 +454,26 @@ namespace NuSysApp
                 }
                 switch (LibraryElementModel.Type)
                 {
-                    case ElementType.Image:
-                    case ElementType.Video:
+                    case NusysConstants.ElementType.Image:
+                    case NusysConstants.ElementType.Video:
                         return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_small.jpg");
                         break;
-                    case ElementType.PDF:
+                    case NusysConstants.ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
                         break;
-                    case ElementType.Audio:
+                    case NusysConstants.ElementType.Audio:
                         return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
                         break;
-                    case ElementType.Text:
+                    case NusysConstants.ElementType.Text:
                         return new Uri("ms-appx:///Assets/library_thumbnails/text.png");
                         break;
-                    case ElementType.Collection:
+                    case NusysConstants.ElementType.Collection:
                         return new Uri("ms-appx:///Assets/library_thumbnails/collection_1.png");
                         break;
-                    case ElementType.Word:
+                    case NusysConstants.ElementType.Word:
                         return new Uri("ms-appx:///Assets/library_thumbnails/word.png");
                         break;
-                    case ElementType.Link:
+                    case NusysConstants.ElementType.Link:
                         return new Uri("ms-appx:///Assets/library_thumbnails/link.png");
                         break;
                     default:
@@ -491,20 +491,20 @@ namespace NuSysApp
             string extension = "";
             switch (_libraryElementModel.Type)
             {
-                case ElementType.PdfRegion:
-                case ElementType.PDF:
+                case NusysConstants.ElementType.PdfRegion:
+                case NusysConstants.ElementType.PDF:
                     extension = ".pdf";
                     break;
-                case ElementType.Video:
-                case ElementType.VideoRegion:
+                case NusysConstants.ElementType.Video:
+                case NusysConstants.ElementType.VideoRegion:
                     extension = ".mp4";
                     break;
-                case ElementType.AudioRegion:
-                case ElementType.Audio:
+                case NusysConstants.ElementType.AudioRegion:
+                case NusysConstants.ElementType.Audio:
                     extension = ".mp3";
                     break;
-                case ElementType.ImageRegion:
-                case ElementType.Image:
+                case NusysConstants.ElementType.ImageRegion:
+                case NusysConstants.ElementType.Image:
                     extension = ".jpg";
                     break;
             }

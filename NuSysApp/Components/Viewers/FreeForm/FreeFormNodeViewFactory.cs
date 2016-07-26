@@ -9,6 +9,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using NuSysApp.Controller;
 using Windows.UI.Xaml.Media.Imaging;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -22,38 +23,38 @@ namespace NuSysApp
 
             switch (model.ElementType)
             {
-                case ElementType.Text:
+                case NusysConstants.ElementType.Text:
                     view = new TextNodeView(new TextNodeViewModel(controller));
                     break;
-                case ElementType.Collection:
+                case NusysConstants.ElementType.Collection:
                     view = new GroupNodeView(new GroupNodeViewModel((ElementCollectionController)controller));
                     break;
-                case ElementType.Tag:
+                case NusysConstants.ElementType.Tag:
                     view = new LabelNodeView(new LabelNodeViewModel((ElementController)controller));
                     break;
-                case ElementType.ImageRegion:
-                case ElementType.Image:
+                case NusysConstants.ElementType.ImageRegion:
+                case NusysConstants.ElementType.Image:
                     view = new ImageNodeView(new ImageElementViewModel(controller));
                     break;
-                case ElementType.Word:
+                case NusysConstants.ElementType.Word:
                     view = new WordNodeView(new WordNodeViewModel(controller));
                     break;
-                case ElementType.Powerpoint:
+                case NusysConstants.ElementType.Powerpoint:
                     view = new PowerpointNodeView(new PowerpointNodeViewModel(controller));
                     break;
-                case ElementType.Audio:
+                case NusysConstants.ElementType.Audio:
                     view = new AudioNodeView(new AudioNodeViewModel(controller));
                     break;
-                case ElementType.PDF:
+                case NusysConstants.ElementType.PDF:
                     view = new PdfNodeView(new PdfNodeViewModel(controller));
                     break;
-                case ElementType.Video:
+                case NusysConstants.ElementType.Video:
                     view = new VideoNodeView(new VideoNodeViewModel(controller));
                     break;
-                case ElementType.Web:
+                case NusysConstants.ElementType.Web:
                     view = new WebNodeView(new WebNodeViewModel(controller));
                     break;
-                case ElementType.Area:
+                case NusysConstants.ElementType.Area:
                     view = new AreaNodeView(new AreaNodeViewModel((ElementCollectionController)controller));
                     break;/*
                 case ElementType.Link:

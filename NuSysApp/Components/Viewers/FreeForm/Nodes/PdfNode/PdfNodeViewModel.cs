@@ -18,6 +18,7 @@ using System.Collections.ObjectModel;
 using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
+using NusysIntermediate;
 
 namespace NuSysApp
 {

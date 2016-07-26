@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media.Imaging;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -17,7 +18,7 @@ namespace NuSysApp
 
         public WebNodeModel(string id) : base(id)
         {
-            ElementType = ElementType.Web;
+            ElementType = NusysConstants.ElementType.Web;
             //_history = new List<Webpage>();
         }
 

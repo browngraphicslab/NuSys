@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
+using NusysIntermediate;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -81,11 +82,11 @@ namespace NuSysApp
             elementMsg["x"] = bb.X;
             elementMsg["y"] = bb.Y;
             elementMsg["contentId"] = contentId;
-            elementMsg["type"] = ElementType.Collection;
+            elementMsg["type"] = NusysConstants.ElementType.Collection;
             elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             elementMsg["id"] = newCollectionId;
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Search Results"));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Search Results"));
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
 
@@ -160,7 +161,7 @@ namespace NuSysApp
             m["width"] = 400;
             m["height"] = 400;
             m["color"] = Colors.Red;
-            m["type"] = ElementType.Area.ToString();
+            m["type"] = NusysConstants.ElementType.Area.ToString();
             m["points"] = Stroke.GetInkPoints();
             m["autoCreate"] = true;
             m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;

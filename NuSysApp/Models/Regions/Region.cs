@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -13,7 +14,7 @@ namespace NuSysApp
 
         public string ClippingParentId { get; set; }
 
-        public Region(string libraryElementId, ElementType type) : base(libraryElementId, type)
+        public Region(string libraryElementId, NusysConstants.ElementType type) : base(libraryElementId, type)
         {
 
         }

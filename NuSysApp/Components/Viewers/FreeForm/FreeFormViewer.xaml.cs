@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.UI;
 using Microsoft.Graphics.Canvas.Geometry;
+using NusysIntermediate;
 
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -241,7 +242,7 @@ namespace NuSysApp
             }
             else if (vm.Selections.Count == 1)
             {
-                if ((vm.Selections[0] as ElementViewModel)?.ElementType == ElementType.Collection)
+                if ((vm.Selections[0] as ElementViewModel)?.ElementType == NusysConstants.ElementType.Collection)
                     SetViewMode(_simpleEditGroupMode);
                 else
                     SetViewMode(_simpleEditMode);

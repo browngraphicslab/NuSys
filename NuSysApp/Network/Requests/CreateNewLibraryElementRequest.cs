@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NusysConstants;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
     public class CreateNewLibraryElementRequest : Request
     {
-        public CreateNewLibraryElementRequest(Message m) : base(ServerConstants.RequestType.CreateNewLibrayElementRequest, m)
+        public CreateNewLibraryElementRequest(Message m) : base(NusysConstants.RequestType.CreateNewLibrayElementRequest, m)
         {
-            SetServerSettings();
         }
 
-        public CreateNewLibraryElementRequest(string id, string data, ElementType type, string title = "")
-            : base(ServerConstants.RequestType.CreateNewLibrayElementRequest)
+        public CreateNewLibraryElementRequest(string id, string data, NusysConstants.ElementType type, string title = "")
+            : base(NusysConstants.RequestType.CreateNewLibrayElementRequest)
         {
             _message["id"] = id;
             _message["data"] = data;
@@ -24,19 +23,9 @@ namespace NuSysApp
             {
                 _message["title"] = title;
             }
-            SetServerSettings();
         }
-
-        private void SetServerSettings()
+        public override async Task CheckOutgoingRequest()
         {
-            SetServerEchoType(ServerEchoType.None);
-            SetServerItemType(ServerItemType.Content);
-            SetServerRequestType(ServerRequestType.Add);
-        }
-
-        public override async Task<bool> CheckOutgoingRequest()
-        {
-            SetServerSettings();
             var time = DateTime.UtcNow.ToString();
             _message["library_element_creation_timestamp"] = time;
             _message["library_element_last_edited_timestamp"] = time;
@@ -46,7 +35,7 @@ namespace NuSysApp
                 url = _message["server_url"].ToString();
             }
 
-            ElementType type = (ElementType) Enum.Parse(typeof(ElementType), (string) _message["type"], true);
+            NusysConstants.ElementType type = (NusysConstants.ElementType) Enum.Parse(typeof(NusysConstants.ElementType), (string) _message["type"], true);
 
             LibraryElementModel libraryElement = LibraryElementModelFactory.CreateFromMessage(new Message(_message.GetSerialized()));
             if (libraryElement != null)
@@ -59,14 +48,13 @@ namespace NuSysApp
                 var loadEventArgs = new LoadContentEventArgs(_message["data"]?.ToString());
                 if (_message.ContainsKey("data") && _message["data"] != null)
                 {
-                    if (libraryElement.Type != ElementType.Word)
+                    if (libraryElement.Type != NusysConstants.ElementType.Word)
                     {
                         controller.Load(loadEventArgs);
                     }
                 }
                 libraryElement.ServerUrl = url;
             }
-            return true;
         }
     }
 }

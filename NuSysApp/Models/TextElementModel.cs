@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -15,7 +16,7 @@ namespace NuSysApp
 
         public TextElementModel(string id): base(id)
         {
-            ElementType = ElementType.Text;
+            ElementType = NusysConstants.ElementType.Text;
         }
 
         public override async Task UnPack(Message props)

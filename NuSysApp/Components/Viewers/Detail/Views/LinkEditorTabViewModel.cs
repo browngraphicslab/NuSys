@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media.Animation;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -28,7 +29,7 @@ namespace NuSysApp
             foreach (var id in idList)
             {
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(id);
-                if (controller.LibraryElementModel.Type != ElementType.Collection)
+                if (controller.LibraryElementModel.Type != NusysConstants.ElementType.Collection)
                 {
                     var libraryElementTemplate = new LibraryItemTemplate(controller);
                     LibraryElements.Add(libraryElementTemplate);
@@ -55,7 +56,7 @@ namespace NuSysApp
         private void ContentController_OnNewContent(LibraryElementModel element)
         {
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId);
-            if (controller.LibraryElementModel.Type != ElementType.Collection)
+            if (controller.LibraryElementModel.Type != NusysConstants.ElementType.Collection)
             {
                 var libraryElementTemplate = new LibraryItemTemplate(controller);
                 UITask.Run(delegate {

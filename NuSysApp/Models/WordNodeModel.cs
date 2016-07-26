@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media.Imaging;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -13,7 +14,7 @@ namespace NuSysApp
     {
         public WordNodeModel(string id) : base(id)
         {
-            ElementType = ElementType.Word;
+            ElementType = NusysConstants.ElementType.Word;
         }
         public override async Task<Dictionary<string, object>> Pack()
         {

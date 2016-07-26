@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Windows.UI;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -165,10 +166,10 @@ namespace NuSysApp
 
         #region StaticMethods
 
-        public static bool IsNode(ElementType type)
+        public static bool IsNode(NusysConstants.ElementType type)
         {
-            if (type == ElementType.Tag || type == ElementType.Area ||
-                type == ElementType.Link)
+            if (type == NusysConstants.ElementType.Tag || type == NusysConstants.ElementType.Area ||
+                type == NusysConstants.ElementType.Link)
             {
                 return false;
             }
@@ -202,10 +203,10 @@ namespace NuSysApp
             return 0;
         }
 
-        public static bool IsRegionType(ElementType type)
+        public static bool IsRegionType(NusysConstants.ElementType type)
         {
-            return type == ElementType.AudioRegion || type == ElementType.ImageRegion || type == ElementType.VideoRegion ||
-                   type == ElementType.PdfRegion;
+            return type == NusysConstants.ElementType.AudioRegion || type == NusysConstants.ElementType.ImageRegion || type == NusysConstants.ElementType.VideoRegion ||
+                   type == NusysConstants.ElementType.PdfRegion;
         }
         #endregion StaticMethods
     }

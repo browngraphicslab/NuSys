@@ -11,7 +11,7 @@ using Windows.UI.Xaml;
 using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json;
-using NusysConstants;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -19,7 +19,7 @@ namespace NuSysApp
     {
         public HashSet<Keyword> Keywords {get; set; }
 
-        public ElementType Type { get; set; }
+        public NusysConstants.ElementType Type { get; set; }
 
         public string Data
         {
@@ -95,7 +95,7 @@ namespace NuSysApp
                 return metadata;
             }
         }
-        public LibraryElementModel(string libraryElementId, ElementType elementType, Dictionary<string, MetadataEntry> metadata = null, string contentName = null, bool favorited = false)
+        public LibraryElementModel(string libraryElementId, NusysConstants.ElementType elementType, Dictionary<string, MetadataEntry> metadata = null, string contentName = null, bool favorited = false)
         {
             ContentDataModelId = libraryElementId;
             LibraryElementId = libraryElementId;
@@ -105,7 +105,7 @@ namespace NuSysApp
             Favorited = favorited;
             Keywords = new HashSet<Keyword>();
             Metadata = new ConcurrentDictionary<string, MetadataEntry>(metadata ?? new Dictionary<string, MetadataEntry>());
-            Debug.Assert(!(Type == ElementType.Link && !(this is LinkLibraryElementModel)));
+            Debug.Assert(!(Type == NusysConstants.ElementType.Link && !(this is LinkLibraryElementModel)));
         }
         //FOR PDF DOWNLOADING  --HACKY AF
         //public static List<string> PDFStrings = new List<string>();

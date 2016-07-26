@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
+using NusysIntermediate;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -85,7 +86,7 @@ namespace NuSysApp
                 byte[] fileBytes = new byte[stream.Size];
                 await stream.AsStream().ReadAsync(fileBytes, 0, fileBytes.Length);
                 Element.Source = null;
-                await SendRequest(fileBytes, ElementType.Video);
+                await SendRequest(fileBytes, NusysConstants.ElementType.Video);
                 _recording = false;
                 mediaCapture.Dispose();
                 this.IsRecordingSwitch(false);
@@ -129,7 +130,7 @@ namespace NuSysApp
                 await stream.AsStream().ReadAsync(fileBytes, 0, fileBytes.Length);
                 Element.Source = null;
 
-                await SendRequest(fileBytes, ElementType.Audio);
+                await SendRequest(fileBytes, NusysConstants.ElementType.Audio);
 
                 _recording = false;
 
@@ -159,7 +160,7 @@ namespace NuSysApp
             }
         }
 
-        private async Task SendRequest(byte[] data, ElementType type)
+        private async Task SendRequest(byte[] data, NusysConstants.ElementType type)
         {
             var vm = (RecordingNodeViewModel) DataContext;
 
@@ -180,7 +181,7 @@ namespace NuSysApp
             m["autoCreate"] = true;
             m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
-            if (type == ElementType.Video)
+            if (type == NusysConstants.ElementType.Video)
             {
                 var settings =
                     mediaCapture.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoPreview);

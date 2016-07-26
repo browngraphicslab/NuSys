@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using NusysIntermediate;
 
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -200,7 +201,7 @@ namespace NuSysApp
         {
             LibraryElementModel element = SessionController.Instance.ContentController.GetContent(_libraryElementId);
             if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element?.LibraryElementId) ||
-                (element?.Type == ElementType.Link))
+                (element?.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -233,7 +234,7 @@ namespace NuSysApp
         private void AddToCollection_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             LibraryElementModel element = SessionController.Instance.ContentController.GetContent(_libraryElementId);
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
+            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -267,7 +268,7 @@ namespace NuSysApp
         private async void AddToCollection_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             LibraryElementModel element = SessionController.Instance.ContentController.GetContent(_libraryElementId);
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
+            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -289,11 +290,11 @@ namespace NuSysApp
             await AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type, element.LibraryElementId);
         }
 
-        public async Task AddNode(Point pos, Size size, ElementType elementType, string libraryId)
+        public async Task AddNode(Point pos, Size size, NusysConstants.ElementType elementType, string libraryId)
         {
             Task.Run(async delegate
             {
-                if (elementType != ElementType.Collection)
+                if (elementType != NusysConstants.ElementType.Collection)
                 {
                     var element = SessionController.Instance.ContentController.GetContent(libraryId);
                     var dict = new Message();

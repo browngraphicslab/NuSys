@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Media;
-using NusysConstants;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
     public class AddInkRequest : Request
     {
 
-        public AddInkRequest(Message message) : base(ServerConstants.RequestType.AddInkRequest, message){}
+        public AddInkRequest(Message message) : base(NusysConstants.RequestType.AddInkRequest, message){}
 
-        public async override Task<bool> CheckOutgoingRequest()
+        public async override Task CheckOutgoingRequest()
         {
             if (_message.GetString("id", null) == null)
             {
@@ -29,12 +29,6 @@ namespace NuSysApp
             }
 
             _message["contentId"] = _message.GetString("id", null);
-
-            SetServerEchoType(ServerEchoType.ForcedEveryone);
-            SetServerItemType(ServerItemType.Ink);
-            SetServerRequestType(ServerRequestType.Add);
-            SetServerIgnore(false);
-            return true;
         }
         public override async Task ExecuteRequestFunction()
         {

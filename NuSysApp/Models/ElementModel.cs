@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -22,11 +23,10 @@ namespace NuSysApp
 
         public ElementModel(string id) : base(id)
         {
-            ElementType = ElementType.None;
             InqCanvas = new InqCanvasModel(id);
         }
 
-        public ElementType ElementType { get; set; }
+        public NusysConstants.ElementType ElementType { get; set; }
 
         public InqCanvasModel InqCanvas { get; set; }
 
@@ -168,12 +168,12 @@ namespace NuSysApp
             if (props.ContainsKey("type"))
             {
                 string t = props.GetString("type");
-                ElementType = (ElementType)Enum.Parse(typeof(ElementType), t);
+                ElementType = (NusysConstants.ElementType)Enum.Parse(typeof(NusysConstants.ElementType), t);
             }
             else if (props.ContainsKey("nodeType"))
             {
                 string t = props.GetString("nodeType");
-                ElementType = (ElementType)Enum.Parse(typeof(ElementType), t);
+                ElementType = (NusysConstants.ElementType)Enum.Parse(typeof(NusysConstants.ElementType), t);
             }
             if (props.ContainsKey("contentId"))
             {

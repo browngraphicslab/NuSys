@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using MyToolkit.UI;
 using System.Threading.Tasks;
+using NusysIntermediate;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -45,24 +46,24 @@ namespace NuSysApp
             }
             var detailHomeTabViewModel = vm.RegionView.DataContext as DetailHomeTabViewModel;
             Message message = null;
-            ElementType type = ElementType.ImageRegion;
+            NusysConstants.ElementType type = NusysConstants.ElementType.ImageRegion;
             switch (vm.CurrentElementController.LibraryElementModel.Type)
             {
-                case ElementType.Image:
+                case NusysConstants.ElementType.Image:
                     message = detailHomeTabViewModel?.GetNewRegionMessage();
-                    type = ElementType.ImageRegion;
+                    type = NusysConstants.ElementType.ImageRegion;
                     break;
-                case ElementType.Audio:
+                case NusysConstants.ElementType.Audio:
                     message = detailHomeTabViewModel?.GetNewRegionMessage();
-                    type = ElementType.AudioRegion;
+                    type = NusysConstants.ElementType.AudioRegion;
                     break;
-                case ElementType.Video:
+                case NusysConstants.ElementType.Video:
                     message = detailHomeTabViewModel?.GetNewRegionMessage();
-                    type  = ElementType.VideoRegion;
+                    type  = NusysConstants.ElementType.VideoRegion;
                     break;
-                case ElementType.PDF:
+                case NusysConstants.ElementType.PDF:
                     message = detailHomeTabViewModel?.GetNewRegionMessage();
-                    type = ElementType.PdfRegion;
+                    type = NusysConstants.ElementType.PdfRegion;
                     break;
                 default:
                     message = null;
@@ -78,7 +79,7 @@ namespace NuSysApp
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }
 
-        public void ShowListView(bool visible, ElementType type)
+        public void ShowListView(bool visible, NusysConstants.ElementType type)
         {
             if (!visible)
             {
@@ -91,7 +92,7 @@ namespace NuSysApp
             }
             else
             {
-                if (type == ElementType.PDF)
+                if (type == NusysConstants.ElementType.PDF)
                 {
                     xListViewPresenter.Content = new PDFRegionListView(DetailViewerView);
                     if (!xMainGrid.ColumnDefinitions.Contains(xSecondColumn))

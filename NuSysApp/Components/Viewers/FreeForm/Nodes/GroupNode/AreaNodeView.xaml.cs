@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using NusysIntermediate;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -25,7 +26,7 @@ namespace NuSysApp
         private NodeManipulationMode _nodeManipulationMode;
         private CreateGroupMode _createGroupMode;
         private PanZoomMode _panZoomMode;
-        private ElementType _elementType;
+        private NusysConstants.ElementType _elementType;
         private Image _dragItem;
         private DragOutMode _dragOutMode;
         private DuplicateNodeMode _duplicateNodeMode;

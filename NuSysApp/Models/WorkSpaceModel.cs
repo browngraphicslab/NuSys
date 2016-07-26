@@ -14,6 +14,7 @@ using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -28,7 +29,7 @@ namespace NuSysApp
 
         public WorkspaceModel(string id ) : base(id)
         {
-            ElementType = ElementType.Collection;
+            ElementType = NusysConstants.ElementType.Collection;
             Zoom = 1;
             LocationX = -Constants.MaxCanvasSize/2.0;
             LocationY= -Constants.MaxCanvasSize/ 2.0;

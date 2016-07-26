@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Windows.UI.Xaml;
+using NusysIntermediate;
 
 namespace NuSysApp
 {

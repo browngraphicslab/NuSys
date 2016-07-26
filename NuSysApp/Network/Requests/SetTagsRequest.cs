@@ -3,33 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NusysConstants;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
     public class SetTagsRequest:Request
     {
-        public SetTagsRequest(Message m) : base(ServerConstants.RequestType.SetTagsRequest, m)
+        public SetTagsRequest(Message m) : base(NusysConstants.RequestType.SetTagsRequest, m)
         {
 
         }
 
-        public SetTagsRequest(string id, List<string> tags) : base(ServerConstants.RequestType.SetTagsRequest)
+        public SetTagsRequest(string id, List<string> tags) : base(NusysConstants.RequestType.SetTagsRequest)
         {
             _message["id"] = id;
             _message["tags"] = tags;
         }
 
-        public override async Task<bool> CheckOutgoingRequest()
+        public override async Task CheckOutgoingRequest()
         {
             if (!_message.ContainsKey("id"))
             {
                 throw new Exception("Set Tags Request must have an 'id' property");
             }
-            SetServerEchoType(ServerEchoType.Everyone);
-            SetServerItemType(ServerItemType.Alias);
-            SetServerRequestType(ServerRequestType.Update);
-            return true;
         }
 
         public override async Task ExecuteRequestFunction()

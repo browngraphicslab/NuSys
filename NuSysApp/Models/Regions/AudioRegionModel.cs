@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -15,7 +16,7 @@ namespace NuSysApp
         public event TimeChangeHandler OnTimeChange;
 
 
-        public AudioRegionModel(string libraryId) : base(libraryId, ElementType.AudioRegion)
+        public AudioRegionModel(string libraryId) : base(libraryId, NusysConstants.ElementType.AudioRegion)
         {
         }
     }

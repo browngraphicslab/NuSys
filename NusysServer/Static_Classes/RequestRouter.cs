@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using NusysConstants;
+using NusysIntermediate;
 
 namespace NusysServer
 {
@@ -14,39 +14,38 @@ namespace NusysServer
         {
             try
             {
-                Debug.Assert(m.ContainsKey(Constants.REQUEST_TYPE_STRING));
-                var type = (ServerConstants.RequestType)Enum.Parse(typeof(ServerConstants.RequestType), m.GetString(Constants.REQUEST_TYPE_STRING), true);
-                switch (type)
+                Request request = new Request(m);
+                switch (request.GetRequestType())
                 {
-                    case ServerConstants.RequestType.DeleteLibraryElementRequest:
+                    case NusysConstants.RequestType.DeleteLibraryElementRequest:
                         break;
-                    case ServerConstants.RequestType.AddInkRequest:
+                    case NusysConstants.RequestType.AddInkRequest:
                         break;
-                    case ServerConstants.RequestType.ChangeContentRequest:
+                    case NusysConstants.RequestType.ChangeContentRequest:
                         break;
-                    case ServerConstants.RequestType.ChatDialogRequest:
+                    case NusysConstants.RequestType.ChatDialogRequest:
                         break;
-                    case ServerConstants.RequestType.CreateNewLibrayElementRequest:
+                    case NusysConstants.RequestType.CreateNewLibrayElementRequest:
                         break;
-                    case ServerConstants.RequestType.SubscribeToCollectionRequest:
+                    case NusysConstants.RequestType.SubscribeToCollectionRequest:
                         break;
-                    case ServerConstants.RequestType.DuplicateNodeRequest:
+                    case NusysConstants.RequestType.DuplicateNodeRequest:
                         break;
-                    case ServerConstants.RequestType.FinalizeInkRequest:
+                    case NusysConstants.RequestType.FinalizeInkRequest:
                         break;
-                    case ServerConstants.RequestType.NewContentRequest:
+                    case NusysConstants.RequestType.NewContentRequest:
                         break;
-                    case ServerConstants.RequestType.NewLinkRequest:
+                    case NusysConstants.RequestType.NewLinkRequest:
                         break;
-                    case ServerConstants.RequestType.NewNodeRequest:
+                    case NusysConstants.RequestType.NewNodeRequest:
                         break;
-                    case ServerConstants.RequestType.NewThumbnailRequest:
+                    case NusysConstants.RequestType.NewThumbnailRequest:
                         break;
-                    case ServerConstants.RequestType.UnsubscribeFromCollectionRequest:
+                    case NusysConstants.RequestType.UnsubscribeFromCollectionRequest:
                         break;
-                    case ServerConstants.RequestType.SetTagsRequest:
+                    case NusysConstants.RequestType.SetTagsRequest:
                         break;
-                    case ServerConstants.RequestType.DeleteSendableRequest:
+                    case NusysConstants.RequestType.DeleteSendableRequest:
                         break;
                     default:
                         return false;

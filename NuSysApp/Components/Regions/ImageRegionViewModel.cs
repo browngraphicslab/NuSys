@@ -65,8 +65,7 @@ namespace NuSysApp
         public bool Selected { set; get; }
         public double OriginalHeight { get; set; }
         public double OriginalWidth { get; set; }
-        public double ContainerHeight { get; set; }
-        public double ContainerWidth { get; set; }
+        public RectangleWrapper RectangleWrapper { get; set; } 
 
         public delegate void SizeChangedEventHandler(object sender, double width, double height);
         public event SizeChangedEventHandler SizeChanged;
@@ -75,17 +74,13 @@ namespace NuSysApp
         public event LocationChangedEventHandler LocationChanged;
 
 
-        public ImageRegionViewModel(RectangleRegion model, RectangleRegionLibraryElementController regionLibraryElementController, Sizeable sizeable) : base(model, regionLibraryElementController,sizeable)
+        public ImageRegionViewModel(RectangleRegion model, RectangleRegionLibraryElementController regionLibraryElementController, RectangleWrapper rectangleWrapper) : base(model, regionLibraryElementController, null)
         {
             if (model == null)
             {
                 return;
             }
             ContainerSizeChanged += BaseSizeChanged;
-            ContainerHeight = sizeable.GetHeight();
-            ContainerWidth = sizeable.GetWidth();
-            Height = model.Height * ContainerHeight;
-            Width = model.Width * ContainerWidth;
 
             regionLibraryElementController.SizeChanged += RegionController_SizeChanged;
             regionLibraryElementController.LocationChanged += RegionController_LocationChanged;
@@ -94,8 +89,17 @@ namespace NuSysApp
             Name = Model.Title;
             Editable = true;
             Selected = false;
+            RectangleWrapper = rectangleWrapper;
+            rectangleWrapper.SizeChanged += RectangleWrapper_SizeChanged;
+        }
 
-
+        private void RectangleWrapper_SizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)
+        {
+            var model = this.RegionLibraryElementController.LibraryElementModel as RectangleRegion;
+            var ContainerHeight = RectangleWrapper.GetHeight();
+            var ContainerWidth = RectangleWrapper.GetWidth();
+            Height = model.Height * ContainerHeight;
+            Width = model.Width * ContainerWidth;
         }
 
         //Not currently implemented
@@ -119,9 +123,7 @@ namespace NuSysApp
                 return;
             }
 
-
-            var denormalizedTopLeft = new Point(model.TopLeftPoint.X * ContainerViewModel.GetWidth(), model.TopLeftPoint.Y * ContainerViewModel.GetHeight());
-
+            var denormalizedTopLeft = new Point(model.TopLeftPoint.X * RectangleWrapper.GetWidth(), model.TopLeftPoint.Y * RectangleWrapper.GetHeight());
             LocationChanged?.Invoke(this, denormalizedTopLeft);
 
         }
@@ -129,16 +131,14 @@ namespace NuSysApp
         
         private void RegionController_SizeChanged(object sender, double width, double height)
         {
-            
-
             var model = Model as RectangleRegion;
             if (model == null)
             {
                 return;
             }
             
-            Height = model.Height * ContainerViewModel.GetHeight();
-            Width = model.Width * ContainerViewModel.GetWidth();
+            Height = model.Height * RectangleWrapper.GetHeight();
+            Width = model.Width * RectangleWrapper.GetWidth();
             SizeChanged?.Invoke(this, Width, Height);
 
         }
@@ -181,8 +181,8 @@ namespace NuSysApp
             {
                 return;
             }
-            var normalTopLeftX = topLeft.X / ContainerViewModel.GetWidth();
-            var normalTopLeftY = topLeft.Y / ContainerViewModel.GetHeight();
+            var normalTopLeftX = topLeft.X / RectangleWrapper.GetWidth();
+            var normalTopLeftY = topLeft.Y / RectangleWrapper.GetHeight();
 
             var tlp = new Point(normalTopLeftX, normalTopLeftY);
 
@@ -196,10 +196,8 @@ namespace NuSysApp
             {
                 return;
             }
-            var normalWidth = width / ContainerViewModel.GetWidth();
-            var normalHeight = height / ContainerViewModel.GetHeight();
-
-            
+            var normalWidth = width / RectangleWrapper.GetWidth();
+            var normalHeight = height / RectangleWrapper.GetHeight();
 
             (RegionLibraryElementController as RectangleRegionLibraryElementController).SetHeight(normalHeight);
             (RegionLibraryElementController as RectangleRegionLibraryElementController).SetWidth(normalWidth);

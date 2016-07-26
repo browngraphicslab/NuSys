@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NusysConstants;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -17,22 +17,21 @@ namespace NuSysApp
         }
 
         private SystemRequestType _systemRequestType;
-        public SystemRequest(SystemRequestType systemRequestType) : base(ServerConstants.RequestType.SystemRequest)
+        public SystemRequest(SystemRequestType systemRequestType) : base(NusysConstants.RequestType.SystemRequest)
         {
             _systemRequestType = systemRequestType;
         }
 
-        public SystemRequest(SystemRequestType type, Message m) : base(ServerConstants.RequestType.SystemRequest, m)
+        public SystemRequest(SystemRequestType type, Message m) : base(NusysConstants.RequestType.SystemRequest, m)
         {
             _systemRequestType = type;
         }
 
         public SystemRequest(Message m) : base(m){}
 
-        public override async Task<bool> CheckOutgoingRequest()
+        public override async Task CheckOutgoingRequest()
         {
             _message["system_request_type"] = _systemRequestType.ToString();
-            return true;
         }
         public virtual async Task ExecuteSystemRequestFunction(NuSysNetworkSession nusysSession, ServerClient serverClient) { }
 

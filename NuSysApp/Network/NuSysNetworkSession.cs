@@ -18,7 +18,7 @@ using Windows.System.Threading;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Newtonsoft.Json;
-using NusysConstants;
+using NusysIntermediate;
 using NuSysApp.Network.Requests;
 using NuSysApp.Network.Requests.SystemRequests;
 using Buffer = System.Buffer;
@@ -87,7 +87,7 @@ namespace NuSysApp
                 }
             });
         }
-    
+
 
         private void PresentationLinkAdded(object sender, string id1, string id2)
         {
@@ -106,9 +106,9 @@ namespace NuSysApp
                     if (PresentationLinkViewModel.Models.FirstOrDefault(item => item.InElementId == id1 && item.OutElementId == id2) != null ||
                         PresentationLinkViewModel.Models.FirstOrDefault(item => item.OutElementId == id1 && item.InElementId == id2) != null)
                     {
-                    return;
+                        return;
                     }
-                    
+
                     // create a new presentation link
                     PresentationLinkViewModel.Models.Add(presentationlink);
                     new PresentationLinkView(vm);
@@ -128,29 +128,28 @@ namespace NuSysApp
         {
             await Task.Run(async delegate {
                 //if CheckOutgoingRequest created a valid thing
-                if (await request.CheckOutgoingRequest())
+                await request.CheckOutgoingRequest();
+                Message message = request.GetFinalMessage();
+
+                if (false)//request.WaitForRequestReturn())//TODO see if we still need this -trent
                 {
-                    Message message = request.GetFinalMessage();
+                    ManualResetEvent mre = new ManualResetEvent(false);
+                    string requestID = SessionController.Instance.GenerateId();
+                    _requestEventDictionary[requestID] = mre;
 
-                    if (request.WaitForRequestReturn())
+                    message["system_local_request_id"] = requestID;
+
+                    await _serverClient.SendMessageToServer(message);
+                    if (_requestEventDictionary.ContainsKey(requestID))
                     {
-                        ManualResetEvent mre = new ManualResetEvent(false);
-                        string requestID = SessionController.Instance.GenerateId();
-                        _requestEventDictionary[requestID] = mre;
-
-                        message["system_local_request_id"] = requestID;
-
-                        await _serverClient.SendMessageToServer(message);
-                        if (_requestEventDictionary.ContainsKey(requestID))
-                        {
-                            mre.WaitOne();
-                        }
-                    }
-                    else
-                    {
-                        await _serverClient.SendMessageToServer(message);
+                        mre.WaitOne();
                     }
                 }
+                else
+                {
+                    await _serverClient.SendMessageToServer(message);
+                }
+
             });
         }
 
@@ -165,7 +164,7 @@ namespace NuSysApp
             {
                 var id = (string)dict["id"];
                 string title = null;
-                ElementType type = ElementType.Text;
+                NusysConstants.ElementType type = NusysConstants.ElementType.Text;
                 var metadata = new Dictionary<string, MetadataEntry>();
                 if (dict.ContainsKey("title"))
                 {
@@ -173,7 +172,7 @@ namespace NuSysApp
                 }
                 if (dict.ContainsKey("type"))
                 {
-                    type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
+                    type = (NusysConstants.ElementType)Enum.Parse(typeof(NusysConstants.ElementType), (string)dict["type"], true);
                 }
                 if (dict.ContainsKey("metadata"))
                 {
@@ -239,64 +238,64 @@ namespace NuSysApp
         private async Task ProcessIncomingRequest(Message message)
         {
             Request request;
-            ServerConstants.RequestType requestType;
+            NusysConstants.RequestType requestType;
             if (!message.ContainsKey("request_type"))
             {
                 throw new NoRequestTypeException();
             }
             try
             {
-                requestType = (ServerConstants.RequestType)Enum.Parse(typeof(ServerConstants.RequestType), message.GetString("request_type"));
+                requestType = (NusysConstants.RequestType)Enum.Parse(typeof(NusysConstants.RequestType), message.GetString("request_type"));
             }
             catch (Exception e)
             {
                 throw new InvalidRequestTypeException();
             }
-            if (requestType == ServerConstants.RequestType.SystemRequest)
+            if (requestType == NusysConstants.RequestType.SystemRequest)
             {
                 await ProcessIncomingSystemRequest(message);
                 return;
             }
             switch (requestType)
             {
-                case ServerConstants.RequestType.DeleteSendableRequest:
+                case NusysConstants.RequestType.DeleteSendableRequest:
                     request = new DeleteSendableRequest(message);
                     break;
-                case ServerConstants.RequestType.NewNodeRequest:
+                case NusysConstants.RequestType.NewNodeRequest:
                     request = new NewElementRequest(message);
                     break;
-                case ServerConstants.RequestType.NewLinkRequest:
+                case NusysConstants.RequestType.NewLinkRequest:
                     request = new NewLinkRequest(message);
                     break;
-                case ServerConstants.RequestType.SendableUpdateRequest:
+                case NusysConstants.RequestType.SendableUpdateRequest:
                     request = new SendableUpdateRequest(message);
                     break;
-                case ServerConstants.RequestType.FinalizeInkRequest:
+                case NusysConstants.RequestType.FinalizeInkRequest:
                     request = new FinalizeInkRequest(message);
                     break;
-                case ServerConstants.RequestType.DuplicateNodeRequest:
+                case NusysConstants.RequestType.DuplicateNodeRequest:
                     request = new DuplicateNodeRequest(message);
                     break;
-                case ServerConstants.RequestType.ChangeContentRequest:
+                case NusysConstants.RequestType.ChangeContentRequest:
                     request = new ChangeContentRequest(message);
                     break;
-                case ServerConstants.RequestType.SetTagsRequest:
+                case NusysConstants.RequestType.SetTagsRequest:
                     request = new SetTagsRequest(message);
                     break;
-                case ServerConstants.RequestType.ChatDialogRequest:
-                    request = new ChatDialogRequest(message);
-                    break;
-                case ServerConstants.RequestType.CreateNewLibrayElementRequest:
+                case NusysConstants.RequestType.CreateNewLibrayElementRequest:
                     request = new CreateNewLibraryElementRequest(message);
                     break;
-                case ServerConstants.RequestType.DeleteLibraryElementRequest:
+                case NusysConstants.RequestType.DeleteLibraryElementRequest:
                     request = new DeleteLibraryElementRequest(message);
                     break;
-                case ServerConstants.RequestType.AddInkRequest:
+                case NusysConstants.RequestType.AddInkRequest:
                     request = new AddInkRequest(message);
                     break;
-                case ServerConstants.RequestType.RemoveInkRequest:
+                case NusysConstants.RequestType.RemoveInkRequest:
                     request = new RemoveInkRequest(message);
+                    break;
+                case NusysConstants.RequestType.ChatRequest:
+                    request = new ChatRequest(message);
                     break;
                 default:
                     throw new InvalidRequestTypeException("The request type could not be found and made into a request instance");
@@ -394,7 +393,7 @@ namespace NuSysApp
         }
         public async Task FetchLibraryElementData(string id)
         {
-            if (SessionController.Instance.ContentController.GetContent(id)?.Type == ElementType.PDF && SessionController.Instance.ContentController.GetLibraryElementController(id) != null && !SessionController.Instance.ContentController.GetLibraryElementController(id).IsLoaded)
+            if (SessionController.Instance.ContentController.GetContent(id)?.Type == NusysConstants.ElementType.PDF && SessionController.Instance.ContentController.GetLibraryElementController(id) != null && !SessionController.Instance.ContentController.GetLibraryElementController(id).IsLoaded)
             {
                 bool fileExists = await CachePDF.isFilePresent(id);
 

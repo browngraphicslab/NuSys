@@ -10,6 +10,7 @@ using System.Xml;
 using Windows.Data.Xml.Dom;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using NusysIntermediate;
 using NuSysApp.Controller;
 using NuSysApp.Nodes.AudioNode;
 
@@ -27,7 +28,7 @@ namespace NuSysApp
         public event JumpEventHandler OnJump;
         public AudioNodeModel(string id) : base(id)
         {
-            ElementType = ElementType.Audio;
+            ElementType = NusysConstants.ElementType.Audio;
             // _linkedTimeBlocks = new ObservableCollection<LinkedTimeBlockViewModel>();
             _linkedTimeModels = new ObservableCollection<LinkedTimeBlockModel>();
 

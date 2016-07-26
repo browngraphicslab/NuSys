@@ -4,17 +4,19 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NusysConstants;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
     public class SendableUpdateRequest : Request
     {
-        public SendableUpdateRequest(Message m, bool saveToServer = false) : base(ServerConstants.RequestType.SendableUpdateRequest, m)
+        public SendableUpdateRequest(Message m, bool saveToServer = false) : base(NusysConstants.RequestType.SendableUpdateRequest, m)
         {
-            SetServerSettings(saveToServer);
+            //TODO ADD BACK IN SAVE TO SERVER FUNCTIONALITY.  
+            //MAYBE ADD A NEW REQUEST TO MATCH OLD FUNCTIONALITY
+            //VERY IMPORTANT ASK TRENT
         }
-        public override async Task<bool> CheckOutgoingRequest()
+        public override async Task CheckOutgoingRequest()
         {
             if (!_message.ContainsKey("id"))
             {
@@ -23,15 +25,6 @@ namespace NuSysApp
             _message["sender_user_id"] = SessionController.Instance.LocalUserID;
             var time = DateTime.UtcNow.ToString();
             _message["library_element_last_edited_timestamp"] = time;
-            return true;
-        }
-
-        private void SetServerSettings(bool saveToServer = false)
-        {
-            SetServerEchoType(ServerEchoType.EveryoneButSender);
-            SetServerItemType(ServerItemType.Alias);
-            SetServerIgnore(!saveToServer);
-            SetServerRequestType(ServerRequestType.Update);
         }
 
         public override async Task ExecuteRequestFunction()

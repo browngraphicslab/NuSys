@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using Newtonsoft.Json;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -15,7 +16,7 @@ namespace NuSysApp
         public string InAtomId { get; set; }
         public string OutAtomId { get; set; }
         public Color Color { get; set; }
-        public LinkLibraryElementModel(string id1, string id2, string id): base(id, ElementType.Link)
+        public LinkLibraryElementModel(string id1, string id2, string id): base(id, NusysConstants.ElementType.Link)
         {
             InAtomId = id1;
             OutAtomId = id2;

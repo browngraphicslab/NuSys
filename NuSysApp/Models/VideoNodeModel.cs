@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Windows.Data.Xml.Dom;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Controls;
+using NusysIntermediate;
 using NuSysApp.Nodes.AudioNode;
 
 namespace NuSysApp
@@ -34,7 +35,7 @@ namespace NuSysApp
             //Test.CurrentStateChanged += Test_CurrentStateChanged;
 
             //Test.AutoPlay = true;
-            ElementType = ElementType.Video;
+            ElementType = NusysConstants.ElementType.Video;
             _linkedTimeModels = new ObservableCollection<LinkedTimeBlockModel>();
 
             //_resX = 1;

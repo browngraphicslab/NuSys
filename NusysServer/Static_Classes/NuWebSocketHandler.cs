@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using Newtonsoft.Json;
+using NusysIntermediate;
 
 
 namespace NusysServer
@@ -85,29 +86,8 @@ namespace NusysServer
                 {
                     try
                     {
-                        var tup = RequestRouter.HandleRequest(new Message(dict), this);
-
-                        string returnMessage = null;
-                        if (tup.Item2 != null)
-                        {
-                            returnMessage = JsonConvert.SerializeObject(tup.Item2, settings);
-                        }
-                        switch (tup.Item1)
-                        {
-                            case ServerEchoType.ForcedEveryone:
-                                Broadcast(returnMessage);
-                                break;
-                            case ServerEchoType.Everyone:
-                                BroadcastToSubset(returnMessage, tup.Item3 ?? new List<string>());
-                                break;
-                            case ServerEchoType.EveryoneButSender:
-                                BroadcastToSubset(returnMessage, tup.Item3 ?? new List<string>(),
-                                    new HashSet<NuWebSocketHandler>() { this });
-                                break;
-                            case ServerEchoType.None:
-                            default:
-                                break;
-                        }
+                        var success = RequestRouter.HandleRequest(new Message(dict), this);
+                        
                     }
                     catch (Exception e)
                     {

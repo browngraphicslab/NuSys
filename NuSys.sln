@@ -33,7 +33,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NusysServer", "NusysServer\
 		{12A8F89E-F77A-43AD-B889-7C9D3631097D} = {12A8F89E-F77A-43AD-B889-7C9D3631097D}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NusysConstants", "NusysConstants\NusysConstants.csproj", "{7296C25F-88E9-478D-A489-8A1C13E8B846}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NusysIntermediate", "NusysConstants\NusysIntermediate.csproj", "{7296C25F-88E9-478D-A489-8A1C13E8B846}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

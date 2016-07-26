@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Media;
 using Newtonsoft.Json;
 using Windows.UI.Xaml.Input;
 using Newtonsoft.Json.Linq;
+using NusysIntermediate;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -36,7 +37,7 @@ namespace NuSysApp
         //public static string Password { get; private set; }
         public static string ServerSessionID { get; private set; }
 
-        public static bool TEST_LOCAL_BOOLEAN = true;
+        public static bool TEST_LOCAL_BOOLEAN = false;
 
         public static bool IS_HUB = false;
 
@@ -153,7 +154,7 @@ namespace NuSysApp
         private async void NewWorkspaceOnClick(object sender, RoutedEventArgs e)
         {
             var name = NewWorkspaceName.Text;
-            var request = new CreateNewLibraryElementRequest(SessionController.Instance.GenerateId(), null, ElementType.Collection, name);
+            var request = new CreateNewLibraryElementRequest(SessionController.Instance.GenerateId(), null, NusysConstants.ElementType.Collection, name);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
             await Task.Delay(1000);
             Init();
@@ -391,7 +392,7 @@ namespace NuSysApp
 
         private void ContentControllerOnOnNewContent(LibraryElementModel element)
         {
-            if (element.Type == ElementType.Collection && !_preloadedIDs.Contains(element.LibraryElementId))
+            if (element.Type == NusysConstants.ElementType.Collection && !_preloadedIDs.Contains(element.LibraryElementId))
             {
                 UITask.Run(delegate
                 {

@@ -25,6 +25,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using NusysIntermediate;
 using SharpDX.Direct2D1;
 using SharpDX.WIC;
 using Image = Windows.UI.Xaml.Controls.Image;
@@ -231,7 +232,7 @@ namespace NuSysApp
         {
             var vm = SessionController.Instance.ActiveFreeFormViewer;
 
-            ElementType elementType = ElementType.Text;
+            NusysConstants.ElementType elementType = NusysConstants.ElementType.Text;
             string data = "";
             string title = "";
             string pdf_text = "";
@@ -257,14 +258,14 @@ namespace NuSysApp
 
                 if (Constants.ImageFileTypes.Contains(fileType))
                 {
-                    elementType = ElementType.Image;
+                    elementType = NusysConstants.ElementType.Image;
                     data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
                     serverURL = contentId + fileType;
                     thumbnails =await MediaUtil.GetThumbnailDictionary(storageFile);
                 }
                 else if (Constants.WordFileTypes.Contains(fileType))
                 {
-                    elementType = ElementType.Word;
+                    elementType = NusysConstants.ElementType.Word;
                     
                     byte[] fileBytes = null;
                     using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
@@ -280,11 +281,11 @@ namespace NuSysApp
                 }
                 else if (Constants.PowerpointFileTypes.Contains(fileType))
                 {
-                    elementType = ElementType.Powerpoint;
+                    elementType = NusysConstants.ElementType.Powerpoint;
                 }
                 else if (Constants.PdfFileTypes.Contains(fileType))
                 {
-                    elementType = ElementType.PDF;
+                    elementType = NusysConstants.ElementType.PDF;
                     IRandomAccessStream s = await storageFile.OpenReadAsync();
 
                     byte[] fileBytes = null;
@@ -351,7 +352,7 @@ namespace NuSysApp
                 }
                 else if (Constants.VideoFileTypes.Contains(fileType))
                 {
-                    elementType = ElementType.Video;
+                    elementType = NusysConstants.ElementType.Video;
                     IRandomAccessStream s = await storageFile.OpenReadAsync();
 
                     byte[] fileBytes = null;
@@ -370,7 +371,7 @@ namespace NuSysApp
                 }
                 else if (Constants.AudioFileTypes.Contains(fileType))
                 {
-                    elementType = ElementType.Audio;
+                    elementType = NusysConstants.ElementType.Audio;
                     IRandomAccessStream s = await storageFile.OpenReadAsync();
 
                     byte[] fileBytes = null;
@@ -435,11 +436,11 @@ namespace NuSysApp
 
         }
 
-        public async Task AddNode(Point pos, Size size, ElementType elementType, string libraryId)
+        public async Task AddNode(Point pos, Size size, NusysConstants.ElementType elementType, string libraryId)
         {
             Task.Run(async delegate
             {
-                if (elementType != ElementType.Collection)
+                if (elementType != NusysConstants.ElementType.Collection)
                 {
                     var element = SessionController.Instance.ContentController.GetContent(libraryId);
                     var dict = new Message();
@@ -597,13 +598,13 @@ namespace NuSysApp
             elementMsg["x"] = r.X;
             elementMsg["y"] = r.Y;
             elementMsg["contentId"] = contentId;
-            elementMsg["type"] = ElementType.Collection;
+            elementMsg["type"] = NusysConstants.ElementType.Collection;
             elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             elementMsg["id"] = newCollectionId;
             if (ListContainer.Children[0] == _libraryList)
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Search Results for '"+Searchfield.Text+"'"));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Search Results for '"+Searchfield.Text+"'"));
             else if (ListContainer.Children[0] == _libraryFavorites)
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Favorites"));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Favorites"));
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
 
@@ -660,7 +661,7 @@ namespace NuSysApp
           
             // Since we are adding a collection, we should make the dragging rectangle reflect this
             var view = SessionController.Instance.SessionView;
-            view.LibraryDraggingRectangle.SwitchType(ElementType.Collection);
+            view.LibraryDraggingRectangle.SwitchType(NusysConstants.ElementType.Collection);
             view.LibraryDraggingRectangle.Show();
             var rect = view.LibraryDraggingRectangle;
             Canvas.SetZIndex(rect, 3);

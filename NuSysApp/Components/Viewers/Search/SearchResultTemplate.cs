@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
     public class SearchResultTemplate
     {
         public string Title { get; set; }
-        public ElementType Type { get; set; }
+        public NusysConstants.ElementType Type { get; set; }
         public string TimeStamp { get; set; }
         public string Creator { get; set; }
         public string Keywords { get; set; }

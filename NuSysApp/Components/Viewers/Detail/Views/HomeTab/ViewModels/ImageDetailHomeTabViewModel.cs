@@ -9,6 +9,7 @@ using Windows.Foundation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using Newtonsoft.Json;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -16,7 +17,6 @@ namespace NuSysApp
     {
         public LibraryElementController LibraryElementController { get; }
         public LibraryElementModel Model { get; }
-        public ObservableCollection<ImageRegionView> RegionViews { set; get; }
         public Uri Image { get; }
         
         public double ImageWidth {
@@ -39,7 +39,6 @@ namespace NuSysApp
             Model = controller.LibraryElementModel;
 
             Image = controller.GetSource();
-            RegionViews = new ObservableCollection<ImageRegionView>();
             Editable = true;
            
         }
@@ -52,11 +51,8 @@ namespace NuSysApp
             {
                 return;
             }
-            var vm = new ImageRegionViewModel(imageRegion, rectRegionController, this);
-            if (!Editable)
-                vm.Editable = false;
-            var view = new ImageRegionView(vm);
-            RegionViews.Add(view);
+          //  var vm = new ImageRegionViewModel(imageRegion, rectRegionController, this);
+
 
             RaisePropertyChanged("RegionViews");
         }
@@ -64,24 +60,23 @@ namespace NuSysApp
 
         public override void RemoveRegion(object sender, Region displayedRegion)
         {
-            var imageRegion = displayedRegion as RectangleRegion;
-            if (imageRegion == null)
-            {
-                return;
-            }
+            //var imageRegion = displayedRegion as RectangleRegion;
+            //if (imageRegion == null)
+            //{
+            //    return;
+            //}
 
-            foreach (var regionView in RegionViews.ToList<ImageRegionView>())
-            {
-                if ((regionView.DataContext as ImageRegionViewModel).Model == imageRegion)
-                    RegionViews.Remove(regionView);
-            }
+            //foreach (var regionView in RegionViews.ToList<ImageRegionView>())
+            //{
+            //    if ((regionView.DataContext as ImageRegionViewModel).Model == imageRegion)
+            //        RegionViews.Remove(regionView);
+            //}
 
-            RaisePropertyChanged("RegionViews");
+            //RaisePropertyChanged("RegionViews");
         }
 
         public override void SizeChanged(object sender, double width, double height)
         {
-           
             if (!Editable)
             {
                 Debug.WriteLine("The detail view size is: " + width);
@@ -90,11 +85,11 @@ namespace NuSysApp
             }
 
             
-            foreach (var rv in RegionViews)
-            {
-                var regionViewViewModel = rv.DataContext as ImageRegionViewModel;
-                regionViewViewModel?.ChangeSize(sender, this.GetWidth(), this.GetHeight());
-            }
+            //foreach (var rv in RegionViews)
+            //{
+            //    var regionViewViewModel = rv.DataContext as ImageRegionViewModel;
+            //    regionViewViewModel?.ChangeSize(sender, this.GetWidth(), this.GetHeight());
+            //}
             
         }
         public double GetHeight()
@@ -121,24 +116,24 @@ namespace NuSysApp
         }
         public override void SetExistingRegions()
         {
-            RegionViews.Clear();
+            //RegionViews.Clear();
 
-            var regionsLibraryElementIds=
-                SessionController.Instance.RegionsController.GetRegionLibraryElementIds(
-                    LibraryElementController.LibraryElementModel.LibraryElementId);
-            foreach (var regionLibraryElementId in regionsLibraryElementIds)
-            {
-                var regionLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementId) as RectangleRegionLibraryElementController;
-                Debug.Assert(regionLibraryElementController != null);
-                Debug.Assert(regionLibraryElementController.LibraryElementModel is RectangleRegion);
-                var vm = new ImageRegionViewModel(regionLibraryElementController.LibraryElementModel as RectangleRegion, regionLibraryElementController, this);
-                if (!Editable)
-                    vm.Editable = false;
-                var view = new ImageRegionView(vm);
-                RegionViews.Add(view);
+            //var regionsLibraryElementIds=
+            //    SessionController.Instance.RegionsController.GetRegionLibraryElementIds(
+            //        LibraryElementController.LibraryElementModel.LibraryElementId);
+            //foreach (var regionLibraryElementId in regionsLibraryElementIds)
+            //{
+            //    var regionLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementId) as RectangleRegionLibraryElementController;
+            //    Debug.Assert(regionLibraryElementController != null);
+            //    Debug.Assert(regionLibraryElementController.LibraryElementModel is RectangleRegion);
+            //    var vm = new ImageRegionViewModel(regionLibraryElementController.LibraryElementModel as RectangleRegion, regionLibraryElementController, this);
+            //    if (!Editable)
+            //        vm.Editable = false;
+            //    var view = new ImageRegionView(vm);
+            //    RegionViews.Add(view);
 
-            }
-            RaisePropertyChanged("RegionViews");
+            //}
+            //RaisePropertyChanged("RegionViews");
         }
 
         public override Message GetNewRegionMessage()
@@ -177,13 +172,13 @@ namespace NuSysApp
             {
                 return;
             }
-            foreach (var view in RegionViews.ToList<ImageRegionView>())
-            {
-                if ((view.DataContext as ImageRegionViewModel).Model.LibraryElementId == rectangleRegion.LibraryElementId)
-                {
-                    view.Select();
-                }
-            }
+            //foreach (var view in RegionViews.ToList<ImageRegionView>())
+            //{
+            //    if ((view.DataContext as ImageRegionViewModel).Model.LibraryElementId == rectangleRegion.LibraryElementId)
+            //    {
+            //        view.Select();
+            //    }
+            //}
         }
     }
 }

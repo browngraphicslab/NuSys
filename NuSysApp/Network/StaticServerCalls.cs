@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -22,7 +23,7 @@ namespace NuSysApp
 
             var m = new Message();
             m["id"] = snapshotId;
-            m["type"] = ElementType.Collection.ToString();
+            m["type"] = NusysConstants.ElementType.Collection.ToString();
             m["inklines"] = collectionLibraryModel.InkLines;
             m["favorited"] = true;
             m["title"] = collectionLibraryModel.Title + " SNAPSHOT "+DateTime.Now;
@@ -54,7 +55,7 @@ namespace NuSysApp
                 message["y"] = y;
                 message["width"] = width;
                 message["height"] = height;
-                message["type"] = ElementType.Collection;
+                message["type"] = NusysConstants.ElementType.Collection;
                 message["collectionview"] = collectionView;
                 message["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
                 message["id"] = newId;

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Newtonsoft.Json;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -74,7 +76,9 @@ namespace NuSysApp
             }
             if (message.ContainsKey("rectangle_location"))
             {
-                SetLocation(message.GetPoint("rectangle_location"));
+                var pointString = message.GetString("rectangle_location");
+                var point = JsonConvert.DeserializeObject<Point>(pointString);
+                SetLocation(point);
             }
             base.UnPack(message);
             SetBlockServerBoolean(false);

@@ -2,20 +2,25 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace NusysConstants
+namespace NusysIntermediate
 {
-    public abstract class Request
+    /// <summary>
+    /// ONLY THE SERVER SHOULD EVER INSTANTIATE THIS BASE CLASS.
+    /// 
+    /// EVERYWHERE ELSE THIS SHOULD BE TREATED AS AN ABSTRACT CLASS
+    /// </summary>
+    public class Request
     {
         protected Message _message;
-        private ServerConstants.RequestType _requestType;
-        public Request(ServerConstants.RequestType request, Message message = null)
+        private NusysConstants.RequestType _requestType;
+        public Request(NusysConstants.RequestType requestType, Message message = null)
         {
             _message = message;
             if (_message == null)
             {
                 _message = new Message();
             }
-            _requestType = request;
+            _requestType = requestType;
         }
 
         public Request(Message message)
@@ -28,11 +33,11 @@ namespace NusysConstants
             {
                 _message = message;
             }
-            if (!message.ContainsKey("request_type"))//make sure there exists a request type
+            if (!_message.ContainsKey(NusysConstants.REQUEST_TYPE_STRING_KEY))//make sure there exists a request type
             {
                 throw new InvalidRequestTypeException("No request type found");
             }
-            _requestType = (ServerConstants.RequestType)Enum.Parse(typeof(ServerConstants.RequestType), message.GetString("request_type"));//set the request type
+            _requestType = (NusysConstants.RequestType)Enum.Parse(typeof(NusysConstants.RequestType), _message.GetString(NusysConstants.REQUEST_TYPE_STRING_KEY));//set the request type
 
         }
         public Message GetFinalMessage()
@@ -42,7 +47,7 @@ namespace NusysConstants
             return _message;
         }
 
-        public ServerConstants.RequestType GetRequestType()
+        public NusysConstants.RequestType GetRequestType()
         {
             return _requestType;
         }
@@ -55,12 +60,25 @@ namespace NusysConstants
             }
         }
 
-        public virtual async Task<bool> CheckOutgoingRequest()
+        /// <summary>
+        ///  THIS METHOD SHOULD ONLY BE USED TO VERIFY THE REQUEST CONTAINS THE CORRECT KEYS AND OBJECTS.  
+        /// 
+        /// Please do not put any logic or calculations in this method.  
+        /// It makes it hard to understand where things are happening
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task CheckOutgoingRequest()
         {
-            return true;
-        }//for anything you want to check right before execution
+            return;
+        }
 
-        //the function to be executed per the request
+        /// <summary>
+        /// This function will be called if/when the request is to be executed locally.
+        /// 
+        /// For instance, A CreateNewLibraryElementRequest should acutally make a library element in this method.
+        /// Other methods in that subclass would be used to prepare and set up the request to have all the tools needed to execute this request
+        /// </summary>
+        /// <returns></returns>
         public virtual async Task ExecuteRequestFunction() { }
 
 

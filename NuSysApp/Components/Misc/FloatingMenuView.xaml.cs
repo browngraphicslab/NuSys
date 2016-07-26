@@ -5,13 +5,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Storage.Streams;
+using Windows.System;
 using Windows.UI;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
+using NusysIntermediate;
 using SharpDX.Direct2D1;
 using Image = Windows.UI.Xaml.Controls.Image;
 using SolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
@@ -33,11 +36,10 @@ namespace NuSysApp
     {
         private FreeFormViewer _freeFormViewer;
         private FrameworkElement _dragItem;
-        private ElementType _elementType;
+        private NusysConstants.ElementType _elementType;
         private LibraryView _lib;
         private LibraryElementPropertiesWindow libProp;
         private bool IsPenMode;
-
         private bool checkPointerAdded;
         private CompositeTransform floatingTransform;
 
@@ -51,6 +53,7 @@ namespace NuSysApp
             btnAddNode.Tapped += BtnAddNode_Tapped;
             btnPen.Tapped += BtnPen_Tapped;
             btnSearch.Tapped += BtnSearch_Tapped;
+             
             libProp = new LibraryElementPropertiesWindow();
             _lib = new LibraryView(new LibraryBucketViewModel(), libProp, this);
             xWrapper.Children.Add(_lib);
@@ -239,13 +242,13 @@ namespace NuSysApp
 
       
             if (sender == btnText)
-                _elementType = ElementType.Text;
+                _elementType = NusysConstants.ElementType.Text;
             if (sender == btnRecording)
-                _elementType = ElementType.Recording;
+                _elementType = NusysConstants.ElementType.Recording;
             if (sender == btnNew)
-                _elementType = ElementType.Collection;
+                _elementType = NusysConstants.ElementType.Collection;
             if (sender == btnTools)
-                _elementType = ElementType.Tools;
+                _elementType = NusysConstants.ElementType.Tools;
 
             args.Container = xWrapper;
             var bmp = new RenderTargetBitmap();
@@ -264,10 +267,10 @@ namespace NuSysApp
             args.Handled = true;
         }
 
-        public async Task AddNode(Point pos, Size size, ElementType elementType, object data = null)
+        public async Task AddNode(Point pos, Size size, NusysConstants.ElementType elementType, object data = null)
         {
             var vm = SessionController.Instance.ActiveFreeFormViewer;
-            if (elementType == ElementType.Recording)
+            if (elementType == NusysConstants.ElementType.Recording)
             {
                 var r = new RecordingNodeView(new RecordingNodeViewModel(new RecordingNodeController(new ElementModel("")
                 {
@@ -279,14 +282,14 @@ namespace NuSysApp
 
                 vm.AtomViewList.Add(r);
                 
-            } else if (elementType == ElementType.Text || elementType == ElementType.Web || elementType == ElementType.Collection)
+            } else if (elementType == NusysConstants.ElementType.Text || elementType == NusysConstants.ElementType.Web || elementType == NusysConstants.ElementType.Collection)
             {
 
 
                 var title = string.Empty;
-                if (elementType == ElementType.Text)
+                if (elementType == NusysConstants.ElementType.Text)
                     title = "Unnamed Text";
-                if (elementType == ElementType.Collection)
+                if (elementType == NusysConstants.ElementType.Collection)
                     title = "Unnamed Collection";
                 var p = pos;
 
@@ -312,7 +315,7 @@ namespace NuSysApp
             }
 
             // Adds a toolview to the atom view list when an tool is droped
-            else if (_elementType == ElementType.Tools)
+            else if (_elementType == NusysConstants.ElementType.Tools)
             {
                 ToolFilterView filter = new ToolFilterView(pos.X, pos.Y);
                 vm.AtomViewList.Add(filter);
@@ -322,7 +325,7 @@ namespace NuSysApp
           //  _lib.UpdateList();
             vm.ClearSelection();
         }
-
+        
         public FrameworkElement Panel
         {
             get { return FloatingMenuPanel; }

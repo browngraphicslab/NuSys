@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using NusysIntermediate;
 
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -36,7 +37,6 @@ namespace NuSysApp
 
         public ImageDetailHomeTabView(ImageDetailHomeTabViewModel vm)
         {
-
             DataContext = vm;
             _libraryElementId = vm.LibraryElementController.ContentId;
             InitializeComponent();
@@ -50,15 +50,12 @@ namespace NuSysApp
             //{
             //    SourceBttn.Visibility = Visibility.Collapsed;
             //}
-
-
-
+            
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
             vm.PropertyChanged += PropertyChanged;
             vm.View = this;
 
-
-
+            xClippingWrapper.Controller = vm.LibraryElementController;
         }
 
         public void RefreshRegions()
@@ -173,10 +170,10 @@ namespace NuSysApp
         private void xImg_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             var vm = DataContext as ImageDetailHomeTabViewModel;
-            foreach (var regionView in vm.RegionViews)
-            {
-                regionView.Deselect();
-            }
+            //foreach (var regionView in vm.RegionViews)
+            //{
+            //    regionView.Deselect();
+            //}
         }
 
         private void BitmapImage_ImageOpened(object sender, RoutedEventArgs e)
@@ -184,7 +181,7 @@ namespace NuSysApp
             var vm = (ImageDetailHomeTabViewModel) DataContext;
             vm.SetExistingRegions();
             ContentLoaded?.Invoke(this);
-
+            xClippingWrapper.Controller = vm.LibraryElementController;
         }
 
 #region addToCollection
@@ -199,7 +196,7 @@ namespace NuSysApp
         {
             LibraryElementModel element = SessionController.Instance.ContentController.GetContent(_libraryElementId);
             if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element?.LibraryElementId) ||
-                (element?.Type == ElementType.Link))
+                (element?.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -232,7 +229,7 @@ namespace NuSysApp
         private void AddToCollection_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             LibraryElementModel element = SessionController.Instance.ContentController.GetContent(_libraryElementId);
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
+            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -266,7 +263,7 @@ namespace NuSysApp
         private async void AddToCollection_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             LibraryElementModel element = SessionController.Instance.ContentController.GetContent(_libraryElementId);
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
+            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -288,11 +285,11 @@ namespace NuSysApp
             await AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type, element.LibraryElementId);
         }
 
-        public async Task AddNode(Point pos, Size size, ElementType elementType, string libraryId)
+        public async Task AddNode(Point pos, Size size, NusysConstants.ElementType elementType, string libraryId)
         {
             Task.Run(async delegate
             {
-                if (elementType != ElementType.Collection)
+                if (elementType != NusysConstants.ElementType.Collection)
                 {
                     var element = SessionController.Instance.ContentController.GetContent(libraryId);
                     var dict = new Message();
@@ -328,5 +325,10 @@ namespace NuSysApp
 
 #endregion addToCollection
 
+        private void XImg_OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var vm = (ImageDetailHomeTabViewModel)DataContext;
+            xClippingWrapper.Controller = vm.LibraryElementController;
+        }
     }
 }

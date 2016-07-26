@@ -17,6 +17,7 @@ using Windows.UI.Xaml;
 using System.Net;
 using Newtonsoft.Json;
 using LdaLibrary;
+using NusysIntermediate;
 using WinRTXamlToolkit.Imaging;
 using Image = SharpDX.Direct2D1.Image;
 using Point = Windows.Foundation.Point;

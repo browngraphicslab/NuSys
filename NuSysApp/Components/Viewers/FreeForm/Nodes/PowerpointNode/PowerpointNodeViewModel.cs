@@ -11,6 +11,7 @@ using Windows.Storage.Streams;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -88,7 +89,7 @@ namespace NuSysApp
             m["height"] = 400;
             m["autoCreate"] = true;
             m["creator"] =  SessionController.Instance.ActiveFreeFormViewer.ContentId;
-            m["type"] = ElementType.PDF.ToString();
+            m["type"] = NusysConstants.ElementType.PDF.ToString();
 
             var metadata = new Dictionary<string, object>();
             metadata["BookmarkId"] = Controller.LibraryElementController.GetMetadata("BookmarkId");
@@ -113,7 +114,7 @@ namespace NuSysApp
 
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, pdfContent, ElementType.PDF));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, pdfContent, NusysConstants.ElementType.PDF));
             /*
             await
                 SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(

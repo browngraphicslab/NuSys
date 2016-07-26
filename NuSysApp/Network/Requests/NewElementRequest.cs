@@ -2,21 +2,18 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using NusysConstants;
+using NusysIntermediate;
 using NuSysApp.Controller;
 
 namespace NuSysApp
 {
     public class NewElementRequest : Request
     {
-        public NewElementRequest(Message message) : base(ServerConstants.RequestType.NewNodeRequest, message)
+        public NewElementRequest(Message message) : base(NusysConstants.RequestType.NewNodeRequest, message)
         {
-            SetServerEchoType(ServerEchoType.Everyone);
-            SetServerItemType(ServerItemType.Alias);
-            SetServerRequestType(ServerRequestType.Add);
         }
 
-        public override async Task<bool> CheckOutgoingRequest()
+        public override async Task CheckOutgoingRequest()
         {
             if (!_message.ContainsKey("id"))
             {
@@ -26,7 +23,6 @@ namespace NuSysApp
             {
                 throw new NewNodeRequestException("New Node requests require messages with at least 'contentId'");
             }
-            return true;
         }
 
         public override async Task ExecuteRequestFunction()
@@ -56,58 +52,58 @@ namespace NuSysApp
 
                 switch (elementType)
                 {
-                    case ElementType.Text:
+                    case NusysConstants.ElementType.Text:
                         elementModel = new TextElementModel(id);
                         await elementModel.UnPack(_message);
                         controller = new TextNodeController((TextElementModel)elementModel);
                         break;
-                    case ElementType.ImageRegion:
-                    case ElementType.Image:
+                    case NusysConstants.ElementType.ImageRegion:
+                    case NusysConstants.ElementType.Image:
                         elementModel = new ImageElementModel(id);
                         await elementModel.UnPack(_message);
                         controller = new ImageElementIntanceController(elementModel);
                         break;
-                    case ElementType.Word:
+                    case NusysConstants.ElementType.Word:
                         elementModel = new WordNodeModel(id);
                         await elementModel.UnPack(_message);
                         controller = new ElementController(elementModel);
                         break;
-                    case ElementType.Powerpoint:
+                    case NusysConstants.ElementType.Powerpoint:
                         elementModel = new PowerpointNodeModel(id);
                         await elementModel.UnPack(_message);
                         controller = new ElementController(elementModel);
                         break;
-                    case ElementType.PDF:
+                    case NusysConstants.ElementType.PDF:
                         elementModel = new PdfNodeModel(id);
                         await elementModel.UnPack(_message);
                         controller = new ElementController(elementModel);
                         break;
-                    case ElementType.Audio:
+                    case NusysConstants.ElementType.Audio:
                         elementModel = new AudioNodeModel(id);
                         await elementModel.UnPack(_message);
                         controller = new ElementController(elementModel);
                         break;
-                    case ElementType.Video:
+                    case NusysConstants.ElementType.Video:
                         elementModel = new VideoNodeModel(id);
                         await elementModel.UnPack(_message);
                         controller = new ElementController(elementModel);
                         break;
-                    case ElementType.Tag:
+                    case NusysConstants.ElementType.Tag:
                         elementModel = new TagNodeModel(id);
                         await elementModel.UnPack(_message);
                         controller = new ElementController(elementModel);
                         break;
-                    case ElementType.Web:
+                    case NusysConstants.ElementType.Web:
                         elementModel = new WebNodeModel(id);
                         await elementModel.UnPack(_message);
                         controller = new ElementController(elementModel);
                         break;
-                    case ElementType.Collection:
+                    case NusysConstants.ElementType.Collection:
                         elementModel = new CollectionElementModel(id);
                         await elementModel.UnPack(_message);
                         controller = new ElementCollectionController(elementModel);
                         break;
-                    case ElementType.Area:
+                    case NusysConstants.ElementType.Area:
                         elementModel = new AreaModel(id);
                         await elementModel.UnPack(_message);
                         controller = new ElementController(elementModel);
@@ -117,7 +113,7 @@ namespace NuSysApp
                         await elementModel.UnPack(_message);
                         controller = new LinkController((LinkModel)elementModel);
                         break;*/
-                    case ElementType.Recording:
+                    case NusysConstants.ElementType.Recording:
                         controller = new ElementController(null);
                         break;
                     default:
@@ -147,7 +143,7 @@ namespace NuSysApp
                     });
                 }
 
-                if (elementType == ElementType.Collection)
+                if (elementType == NusysConstants.ElementType.Collection)
                 {
                     //TODO have this code somewhere but not stack overflow.  aka: add in a level checker so we don't recursively load 
                     var existingChildren = ((CollectionLibraryElementModel)(controller.LibraryElementModel))?.Children;

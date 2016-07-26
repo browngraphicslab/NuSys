@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights.DataContracts;
 using Newtonsoft.Json;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -14,7 +15,7 @@ namespace NuSysApp
         public static LibraryElementModel CreateFromMessage(Message message)
         {
             Debug.Assert(message.ContainsKey("type"));
-            var type = (ElementType)Enum.Parse(typeof(ElementType),message.GetString("type"), true);
+            var type = (NusysConstants.ElementType)Enum.Parse(typeof(NusysConstants.ElementType),message.GetString("type"), true);
             LibraryElementModel model;
 
             var id = message.GetString("id");
@@ -33,22 +34,22 @@ namespace NuSysApp
                 Debug.Assert(id != null);
                 switch (type)
                 {
-                    case ElementType.ImageRegion:
-                        model = new RectangleRegion(id, ElementType.ImageRegion);
+                    case NusysConstants.ElementType.ImageRegion:
+                        model = new RectangleRegion(id, NusysConstants.ElementType.ImageRegion);
                         break;
-                    case ElementType.VideoRegion:
+                    case NusysConstants.ElementType.VideoRegion:
                         model = new VideoRegionModel(id);
                         break;
-                    case ElementType.PdfRegion:
+                    case NusysConstants.ElementType.PdfRegion:
                         model = new PdfRegionModel(id);
                         break;
-                    case ElementType.AudioRegion:
+                    case NusysConstants.ElementType.AudioRegion:
                         model = new AudioRegionModel(id);
                         break;
-                    case ElementType.Collection:
+                    case NusysConstants.ElementType.Collection:
                         model = new CollectionLibraryElementModel(id, metadata, title, favorited);
                         break;
-                    case ElementType.Link:
+                    case NusysConstants.ElementType.Link:
                         Debug.Assert(message.ContainsKey("id1") && message.ContainsKey("id2"));
                         var id1 = message.Get("id1");
                         var id2 = message.Get("id2");
@@ -70,7 +71,7 @@ namespace NuSysApp
                     Debug.Assert(model is Region);
                     SessionController.Instance.RegionsController.AddRegion(model as Region);
                 }
-                if (type == ElementType.Link)
+                if (type == NusysConstants.ElementType.Link)
                 {
                     var linkController =
                         SessionController.Instance.ContentController.GetLibraryElementController(id) as

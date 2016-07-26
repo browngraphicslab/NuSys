@@ -5,26 +5,21 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
-using NusysConstants;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
     public class FinalizeInkRequest : Request
     {
-        public FinalizeInkRequest(Message message) : base(ServerConstants.RequestType.FinalizeInkRequest, message){}
+        public FinalizeInkRequest(Message message) : base(NusysConstants.RequestType.FinalizeInkRequest, message){}
 
-        public async override Task<bool> CheckOutgoingRequest()
+        public async override Task CheckOutgoingRequest()
         {
             if (_message.GetString("id", null) == null)
             {
                 throw new Exception("FinalizeInkRequest must contain 'id'");
             }
             _message["contentId"] = _message.GetString("id", null);
-            SetServerEchoType(ServerEchoType.Everyone);
-            SetServerItemType(ServerItemType.Content);
-            SetServerRequestType(ServerRequestType.Update);
-            SetServerIgnore(false);
-            return true;
         }
         public override async Task ExecuteRequestFunction()
         {

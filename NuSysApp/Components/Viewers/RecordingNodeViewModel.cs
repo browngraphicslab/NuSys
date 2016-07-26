@@ -11,6 +11,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
+using NusysIntermediate;
 using NuSysApp.Controller;
 using NuSysApp.Util;
 
@@ -406,7 +407,7 @@ namespace NuSysApp
             }
         }
 
-        public ElementType ElementType
+        public NusysConstants.ElementType ElementType
         {
             get { return ((ElementModel)Model).ElementType; }
         }

@@ -13,6 +13,7 @@ using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using Newtonsoft.Json;
 using Windows.UI.Input.Inking;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -436,7 +437,7 @@ namespace NuSysApp
                         data = await responseContent.ReadAsStringAsync();
                     }
 
-                    if (SessionController.Instance.ContentController.GetContent(libraryId) != null && SessionController.Instance.ContentController.GetContent(libraryId).Type == ElementType.Video)
+                    if (SessionController.Instance.ContentController.GetContent(libraryId) != null && SessionController.Instance.ContentController.GetContent(libraryId).Type == NusysConstants.ElementType.Video)
                     {
                         if (data == "{}")
                         {
@@ -682,9 +683,9 @@ namespace NuSysApp
         /// <returns></returns>
         private async Task<Message> WaitGetRequestAsync(Message message)
         {
-            Debug.Assert(!message.ContainsKey(NusysConstants.ServerConstants.GET_REQUEST_ID_STRING));
+            Debug.Assert(!message.ContainsKey(NusysIntermediate.NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING));
             var mreId = SessionController.Instance.GenerateId();
-            message[NusysConstants.ServerConstants.GET_REQUEST_ID_STRING] = mreId;
+            message[NusysIntermediate.NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING] = mreId;
             var mre = new ManualResetEvent(false);
             _requestEventDictionary.TryAdd(mreId, mre);
             Task.Run(async delegate
@@ -707,64 +708,14 @@ namespace NuSysApp
         /// <returns></returns>
         private async Task ReturnGetRequestAsync(Message message)
         {
-            Debug.Assert(message.ContainsKey(NusysConstants.ServerConstants.GET_REQUEST_ID_STRING));
-            var mreId = message.GetString(NusysConstants.ServerConstants.GET_REQUEST_ID_STRING);
+            Debug.Assert(message.ContainsKey(NusysIntermediate.NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING));
+            var mreId = message.GetString(NusysIntermediate.NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING);
             var mre = _requestEventDictionary[mreId];
             ManualResetEvent outMre;
             _requestEventDictionary.TryRemove(mreId, out outMre);
             _returnMessages.TryAdd(mreId, message);
             mre.Set();
         }
-        /*
-        public async Task DeleteAllRepoFiles()
-        {
-            HttpClient client = new HttpClient();
-            var response = await client.GetAsync(GetUri("delete"));
-        }
-
-        public async Task<bool> DeleteContent(string id)
-        {
-            HttpClient client = new HttpClient();
-            var response = await client.GetAsync(GetUri("delete/"+id));
-            string data;
-            using (var content = response.Content)
-            {
-                data = await content.ReadAsStringAsync();
-            }
-            bool success = bool.Parse(data.Substring(1,data.Length-2));
-            return success;
-        }
-
-        public async Task<bool> UpdateContent(string id, Dictionary<string, string> dict)
-        {
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-            JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-            var uri = GetUri("update/" + id);
-            client.BaseAddress = uri;
-            var message = new HttpRequestMessage();
-            message.Content = new StringContent(JsonConvert.SerializeObject(dict, settings), Encoding.UTF8, "application/json");
-            
-            var response = await client.SendAsync(message);
-            string data;
-            using (var content = response.Content)
-            {
-                data = await content.ReadAsStringAsync();
-            }
-            try
-            {
-                bool success = bool.Parse(data);
-                return success;
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-
-
-        }
-        */
 
         private class SearchIntermediate
         {

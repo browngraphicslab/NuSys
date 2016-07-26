@@ -8,8 +8,8 @@
     <ProjectGuid>{7296C25F-88E9-478D-A489-8A1C13E8B846}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NusysConstants</RootNamespace>
-    <AssemblyName>NusysConstants</AssemblyName>
+    <RootNamespace>NusysIntermediate</RootNamespace>
+    <AssemblyName>NusysIntermediate</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -41,7 +41,7 @@
     <Compile Include="Keyword.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Request.cs" />
-    <Compile Include="ServerConstants.cs" />
+    <Compile Include="NusysConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

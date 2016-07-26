@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using NusysIntermediate;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -40,42 +41,42 @@ namespace NuSysApp
             StackPanel itemPanel = new StackPanel();
             itemPanel.Orientation = Orientation.Vertical;
             
-            if (newItem.Type == ElementType.Image)
+            if (newItem.Type == NusysConstants.ElementType.Image)
             {
                 Image icon = new Image();
                 icon.Source = new BitmapImage(new Uri("http://wiki.tripwireinteractive.com/images/4/47/Placeholder.png", UriKind.Absolute));
                 icon.MaxWidth = 125;
                 itemPanel.Children.Add(icon);
             }
-            else if (newItem.Type == ElementType.Text)
+            else if (newItem.Type == NusysConstants.ElementType.Text)
             {
                 Image icon = new Image();
                 icon.Source = new BitmapImage(new Uri("http://findicons.com/files/icons/1580/devine_icons_part_2/512/defult_text.png", UriKind.Absolute));
                 icon.MaxWidth = 125;
                 itemPanel.Children.Add(icon);
             }
-            else if (newItem.Type == ElementType.Web)
+            else if (newItem.Type == NusysConstants.ElementType.Web)
             {
                 Image icon = new Image();
                 icon.Source = new BitmapImage(new Uri("http://www.clker.com/cliparts/I/Y/4/e/m/C/internet-icon-md.png", UriKind.Absolute));
                 icon.MaxWidth = 125;
                 itemPanel.Children.Add(icon);
             }
-            else if (newItem.Type == ElementType.PDF)
+            else if (newItem.Type == NusysConstants.ElementType.PDF)
             {
                 Image icon = new Image();
                 icon.Source = new BitmapImage(new Uri("http://iconizer.net/files/Devine_icons/orig/PDF.png", UriKind.Absolute));
                 icon.MaxWidth = 125;
                 itemPanel.Children.Add(icon);
             }
-            else if (newItem.Type == ElementType.Audio)
+            else if (newItem.Type == NusysConstants.ElementType.Audio)
             {
                 Image icon = new Image();
                 icon.Source = new BitmapImage(new Uri("http://icons.iconarchive.com/icons/icons8/windows-8/512/Music-Audio-Wave-icon.png", UriKind.Absolute));
                 icon.MaxWidth = 125;
                 itemPanel.Children.Add(icon);
             }
-            else if (newItem.Type == ElementType.Video)
+            else if (newItem.Type == NusysConstants.ElementType.Video)
             {
                 Image icon = new Image();
                 icon.Source = new BitmapImage(new Uri("http://www.veryicon.com/icon/ico/System/Icons8%20Metro%20Style/Photo%20Video%20Camcoder%20pro.ico", UriKind.Absolute));
@@ -120,7 +121,7 @@ namespace NuSysApp
 
             this.UpdateFavoriteButton();
 
-            if (element.Type == ElementType.Collection)
+            if (element.Type == NusysConstants.ElementType.Collection)
             {
                 EnterCollectionButton.Visibility = Visibility.Visible;
             }
@@ -188,7 +189,7 @@ namespace NuSysApp
                 UITask.Run(async delegate
                 {
                     var content = SessionController.Instance.ContentController.GetContent(id);
-                    if (content != null && content.Type == ElementType.Collection)
+                    if (content != null && content.Type == NusysConstants.ElementType.Collection)
                     {
                         List<Message> messages = new List<Message>();
                         await Task.Run(async delegate

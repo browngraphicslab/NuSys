@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media.Imaging;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -13,7 +14,7 @@ namespace NuSysApp
     {
         public PowerpointNodeModel(string id) : base(id)
         {
-            ElementType = ElementType.Powerpoint;
+            ElementType = NusysConstants.ElementType.Powerpoint;
         }
 
         public string FilePath { get; set; }

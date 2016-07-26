@@ -7,26 +7,20 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Media;
-using NusysConstants;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
     public class RemoveInkRequest : Request
     {
-        public RemoveInkRequest(Message message) : base(ServerConstants.RequestType.RemoveInkRequest, message){}
+        public RemoveInkRequest(Message message) : base(NusysConstants.RequestType.RemoveInkRequest, message){}
 
-        public async override Task<bool> CheckOutgoingRequest()
+        public async override Task CheckOutgoingRequest()
         {
             if (_message.GetString("id", null) == null)
             {
                 throw new Exception("AddInkRequest must contain 'id'");
             }
-  
-            SetServerEchoType(ServerEchoType.ForcedEveryone);
-            SetServerItemType(ServerItemType.Ink);
-            SetServerRequestType(ServerRequestType.Remove);
-            SetServerIgnore(false);
-            return true;
         }
         public override async Task ExecuteRequestFunction()
         {

@@ -9,6 +9,7 @@ using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Imaging;
 using LdaLibrary;
+using NusysIntermediate;
 
 namespace NuSysApp
 {

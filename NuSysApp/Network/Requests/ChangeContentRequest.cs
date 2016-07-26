@@ -5,36 +5,26 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Input.Inking;
 using Newtonsoft.Json;
-using NusysConstants;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
     public class ChangeContentRequest : Request
     {
-        public ChangeContentRequest(Message m) : base(ServerConstants.RequestType.ChangeContentRequest, m)
+        public ChangeContentRequest(Message m) : base(NusysConstants.RequestType.ChangeContentRequest, m)
         {
-            SetServerSettings();
         }
 
-        public ChangeContentRequest(string contentID, string contentData) : base(ServerConstants.RequestType.ChangeContentRequest)
+        public ChangeContentRequest(string contentID, string contentData) : base(NusysConstants.RequestType.ChangeContentRequest)
         {
             _message["contentId"] = contentID;
             _message["data"] = contentData;
-            SetServerSettings();
         }
 
-        private void SetServerSettings()
-        {
-            SetServerEchoType(ServerEchoType.EveryoneButSender);//TODO maybe have this be everyone again
-            SetServerItemType(ServerItemType.Content);
-            SetServerRequestType(ServerRequestType.Update);
-        }
-
-        public override async Task<bool> CheckOutgoingRequest()
+        public override async Task CheckOutgoingRequest()
         {
             var time = DateTime.UtcNow.ToString();
             _message["library_element_last_edited_timestamp"] = time;
-            return true;
         }
 
         public override async Task ExecuteRequestFunction()

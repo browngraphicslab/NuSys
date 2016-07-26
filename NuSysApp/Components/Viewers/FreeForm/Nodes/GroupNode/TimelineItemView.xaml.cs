@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
+using NusysIntermediate;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -24,8 +25,8 @@ namespace NuSysApp.Components.Nodes.GroupNode
     public sealed partial class TimelineItemView : UserControl
     {
         private FrameworkElement _atom;
-        public readonly ElementType EType;
-        public TimelineItemView(FrameworkElement image, Object sortElement, FrameworkElement atom, ElementType type)
+        public readonly NusysConstants.ElementType EType;
+        public TimelineItemView(FrameworkElement image, Object sortElement, FrameworkElement atom, NusysConstants.ElementType type)
         {
             this.InitializeComponent();
             EType = type;

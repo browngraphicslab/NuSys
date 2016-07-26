@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml.Media;
 using Newtonsoft.Json;
+using NusysIntermediate;
 
 namespace NuSysApp
 {

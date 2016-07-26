@@ -8,6 +8,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using NusysIntermediate;
 
 
 namespace NuSysApp
@@ -147,11 +148,11 @@ namespace NuSysApp
                 elementMsg["x"] = p.X;
                 elementMsg["y"] = p.Y;
                 elementMsg["contentId"] = contentId;
-                elementMsg["type"] = ElementType.Collection;
+                elementMsg["type"] = NusysConstants.ElementType.Collection;
                 elementMsg["creator"] = controller2.LibraryElementModel.LibraryElementId;
                 elementMsg["id"] = newCollectionId;
 
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "New Collection"));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "New Collection"));
 
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
 

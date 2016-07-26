@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -11,7 +12,7 @@ namespace NuSysApp
     {
 
         public int PageLocation { get; set; }
-        public PdfRegionModel(string libraryId) : base(libraryId, ElementType.PdfRegion)
+        public PdfRegionModel(string libraryId) : base(libraryId, NusysConstants.ElementType.PdfRegion)
         {
         }
     }

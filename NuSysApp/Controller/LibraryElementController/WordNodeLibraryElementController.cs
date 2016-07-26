@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Windows.UI;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -30,7 +31,7 @@ namespace NuSysApp
 
         public WordNodeLibraryElementController(LibraryElementModel model) : base(model)
         {
-            Debug.Assert(model.Type == ElementType.Word);
+            Debug.Assert(model.Type == NusysConstants.ElementType.Word);
         }
 
         /// <summary>

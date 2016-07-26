@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -24,7 +25,7 @@ namespace NuSysApp
 
         public PdfNodeModel(string id) : base(id)
         {
-            ElementType = ElementType.PDF;
+            ElementType = NusysConstants.ElementType.PDF;
         }
         
         public override async Task<Dictionary<string, object>> Pack()

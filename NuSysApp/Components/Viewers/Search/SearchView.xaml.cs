@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using MyToolkit.UI;
+using NusysIntermediate;
 using WinRTXamlToolkit.Controls.Extensions;
 
 namespace NuSysApp
@@ -248,7 +249,7 @@ namespace NuSysApp
         {
             SearchResultTemplate result = (sender as Grid)?.DataContext as SearchResultTemplate;
             LibraryElementModel element = result?.Model;
-            if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element.LibraryElementId) || (element.Type == ElementType.Link))
+            if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -281,7 +282,7 @@ namespace NuSysApp
 
             SearchResultTemplate result = (sender as Grid)?.DataContext as SearchResultTemplate;
             LibraryElementModel element = result?.Model;
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
+            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -328,7 +329,7 @@ namespace NuSysApp
         {
             SearchResultTemplate result = (sender as Grid)?.DataContext as SearchResultTemplate;
             LibraryElementModel element = result?.Model;
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
+            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -348,11 +349,11 @@ namespace NuSysApp
             await AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type, element.LibraryElementId);
         }
 
-        public async Task AddNode(Point pos, Size size, ElementType elementType, string libraryId)
+        public async Task AddNode(Point pos, Size size, NusysConstants.ElementType elementType, string libraryId)
         {
             Task.Run(async delegate
             {
-                if (elementType != ElementType.Collection)
+                if (elementType != NusysConstants.ElementType.Collection)
                 {
                     var element = SessionController.Instance.ContentController.GetContent(libraryId);
                     var dict = new Message();
@@ -401,7 +402,7 @@ namespace NuSysApp
 
             // Since we are adding a collection, we should make the dragging rectangle reflect this
             var view = SessionController.Instance.SessionView;
-            view.LibraryDraggingRectangle.SwitchType(ElementType.Collection);
+            view.LibraryDraggingRectangle.SwitchType(NusysConstants.ElementType.Collection);
             view.LibraryDraggingRectangle.Show();
             var rect = view.LibraryDraggingRectangle;
             Canvas.SetZIndex(rect, 3);
@@ -497,12 +498,12 @@ namespace NuSysApp
             elementMsg["x"] = r.X;
             elementMsg["y"] = r.Y;
             elementMsg["contentId"] = contentId;
-            elementMsg["type"] = ElementType.Collection;
+            elementMsg["type"] = NusysConstants.ElementType.Collection;
             elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             elementMsg["id"] = newCollectionId;
 
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Search Results for '" + SearchBox.Text + "'"));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Search Results for '" + SearchBox.Text + "'"));
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
 

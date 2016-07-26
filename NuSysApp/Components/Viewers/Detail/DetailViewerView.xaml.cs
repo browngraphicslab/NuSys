@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using LdaLibrary;
 using MyToolkit.Utilities;
+using NusysIntermediate;
 using WinRTXamlToolkit.IO.Serialization;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -169,9 +170,9 @@ namespace NuSysApp
             }
 
             //Also, for PDFs the list view of the regions is shown in the Region Editor tab. 
-            if (controller.LibraryElementModel.Type == ElementType.PDF)
+            if (controller.LibraryElementModel.Type == NusysConstants.ElementType.PDF)
             {
-                xRegionEditorView.ShowListView(true, ElementType.PDF);
+                xRegionEditorView.ShowListView(true, NusysConstants.ElementType.PDF);
 
             }
             else
@@ -194,8 +195,8 @@ namespace NuSysApp
                 xRootPivot.Items.Add(pivotItem);
             }
 
-            if (controller.LibraryElementModel.Type == ElementType.Text || controller.LibraryElementModel.Type == ElementType.Link ||
-                controller.LibraryElementModel.Type == ElementType.Collection || controller.LibraryElementModel.Type == ElementType.Word)
+            if (controller.LibraryElementModel.Type == NusysConstants.ElementType.Text || controller.LibraryElementModel.Type == NusysConstants.ElementType.Link ||
+                controller.LibraryElementModel.Type == NusysConstants.ElementType.Collection || controller.LibraryElementModel.Type == NusysConstants.ElementType.Word)
             {
                 if (xRootPivot?.Items?.Count == 4)
                 {
@@ -238,12 +239,12 @@ namespace NuSysApp
             linkEditorViewModel?.ChangeLinkTemplates(libraryElementController);
             //linkEditorViewModel?.Update
 
-            //Make the region editor invisible
-            if (xRootPivot?.Items?.Count == 4)
-            {
-                _regionEditorPivotItem = xRootPivot.Items[3];
-                xRootPivot.Items.RemoveAt(3);
-            }
+            ////Make the region editor invisible
+            //if (xRootPivot?.Items?.Count == 4)
+            //{
+            //    _regionEditorPivotItem = xRootPivot.Items[3];
+            //    xRootPivot.Items.RemoveAt(3);
+            //}
             
             //Update metadata editor
             xMetadataEditorView.Metadatable = libraryElementController;
@@ -507,7 +508,6 @@ namespace NuSysApp
                 {
                     case 0:
                         vm.TabDictionary[_currentDetailViewable.TabId()] = DetailViewTabType.Home;
-                        await Task.Delay(42);
                         var home = vm.View.DataContext as DetailHomeTabViewModel;
                         home.SetExistingRegions();
                         break;
@@ -519,7 +519,6 @@ namespace NuSysApp
                         break;
                     case 3:
                         vm.TabDictionary[_currentDetailViewable.TabId()] = DetailViewTabType.Regions;
-                        await Task.Delay(42);
                         var region = vm.RegionView.DataContext as DetailHomeTabViewModel;
                         region.SetExistingRegions();
                         break;
@@ -533,7 +532,6 @@ namespace NuSysApp
                 {
                     case 0:
                         vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Home);
-                        await Task.Delay(43);
                         var home = vm.View.DataContext as DetailHomeTabViewModel;
                         home.SetExistingRegions();
                         break;
@@ -545,7 +543,6 @@ namespace NuSysApp
                         break;
                     case 3:
                         vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Regions);
-                        await Task.Delay(43);
                         var region = vm.RegionView.DataContext as DetailHomeTabViewModel;
                         region.SetExistingRegions();
                         break;

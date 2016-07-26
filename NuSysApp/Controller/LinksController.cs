@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
-using NusysConstants;
+using NusysIntermediate;
 
 namespace NuSysApp
 { 
@@ -221,7 +221,7 @@ namespace NuSysApp
             var libraryElementId = content?.LibraryElementModel?.LibraryElementId;
             Debug.Assert(libraryElementId != null);
             Debug.Assert(content?.LibraryElementModel != null);
-            if (content.LibraryElementModel.Type == ElementType.Link)
+            if (content.LibraryElementModel.Type == NusysConstants.ElementType.Link)
             {
                 Debug.Assert(content.LibraryElementModel is LinkLibraryElementModel);
                 var linkLibraryElementModel = content.LibraryElementModel as LinkLibraryElementModel;

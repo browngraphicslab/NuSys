@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using MyToolkit.Messaging;
 using MyToolkit.UI;
+using NusysIntermediate;
 using NuSysApp.Util;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -296,7 +297,7 @@ namespace NuSysApp
             {
                 var id = vm.Controller.LibraryElementModel.LibraryElementId;
                 var content = SessionController.Instance.ContentController.GetContent(id);
-                if (content != null && content.Type == ElementType.Collection)
+                if (content != null && content.Type == NusysConstants.ElementType.Collection)
                 {
                     List<Message> messages = new List<Message>();
                     await Task.Run(async delegate

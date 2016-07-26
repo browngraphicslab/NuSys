@@ -8,6 +8,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using NusysIntermediate;
 using NuSysApp.Tools;
 
 namespace NuSysApp
@@ -128,13 +129,13 @@ namespace NuSysApp
             Task.Run(async delegate
             {
                 var collectionID = SessionController.Instance.GenerateId();
-                var request = new CreateNewLibraryElementRequest(collectionID, "", ElementType.Collection,
+                var request = new CreateNewLibraryElementRequest(collectionID, "", NusysConstants.ElementType.Collection,
                     "Tool-Generated Collection");
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
                 var m = new Message();
                 m["width"] = "300";
                 m["height"] = "300";
-                m["type"] = ElementType.Collection.ToString();
+                m["type"] = NusysConstants.ElementType.Collection.ToString();
                 m["x"] = x;
                 m["y"] = y;
                 m["contentId"] = collectionID;
@@ -145,7 +146,7 @@ namespace NuSysApp
                 foreach (var id in Controller.Model.OutputLibraryIds)
                 {
                     var lem = SessionController.Instance.ContentController.GetContent(id);
-                    if (lem == null || lem.Type == ElementType.Link)
+                    if (lem == null || lem.Type == NusysConstants.ElementType.Link)
                     {
                         continue;
                     }
@@ -178,7 +179,7 @@ namespace NuSysApp
                 foreach (var id in Controller.Model.OutputLibraryIds)
                 {
                     var lem = SessionController.Instance.ContentController.GetContent(id);
-                    if (lem == null || lem.Type == ElementType.Link || i > 20)//TODO indicate to user than no more than 20 non-link items will be made
+                    if (lem == null || lem.Type == NusysConstants.ElementType.Link || i > 20)//TODO indicate to user than no more than 20 non-link items will be made
                     {
                         continue;
                     }

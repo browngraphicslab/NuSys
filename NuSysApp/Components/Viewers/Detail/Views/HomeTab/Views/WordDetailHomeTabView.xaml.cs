@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using NusysIntermediate;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -118,7 +119,7 @@ namespace NuSysApp
                 {
                     m["pdf_text"] = pdf_text;
                 }
-                m["type"] = ElementType.PDF.ToString();
+                m["type"] = NusysConstants.ElementType.PDF.ToString();
                 m["title"] = vm.Controller.LibraryElementModel.Title + " CAPTURED "+DateTime.Now.ToString();
                 SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(m));
             });

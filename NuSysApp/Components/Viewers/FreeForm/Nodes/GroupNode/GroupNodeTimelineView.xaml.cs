@@ -23,6 +23,7 @@ using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 using MyToolkit.UI;
 using MyToolkit.Utilities;
+using NusysIntermediate;
 using NuSysApp.Components.Nodes.GroupNode;
 
 namespace NuSysApp
@@ -295,11 +296,11 @@ namespace NuSysApp
                 var image = (Image)dc;
                 var type = _elementControllerDict[image].Model.ElementType; ;
 
-                if (type == ElementType.Word || type == ElementType.Powerpoint)
+                if (type == NusysConstants.ElementType.Word || type == NusysConstants.ElementType.Powerpoint)
                 {
                     return;
                 }
-                else if (type != ElementType.Link)
+                else if (type != NusysConstants.ElementType.Link)
                 {
                     SessionController.Instance.SessionView.ShowDetailView((dc.DataContext as ElementViewModel).Controller.LibraryElementController);
                 }

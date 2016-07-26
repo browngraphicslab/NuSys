@@ -51,39 +51,39 @@ namespace NuRepo
         private void SetUpTables()
         {
             var libraryElementTable = MakeCommand("CREATE TABLE " + GetTableName(SQLTableType.LibrayElement) + " (" +
-                NusysConstants.ServerConstants.LIBRARY_ELEMENT_ID_KEY + " char(32), " +
-                NusysConstants.ServerConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY + " char(32), " +
-                NusysConstants.ServerConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY + " char(32), " +
-                NusysConstants.ServerConstants.LIBRARY_ELEMENT_TYPE_KEY + " char(32), " +
-                NusysConstants.ServerConstants.LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY + " varchar, " +
-                NusysConstants.ServerConstants.LIBRARY_ELEMENT_CREATOR_USER_ID_KEY + " varchar, " +
-                NusysConstants.ServerConstants.LIBRARY_ELEMENT_FAVORITED_KEY + " boolean, " +
-                NusysConstants.ServerConstants.LIBRARY_ELEMENT_KEYWORDS_KEY + " text, " +
-                NusysConstants.ServerConstants.LIBRARY_ELEMENT_TITLE_KEY + " varchar, " +
-                NusysConstants.ServerConstants.LIBRARY_ELEMENT_SMALL_ICON_URL_KEY + " varchar, " +
-                NusysConstants.ServerConstants.LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY + " varchar, " +
-                NusysConstants.ServerConstants.LIBRARY_ELEMENT_LARGE_ICON_URL_KEY + " varchar);");
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_ID_KEY + " char(32), " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY + " char(32), " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY + " char(32), " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_TYPE_KEY + " char(32), " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY + " varchar, " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_CREATOR_USER_ID_KEY + " varchar, " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_FAVORITED_KEY + " boolean, " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY + " text, " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_TITLE_KEY + " varchar, " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_SMALL_ICON_URL_KEY + " varchar, " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY + " varchar, " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_LARGE_ICON_URL_KEY + " varchar);");
 
             var aliasTable = MakeCommand("CREATE TABLE "+GetTableName(SQLTableType.Alias)+" ("+
-                NusysConstants.ServerConstants.ALIAS_ID_KEY + " char(32), " +
-                NusysConstants.ServerConstants.ALIAS_LIBRARY_ID_KEY + " char(32), " +
-                NusysConstants.ServerConstants.ALIAS_LOCATION_X_KEY + " double, " +
-                NusysConstants.ServerConstants.ALIAS_LOCATION_Y_KEY + " double, " +
-                NusysConstants.ServerConstants.ALIAS_SIZE_WIDTH_KEY + " double, " +
-                NusysConstants.ServerConstants.ALIAS_SIZE_HEIGHT_KEY + " double, " +
-                NusysConstants.ServerConstants.ALIAS_PARENT_COLLECTION_ID_KEY + " char(32));");
+                NusysIntermediate.NusysConstants.ALIAS_ID_KEY + " char(32), " +
+                NusysIntermediate.NusysConstants.ALIAS_LIBRARY_ID_KEY + " char(32), " +
+                NusysIntermediate.NusysConstants.ALIAS_LOCATION_X_KEY + " double, " +
+                NusysIntermediate.NusysConstants.ALIAS_LOCATION_Y_KEY + " double, " +
+                NusysIntermediate.NusysConstants.ALIAS_SIZE_WIDTH_KEY + " double, " +
+                NusysIntermediate.NusysConstants.ALIAS_SIZE_HEIGHT_KEY + " double, " +
+                NusysIntermediate.NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY + " char(32));");
 
             var metadataTable = MakeCommand("CREATE TABLE "+GetTableName(SQLTableType.Metadata)+" ("+
-                NusysConstants.ServerConstants.METADATA_LIBRARY_ELEMENT_ID_KEY + " char(32), " +
-                NusysConstants.ServerConstants.METADATA_KEY_COLUMN_KEY + " varchar, " +
-                NusysConstants.ServerConstants.METADATA_VALUE_COLUMN_KEY + " varchar);");
+                NusysIntermediate.NusysConstants.METADATA_LIBRARY_ELEMENT_ID_KEY + " char(32), " +
+                NusysIntermediate.NusysConstants.METADATA_KEY_COLUMN_KEY + " varchar, " +
+                NusysIntermediate.NusysConstants.METADATA_VALUE_COLUMN_KEY + " varchar);");
 
             var propertiesTable = MakeCommand("CREATE TABLE " + GetTableName(SQLTableType.Properties) + " (" +
-                NusysConstants.ServerConstants.PROPERTIES_LIBRARY_ID_KEY + " char(32), " +
-                NusysConstants.ServerConstants.PROPERTIES_KEY_COLUMN_KEY + " varchar, " +
-                NusysConstants.ServerConstants.PROPERTIES_DATE_VALUE_COLUMN_KEY + " datetime, " +
-                NusysConstants.ServerConstants.PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY + " double, " +
-                NusysConstants.ServerConstants.PROPERTIES_STRING_VALUE_COLUMN_KEY + " varchar);");
+                NusysIntermediate.NusysConstants.PROPERTIES_LIBRARY_ID_KEY + " char(32), " +
+                NusysIntermediate.NusysConstants.PROPERTIES_KEY_COLUMN_KEY + " varchar, " +
+                NusysIntermediate.NusysConstants.PROPERTIES_DATE_VALUE_COLUMN_KEY + " datetime, " +
+                NusysIntermediate.NusysConstants.PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY + " double, " +
+                NusysIntermediate.NusysConstants.PROPERTIES_STRING_VALUE_COLUMN_KEY + " varchar);");
 
             libraryElementTable.ExecuteNonQuery();
             aliasTable.ExecuteNonQuery();
@@ -131,13 +131,13 @@ namespace NuRepo
             switch (type)
             {
                 case SQLTableType.Alias:
-                    return NusysConstants.ServerConstants.ALIASES_SQL_TABLE_NAME;
+                    return NusysIntermediate.NusysConstants.ALIASES_SQL_TABLE_NAME;
                 case SQLTableType.LibrayElement:
-                    return NusysConstants.ServerConstants.LIBRARY_ELEMENTS_SQL_TABLE_NAME;
+                    return NusysIntermediate.NusysConstants.LIBRARY_ELEMENTS_SQL_TABLE_NAME;
                 case SQLTableType.Metadata:
-                    return NusysConstants.ServerConstants.METADATA_SQL_TABLE_NAME;
+                    return NusysIntermediate.NusysConstants.METADATA_SQL_TABLE_NAME;
                 case SQLTableType.Properties:
-                    return NusysConstants.ServerConstants.PROPERTIES_SQL_TABLE_NAME;
+                    return NusysIntermediate.NusysConstants.PROPERTIES_SQL_TABLE_NAME;
             }
             return null;
         }

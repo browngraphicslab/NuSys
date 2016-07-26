@@ -3,11 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace NusysConstants
+namespace NusysIntermediate
 {
-    public class ServerConstants
+    public class NusysConstants
     {
-        public static readonly string GET_REQUEST_ID_STRING = "get_request_id";
+        /// <summary>
+        /// key for the 32-char value id that represents the id of this request.
+        /// This will be used to stop a thread and await this id returning from the server to resume that thead. 
+        /// used to simulate async functions that will return agter the server call has executed.
+        /// </summary>
+        public static readonly string RETURN_AWAITABLE_REQUEST_ID_STRING = "awaitable_request_id";
+
+        /// <summary>
+        /// the string key used to identify the request type of a request being sent. 
+        /// the value for this key should be an stringified ElementType with the .ToString() method called
+        /// </summary>
+        public static readonly string REQUEST_TYPE_STRING_KEY = "request_type";
 
         #region SQLColumnNames
 
@@ -219,6 +230,20 @@ namespace NusysConstants
             DeleteLibraryElementRequest,
             AddInkRequest,
             RemoveInkRequest,
+            ChatRequest
+        }
+
+        public enum ElementType
+        {
+
+            // Basic Types
+            Text, Image, Word, Powerpoint, Collection, PDF, Audio, Video, Tag, Web, Area, Link, Recording,
+
+            // Region Types
+            ImageRegion, PdfRegion, AudioRegion, VideoRegion,
+
+            // weird type that possibly shouldn't be here
+            Tools
         }
     }
 }

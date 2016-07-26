@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using MyToolkit.UI;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -96,7 +97,7 @@ namespace NuSysApp
         {
             get
             {
-                if (CurrentElementController.LibraryElementModel.Type == ElementType.PDF)
+                if (CurrentElementController.LibraryElementModel.Type == NusysConstants.ElementType.PDF)
                 {
                     var list = RegionCollection.ToList<Region>();
                     var orderedList = (list.OrderBy(a => (a as PdfRegionModel).PageLocation)).ToList<Region>();

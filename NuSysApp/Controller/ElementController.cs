@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Xaml.Controls;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -136,15 +137,15 @@ namespace NuSysApp
         {
             switch (Model.ElementType)
             {
-                case ElementType.Image:
+                case NusysConstants.ElementType.Image:
                     break;
-                case ElementType.Text:
+                case NusysConstants.ElementType.Text:
                     break;
-                case ElementType.Audio:
+                case NusysConstants.ElementType.Audio:
                     _debouncingDictionary.Add("linkedTimeModels", ((AudioNodeModel)Model).LinkedTimeModels);
 
                     break;
-                case ElementType.Video:
+                case NusysConstants.ElementType.Video:
                     _debouncingDictionary.Add("linkedTimeModels", ((VideoNodeModel)Model).LinkedTimeModels);
                     break;
             }

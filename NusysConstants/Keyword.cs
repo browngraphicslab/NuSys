@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NusysConstants
+namespace NusysIntermediate
 {
    public class Keyword
     {
