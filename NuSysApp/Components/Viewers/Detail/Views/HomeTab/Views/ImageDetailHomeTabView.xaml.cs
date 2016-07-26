@@ -305,7 +305,7 @@ namespace NuSysApp
                     dict["type"] = elementType.ToString();
                     dict["x"] = pos.X;
                     dict["y"] = pos.Y;
-                    dict["contentId"] = libraryId;
+                    dict["libraryId"] = libraryId;
                     dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
                     dict["metadata"] = metadata;
                     dict["autoCreate"] = true;

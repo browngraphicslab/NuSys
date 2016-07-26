@@ -177,7 +177,7 @@ namespace NuSysApp
                 m = new Message();
 
             m.Remove("id");
-            m["contentId"] = Model.LibraryId;
+            m["libraryId"] = Model.LibraryId;
             m["data"] = "";
             m["x"] = x;
             m["y"] = y;

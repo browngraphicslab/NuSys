@@ -141,6 +141,16 @@ namespace NuSysApp
             m["rectangle_location"] = new Point(.25, .25);
             m["rectangle_width"] = .5;
             m["rectangle_height"] = .5;
+            if (LibraryElementController is RegionLibraryElementController)
+            {
+                var imageRegionLibraryElementController =
+                    LibraryElementController as RectangleRegionLibraryElementController;
+                m["rectangle_location"] = new Point(.25 * imageRegionLibraryElementController.RectangleRegionModel.Width + imageRegionLibraryElementController.RectangleRegionModel.TopLeftPoint.X, imageRegionLibraryElementController.RectangleRegionModel.Height
+                    + imageRegionLibraryElementController.RectangleRegionModel.TopLeftPoint.Y);
+                m["rectangle_width"] = .5 * imageRegionLibraryElementController.RectangleRegionModel.Width;
+                m["rectangle_height"] = .5 * imageRegionLibraryElementController.RectangleRegionModel.Height;
+            }
+
             return m;
         }
 

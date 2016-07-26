@@ -80,7 +80,7 @@ namespace NuSysApp
             // Add universal data to the message, should be self explanatory, unpacked in the rectangleRegionController
             message["id"] = SessionController.Instance.GenerateId();
             message["title"] = "Region " + vm.CurrentElementController.Title;
-            message["contentId"] = vm.CurrentElementController.LibraryElementModel.ContentDataModelId;
+            message["content__id"] = vm.CurrentElementController.LibraryElementModel.ContentDataModelId;
             message["type"] = type.ToString();
             message["clipping_parent_library_id"] = vm.CurrentElementController.LibraryElementModel.LibraryElementId;
             message["server_url"] = vm.CurrentElementController.LibraryElementModel.ServerUrl;

@@ -182,7 +182,7 @@ namespace NuSysApp
                 var regionLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementId) as RectangleRegionLibraryElementController;
                 Debug.Assert(regionLibraryElementController != null);
                 Debug.Assert(regionLibraryElementController.LibraryElementModel is RectangleRegion);
-                if (regionLibraryElementController == Controller)
+                if (regionLibraryElementController.LibraryElementModel.LibraryElementId == Controller.LibraryElementModel.LibraryElementId)
                 {
                     return;
                 }

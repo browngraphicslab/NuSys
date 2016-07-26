@@ -335,7 +335,8 @@ namespace NuSysApp
             }
 
             //TODO add in remove region requests aka remove librayr element request
-
+            var removeRequest = new DeleteLibraryElementRequest(vm.RegionLibraryElementController.LibraryElementModel.LibraryElementId);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(removeRequest);
 
         }
 

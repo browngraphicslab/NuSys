@@ -438,9 +438,9 @@ namespace NuSysApp
             {
                 LibraryElementModel.ServerUrl = message.GetString("server_url");
             }
-            if (message.ContainsKey("contentId"))
+            if (message.ContainsKey("content__id"))
             {
-                LibraryElementModel.ContentDataModelId = message.GetString("contentId");
+                LibraryElementModel.ContentDataModelId = message.GetString("content__id");
             }
             //TODO set regions maybe
             SetBlockServerBoolean(false);
