@@ -33,8 +33,10 @@ namespace NuSysApp
         public string LibraryId { set; get; }
 
         public string ParentCollectionId { get; set; }
+        public List<Windows.Foundation.Point> ShapePoints { get; set; }
+        public bool IsFinite { get; set; } 
 
-        public List<Windows.Foundation.Point> ShapePoints { get; set; } 
+   
 
         // TODO: Move color to higher level type
 
@@ -142,9 +144,15 @@ namespace NuSysApp
             {
                 lines.Add(await inqLineModel.Pack());
             }
+            dict.Add("finite", IsFinite);
+            if (ShapePoints != null)
+            {
+                dict.Add("points", ShapePoints);
+            }
 
             dict.Add("inqLines", lines);
-            dict.Add("points", ShapePoints);
+            
+            
             return dict;
         }
 
@@ -189,6 +197,10 @@ namespace NuSysApp
             if (props.ContainsKey("points"))
             {
                 ShapePoints = props.GetList<Windows.Foundation.Point>("points");
+            }
+            if (props.ContainsKey("finite"))
+            {
+                IsFinite = props.GetBool("finite");
             }
 
             InqCanvas.UnPack(props);

@@ -87,11 +87,22 @@ namespace NuSysApp
                 return;
             }
             colModel.CollectionLibraryElementModel.IsFinite = isFinite;
+            _debouncingDictionary.Add("finite",isFinite);
         }
 
-        public void SetHasShape(bool hasShape)
+        /// <summary>
+        /// Sets the shape of the model -- i.e. the points the shape is defined by
+        /// </summary>
+        /// <param name="points"></param>
+        public void SetShape(List<Windows.Foundation.Point> points)
         {
-            
+            var colModel = Model as CollectionElementModel;
+            if (colModel == null)
+            {
+                return;
+            }
+            colModel.CollectionLibraryElementModel.ShapePoints = points;
+            _debouncingDictionary.Add("points",points);
         }
 
     }

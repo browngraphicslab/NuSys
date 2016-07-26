@@ -61,7 +61,10 @@ namespace NuSysApp
                 message["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
                 message["id"] = newId;
                 message["finite"] = finite;
-                message["points"] = shapepoints;
+                if (shapepoints != null)
+                {
+                    message["points"] = shapepoints;
+                }
 
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(message));
 

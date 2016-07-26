@@ -54,7 +54,18 @@ namespace NuSysApp
             //    ) });
             var shapePoints = vm.Model.ShapePoints;
             vm.AtomViewList.Add(new AdornmentView(shapePoints));
-            
+            //var cont = vm.Controller as ElementCollectionController;
+            var col = vm.Model as CollectionElementModel;
+            if (col == null)
+            {
+                return;
+            }
+            var foo = col.CollectionLibraryElementModel;
+            if (foo != null)
+            {
+                col.CollectionLibraryElementModel.IsFinite = true;
+            }
+
         }
 
 

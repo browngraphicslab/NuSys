@@ -25,7 +25,11 @@ namespace NuSysApp.Components.Misc
             (Adornment.RenderTransform as CompositeTransform).TranslateX = 50000;
             (Adornment.RenderTransform as CompositeTransform).TranslateY = 50000;
 
-            
+            // If shape points are null, disregard this all
+            if (shapePoints == null)
+            {
+                return;
+            }
 
             // Search for the left and top most point
             var leftMost = Double.PositiveInfinity;
