@@ -218,16 +218,19 @@ namespace NuSysApp
 
         public void RemoveRegionView(string regionLibraryElementId)
         {
-            foreach (var item in xClippingCanvas.Items)
-            {
-                var region = (item as FrameworkElement).DataContext as RegionViewModel;
-                Debug.Assert(region != null);
 
-                if (region.Model.LibraryElementId == regionLibraryElementId)
+
+                foreach (var item in xClippingCanvas.Items)
                 {
-                    xClippingCanvas.Items.Remove(item);
+                    var region = (item as FrameworkElement).DataContext as RegionViewModel;
+                    Debug.Assert(region != null);
+
+                    if (region.Model.LibraryElementId == regionLibraryElementId)
+                    {
+                        xClippingCanvas.Items.Remove(item);
+                        return;
+                    }
                 }
-            }
         }
 
         public double GetWidth()

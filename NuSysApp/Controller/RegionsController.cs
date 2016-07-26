@@ -85,13 +85,16 @@ namespace NuSysApp
             var clippingParentId = regionModel.ClippingParentId;
             var contentId = regionModel.ContentDataModelId;
             Debug.Assert(clippingParentId != null || contentId != null, "This should never be null");
-
-            Debug.Assert(_clippingParentIdToRegionLibraryElementIds.ContainsKey(clippingParentId) && _contentDataModelIdToRegionLibraryElementIds.ContainsKey(contentId), "this shouldn't be called twice on the region");
-            HashSet<string> outParentIds;
+            /*
+            if (_clippingParentIdToRegionLibraryElementIds.ContainsKey(clippingParentId) && _contentDataModelIdToRegionLibraryElementIds.ContainsKey(contentId)){
+                return;
+            }
+            */
+            string outParentIds;
 
             //Removed the region Id from both of the dictionaries
-            _clippingParentIdToRegionLibraryElementIds.TryRemove(clippingParentId,out outParentIds);
-            _contentDataModelIdToRegionLibraryElementIds.TryRemove(contentId, out outParentIds);
+            _clippingParentIdToRegionLibraryElementIds[clippingParentId].Remove(regionModel.LibraryElementId);
+            _contentDataModelIdToRegionLibraryElementIds[contentId].Remove(regionModel.LibraryElementId);
 
             var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(contentId);
             contentDataModel.RemoveRegion(regionModel.LibraryElementId);
