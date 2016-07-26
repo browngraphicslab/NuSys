@@ -248,6 +248,8 @@ namespace NuSysApp
             var model = Controller.Model;
             Transform.TranslateX = model.X;
             Transform.TranslateY = model.Y;
+            X = model.X;
+            Y = model.Y;
             Transform.ScaleX = model.ScaleX;
             Transform.ScaleY = model.ScaleY;
             
@@ -355,6 +357,9 @@ namespace NuSysApp
             get { return _id; }
             set { _id = value; }
         }
+
+        public double X { get; set; }
+        public double Y { get; set; }
 
         public CompositeTransform Transform
         {

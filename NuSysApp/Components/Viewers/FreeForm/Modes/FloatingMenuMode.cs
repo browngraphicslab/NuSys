@@ -19,7 +19,7 @@ namespace NuSysApp
 
             lib.ManipulationMode = ManipulationModes.All;
             lib.ManipulationDelta += OnManipulationDelta;
-            fm.ManipulationMode = ManipulationModes.All;
+            fm.ManipulationMode = ManipulationModes.All;    
             fm.ManipulationDelta += OnManipulationDelta;
         }
 

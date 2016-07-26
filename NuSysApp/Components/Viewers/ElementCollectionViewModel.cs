@@ -6,10 +6,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
+using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using NuSysApp.Tools;
 
 
@@ -17,6 +19,9 @@ namespace NuSysApp
 {
     public class ElementCollectionViewModel: ElementViewModel, ToolStartable
     {
+
+        public static Dictionary<ElementViewModel, IRandomAccessStream> Mems = new Dictionary<ElementViewModel, IRandomAccessStream>(); 
+
         public string Text { get; set; }
         public event EventHandler<HashSet<string>> OutputLibraryIdsChanged;
         public event EventHandler<string> Disposed;
@@ -25,8 +30,10 @@ namespace NuSysApp
         /// </summary>
         private string _toolStartableId;
 
-        public ObservableCollection<FrameworkElement> AtomViewList { get; set; } 
+        public ObservableCollection<FrameworkElement> AtomViewList { get; set; } = new ObservableCollection<FrameworkElement>();
+        public ObservableCollection<ElementViewModel> Elements { get; set; } = new ObservableCollection<ElementViewModel>();
         protected INodeViewFactory _nodeViewFactory = new FreeFormNodeViewFactory();
+        protected FreeFormElementViewModelFactory _elementVmFactory = new FreeFormElementViewModelFactory();
        
         public ElementCollectionViewModel(ElementCollectionController controller): base(controller)
         {
@@ -37,7 +44,6 @@ namespace NuSysApp
             Text = controller.LibraryElementModel?.Data;
 
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
-            AtomViewList = new ObservableCollection<FrameworkElement>();
             _toolStartableId = SessionController.Instance.GenerateId();
             ToolController.ToolControllers.Add(_toolStartableId, this);
             
@@ -73,34 +79,70 @@ namespace NuSysApp
 
         private async Task CreateChild(ElementController controller)
         {
-            var view = await _nodeViewFactory.CreateFromSendable(controller);
-            AtomViewList.Add(view);
-            if (controller is LinkController)
-            {
-                return;
-            }
-            foreach (var regions in controller?.LibraryElementModel?.Regions ?? new HashSet<Region>()) 
-            {
-                RegionController regionController;
 
-                if (SessionController.Instance.RegionsController.GetRegionController(regions.Id) == null)
+            var vm = await _elementVmFactory.CreateFromSendable(controller);
+            Elements.Add(vm);
+
+            /*
+          var view = await _nodeViewFactory.CreateFromSendable(controller);
+          AtomViewList.Add(view);
+            if (view is TextNodeView)
+            {
+                var tview = (TextNodeView) view;
+                InMemoryRandomAccessStream ms = new InMemoryRandomAccessStream();
+                await tview.XWebView.CapturePreviewToStreamAsync(ms);
+
+                // Create a small thumbnail.
+                int longlength = 180, width = 0, height = 0;
+                double srcwidth = tview.XWebView.ActualWidth, srcheight = tview.XWebView.ActualHeight;
+                double factor = srcwidth / srcheight;
+                if (factor < 1)
                 {
-                    regionController = SessionController.Instance.RegionsController.AddRegion(regions, controller.LibraryElementModel.LibraryElementId);
+                    height = longlength;
+                    width = (int)(longlength * factor);
                 }
                 else
                 {
-                    regionController = SessionController.Instance.RegionsController.GetRegionController(regions.Id);
+                    width = longlength;
+                    height = (int)(longlength / factor);
                 }
-                var cLinks = SessionController.Instance.LinksController.GetLinkedIds(regionController.ContentId);
-                foreach (var linkId in cLinks)
-                {
-                    var link = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
-                    //AddVisualLinks(regioncontroller, controller, link.LibraryElementId);
-                }
+
+                Mems.Add(vm, ms.CloneStream());
             }
-            controller.Deleted += OnChildDeleted;
-        }
+
         
+
+
+
+            if (controller is LinkController)
+          {
+              return;
+          }
+          foreach (var regions in controller?.LibraryElementModel?.Regions ?? new HashSet<Region>()) 
+          {
+              RegionController regionController;
+
+              if (SessionController.Instance.RegionsController.GetRegionController(regions.Id) == null)
+              {
+                  regionController = SessionController.Instance.RegionsController.AddRegion(regions, controller.LibraryElementModel.LibraryElementId);
+              }
+              else
+              {
+                  regionController = SessionController.Instance.RegionsController.GetRegionController(regions.Id);
+              }
+              var cLinks = SessionController.Instance.LinksController.GetLinkedIds(regionController.ContentId);
+              foreach (var linkId in cLinks)
+              {
+                  var link = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
+                  //AddVisualLinks(regioncontroller, controller, link.LibraryElementId);
+              }
+          }
+          controller.Deleted += OnChildDeleted;
+
+    */
+
+        }
+
         private void OnChildDeleted(object source)
         {
             var c = (ElementCollectionController) Controller;

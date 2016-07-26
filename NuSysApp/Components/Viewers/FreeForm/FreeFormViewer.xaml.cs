@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.UI;
 using Microsoft.Graphics.Canvas.Geometry;
-using NuSysApp.Components.NuSysRender;
+
 
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -43,6 +43,8 @@ namespace NuSysApp
         private MultiMode _explorationMode;
 
         private NuSysRenderer _nusysRenderer;
+
+        public NuSysRenderer NuSysRenderer => _nusysRenderer;
 
         public Brush CanvasColor
         {

@@ -57,6 +57,7 @@ namespace NuSysApp
         private StringBuilder _dictatedTextBuilder;
         private StringBuilder _hypothesisBuilder;
 
+        public WebView XWebView => TextNodeWebView;
 
 
         public TextNodeView(TextNodeViewModel vm)

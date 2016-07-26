@@ -308,13 +308,18 @@ namespace NuSysApp
                     allContent.FirstOrDefault(item => ((item as GroupNodeViewModel)?.ContentId == oneParentCollectionId)) as GroupNodeViewModel;
                 if (collectionViewModel != null)
                 {
-                    UITask.Run(async delegate {
-                        collectionViewModel.AtomViewList.Add(view);
+                    UITask.Run(async delegate
+                    {
+                        SessionController.Instance.SessionView.FreeFormViewer.NuSysRenderer.AddLink(vm);
+                        //collectionViewModel.Elements.Add(vm);
+                        //collectionViewModel.AtomViewList.Add(view);
                     });
                 }
                 else if (SessionController.Instance.ActiveFreeFormViewer.ContentId == oneParentCollectionId)
                 {
-                    SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(view);
+                    SessionController.Instance.SessionView.FreeFormViewer.NuSysRenderer.AddLink(vm);
+                    //collectionViewModel.Elements.Add(vm);
+                    // SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(view);
                 }
                 //TODO Change ElementCollectionViewModel child added and removed code to take link controllers or element controllers
                 Canvas.SetZIndex(view, -2);

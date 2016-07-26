@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using MyToolkit.Mathematics;
+
+using Point = Windows.Foundation.Point;
 
 namespace NuSysApp
 {
@@ -23,7 +27,6 @@ namespace NuSysApp
         public PanZoomMode(FrameworkElement view) : base(view)
         {
             _cview = view as FreeFormViewer;
-       
         }
     
         public void UpdateTempTransform( CompositeTransform compositeTransform )
@@ -53,7 +56,7 @@ namespace NuSysApp
             compositeTransform.CenterY = _tempTransform.CenterY;
 
             if (_cview != null) { 
-                CullScreen();
+            //    CullScreen();
             }
         }
 
@@ -239,10 +242,16 @@ namespace NuSysApp
             }
             if (_cview?.InqCanvas != null)
             {
-                _cview.InqCanvas.Transform = compositeTransform;
-                _cview.InqCanvas.Redraw();
+               _cview.InqCanvas.Transform = compositeTransform;
+              //  _cview.InqCanvas.Redraw();
             }
 
+            var inv = (MatrixTransform)compositeTransform.Inverse.Inverse;
+            var m = new Matrix3x2((float)inv.Matrix.M11, (float)inv.Matrix.M12, (float)inv.Matrix.M21,
+                (float)inv.Matrix.M22, (float)inv.Matrix.OffsetX, (float)inv.Matrix.OffsetY);
+
+            NuSysRenderer.T = m;
+            var wv = new WebView();
 
             e.Handled = true;
 

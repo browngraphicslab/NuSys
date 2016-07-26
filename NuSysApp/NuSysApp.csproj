@@ -303,7 +303,11 @@
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\TextInputBlockViewModel.cs" />
+    <Compile Include="Components\NuSysRender\TrailRenderItem.cs" />
+    <Compile Include="Components\NuSysRender\LinkRenderItem.cs" />
+    <Compile Include="Components\NuSysRender\ElementRenderItem.cs" />
     <Compile Include="Components\NuSysRender\NuSysRenderer.cs" />
+    <Compile Include="Components\NuSysRender\BaseRenderItem.cs" />
     <Compile Include="Components\Regions\VideoRegionView.xaml.cs">
       <DependentUpon>VideoRegionView.xaml</DependentUpon>
     </Compile>
@@ -374,6 +378,7 @@
     <Compile Include="Components\Viewers\Detail\Views\PDFRegionListView.xaml.cs">
       <DependentUpon>PDFRegionListView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Viewers\FreeForm\FreeFormElementViewModelFactory.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\ExploreMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml.cs">
       <DependentUpon>AudioMediaPlayer.xaml</DependentUpon>
@@ -1215,14 +1220,6 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BgTasks\BgTasks.csproj">
-      <Project>{64866830-e3f0-45a7-be72-0e3ae4e341de}</Project>
-      <Name>BgTasks</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CommModule\CommModule.csproj">
-      <Project>{cd9491ce-2eee-4315-b53e-f625a2615f03}</Project>
-      <Name>CommModule</Name>
-    </ProjectReference>
     <ProjectReference Include="..\LdaLibrary\LdaLibrary.csproj">
       <Project>{70229fb2-2d64-49dc-8b44-9faad76dd4e3}</Project>
       <Name>LdaLibrary</Name>

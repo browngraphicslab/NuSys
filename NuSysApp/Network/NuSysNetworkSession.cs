@@ -106,12 +106,14 @@ namespace NuSysApp
                     if (PresentationLinkViewModel.Models.FirstOrDefault(item => item.InElementId == id1 && item.OutElementId == id2) != null ||
                         PresentationLinkViewModel.Models.FirstOrDefault(item => item.OutElementId == id1 && item.InElementId == id2) != null)
                     {
-                    return;
+                        return;
                     }
                     
+                    SessionController.Instance.SessionView.FreeFormViewer.NuSysRenderer.AddTrail(vm);
+
                     // create a new presentation link
-                    PresentationLinkViewModel.Models.Add(presentationlink);
-                    new PresentationLinkView(vm);
+                    //PresentationLinkViewModel.Models.Add(presentationlink);
+                  //  new PresentationLinkView(vm);
                 });
             }
         }
