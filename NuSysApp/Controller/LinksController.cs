@@ -102,9 +102,9 @@ namespace NuSysApp
                     continue;
                 }
                 var linkables = GetInstancesOfContent(libraryElementController.ContentId);
-                foreach (var link in linkables)
+                foreach (var toLinkTo in linkables)
                 {
-                    CreateBezierLinkBetween(linkable, link);
+                    CreateBezierLinkBetween(linkable, toLinkTo);
                 }
             }
         }
@@ -299,7 +299,7 @@ namespace NuSysApp
             {
                 var vm = new LinkViewModel(controller);
                 var allContent = SessionController.Instance.ActiveFreeFormViewer.AllContent;
-                var view = new BezierLinkView(vm);
+                var view = new BezierLinkView(vm, linkLibElemController.LinkLibraryElementModel.IsBiDirectional);
                 var collectionViewModel =
                     allContent.FirstOrDefault(item => ((item as GroupNodeViewModel)?.ContentId == oneParentCollectionId)) as GroupNodeViewModel;
                 if (collectionViewModel != null)

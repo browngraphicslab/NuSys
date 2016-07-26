@@ -17,9 +17,13 @@ namespace NuSysApp
 {
     public sealed partial class BezierLinkView : AnimatableUserControl
     {
-        public BezierLinkView(LinkViewModel vm)
+        public BezierLinkView(LinkViewModel vm, bool isBiDirectional)
         {
             InitializeComponent();
+            if (!isBiDirectional)
+            {
+                arrow.Visibility = Visibility.Visible;
+            }
             DataContext = vm;
 
             vm.PropertyChanged += OnPropertyChanged;
@@ -101,7 +105,7 @@ namespace NuSysApp
             }
 
             this.UpdateEndPoints();
-
+            this.UpdateArrow();
             var vm = (LinkViewModel)this.DataContext;
 
             var controller = (LinkController)vm.Controller;
@@ -119,6 +123,19 @@ namespace NuSysApp
             Canvas.SetLeft(TitleContainer, anchor1.X - distanceX / 2 - Rect.ActualWidth / 2);
             Canvas.SetTop(TitleContainer, anchor1.Y - distanceY / 2 - Rect.ActualHeight * 1.5);
 
+        }
+
+        private void UpdateArrow()
+        {
+            var center = new Point((pathfigure.StartPoint.X + curve.Point3.X) / 2.0, (pathfigure.StartPoint.Y + curve.Point3.Y) / 2.0);
+            var xDiff = curve.Point3.X - pathfigure.StartPoint.X;
+            var yDiff = curve.Point3.Y - pathfigure.StartPoint.Y;
+            var angle = Math.Atan2(yDiff, xDiff) * (180 / Math.PI);
+            var tranformGroup = new TransformGroup();
+            tranformGroup.Children.Add(new RotateTransform { Angle = angle, CenterX = 20, CenterY = 20 });
+            tranformGroup.Children.Add(new TranslateTransform { X = center.X - 20, Y = center.Y - 20 });
+
+            arrow.RenderTransform = tranformGroup;
         }
 
         private void UpdateEndPoints()

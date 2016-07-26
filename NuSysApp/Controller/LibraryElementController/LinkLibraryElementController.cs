@@ -41,6 +41,17 @@ namespace NuSysApp
                 LinkLibraryElementModel.Color = Color.FromArgb(a, r, g, b);
                 //Color = Color.FromArgb(message.GetString("color"));
             }
+            if (message.ContainsKey("isBiDirectional"))
+            {
+                if (message.GetString("isBiDirectional").Equals("True"))
+                {
+                    LinkLibraryElementModel.IsBiDirectional = true;
+                }
+                else
+                {
+                    LinkLibraryElementModel.IsBiDirectional = false;
+                }
+            }
             base.UnPack(message);
         }
 
