@@ -96,10 +96,12 @@ namespace NuSysApp
         private void RectangleWrapper_SizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)
         {
             var model = this.RegionLibraryElementController.LibraryElementModel as RectangleRegion;
-            var ContainerHeight = RectangleWrapper.GetHeight();
-            var ContainerWidth = RectangleWrapper.GetWidth();
-            Height = model.Height * ContainerHeight;
-            Width = model.Width * ContainerWidth;
+            var containerHeight = RectangleWrapper.GetHeight();
+            var containerWidth = RectangleWrapper.GetWidth();
+            Height = model.Height * containerHeight;
+            Width = model.Width * containerWidth;
+
+            LocationChanged?.Invoke(this,new Point(model.TopLeftPoint.X * containerWidth,model.TopLeftPoint.Y * containerHeight));
         }
 
         //Not currently implemented

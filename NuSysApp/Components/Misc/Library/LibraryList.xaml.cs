@@ -320,7 +320,7 @@ namespace NuSysApp
             }
             var elementModel = SessionController.Instance.ContentController.GetContent(elementTemplate?.ContentID);
 
-            var regionIds = SessionController.Instance.RegionsController.GetRegionLibraryElementIds(elementModel.LibraryElementId);
+            var regionIds = SessionController.Instance.RegionsController.GetClippingParentRegionLibraryElementIds(elementModel.LibraryElementId);
 
             if (regionIds == null || regionIds.Count == 0)
             {

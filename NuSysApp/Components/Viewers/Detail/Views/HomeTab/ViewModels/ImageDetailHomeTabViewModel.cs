@@ -118,7 +118,7 @@ namespace NuSysApp
             //RegionViews.Clear();
 
             //var regionsLibraryElementIds=
-            //    SessionController.Instance.RegionsController.GetRegionLibraryElementIds(
+            //    SessionController.Instance.RegionsController.GetClippingParentRegionLibraryElementIds(
             //        LibraryElementController.LibraryElementModel.LibraryElementId);
             //foreach (var regionLibraryElementId in regionsLibraryElementIds)
             //{

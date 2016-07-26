@@ -326,8 +326,6 @@ namespace NuSysApp
 
         private void XImg_OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            var vm = (ImageDetailHomeTabViewModel)DataContext;
-            xClippingWrapper.Controller = vm.LibraryElementController;
         }
     }
 }

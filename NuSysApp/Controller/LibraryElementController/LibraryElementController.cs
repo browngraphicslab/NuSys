@@ -410,7 +410,6 @@ namespace NuSysApp
             {
                 SetTitle(message.GetString("title"));
             }
-
             if (message.ContainsKey("keywords"))
             {
                 SetKeywords(message.GetHashSet<Keyword>("keywords"));
@@ -438,6 +437,10 @@ namespace NuSysApp
             if (message.GetString("server_url") != null)
             {
                 LibraryElementModel.ServerUrl = message.GetString("server_url");
+            }
+            if (message.ContainsKey("contentId"))
+            {
+                LibraryElementModel.ContentDataModelId = message.GetString("contentId");
             }
             //TODO set regions maybe
             SetBlockServerBoolean(false);

@@ -110,7 +110,7 @@ namespace NuSysApp
         {
 
             RegionViews.Clear();
-            foreach (var regionId in SessionController.Instance.RegionsController.GetRegionLibraryElementIds(Controller.LibraryElementModel.LibraryElementId))
+            foreach (var regionId in SessionController.Instance.RegionsController.GetClippingParentRegionLibraryElementIds(Controller.LibraryElementModel.LibraryElementId))
             {
                 var audioRegionController = SessionController.Instance.ContentController.GetLibraryElementController(regionId) as AudioRegionLibraryElementController;
                 if (audioRegionController == null)

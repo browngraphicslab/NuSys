@@ -43,23 +43,30 @@ namespace NuSysApp
             {
                 return;
             }
+
+            // get appropriate new region message based on the type of library element currently
+            // loaded in the detail view. i.e. for images top left point, width, and height.
             var detailHomeTabViewModel = vm.RegionView.DataContext as DetailHomeTabViewModel;
             Message message = null;
             ElementType type = ElementType.ImageRegion;
             switch (vm.CurrentElementController.LibraryElementModel.Type)
             {
+                case ElementType.ImageRegion:
                 case ElementType.Image:
                     message = detailHomeTabViewModel?.GetNewRegionMessage();
                     type = ElementType.ImageRegion;
                     break;
+                case ElementType.AudioRegion:
                 case ElementType.Audio:
                     message = detailHomeTabViewModel?.GetNewRegionMessage();
                     type = ElementType.AudioRegion;
                     break;
+                case ElementType.VideoRegion:
                 case ElementType.Video:
                     message = detailHomeTabViewModel?.GetNewRegionMessage();
                     type  = ElementType.VideoRegion;
                     break;
+                case ElementType.PdfRegion:
                 case ElementType.PDF:
                     message = detailHomeTabViewModel?.GetNewRegionMessage();
                     type = ElementType.PdfRegion;
@@ -69,8 +76,11 @@ namespace NuSysApp
                     break;
             }
             Debug.Assert(message != null);
+
+            // Add universal data to the message, should be self explanatory, unpacked in the rectangleRegionController
             message["id"] = SessionController.Instance.GenerateId();
             message["title"] = "Region " + vm.CurrentElementController.Title;
+            message["contentId"] = vm.CurrentElementController.LibraryElementModel.ContentDataModelId;
             message["type"] = type.ToString();
             message["clipping_parent_library_id"] = vm.CurrentElementController.LibraryElementModel.LibraryElementId;
             message["server_url"] = vm.CurrentElementController.LibraryElementModel.ServerUrl;

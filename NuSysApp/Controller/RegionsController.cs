@@ -14,18 +14,42 @@ namespace NuSysApp
 
 
         // Keeps track of all the region library elements associated with a library element
-        private ConcurrentDictionary<string, HashSet<string>> _libraryElementIdToRegionLibraryElementIds = new ConcurrentDictionary<string, HashSet<string>>();
+        private ConcurrentDictionary<string, HashSet<string>> _clippingParentIdToRegionLibraryElementIds = new ConcurrentDictionary<string, HashSet<string>>();
         
-        public HashSet<string> GetRegionLibraryElementIds(string libraryElementId)
+        // Keeps track of all the region library elements associated with a content 
+        private ConcurrentDictionary<string, HashSet<string>> _contentDataModelIdToRegionLibraryElementIds = new ConcurrentDictionary<string, HashSet<string>>();
+
+        /// <summary>
+        /// Takes in a library element model id
+        /// </summary>
+        /// <param name="libraryElementId"></param>
+        /// <returns>a list of region library element ids which were clipped from the library element model passed in</returns>
+        public HashSet<string> GetClippingParentRegionLibraryElementIds(string libraryElementId)
         {
             if (libraryElementId == null)
             {
                 return null;
             }
             
-            return _libraryElementIdToRegionLibraryElementIds.ContainsKey(libraryElementId) ? _libraryElementIdToRegionLibraryElementIds[libraryElementId] : new HashSet<string>();
+            return _clippingParentIdToRegionLibraryElementIds.ContainsKey(libraryElementId) ? _clippingParentIdToRegionLibraryElementIds[libraryElementId] : new HashSet<string>();
         }
-        
+
+        /// <summary>
+        /// Takes in a content data model id and returns a list of region library element ids for regions created from that content
+        /// </summary>
+        /// <param name="contentDataModelId"></param>
+        /// <returns></returns>
+        public HashSet<string> GetContentDataModelRegionLibraryElementIds(string contentDataModelId)
+        {
+            if (contentDataModelId == null)
+            {
+                return null;
+            }
+
+            return _contentDataModelIdToRegionLibraryElementIds.ContainsKey(contentDataModelId) ? _contentDataModelIdToRegionLibraryElementIds[contentDataModelId] : new HashSet<string>();
+        }
+
+
         /// <summary>
         /// to be called when we make the regon library element model.  Adds it to dictionaries
         /// </summary>
@@ -34,16 +58,43 @@ namespace NuSysApp
         {
             Debug.Assert(regionModel != null);
             var clippingParentId = regionModel.ClippingParentId;
-            if (clippingParentId == null)
+            var contentId = regionModel.ContentDataModelId;
+            Debug.Assert(clippingParentId != null || contentId != null, "This should never be null");
+
+            // create hashsets in the concurrent dictionaries if they don't exist
+            if (!_clippingParentIdToRegionLibraryElementIds.ContainsKey(clippingParentId))
             {
-                return;
+                _clippingParentIdToRegionLibraryElementIds.TryAdd(clippingParentId, new HashSet<string>());
             }
-            if (!_libraryElementIdToRegionLibraryElementIds.ContainsKey(clippingParentId))
+            if (!_contentDataModelIdToRegionLibraryElementIds.ContainsKey(contentId))
             {
-                _libraryElementIdToRegionLibraryElementIds.TryAdd(clippingParentId, new HashSet<string>());
+                _contentDataModelIdToRegionLibraryElementIds.TryAdd(contentId, new HashSet<string>());
             }
-            _libraryElementIdToRegionLibraryElementIds[clippingParentId].Add(regionModel.LibraryElementId);
-            return;
+
+            // add the current region model library element id to the clipping parent dictionary and contentId dictionary
+            _clippingParentIdToRegionLibraryElementIds[clippingParentId].Add(regionModel.LibraryElementId);
+            _contentDataModelIdToRegionLibraryElementIds[contentId].Add(regionModel.LibraryElementId);
+
+            var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(contentId);
+            contentDataModel.AddRegion(regionModel.LibraryElementId);
+        }
+
+        public void RemoveRegion(Region regionModel)
+        {
+            Debug.Assert(regionModel != null);
+            var clippingParentId = regionModel.ClippingParentId;
+            var contentId = regionModel.ContentDataModelId;
+            Debug.Assert(clippingParentId != null || contentId != null, "This should never be null");
+
+            Debug.Assert(_clippingParentIdToRegionLibraryElementIds.ContainsKey(clippingParentId) && _contentDataModelIdToRegionLibraryElementIds.ContainsKey(contentId), "this shouldn't be called twice on the region");
+            HashSet<string> outParentIds;
+
+            //Removed the region Id from both of the dictionaries
+            _clippingParentIdToRegionLibraryElementIds.TryRemove(clippingParentId,out outParentIds);
+            _contentDataModelIdToRegionLibraryElementIds.TryRemove(contentId, out outParentIds);
+
+            var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(contentId);
+            contentDataModel.RemoveRegion(regionModel.LibraryElementId);
         }
 
     }

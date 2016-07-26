@@ -131,7 +131,6 @@ namespace NuSysApp
         /// </summary>
         private void ProcessLibraryElementController()
         {
-
             Debug.Assert(Controller != null);
             var type = Controller.LibraryElementModel.Type;
 
@@ -141,33 +140,93 @@ namespace NuSysApp
                 var scaleX = 1 / (Controller.LibraryElementModel as RectangleRegion).Width;
                 var scaleY = 1 / (Controller.LibraryElementModel as RectangleRegion).Height;
 
+                // scales the region using a composite transform based on the normalized height and width from above
                 var compositeTransform = xClippingCompositeTransform;
                 compositeTransform.ScaleX = scaleX;
                 compositeTransform.ScaleY = scaleY;
                 xClippingCompositeTransform = compositeTransform;
             }
+
+            // clear the items control
             xClippingCanvas.Items.Clear();
+
+            // get the region ids for the wrapper
             var regionsLibraryElementIds =
-                SessionController.Instance.RegionsController.GetRegionLibraryElementIds(
-                    Controller.LibraryElementModel.LibraryElementId);
-            var ParentDC = DataContext as DetailHomeTabViewModel;
-            if (regionsLibraryElementIds == null)
-            {
-                return;
-            }
+                SessionController.Instance.RegionsController.GetContentDataModelRegionLibraryElementIds(
+                    Controller.LibraryElementModel.ContentDataModelId);
+            Debug.Assert(regionsLibraryElementIds != null);
+
+            // for each region id create a new view and put it into the canvas
             foreach (var regionId in regionsLibraryElementIds)
             {
-                var regionLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(regionId) as RectangleRegionLibraryElementController;
+                AddRegionView(regionId);
+            }
+
+            // Add the OnRegionAdded and OnRegionRemoved events so the view is updated
+            var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(Controller.LibraryElementModel.ContentDataModelId);
+            contentDataModel.OnRegionAdded += AddRegionView;
+            contentDataModel.OnRegionRemoved += RemoveRegionView;
+
+        }
+
+        /// <summary>
+        /// Adds a new region view to the wrapper
+        /// </summary>
+        public void AddRegionView(string regionLibraryElementId)
+        {
+            UITask.Run(async delegate {
+                // used to check if the wrapper is in an editable detailhometabviewmodel
+                var ParentDC = DataContext as DetailHomeTabViewModel;
+
+                // get the region from the id
+                var regionLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementId) as RectangleRegionLibraryElementController;
                 Debug.Assert(regionLibraryElementController != null);
                 Debug.Assert(regionLibraryElementController.LibraryElementModel is RectangleRegion);
-                var vm = new ImageRegionViewModel(regionLibraryElementController.LibraryElementModel as RectangleRegion,
-                    regionLibraryElementController, this);
+                if (regionLibraryElementController == Controller)
+                {
+                    return;
+                }
+                // create the view and vm based on the region type
+                // todo add pdf, and video functionality
+                FrameworkElement view = null;
+                ImageRegionViewModel vm = null;
+                switch (regionLibraryElementController.LibraryElementModel.Type)
+                {
+                    case ElementType.ImageRegion:
+                        vm = new ImageRegionViewModel(regionLibraryElementController.LibraryElementModel as RectangleRegion,
+                                regionLibraryElementController, this);
+                        view = new ImageRegionView(vm);
+                        break;
+                    default:
+                        vm = null;
+                        view = null;
+                        break;
+                }
 
+                // set editable based on the parent data context
                 vm.Editable = false;
                 if (ParentDC != null)
+                {
                     vm.Editable = ParentDC.Editable;
-                var view = new ImageRegionView(vm);
+                }
+
+                // add the region to thew view
+
                 xClippingCanvas.Items.Add(view);
+            });
+        }
+
+        public void RemoveRegionView(string regionLibraryElementId)
+        {
+            foreach (var item in xClippingCanvas.Items)
+            {
+                var region = (item as FrameworkElement).DataContext as RegionViewModel;
+                Debug.Assert(region != null);
+
+                if (region.Model.LibraryElementId == regionLibraryElementId)
+                {
+                    xClippingCanvas.Items.Remove(item);
+                }
             }
         }
 
@@ -187,6 +246,7 @@ namespace NuSysApp
         {
             return xClippingContent.ActualHeight;
         }
+
         // My code is slick yo - Sahil, July 2016
 
         // Why is this so broken - everybody else
@@ -194,11 +254,7 @@ namespace NuSysApp
         // But its slick - sahil "slick" mishra
 
         // Your code is actually slick - Luke "literally crying" Murray
-        private void XClippingContent_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
-        {
-            Debug.Assert(Controller != null);
-            SessionController.Instance.SessionView.DetailViewerView.ShowElement(Controller);
-        }
+
     }
 
 

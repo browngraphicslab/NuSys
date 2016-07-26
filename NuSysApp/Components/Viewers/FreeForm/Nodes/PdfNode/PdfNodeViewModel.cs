@@ -50,7 +50,7 @@ namespace NuSysApp
             RegionViews.Clear();
 
             var regionsLibraryElementIds =
-                SessionController.Instance.RegionsController.GetRegionLibraryElementIds(
+                SessionController.Instance.RegionsController.GetClippingParentRegionLibraryElementIds(
                     Controller.LibraryElementModel.LibraryElementId);
             foreach (var regionLibraryElementId in regionsLibraryElementIds)
             {

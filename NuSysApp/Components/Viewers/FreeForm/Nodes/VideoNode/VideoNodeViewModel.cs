@@ -31,7 +31,7 @@ namespace NuSysApp
             get
             {
                 _regionViews.Clear();
-                foreach (var regionId in SessionController.Instance.RegionsController.GetRegionLibraryElementIds(Controller.LibraryElementModel.LibraryElementId))
+                foreach (var regionId in SessionController.Instance.RegionsController.GetClippingParentRegionLibraryElementIds(Controller.LibraryElementModel.LibraryElementId))
                 {
                     var videoRegionController = SessionController.Instance.ContentController.GetLibraryElementController(regionId) as VideoRegionLibraryElementController;
                     if (videoRegionController == null)
