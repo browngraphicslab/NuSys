@@ -44,6 +44,7 @@ namespace NuSysApp
 
             return true; 
         }
+
         public static async Task<ElementCollectionController> PutCollectionInstanceOnMainCollection(double x, double y, string contentID, bool finite, List<Point> shapepoints, double width = 400, double height = 400, string id = null, CollectionElementModel.CollectionViewType collectionView = CollectionElementModel.CollectionViewType.List)
         {
             return await Task.Run(async delegate

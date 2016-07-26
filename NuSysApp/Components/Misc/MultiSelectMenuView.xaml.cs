@@ -59,7 +59,18 @@ namespace NuSysApp
             e.Handled = true;
         }
 
-        private async void GroupButtonOnClick(object sender, RoutedEventArgs routedEventArgs)
+        private void GroupButtonOnClick(object sender, RoutedEventArgs e)
+        {
+            GroupSettings.Visibility = Visibility.Visible;
+            Buttons.Visibility = Visibility.Collapsed;
+        }
+
+        private void GroupSettingsXOnClick(object sender, RoutedEventArgs e)
+        {
+            GroupSettings.Visibility = Visibility.Collapsed;
+        }
+
+        private async void CreateGroupButtonOnClick(object sender, RoutedEventArgs routedEventArgs)
         {
             var selections = SessionController.Instance.ActiveFreeFormViewer.Selections;
             if (selections.Count == 0) {
@@ -88,16 +99,33 @@ namespace NuSysApp
             deleteMsg["inklines"] = new HashSet<string>(model.InkLines);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(deleteMsg));
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "Search Results"));
-
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
-
             // make a pointcollection that will be the "shape" property of the collection (use pointcollection or list?)
             var inkpoints = Stroke.GetInkPoints().ToArray();
             foreach (var i in inkpoints)
             {
                 Points.Add(i.Position);
             }
+
+            if (FiniteCheck.IsChecked.Value != null)
+            {
+                Finite = FiniteCheck.IsChecked.Value;
+            }
+
+            if (ShapeCheck.IsChecked.Value != true)
+            {
+                Points.Clear();
+            }
+
+            var m = new Message();
+            m["id"] = contentId;
+            m["data"] = "";
+            m["type"] = ElementType.Collection.ToString();
+            m["title"] = "new collection, " + Finite.ToString();
+            m["finite"] = Finite;
+            m["shape_points"] = Points;
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(m));
+
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
 
             //here, settings should also be passed in as parameters
             var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(bb.X, bb.Y, contentId, Finite, Points, bb.Width, bb.Height, newCollectionId, CollectionElementModel.CollectionViewType.FreeForm);

@@ -39,11 +39,14 @@ namespace NuSysApp
                 }
                 var favorited = message.GetBool("favorited");
 
+                var finite = message.GetBool("finite");
+                var shapepoints = message.GetList<Windows.Foundation.Point>("points");
+
                 Debug.Assert(id != null);
                 switch (type)
                 {
                     case ElementType.Collection:
-                        model = new CollectionLibraryElementModel(id, metadata, title, favorited);
+                        model = new CollectionLibraryElementModel(id, metadata, title, favorited, finite, shapepoints);
                         break;
                     case ElementType.Link:
                         Debug.Assert(message.ContainsKey("id1") && message.ContainsKey("id2"));

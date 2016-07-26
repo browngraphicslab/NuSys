@@ -37,5 +37,20 @@
             <Rectangle Width="30" Height="30" Fill="LightGreen" PointerReleased="Rectangle_PointerReleased"></Rectangle>
             
         </StackPanel>
+
+        <Grid x:Name="GroupSettings" BorderBrush="DarkSlateGray" BorderThickness="1"  Height="125" Width="200" Visibility="Visible" Background="{StaticResource color1}">
+            <StackPanel Margin="10">
+                <CheckBox x:Name="FiniteCheck" FontSize="16" Foreground="{StaticResource color2}"  Content="Finite"></CheckBox>
+                <CheckBox x:Name="ShapeCheck" FontSize="16" Foreground="{StaticResource color2}" Content="Shaped"></CheckBox>
+            </StackPanel>
+            <Button Padding="0" Margin="10"  HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="100" Height="30"
+                    Click="CreateGroupButtonOnClick">
+                Make Group
+            </Button>
+            <Button x:Name="CloseGroupSettings" Background="Transparent" Height="20" Width="20" HorizontalAlignment="Right"
+                    VerticalAlignment="Top" Margin="10" Padding="0" Click="GroupSettingsXOnClick">
+                <Image Source="ms-appx:///Assets/icon_node_x.png"></Image>
+            </Button>
+        </Grid>
     </Canvas>
 </UserControl>

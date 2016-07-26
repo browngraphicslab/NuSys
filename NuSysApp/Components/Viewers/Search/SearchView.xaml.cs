@@ -509,7 +509,7 @@ namespace NuSysApp
 
             //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
 
-            var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(r.X, r.Y, contentId, false, null, 300, 300, newCollectionId);
+            var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(r.X, r.Y, contentId, false, new List<Windows.Foundation.Point>(), 300, 300, newCollectionId);
             foreach (var searchResult in _vm.PageElements.ToList().GetRange(0, Math.Min(_vm.PageElements.Count, 10)))
             {
                 var dict = new Message();

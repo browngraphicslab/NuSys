@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using Microsoft.Graphics.Canvas.Geometry;
@@ -24,18 +25,26 @@ namespace NuSysApp
 
         public delegate void ChildRemovedEventHandler(string id);
         public event ChildRemovedEventHandler OnChildRemoved;
-        public bool IsFinite { get; set; }
-        public List<Windows.Foundation.Point> Shape { get; set; }
 
-        public CollectionLibraryElementModel(string id, Dictionary<String, MetadataEntry> metadata = null, string contentName = null, bool favorited = false) : base(id, ElementType.Collection, metadata, contentName)
+        public bool IsFinite
+        {
+            get;
+            set;
+        }
+        public List<Windows.Foundation.Point> Shape {
+            get;
+            set;
+        }
+
+        public CollectionLibraryElementModel(string id, Dictionary<String, MetadataEntry> metadata = null, string contentName = null, bool favorited = false, bool finite = false, List<Windows.Foundation.Point> points = null) : base(id, ElementType.Collection, metadata, contentName)
         {
             _children = new HashSet<string>();
 
             this.Favorited = favorited;
 
             InkLines = new HashSet<string>();
-            IsFinite = false;
-            Shape = null;
+            IsFinite = finite;
+            Shape = points;
 
         }
 
@@ -90,5 +99,17 @@ namespace NuSysApp
             return false;
         }
         public HashSet<string> Children { get { return _children; } }
+        public override async Task UnPack(Message message)
+        {
+            if (message.ContainsKey("finite"))
+            {
+                IsFinite = message.GetBool("finite");
+            }
+            if (message.ContainsKey("shape_points"))
+            {
+                Shape = message.GetList<Point>("shape_points");
+            }
+            base.UnPack(message);
+        }
     }
 }

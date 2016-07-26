@@ -144,7 +144,7 @@ namespace NuSysApp
 
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
 
-                var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(p.X, p.Y, contentId, false, null, 380, 300, newCollectionId);
+                var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(p.X, p.Y, contentId, false, new List<Windows.Foundation.Point>(), 380, 300, newCollectionId);
 
                 await controller2.RequestMoveToCollection(contentId);
                 await controller1.RequestMoveToCollection(contentId);

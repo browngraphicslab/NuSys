@@ -409,9 +409,6 @@
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\TextDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\VideoDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\MetadataEntry.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\ElementCollectionDetailHomeTabView.xaml.cs">
-      <DependentUpon>ElementCollectionDetailHomeTabView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\Viewers\Detail\Views\MetadataEditorTabView.xaml.cs">
       <DependentUpon>MetadataEditorTabView.xaml</DependentUpon>
     </Compile>
@@ -947,10 +944,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\AudioDetailHomeTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\ElementCollectionDetailHomeTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
