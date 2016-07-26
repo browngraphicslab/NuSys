@@ -358,6 +358,7 @@
     <Compile Include="Components\Tools\ToolModel.cs" />
     <Compile Include="Components\Tools\BasicToolViewModel.cs" />
     <Compile Include="Components\Tools\ToolStartable.cs" />
+    <Compile Include="Components\Tools\ToolUtilities.cs" />
     <Compile Include="Components\Tools\ToolViewable.cs" />
     <Compile Include="Components\Tools\ToolViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\ILinkTabable.cs" />

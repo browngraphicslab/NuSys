@@ -49,7 +49,11 @@ namespace NuSysApp
             this.InitializeComponent();
             vm.Controller.SetLocation(x, y);
             Vm = vm;
-            xTitle.Text = vm.Filter.ToString();
+            xFilterComboBox.ItemsSource = Enum.GetValues(typeof(ToolModel.ToolFilterTypeTitle)).Cast<ToolModel.ToolFilterTypeTitle> ();
+
+            xFilterComboBox.SelectedItem = vm.Filter;
+
+            //xTitle.Text = vm.Filter.ToString();
             vm.ReloadPropertiesToDisplay();
             _toolView = new Tools.ListToolView(this);
             _toolView.SetProperties(Vm.PropertiesToDisplay);
@@ -82,8 +86,15 @@ namespace NuSysApp
             }
         }
         
+        /// <summary>
+        /// Removes all the handlers, and removes visually. Calls dispose on the toolView and the viewmodel.
+        /// </summary>
         public void Dispose()
         {
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            wvm.AtomViewList.Remove(this);
+            (DataContext as ToolViewModel).Dispose();
+            _toolView.Dispose();
             (DataContext as BasicToolViewModel).PropertiesToDisplayChanged -= Vm_PropertiesToDisplayChanged;
             ((DataContext as BasicToolViewModel).Controller as BasicToolController).SelectionChanged -= OnSelectionChanged;
             (DataContext as BasicToolViewModel).Controller.NumberOfParentsChanged -= Controller_NumberOfParentsChanged;
@@ -161,10 +172,6 @@ namespace NuSysApp
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            var wvm = SessionController.Instance.ActiveFreeFormViewer;
-            wvm.AtomViewList.Remove(this);
-            (DataContext as ToolViewModel).Dispose();
-            _toolView.Dispose();
             this.Dispose();
         }
 
@@ -296,6 +303,7 @@ namespace NuSysApp
         private void Tool_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             e.Handled = true;
+            xFilterComboBox.IsEnabled = false;
         }
 
         /// <summary>
@@ -315,6 +323,17 @@ namespace NuSysApp
             {
                 vm.Controller.SetLocation(vm.X + x, vm.Y + y);
             }
+        }
+
+        /// <summary>
+        /// This is necessary so that when you drag the filter combo box, the drop down list does not appear at the end of the drag.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XFilterComboBox_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            xFilterComboBox.IsEnabled = true;
+
         }
 
         /// <summary>
@@ -455,25 +474,6 @@ namespace NuSysApp
                         _currentDragMode = DragMode.Scroll;
                     }
                 }
-                //if (sp.X < boundingScrollingElement.ActualWidth && sp.X > 0 && sp.Y > 0 && sp.Y < boundingScrollingElement.ActualHeight)
-                //{
-                //    Border border = (Border)VisualTreeHelper.GetChild(boundingScrollingElement, 0);
-                //    ScrollViewer scrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
-                //    if (scrollViewer != null)
-                //    {
-                //        scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta.Translation.Y);
-                //    }
-                //    if (_currentDragMode == DragMode.Filter)
-                //    {
-                //        _dragFilterItem.Visibility = Visibility.Collapsed;
-                //        _currentDragMode = DragMode.Scroll;
-                //    }
-                //}
-                //else if (_currentDragMode == DragMode.Scroll)
-                //{
-                //    _dragFilterItem.Visibility = Visibility.Visible;
-                //    _currentDragMode = DragMode.Filter;
-                //}
             }
             
             if ((_dragFilterItem.RenderTransform as CompositeTransform) != null && e.IsInertial == false)
@@ -514,7 +514,24 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// When the selection of the filter combo box changes, either set a new filter on the basic tool view,
+        /// or switch to an AllMetadata tool.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Vm.Filter = xFilterComboBox.SelectedItem is ToolModel.ToolFilterTypeTitle ? (ToolModel.ToolFilterTypeTitle) xFilterComboBox.SelectedItem : ToolModel.ToolFilterTypeTitle.Title;
+            if (Vm.Filter == ToolModel.ToolFilterTypeTitle.AllMetadata)
+            {
 
+                Vm.SwitchToAllMetadataTool();
+                this.Dispose();
+            }
+        }
+
+        
     }
 
 }

@@ -197,7 +197,7 @@ namespace NuSysApp
 
                 //set up axis labels
                 var label = new TextBlock();
-                label.Text = kvp.Key;
+                label.Text = ToolUtilities.GetLabel(kvp.Key, _baseTool.Vm.Filter);
                 Grid.SetColumn(label, i);
                 Grid.SetRow(label, 1);
                 label.TextWrapping = TextWrapping.WrapWholeWords;
@@ -305,17 +305,14 @@ namespace NuSysApp
         /// </summary>
         private void SetBarChartBarHeights()
         {
-            //int i = 0;
             foreach (var uiElement in xBarChart.Children)
             {
                 var item = uiElement as BarChartItem;
                 var itemDataContext = item?.DataContext as BarChartItemViewModel;
-                //Debug.Assert(itemDataContext != null);
                 if (itemDataContext != null)
                 {
                     itemDataContext.Height = (itemDataContext.Count / _maxValue) * xBarChart.RowDefinitions[0].ActualHeight;
                 }
-                //i++;
             }
         }
 

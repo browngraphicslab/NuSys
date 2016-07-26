@@ -16,12 +16,16 @@ namespace NuSysApp
     {
 
         private Point2d _anchor;
+        public event EventHandler<ToolViewModel> FilterTypeAllMetadataChanged;
 
         /// <summary>
         ///The anchor that the tool link uses
         /// </summary>
         public Point2d ToolAnchor { get { return _anchor; } }
         public event EventHandler<Point2d> ToolAnchorChanged;
+        //never fired because the collection can never change to or from metadata tool view or basic tool view.
+        public event EventHandler<ToolLinkable> ReplacedToolLinkAnchorPoint;
+
 
         public CollectionElementModel.CollectionViewType ActiveCollectionViewType { get; set; }
        
@@ -67,6 +71,7 @@ namespace NuSysApp
         {
             _anchor = new Point2d(Anchor.X, Anchor.Y - Height/2 + 30);
         }
+
 
 
         public ToolStartable GetToolStartable()

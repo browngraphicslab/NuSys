@@ -32,22 +32,17 @@ namespace NuSysApp
             {
                 UpdateControlPoints();
             };
-
-            vm.InTool.Disposed += Tool_Disposed;
-            vm.OutTool.Disposed += Tool_Disposed;
+            
+            vm.Disposed += Vm_Disposed;
         }
 
-        /// <summary>
-        /// When either tool the link is connected to is deleted, remove the link, and remove and listeners.
-        /// </summary>
-        public void Tool_Disposed(object sender, string id)
+        private void Vm_Disposed()
         {
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
             wvm.AtomViewList.Remove(this);
-            (DataContext as ToolLinkViewModel).Dispose();
-            (DataContext as ToolLinkViewModel).InTool.Disposed -= Tool_Disposed;
-            (DataContext as ToolLinkViewModel).OutTool.Disposed -= Tool_Disposed;
         }
+
+
 
         /// <summary>
         /// When either of the tool linkables on either end change its anchor point, reposition the link.

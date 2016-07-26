@@ -45,6 +45,8 @@ namespace NuSysApp
             this.InitializeComponent();
             _dragItem = vm.InitializeDragFilterImage();
             vm.Controller.SetLocation(x, y);
+            xFilterComboBox.ItemsSource = Enum.GetValues(typeof(ToolModel.ToolFilterTypeTitle)).Cast<ToolModel.ToolFilterTypeTitle>();
+            xFilterComboBox.SelectedItem = vm.Filter;
             this.DataContext = vm;
             SetSize(400,500);
             xCollectionElement.AddHandler(PointerPressedEvent, new PointerEventHandler(CollectionBtnAddOnManipulationStarting), true);
@@ -203,17 +205,17 @@ namespace NuSysApp
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            var wvm = SessionController.Instance.ActiveFreeFormViewer;
-            wvm.AtomViewList.Remove(this);
-            (DataContext as ToolViewModel)?.Dispose();
             this.Dispose();
         }
 
         public void Dispose()
         {
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            wvm.AtomViewList.Remove(this);
             (DataContext as MetadataToolViewModel).PropertiesToDisplayChanged -= Vm_PropertiesToDisplayChanged;
             ((DataContext as MetadataToolViewModel).Controller as MetadataToolController).SelectionChanged -= On_SelectionChanged;
             (DataContext as MetadataToolViewModel).Controller.NumberOfParentsChanged -= Controller_NumberOfParentsChanged;
+            (DataContext as ToolViewModel)?.Dispose();
 
         }
 
@@ -338,6 +340,7 @@ namespace NuSysApp
         private void Tool_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             e.Handled = true;
+            xFilterComboBox.IsEnabled = false;
         }
 
         /// <summary>
@@ -353,6 +356,17 @@ namespace NuSysApp
             {
                 vm.Controller.SetLocation(vm.X + x, vm.Y + y);
             }
+        }
+
+        /// <summary>
+        /// This is necessary so that when you drag the filter combo box, the drop down list does not appear at the end of the drag.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XFilterComboBox_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            xFilterComboBox.IsEnabled = true;
+
         }
 
         /// <summary>
@@ -624,6 +638,21 @@ namespace NuSysApp
             }
         }
 
-        
+        /// <summary>
+        /// When the selection of the filter combo box changes, either set a new filter on the basic tool view,
+        /// or switch to an AllMetadata tool.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var filter = xFilterComboBox.SelectedItem is ToolModel.ToolFilterTypeTitle ? (ToolModel.ToolFilterTypeTitle)xFilterComboBox.SelectedItem : ToolModel.ToolFilterTypeTitle.Title;
+            if (filter != ToolModel.ToolFilterTypeTitle.AllMetadata)
+            {
+
+                (DataContext as MetadataToolViewModel).SwitchToBasicTool(filter);
+                this.Dispose();
+            }
+        }
     }
 }
