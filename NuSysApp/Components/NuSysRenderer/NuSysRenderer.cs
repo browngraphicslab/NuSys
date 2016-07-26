@@ -73,8 +73,11 @@ namespace NuSysApp
             foreach (var newItem in args.NewItems)
             {
                 var vm = (ElementViewModel) newItem;
-                var elem = new ElementRenderItem(vm);
-                _renderItems2.Add(elem);
+                if (vm is TextNodeViewModel)
+                    _renderItems2.Add(new TextElementRenderItem((TextNodeViewModel)vm, _canvas));
+                else
+                    _renderItems2.Add(new ElementRenderItem(vm, _canvas));
+
             }
         }
 

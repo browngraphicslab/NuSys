@@ -63,6 +63,8 @@ namespace NuSysApp
 
         private int initChatNotifs;
 
+        public WebView WV => xWebView;
+
         public SessionView()
         {
             this.InitializeComponent();
@@ -950,4 +952,6 @@ namespace NuSysApp
             
         }
     }
+
+
 }

@@ -304,6 +304,7 @@
     </Compile>
     <Compile Include="Components\Misc\TextInputBlockViewModel.cs" />
     <Compile Include="Components\NuSysRenderer\AdornmentRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\TextElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\InkRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\TrailRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\LinkRenderItem.cs" />
@@ -653,6 +654,7 @@
     <Compile Include="Util\AccessList.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
+    <Compile Include="Util\BlockingQueue.cs" />
     <Compile Include="Util\DetailViewTabType.cs" />
     <Compile Include="Util\EventUtil.cs" />
     <Compile Include="Util\ExplorationMode.cs" />

@@ -14,6 +14,7 @@
 
     function InsertText(text) {
         document.getElementById("editor").innerHTML = text;
+        window.external.notify("new text yo");
     }
 
     function Blur() {

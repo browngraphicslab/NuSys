@@ -50,7 +50,7 @@ namespace NuSysApp
             LibraryElementModel libraryElement = LibraryElementModelFactory.CreateFromMessage(_message);
             if (libraryElement != null)
             {
-                SessionController.Instance.ContentController.Add(libraryElement);
+                //SessionController.Instance.ContentController.Add(libraryElement);
                 var controller =
                     SessionController.Instance.ContentController.GetLibraryElementController(
                         libraryElement.LibraryElementId);

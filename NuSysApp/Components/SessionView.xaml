@@ -95,5 +95,10 @@
             <local:LoadingScreen></local:LoadingScreen>
         </Grid>
 
+        <WebView x:Name="xWebView" Width="400" Height="300" VerticalAlignment="Top" HorizontalAlignment="Left" >
+            <WebView.RenderTransform>
+                <TranslateTransform Y="-400"></TranslateTransform>
+            </WebView.RenderTransform>
+        </WebView>
     </Grid>
 </Page>
