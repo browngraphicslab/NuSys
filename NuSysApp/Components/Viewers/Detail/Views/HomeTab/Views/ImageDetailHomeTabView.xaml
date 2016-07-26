@@ -31,7 +31,7 @@
 
                 <local:RectangleWrapper x:Name="xClippingWrapper">
                     <local:RectangleWrapper.Content>
-                        <Image x:Name="xImg" PointerPressed="xImg_PointerPressed" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" SizeChanged="XImg_OnSizeChanged">
+                        <Image x:Name="xImg" PointerPressed="xImg_PointerPressed" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" SizeChanged="XImg_OnSizeChanged" >
                             <Image.Source>
                                 <BitmapImage x:Name="sourceImage" ImageOpened="BitmapImage_ImageOpened" UriSource="{Binding Image}"/>
                             </Image.Source>

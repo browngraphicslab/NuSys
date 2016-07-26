@@ -305,7 +305,7 @@ namespace NuSysApp
                     dict["type"] = elementType.ToString();
                     dict["x"] = pos.X;
                     dict["y"] = pos.Y;
-                    dict["libraryId"] = libraryId;
+                    dict["contentId"] = libraryId;
                     dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
                     dict["metadata"] = metadata;
                     dict["autoCreate"] = true;
@@ -322,7 +322,7 @@ namespace NuSysApp
             });
         }
 
-#endregion addToCollection
+        #endregion addToCollection
 
         private void XImg_OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
