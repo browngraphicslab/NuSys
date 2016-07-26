@@ -13,14 +13,13 @@ namespace NuSysApp
     {
         public bool IsDirty { get; set; }
 
-        public virtual void Update()
-        {
+        public virtual void Update(){
             
         }
 
         public virtual void Draw(CanvasDrawingSession ds) 
         {
-         //   ds.FillRectangle( new Rect {X=0, Y=0,Width = 100, Height=100}, Colors.Black);
+         
         }
     }
 }

@@ -78,19 +78,17 @@ namespace NuSysApp
 
                 collectionModel.OnInkAdded += delegate(string id)
                 {
-                    if (InkStorage._inkStrokes.ContainsKey(id))
+                    var x = InkStorage._inkStrokes[id];
+                    if (x.Type == "ink")
                     {
-                        var x = InkStorage._inkStrokes[id];
-                        if (x.Type == "ink")
-                        {
-                            _inqCanvas.AddStroke(x.Stroke);
-                            _inqCanvas.Redraw();
-                        }
-                        else
-                        {
-                            _inqCanvas.AddAdorment(x.Stroke, x.Color, false);
-                            _inqCanvas.Redraw();
-                        }
+                        SessionController.Instance.SessionView.FreeFormViewer.NuSysRenderer.AddStroke(x.Stroke);
+                        //  _inqCanvas.AddStroke(x.Stroke);
+                        //   _inqCanvas.Redraw();
+                    }
+                    else
+                    {
+                        _inqCanvas.AddAdorment(x.Stroke, x.Color, false);
+                        _inqCanvas.Redraw();
                     }
                 };
 

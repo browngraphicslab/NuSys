@@ -41,8 +41,7 @@ namespace NuSysApp
             cb.EndFigure(CanvasFigureLoop.Open);
             var path = CanvasGeometry.CreatePath(cb);
             ds.DrawGeometry(path, Colors.DodgerBlue, 20);
-            //ds.DrawGeometry( new BezierSegment {Point1 = Point1, Point2 = Point2, Point3 = Point3}, Colors.Black);
-            //ds.FillRectangle( new Rect {X=_vm., Y= _vm.Y, Width = 100, Height=100}, Colors.Black);
+
         }
     }
 }

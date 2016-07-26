@@ -303,11 +303,13 @@
       <DependentUpon>TextInputBlock.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Misc\TextInputBlockViewModel.cs" />
-    <Compile Include="Components\NuSysRender\TrailRenderItem.cs" />
-    <Compile Include="Components\NuSysRender\LinkRenderItem.cs" />
-    <Compile Include="Components\NuSysRender\ElementRenderItem.cs" />
-    <Compile Include="Components\NuSysRender\NuSysRenderer.cs" />
-    <Compile Include="Components\NuSysRender\BaseRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\AdornmentRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\InkRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\TrailRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\LinkRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\ElementRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\NuSysRenderer.cs" />
+    <Compile Include="Components\NuSysRenderer\BaseRenderItem.cs" />
     <Compile Include="Components\Regions\VideoRegionView.xaml.cs">
       <DependentUpon>VideoRegionView.xaml</DependentUpon>
     </Compile>
