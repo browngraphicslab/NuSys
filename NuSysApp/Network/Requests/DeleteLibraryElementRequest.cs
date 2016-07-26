@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NusysConstants;
 
 namespace NuSysApp
 {
     public class DeleteLibraryElementRequest : Request
     {
-        public DeleteLibraryElementRequest(string id) : base(RequestType.DeleteLibraryElementRequest)
+        public DeleteLibraryElementRequest(string id) : base(ServerConstants.RequestType.DeleteLibraryElementRequest)
         {
             _message["id"] = id;
             SetServerSettings();
         }
-        public DeleteLibraryElementRequest(Message m) : base(RequestType.DeleteLibraryElementRequest,m)
+        public DeleteLibraryElementRequest(Message m) : base(ServerConstants.RequestType.DeleteLibraryElementRequest,m)
         {
             SetServerSettings();
         }

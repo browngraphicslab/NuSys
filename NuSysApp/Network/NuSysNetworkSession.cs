@@ -18,6 +18,7 @@ using Windows.System.Threading;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Newtonsoft.Json;
+using NusysConstants;
 using NuSysApp.Network.Requests;
 using NuSysApp.Network.Requests.SystemRequests;
 using Buffer = System.Buffer;
@@ -238,63 +239,63 @@ namespace NuSysApp
         private async Task ProcessIncomingRequest(Message message)
         {
             Request request;
-            Request.RequestType requestType;
+            ServerConstants.RequestType requestType;
             if (!message.ContainsKey("request_type"))
             {
                 throw new NoRequestTypeException();
             }
             try
             {
-                requestType = (Request.RequestType)Enum.Parse(typeof(Request.RequestType), message.GetString("request_type"));
+                requestType = (ServerConstants.RequestType)Enum.Parse(typeof(ServerConstants.RequestType), message.GetString("request_type"));
             }
             catch (Exception e)
             {
                 throw new InvalidRequestTypeException();
             }
-            if (requestType == Request.RequestType.SystemRequest)
+            if (requestType == ServerConstants.RequestType.SystemRequest)
             {
                 await ProcessIncomingSystemRequest(message);
                 return;
             }
             switch (requestType)
             {
-                case Request.RequestType.DeleteSendableRequest:
+                case ServerConstants.RequestType.DeleteSendableRequest:
                     request = new DeleteSendableRequest(message);
                     break;
-                case Request.RequestType.NewNodeRequest:
+                case ServerConstants.RequestType.NewNodeRequest:
                     request = new NewElementRequest(message);
                     break;
-                case Request.RequestType.NewLinkRequest:
+                case ServerConstants.RequestType.NewLinkRequest:
                     request = new NewLinkRequest(message);
                     break;
-                case Request.RequestType.SendableUpdateRequest:
+                case ServerConstants.RequestType.SendableUpdateRequest:
                     request = new SendableUpdateRequest(message);
                     break;
-                case Request.RequestType.FinalizeInkRequest:
+                case ServerConstants.RequestType.FinalizeInkRequest:
                     request = new FinalizeInkRequest(message);
                     break;
-                case Request.RequestType.DuplicateNodeRequest:
+                case ServerConstants.RequestType.DuplicateNodeRequest:
                     request = new DuplicateNodeRequest(message);
                     break;
-                case Request.RequestType.ChangeContentRequest:
+                case ServerConstants.RequestType.ChangeContentRequest:
                     request = new ChangeContentRequest(message);
                     break;
-                case Request.RequestType.SetTagsRequest:
+                case ServerConstants.RequestType.SetTagsRequest:
                     request = new SetTagsRequest(message);
                     break;
-                case Request.RequestType.ChatDialogRequest:
+                case ServerConstants.RequestType.ChatDialogRequest:
                     request = new ChatDialogRequest(message);
                     break;
-                case Request.RequestType.CreateNewLibrayElementRequest:
+                case ServerConstants.RequestType.CreateNewLibrayElementRequest:
                     request = new CreateNewLibraryElementRequest(message);
                     break;
-                case Request.RequestType.DeleteLibraryElementRequest:
+                case ServerConstants.RequestType.DeleteLibraryElementRequest:
                     request = new DeleteLibraryElementRequest(message);
                     break;
-                case Request.RequestType.AddInkRequest:
+                case ServerConstants.RequestType.AddInkRequest:
                     request = new AddInkRequest(message);
                     break;
-                case Request.RequestType.RemoveInkRequest:
+                case ServerConstants.RequestType.RemoveInkRequest:
                     request = new RemoveInkRequest(message);
                     break;
                 default:

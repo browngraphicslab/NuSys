@@ -6,12 +6,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
+using NusysConstants;
 
 namespace NuSysApp
 {
     public class DuplicateNodeRequest : Request
     {
-        public DuplicateNodeRequest(Message message) : base(Request.RequestType.DuplicateNodeRequest, message){}
+        public DuplicateNodeRequest(Message message) : base(ServerConstants.RequestType.DuplicateNodeRequest, message){}
 
         public override async Task ExecuteRequestFunction()
         {

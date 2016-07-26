@@ -273,7 +273,6 @@
     <Compile Include="Components\InqCanvas\NuSysInqCanvas.cs" />
     <Compile Include="Components\InqCanvas\WetDryInkCanvas.cs" />
     <Compile Include="Components\ISelectable.cs" />
-    <Compile Include="Components\Keywords\Keyword.cs" />
     <Compile Include="Components\Links\LinkCircle.xaml.cs">
       <DependentUpon>LinkCircle.xaml</DependentUpon>
     </Compile>
@@ -609,7 +608,6 @@
     <Compile Include="Models\WorkSpaceModel.cs" />
     <Compile Include="Network\CachePDF.cs" />
     <Compile Include="Network\ClientHandler.cs" />
-    <Compile Include="Network\Message.cs" />
     <Compile Include="Network\NetworkClient.cs" />
     <Compile Include="Network\NetworkSession.cs" />
     <Compile Include="Network\NetworkUser.cs" />
@@ -625,7 +623,6 @@
     <Compile Include="Network\Requests\NewLinkRequest.cs" />
     <Compile Include="Network\Requests\FinalizeInkRequest.cs" />
     <Compile Include="Network\Requests\NewElementRequest.cs" />
-    <Compile Include="Network\Requests\Request.cs" />
     <Compile Include="Network\Requests\SendableUpdateRequest.cs" />
     <Compile Include="Network\Requests\SubscribeToCollectionRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\RequestClientInfoSystemRequest.cs" />
@@ -1225,6 +1222,10 @@
       <Project>{56c66c4f-3c21-4929-baf1-2eda2ec56823}</Project>
       <Name>MuPDFWinRT</Name>
     </ProjectReference>
+    <ProjectReference Include="..\NusysConstants\NusysConstants.csproj">
+      <Project>{7296c25f-88e9-478d-a489-8a1c13e8b846}</Project>
+      <Name>NusysConstants</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Office.Interop.Word, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
@@ -1272,6 +1273,7 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Components\Keywords\" />
     <Folder Include="Icons\" />
     <Folder Include="Util\Regions\" />
   </ItemGroup>

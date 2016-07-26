@@ -5,17 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Input.Inking;
 using Newtonsoft.Json;
+using NusysConstants;
 
 namespace NuSysApp
 {
     public class ChangeContentRequest : Request
     {
-        public ChangeContentRequest(Message m) : base(RequestType.ChangeContentRequest, m)
+        public ChangeContentRequest(Message m) : base(ServerConstants.RequestType.ChangeContentRequest, m)
         {
             SetServerSettings();
         }
 
-        public ChangeContentRequest(string contentID, string contentData) : base(RequestType.ChangeContentRequest)
+        public ChangeContentRequest(string contentID, string contentData) : base(ServerConstants.RequestType.ChangeContentRequest)
         {
             _message["contentId"] = contentID;
             _message["data"] = contentData;

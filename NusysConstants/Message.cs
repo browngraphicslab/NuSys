@@ -5,10 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Windows.Foundation;
 using Newtonsoft.Json;
 
-namespace NuSysApp
+namespace NusysConstants
 {
     public class Message
     {
@@ -22,7 +21,7 @@ namespace NuSysApp
         {
             try
             {
-                var settings = new JsonSerializerSettings {StringEscapeHandling = StringEscapeHandling.EscapeNonAscii};
+                var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
                 _dict = new ConcurrentDictionary<string, object>(JsonConvert.DeserializeObject<Dictionary<string, object>>(m, settings));
             }
             catch (Exception e)
@@ -36,7 +35,7 @@ namespace NuSysApp
                 }
                 catch (Exception f)
                 {
-                    
+
                 }
             }
             if (_dict == null)
@@ -55,13 +54,13 @@ namespace NuSysApp
         }
         public Message(Dictionary<string, object> dict)
         {
-            _dict = new ConcurrentDictionary<string,object>(dict);
+            _dict = new ConcurrentDictionary<string, object>(dict);
         }
         public void Add(string key, object value)//TODO get rid of this
         {
             if (_dict.ContainsKey(key))
             {
-                throw new InvalidOperationException("Key "+key+" already exists");
+                throw new InvalidOperationException("Key " + key + " already exists");
             }
             _dict.TryAdd(key, value);
         }
@@ -73,7 +72,7 @@ namespace NuSysApp
                 _dict.TryRemove(key, out outVar);
                 return;
             }
-            throw new KeyNotFoundException("Key "+key+" not found when attemped to remove it.");
+            throw new KeyNotFoundException("Key " + key + " not found when attemped to remove it.");
         }
         public object this[string key]
         {
@@ -159,10 +158,6 @@ namespace NuSysApp
         public List<List<T>> GetNestedList<T>(string key)
         {
             return ContainsKey(key) ? JsonConvert.DeserializeObject<List<List<T>>>(Get(key)) : null;
-        }
-        public Point GetPoint(string key, Point defaultValue = new Point())
-        {
-            return ContainsKey(key) ? JsonConvert.DeserializeObject<Point>(Get(key)) : defaultValue;
         }
         public bool ContainsKey(string key)
         {

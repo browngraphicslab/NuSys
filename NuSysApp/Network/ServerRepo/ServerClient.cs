@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using Windows.Networking.Sockets;
@@ -48,6 +51,8 @@ namespace NuSysApp
         public event PresentationLinkRemovedEventHandler PresentationLinkRemoved;
 
         public static HashSet<string> NeededLibraryDataIDs = new HashSet<string>();
+        private ConcurrentDictionary<string,Message> _returnMessages = new ConcurrentDictionary<string, Message>();
+        private ConcurrentDictionary<string, ManualResetEvent> _requestEventDictionary = new ConcurrentDictionary<string, ManualResetEvent>();
         public string ServerBaseURI { get; private set; }
         
 
@@ -666,6 +671,49 @@ namespace NuSysApp
                 returnList.Add(new Message(s));
             }
             return returnList;
+        }
+
+        /// <summary>
+        /// Will send a dictionary to the server and manually wait for its return
+        /// Later, another message will be called that will resumet this thread after placing the returned response in the _returnMessages dictionary
+        /// THESE METHOD PAIRS SHOULD SIMULATE ACTUAL ASYNCHRONOUS CALLS
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        private async Task<Message> WaitGetRequestAsync(Message message)
+        {
+            Debug.Assert(!message.ContainsKey(NusysConstants.ServerConstants.GET_REQUEST_ID_STRING));
+            var mreId = SessionController.Instance.GenerateId();
+            message[NusysConstants.ServerConstants.GET_REQUEST_ID_STRING] = mreId;
+            var mre = new ManualResetEvent(false);
+            _requestEventDictionary.TryAdd(mreId, mre);
+            Task.Run(async delegate
+            {
+                SendMessageToServer(message);
+            });
+            mre.WaitOne();
+            Debug.Assert(_returnMessages.ContainsKey(mreId));
+            Message outMessage;
+            _returnMessages.TryRemove(mreId, out outMessage);
+            Debug.Assert(outMessage != null);
+            return outMessage;
+        }
+
+        /// <summary>
+        /// will be called when a message is recieved and is a get request
+        /// will resume the waiting thread for the get request and place the message in the message dictionary
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        private async Task ReturnGetRequestAsync(Message message)
+        {
+            Debug.Assert(message.ContainsKey(NusysConstants.ServerConstants.GET_REQUEST_ID_STRING));
+            var mreId = message.GetString(NusysConstants.ServerConstants.GET_REQUEST_ID_STRING);
+            var mre = _requestEventDictionary[mreId];
+            ManualResetEvent outMre;
+            _requestEventDictionary.TryRemove(mreId, out outMre);
+            _returnMessages.TryAdd(mreId, message);
+            mre.Set();
         }
         /*
         public async Task DeleteAllRepoFiles()

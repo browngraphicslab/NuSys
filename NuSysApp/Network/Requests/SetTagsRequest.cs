@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NusysConstants;
 
 namespace NuSysApp
 {
     public class SetTagsRequest:Request
     {
-        public SetTagsRequest(Message m) : base(RequestType.SetTagsRequest, m)
+        public SetTagsRequest(Message m) : base(ServerConstants.RequestType.SetTagsRequest, m)
         {
 
         }
 
-        public SetTagsRequest(string id, List<string> tags) : base(RequestType.SetTagsRequest)
+        public SetTagsRequest(string id, List<string> tags) : base(ServerConstants.RequestType.SetTagsRequest)
         {
             _message["id"] = id;
             _message["tags"] = tags;

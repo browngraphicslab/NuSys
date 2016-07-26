@@ -5,12 +5,13 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
+using NusysConstants;
 
 namespace NuSysApp
 {
     public class FinalizeInkRequest : Request
     {
-        public FinalizeInkRequest(Message message) : base(Request.RequestType.FinalizeInkRequest, message){}
+        public FinalizeInkRequest(Message message) : base(ServerConstants.RequestType.FinalizeInkRequest, message){}
 
         public async override Task<bool> CheckOutgoingRequest()
         {

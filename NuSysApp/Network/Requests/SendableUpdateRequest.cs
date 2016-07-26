@@ -4,12 +4,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NusysConstants;
 
 namespace NuSysApp
 {
     public class SendableUpdateRequest : Request
     {
-        public SendableUpdateRequest(Message m, bool saveToServer = false) : base(RequestType.SendableUpdateRequest, m)
+        public SendableUpdateRequest(Message m, bool saveToServer = false) : base(ServerConstants.RequestType.SendableUpdateRequest, m)
         {
             SetServerSettings(saveToServer);
         }

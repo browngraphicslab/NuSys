@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Media;
+using NusysConstants;
 
 namespace NuSysApp
 {
     public class RemoveInkRequest : Request
     {
-        public RemoveInkRequest(Message message) : base(Request.RequestType.RemoveInkRequest, message){}
+        public RemoveInkRequest(Message message) : base(ServerConstants.RequestType.RemoveInkRequest, message){}
 
         public async override Task<bool> CheckOutgoingRequest()
         {

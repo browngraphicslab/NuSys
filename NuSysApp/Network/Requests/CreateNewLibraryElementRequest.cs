@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NusysConstants;
 
 namespace NuSysApp
 {
     public class CreateNewLibraryElementRequest : Request
     {
-        public CreateNewLibraryElementRequest(Message m) : base(RequestType.CreateNewLibrayElementRequest, m)
+        public CreateNewLibraryElementRequest(Message m) : base(ServerConstants.RequestType.CreateNewLibrayElementRequest, m)
         {
             SetServerSettings();
         }
 
         public CreateNewLibraryElementRequest(string id, string data, ElementType type, string title = "")
-            : base(RequestType.CreateNewLibrayElementRequest)
+            : base(ServerConstants.RequestType.CreateNewLibrayElementRequest)
         {
             _message["id"] = id;
             _message["data"] = data;

@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NusysConstants;
 
 namespace NuSysApp
 {
     public class UnsubscribeFromCollectionRequest : Request
     {
-        public UnsubscribeFromCollectionRequest(string collectionID) : base(RequestType.UnsubscribeFromCollectionRequest)
+        public UnsubscribeFromCollectionRequest(string collectionID) : base(ServerConstants.RequestType.UnsubscribeFromCollectionRequest)
         {
             _message["server_collection_to_subscribe"] = collectionID;
             SetServerEchoType(ServerEchoType.None);

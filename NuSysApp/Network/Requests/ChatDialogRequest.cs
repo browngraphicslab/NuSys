@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NusysConstants;
 
 namespace NuSysApp.Network.Requests
 {
     public class ChatDialogRequest : Request
     {
-        public ChatDialogRequest(string text) : base(RequestType.ChatDialogRequest)
+        public ChatDialogRequest(string text) : base(ServerConstants.RequestType.ChatDialogRequest)
         {
             _message["text"] = text;
             _message["senderIP"] = SessionController.Instance.NuSysNetworkSession.LocalIP;
         }
 
-        public ChatDialogRequest(Message m) : base(RequestType.ChatDialogRequest, m){}
+        public ChatDialogRequest(Message m) : base(ServerConstants.RequestType.ChatDialogRequest, m){}
         public override async Task ExecuteRequestFunction()
         {
             var session = SessionController.Instance;

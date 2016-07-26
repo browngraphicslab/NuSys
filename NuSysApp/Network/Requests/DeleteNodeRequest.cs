@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NusysConstants;
 
 namespace NuSysApp
 {
     public class DeleteSendableRequest : Request
     {
         public string Id;
-        public DeleteSendableRequest(string id) : base(RequestType.DeleteSendableRequest)//maybe make an abstract delete sendable class and have this extend that
+        public DeleteSendableRequest(string id) : base(ServerConstants.RequestType.DeleteSendableRequest)//maybe make an abstract delete sendable class and have this extend that
         {
             Id = id;
             _message["id"] = id;

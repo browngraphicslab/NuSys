@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using NusysConstants;
 using NuSysApp.Controller;
 
 namespace NuSysApp
 {
     public class NewElementRequest : Request
     {
-        public NewElementRequest(Message message) : base(Request.RequestType.NewNodeRequest, message)
+        public NewElementRequest(Message message) : base(ServerConstants.RequestType.NewNodeRequest, message)
         {
             SetServerEchoType(ServerEchoType.Everyone);
             SetServerItemType(ServerItemType.Alias);

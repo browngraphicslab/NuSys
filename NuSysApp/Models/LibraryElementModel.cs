@@ -11,6 +11,7 @@ using Windows.UI.Xaml;
 using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json;
+using NusysConstants;
 
 namespace NuSysApp
 {
@@ -119,11 +120,13 @@ namespace NuSysApp
             Metadata = new ConcurrentDictionary<string, MetadataEntry>(metadata);
         }
         /*
-* Trent, Help ME.!!!!! He's talking about bio. What did I do to deserve this. 
-* Help me. He just won't stop. Dear god what have I done. Sahil save me.
-* This is my life now. I will suffer every day. Is there no way to escape this hell?
-* 
-* Not nice Grant!!! I was just trying to be helpful and friendly! - Z
-*/
+        * Trent, Help ME.!!!!! He's talking about bio. What did I do to deserve this. 
+        * Help me. He just won't stop. Dear god what have I done. Sahil save me.
+        * This is my life now. I will suffer every day. Is there no way to escape this hell?
+        * 
+        * Not nice Grant!!! I was just trying to be helpful and friendly! - Z
+        * 
+        * hey guys let's all be nice and do nusys.  -T
+        */
     }
 }
