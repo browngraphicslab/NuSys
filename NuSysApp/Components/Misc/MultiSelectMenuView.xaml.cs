@@ -71,13 +71,20 @@ namespace NuSysApp
         }
 
         private async void CreateGroupButtonOnClick(object sender, RoutedEventArgs routedEventArgs)
+
+        /// <summary>
+        /// Creates a collection based on the nodes enclosed in the ink stroke. TODO: refactor
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="routedEventArgs"></param>
         {
             var selections = SessionController.Instance.ActiveFreeFormViewer.Selections;
             if (selections.Count == 0) {
                 Visibility = Visibility.Collapsed;
                 return;
             }
-            var bb = Geometry.NodesToBoudingRect(selections.Where(v =>  (v is ElementViewModel)).Select(item=> item as ElementViewModel).ToList());       
+            //var bb = Geometry.NodesToBoudingRect(selections.Where(v =>  (v is ElementViewModel)).Select(item=> item as ElementViewModel).ToList());       
+            var bb = Stroke.BoundingRect;
 
             var metadata = new Dictionary<string, object>();
             metadata["node_creation_date"] = DateTime.Now;
@@ -101,6 +108,7 @@ namespace NuSysApp
 
             // make a pointcollection that will be the "shape" property of the collection (use pointcollection or list?)
             var inkpoints = Stroke.GetInkPoints().ToArray();
+            Points = new List<Windows.Foundation.Point>();
             foreach (var i in inkpoints)
             {
                 Points.Add(i.Position);

@@ -43,6 +43,7 @@ namespace NuSysApp
             this.Favorited = favorited;
 
             InkLines = new HashSet<string>();
+
             IsFinite = finite;
             Shape = points;
 

@@ -205,7 +205,21 @@ namespace NuSysApp
             await fvm.CreateChildren();
             freeFormView = new AreaNodeView(fvm);
             ExpandedGrid.Children.Add(freeFormView);
+            
             freeFormView.Visibility = Visibility.Visible;
+            /*
+            var model = vm.Model as CollectionElementModel;
+            if (model == null)
+            {
+                return;
+            }
+           
+            var foo = model.CollectionLibraryElementModel;
+            if (foo!=null&&foo.IsFinite)
+            {
+                Resizer.Visibility=Visibility.Collapsed;
+            }
+            */
         }
 
         private async void CreateTimelineView()

@@ -39,6 +39,7 @@ namespace NuSysApp
         protected GeneralTransform _inverseTransform;
         protected CompositeTransform _transform;
         private bool _shiftIsDown;
+        private bool _mouseDown;
 
         public CompositeTransform Transform { get
             {
@@ -68,6 +69,7 @@ namespace NuSysApp
             _dryCanvas.Draw += OnDryCanvasDraw;
             CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
             CoreWindow.GetForCurrentThread().KeyUp += OnKeyUp;
+            _mouseDown = false;
         }
 
         /// <summary>
@@ -200,6 +202,7 @@ namespace NuSysApp
             if (!(_shiftIsDown || e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen))
                 return;
 
+            _mouseDown = true;
             _currentStroke.Clear();
 
             _capturedPointer = e.Pointer;
@@ -229,6 +232,7 @@ namespace NuSysApp
             if (!(_shiftIsDown || e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen))
                 return;
 
+            _mouseDown = false;
 
 
             _wetCanvas.PointerMoved -= OnPointerMoved;
@@ -299,6 +303,9 @@ namespace NuSysApp
         {
             // We only register ink if shift is down or the pen is being used. Otherwise, return.
             if (!(_shiftIsDown || e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen))
+                return;
+
+            if (!_mouseDown)
                 return;
 
             foreach (var p in e.GetIntermediatePoints(_wetCanvas).Reverse())

@@ -39,6 +39,7 @@ namespace NuSysApp
         public string LastEditedTimestamp { get; set; }
 
         public string ServerUrl { get; set; } 
+        public List<Windows.Foundation.Point> ShapePoints { get; set; } 
         public Dictionary<string, MetadataEntry> FullMetadata
         {
             get
@@ -121,6 +122,11 @@ namespace NuSysApp
             {
                 ServerUrl = message.GetString("server_url");
             }
+            //if (message.ContainsKey("points"))
+            //{
+            //    ShapePoints = message.GetList<Windows.Foundation.Point>("points");
+            //}
+            //if (message.ContainsKey("finite"))
             //TO DOWNLOAD PDFS
             /*
             if (Type == ElementType.PDF)

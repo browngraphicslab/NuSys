@@ -31,8 +31,8 @@ namespace NuSysApp
 
         public NuSysInqCanvas(CanvasControl wetCanvas, CanvasControl dryCanvas) : base(wetCanvas, dryCanvas)
         {
-            CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
-            CoreWindow.GetForCurrentThread().KeyUp += OnKeyUp;
+            //CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
+            //CoreWindow.GetForCurrentThread().KeyUp += OnKeyUp;
             _shiftIsDown = false;
         }
         /// <summary>

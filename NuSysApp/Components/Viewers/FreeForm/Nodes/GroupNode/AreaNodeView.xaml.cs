@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -14,6 +15,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using NuSysApp.Components.Misc;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -48,7 +50,22 @@ namespace NuSysApp
             _dragOutMode = new DragOutMode(this);
             _dragOutMode.Activate();
 
-            
+            // vm.AtomViewList.Add(new Windows.UI.Xaml.Shapes.Ellipse() {Width = 700, Height = 500, Fill = new SolidColorBrush(Colors.Red
+            //    ) });
+            var shapePoints = vm.Model.ShapePoints;
+            vm.AtomViewList.Add(new AdornmentView(shapePoints));
+            //var cont = vm.Controller as ElementCollectionController;
+            var col = vm.Model as CollectionElementModel;
+            if (col == null)
+            {
+                return;
+            }
+            var foo = col.CollectionLibraryElementModel;
+            if (foo != null)
+            {
+                col.CollectionLibraryElementModel.IsFinite = true;
+            }
+
         }
 
 
