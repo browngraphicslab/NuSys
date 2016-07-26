@@ -251,7 +251,7 @@
         <Canvas x:Name="chatCanvas" Visibility="Collapsed">
             <Border x:Name ="border" BorderThickness="3" BorderBrush="{StaticResource color2}" VerticalAlignment="Top">
                 <StackPanel Orientation="Vertical" Background="White">
-                        <ListView x:Name="chatDisplayListView" ItemsSource="{Binding Messages}" Height="300" Width="300" Background ="White" Opacity="1" Padding ="0">
+                    <ListView x:Name="chatDisplayListView" ItemsSource="{Binding Messages}" Height="300" Width="300" Background ="White" Opacity="1" Padding ="0">
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
                                 <Setter Property="IsHitTestVisible" Value="False"></Setter>
