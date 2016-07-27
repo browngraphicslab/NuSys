@@ -174,5 +174,25 @@ namespace NuSysApp
         {
             return xImage.ActualHeight;
         }
+
+        private void xClippingWrapper_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var vm = DataContext as ImageElementViewModel;
+            if (!(vm.Controller.LibraryElementModel is RectangleRegion))
+            {
+                return;
+            }
+            var scaleX = 1 / (vm.Controller.LibraryElementModel as RectangleRegion).Width;
+            var scaleY = 1 / (vm.Controller.LibraryElementModel as RectangleRegion).Height;
+            var lesserScale = scaleX < scaleY ? scaleX : scaleY;
+            var regionModel = vm.Controller.LibraryElementModel as RectangleRegion;
+            // shifts the clipped rectangle so its upper left corner is in the upper left corner of the node
+            var compositeTransform = WrapperTransform;
+            compositeTransform.TranslateX = -regionModel.TopLeftPoint.X * xClippingWrapper.ActualWidth * scaleX;
+            compositeTransform.TranslateY = -regionModel.TopLeftPoint.Y * xClippingWrapper.ActualHeight * scaleY;
+            compositeTransform.ScaleX = scaleX;
+            compositeTransform.ScaleY = scaleY;
+            WrapperTransform = compositeTransform;
+        }
     }
 }

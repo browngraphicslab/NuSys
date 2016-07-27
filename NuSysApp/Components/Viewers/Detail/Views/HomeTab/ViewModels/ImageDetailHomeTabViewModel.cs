@@ -82,7 +82,6 @@ namespace NuSysApp
                 Debug.WriteLine("Image Width: " + this.GetWidth());
 
             }
-
             
             //foreach (var rv in RegionViews)
             //{

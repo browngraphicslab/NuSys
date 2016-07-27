@@ -66,7 +66,7 @@ namespace NuSysApp
         public double GetImgHeight()
         {
             //return ActualHeight;
-            return xImg.ActualHeight;
+            return xClippingWrapper.GetHeight();
         }
 
         private double _nonZeroPrevActualWidth = 0;
@@ -74,7 +74,7 @@ namespace NuSysApp
         // TODO: Very hacky, change later so that the width binds instead of xaml stretching
         public double GetImgWidth()
         {
-            return xImg.ActualWidth;
+            return xClippingWrapper.GetWidth();
             //return actualWidth;
             //if (actualWidth.Equals(0))
             //{
@@ -326,6 +326,31 @@ namespace NuSysApp
 
         private void XImg_OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
+
+        }
+
+        private void xClippingWrapper_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var vm = DataContext as ImageDetailHomeTabViewModel;
+            if (!(vm.LibraryElementController.LibraryElementModel is RectangleRegion))
+            {
+                return;
+            }
+            var regionModel = vm.LibraryElementController.LibraryElementModel as RectangleRegion;
+
+            var scaleX = this.ActualWidth / (regionModel.Width * xImg.ActualWidth);
+            var scaleY = this.ActualHeight / (regionModel.Height * xImg.ActualHeight);
+            var lesserScale = scaleX < scaleY ? scaleX : scaleY;
+            // shifts the clipped rectangle so its upper left corner is in the upper left corner of the node
+            var compositeTransform = WrapperTransform;
+            compositeTransform.TranslateX = 0;// -(-regionModel.TopLeftPoint.X * this.ActualWidth + this.ActualWidth/2 - xImg.ActualWidth*regionModel.Width/2)*scaleX ;
+            compositeTransform.TranslateY = 0;// -(-regionModel.TopLeftPoint.X * this.ActualWidth + this.ActualWidth/2 - xImg.ActualWidth*regionModel.Width/2)*scaleX ;
+
+            //compositeTransform.TranslateY = -(-regionModel.TopLeftPoint.Y * xImg.ActualHeight - regionModel.Height * xImg.ActualHeight / 2 + xImg.ActualHeight - this.ActualHeight / 2 ) / scaleX;
+            //compositeTransform.TranslateX = (-regionModel.TopLeftPoint.X * xImg.ActualWidth - regionModel.Width * xImg.ActualWidth / 2 + xImg.ActualWidth - this.ActualWidth / 2 - 30)/ scaleX;
+            //compositeTransform.ScaleX = lesserScale;
+            //compositeTransform.ScaleY = lesserScale;
+            WrapperTransform = compositeTransform;
         }
     }
 }

@@ -80,6 +80,7 @@ namespace NuSysApp
             }
         }
 
+        //public RectangleGeometry Rect { get { return xClippingRectangle;} }
         public RectangleWrapper()
         {
             this.InitializeComponent();
@@ -106,16 +107,6 @@ namespace NuSysApp
                     regionModel.Width * contentView.ActualWidth, regionModel.Height * contentView.ActualHeight);
                 xClippingRectangle.Rect = rect;
 
-                var scaleX = 1 / (Controller.LibraryElementModel as RectangleRegion).Width;
-                var scaleY = 1 / (Controller.LibraryElementModel as RectangleRegion).Height;
-
-                // shifts the clipped rectangle so its upper left corner is in the upper left corner of the node
-                var compositeTransform = xClippingCompositeTransform;
-                compositeTransform.TranslateX = -regionModel.TopLeftPoint.X* contentView.ActualWidth * 1/regionModel.Width;
-                compositeTransform.TranslateY = -regionModel.TopLeftPoint.Y * contentView.ActualHeight * 1/regionModel.Height;
-                compositeTransform.ScaleX = scaleX;
-                compositeTransform.ScaleY = scaleY;
-                xClippingCompositeTransform = compositeTransform;
             }
             else
             {
@@ -137,14 +128,6 @@ namespace NuSysApp
             if (Constants.IsRegionType(type))
             {
                 // rectangle region width and height are normalized so this is something like scaleX = 1 / .5
-                var scaleX = 1 / (Controller.LibraryElementModel as RectangleRegion).Width;
-                var scaleY = 1 / (Controller.LibraryElementModel as RectangleRegion).Height;
-
-                // scales the region using a composite transform based on the normalized height and width from above
-                var compositeTransform = xClippingCompositeTransform;
-                compositeTransform.ScaleX = scaleX;
-                compositeTransform.ScaleY = scaleY;
-                xClippingCompositeTransform = compositeTransform;
             }
 
             // clear the items control
