@@ -98,16 +98,23 @@ namespace NuSysApp
             Debug.Assert(contentView != null);
             if (Constants.IsRegionType(type))
             {
-                
-                var regionModel = (Controller as RectangleRegionLibraryElementController).LibraryElementModel as RectangleRegion;
+                var regionController = Controller as RectangleRegionLibraryElementController;
+                Debug.Assert(regionController != null);
+                var regionModel = regionController.LibraryElementModel as RectangleRegion;
+                Debug.Assert(regionModel != null);
                 // creates a clipping rectangle using parameters topleftX, topleftY, width, height
                 // the regionModel Width and points are all normalized
-                var rect = new Rect(regionModel.TopLeftPoint.X * contentView.ActualWidth, regionModel.TopLeftPoint.Y * contentView.ActualHeight,
-                    regionModel.Width * contentView.ActualWidth, regionModel.Height * contentView.ActualHeight);
+                var topLeftX = regionModel.TopLeftPoint.X * contentView.ActualWidth;
+                var topLeftY = regionModel.TopLeftPoint.Y * contentView.ActualHeight;
+                var rectWidth = regionModel.Width * contentView.ActualWidth;
+                var rectHeight = regionModel.Height * contentView.ActualWidth;
+                
+                var rect = new Rect(topLeftX, topLeftY, rectWidth, rectHeight); 
+                
                 xClippingRectangle.Rect = rect;
 
-                var scaleX = 1 / (Controller.LibraryElementModel as RectangleRegion).Width;
-                var scaleY = 1 / (Controller.LibraryElementModel as RectangleRegion).Height;
+                var scaleX = 1 / regionModel.Width;
+                var scaleY = 1 / regionModel.Height;
 
                 // shifts the clipped rectangle so its upper left corner is in the upper left corner of the node
                 var compositeTransform = xClippingCompositeTransform;

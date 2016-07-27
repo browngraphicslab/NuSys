@@ -76,6 +76,10 @@ namespace NuSysApp
             _contentDataModelIdToRegionLibraryElementIds[contentId].Add(regionModel.LibraryElementId);
 
             var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(contentId);
+            if (contentDataModel == null)
+            {
+                return;
+            }
             contentDataModel.AddRegion(regionModel.LibraryElementId);
         }
 
