@@ -108,7 +108,7 @@ namespace NuSysApp
                 var topLeftX = regionModel.TopLeftPoint.X * contentView.ActualWidth;
                 var topLeftY = regionModel.TopLeftPoint.Y * contentView.ActualHeight;
                 var rectWidth = regionModel.Width * contentView.ActualWidth;
-                var rectHeight = regionModel.Height * contentView.ActualWidth;
+                var rectHeight = regionModel.Height * contentView.ActualHeight;
                 
                 var rect = new Rect(topLeftX, topLeftY, rectWidth, rectHeight); 
                 

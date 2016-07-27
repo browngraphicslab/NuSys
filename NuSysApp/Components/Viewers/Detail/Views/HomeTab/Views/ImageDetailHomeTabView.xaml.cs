@@ -339,18 +339,35 @@ namespace NuSysApp
             }
             var regionModel = vm.LibraryElementController.LibraryElementModel as RectangleRegion;
 
-            var scaleX = this.ActualWidth / (regionModel.Width * xImg.ActualWidth);
-            var scaleY = this.ActualHeight / (regionModel.Height * xImg.ActualHeight);
+            var scaleX = xImg.ActualWidth / (regionModel.Width * xImg.ActualWidth);
+            var scaleY = xImg.ActualHeight / (regionModel.Height * xImg.ActualHeight);
             var lesserScale = scaleX < scaleY ? scaleX : scaleY;
             // shifts the clipped rectangle so its upper left corner is in the upper left corner of the node
             var compositeTransform = WrapperTransform;
-            compositeTransform.TranslateX = 0;// -(-regionModel.TopLeftPoint.X * this.ActualWidth + this.ActualWidth/2 - xImg.ActualWidth*regionModel.Width/2)*scaleX ;
-            compositeTransform.TranslateY = 0;// -(-regionModel.TopLeftPoint.X * this.ActualWidth + this.ActualWidth/2 - xImg.ActualWidth*regionModel.Width/2)*scaleX ;
 
-            //compositeTransform.TranslateY = -(-regionModel.TopLeftPoint.Y * xImg.ActualHeight - regionModel.Height * xImg.ActualHeight / 2 + xImg.ActualHeight - this.ActualHeight / 2 ) / scaleX;
-            //compositeTransform.TranslateX = (-regionModel.TopLeftPoint.X * xImg.ActualWidth - regionModel.Width * xImg.ActualWidth / 2 + xImg.ActualWidth - this.ActualWidth / 2 - 30)/ scaleX;
-            //compositeTransform.ScaleX = lesserScale;
-            //compositeTransform.ScaleY = lesserScale;
+            var regionHalfWidth = regionModel.Width * this.ActualWidth / 2.0;
+            var regionHalfHeight = regionModel.Height * this.ActualHeight / 2.0;
+
+            var detailViewHalfWidth = this.ActualWidth  / 2.0;
+            var detailViewHalfHeight = this.ActualHeight  / 2.0;
+
+            var regionTopLeftX = this.ActualWidth * regionModel.TopLeftPoint.X;
+            var regionTopLeftY = this.ActualHeight * regionModel.TopLeftPoint.Y;
+
+            var regionCenterX = -(regionTopLeftX + regionHalfWidth - detailViewHalfWidth);
+            var regionCenterY = -(regionTopLeftY + regionHalfHeight - detailViewHalfHeight);
+
+            
+
+             compositeTransform.TranslateX = regionCenterX;
+            compositeTransform.TranslateY = regionCenterY;
+
+            compositeTransform.ScaleX = lesserScale;
+            compositeTransform.ScaleY = lesserScale;
+
+            compositeTransform.CenterX = regionTopLeftX + regionHalfWidth;
+            compositeTransform.CenterY = regionTopLeftY + regionHalfHeight;
+
             WrapperTransform = compositeTransform;
         }
     }
