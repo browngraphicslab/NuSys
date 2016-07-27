@@ -568,8 +568,9 @@ namespace NuSysApp
         public async Task RequestAddNewLink(string idToLinkTo, string title)
         {
             var m = new Message();
-            m["id1"] = LibraryElementModel.LibraryElementId;
-            m["id2"] = idToLinkTo;
+            //these seem to be backwards, but it works, probably
+            m["id1"] = idToLinkTo; 
+            m["id2"] = LibraryElementModel.LibraryElementId;
             m["title"] = title;
             await SessionController.Instance.LinksController.RequestLink(m);
         }

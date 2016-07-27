@@ -71,11 +71,9 @@ namespace NuSysApp
             var height = bounds.Height;
             var width = bounds.Width;
             Canvas.SetLeft(xChatBox, width - 300 - 10);
-            Canvas.SetTop(xChatBox, height - 375 - 15 - 50);
+            Canvas.SetTop(xChatBox, height - 375 - 10 - 50 - 10 - 7);
             Canvas.SetLeft(ChatBoxButton, width - 10 - 50);
             Canvas.SetTop(ChatBoxButton, height - 10 - 50);
-            //Canvas.SetLeft(ChatNotifs, width - 10 - 50);
-            //Canvas.SetTop(ChatNotifs, height - 5 - 30);
             Canvas.SetLeft(LinkDirectionButton, 50);
             Canvas.SetTop(LinkDirectionButton, height/2);
             Canvas.SetLeft(ChatNotifs, width - 10 - 50 - 10);
@@ -996,7 +994,7 @@ namespace NuSysApp
             {
                 xChatBox.Visibility = Visibility.Visible;
                 _unseenChatMessagesNum = 0;
-                //NotifNumber.Text = "" + _unseenChatMessagesNum;
+                NotifNumber.Text = "" + _unseenChatMessagesNum;
             }
             else
             {

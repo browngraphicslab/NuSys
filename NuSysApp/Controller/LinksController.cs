@@ -104,7 +104,18 @@ namespace NuSysApp
                 var linkables = GetInstancesOfContent(libraryElementController.ContentId);
                 foreach (var toLinkTo in linkables)
                 {
-                    CreateBezierLinkBetween(linkable, toLinkTo);
+                    var linkLibElemController = GetLinkLibraryElementControllerBetweenLinkables(linkable, toLinkTo);
+                    Debug.Assert(linkLibElemController != null);
+                    Debug.Assert(linkable.Id != toLinkTo.Id);
+
+                    if (linkLibElemController.LinkLibraryElementModel.InAtomId.Equals(linkable.ContentId))
+                    {
+                        CreateBezierLinkBetween(linkable, toLinkTo);
+                    }
+                    else
+                    {
+                        CreateBezierLinkBetween(toLinkTo, linkable);
+                    }
                 }
             }
         }
