@@ -114,12 +114,15 @@ namespace NuSysApp
                 Points.Add(i.Position);
             }
 
-            if (FiniteCheck.IsChecked.Value != null)
+            if (FiniteCheck.IsOn)
             {
-                Finite = FiniteCheck.IsChecked.Value;
+                Finite = true;
+            } else
+            {
+                Finite = false;
             }
 
-            if (ShapeCheck.IsChecked.Value != true)
+            if (!ShapeCheck.IsOn)
             {
                 Points.Clear();
             }
@@ -210,7 +213,6 @@ namespace NuSysApp
             m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
             SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddAdorment(Stroke, SelectedColor);
-
           
             var request = InkStorage.CreateRemoveInkRequest(new InkWrapper(Stroke, "ink"));
             SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.RemoveStroke(Stroke);

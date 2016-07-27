@@ -38,10 +38,12 @@
             
         </StackPanel>
 
-        <Grid x:Name="GroupSettings" BorderBrush="DarkSlateGray" BorderThickness="1"  Height="125" Width="200" Visibility="Visible" Background="{StaticResource color1}">
+        <Grid x:Name="GroupSettings" BorderBrush="DarkSlateGray" BorderThickness="1"  Height="150" Width="200" Visibility="Visible" Background="{StaticResource color1}">
             <StackPanel Margin="10">
-                <CheckBox x:Name="FiniteCheck" FontSize="16" Foreground="{StaticResource color2}"  Content="Finite"></CheckBox>
-                <CheckBox x:Name="ShapeCheck" FontSize="16" Foreground="{StaticResource color2}" Content="Shaped"></CheckBox>
+                <ToggleSwitch x:Name="FiniteCheck" OnContent="Finite" OffContent="Infinite" ></ToggleSwitch>
+                <ToggleSwitch x:Name="ShapeCheck" OnContent="Has Shape" OffContent="No Shape"></ToggleSwitch>
+                <!--<CheckBox FontSize="16" Foreground="{StaticResource color2}"  Content="Finite"></CheckBox>-->
+                <!--<CheckBox FontSize="16" Foreground="{StaticResource color2}" Content="Shaped"></CheckBox>-->
             </StackPanel>
             <Button Padding="0" Margin="10"  HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="100" Height="30"
                     Click="CreateGroupButtonOnClick">
