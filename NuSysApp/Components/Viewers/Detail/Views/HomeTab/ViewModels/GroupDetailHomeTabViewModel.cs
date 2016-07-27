@@ -14,7 +14,7 @@ namespace NuSysApp
 
         public bool Finite { get; }
 
-        public bool Shape { get; }
+        public int ShapePoints { get; }
 
         public GroupDetailHomeTabViewModel(LibraryElementController controller, HashSet<Region> regionsToLoad) : base(controller, regionsToLoad)
         {
@@ -23,11 +23,7 @@ namespace NuSysApp
 
             var collectionmodel = Model as CollectionLibraryElementModel;
             Finite = collectionmodel.IsFinite;
-            if (collectionmodel.ShapePoints != null)
-            {
-                Shape = true;
-            }
-            Shape = false;
+            ShapePoints = collectionmodel.ShapePoints.Count;
         }
 
         public override void AddRegion(object sender, RegionController controller)
