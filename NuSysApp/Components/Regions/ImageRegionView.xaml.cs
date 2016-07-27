@@ -178,7 +178,7 @@ namespace NuSysApp
             if (vm.Width + rt.TranslateX + e.Delta.Translation.X <= rightXBound)
             {
                // xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
-                vm.Width = Math.Max(vm.Width + e.Delta.Translation.X, 25);
+                vm.Width = Math.Max(vm.Width + e.Delta.Translation.X * ResizerTransform.ScaleX, 25);
 
             }
             //CHANGE IN HEIGHT
@@ -186,7 +186,7 @@ namespace NuSysApp
             if (vm.Height + rt.TranslateY + e.Delta.Translation.Y <= downYBound)
             {
              //   xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
-                vm.Height = Math.Max(vm.Height + e.Delta.Translation.Y, 25);
+                vm.Height = Math.Max(vm.Height + e.Delta.Translation.Y * ResizerTransform.ScaleY, 25);
             }
 
             //Updates viewmodel
@@ -228,8 +228,8 @@ namespace NuSysApp
             var upYBound = verticalMargin;
             var downYBound = verticalMargin + ivm.GetHeight() - vm.Height;
 
-            _tx += e.Delta.Translation.X;
-            _ty += e.Delta.Translation.Y;
+            _tx += e.Delta.Translation.X * ResizerTransform.ScaleX;
+            _ty += e.Delta.Translation.Y * ResizerTransform.ScaleY;
 
             //Translating X
             if (_tx < leftXBound)
@@ -245,8 +245,6 @@ namespace NuSysApp
                 rt.TranslateX = _tx;
             }
 
-            //According to scale:
-            rt.TranslateX *= ResizerTransform.ScaleX; 
 
             //Translating Y
             if (_ty < upYBound)
@@ -261,9 +259,6 @@ namespace NuSysApp
             {
                 rt.TranslateY = _ty;
             }
-
-            //According to scale:
-            rt.TranslateY *= ResizerTransform.ScaleY;
 
             var composite = RenderTransform as CompositeTransform;
             //Makes sure the location of the point is generalized -- not relative to the margined container.
@@ -360,20 +355,22 @@ namespace NuSysApp
 
         }
 
-        // unused
         public void RescaleComponents(double scaleX,double scaleY)
         {
+            //Updates scale of delete button
             var deleteTransform = xDelete.RenderTransform as CompositeTransform ?? new CompositeTransform();
             deleteTransform.ScaleX = 1 / scaleX;
             deleteTransform.ScaleY = 1 / scaleY;
             xDelete.RenderTransform = deleteTransform;
-
+            //Updates scale of text box
             var textTransform = xNameTextBox.RenderTransform as CompositeTransform ?? new CompositeTransform();
             textTransform.ScaleX = 1 / scaleX;
             textTransform.ScaleY = 1 / scaleY;
             xNameTextBox.RenderTransform = textTransform;
             xNameTextBox.Margin = new Thickness(0, -30/scaleY, 0, 0);
+            xNameTextBox.Width = (DataContext as ImageRegionViewModel).Width * scaleX;
 
+            //UPdates scale of Resizing Triangle
             ResizerTransform.ScaleX = 1 / scaleX;
             ResizerTransform.ScaleY = 1 / scaleY;
 
