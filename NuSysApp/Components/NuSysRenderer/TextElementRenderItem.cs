@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Storage.Streams;
 using Windows.UI;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
@@ -19,27 +21,33 @@ namespace NuSysApp
         private IRandomAccessStream _stream;
         private CanvasBitmap _bmp;
         private ICanvasResourceCreator _ds;
+        private static Semaphore _semaphore = new Semaphore(1,1);
 
         public TextElementRenderItem(TextNodeViewModel vm, ICanvasResourceCreator ds)
         {
             _vm = vm;
             _ds = ds;
-
-
-            UITask.Run(async () =>
+ 
+            Task.Run(async () =>
             {
-                var wv = SessionController.Instance.SessionView.WV;
-                wv.Width = _vm.Width;
-                wv.Height = _vm.Height;
-                wv.NavigationCompleted += TextNodeWebViewOnNavigationCompleted;
-                wv.ScriptNotify += wvBrowser_ScriptNotify;
-                wv.Navigate(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
+                _semaphore.WaitOne();
+                await Task.Delay(75);
+                await UITask.Run(async () =>
+                {
+                   
+                    var wv = SessionController.Instance.SessionView.WV;
+                    wv.Width = _vm.Width;
+                    wv.Height = _vm.Height;
+                    wv.NavigationCompleted += TextNodeWebViewOnNavigationCompleted;
+                    wv.ScriptNotify += wvBrowser_ScriptNotify;
+                    wv.Navigate(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
+                });
             });
-        }
+    }
 
         private async void wvBrowser_ScriptNotify(object sender, NotifyEventArgs e)
         {
-            var wv = SessionController.Instance.SessionView.WV;
+            var wv = SessionController.Instance.SessionView.WV;           
             wv.ScriptNotify -= wvBrowser_ScriptNotify;
             InMemoryRandomAccessStream ms = new InMemoryRandomAccessStream();
             await wv.CapturePreviewToStreamAsync(ms);
@@ -63,8 +71,7 @@ namespace NuSysApp
 
 
             _bmp = await CanvasBitmap.LoadAsync(_ds, _stream);
-
-
+            _semaphore.Release(1);
         }
 
         private async void TextNodeWebViewOnNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
