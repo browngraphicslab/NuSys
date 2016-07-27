@@ -16,7 +16,7 @@ namespace NuSysApp
     {
 
         private Point2d _anchor;
-
+        private ElementCollectionController _controller;
         /// <summary>
         ///The anchor that the tool link uses
         /// </summary>
@@ -33,6 +33,15 @@ namespace NuSysApp
             Controller.SizeChanged += Controller_SizeChanged;
             Controller.PositionChanged += Controller_PositionChanged;
             Controller.Disposed += Controller_Disposed;
+            _controller = controller;
+        }
+
+        public bool Finite
+        {
+            get
+            {
+                return (_controller.Model as CollectionElementModel).CollectionLibraryElementModel.IsFinite;
+            }
         }
 
         private void Controller_Disposed(object sender, EventArgs e)

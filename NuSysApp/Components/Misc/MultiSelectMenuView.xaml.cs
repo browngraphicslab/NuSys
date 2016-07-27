@@ -131,7 +131,7 @@ namespace NuSysApp
             m["id"] = contentId;
             m["data"] = "";
             m["type"] = ElementType.Collection.ToString();
-            m["title"] = "new collection, " + Finite.ToString() + " " + Points.Count;
+            m["title"] = "new collection, " + Finite.ToString() + ", " + Points.Count;
             m["finite"] = Finite;
             m["shape_points"] = Points;
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(m));
