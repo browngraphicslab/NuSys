@@ -39,7 +39,7 @@ namespace NuSysApp
         public string LastEditedTimestamp { get; set; }
 
         public string ServerUrl { get; set; } 
-        public List<Windows.Foundation.Point> ShapePoints { get; set; } 
+
         public Dictionary<string, MetadataEntry> FullMetadata
         {
             get

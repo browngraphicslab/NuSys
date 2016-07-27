@@ -75,35 +75,5 @@ namespace NuSysApp
             _debouncingDictionary.Add("collectionview", colModel.ActiveCollectionViewType.ToString());
         }
 
-        /// <summary>
-        /// Sets whether or not the collection is finite
-        /// </summary>
-        /// <param name="isFinite"></param>
-        public void SetFinite(bool isFinite)
-        {
-            var colModel = Model as CollectionElementModel;
-            if (colModel == null)
-            {
-                return;
-            }
-            colModel.CollectionLibraryElementModel.IsFinite = isFinite;
-            _debouncingDictionary.Add("finite",isFinite);
-        }
-
-        /// <summary>
-        /// Sets the shape of the model -- i.e. the points the shape is defined by
-        /// </summary>
-        /// <param name="points"></param>
-        public void SetShape(List<Windows.Foundation.Point> points)
-        {
-            var colModel = Model as CollectionElementModel;
-            if (colModel == null)
-            {
-                return;
-            }
-            colModel.CollectionLibraryElementModel.ShapePoints = points;
-            _debouncingDictionary.Add("points",points);
-        }
-
     }
 }

@@ -31,7 +31,7 @@ namespace NuSysApp
             get;
             set;
         }
-        public List<Windows.Foundation.Point> Shape {
+        public List<Windows.Foundation.Point> ShapePoints {
             get;
             set;
         }
@@ -45,7 +45,7 @@ namespace NuSysApp
             InkLines = new HashSet<string>();
 
             IsFinite = finite;
-            Shape = points;
+            ShapePoints = points;
 
         }
 
@@ -108,7 +108,7 @@ namespace NuSysApp
             }
             if (message.ContainsKey("shape_points"))
             {
-                Shape = message.GetList<Point>("shape_points");
+                ShapePoints = message.GetList<Point>("shape_points");
             }
             base.UnPack(message);
         }

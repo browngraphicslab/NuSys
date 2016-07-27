@@ -23,7 +23,7 @@ namespace NuSysApp
 
             var collectionmodel = Model as CollectionLibraryElementModel;
             Finite = collectionmodel.IsFinite;
-            if (collectionmodel.Shape != null)
+            if (collectionmodel.ShapePoints != null)
             {
                 Shape = true;
             }

@@ -52,20 +52,11 @@ namespace NuSysApp
 
             // vm.AtomViewList.Add(new Windows.UI.Xaml.Shapes.Ellipse() {Width = 700, Height = 500, Fill = new SolidColorBrush(Colors.Red
             //    ) });
-            var shapePoints = vm.Model.ShapePoints;
-            vm.AtomViewList.Add(new AdornmentView(shapePoints));
-            //var cont = vm.Controller as ElementCollectionController;
-            var col = vm.Model as CollectionElementModel;
-            if (col == null)
-            {
-                return;
-            }
-            var foo = col.CollectionLibraryElementModel;
-            if (foo != null)
-            {
-                col.CollectionLibraryElementModel.IsFinite = true;
-            }
+            var collElementModel = ((vm.Controller as ElementCollectionController).Model as CollectionElementModel);
+            var finite = collElementModel.CollectionLibraryElementModel.IsFinite;
+            var shapePoints = collElementModel.CollectionLibraryElementModel.ShapePoints;
 
+            vm.AtomViewList.Add(new AdornmentView(shapePoints));
         }
 
 
