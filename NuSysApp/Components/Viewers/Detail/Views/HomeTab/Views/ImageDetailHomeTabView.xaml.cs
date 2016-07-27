@@ -181,6 +181,7 @@ namespace NuSysApp
             vm.SetExistingRegions();
             ContentLoaded?.Invoke(this);
             xClippingWrapper.Controller = vm.LibraryElementController;
+            
         }
 
 #region addToCollection

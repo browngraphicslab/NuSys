@@ -22,12 +22,13 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+
         <Border x:Name="xBorder" BorderBrush="{StaticResource color6}"   HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Grid x:Name="totalStackPanel">
-                <!--<StackPanel x:Name="buttons" Orientation="Vertical" Background="{StaticResource color3}" VerticalAlignment="Top" HorizontalAlignment="Stretch"  Height="30" Visibility="Collapsed">
+            <Grid x:Name="totalStackPanel" >
+                <StackPanel x:Name="buttons" Orientation="Vertical" Background="{StaticResource color3}" VerticalAlignment="Top" HorizontalAlignment="Center"  Height="30" Visibility="Collapsed">
                     <Button Click="ButtonBase_OnClick" Foreground="{StaticResource foreground6}" Background="Transparent">INK</Button>
                     <Button Name="SourceBttn" Foreground="{StaticResource foreground6}" Click="OnGoToSource" Background="Transparent">GO TO SOURCE</Button>
-                </StackPanel>-->
+                </StackPanel> 
 
                 <local:RectangleWrapper x:Name="xClippingWrapper" SizeChanged="xClippingWrapper_SizeChanged">
                     <local:RectangleWrapper.RenderTransform>
