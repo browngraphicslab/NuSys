@@ -172,8 +172,7 @@ namespace NuSysApp
 
             var upYBound = verticalMargin;
             var downYBound = verticalMargin + ivm.GetHeight();
-
-
+           
             //CHANGE IN WIDTH
             if (vm.Width + rt.TranslateX + e.Delta.Translation.X <= rightXBound)
             {
@@ -289,8 +288,9 @@ namespace NuSysApp
 
         public void Deselect()
         {
-            xMainRectangle.StrokeThickness = 3*ResizerTransform.ScaleX;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
+            //xMainRectangle.StrokeThickness = 3*ResizerTransform.ScaleX;
+            //xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
+            xMainRectangleBorder.BorderThickness = new Thickness(3 * ResizerTransform.ScaleY, 3 * ResizerTransform.ScaleX, 3 * ResizerTransform.ScaleY, 3 * ResizerTransform.ScaleX);
             xResizingTriangle.Visibility = Visibility.Collapsed;
             xDelete.Visibility = Visibility.Collapsed;
             xNameTextBox.Visibility = Visibility.Collapsed;
@@ -300,8 +300,10 @@ namespace NuSysApp
 
         public void Select()
         {
-            xMainRectangle.StrokeThickness = 6*ResizerTransform.ScaleX;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
+            //xMainRectangle.StrokeThickness = 6*ResizerTransform.ScaleX;
+            //xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
+            xMainRectangleBorder.BorderThickness = new Thickness(6 * ResizerTransform.ScaleY, 6 * ResizerTransform.ScaleX, 6 * ResizerTransform.ScaleY,6 * ResizerTransform.ScaleX);
+
             xResizingTriangle.Visibility = Visibility.Visible;
             xDelete.Visibility = Visibility.Visible;
             xNameTextBox.Visibility = Visibility.Visible;
@@ -358,23 +360,28 @@ namespace NuSysApp
         public void RescaleComponents(double scaleX,double scaleY)
         {
             //Updates scale of delete button
-            var deleteTransform = xDelete.RenderTransform as CompositeTransform ?? new CompositeTransform();
-            deleteTransform.ScaleX = 1 / scaleX;
-            deleteTransform.ScaleY = 1 / scaleY;
-            xDelete.RenderTransform = deleteTransform;
+            DeleteTransform.ScaleX = 1 / scaleX;
+            DeleteTransform.ScaleY = 1 / scaleY;
+            
+
             //Updates scale of text box
-            var textTransform = xNameTextBox.RenderTransform as CompositeTransform ?? new CompositeTransform();
-            textTransform.ScaleX = 1 / scaleX;
-            textTransform.ScaleY = 1 / scaleY;
-            xNameTextBox.RenderTransform = textTransform;
+
+            NameTextTransform.ScaleX = 1 / scaleX;
+            NameTextTransform.ScaleY = 1 / scaleY;
+            //Updates margin so that it is directly on top of the rectangle.
             xNameTextBox.Margin = new Thickness(0, -30/scaleY, 0, 0);
-            xNameTextBox.Width = (DataContext as ImageRegionViewModel).Width * scaleX;
+            xNameTextBox.MinWidth = (DataContext as ImageRegionViewModel).Width / scaleX;
 
             //UPdates scale of Resizing Triangle
             ResizerTransform.ScaleX = 1 / scaleX;
             ResizerTransform.ScaleY = 1 / scaleY;
+            xResizingTriangle.Margin = new Thickness(-28 / scaleX ,-28 / scaleY, 0, 0);
 
-            xMainRectangle.StrokeThickness = 3 / scaleX;
+            //xMainRectangle.StrokeThickness = 3 / scaleX;
+            xMainRectangleBorder.BorderThickness = new Thickness(3/scaleY, 3/scaleX, 3/scaleY, 3/scaleX);
+
+
+
         }
     }
 }
