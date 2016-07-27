@@ -17,6 +17,7 @@ namespace NuSysApp
         
         private string _title;
         private string _annotation;
+        private int _numDirectionButtonClicks;
         private readonly LinkController _controller;
         private bool _selected;
         private SolidColorBrush _color;
@@ -59,7 +60,7 @@ namespace NuSysApp
         public LinkViewModel(LinkController controller)
         {
             _controller = controller;
-
+            _numDirectionButtonClicks = 0;
             Debug.Assert(controller.LibraryElementController != null);
 
             controller.TitleChanged += TitleChanged;
@@ -96,6 +97,26 @@ namespace NuSysApp
             Controller.TitleChanged -= TitleChanged;
             Controller.LibraryElementController.SetTitle(title);
             Controller.TitleChanged += TitleChanged;
+        }
+
+        public void DirectionButtonClicked()
+        {
+            _numDirectionButtonClicks++;
+            //switching to monodirectional
+            if (_numDirectionButtonClicks % 3 == 1)
+            {
+                Debug.WriteLine("make mono");
+            }
+            //swapping direction
+            else if (_numDirectionButtonClicks % 3 == 2)
+            {
+                Debug.WriteLine("swap mono");
+            }
+            //going back to bidirectional
+            else
+            {
+                Debug.WriteLine("make bi");
+            }
         }
 
 

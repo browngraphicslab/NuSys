@@ -63,7 +63,6 @@ namespace NuSysApp
 
         private int _unseenChatMessagesNum;
         private bool _isChatVisible;
-        private bool _areLinksBiDirectional;
         public SessionView()
         {
             this.InitializeComponent();
@@ -74,14 +73,11 @@ namespace NuSysApp
             Canvas.SetTop(xChatBox, height - 375 - 10 - 50 - 10 - 7);
             Canvas.SetLeft(ChatBoxButton, width - 10 - 50);
             Canvas.SetTop(ChatBoxButton, height - 10 - 50);
-            Canvas.SetLeft(LinkDirectionButton, 50);
-            Canvas.SetTop(LinkDirectionButton, height/2);
             Canvas.SetLeft(ChatNotifs, width - 10 - 50 - 10);
             Canvas.SetTop(ChatNotifs, height - 10 - 50 - 10);
 
             
             _isChatVisible = false;
-            _areLinksBiDirectional = true;
             _unseenChatMessagesNum = 0;
 
             CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
@@ -919,19 +915,6 @@ namespace NuSysApp
             }
         }
 
-        private void LinkDirectionButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            _areLinksBiDirectional = !_areLinksBiDirectional;
-            if (_areLinksBiDirectional)
-            {
-                LinkDirectionButton.Content = "bi";
-            }
-            else
-            {
-                LinkDirectionButton.Content = "mono";
-            }
-        }
-
 
         private void MenuVisibility(object sender, DoubleTappedRoutedEventArgs e)
         {
@@ -947,7 +930,6 @@ namespace NuSysApp
                 FloatingMenu.Visibility = Visibility.Collapsed;
             }
         }
-        public bool AreLinksBiDirectional { get { return _areLinksBiDirectional; } }
         public Grid OuterMost { get { return xOuterMost; } }
         public FreeFormViewer FreeFormViewer { get { return _activeFreeFormViewer; } }
         private async void SnapshotButton_OnClick(object sender, RoutedEventArgs e)

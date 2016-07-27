@@ -59,7 +59,7 @@ namespace NuSysApp
             Color c = Constants.linkColors[rand.Next(0, Constants.linkColors.Count)];
             _message["color"] = c.ToString();
             ElementType type = (ElementType)Enum.Parse(typeof(ElementType), (string)_message["type"], true);
-            _message["isBiDirectional"] = SessionController.Instance.SessionView.AreLinksBiDirectional.ToString();
+            _message["isBiDirectional"] = "false";
 
             var libraryElement = LibraryElementModelFactory.CreateFromMessage(_message);
 

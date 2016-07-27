@@ -178,6 +178,11 @@ namespace NuSysApp
                 tb.IsReadOnly = true;
             }
         }
+        private void LinkDirectionButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var vm = DataContext as LinkViewModel;
+            vm?.DirectionButtonClicked();
+        }
 
     }
 }
