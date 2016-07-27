@@ -245,6 +245,9 @@ namespace NuSysApp
                 rt.TranslateX = _tx;
             }
 
+            //According to scale:
+            rt.TranslateX *= ResizerTransform.ScaleX; 
+
             //Translating Y
             if (_ty < upYBound)
             {
@@ -258,6 +261,9 @@ namespace NuSysApp
             {
                 rt.TranslateY = _ty;
             }
+
+            //According to scale:
+            rt.TranslateY *= ResizerTransform.ScaleY;
 
             var composite = RenderTransform as CompositeTransform;
             //Makes sure the location of the point is generalized -- not relative to the margined container.
@@ -288,7 +294,7 @@ namespace NuSysApp
 
         public void Deselect()
         {
-            xMainRectangle.StrokeThickness = 3;
+            xMainRectangle.StrokeThickness = 3*ResizerTransform.ScaleX;
             xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
             xResizingTriangle.Visibility = Visibility.Collapsed;
             xDelete.Visibility = Visibility.Collapsed;
@@ -299,7 +305,7 @@ namespace NuSysApp
 
         public void Select()
         {
-            xMainRectangle.StrokeThickness = 6;
+            xMainRectangle.StrokeThickness = 6*ResizerTransform.ScaleX;
             xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
             xResizingTriangle.Visibility = Visibility.Visible;
             xDelete.Visibility = Visibility.Visible;
@@ -352,6 +358,26 @@ namespace NuSysApp
             var vm = DataContext as ImageRegionViewModel;
             vm.SetNewName((sender as TextBox).Text);
 
+        }
+
+        // unused
+        public void RescaleComponents(double scaleX,double scaleY)
+        {
+            var deleteTransform = xDelete.RenderTransform as CompositeTransform ?? new CompositeTransform();
+            deleteTransform.ScaleX = 1 / scaleX;
+            deleteTransform.ScaleY = 1 / scaleY;
+            xDelete.RenderTransform = deleteTransform;
+
+            var textTransform = xNameTextBox.RenderTransform as CompositeTransform ?? new CompositeTransform();
+            textTransform.ScaleX = 1 / scaleX;
+            textTransform.ScaleY = 1 / scaleY;
+            xNameTextBox.RenderTransform = textTransform;
+            xNameTextBox.Margin = new Thickness(0, -30/scaleY, 0, 0);
+
+            ResizerTransform.ScaleX = 1 / scaleX;
+            ResizerTransform.ScaleY = 1 / scaleY;
+
+            xMainRectangle.StrokeThickness = 3 / scaleX;
         }
     }
 }

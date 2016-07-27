@@ -332,43 +332,7 @@ namespace NuSysApp
 
         private void xClippingWrapper_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            var vm = DataContext as ImageDetailHomeTabViewModel;
-            if (!(vm.LibraryElementController.LibraryElementModel is RectangleRegion))
-            {
-                return;
-            }
-            var regionModel = vm.LibraryElementController.LibraryElementModel as RectangleRegion;
-
-            var scaleX = xImg.ActualWidth / (regionModel.Width * xImg.ActualWidth);
-            var scaleY = xImg.ActualHeight / (regionModel.Height * xImg.ActualHeight);
-            var lesserScale = scaleX < scaleY ? scaleX : scaleY;
-            // shifts the clipped rectangle so its upper left corner is in the upper left corner of the node
-            var compositeTransform = WrapperTransform;
-
-            var regionHalfWidth = regionModel.Width * this.ActualWidth / 2.0;
-            var regionHalfHeight = regionModel.Height * this.ActualHeight / 2.0;
-
-            var detailViewHalfWidth = this.ActualWidth  / 2.0;
-            var detailViewHalfHeight = this.ActualHeight  / 2.0;
-
-            var regionTopLeftX = this.ActualWidth * regionModel.TopLeftPoint.X;
-            var regionTopLeftY = this.ActualHeight * regionModel.TopLeftPoint.Y;
-
-            var regionCenterX = -(regionTopLeftX + regionHalfWidth - detailViewHalfWidth);
-            var regionCenterY = -(regionTopLeftY + regionHalfHeight - detailViewHalfHeight);
-
             
-
-             compositeTransform.TranslateX = regionCenterX;
-            compositeTransform.TranslateY = regionCenterY;
-
-            compositeTransform.ScaleX = lesserScale;
-            compositeTransform.ScaleY = lesserScale;
-
-            compositeTransform.CenterX = regionTopLeftX + regionHalfWidth;
-            compositeTransform.CenterY = regionTopLeftY + regionHalfHeight;
-
-            WrapperTransform = compositeTransform;
         }
     }
 }

@@ -10,7 +10,7 @@
 
     <Grid x:Name="xClippingGrid" SizeChanged="XClippingGrid_OnSizeChanged"  VerticalAlignment="Center" HorizontalAlignment="Center" >
         <Grid.RenderTransform>
-            <CompositeTransform/>
+            <CompositeTransform x:Name="WrapperTransform"/>
         </Grid.RenderTransform>
         <Grid.Clip>
             <RectangleGeometry x:Name="xClippingRectangle">

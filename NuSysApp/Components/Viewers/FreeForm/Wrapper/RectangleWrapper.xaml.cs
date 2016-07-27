@@ -113,17 +113,63 @@ namespace NuSysApp
                 var rect = new Rect(topLeftX, topLeftY, rectWidth, rectHeight); 
                 
                 xClippingRectangle.Rect = rect;
+                //This section onwards is for resizing 
 
-                //var scaleX = 1 / regionModel.Width;
-                //var scaleY = 1 / regionModel.Height;
 
-                //// shifts the clipped rectangle so its upper left corner is in the upper left corner of the node
-                //var compositeTransform = xClippingCompositeTransform;
-                //compositeTransform.TranslateX = -regionModel.TopLeftPoint.X* contentView.ActualWidth * 1/regionModel.Width;
-                //compositeTransform.TranslateY = -regionModel.TopLeftPoint.Y * contentView.ActualHeight * 1/regionModel.Height;
-                //compositeTransform.ScaleX = scaleX;
-                //compositeTransform.ScaleY = scaleY;
-                //xClippingCompositeTransform = compositeTransform;
+                var scaleX = 1 / regionModel.Width;
+                var scaleY = 1 / regionModel.Height;
+                var lesserScale = scaleX < scaleY ? scaleX : scaleY;
+                // shifts the clipped rectangle so its upper left corner is in the upper left corner of the node
+                var compositeTransform = WrapperTransform;
+                if (DataContext is DetailHomeTabViewModel) {
+                    var regionHalfWidth = regionModel.Width * xClippingContent.ActualWidth / 2.0;
+                    var regionHalfHeight = regionModel.Height * xClippingContent.ActualHeight / 2.0;
+
+                    var detailViewHalfWidth = xClippingContent.ActualWidth / 2.0;
+                    var detailViewHalfHeight = xClippingContent.ActualHeight / 2.0;
+
+                    var regionTopLeftX = xClippingContent.ActualWidth * regionModel.TopLeftPoint.X;
+                    var regionTopLeftY = xClippingContent.ActualHeight * regionModel.TopLeftPoint.Y;
+
+                    var regionCenterX = -(regionTopLeftX + regionHalfWidth - detailViewHalfWidth);
+                    var regionCenterY = -(regionTopLeftY + regionHalfHeight - detailViewHalfHeight);
+
+
+
+                    compositeTransform.TranslateX = regionCenterX;
+                    compositeTransform.TranslateY = regionCenterY;
+
+                    compositeTransform.ScaleX = lesserScale;
+                    compositeTransform.ScaleY = lesserScale;
+
+                    compositeTransform.CenterX = regionTopLeftX + regionHalfWidth;
+                    compositeTransform.CenterY = regionTopLeftY + regionHalfHeight;
+                }
+                else
+                {
+                    // shifts the clipped rectangle so its upper left corner is in the upper left corner of the node
+                    compositeTransform.TranslateX = -regionModel.TopLeftPoint.X * xClippingContent.ActualWidth * scaleX;
+                    compositeTransform.TranslateY = -regionModel.TopLeftPoint.Y * xClippingContent.ActualHeight * scaleY;
+                    compositeTransform.ScaleX = scaleX;
+                    compositeTransform.ScaleY = scaleY;
+                    WrapperTransform = compositeTransform;
+                }
+                WrapperTransform = compositeTransform;
+
+                //now we want to resize the components of the imageregionview so that it isn't too big
+                foreach (var item in xClippingCanvas.Items)
+                {
+                    var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
+                    switch (regionViewModel.Model.Type)
+                    {
+                        case ElementType.ImageRegion:
+                            var region = item as ImageRegionView;
+                            region.RescaleComponents(WrapperTransform.ScaleX, WrapperTransform.ScaleY);
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
             else
             {
@@ -189,13 +235,14 @@ namespace NuSysApp
                 // create the view and vm based on the region type
                 // todo add pdf, and video functionality
                 FrameworkElement view = null;
-                ImageRegionViewModel vm = null;
+                RegionViewModel vm = null;
                 switch (regionLibraryElementController.LibraryElementModel.Type)
                 {
                     case ElementType.ImageRegion:
                         vm = new ImageRegionViewModel(regionLibraryElementController.LibraryElementModel as RectangleRegion,
                                 regionLibraryElementController, this);
-                        view = new ImageRegionView(vm);
+                        view = new ImageRegionView(vm as ImageRegionViewModel);
+                        (view as ImageRegionView).RescaleComponents(WrapperTransform.ScaleX, WrapperTransform.ScaleY);
                         break;
                     default:
                         vm = null;

@@ -16,7 +16,6 @@ namespace NuSysApp
         private double _height;
         private double _width;
         private string _name;
-        private bool _editable;
 
         
         public string Name {
@@ -48,20 +47,7 @@ namespace NuSysApp
             }
         }
 
-        public bool Editable
-        {
-            set
-            {
 
-                _editable = value;
-
-                RaisePropertyChanged("Editable");
-            }
-            get
-            {
-                return _editable;
-            }
-        }
         public bool Selected { set; get; }
         public double OriginalHeight { get; set; }
         public double OriginalWidth { get; set; }
