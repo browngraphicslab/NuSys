@@ -99,6 +99,11 @@ namespace NuSysApp
             set { SetValue(InnerProperty, value); }
         }
 
+        public void HideResizer()
+        {
+            resizer.Visibility = Visibility.Collapsed;
+        }
+
         protected override void OnApplyTemplate()
         {
             bg = (Grid)GetTemplateChild("bg");
@@ -142,8 +147,6 @@ namespace NuSysApp
 
             tags = (ItemsControl)GetTemplateChild("Tags");
             tags.Tapped += Tags_Tapped;
-
-
 
             title = (TextBox)GetTemplateChild("xTitle");
             title.KeyUp += TitleOnTextChanged;

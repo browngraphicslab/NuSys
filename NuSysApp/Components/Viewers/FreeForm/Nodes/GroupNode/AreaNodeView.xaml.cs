@@ -52,12 +52,19 @@ namespace NuSysApp
 
             var collElementModel = ((vm.Controller as ElementCollectionController).Model as CollectionElementModel);
             var finite = collElementModel.CollectionLibraryElementModel.IsFinite;
+            if (finite)
+            {
+                _nodeManipulationMode.Deactivate();
+                //_panZoomMode.Deactivate(); //this should be commented out when panning and zooming isn't buggy anymore
+            }
             var shapePoints = collElementModel.CollectionLibraryElementModel.ShapePoints;
+
 
             var adornment = new AdornmentView(shapePoints);
             vm.AtomViewList.Add(adornment);
             adornment.SetFill(new SolidColorBrush(Colors.Green));
             Canvas.SetZIndex(adornment,-1);
+
         }
 
 

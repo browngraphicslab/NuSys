@@ -71,7 +71,6 @@ namespace NuSysApp
                 new TappedEventHandler(MenuDetailButton_Tapped), true);
 
             SetUpToolsBtn();
-
         }
 
         /// <summary>
@@ -166,6 +165,10 @@ namespace NuSysApp
             {
                 case CollectionElementModel.CollectionViewType.FreeForm:
                     CreateFreeFormView();
+                    if (((GroupNodeViewModel)DataContext).Finite)
+                    {
+                        nodeTpl.HideResizer();
+                    }
                     break;
                 case CollectionElementModel.CollectionViewType.List:
                     CreateDataGridView();
