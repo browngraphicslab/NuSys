@@ -960,6 +960,10 @@ namespace NuSysApp
 
         public void IncrementUnseenMessage()
         {
+            if (ChatNotifs.Visibility.Equals(Visibility.Collapsed))
+            {
+                ChatNotifs.Visibility = Visibility.Visible;
+            }
             _unseenChatMessagesNum++;
             NotifNumber.Text = "" + _unseenChatMessagesNum;
         }
@@ -977,6 +981,7 @@ namespace NuSysApp
                 xChatBox.Visibility = Visibility.Visible;
                 _unseenChatMessagesNum = 0;
                 NotifNumber.Text = "" + _unseenChatMessagesNum;
+                ChatNotifs.Visibility = Visibility.Visible;
             }
             else
             {
