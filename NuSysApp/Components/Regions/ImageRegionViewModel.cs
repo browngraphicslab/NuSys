@@ -16,8 +16,8 @@ namespace NuSysApp
         private double _height;
         private double _width;
         private string _name;
-
         
+
         public string Name {
             get { return _name; }
             set
@@ -78,6 +78,7 @@ namespace NuSysApp
             RectangleWrapper = rectangleWrapper;
             rectangleWrapper.SizeChanged += RectangleWrapper_SizeChanged;
         }
+
 
         private void RectangleWrapper_SizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)
         {

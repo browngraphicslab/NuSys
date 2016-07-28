@@ -51,27 +51,28 @@ namespace NuSysApp
 
             var parentWidth = vm.RectangleWrapper.GetWidth();
             var parentHeight = vm.RectangleWrapper.GetHeight();
-            
+
             composite.TranslateX = model.TopLeftPoint.X * parentWidth;
             composite.TranslateY = model.TopLeftPoint.Y * parentHeight;
             vm.Width = (model.Width) * parentWidth;
             vm.Height = (model.Height) * parentHeight;
 
             //If in detail view, adjust to the right to account for difference between view and actual image.
-       /*     if (vm.ContainerViewModel is ImageDetailHomeTabViewModel)
-            {
-                var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
+            /*     if (vm.ContainerViewModel is ImageDetailHomeTabViewModel)
+                 {
+                     var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
 
-                var horizontalMargin = (ivm.GetViewWidth() - parentWidth)/2;
-                var verticalMargin = (ivm.GetViewHeight() - parentHeight)/2;
-                composite.TranslateX += horizontalMargin;
-                composite.TranslateY += verticalMargin;
-            }*/
+                     var horizontalMargin = (ivm.GetViewWidth() - parentWidth)/2;
+                     var verticalMargin = (ivm.GetViewHeight() - parentHeight)/2;
+                     composite.TranslateX += horizontalMargin;
+                     composite.TranslateY += verticalMargin;
+                 }*/
 
             _tx = composite.TranslateX;
             _ty = composite.TranslateY;
-
         }
+
+
 
         /// <summary>
         /// Changes location of view according to the element that contains it.
@@ -359,10 +360,18 @@ namespace NuSysApp
 
         public void RescaleComponents(double scaleX,double scaleY)
         {
+            /// How this works
+            /// We scale the entire region based on the image being scaled. But we then want to invert the scaling on the visual components, 
+            /// but not on the size of the region as a whole. To revert the scale, we divide the transforms by their current scale. using scaleX = 1/scaleX etc.
+            /// we then shift the transforms over by certain margins. The math is simple even though the numbers look like "magic numbers."
+            /// 
+            /// The width of the rectangle borders is 3. The size of the delete button and resizing triangle is 25. So these magic numbers are simply
+            /// the result of shifting things over by values relative to 25 and 3.
+
             //Updates scale of delete button
             DeleteTransform.ScaleX = 1 / scaleX;
             DeleteTransform.ScaleY = 1 / scaleY;
-            
+            xDelete.Margin = new Thickness(5/ scaleX, -28/scaleY, 0, 0); // move button so its left side is 2 px to the right of the rectangle border, and bottom is in line with rectangle broder
 
             //Updates scale of text box
 
@@ -370,16 +379,15 @@ namespace NuSysApp
             NameTextTransform.ScaleY = 1 / scaleY;
             //Updates margin so that it is directly on top of the rectangle.
             xNameTextBox.Margin = new Thickness(0, -30/scaleY, 0, 0);
-            xNameTextBox.MinWidth = (DataContext as ImageRegionViewModel).Width / scaleX;
 
             //UPdates scale of Resizing Triangle
             ResizerTransform.ScaleX = 1 / scaleX;
             ResizerTransform.ScaleY = 1 / scaleY;
-            xResizingTriangle.Margin = new Thickness(-28 / scaleX ,-28 / scaleY, 0, 0);
+            xResizingTriangle.Margin = new Thickness(-25 / scaleX ,-25 / scaleY, 0, 0); // move resizing triangle so bottom and left are in line with the bottom and right side of the rectangle border
 
+               
             //xMainRectangle.StrokeThickness = 3 / scaleX;
-            xMainRectangleBorder.BorderThickness = new Thickness(3/scaleY, 3/scaleX, 3/scaleY, 3/scaleX);
-
+            xMainRectangleBorder.BorderThickness = new Thickness(3/scaleY, 3/scaleX, 3/scaleY, 3/scaleX); // resize border so its width is always 3
 
 
         }

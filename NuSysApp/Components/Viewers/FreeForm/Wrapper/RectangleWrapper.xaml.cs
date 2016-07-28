@@ -242,7 +242,11 @@ namespace NuSysApp
                         vm = new ImageRegionViewModel(regionLibraryElementController.LibraryElementModel as RectangleRegion,
                                 regionLibraryElementController, this);
                         view = new ImageRegionView(vm as ImageRegionViewModel);
-                        (view as ImageRegionView).RescaleComponents(WrapperTransform.ScaleX, WrapperTransform.ScaleY);
+                        view.Loaded += delegate
+                        {
+                            (view as ImageRegionView).RescaleComponents(WrapperTransform.ScaleX, WrapperTransform.ScaleY);
+                        };
+
                         break;
                     default:
                         vm = null;
@@ -282,11 +286,11 @@ namespace NuSysApp
 
         public double GetWidth()
         {
-            return xClippingGrid.ActualWidth;
+            return this.ActualWidth;
         }
         public double GetHeight()
         {
-            return xClippingGrid.ActualHeight;
+            return this.ActualHeight;
         }
         public double GetViewWidth()
         {
