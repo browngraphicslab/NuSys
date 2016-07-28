@@ -115,6 +115,12 @@ namespace NuSysApp
                 xInqCanvasContainer.Width = args.NewSize.Width;
                 xInqCanvasContainer.Height = args.NewSize.Height;
             };
+
+            var controller = vm.Controller as ElementCollectionController;
+            if ((controller.Model as CollectionElementModel).CollectionLibraryElementModel.IsFinite)
+            {
+                DisablePanning();
+            }
         }
 
         private void AdornmentRemoved(WetDryInkCanvas canvas, InkStroke stroke)
@@ -327,6 +333,11 @@ namespace NuSysApp
         public void ChangeMode(object source, Options mode)
         {
             SwitchMode(mode, false);
+        }
+
+        public void DisablePanning()
+        {
+            _panZoomMode.PanningEnabled = false;
         }
     }
 }
