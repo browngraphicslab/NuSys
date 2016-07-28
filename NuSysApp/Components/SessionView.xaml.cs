@@ -61,9 +61,8 @@ namespace NuSysApp
 
         #endregion Private Members
 
-        private int initChatNotifs;
+        private int _unseenChatMessagesNum;
         private bool _isChatVisible;
-
         public SessionView()
         {
             this.InitializeComponent();
@@ -71,11 +70,15 @@ namespace NuSysApp
             var height = bounds.Height;
             var width = bounds.Width;
             Canvas.SetLeft(xChatBox, width - 300 - 10);
-            Canvas.SetTop(xChatBox, height - 375 - 10 - 50);
+            Canvas.SetTop(xChatBox, height - 375 - 10 - 50 - 10 - 7);
             Canvas.SetLeft(ChatBoxButton, width - 10 - 50);
             Canvas.SetTop(ChatBoxButton, height - 10 - 50);
+            Canvas.SetLeft(ChatNotifs, width - 10 - 50 - 10);
+            Canvas.SetTop(ChatNotifs, height - 10 - 50 - 10);
 
+            
             _isChatVisible = false;
+            _unseenChatMessagesNum = 0;
 
             CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
             CoreWindow.GetForCurrentThread().KeyUp += OnKeyUp;
@@ -93,9 +96,6 @@ namespace NuSysApp
                     }
 
                 };
-
-
-
 
             xWorkspaceTitle.IsActivated = true;
 
@@ -767,8 +767,8 @@ namespace NuSysApp
             Canvas.SetLeft(ChatPopup, 5);
             Canvas.SetLeft(ChatButton, 5);
             Canvas.SetTop(ChatButton, mainCanvas.ActualHeight - 70);
-            Canvas.SetLeft(ChatNotifs, 37);
-            Canvas.SetTop(ChatNotifs, mainCanvas.ActualHeight - 67);
+            //Canvas.SetLeft(ChatNotifs, 37);
+            //Canvas.SetTop(ChatNotifs, mainCanvas.ActualHeight - 67);
             //Canvas.SetLeft(SnapshotButton, MainCanvas.ActualWidth - 65);
             //Canvas.SetTop(SnapshotButton, MainCanvas.ActualHeight - 65);
         }
@@ -903,7 +903,7 @@ namespace NuSysApp
 
         private void ChatButton_OnClick(object sender, RoutedEventArgs e)
         {
-            initChatNotifs = ChatPopup.getTexts().Count;
+            //initChatNotifs = ChatPopup.getTexts().Count;
             ChatPopup.Visibility = ChatPopup.Visibility == Visibility.Collapsed
                 ? Visibility.Visible
                 : Visibility.Collapsed;
@@ -930,10 +930,8 @@ namespace NuSysApp
                 FloatingMenu.Visibility = Visibility.Collapsed;
             }
         }
-
         public Grid OuterMost { get { return xOuterMost; } }
         public FreeFormViewer FreeFormViewer { get { return _activeFreeFormViewer; } }
-
         private async void SnapshotButton_OnClick(object sender, RoutedEventArgs e)
         {
             await StaticServerCalls.CreateSnapshot();
@@ -960,6 +958,12 @@ namespace NuSysApp
             
         }
 
+        public void IncrementUnseenMessage()
+        {
+            _unseenChatMessagesNum++;
+            NotifNumber.Text = "" + _unseenChatMessagesNum;
+        }
+
         public ChatBoxView GetChatBox()
         {
             return xChatBox;
@@ -971,6 +975,8 @@ namespace NuSysApp
             if (_isChatVisible)
             {
                 xChatBox.Visibility = Visibility.Visible;
+                _unseenChatMessagesNum = 0;
+                NotifNumber.Text = "" + _unseenChatMessagesNum;
             }
             else
             {

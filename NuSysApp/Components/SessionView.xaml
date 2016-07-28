@@ -54,14 +54,11 @@
             <Button x:Name="xPresentation" Style="{StaticResource CircleButton}" Click="Presentation_OnClick" Background="{StaticResource color3}" Width="50" Height="50" Visibility="Collapsed">
                 <Image Source="/Assets/icon_whitex.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
             </Button>
-       
-        <Button Visibility="Collapsed" x:Name="ChatButton" Style="{StaticResource CircleButton}" Click="ChatButton_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="5,10,5,10">
-            <Image Source="/Assets/icon_chat.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
-        </Button>
-        <Button x:Name="ChatNotifs"  Style="{StaticResource CircleButton}" Background="Red" Width="30" Height="30" Opacity="0" VerticalAlignment="Bottom" Visibility="Collapsed">
-            <TextBlock x:Name="NotifNumber" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        </Button>
-        <StackPanel Name="Users" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="70">
+
+            <Button Visibility="Collapsed" x:Name="ChatButton" Style="{StaticResource CircleButton}" Click="ChatButton_OnClick" Background="#B3B3B3" Width="50" Height="50" Margin="5,10,5,10">
+                <Image Source="/Assets/icon_chat.png" Height="25" Width="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+            </Button>
+            <StackPanel Name="Users" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="70">
         </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <!--<Button x:Name="CurrentCollectionDV" Click="CurrentCollectionDV_OnClick"  VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource CircleButton}" Background="{StaticResource color4}" Width="50" Height="50" Margin="10,10,0,0">-->
@@ -74,6 +71,9 @@
             </Button>
             <Button x:Name="ChatBoxButton" Click="ChatBoxButton_OnClick" Style="{StaticResource CircleButton}" Background="{StaticResource color4}" Width="50" Height="50" >
                 <Image Source="ms-appx:///Assets/icon_chat.png" Width="25" Height="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+            </Button>
+            <Button x:Name="ChatNotifs"  Style="{StaticResource CircleButton}" Background="Red" Width="30" Height="30" Opacity="1">
+                <TextBlock x:Name="NotifNumber" Text="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Button>
             <local:ChatBoxView x:Name ="xChatBox" Visibility="Collapsed"></local:ChatBoxView>
             <local:LibraryDragElement x:Name="LibraryDraggingNode" Visibility="Collapsed"></local:LibraryDragElement>
