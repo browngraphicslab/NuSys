@@ -249,36 +249,31 @@
 
     <Grid Background="White" Opacity="1">
         <Canvas x:Name="chatCanvas" Visibility="Collapsed">
-            <StackPanel Orientation="Vertical" Background="White">
-                <!--<ScrollViewer x:Name="scroller">-->
-                    <Border x:Name ="border" BorderThickness="1" BorderBrush="#FF000000" VerticalAlignment="Top">
-                        <ListView x:Name="chatDisplayListView" ItemsSource="{Binding Messages}" Height="300" Width="300" Background ="White" Opacity="1" Padding ="0">
-                            <ListView.ItemContainerStyle>
-                                <Style TargetType="ListViewItem">
-                                    <Setter Property="IsHitTestVisible" Value="False"></Setter>
-                                </Style>
-                            </ListView.ItemContainerStyle>
+            <Border x:Name ="border" BorderThickness="3" BorderBrush="{StaticResource color2}" VerticalAlignment="Top">
+                <StackPanel Orientation="Vertical" Background="White">
+                    <ListView x:Name="chatDisplayListView" ItemsSource="{Binding Messages}" Height="300" Width="300" Background ="White" Opacity="1" Padding ="0">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="IsHitTestVisible" Value="False"></Setter>
+                            </Style>
+                        </ListView.ItemContainerStyle>
 
-                             <ListView.ItemTemplate>
-                                <DataTemplate x:DataType="local:ChatMessageTemplate">
-                                    <StackPanel Width="280" Margin="0,2,0,0">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="local:ChatMessageTemplate">
+                                <StackPanel Width="280" Margin="0,2,0,0">
                                     <StackPanel Orientation="Horizontal" >
                                         <TextBlock Text="{Binding UserName}" FontWeight="Bold" Foreground="{Binding UserColor}"></TextBlock>
                                         <TextBlock Text="{Binding TimeStamp}" FontSize="8" FontWeight="ExtraLight" Foreground="Gray" VerticalAlignment="Center" Margin="5, 0,0,0"></TextBlock>
                                     </StackPanel>
                                     <TextBlock Text="{Binding MessageText}"></TextBlock>
-
-                                    </StackPanel>
-                                </DataTemplate>
-                             </ListView.ItemTemplate>
-
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
                     </ListView>
-                        
-                        
-                    </Border>
-                <!--</ScrollViewer>-->
-                <TextBox x:Name="chatInputBox" Height="75" Width="300" IsReadOnly="false" Opacity="1" Background="White" TextWrapping="Wrap"/>
-            </StackPanel>
+
+                    <TextBox x:Name="chatInputBox" Height="75" Width="300" IsReadOnly="false" Opacity="1" Background="White" TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
         </Canvas>
     </Grid>
 </UserControl>
