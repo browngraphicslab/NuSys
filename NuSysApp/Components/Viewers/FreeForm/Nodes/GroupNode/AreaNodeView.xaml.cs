@@ -54,7 +54,10 @@ namespace NuSysApp
             var finite = collElementModel.CollectionLibraryElementModel.IsFinite;
             var shapePoints = collElementModel.CollectionLibraryElementModel.ShapePoints;
 
-            vm.AtomViewList.Add(new AdornmentView(shapePoints));
+            var adornment = new AdornmentView(shapePoints);
+            vm.AtomViewList.Add(adornment);
+            adornment.SetFill(new SolidColorBrush(Colors.Green));
+            Canvas.SetZIndex(adornment,-1);
         }
 
 

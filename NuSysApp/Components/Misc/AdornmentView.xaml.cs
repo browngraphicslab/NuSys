@@ -56,5 +56,10 @@ namespace NuSysApp.Components.Misc
             }
             Adornment.Points = col;
         }
+
+        public void SetFill(SolidColorBrush brush)
+        {
+            Adornment.Fill = brush;
+        }
     }
 }

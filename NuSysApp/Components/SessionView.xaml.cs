@@ -115,6 +115,16 @@ namespace NuSysApp
                 await LoadWorkspaceFromServer(l, WaitingRoomView.InitialWorkspaceId);
             }
 
+            var lem = (SessionController.Instance.ActiveFreeFormViewer.Model as CollectionElementModel).CollectionLibraryElementModel;
+
+            if (lem.ShapePoints != null)
+            {
+                var adornment = new AdornmentView(lem.ShapePoints);
+                SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(adornment);
+                Canvas.SetZIndex(adornment,-1);
+                adornment.SetFill(new SolidColorBrush(Colors.Green) {Opacity=.3});
+            }
+
 
             xDetailViewer.DataContext = new DetailViewerViewModel();
             xSearchViewer.DataContext = new SearchViewModel();
@@ -155,6 +165,10 @@ namespace NuSysApp
                 }
 
             }
+
+            
+            
+        
         }
 
 
