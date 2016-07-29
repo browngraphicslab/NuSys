@@ -28,7 +28,6 @@ namespace NuSysApp
         public MuPDFWinRT.Document _document;
         public ObservableCollection<Button> SuggestedTags { get; set; }
         private List<string> _suggestedTags = new List<string>();
-        public ObservableCollection<PDFRegionView> RegionViews { private set; get; }
 
         public Sizeable View { get; set; }
 
@@ -38,9 +37,12 @@ namespace NuSysApp
             var model = (PdfNodeModel) controller.Model;
             model.PageChange += OnPageChange;
             CurrentPageNumber = model.CurrentPageNumber;
+            if (controller.LibraryElementModel.Type == ElementType.PdfRegion)
+            {
+                var pdfRegionModel = controller.LibraryElementModel as PdfRegionModel;
+                CurrentPageNumber = pdfRegionModel.PageLocation;
+            }
 
-            RegionViews = new ObservableCollection<PDFRegionView>();
-            this.CreatePdfRegionViews();
         }
        
         
@@ -146,18 +148,18 @@ namespace NuSysApp
             ((PdfNodeModel)Model).CurrentPageNumber = CurrentPageNumber;
 
 
-            foreach (var regionView in RegionViews)
-            {
-                var model = (regionView.DataContext as PdfRegionViewModel)?.Model;
-                if ((model as PdfRegionModel).PageLocation != CurrentPageNumber)
-                {
-                    regionView.Visibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    regionView.Visibility = Visibility.Visible;
-                }
-            }
+            //foreach (var regionView in RegionViews)
+            //{
+            //    var model = (regionView.DataContext as PdfRegionViewModel)?.Model;
+            //    if ((model as PdfRegionModel).PageLocation != CurrentPageNumber)
+            //    {
+            //        regionView.Visibility = Visibility.Collapsed;
+            //    }
+            //    else
+            //    {
+            //        regionView.Visibility = Visibility.Visible;
+            //    }
+            //}
 
 
         }
@@ -344,28 +346,6 @@ namespace NuSysApp
         public double GetHeight()
         {
             return View?.GetHeight() ?? 0 ;
-        }
-
-       public void SizeChanged(object sender, double width, double height)
-       {
-           var newHeight = View.GetHeight();
-           var newWidth = View.GetWidth();
-
-            foreach (var rv in RegionViews)
-            {
-                var regionViewViewModel = rv.DataContext as RegionViewModel;
-                regionViewViewModel?.ChangeSize(sender, newWidth, newHeight);
-            }
-        }
-
-        public double GetViewWidth()
-        {
-            throw new NotImplementedException();
-        }
-
-        public double GetViewHeight()
-        {
-            throw new NotImplementedException();
         }
     }
 }

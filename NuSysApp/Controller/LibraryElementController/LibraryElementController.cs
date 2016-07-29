@@ -308,8 +308,11 @@ namespace NuSysApp
         {
             if (e.Data != null)
             {
-                _libraryElementModel.Data = e.Data;
-                ContentChanged?.Invoke(this,e.Data);
+                if (LibraryElementModel.Type != ElementType.PdfRegion)
+                {
+                    _libraryElementModel.Data = e.Data;
+                    ContentChanged?.Invoke(this, e.Data);
+                }
             }
             //_libraryElementModel.InkLinkes = e.InkStrings;
 

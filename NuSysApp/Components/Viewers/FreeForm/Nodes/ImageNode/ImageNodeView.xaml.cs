@@ -54,6 +54,7 @@ namespace NuSysApp
         private void ViewLoaded(object sender, RoutedEventArgs e)
         {
             xClippingWrapper.Controller = _vm.LibraryElementController;
+            xClippingWrapper.ProcessLibraryElementController();
         }
 
         private void ImageNodeView_SizeChanged(object sender, SizeChangedEventArgs e)

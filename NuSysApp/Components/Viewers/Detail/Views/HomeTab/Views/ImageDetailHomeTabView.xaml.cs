@@ -55,6 +55,7 @@ namespace NuSysApp
             vm.View = this;
 
             xClippingWrapper.Controller = vm.LibraryElementController;
+            xClippingWrapper.ProcessLibraryElementController();
         }
 
         public void RefreshRegions()

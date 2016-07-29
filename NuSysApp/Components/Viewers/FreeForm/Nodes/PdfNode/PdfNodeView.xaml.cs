@@ -33,19 +33,37 @@ namespace NuSysApp
             SizeChanged += PdfNodeView_SizeChanged;
 
             Loaded += PdfNodeView_Loaded;
+
         }
 
-        private void PdfNodeView_Loaded(object sender, RoutedEventArgs e)
+        private async void UpdateRegionViews(int currentPageNumber)
+        {
+            foreach (var item in xClippingWrapper.GetRegionItems())
+            {
+                var regionView = item as PDFRegionView;
+                var model = (regionView?.DataContext as PdfRegionViewModel)?.Model as PdfRegionModel;
+                Debug.Assert(regionView != null);
+                await UITask.Run(() =>
+                {
+                    regionView.Visibility = model?.PageLocation == currentPageNumber ? Visibility.Visible : Visibility.Collapsed;
+                });
+            }
+        }
+
+        private async void PdfNodeView_Loaded(object sender, RoutedEventArgs e)
         {
             var vm = DataContext as PdfNodeViewModel;
             xClippingWrapper.Controller = vm?.Controller.LibraryElementController;
+            await xClippingWrapper.ProcessLibraryElementController();
+            UpdateRegionViews(vm.CurrentPageNumber);
+
+
             //vm?.CreatePdfRegionViews();
         }
 
         private void PdfNodeView_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            var vm = DataContext as PdfNodeViewModel;
-            vm.SizeChanged(this, xRenderedPdf.ActualWidth, xRenderedPdf.ActualHeight);
+            // ?
         }
 
         private void ControllerOnDisposed(object source, object args)
@@ -66,6 +84,8 @@ namespace NuSysApp
         {
             var vm = (PdfNodeViewModel) this.DataContext;
             await vm.FlipLeft();
+            UpdateRegionViews(vm.CurrentPageNumber);
+
 
             //(nodeTpl.inkCanvas.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
             e.Handled = true;
@@ -79,7 +99,7 @@ namespace NuSysApp
         {
             var vm = (PdfNodeViewModel) this.DataContext;
             await vm.FlipRight();
-
+            UpdateRegionViews(vm.CurrentPageNumber);
             //(nodeTpl.inkCanvas.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
             e.Handled = true;
 

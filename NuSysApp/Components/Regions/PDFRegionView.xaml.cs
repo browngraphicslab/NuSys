@@ -293,6 +293,9 @@ namespace NuSysApp
         {
             var vm = DataContext as RegionViewModel;
             var regionController = vm?.RegionLibraryElementController;
+            var page = (vm.Model as PdfRegionModel).PageLocation;
+            PdfDetailHomeTabViewModel.InitialPageNumber = page;
+
             SessionController.Instance.SessionView.ShowDetailView(regionController);
         }
 

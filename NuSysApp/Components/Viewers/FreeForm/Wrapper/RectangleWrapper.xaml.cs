@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -76,7 +77,6 @@ namespace NuSysApp
             set
             {
                 _contentController = value;
-                ProcessLibraryElementController();
             }
         }
 
@@ -183,7 +183,7 @@ namespace NuSysApp
         /// Called once when the library element controller is set to set the scale of the region if the library elment controller
         /// represents a region
         /// </summary>
-        private void ProcessLibraryElementController()
+        public async Task ProcessLibraryElementController()
         {
             Debug.Assert(Controller != null);
             var type = Controller.LibraryElementModel.Type;
@@ -205,7 +205,7 @@ namespace NuSysApp
             // for each region id create a new view and put it into the canvas
             foreach (var regionId in regionsLibraryElementIds)
             {
-                AddRegionView(regionId);
+                await AddRegionView(regionId);
             }
 
             // Add the OnRegionAdded and OnRegionRemoved events so the view is updated
@@ -218,22 +218,24 @@ namespace NuSysApp
         /// <summary>
         /// Adds a new region view to the wrapper
         /// </summary>
-        public void AddRegionView(string regionLibraryElementId)
+        public async Task AddRegionView(string regionLibraryElementId)
         {
-            UITask.Run(async delegate {
+            await UITask.Run(async delegate {
                 // used to check if the wrapper is in an editable detailhometabviewmodel
-                var ParentDC = DataContext as DetailHomeTabViewModel;
+                var ParentDetailDC = DataContext as DetailHomeTabViewModel;
 
                 // get the region from the id
                 var regionLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementId) as RectangleRegionLibraryElementController;
                 Debug.Assert(regionLibraryElementController != null);
                 Debug.Assert(regionLibraryElementController.LibraryElementModel is RectangleRegion);
+
+                // if we are in the region itself then don't create a region view
                 if (regionLibraryElementController.LibraryElementModel.LibraryElementId == Controller.LibraryElementModel.LibraryElementId)
                 {
                     return;
                 }
                 // create the view and vm based on the region type
-                // todo add pdf, and video functionality
+                // todo video functionality
                 FrameworkElement view = null;
                 RegionViewModel vm = null;
                 switch (regionLibraryElementController.LibraryElementModel.Type)
@@ -242,6 +244,7 @@ namespace NuSysApp
                         vm = new ImageRegionViewModel(regionLibraryElementController.LibraryElementModel as RectangleRegion,
                                 regionLibraryElementController, this);
                         view = new ImageRegionView(vm as ImageRegionViewModel);
+                        // view loaded probably not necessary
                         view.Loaded += delegate
                         {
                             (view as ImageRegionView).RescaleComponents(WrapperTransform.ScaleX, WrapperTransform.ScaleY);
@@ -253,6 +256,25 @@ namespace NuSysApp
                                 regionLibraryElementController as PdfRegionLibraryElementController, this);
                         view = new PDFRegionView(vm as PdfRegionViewModel);
                         (view as PDFRegionView).RescaleComponents(WrapperTransform.ScaleX, WrapperTransform.ScaleY);
+
+                        // check the page number of detail view parent data context and node view parent data context and set visibility
+                        var ParentNodeDC = DataContext as PdfNodeViewModel;
+                        if (ParentNodeDC != null)
+                        {
+                            view.Visibility = ParentNodeDC.CurrentPageNumber == (vm.Model as PdfRegionModel).PageLocation ? Visibility.Visible : Visibility.Collapsed;
+                        }
+                        else if (ParentDetailDC != null)
+                        {
+                            var PdfParentDetailDC = ParentDetailDC as PdfDetailHomeTabViewModel;
+                            view.Visibility = PdfParentDetailDC.CurrentPageNumber == (vm.Model as PdfRegionModel).PageLocation ? Visibility.Visible : Visibility.Collapsed;
+                        }
+                        else
+                        {
+                            Debug.Fail("the parent data context should always be a detail view or node view, if not the visibility should be taken care of here");
+                        }
+
+
+
                         break;
                     default:
                         vm = null;
@@ -262,9 +284,9 @@ namespace NuSysApp
 
                 // set editable based on the parent data context
                 vm.Editable = false;
-                if (ParentDC != null)
+                if (ParentDetailDC != null)
                 {
-                    vm.Editable = ParentDC.Editable;
+                    vm.Editable = ParentDetailDC.Editable;
                 }
 
                 // add the region to thew view
@@ -305,6 +327,11 @@ namespace NuSysApp
         public double GetViewHeight()
         {
             return xClippingContent.ActualHeight;
+        }
+
+        public ItemCollection GetRegionItems()
+        {
+            return xClippingCanvas.Items;
         }
 
         // My code is slick yo - Sahil, July 2016

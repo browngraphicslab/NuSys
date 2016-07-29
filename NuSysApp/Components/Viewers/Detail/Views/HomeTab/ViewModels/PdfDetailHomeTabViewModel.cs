@@ -26,10 +26,13 @@ namespace NuSysApp
     public class PdfDetailHomeTabViewModel : DetailHomeTabViewModel, Sizeable
     {
         public LibraryElementController LibraryElementController { get; }
-        public ObservableCollection<PDFRegionView> RegionViews { set; get; }
+        //public ObservableCollection<PDFRegionView> RegionViews { set; get; }
         public WriteableBitmap ImageSource { get; set; }
         
         private int _pageNumber = 0;
+
+        public int CurrentPageNumber => _pageNumber;
+
         private MuPDFWinRT.Document _document;
 
         public static int InitialPageNumber;
@@ -37,7 +40,7 @@ namespace NuSysApp
         public PdfDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
             LibraryElementController = controller;
-            RegionViews = new ObservableCollection<PDFRegionView>();
+            //RegionViews = new ObservableCollection<PDFRegionView>();
             Editable = true;
 
             _pageNumber = InitialPageNumber;
@@ -48,7 +51,6 @@ namespace NuSysApp
             await Task.Run(async delegate {
                 _document = await MediaUtil.DataToPDF(LibraryElementController.LibraryElementModel.Data);
             });
-
             await Goto(_pageNumber);
         }
 
@@ -87,37 +89,34 @@ namespace NuSysApp
 
 
 
-            foreach (var regionView in RegionViews)
-            {
-                var model = (regionView.DataContext as PdfRegionViewModel)?.Model;
-                if ((model as PdfRegionModel).PageLocation != _pageNumber)
-                {
-                    regionView.Visibility = Visibility.Collapsed;
-                    regionView.Deselect();
+            //foreach (var regionView in RegionViews)
+            //{
+            //    var model = (regionView.DataContext as PdfRegionViewModel)?.Model;
+            //    if ((model as PdfRegionModel).PageLocation != _pageNumber)
+            //    {
+            //        regionView.Visibility = Visibility.Collapsed;
+            //        regionView.Deselect();
 
-                }
-                else
-                {
-                    regionView.Visibility = Visibility.Visible;
-                    if (region != null)
-                    {
-                        if (model?.LibraryElementId == region.LibraryElementId)
-                        {
-                            regionView.Select();
-                        }
-                        else
-                        {
-                            regionView.Deselect();
-                            //ensures that only thing selected is the pdf you just clicked.
-                        }
-                    }
-                }
-            }
-
-
-
-
+            //    }
+            //    else
+            //    {
+            //        regionView.Visibility = Visibility.Visible;
+            //        if (region != null)
+            //        {
+            //            if (model?.LibraryElementId == region.LibraryElementId)
+            //            {
+            //                regionView.Select();
+            //            }
+            //            else
+            //            {
+            //                regionView.Deselect();
+            //                //ensures that only thing selected is the pdf you just clicked.
+            //            }
+            //        }
+            //    }
+            //}
         }
+
         public async Task FlipLeft()
         {
             await Goto(_pageNumber - 1);
@@ -251,14 +250,14 @@ namespace NuSysApp
 
         public override void SizeChanged(object sender, double width, double height)
         {
-            var newHeight = this.GetHeight();
-            var newWidth = this.GetWidth();
+            //var newHeight = this.GetHeight();
+            //var newWidth = this.GetWidth();
 
-            foreach (var rv in RegionViews)
-            {
-                var regionViewViewModel = rv.DataContext as RegionViewModel;
-                regionViewViewModel?.ChangeSize(sender, newWidth, newHeight);
-            }
+            //foreach (var rv in RegionViews)
+            //{
+            //    var regionViewViewModel = rv.DataContext as RegionViewModel;
+            //    regionViewViewModel?.ChangeSize(sender, newWidth, newHeight);
+            //}
         }
 
         public double GetHeight()
