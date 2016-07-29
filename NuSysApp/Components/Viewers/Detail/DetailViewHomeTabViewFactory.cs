@@ -32,12 +32,14 @@ namespace NuSysApp
                 case ElementType.Powerpoint:
                     //view = new PowerpointDetailView(new PowerpointNodeViewModel(controller));
                     break;
+                case ElementType.PdfRegion:
                 case ElementType.PDF:
                     view = new PdfDetailHomeTabView(new PdfDetailHomeTabViewModel(controller));
                     break;
                 case ElementType.Web:
                     //view = new WebDetailView(new WebNodeViewModel(controller));
                     break;
+                case ElementType.VideoRegion:
                 case ElementType.Video:
                     view = new VideoDetailHomeTabView(new VideoDetailHomeTabViewModel(controller));
                     break;

@@ -38,7 +38,8 @@ namespace NuSysApp
         private void PdfNodeView_Loaded(object sender, RoutedEventArgs e)
         {
             var vm = DataContext as PdfNodeViewModel;
-            vm.CreatePdfRegionViews();
+            xClippingWrapper.Controller = vm?.Controller.LibraryElementController;
+            //vm?.CreatePdfRegionViews();
         }
 
         private void PdfNodeView_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -119,6 +120,6 @@ namespace NuSysApp
         {
             return xRenderedPdf.ActualHeight;
         }
-        
+
     }
 }

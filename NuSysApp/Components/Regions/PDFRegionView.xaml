@@ -14,15 +14,22 @@
             <CompositeTransform x:Name="GridTranform"></CompositeTransform>
         </Grid.RenderTransform>
         
-        <TextBox x:Name="xNameTextBox" Height="15" Text="{Binding Name}" TextChanged="xNameTextBox_TextChanged" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,-30,0,0"></TextBox>
+        <TextBox x:Name="xNameTextBox" Height="15" Text="{Binding Name}" TextChanged="xNameTextBox_TextChanged" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,-30,0,0">
+            <TextBox.RenderTransform>
+                <CompositeTransform x:Name="NameTextTransform"></CompositeTransform>
+            </TextBox.RenderTransform>
+        </TextBox>
 
-        <Rectangle x:Name="xMainRectangle"  PointerPressed="xMainRectangle_PointerPressed" Fill="Transparent" ManipulationStarted="RectangleRegionView_ManipulationStarted" 
+        <Border x:Name="xMainRectangleBorder"  BorderBrush="CadetBlue" BorderThickness="3,3,3,3">
+            <Rectangle x:Name="xMainRectangle"  PointerPressed="xMainRectangle_PointerPressed" Fill="Transparent" ManipulationStarted="RectangleRegionView_ManipulationStarted" 
                    Width="{Binding Width}" Height="{Binding Height}" ManipulationDelta="RectangleRegionView_ManipulationDelta" GotFocus="XMainRectangle_OnGotFocus"
                     LostFocus="XMainRectangle_OnLostFocus" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}">
-            <Rectangle.RenderTransform>
-                <CompositeTransform x:Name="RectangleTranform"></CompositeTransform>
-            </Rectangle.RenderTransform>
-        </Rectangle>
+                <Rectangle.RenderTransform>
+                    <CompositeTransform x:Name="RectangleTranform"></CompositeTransform>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+        </Border>
+        
         <Path x:Name="xResizingTriangle" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" 
               Height="25" Stretch="Fill" HorizontalAlignment="Left" VerticalAlignment="Top" UseLayoutRounding="False" Width="25" Margin="-28,-28,0,0"
               Opacity=".35"  Canvas.ZIndex="20" ManipulationStarted="XResizingTriangle_ManipulationStarted" ManipulationDelta="XResizingTriangle_ManipulationDelta" 
@@ -33,7 +40,11 @@
             </Path.RenderTransform>
         </Path>
 
-        <Image x:Name="xDelete" Width="25" Height="25" Margin="0,5,5,0" PointerPressed="xDelete_PointerPressed"  HorizontalAlignment="Right"  VerticalAlignment="Top" Stretch="Uniform" Source="ms-appx:///Assets/icon_delete_color.png"></Image>
+        <Image x:Name="xDelete" Width="25" Height="25" Margin="0,5,5,0" PointerPressed="xDelete_PointerPressed"  HorizontalAlignment="Right"  VerticalAlignment="Top" Stretch="Uniform" Source="ms-appx:///Assets/icon_delete_color.png">
+            <Image.RenderTransform>
+                <CompositeTransform x:Name="DeleteTransform"  TranslateX="{Binding Width}"></CompositeTransform>
+            </Image.RenderTransform>
+        </Image>
 
     </Grid>
 </UserControl>

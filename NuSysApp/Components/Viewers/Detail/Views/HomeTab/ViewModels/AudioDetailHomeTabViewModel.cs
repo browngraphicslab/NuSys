@@ -12,14 +12,14 @@ namespace NuSysApp
     public class AudioDetailHomeTabViewModel : DetailHomeTabViewModel, Sizeable
     {
         public double Duration { set; get; }
-        public LibraryElementController Controller { get; }
+        public LibraryElementController LibraryElementController { get; }
         public ObservableCollection<Region> Regions;
         public ObservableCollection<AudioRegionView> RegionViews { set; get; }
         public delegate void OnRegionSeekPassingHandler(double time);
         public event OnRegionSeekPassingHandler OnRegionSeekPassing;
         public AudioDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
-            Controller = controller;
+            LibraryElementController = controller;
             Regions = new ObservableCollection<Region>();
             RegionViews = new ObservableCollection<AudioRegionView>();
             
@@ -110,7 +110,7 @@ namespace NuSysApp
         {
 
             RegionViews.Clear();
-            foreach (var regionId in SessionController.Instance.RegionsController.GetClippingParentRegionLibraryElementIds(Controller.LibraryElementModel.LibraryElementId))
+            foreach (var regionId in SessionController.Instance.RegionsController.GetClippingParentRegionLibraryElementIds(LibraryElementController.LibraryElementModel.LibraryElementId))
             {
                 var audioRegionController = SessionController.Instance.ContentController.GetLibraryElementController(regionId) as AudioRegionLibraryElementController;
                 if (audioRegionController == null)

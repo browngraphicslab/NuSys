@@ -78,7 +78,7 @@ namespace NuSysApp
 
             //double width = this.ActualWidth;
             //double height = this.ActualHeight;
-            //vm.Controller.SetSize(width, height);
+            //vm.LibraryElementController.SetSize(width, height);
 
             MediaElement.Position = new TimeSpan(0);
 

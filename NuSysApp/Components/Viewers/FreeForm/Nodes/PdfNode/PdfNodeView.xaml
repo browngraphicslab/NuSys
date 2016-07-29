@@ -37,10 +37,15 @@
         </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
             <Grid>
-                <Grid>
-                    <Image x:Name="xRenderedPdf"  Margin="3,3,3,3" Source="{Binding ImageSource}" Stretch="Uniform" Height="{Binding Height}" Width="{Binding Width}"/>
-                </Grid>
-                <Canvas x:Name="Canvas" VerticalAlignment ="Top" HorizontalAlignment="Left" ManipulationMode="None" >
+                <local:RectangleWrapper x:Name="xClippingWrapper">
+                    <local:RectangleWrapper.RenderTransform>
+                        <CompositeTransform x:Name="WrapperTransform"></CompositeTransform>
+                    </local:RectangleWrapper.RenderTransform>
+                    <local:RectangleWrapper.Content>
+                        <Image x:Name="xRenderedPdf"  Margin="3,3,3,3" Source="{Binding ImageSource}" Stretch="Fill" Height="{Binding Height}" Width="{Binding Width}"/>
+                    </local:RectangleWrapper.Content>
+                </local:RectangleWrapper>
+                <!--<Canvas x:Name="Canvas" VerticalAlignment ="Top" HorizontalAlignment="Left" ManipulationMode="None" >
                     <ItemsControl x:Name="IC"  ItemsSource="{Binding RegionViews}" ManipulationMode="None">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -48,7 +53,7 @@
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
-                </Canvas>
+                </Canvas>-->
                 <Button x:Name="pageLeft" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}" Height ="50" Width="50" VerticalAlignment="Top" Background=" Transparent" HorizontalAlignment="Left" Tapped="OnPageLeftClick" DoubleTapped="PageRight_OnDoubleTapped">
                     <Button.RenderTransform>
                         <TranslateTransform X="-45"  Y="-45" />

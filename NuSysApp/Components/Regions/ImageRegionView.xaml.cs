@@ -44,7 +44,6 @@ namespace NuSysApp
             CompositeTransform composite = new CompositeTransform();
             this.RenderTransform = composite;
 
-            vm.PropertyChanged += PropertyChanged;
             //vm.SizeChanged += ChangeSize;
             vm.LocationChanged += ChangeLocation;
 
@@ -56,17 +55,6 @@ namespace NuSysApp
             composite.TranslateY = model.TopLeftPoint.Y * parentHeight;
             vm.Width = (model.Width) * parentWidth;
             vm.Height = (model.Height) * parentHeight;
-
-            //If in detail view, adjust to the right to account for difference between view and actual image.
-       /*     if (vm.ContainerViewModel is ImageDetailHomeTabViewModel)
-            {
-                var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
-
-                var horizontalMargin = (ivm.GetViewWidth() - parentWidth)/2;
-                var verticalMargin = (ivm.GetViewHeight() - parentHeight)/2;
-                composite.TranslateX += horizontalMargin;
-                composite.TranslateY += verticalMargin;
-            }*/
 
             _tx = composite.TranslateX;
             _ty = composite.TranslateY;
@@ -121,21 +109,6 @@ namespace NuSysApp
 
             vm.Width = width;
             vm.Height = height;
-        }
-        private void PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case "Selected":
-                    var vm = DataContext as ImageRegionViewModel;
-                    if (vm.Selected)
-                    {
-                        this.Select();
-                    }
-                    break;
-                default:
-                    break;
-            }
         }
 
 
@@ -378,7 +351,7 @@ namespace NuSysApp
             xResizingTriangle.Margin = new Thickness(-28 / scaleX ,-28 / scaleY, 0, 0);
 
             //xMainRectangle.StrokeThickness = 3 / scaleX;
-            xMainRectangleBorder.BorderThickness = new Thickness(3/scaleY, 3/scaleX, 3/scaleY, 3/scaleX);
+            xMainRectangleBorder.BorderThickness = new Thickness(3/scaleX, 3/scaleY, 3/scaleX, 3/scaleY);
 
 
 

@@ -44,32 +44,22 @@ namespace NuSysApp
 
             CompositeTransform composite = new CompositeTransform();
             this.RenderTransform = composite;
-           
-            regionVM.SizeChanged += ChangeSize;
+
+            //vm.SizeChanged += ChangeSize;
             regionVM.LocationChanged += ChangeLocation;
 
-            var parentWidth = regionVM.ContainerViewModel.GetWidth();
-            var parentHeight = regionVM.ContainerViewModel.GetHeight();
+
+            var parentWidth = regionVM.RectangleWrapper.GetWidth();
+            var parentHeight = regionVM.RectangleWrapper.GetHeight();
 
             composite.TranslateX = model.TopLeftPoint.X * parentWidth;
             composite.TranslateY = model.TopLeftPoint.Y * parentHeight;
             regionVM.Width = (model.Width) * parentWidth;
             regionVM.Height = (model.Height) * parentHeight;
 
-
-            //If in detail view, adjust to the right to account for difference between view and actual image.
-            if (regionVM.ContainerViewModel is PdfDetailHomeTabViewModel)
-            {
-                var pvm = regionVM.ContainerViewModel as PdfDetailHomeTabViewModel;
-                var diffWidth = pvm.GetViewWidth() - parentWidth;
-                var diffHeight = pvm.GetViewHeight() - parentHeight;
-                composite.TranslateX += diffWidth / 2;
-                composite.TranslateY += diffHeight / 2;
-            }
-
-
             _tx = composite.TranslateX;
             _ty = composite.TranslateY;
+
         }
 
 
@@ -315,6 +305,33 @@ namespace NuSysApp
         {
             var vm = DataContext as PdfRegionViewModel;
             vm.SetNewName((sender as TextBox).Text);
+
+        }
+
+        public void RescaleComponents(double scaleX, double scaleY)
+        {
+            //Updates scale of delete button
+            DeleteTransform.ScaleX = 1 / scaleX;
+            DeleteTransform.ScaleY = 1 / scaleY;
+
+
+            //Updates scale of text box
+
+            NameTextTransform.ScaleX = 1 / scaleX;
+            NameTextTransform.ScaleY = 1 / scaleY;
+            //Updates margin so that it is directly on top of the rectangle.
+            xNameTextBox.Margin = new Thickness(0, -30 / scaleY, 0, 0);
+            xNameTextBox.MinWidth = (DataContext as PdfRegionViewModel).Width / scaleX;
+
+            //UPdates scale of Resizing Triangle
+            ResizerTransform.ScaleX = 1 / scaleX;
+            ResizerTransform.ScaleY = 1 / scaleY;
+            xResizingTriangle.Margin = new Thickness(-28 / scaleX, -28 / scaleY, 0, 0);
+
+            //xMainRectangle.StrokeThickness = 3 / scaleX;
+            xMainRectangleBorder.BorderThickness = new Thickness(3 / scaleY, 3 / scaleX, 3 / scaleY, 3 / scaleX);
+
+
 
         }
     }

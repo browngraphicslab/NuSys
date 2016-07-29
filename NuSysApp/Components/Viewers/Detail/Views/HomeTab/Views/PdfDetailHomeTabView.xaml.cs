@@ -38,11 +38,11 @@ namespace NuSysApp
         public PdfDetailHomeTabView(PdfDetailHomeTabViewModel vm)
         {
             InitializeComponent();
-            _libraryElementId = vm.Controller.ContentId;
+            _libraryElementId = vm.LibraryElementController.ContentId;
 
 
-            Canvas.SetZIndex(ItemsControl, 0);
-            vm.Controller.Disposed += ControllerOnDisposed;
+            //Canvas.SetZIndex(ItemsControl, 0);
+            vm.LibraryElementController.Disposed += ControllerOnDisposed;
             vm.PropertyChanged += PropertyChanged;
             vm.View = this;
 
@@ -58,7 +58,7 @@ namespace NuSysApp
             };
             //vm.MakeTagList();
 
-            vm.Controller.Disposed += ControllerOnDisposed;
+            vm.LibraryElementController.Disposed += ControllerOnDisposed;
         }
         private void PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -77,7 +77,7 @@ namespace NuSysApp
         private void ControllerOnDisposed(object source, object args)
         {
             var vm = (PdfDetailHomeTabViewModel)DataContext;
-            vm.Controller.Disposed += ControllerOnDisposed;
+            vm.LibraryElementController.Disposed += ControllerOnDisposed;
             DataContext = null;
         }
         
@@ -108,7 +108,7 @@ namespace NuSysApp
         private async void OnGoToSource(object sender, RoutedEventArgs e)
         {
             var model = (PdfNodeModel)((PdfNodeViewModel)DataContext).Model;
-            var libraryElementController = (DataContext as PdfDetailHomeTabViewModel)?.Controller;
+            var libraryElementController = (DataContext as PdfDetailHomeTabViewModel)?.LibraryElementController;
             string token = libraryElementController.GetMetadata("Token")?.ToString();
             await AccessList.OpenFile(token);
         }
@@ -166,6 +166,16 @@ namespace NuSysApp
 
             e.Handled = true;
             */
+        }
+
+        private void XImg_OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+
+        }
+
+        private void xClippingWrapper_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+
         }
 
         public double GetPdfHeight()

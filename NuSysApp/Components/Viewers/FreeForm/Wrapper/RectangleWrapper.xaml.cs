@@ -30,7 +30,7 @@ namespace NuSysApp
     ///             </local:RectangleWrapper>
     /// 
     ///  code behind -  place this in on loaded
-    ///     xClippingWrapper.Controller = _vm.LibraryElementController;
+    ///     xClippingWrapper.LibraryElementController = _vm.LibraryElementController;
     /// 
     /// </summary>
     public sealed partial class RectangleWrapper : UserControl
@@ -243,6 +243,12 @@ namespace NuSysApp
                                 regionLibraryElementController, this);
                         view = new ImageRegionView(vm as ImageRegionViewModel);
                         (view as ImageRegionView).RescaleComponents(WrapperTransform.ScaleX, WrapperTransform.ScaleY);
+                        break;
+                    case ElementType.PdfRegion:
+                        vm = new PdfRegionViewModel(regionLibraryElementController.LibraryElementModel as PdfRegionModel, 
+                                regionLibraryElementController as PdfRegionLibraryElementController, this);
+                        view = new PDFRegionView(vm as PdfRegionViewModel);
+                        (view as PDFRegionView).RescaleComponents(WrapperTransform.ScaleX, WrapperTransform.ScaleY);
                         break;
                     default:
                         vm = null;

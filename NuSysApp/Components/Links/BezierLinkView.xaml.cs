@@ -24,7 +24,7 @@ namespace NuSysApp
 
             vm.PropertyChanged += OnPropertyChanged;
            
-          //  vm.Controller.LibraryElementModel.OnTitleChanged+= ControllerOnTitleChanged;
+          //  vm.LibraryElementController.LibraryElementModel.OnTitleChanged+= ControllerOnTitleChanged;
             vm.Controller.Disposed += OnDisposed;
 
              Title.SizeChanged += delegate (object sender, SizeChangedEventArgs args)
