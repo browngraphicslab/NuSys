@@ -28,10 +28,25 @@ namespace NusysIntermediate
         public static readonly string REQUEST_SUCCESS_BOOL_KEY = "successful_request";
 
         /// <summary>
-        /// MIGHT be returned if an error occurs during the request handling
+        /// MIGHT be returned as the key that hold the error message 
+        /// if an error occurs during the request handling
         /// </summary>
         public static readonly string REQUEST_ERROR_MESSAGE_KEY = "error_message";
         #endregion AllRequests
+
+        #region GetContentDataModelRequest
+
+        /// <summary>
+        /// The key whose value will be the 32 character string for the id of the contentDataModel you are fetching
+        /// </summary>
+        public static readonly string GET_CONTENT_DATA_MODEL_REQUEST_CONTENT_ID_KEY = "content_data_model_id";
+        
+        /// <summary>
+        /// The key whose value should be the returned, json serialized, ContentDataModel requested
+        /// </summary>
+        public static readonly string GET_CONTENT_DATA_MODEL_REQUEST_RETURNED_CONTENT_DATA_MODEL_KEY = "content_data_model_id";
+
+        #endregion GetContentDataModelRequest
 
         #region GetEntireWorkspaceRequest
         /// <summary>
@@ -324,6 +339,7 @@ namespace NusysIntermediate
         /// </summary>
         public enum RequestType
         {
+            GetContentDataModelRequest,
             DeleteSendableRequest,
             NewNodeRequest,
             FinalizeInkRequest,

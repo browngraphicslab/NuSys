@@ -147,6 +147,7 @@ namespace NuSysApp
 
         /// <summary>
         /// this will simply spin off a new thread and execute the request you sent without waiting for server processing
+        /// ONLY USE THIS IN SPECIAL OCCASIONS
         /// </summary>
         /// <param name="request"></param>
         public void ExecuteRequest(Request request)

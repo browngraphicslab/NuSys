@@ -52,7 +52,7 @@ namespace NusysServer
                     case NusysConstants.RequestType.DeleteSendableRequest:
                         break;*/
                     case NusysConstants.RequestType.CreateNewLibrayElementRequest:
-                        requestHandler = null;
+                        requestHandler = new CreateNewLibraryElementRequestHandler();
                         break;
                     case NusysConstants.RequestType.GetEntireWorkspaceRequest:
                         requestHandler = new GetEntireWorkspaceRequestHandler();
