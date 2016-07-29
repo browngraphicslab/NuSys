@@ -32,7 +32,7 @@ namespace NuSysApp
 
         public DebouncingDictionary(string id, int milliSecondDebounce, bool updateLibraryElement = false)
         {
-            _timer = new Timer(SendMessage, false, Timeout.Infinite, Timeout.Infinite);
+      //      _timer = new Timer(SendMessage, false, Timeout.Infinite, Timeout.Infinite);
             _serverSaveTimer = new Timer(SendMessage, true, Timeout.Infinite, Timeout.Infinite);
             _dict = new ConcurrentDictionary<string, object>();
             _serverDict = new ConcurrentDictionary<string, object>();

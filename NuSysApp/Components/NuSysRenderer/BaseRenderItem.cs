@@ -13,6 +13,9 @@ namespace NuSysApp
     {
         public bool IsDirty { get; set; }
 
+
+        public virtual async Task Load() { }
+
         public virtual void Update(){
             
         }

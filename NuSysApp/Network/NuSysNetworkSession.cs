@@ -405,8 +405,8 @@ namespace NuSysApp
         {
             if (SessionController.Instance.ContentController.GetContent(id)?.Type == ElementType.PDF && SessionController.Instance.ContentController.GetLibraryElementController(id) != null && !SessionController.Instance.ContentController.GetLibraryElementController(id).IsLoaded)
             {
-                bool fileExists = await CachePDF.isFilePresent(id);
-
+               // bool fileExists = await CachePDF.isFilePresent(id);
+                bool fileExists = false;
                 if (fileExists) // exists in cache
                 {
                     var cacheData = await CachePDF.readFile(id);
@@ -424,7 +424,7 @@ namespace NuSysApp
                     await _serverClient.FetchLibraryElementData(id);
                     var data = SessionController.Instance.ContentController.GetContent(id).Data;
 
-                    CachePDF.createWriteFile(id, data); //save the data
+                   // CachePDF.createWriteFile(id, data); //save the data
                 }
             }
             else

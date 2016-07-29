@@ -63,7 +63,8 @@ namespace NuSysApp
 
         private int initChatNotifs;
 
-        public WebView WV => xWebView;
+        public WebView WV;
+        public Canvas RenderRect => xRenderRect;
 
         public SessionView()
         {
@@ -74,7 +75,20 @@ namespace NuSysApp
 
             SessionController.Instance.SessionView = this;
 
-            SizeChanged +=
+            WV = new WebView(WebViewExecutionMode.SeparateThread)
+            {
+                Width = 400,
+                Height = 300,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                RenderTransform = new TranslateTransform {Y = -400}
+            };
+
+            xOuterMost.Children.Add(WV);
+
+                  
+
+                       SizeChanged +=
                 delegate (object sender, SizeChangedEventArgs args)
                 {
                     Clip = new RectangleGeometry { Rect = new Rect(0, 0, args.NewSize.Width, args.NewSize.Height) };

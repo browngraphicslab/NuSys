@@ -2,16 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Graphics.DirectX;
 using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Imaging;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Geometry;
+using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using SharpDX.DirectWrite;
 
 namespace NuSysApp
 {
@@ -21,81 +27,30 @@ namespace NuSysApp
         private IRandomAccessStream _stream;
         private CanvasBitmap _bmp;
         private ICanvasResourceCreator _ds;
-        private static Semaphore _semaphore = new Semaphore(1,1);
+        private CanvasGeometry _geometry;
 
         public TextElementRenderItem(TextNodeViewModel vm, ICanvasResourceCreator ds)
         {
             _vm = vm;
             _ds = ds;
- 
-            Task.Run(async () =>
-            {
-                _semaphore.WaitOne();
-                await Task.Delay(75);
-                await UITask.Run(async () =>
-                {
-                   
-                    var wv = SessionController.Instance.SessionView.WV;
-                    wv.Width = _vm.Width;
-                    wv.Height = _vm.Height;
-                    wv.NavigationCompleted += TextNodeWebViewOnNavigationCompleted;
-                    wv.ScriptNotify += wvBrowser_ScriptNotify;
-                    wv.Navigate(new Uri("ms-appx-web:///Components/TextEditor/textview.html"));
-                });
-            });
-    }
-
-        private async void wvBrowser_ScriptNotify(object sender, NotifyEventArgs e)
-        {
-            var wv = SessionController.Instance.SessionView.WV;           
-            wv.ScriptNotify -= wvBrowser_ScriptNotify;
-            InMemoryRandomAccessStream ms = new InMemoryRandomAccessStream();
-            await wv.CapturePreviewToStreamAsync(ms);
-
-            // Create a small thumbnail.
-            int longlength = 180, width = 0, height = 0;
-            double srcwidth = wv.ActualWidth, srcheight = wv.ActualHeight;
-            double factor = srcwidth / srcheight;
-            if (factor < 1)
-            {
-                height = longlength;
-                width = (int)(longlength * factor);
-            }
-            else
-            {
-                width = longlength;
-                height = (int)(longlength / factor);
-            }
-
-            _stream = ms.CloneStream();
-
-
-            _bmp = await CanvasBitmap.LoadAsync(_ds, _stream);
-            _semaphore.Release(1);
-        }
-
-        private async void TextNodeWebViewOnNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
-        {
-            var wv = SessionController.Instance.SessionView.WV;
-            wv.NavigationCompleted -= TextNodeWebViewOnNavigationCompleted;
-            var vm = _vm as TextNodeViewModel;
-
-            var str = vm?.Text;
-            if (str != null)
-            {
-                String[] myString = { str };
-                IEnumerable<String> s = myString;
-                await wv.InvokeScriptAsync("InsertText", s);
-            }
+            _geometry = CanvasGeometry.CreateRectangle(_ds, new Rect { X = _vm.X, Y = _vm.Y, Width = _vm.Width, Height = _vm.Height });
+            
         }
 
         public async override void Draw(CanvasDrawingSession ds)
         {
             ds.DrawText(_vm.Title, new Vector2((float)_vm.X, (float)(_vm.Y-30)), Colors.Black);
-            ds.FillRectangle( new Rect {X=_vm.X, Y= _vm.Y, Width = _vm.Width, Height=_vm.Height}, Colors.Black);
+            ds.FillRectangle( new Rect {X=_vm.X, Y= _vm.Y, Width = _vm.Width, Height=_vm.Height}, Colors.White);
+            
+            var f = new CanvasTextFormat();
+            f.WordWrapping = CanvasWordWrapping.Wrap;
+            f.FontSize = 12;
+            if (_vm.Text != null) { 
+                var l = new CanvasTextLayout(_ds, _vm.Text, f, (float)_vm.Width, (float)_vm.Height);
 
-            if (_bmp != null)
-                ds.DrawImage(_bmp, new Rect { X = _vm.X, Y = _vm.Y, Width = _vm.Width, Height = _vm.Height });
+                ds.DrawTextLayout(l, (float)_vm.X, (float)_vm.Y, Colors.Black);
+            }
+
         }
     }
 

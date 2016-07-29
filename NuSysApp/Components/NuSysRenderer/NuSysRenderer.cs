@@ -72,12 +72,27 @@ namespace NuSysApp
         {
             foreach (var newItem in args.NewItems)
             {
+                BaseRenderItem item;
                 var vm = (ElementViewModel) newItem;
-                if (vm is TextNodeViewModel)
-                    _renderItems2.Add(new TextElementRenderItem((TextNodeViewModel)vm, _canvas));
-                else
-                    _renderItems2.Add(new ElementRenderItem(vm, _canvas));
-
+                if (vm is TextNodeViewModel) { 
+                    item = new TextElementRenderItem((TextNodeViewModel) vm, _canvas);
+                    _renderItems0.Add(item);
+                }
+                else if (vm is ImageElementViewModel) { 
+                    item = new ImageElementRenderItem((ImageElementViewModel) vm, _canvas);
+                    _renderItems1.Add(item);
+                }
+                else if (vm is PdfNodeViewModel)
+                {
+                    item = new PdfElementRenderItem((PdfNodeViewModel)vm, _canvas);
+                    _renderItems1.Add(item);
+                }
+                else { 
+                    item = new ElementRenderItem(vm, _canvas);
+                    _renderItems2.Add(item);
+                }
+                await item.Load();
+                
             }
         }
 
@@ -99,7 +114,7 @@ namespace NuSysApp
         {
             using (var ds = args.DrawingSession)
             {
-                ds.Clear(Colors.Gold);
+                ds.Clear(Colors.LightGoldenrodYellow);
                 ds.Transform = T;
                 foreach (var item in _renderItems0)
                     item.Draw(ds);

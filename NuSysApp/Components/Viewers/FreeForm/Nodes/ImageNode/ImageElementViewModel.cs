@@ -133,8 +133,6 @@ namespace NuSysApp
         {
             await DisplayImage();
             this.CreateRegionViews();
-
-
         }
 
         private async Task DisplayImage()

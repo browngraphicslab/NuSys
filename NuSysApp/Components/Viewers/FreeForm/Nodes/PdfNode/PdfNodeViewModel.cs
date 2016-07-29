@@ -15,9 +15,12 @@ using Microsoft.Graphics.Canvas.Brushes;
 using MuPDFWinRT;
 using LdaLibrary;
 using System.Collections.ObjectModel;
+using Windows.ApplicationModel;
+using Windows.Graphics.Imaging;
 using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
+using Image = SharpDX.Direct2D1.Image;
 
 namespace NuSysApp
 {
@@ -147,9 +150,9 @@ namespace NuSysApp
 
         private async void LibraryElementModelOnOnLoaded(object sender)
         {
+            Controller.LibraryElementController.Loaded -= LibraryElementModelOnOnLoaded;
             await DisplayPdf();
             this.CreatePdfRegionViews();
-
         }
 
 
@@ -223,15 +226,34 @@ namespace NuSysApp
             buf.Length = image.PixelBuffer.Length;
             
             _document.DrawPage(pageNumber, buf, 0, 0, width, height, false);
+            Width = width;
+            Height = height;
+            Buffer = buf;
+            //await s.ReadAsync(Bytes, 0, (int) s.Length);
 
-            var s = buf.AsStream();
-            await s.CopyToAsync(image.PixelBuffer.AsStream());
-            image.Invalidate();
-            ImageSource = image;
+           // var s= buf.AsStream();
+
+            //RandomAccessStream.
+           // await s.CopyToAsync(image.PixelBuffer.AsStream());
+           // image.Invalidate();
+
+      //      Image x = (Bitmap)((new ImageConverter()).ConvertFrom(jpegByteArray))
+            /*
+            InMemoryRandomAccessStream ras = new InMemoryRandomAccessStream();
+
+            using (Stream stream = image.PixelBuffer)
+            {
+                await stream.CopyToAsync(ras.AsStreamForWrite());
+            }
+            */
+            //ImageSource = image;
+
             RaisePropertyChanged("ImageSource");
 
 
         }
+
+        public IBuffer Buffer { get; set; }
 
 
         public override void SetSize(double width, double height)
