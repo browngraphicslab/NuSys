@@ -166,24 +166,6 @@ namespace NuSysApp
             await AccessList.OpenFile(token);
         }
 
-        private void xImg_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            var vm = DataContext as ImageDetailHomeTabViewModel;
-            //foreach (var regionView in vm.RegionViews)
-            //{
-            //    regionView.Deselect();
-            //}
-        }
-
-        private void BitmapImage_ImageOpened(object sender, RoutedEventArgs e)
-        {
-            var vm = (ImageDetailHomeTabViewModel) DataContext;
-            vm.SetExistingRegions();
-            ContentLoaded?.Invoke(this);
-            xClippingWrapper.Controller = vm.LibraryElementController;
-            
-        }
-
 #region addToCollection
         private void AddToCollection_OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {

@@ -114,34 +114,62 @@ namespace NuSysApp
             {
                 return;
             }
+
             var rt = ((CompositeTransform)this.RenderTransform);
             if (rt == null)
             {
                 return;
             }
-            //Because editing is done only in region editor tab, this is probably safe to cast.
-            var pvm = vm.ContainerViewModel as PdfDetailHomeTabViewModel;
-            var horizontalMargin = (pvm.GetViewWidth() - pvm.GetWidth()) / 2;
-            var verticalMargin = (pvm.GetViewHeight() - pvm.GetHeight()) / 2;
+
+            var ivm = vm.RectangleWrapper as RectangleWrapper;
+            var horizontalMargin = 0;// (-ivm.GetWidth() + ivm.GetViewWidth())/2;
+            var verticalMargin = 0;// (-ivm.GetHeight() + ivm.GetViewHeight())/2;
 
             var leftXBound = horizontalMargin;
-            var rightXBound = horizontalMargin + pvm.GetWidth();
+            var rightXBound = horizontalMargin + ivm.GetWidth() - vm.Width;
+
 
             var upYBound = verticalMargin;
-            var downYBound = verticalMargin + pvm.GetHeight();
+            var downYBound = verticalMargin + ivm.GetHeight() - vm.Height;
 
-            if (xMainRectangle.Width + rt.TranslateX + e.Delta.Translation.X <= rightXBound)
+            _tx += e.Delta.Translation.X * ResizerTransform.ScaleX;
+            _ty += e.Delta.Translation.Y * ResizerTransform.ScaleY;
+
+            //Translating X
+            if (_tx < leftXBound)
             {
-                vm.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
+                rt.TranslateX = leftXBound;
+            }
+            else if (_tx > rightXBound)
+            {
+                rt.TranslateX = rightXBound;
+            }
+            else
+            {
+                rt.TranslateX = _tx;
             }
 
-            if (xMainRectangle.Height + rt.TranslateY + e.Delta.Translation.Y <= downYBound)
-            {
-                vm.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
 
+            //Translating Y
+            if (_ty < upYBound)
+            {
+                rt.TranslateY = upYBound;
+            }
+            else if (_ty > downYBound)
+            {
+                rt.TranslateY = vm.RectangleWrapper.GetHeight() - vm.OriginalHeight;
+            }
+            else
+            {
+                rt.TranslateY = _ty;
             }
 
-            vm.SetNewSize(xMainRectangle.Width, xMainRectangle.Height);
+            var composite = RenderTransform as CompositeTransform;
+            //Makes sure the location of the point is generalized -- not relative to the margined container.
+            var topLeft = new Point(composite.TranslateX - leftXBound, composite.TranslateY - upYBound);
+            //Updates the viewmodel
+            vm.SetNewLocation(topLeft);
+            e.Handled = true;
         }
 
 
@@ -164,26 +192,27 @@ namespace NuSysApp
             {
                 return;
             }
-            var pvm = vm.ContainerViewModel as PdfDetailHomeTabViewModel;
-            var horizontalMargin = (pvm.GetViewWidth() - pvm.GetWidth()) / 2;
-            var verticalMargin = (pvm.GetViewHeight() - pvm.GetHeight()) / 2;
+
+            var ivm = vm.RectangleWrapper as RectangleWrapper;
+            var horizontalMargin = 0;// (-ivm.GetWidth() + ivm.GetViewWidth())/2;
+            var verticalMargin = 0;// (-ivm.GetHeight() + ivm.GetViewHeight())/2;
 
             var leftXBound = horizontalMargin;
-            var rightXBound = horizontalMargin + pvm.GetWidth() - vm.Width;
+            var rightXBound = horizontalMargin + ivm.GetWidth() - vm.Width;
 
 
             var upYBound = verticalMargin;
-            var downYBound = verticalMargin + pvm.GetHeight() - vm.Height;
+            var downYBound = verticalMargin + ivm.GetHeight() - vm.Height;
 
-
-            _tx += e.Delta.Translation.X;
-            _ty += e.Delta.Translation.Y;
+            _tx += e.Delta.Translation.X * ResizerTransform.ScaleX;
+            _ty += e.Delta.Translation.Y * ResizerTransform.ScaleY;
 
             //Translating X
             if (_tx < leftXBound)
             {
                 rt.TranslateX = leftXBound;
-            } else if (_tx > rightXBound)
+            }
+            else if (_tx > rightXBound)
             {
                 rt.TranslateX = rightXBound;
             }
@@ -192,6 +221,7 @@ namespace NuSysApp
                 rt.TranslateX = _tx;
             }
 
+
             //Translating Y
             if (_ty < upYBound)
             {
@@ -199,7 +229,7 @@ namespace NuSysApp
             }
             else if (_ty > downYBound)
             {
-                rt.TranslateY = downYBound;
+                rt.TranslateY = vm.RectangleWrapper.GetHeight() - vm.OriginalHeight;
             }
             else
             {
@@ -210,9 +240,8 @@ namespace NuSysApp
             //Makes sure the location of the point is generalized -- not relative to the margined container.
             var topLeft = new Point(composite.TranslateX - leftXBound, composite.TranslateY - upYBound);
             //Updates the viewmodel
-
             vm.SetNewLocation(topLeft);
-            e.Handled = true; 
+            e.Handled = true;
         }
 
         private void RectangleRegionView_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
@@ -231,29 +260,26 @@ namespace NuSysApp
             this.Select();
             e.Handled = true;
         }
-
         public void Deselect()
         {
-            xMainRectangle.StrokeThickness = 3;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
+            xMainRectangleBorder.BorderThickness = new Thickness(3 * ResizerTransform.ScaleY, 3 * ResizerTransform.ScaleX, 3 * ResizerTransform.ScaleY, 3 * ResizerTransform.ScaleX);
             xResizingTriangle.Visibility = Visibility.Collapsed;
             xDelete.Visibility = Visibility.Collapsed;
             xNameTextBox.Visibility = Visibility.Collapsed;
-            Selected = false;
 
+            Selected = false;
         }
 
         public void Select()
         {
-            xMainRectangle.StrokeThickness = 6;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
+            xMainRectangleBorder.BorderThickness = new Thickness(6 * ResizerTransform.ScaleY, 6 * ResizerTransform.ScaleX, 6 * ResizerTransform.ScaleY, 6 * ResizerTransform.ScaleX);
+
             xResizingTriangle.Visibility = Visibility.Visible;
             xDelete.Visibility = Visibility.Visible;
             xNameTextBox.Visibility = Visibility.Visible;
             Selected = true;
-
-
         }
+
         private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             

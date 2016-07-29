@@ -262,8 +262,6 @@ namespace NuSysApp
 
         public void Deselect()
         {
-            //xMainRectangle.StrokeThickness = 3*ResizerTransform.ScaleX;
-            //xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
             xMainRectangleBorder.BorderThickness = new Thickness(3 * ResizerTransform.ScaleY, 3 * ResizerTransform.ScaleX, 3 * ResizerTransform.ScaleY, 3 * ResizerTransform.ScaleX);
             xResizingTriangle.Visibility = Visibility.Collapsed;
             xDelete.Visibility = Visibility.Collapsed;
@@ -274,8 +272,6 @@ namespace NuSysApp
 
         public void Select()
         {
-            //xMainRectangle.StrokeThickness = 6*ResizerTransform.ScaleX;
-            //xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
             xMainRectangleBorder.BorderThickness = new Thickness(6 * ResizerTransform.ScaleY, 6 * ResizerTransform.ScaleX, 6 * ResizerTransform.ScaleY,6 * ResizerTransform.ScaleX);
 
             xResizingTriangle.Visibility = Visibility.Visible;
@@ -361,9 +357,6 @@ namespace NuSysApp
                
             //xMainRectangle.StrokeThickness = 3 / scaleX;
             xMainRectangleBorder.BorderThickness = new Thickness(3/scaleX, 3/scaleY, 3/scaleX, 3/scaleY);
-
-
-
         }
     }
 }

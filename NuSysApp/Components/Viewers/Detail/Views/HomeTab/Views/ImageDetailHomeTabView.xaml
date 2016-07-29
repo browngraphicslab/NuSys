@@ -35,7 +35,7 @@
                         <CompositeTransform x:Name="WrapperTransform"/>
                     </local:RectangleWrapper.RenderTransform>
                     <local:RectangleWrapper.Content>
-                        <Image x:Name="xImg" PointerPressed="xImg_PointerPressed" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Center" SizeChanged="XImg_OnSizeChanged" Source="{Binding Image}"/>
+                        <Image x:Name="xImg" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Center" SizeChanged="XImg_OnSizeChanged" Source="{Binding Image}"/>
                     </local:RectangleWrapper.Content>
                 </local:RectangleWrapper>
 

@@ -40,13 +40,9 @@ namespace NuSysApp
             InitializeComponent();
             _libraryElementId = vm.LibraryElementController.ContentId;
 
-
-            //Canvas.SetZIndex(ItemsControl, 0);
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
-            vm.PropertyChanged += PropertyChanged;
             vm.View = this;
 
-            //vm.CreateRegionViews();
             DataContext = vm;
             xImg.ImageOpened += delegate
             {
@@ -56,17 +52,11 @@ namespace NuSysApp
             {
                 ContentLoaded?.Invoke(this);
             };
-            //vm.MakeTagList();
+
+
+            xClippingWrapper.Controller = vm.LibraryElementController;
 
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
-        }
-        private void PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case "RegionViews":
-                    break;
-            }
         }
 
         private void XBorderOnSizeChanged(object sender, SizeChangedEventArgs e)
