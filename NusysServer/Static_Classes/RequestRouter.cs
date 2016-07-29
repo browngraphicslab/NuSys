@@ -17,6 +17,7 @@ namespace NusysServer
                 var requiresReturn = originalMessage.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING);
                 RequestHandler requestHandler;
                 Request request = new Request(originalMessage);
+                Message messageToReturn;
 
                 try
                 {
@@ -64,6 +65,7 @@ namespace NusysServer
                         requestHandler = null;
                         return false;
                     }
+                    messageToReturn = requestHandler.HandleRequest(request, webSocketHandler) ?? new Message();
                 }
                 catch (Exception e)
                 {
@@ -75,7 +77,7 @@ namespace NusysServer
                     return false;
                 }
 
-                var messageToReturn = requestHandler.HandleRequest(request, webSocketHandler) ?? new Message();
+
                 if (requiresReturn)
                 {
                     //defaults to returning successful request if the individual handler hasn't specified it 

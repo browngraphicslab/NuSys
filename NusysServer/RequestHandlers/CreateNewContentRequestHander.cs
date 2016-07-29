@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using NusysIntermediate;
 
 namespace NusysServer
@@ -12,18 +13,9 @@ namespace NusysServer
             Debug.Assert(message.ContainsKey(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY));
             Debug.Assert(message.ContainsKey(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY));
             Debug.Assert(message.ContainsKey(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES));
-
             var returnMessage = new Message();
 
-            //try to get the type of content being added
-            NusysConstants.ContentType contentType;
-            if (!NusysConstants.ContentType.TryParse(message.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY), out contentType))
-            {
-                returnMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = false;
-                return returnMessage;
-            }
-
-            Message addContentToDatabaseMessage = CreateAddContentToDatabaseMessage(contentType, message);
+            Message addContentToDatabaseMessage = CreateAddContentToDatabaseMessage(message);
 
             //try to add new content to the sql database
             var createNewContentsuccess = ContentController.Instance.SqlConnector.AddContent(addContentToDatabaseMessage);
@@ -40,9 +32,9 @@ namespace NusysServer
             message.Remove(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY);
             message.Remove(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES);
 
-            var createNewLibraryRequest = new Request(NusysConstants.RequestType.CreateNewContentRequest, message);
+            var createNewLibraryRequest = new Request(NusysConstants.RequestType.CreateNewLibrayElementRequest, message);
             var createNewLibraryElementRequestHandler = new CreateNewLibraryElementRequestHandler();
-
+            
             //return a message saying whether content and library element model were successfully created
             returnMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = createNewLibraryElementRequestHandler.HandleRequest(
                 createNewLibraryRequest, senderHandler)
@@ -57,9 +49,12 @@ namespace NusysServer
         /// <param name="contentType"></param>
         /// <param name="originalMessage"></param>
         /// <returns></returns>
-        private Message CreateAddContentToDatabaseMessage(NusysConstants.ContentType contentType, Message originalMessage)
+        private Message CreateAddContentToDatabaseMessage(Message originalMessage)
         {
-            Message addContentToDatabaseMessage = null;
+            //try to get the type of content being added
+            var contentType = (NusysConstants.ContentType)Enum.Parse(typeof(NusysConstants.ContentType),
+                originalMessage.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY), true);
+            Message addContentToDatabaseMessage = new Message();
             //depending on type of content, create new URL, or create new file in the server
             switch (contentType)
             {
