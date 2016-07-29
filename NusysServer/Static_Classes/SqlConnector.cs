@@ -62,7 +62,6 @@ namespace NusysServer
                 NusysIntermediate.NusysConstants.CONTENT_TABLE_CONTENT_URL + " varchar);");
 
             var libraryElementTable = MakeCommand("CREATE TABLE " + GetTableName(SQLTableType.LibrayElement) + " (" +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_ID_KEY + " char(32), " +
                 NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY + " char(32), " +
                 NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY + " char(32), " +
                 NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_TYPE_KEY + " char(32), " +
@@ -245,6 +244,25 @@ namespace NusysServer
         }
 
         /// <summary>
+        /// To remove a single library element from the server, the passed in message should contain the LIBRARY_ELEMENT_LIBRARY_ID_KEY.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public bool DeleteLibraryElement(Message message)
+        {
+            if (!message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY))
+            {
+                return false;
+            }
+            var safeInsertMessage = new Message();
+            safeInsertMessage[NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY] =
+                message[NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY];
+            var cmd = GetDeleteCommand(SQLTableType.LibrayElement, safeInsertMessage, NusysConstants.Operator.And);
+            var successInt = cmd.ExecuteNonQuery();
+            return successInt > 0;
+        }
+
+        /// <summary>
         /// Adds a string property to the properties table using the given key and library or alias Id
         /// </summary>
         /// <param name="objectId"></param>
@@ -257,6 +275,8 @@ namespace NusysServer
             var successInt = cmd.ExecuteNonQuery();
             return successInt > 0;
         }
+
+
 
         /// <summary>
         /// creates an insert command for the table t
@@ -290,5 +310,37 @@ namespace NusysServer
             sqlStatement = sqlStatement + columnNames + " VALUES " + values + ";";
             return MakeCommand(sqlStatement);
         }
+
+
+
+        /// <summary>
+        /// This returns an sql delete command where either all or any (depending on the delete operator passed in) 
+        /// of the key value pairs of columnValueMessage is is contained in the table.
+        /// </summary>
+        /// <param name="tableType"></param>
+        /// <param name="columnValueMessage"></param>
+        /// <param name="deleteOperator"></param>
+        /// <returns></returns>
+        private SqlCommand GetDeleteCommand(SQLTableType tableType, Message columnValueMessage, NusysConstants.Operator deleteOperator )
+        {
+            var deleteOperatorString = deleteOperator.ToString();
+            var deleteStringCmd = "DELETE FROM " + GetTableName(tableType) + " WHERE ";
+            int i = 0;
+            foreach (var kvp in columnValueMessage)
+            {
+                if (i == 0)
+                {
+                    deleteStringCmd = deleteStringCmd + kvp.Key + " = '" + kvp.Value + "' ";
+                }
+                else
+                {
+                    deleteStringCmd = deleteStringCmd + deleteOperatorString + kvp.Key + " = '" + kvp.Value + "' ";
+                }
+                i++;
+            }
+            deleteStringCmd = deleteStringCmd + ";";
+            return MakeCommand(deleteStringCmd);
+        }
+
     }
 }
