@@ -57,6 +57,9 @@ namespace NusysServer
                     case NusysConstants.RequestType.GetEntireWorkspaceRequest:
                         requestHandler = new GetEntireWorkspaceRequestHandler();
                         break;
+                    case NusysConstants.RequestType.NewContentRequest:
+                        requestHandler = new CreateNewContentRequestHander();
+                        break;
                     default:
                         requestHandler = null;
                         return false;

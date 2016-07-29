@@ -12,7 +12,7 @@ namespace NuSysApp
     {
         public SendableUpdateRequest(Message m, bool saveToServer = false) : base(NusysConstants.RequestType.SendableUpdateRequest, m)
         {
-            //TODO ADD BACK IN SAVE TO SERVER FUNCTIONALITY.  
+            //TODO ADD BACK IN SAVE-TO-SERVER FUNCTIONALITY.  
             //MAYBE ADD A NEW REQUEST TO MATCH OLD FUNCTIONALITY
             //VERY IMPORTANT ASK TRENT
         }

@@ -60,6 +60,25 @@ namespace NusysIntermediate
         public static readonly string GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY = "returned_workspace_arguments";
         #endregion GetEntireWorkspaceRequest
 
+        #region CreateNewContentRequest
+        /// <summary>
+        /// The key used to hold the type of content being added
+        /// </summary>
+        public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY = "content_type_key";
+
+        /// <summary>
+        /// The key used to hold the content id.
+        /// </summary>
+        public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY = "content_id_key";
+
+        /// <summary>
+        /// The key used to hold the base 64 string of the contents data bytes
+        /// </summary>
+        public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES = "content_id_key";
+
+        #endregion CreateNewContentRequest
+
+
         #endregion RequestKeys
         #region SQLColumnNames
 
@@ -277,7 +296,7 @@ namespace NusysIntermediate
         /// <summary>
         /// varchar url of the content
         /// </summary>
-        public static readonly string CONTENT_TABLE_URL = "content_url";
+        public static readonly string CONTENT_TABLE_CONTENT_URL = "content_ur";
         #endregion Content
         #endregion SQLColumnNames
         #region SQLTableNames
@@ -359,8 +378,8 @@ namespace NusysIntermediate
             AddInkRequest,
             RemoveInkRequest,
             ChatRequest,
-
-            GetEntireWorkspaceRequest
+            GetEntireWorkspaceRequest,
+            CreateNewContentRequest
         }
 
         /// <summary>
