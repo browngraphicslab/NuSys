@@ -59,7 +59,7 @@ namespace NusysServer
             var contentTable = MakeCommand("CREATE TABLE " + GetTableName(SQLTableType.Content) + " (" +
                 NusysIntermediate.NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY + " char(32), " +
                 NusysIntermediate.NusysConstants.CONTENT_TABLE_TYPE_KEY + " char(32), " +
-                NusysIntermediate.NusysConstants.CONTENT_TABLE_URL + " varchar);");
+                NusysIntermediate.NusysConstants.CONTENT_TABLE_CONTENT_URL + " varchar);");
 
             var libraryElementTable = MakeCommand("CREATE TABLE " + GetTableName(SQLTableType.LibrayElement) + " (" +
                 NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_ID_KEY + " char(32), " +
@@ -212,6 +212,22 @@ namespace NusysServer
                 }
             }
             var cmd = GetInsertCommand(SQLTableType.LibrayElement, acceptedKeysDictionary);
+            var successInt = cmd.ExecuteNonQuery();
+            return successInt > 0;
+        }
+
+        /// <summary>
+        /// To add a content to the server.  Returns true if successful, false otherwise
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public bool AddContent(Message message)
+        {
+            if (!message.ContainsKey(NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY))
+            {
+                return false;
+            }
+            var cmd = GetInsertCommand(SQLTableType.Content, message);
             var successInt = cmd.ExecuteNonQuery();
             return successInt > 0;
         }
