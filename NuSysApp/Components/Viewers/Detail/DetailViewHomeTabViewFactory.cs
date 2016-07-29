@@ -41,6 +41,7 @@ namespace NuSysApp
                 case ElementType.Video:
                     view = new VideoDetailHomeTabView(new VideoDetailHomeTabViewModel(controller));
                     break;
+                case ElementType.AudioRegion:
                 case ElementType.Audio:
                     view = new AudioDetailHomeTabView(new AudioDetailHomeTabViewModel(controller));
                     break;

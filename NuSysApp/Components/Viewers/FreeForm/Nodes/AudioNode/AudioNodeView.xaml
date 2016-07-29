@@ -38,13 +38,6 @@
         <local:NodeTemplate.Inner>
             <Grid>
                 <local:AudioMediaPlayer x:Name="MediaPlayer"/>
-                <ItemsControl ItemsSource="{Binding Regions}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <Grid/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
             </Grid>
             <!--<Grid x:Name ="grid" PointerPressed="Grid_OnPointerPressed" Width="{Binding Width}">
                 <Grid.Resources>

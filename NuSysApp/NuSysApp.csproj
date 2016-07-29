@@ -391,6 +391,9 @@
     <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoMediaPlayer.xaml.cs">
       <DependentUpon>VideoMediaPlayer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Wrapper\AudioWrapper.xaml.cs">
+      <DependentUpon>AudioWrapper.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Viewers\FreeForm\Wrapper\RectangleWrapper.xaml.cs">
       <DependentUpon>RectangleWrapper.xaml</DependentUpon>
     </Compile>
@@ -1168,6 +1171,10 @@
     <Page Include="Components\Viewers\FreeForm\Nodes\WordNode\WordNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Wrapper\AudioWrapper.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\FreeForm\Wrapper\RectangleWrapper.xaml">
       <SubType>Designer</SubType>

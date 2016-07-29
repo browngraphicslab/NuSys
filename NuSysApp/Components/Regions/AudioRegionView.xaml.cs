@@ -57,7 +57,7 @@ namespace NuSysApp
         private void Handle_OnManipulationDelta2(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = this.DataContext as AudioRegionViewModel;
-            if (Rect.Width + e.Delta.Translation.X > 0 && vm.RightHandleX + e.Delta.Translation.X < vm.ContainerViewModel.GetWidth())
+            if (Rect.Width + e.Delta.Translation.X > 0 && vm.RightHandleX + e.Delta.Translation.X < vm.AudioWrapper.ActualWidth)
             {
                 //            (Bound2.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
                 //         Bound2.X2 += e.Delta.Translation.X;
@@ -130,7 +130,7 @@ namespace NuSysApp
         private void Rect_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = this.DataContext as AudioRegionViewModel;
-            if (Rect.Width + e.Delta.Translation.X > 0 && vm.RightHandleX + e.Delta.Translation.X < vm.ContainerViewModel.GetWidth() && vm.LeftHandleX + e.Delta.Translation.X > 0)
+            if (Rect.Width + e.Delta.Translation.X > 0 && vm.RightHandleX + e.Delta.Translation.X < vm.AudioWrapper.ActualWidth && vm.LeftHandleX + e.Delta.Translation.X > 0)
             {
 
                 vm.SetNewPoints(e.Delta.Translation.X, e.Delta.Translation.X);

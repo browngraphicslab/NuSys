@@ -31,7 +31,7 @@ namespace NuSysApp
             get
             {
                 var model = Model as AudioRegionModel;
-                return ContainerViewModel.GetWidth() * model.Start;
+                return AudioWrapper.ActualWidth * model.Start;
             } 
         }
         public double LefthandleY1 { get; set; }
@@ -42,10 +42,10 @@ namespace NuSysApp
             get
             {
                 var model = Model as AudioRegionModel;
-                return ContainerViewModel.GetWidth() * model.End;
+                return AudioWrapper.ActualWidth * model.End;
             } 
         }
-        public double RightHandleY1 { get;  }
+        public double RightHandleY1 { get; set; }
         public double RightHandleY2 { get; set; }
         public double RegionHeight { get; set; }
         public double RegionWidth { get; set; }
@@ -61,40 +61,38 @@ namespace NuSysApp
                 RaisePropertyChanged("Name");
             }
         }
-        public bool Editable
-        {
-            set
-            {
-
-                _editable = value;
-
-                RaisePropertyChanged("Editable");
-                RaisePropertyChanged("IsReadOnly");
-            }
-            get
-            {
-                return _editable;
-            }
-        }
         //needed for xaml (setting text box to read only)
         public bool IsReadOnly { get { return !Editable; } }
 
-        private bool _editable;
+        public AudioWrapper AudioWrapper { get; set; }
 
-        public AudioRegionViewModel(AudioRegionModel model, AudioRegionLibraryElementController regionLibraryElementController, Sizeable sizeable) : base(model, regionLibraryElementController, sizeable)
+        public AudioRegionViewModel(AudioRegionModel model, AudioRegionLibraryElementController regionLibraryElementController, AudioWrapper wrapper) : base(model, regionLibraryElementController, null)
         {
-            ContainerSizeChanged += BaseSizeChanged;
-            RegionWidth = (model.End-model.Start)*sizeable.GetWidth();
-            RegionHeight = sizeable.GetHeight();
+        //    ContainerSizeChanged += BaseSizeChanged;
 
-            LefthandleY1 = 10;
-            LefthandleY2 = 110; //+ contentView.ActualHeight;
-            RightHandleY1 = 10;
-            RightHandleY2 = 110; //+ contentView.ActualHeight;
+
+
             Name = Model.Title;
 
             regionLibraryElementController.TimeChanged += RegionController_TimeChanged;
             regionLibraryElementController.TitleChanged += RegionController_TitleChanged;
+            LefthandleY1 = 0;
+            LefthandleY2 = 110; //+ contentView.ActualHeight;
+            RightHandleY1 = 0;
+            RightHandleY2 = 110; //+ contentView.ActualHeight;
+            AudioWrapper = wrapper;
+            AudioWrapper.SizeChanged += AudioWrapper_SizeChanged;
+        }
+
+        private void AudioWrapper_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var audioModel = Model as AudioRegionModel;
+            RegionWidth = (audioModel.End - audioModel.Start) * AudioWrapper.ActualWidth;
+            RegionHeight = AudioWrapper.ActualHeight;
+            RaisePropertyChanged("RegionHeight");
+            RaisePropertyChanged("RegionWidth");
+            RaisePropertyChanged("LeftHandleX");
+            RaisePropertyChanged("RightHandleX");
 
         }
 
@@ -103,7 +101,7 @@ namespace NuSysApp
             var model = Model as AudioRegionModel;
             model.Start = start;
             model.End = end;
-            RegionWidth = (model.End - model.Start) * ContainerViewModel.GetWidth();
+            RegionWidth = (model.End - model.Start) * AudioWrapper.ActualWidth;
 
             RaisePropertyChanged("LeftHandleX");
             RaisePropertyChanged("RegionWidth");
@@ -138,9 +136,9 @@ namespace NuSysApp
             {
                 return;
             }
-            model.Start += Start / ContainerViewModel.GetWidth();
-            model.End += End / ContainerViewModel.GetWidth();
-            RegionWidth = (model.End - model.Start)*ContainerViewModel.GetWidth();
+            model.Start += Start / AudioWrapper.ActualWidth;
+            model.End += End / AudioWrapper.ActualWidth;
+            RegionWidth = (model.End - model.Start)* AudioWrapper.ActualWidth;
 
             audioRegionController.SetEndTime(model.End);
             audioRegionController.SetStartTime(model.Start);

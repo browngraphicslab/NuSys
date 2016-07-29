@@ -30,6 +30,17 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             MediaElement.SetValue(Canvas.ZIndexProperty, 1);
+
+            if (DataContext is AudioDetailHomeTabViewModel)
+            {
+                var vm = DataContext as AudioDetailHomeTabViewModel;
+                xAudioWrapper.Controller = vm.Controller;
+            }
+            else if (DataContext is AudioNodeViewModel)
+            {
+                var vm = DataContext as AudioNodeViewModel;
+                xAudioWrapper.Controller = vm.Controller.LibraryElementController;
+            }
         }
 
         private void Stop_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -82,7 +93,16 @@ namespace NuSysApp
 
             MediaElement.Position = new TimeSpan(0);
 
-
+            if (DataContext is AudioDetailHomeTabViewModel)
+            {
+                var vm = DataContext as AudioDetailHomeTabViewModel;
+                xAudioWrapper.Controller = vm.Controller;
+            }
+            else if (DataContext is AudioNodeViewModel)
+            {
+                var vm = DataContext as AudioNodeViewModel;
+                xAudioWrapper.Controller = vm.Controller.LibraryElementController;
+            }
         }
 
         private void ProgressBar_OnTapped(object sender, TappedRoutedEventArgs e)
