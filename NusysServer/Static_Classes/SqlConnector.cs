@@ -323,6 +323,7 @@ namespace NusysServer
         /// <returns></returns>
         private SqlCommand GetDeleteCommand(SQLTableType tableType, Message columnValueMessage, NusysConstants.Operator deleteOperator )
         {
+            //TODO Clean message
             var deleteOperatorString = deleteOperator.ToString();
             var deleteStringCmd = "DELETE FROM " + GetTableName(tableType) + " WHERE ";
             int i = 0;

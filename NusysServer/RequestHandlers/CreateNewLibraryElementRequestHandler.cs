@@ -15,7 +15,6 @@ namespace NusysServer
 
             var message = GetRequestMessage(request);
 
-            Debug.Assert(message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_ID_KEY));
             Debug.Assert(message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY));
             Debug.Assert(message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY));
             Debug.Assert(message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_TYPE_KEY));

@@ -83,7 +83,12 @@ namespace NusysIntermediate
 
         #endregion CreateNewContentRequest
 
-
+        #region DeleteLibraryElementRequest
+        /// <summary>
+        /// the key used to send the library element id key of the library element to be deleted
+        /// </summary>
+        public static readonly string DELETE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
+        #endregion DeleteLibraryElementRequest
         #endregion RequestKeys
         #region SQLColumnNames
 
@@ -142,11 +147,6 @@ namespace NusysIntermediate
         #endregion alias
 
         #region libraryElementModel
-        /// <summary>
-        /// 32-character string, aka an ID.  
-        /// </summary>
-        public static readonly string LIBRARY_ELEMENT_ID_KEY = "id";
-
         /// <summary>
         /// element type enum in string form.  call ElementType.ToString() to get this string when you have an elementtype variable
         /// 32 characters max
@@ -233,7 +233,6 @@ namespace NusysIntermediate
             { LIBRARY_ELEMENT_LIBRARY_ID_KEY,typeof(string)},
             { LIBRARY_ELEMENT_CONTENT_ID_KEY,typeof(string)},
             { LIBRARY_ELEMENT_TYPE_KEY,typeof(string)},
-            { LIBRARY_ELEMENT_ID_KEY,typeof(string)}
         };
         #endregion libraryElementModel
 
@@ -366,6 +365,12 @@ namespace NusysIntermediate
             Image,
             Video,
             Audio
+        }
+
+        public enum Operator
+        {
+            And,
+            Or
         }
 
         /// <summary>
