@@ -329,7 +329,7 @@ namespace NuSysApp
 
 
             //Updates scale of text box
-
+            
             NameTextTransform.ScaleX = 1 / scaleX;
             NameTextTransform.ScaleY = 1 / scaleY;
             //Updates margin so that it is directly on top of the rectangle.
@@ -342,7 +342,7 @@ namespace NuSysApp
             xResizingTriangle.Margin = new Thickness(-28 / scaleX, -28 / scaleY, 0, 0);
 
             //xMainRectangle.StrokeThickness = 3 / scaleX;
-            xMainRectangleBorder.BorderThickness = new Thickness(3 / scaleY, 3 / scaleX, 3 / scaleY, 3 / scaleX);
+            xMainRectangleBorder.BorderThickness = new Thickness(3 / scaleX, 3 / scaleY, 3 / scaleX, 3 / scaleY);
 
 
 

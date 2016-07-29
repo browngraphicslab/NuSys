@@ -192,7 +192,8 @@ namespace NuSysApp
             if (ImageSource == null)
                 return;
 
-
+            base.SetSize(width, height);
+            /*
             if (ImageSource.PixelWidth > ImageSource.PixelHeight)
             {
                 var r = ImageSource.PixelHeight / (double)ImageSource.PixelWidth;
@@ -203,6 +204,22 @@ namespace NuSysApp
                 var r = ImageSource.PixelWidth / (double)ImageSource.PixelHeight;
                 base.SetSize(height * r, height);
             }
+            */
+        }
+
+        public override double GetRatio()
+        {
+            if (ImageSource == null)
+            {
+                return 1;
+            }
+            if (Controller.LibraryElementModel is PdfRegionModel)
+            {
+                var rect = Controller.LibraryElementModel as PdfRegionModel;
+                return ((double)ImageSource.PixelHeight * rect.Height) / ((double)ImageSource.PixelWidth * rect.Width);
+            }
+            return (double)ImageSource.PixelHeight / (double)ImageSource.PixelWidth;
+
         }
 
         protected override void OnSizeChanged(object source, double width, double height)
@@ -219,10 +236,6 @@ namespace NuSysApp
             //SetSize(width, height);
         }
 
-        public override double GetRatio()
-        {
-            return ImageSource == null ? 1 : (double)ImageSource.PixelHeight / (double)ImageSource.PixelWidth;
-        }
 
         public string GetAllText()
         {
