@@ -76,6 +76,11 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES = "content_id_key";
 
+        /// <summary>
+        /// The key used to hold the string file extention required when creating audio, video, or image content (e.g .jpeg, .mp3, .mp4)
+        /// </summary>
+        public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_FILE_EXTENTION = "content_file_extention";
+
         #endregion CreateNewContentRequest
 
 

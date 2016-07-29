@@ -61,6 +61,10 @@ namespace NusysServer
                 case NusysConstants.ContentType.Audio:
                 case NusysConstants.ContentType.Image:
                 case NusysConstants.ContentType.Video:
+                    if (!originalMessage.ContainsKey(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_FILE_EXTENTION))
+                    {
+                        throw new Exception("When creating content of type image, video, or audio, the file extention (e.g .mp4, .mp3, .png) should be included");
+                    }
                     //create new url
                     addContentToDatabaseMessage[NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY] = originalMessage[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY];
                     addContentToDatabaseMessage[NusysConstants.CONTENT_TABLE_TYPE_KEY] = originalMessage[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY];
