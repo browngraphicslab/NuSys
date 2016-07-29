@@ -22,7 +22,7 @@
                     </Rectangle.RenderTransform>
                 </Rectangle>
             </Border>
-            <TextBox x:Name="xNameTextBox" Text="{Binding Name}" TextChanged="xNameTextBox_TextChanged" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,-30,0,0">
+            <TextBox x:Name="xNameTextBox" Text="{Binding Name}" Width="{Binding Width}" TextChanged="xNameTextBox_TextChanged" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,-30,0,0">
                 <TextBox.RenderTransform>
                     <CompositeTransform x:Name="NameTextTransform"></CompositeTransform>
                 </TextBox.RenderTransform>
