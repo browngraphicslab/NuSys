@@ -124,40 +124,41 @@ namespace NuSysApp
             var m = new Message(request.GetFinalMessage().GetSerialized());
             await ProcessIncomingRequest(m);
         }
-        public async Task ExecuteRequest(Request request)
+        /// <summary>
+        /// Will execute a request and not return from this method until the server has processed the request and returned a confirmation message
+        /// the message that is returned is the confirmation message
+        /// when parsing the confirmation messsage, please use Constants in NusysIntermediate.NusysConstants instead of strings as the keys you're parsing
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>
+        /// The message this returns will vary greatly based on the request type sent.  make sure you parse it using constants instead of arbitrary strings
+        /// </returns>
+        public async Task<Message> ExecuteRequestAsync(Request request)
         {
-            await Task.Run(async delegate {
+            return await Task.Run(async delegate {
                 //if CheckOutgoingRequest created a valid thing
                 await request.CheckOutgoingRequest();
                 Message message = request.GetFinalMessage();
-
-                if (false)//request.WaitForRequestReturn())//TODO see if we still need this -trent
-                {
-                    ManualResetEvent mre = new ManualResetEvent(false);
-                    string requestID = SessionController.Instance.GenerateId();
-                    _requestEventDictionary[requestID] = mre;
-
-                    message["system_local_request_id"] = requestID;
-
-                    await _serverClient.SendMessageToServer(message);
-                    if (_requestEventDictionary.ContainsKey(requestID))
-                    {
-                        mre.WaitOne();
-                    }
-                }
-                else
-                {
-                    await _serverClient.SendMessageToServer(message);
-                }
-
+                var returnMessage = await _serverClient.WaitForRequestRequestAsync(message);
+                request.SetReturnMessage(returnMessage);
+                return returnMessage;
             });
         }
 
-        public async Task ExecuteSystemRequestLocally(SystemRequest request)
+        /// <summary>
+        /// this will simply spin off a new thread and execute the request you sent without waiting for server processing
+        /// </summary>
+        /// <param name="request"></param>
+        public void ExecuteRequest(Request request)
         {
-            await request.CheckOutgoingRequest();
-            await ProcessIncomingSystemRequest(request.GetFinalMessage());
+            Task.Run(async delegate {
+                //if CheckOutgoingRequest created a valid thing
+                await request.CheckOutgoingRequest();
+                Message message = request.GetFinalMessage();
+                await _serverClient.SendMessageToServer(message);
+            });
         }
+
         private async void ContentAvailable(Dictionary<string, object> dict)
         {
             if (dict.ContainsKey("id"))

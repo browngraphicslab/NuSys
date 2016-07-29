@@ -19,7 +19,33 @@ namespace NusysIntermediate
         /// the value for this key should be an stringified ElementType with the .ToString() method called
         /// </summary>
         public static readonly string REQUEST_TYPE_STRING_KEY = "request_type";
+        #region RequestKeys
 
+        #region AllRequests
+        /// <summary>
+        /// should be returned by all requests if it is successful
+        /// </summary>
+        public static readonly string REQUEST_SUCCESS_BOOL_KEY = "successful_request";
+
+        /// <summary>
+        /// MIGHT be returned if an error occurs during the request handling
+        /// </summary>
+        public static readonly string REQUEST_ERROR_MESSAGE_KEY = "error_message";
+        #endregion AllRequests
+
+        #region GetEntireWorkspaceRequest
+        /// <summary>
+        /// the key used to send the 32-char value of the libraryId of the collection being asked for 
+        /// </summary>
+        public static readonly string GET_ENTIRE_WORKSPACE_REQUEST_COLLECTION_ID_KEY = "collection_id_to_get";
+
+        /// <summary>
+        /// The key used to hold the GetEntireWorkspaceRequestArgs class
+        /// </summary>
+        public static readonly string GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY = "returned_workspace_arguments";
+        #endregion GetEntireWorkspaceRequest
+
+        #endregion RequestKeys
         #region SQLColumnNames
 
         #region alias
@@ -59,6 +85,21 @@ namespace NusysIntermediate
         /// the id of the collection that this alias belongs inside of
         /// </summary>
         public static readonly string ALIAS_PARENT_COLLECTION_ID_KEY = "parent_collection_id";
+
+        /// <summary>
+        /// the dictionary from keys that are accepted and put into the Alias table to their type. 
+        /// the keys not included in this list are put into the properties table
+        /// </summary>
+        public static readonly Dictionary<string, Type> ALIAS_ACCEPTED_KEYS = new Dictionary<string, Type>()
+        {
+            {ALIAS_ID_KEY, typeof(string)},
+            { ALIAS_LIBRARY_ID_KEY, typeof(string)},
+            { ALIAS_LOCATION_X_KEY,typeof(float)},
+            { ALIAS_LOCATION_Y_KEY,typeof(float)},
+            {ALIAS_SIZE_WIDTH_KEY,typeof(float)},
+            { ALIAS_SIZE_HEIGHT_KEY,typeof(float)},
+            { ALIAS_PARENT_COLLECTION_ID_KEY,typeof(string)},
+        };
         #endregion alias
 
         #region libraryElementModel
@@ -106,6 +147,11 @@ namespace NusysIntermediate
         public static readonly string LIBRARY_ELEMENT_LARGE_ICON_URL_KEY = "large_icon_url";
 
         /// <summary>
+        /// key that represents the data for every object being made
+        /// </summary>
+        public static readonly string LIBRARY_ELEMENT_DATA_KEY = "library_element_data";
+
+        /// <summary>
         /// URL for the medium icon for this library element model.  
         /// </summary>
         public static readonly string LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY = "medium_icon_url";
@@ -129,6 +175,27 @@ namespace NusysIntermediate
         /// datetime-parseable string for the last edited time of the current libraryElementModel
         /// </summary>
         public static readonly string LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY = "last_edited_timestamp";
+
+        /// <summary>
+        /// the dictionary from keys that are accepted and put into the library elmeent table to their type. 
+        /// the keys not included in this list are put into the properties table
+        /// </summary>
+        public static readonly Dictionary<string, Type> LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS = new Dictionary<string, Type>()
+        {
+            {LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY, typeof(string)},
+            { LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY, typeof(string)},
+            { LIBRARY_ELEMENT_CREATOR_USER_ID_KEY,typeof(string)},
+            { LIBRARY_ELEMENT_SMALL_ICON_URL_KEY,typeof(string)},
+            {LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY,typeof(string)},
+            { LIBRARY_ELEMENT_LARGE_ICON_URL_KEY,typeof(string)},
+            { LIBRARY_ELEMENT_FAVORITED_KEY,typeof(bool)},
+            { LIBRARY_ELEMENT_TITLE_KEY,typeof(string)},
+            { LIBRARY_ELEMENT_KEYWORDS_KEY,typeof(string)},
+            { LIBRARY_ELEMENT_LIBRARY_ID_KEY,typeof(string)},
+            { LIBRARY_ELEMENT_CONTENT_ID_KEY,typeof(string)},
+            { LIBRARY_ELEMENT_TYPE_KEY,typeof(string)},
+            { LIBRARY_ELEMENT_ID_KEY,typeof(string)}
+        };
         #endregion libraryElementModel
 
         #region metadata
@@ -141,26 +208,26 @@ namespace NusysIntermediate
         /// the string used as the name of the 'key' column for metadata.  
         /// PROBABLY ONLY FOR SERVER-SIDE USE
         /// </summary>
-        public static readonly string METADATA_KEY_COLUMN_KEY = "key";
+        public static readonly string METADATA_KEY_COLUMN_KEY = "key_string";
 
         /// <summary>
         /// the string used as the name of the 'value' column for metadata.  
         /// PROBABLY ONLY FOR SERVER-SIDE USE
         /// </summary>
-        public static readonly string METADATA_VALUE_COLUMN_KEY = "value";
+        public static readonly string METADATA_VALUE_COLUMN_KEY = "value_string";
         #endregion metadata
 
         #region propertiesTable
         /// <summary>
-        /// 32 character ID of the library element this property belongs to
+        /// 32 character ID of the library element or alias that this property belongs to
         /// </summary>
-        public static readonly string PROPERTIES_LIBRARY_ID_KEY = "library_id";
+        public static readonly string PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY = "library_id";
 
         /// <summary>
         /// the string used as the name of the 'key' column for unique properties.  
         /// PROBABLY ONLY FOR SERVER-SIDE USE
         /// </summary>
-        public static readonly string PROPERTIES_KEY_COLUMN_KEY = "key";
+        public static readonly string PROPERTIES_KEY_COLUMN_KEY = "key_string";
 
         /// <summary>
         /// the string used as the name of the string 'value' column for properties.  
@@ -181,6 +248,22 @@ namespace NusysIntermediate
         public static readonly string PROPERTIES_DATE_VALUE_COLUMN_KEY = "date_value";
         #endregion propertiesTable
 
+        #region Content
+        /// <summary>
+        /// 32 character ID of the content
+        /// </summary>
+        public static readonly string CONTENT_TABLE_CONTENT_ID_KEY = "content_id";
+
+        /// <summary>
+        /// 32 character type of content. e.g. image, video, pdf
+        /// </summary>
+        public static readonly string CONTENT_TABLE_TYPE_KEY = "content_type";
+
+        /// <summary>
+        /// varchar url of the content
+        /// </summary>
+        public static readonly string CONTENT_TABLE_URL = "content_url";
+        #endregion Content
         #endregion SQLColumnNames
         #region SQLTableNames
 
@@ -204,7 +287,36 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string METADATA_SQL_TABLE_NAME = "metadata";
 
+        /// <summary>
+        /// The string name of the metadata SQL table in our database
+        /// </summary>
+        public static readonly string CONTENTS_SQL_TABLE_NAME = "contents";
         #endregion SQLTableNames
+
+        /// <summary>
+        /// A hashset of strings that should never be stored as properties in any of the sql databases.
+        /// should be comprised of other string constants defined above.
+        /// Example: strings used to parse request types for network communication
+        /// </summary>
+        public static readonly HashSet<string> ILLEGAL_DATABASE_KEYS = new HashSet<string>()
+        {
+            RETURN_AWAITABLE_REQUEST_ID_STRING,
+            REQUEST_TYPE_STRING_KEY,
+            REQUEST_SUCCESS_BOOL_KEY
+        };
+
+        /// <summary>
+        /// The base types for every content.  ElementTypes can have the same content Types.
+        /// For instance, Image and ImageRegion both have ContentType Image
+        /// </summary>
+        public enum ContentType
+        {
+            Text,
+            PDF,
+            Image,
+            Video,
+            Audio
+        }
 
         /// <summary>
         /// the list of the request types 
@@ -230,9 +342,14 @@ namespace NusysIntermediate
             DeleteLibraryElementRequest,
             AddInkRequest,
             RemoveInkRequest,
-            ChatRequest
+            ChatRequest,
+
+            GetEntireWorkspaceRequest
         }
 
+        /// <summary>
+        /// the list of all the element types in all of Nusys
+        /// </summary>
         public enum ElementType
         {
 
@@ -245,5 +362,25 @@ namespace NusysIntermediate
             // weird type that possibly shouldn't be here
             Tools
         }
+
+        #region staticMethods
+
+        /// <summary>
+        /// this method will take in a message and return a new message (new instance) 
+        /// with network and managment keys removed
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public static Message CleanForDatabaseInsertion(Message message)
+        {
+            var returnMessage = new Message(message);
+            foreach (var invalid_key in ILLEGAL_DATABASE_KEYS)
+            {
+                //this will remove the key if it exists
+                returnMessage.Remove(invalid_key);
+            }
+            return returnMessage;
+        }
+        #endregion staticMethods
     }
 }

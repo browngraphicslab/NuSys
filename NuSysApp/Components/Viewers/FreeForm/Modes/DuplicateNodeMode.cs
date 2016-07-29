@@ -89,7 +89,7 @@ namespace NuSysApp
                 }
                 
                 var request = new DuplicateNodeRequest(msg);
-                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
             }
         }
 

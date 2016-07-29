@@ -123,14 +123,14 @@ namespace NuSysApp
             var request = InkStorage.CreateRemoveInkRequest(new InkWrapper(stroke, "adornment"));
             if (request == null)
                 return;
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request.Item1);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request.Item1);
 
             var m = new Message();
             m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
             var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
             model.InkLines.Remove(request.Item2);
             m["inklines"] = new HashSet<string>(model.InkLines);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(m));
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new ChangeContentRequest(m));
 
         }
 
@@ -140,14 +140,14 @@ namespace NuSysApp
             InkStorage._inkStrokes.Add(id, new InkWrapper(inkStroke, "adornment"));//"adornment", inkStroke));
 
             var request = InkStorage.CreateAddInkRequest(id, inkStroke, "adornment", MultiSelectMenuView.SelectedColor);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
 
             var m = new Message();
             m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
             var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
             model.InkLines.Add(id);
             m["inklines"] = new HashSet<string>(model.InkLines);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(m));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new ChangeContentRequest(m));
         }
 
         private async void InkStrokedAdded(WetDryInkCanvas canvas, InkStroke stroke)
@@ -156,14 +156,14 @@ namespace NuSysApp
             InkStorage._inkStrokes.Add(id, new InkWrapper(stroke, "ink"));
 
             var request = InkStorage.CreateAddInkRequest(id, stroke, "ink", Colors.Black );
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
 
             var m = new Message();
             m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
             var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
             model.InkLines.Add(id);
             m["inklines"] = new HashSet<string>(model.InkLines);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(m));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new ChangeContentRequest(m));
         }
 
         private void InkStrokedRemoved(WetDryInkCanvas canvas, InkStroke stroke)
@@ -171,14 +171,14 @@ namespace NuSysApp
             var request = InkStorage.CreateRemoveInkRequest(new InkWrapper(stroke, "ink"));
             if (request == null)
                 return;
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request.Item1);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request.Item1);
 
             var m = new Message();
             m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
             var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
             model.InkLines.Remove(request.Item2);
             m["inklines"] = new HashSet<string>(model.InkLines);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(m));
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new ChangeContentRequest(m));
         }
 
         private void ControllerOnDisposed(object source, object args)

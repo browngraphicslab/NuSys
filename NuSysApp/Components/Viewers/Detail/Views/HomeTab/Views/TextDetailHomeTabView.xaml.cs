@@ -210,8 +210,8 @@ namespace NuSysApp
             m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId ;
             m["id"] = nodeid;
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "",NusysConstants.ElementType.Web));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, "",NusysConstants.ElementType.Web));
 
 
         }
@@ -486,7 +486,7 @@ namespace NuSysApp
                     dict["autoCreate"] = true;
                     dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
                     var request = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                 }
                 else
                 {

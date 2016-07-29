@@ -456,7 +456,7 @@ namespace NuSysApp
             Task.Run(async delegate
             {
                 var request = new DeleteLibraryElementRequest(id);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
             });
         }
     }

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -9,20 +11,35 @@ using Newtonsoft.Json;
 
 namespace NusysIntermediate
 {
-    public class Message
+    public class Message : IEnumerable<KeyValuePair<string,object>>
     {
-        private ConcurrentDictionary<string, object> _dict;
-
+        private ConcurrentDictionary<string, object> _dictionary;
         public Message()
         {
-            _dict = new ConcurrentDictionary<string, object>();
+            _dictionary = new ConcurrentDictionary<string, object>();
         }
+
+        /// <summary>
+        /// creates a new message based on the on passed in.
+        /// Uses the IEnumerable's builtin constructor for copying ienumerables
+        /// </summary>
+        /// <param name="message"></param>
+        public Message(Message message)
+        {
+            _dictionary = new ConcurrentDictionary<string, object>(message);
+        }
+
+        /// <summary>
+        /// to desialize a string to a message.
+        /// This constructor calls the json convert method and de-json-stringifies the string you pass in
+        /// </summary>
+        /// <param name="m"></param>
         public Message(string m)
         {
             try
             {
                 var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                _dict = new ConcurrentDictionary<string, object>(JsonConvert.DeserializeObject<Dictionary<string, object>>(m, settings));
+                _dictionary = new ConcurrentDictionary<string, object>(JsonConvert.DeserializeObject<Dictionary<string, object>>(m, settings));
             }
             catch (Exception e)
             {
@@ -31,68 +48,68 @@ namespace NusysIntermediate
                 try
                 {
                     var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                    _dict = JsonConvert.DeserializeObject<ConcurrentDictionary<string, object>>(miniStrings[0], settings);
+                    _dictionary = JsonConvert.DeserializeObject<ConcurrentDictionary<string, object>>(miniStrings[0], settings);
                 }
                 catch (Exception f)
                 {
 
                 }
             }
-            if (_dict == null)
+            if (_dictionary == null)
             {
-                _dict = new ConcurrentDictionary<string, object>();
+                _dictionary = new ConcurrentDictionary<string, object>();
             }
         }
 
         public Message(Dictionary<string, string> dict)
         {
-            _dict = new ConcurrentDictionary<string, object>();
+            _dictionary = new ConcurrentDictionary<string, object>();
             foreach (var kvp in dict)
             {
-                _dict.TryAdd(kvp.Key, kvp.Value);
+                _dictionary.TryAdd(kvp.Key, kvp.Value);
             }
         }
         public Message(Dictionary<string, object> dict)
         {
-            _dict = new ConcurrentDictionary<string, object>(dict);
+            _dictionary = new ConcurrentDictionary<string, object>(dict);
         }
         public void Add(string key, object value)//TODO get rid of this
         {
-            if (_dict.ContainsKey(key))
+            if (_dictionary.ContainsKey(key))
             {
                 throw new InvalidOperationException("Key " + key + " already exists");
             }
-            _dict.TryAdd(key, value);
+            _dictionary.TryAdd(key, value);
         }
-        public void Remove(string key)//TODO get rid of this too, only use is hacky fix
+        public bool Remove(string key)//TODO get rid of this too, only use is hacky fix
         {
-            if (_dict.ContainsKey(key))
+            if (_dictionary.ContainsKey(key))
             {
                 object outVar;
-                _dict.TryRemove(key, out outVar);
-                return;
+                _dictionary.TryRemove(key, out outVar);
+                return true;
             }
-            throw new KeyNotFoundException("Key " + key + " not found when attemped to remove it.");
+            return false;
         }
         public object this[string key]
         {
             get { return Get(key); }
-            set { _dict[key] = value; }
+            set { _dictionary[key] = value; }
         }
 
         public object GetObject(string key)
         {
-            if (_dict.ContainsKey(key))
+            if (_dictionary.ContainsKey(key))
             {
-                return _dict[key];
+                return _dictionary[key];
             }
             return null;
         }
         public string Get(string key)
         {
-            if (_dict.ContainsKey(key) && _dict[key] != null)
+            if (_dictionary.ContainsKey(key) && _dictionary[key] != null)
             {
-                return _dict[key].ToString();
+                return _dictionary[key].ToString();
             }
             return null;
         }
@@ -125,6 +142,13 @@ namespace NusysIntermediate
         public byte[] GetByteArray(string key)
         {
             return ContainsKey(key) ? Convert.FromBase64String(Get(key)) : null;
+        }
+
+        public T Get<T>(string key)
+        {
+            var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+            Debug.Assert(_dictionary.ContainsKey(key));
+            return JsonConvert.DeserializeObject<T>(Get(key), settings);
         }
 
         public List<T> GetList<T>(string key, List<T> def = null)
@@ -161,13 +185,23 @@ namespace NusysIntermediate
         }
         public bool ContainsKey(string key)
         {
-            return _dict.ContainsKey(key);
+            return _dictionary.ContainsKey(key);
         }
 
         public string GetSerialized()
         {
-            var r = JsonConvert.SerializeObject(_dict, new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii });
+            var r = JsonConvert.SerializeObject(new Dictionary<string,object>(_dictionary), new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii });
             return r;
+        }
+
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        {
+            return _dictionary.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _dictionary.GetEnumerator();
         }
     }
 }

@@ -376,7 +376,7 @@ namespace NuSysApp
                     dict["autoCreate"] = true;
                     dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
                     var request = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                 }
                 else
                 {
@@ -503,9 +503,9 @@ namespace NuSysApp
             elementMsg["id"] = newCollectionId;
 
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Search Results for '" + SearchBox.Text + "'"));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Search Results for '" + SearchBox.Text + "'"));
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new SubscribeToCollectionRequest(contentId));
 
             //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
 
@@ -524,7 +524,7 @@ namespace NuSysApp
                 dict["autoCreate"] = true;
                 dict["creator"] = controller.LibraryElementModel.LibraryElementId;
                 var request = new NewElementRequest(dict);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
             }
         }
 

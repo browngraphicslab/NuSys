@@ -5,7 +5,16 @@ using System.Web;
 
 namespace NusysServer
 {
-    public class ContentController { 
+    public class ContentController
+    {
+        /// <summary>
+        /// returns te static class's private instance
+        /// </summary>
+        public SQLConnector SqlConnector
+        {
+            get { return _sqlConnector; }
+        }
+        private static SQLConnector _sqlConnector;
         private static ContentController _instance = null;
         public static ContentController Instance
         {
@@ -19,10 +28,13 @@ namespace NusysServer
             }
         }
 
+        /// <summary>
+        /// private constructor to make singleton
+        /// </summary>
         private ContentController()
         {
-            SqlConnector = new SQLConnector();
+            _sqlConnector = new SQLConnector();
+           
         }
-    
     }
 }

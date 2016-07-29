@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Newtonsoft.Json;
+using NusysIntermediate;
 
 namespace NuSysApp
 {

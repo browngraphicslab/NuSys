@@ -10,13 +10,19 @@ namespace NusysServer
 {
     public class RequestRouter
     {
-        public static async Task<bool> HandleRequest(Message m, NuWebSocketHandler handler)
+        public static async Task<bool> HandleRequest(Message originalMessage, NuWebSocketHandler webSocketHandler)
         {
             try
             {
-                Request request = new Request(m);
-                switch (request.GetRequestType())
+                var requiresReturn = originalMessage.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING);
+                RequestHandler requestHandler;
+                Request request = new Request(originalMessage);
+
+                try
                 {
+                    switch (request.GetRequestType())
+                    {
+/*
                     case NusysConstants.RequestType.DeleteLibraryElementRequest:
                         break;
                     case NusysConstants.RequestType.AddInkRequest:
@@ -24,8 +30,6 @@ namespace NusysServer
                     case NusysConstants.RequestType.ChangeContentRequest:
                         break;
                     case NusysConstants.RequestType.ChatDialogRequest:
-                        break;
-                    case NusysConstants.RequestType.CreateNewLibrayElementRequest:
                         break;
                     case NusysConstants.RequestType.SubscribeToCollectionRequest:
                         break;
@@ -46,9 +50,39 @@ namespace NusysServer
                     case NusysConstants.RequestType.SetTagsRequest:
                         break;
                     case NusysConstants.RequestType.DeleteSendableRequest:
+                        break;*/
+                    case NusysConstants.RequestType.CreateNewLibrayElementRequest:
+                        requestHandler = null;
+                        break;
+                    case NusysConstants.RequestType.GetEntireWorkspaceRequest:
+                        requestHandler = new GetEntireWorkspaceRequestHandler();
                         break;
                     default:
+                        requestHandler = null;
                         return false;
+                    }
+                }
+                catch (Exception e)
+                {
+                    var errorMessage = new Message();
+                    errorMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = false;
+                    errorMessage[NusysConstants.REQUEST_ERROR_MESSAGE_KEY] = e.Message;
+                    webSocketHandler.Send(errorMessage.GetSerialized());
+                    ErrorLog.AddError(e);
+                    return false;
+                }
+
+                var messageToReturn = requestHandler.HandleRequest(request, webSocketHandler) ?? new Message();
+                if (requiresReturn)
+                {
+                    //defaults to returning successful request if the individual handler hasn't specified it 
+                    if (!messageToReturn.ContainsKey(NusysConstants.REQUEST_SUCCESS_BOOL_KEY))
+                    {
+                        messageToReturn[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = true;
+                    }
+                    messageToReturn[NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING] = originalMessage[NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING];
+                    var serialized = messageToReturn.GetSerialized();
+                    webSocketHandler.Send(serialized);
                 }
                 return true;
             }

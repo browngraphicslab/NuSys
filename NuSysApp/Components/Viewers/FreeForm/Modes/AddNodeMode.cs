@@ -252,8 +252,8 @@ namespace NuSysApp
                 dict["autoCreate"] = true;
 
                 var request = new NewElementRequest(dict);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, data == null ? "" : data.ToString(), elementType, dict.ContainsKey("title") ? dict["title"].ToString() : null));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, data == null ? "" : data.ToString(), elementType, dict.ContainsKey("title") ? dict["title"].ToString() : null));
                 //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, data == null ? "" : data.ToString()), NetworkClient.PacketType.TCP, null, true);
 
                 vm.ClearSelection();

@@ -317,7 +317,7 @@ namespace NuSysApp
                     dict["autoCreate"] = true;
                     dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
                     var request = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                 }
                 else
                 {

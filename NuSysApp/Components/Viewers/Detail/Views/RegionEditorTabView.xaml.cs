@@ -76,7 +76,7 @@ namespace NuSysApp
             message["clipping_parent_library_id"] = vm.CurrentElementController.LibraryElementModel.LibraryElementId;
             message["server_url"] = vm.CurrentElementController.LibraryElementModel.ServerUrl;
             var request = new CreateNewLibraryElementRequest(message);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
         }
 
         public void ShowListView(bool visible, NusysConstants.ElementType type)

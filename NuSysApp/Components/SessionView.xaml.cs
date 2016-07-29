@@ -514,7 +514,7 @@ namespace NuSysApp
             xLoadingGrid.Visibility = Visibility.Visible;
 
             await
-                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
                     new SubscribeToCollectionRequest(collectionId));
 
             foreach (var controller in SessionController.Instance.IdToControllers.Values)
@@ -558,7 +558,7 @@ namespace NuSysApp
                 {
                     if (msg.ContainsKey("id"))
                     {
-                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                        SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
                             new DeleteSendableRequest((string)msg["id"]));
                     }
                     continue;

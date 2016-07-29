@@ -113,8 +113,8 @@ namespace NuSysApp
             var pdfContent = Convert.ToBase64String(fileBytes);
 
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, pdfContent, NusysConstants.ElementType.PDF));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, pdfContent, NusysConstants.ElementType.PDF));
             /*
             await
                 SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
@@ -122,7 +122,7 @@ namespace NuSysApp
                         pdfContent), NetworkClient.PacketType.TCP, null, true);*/
 
             Request deleteRequest = new DeleteSendableRequest(wordId);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(deleteRequest);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(deleteRequest);
         }
 
         public override async Task Init()

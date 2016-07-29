@@ -86,8 +86,8 @@ namespace NuSysApp
                         m["autoCreate"] = true;
                         m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
 
-                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, htmltext == null ? "" : htmltext.ToString(), NusysConstants.ElementType.Text, m.ContainsKey("title") ? m["title"].ToString() : null));
-                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
+                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, htmltext == null ? "" : htmltext.ToString(), NusysConstants.ElementType.Text, m.ContainsKey("title") ? m["title"].ToString() : null));
+                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m));
                         //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, json), NetworkClient.PacketType.TCP, null, true);
                     });
 
@@ -147,8 +147,8 @@ namespace NuSysApp
                         Message m = CreateMessage(selectionItem, contentId, centerpoint);
                         m["type"] = NusysConstants.ElementType.Text.ToString();
 
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest( new CreateNewLibraryElementRequest(contentId, rtfContent, NusysConstants.ElementType.Text));
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m));
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync( new CreateNewLibraryElementRequest(contentId, rtfContent, NusysConstants.ElementType.Text));
                     /*
                     await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
                                 new NewContentSystemRequest(contentId,
@@ -169,8 +169,8 @@ namespace NuSysApp
                             try {
                                 imgFile = await NuSysStorages.Media.GetFileAsync(imageName);
                                 var ba = await MediaUtil.StorageFileToByteArray(imgFile);
-                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
-                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(ba), NusysConstants.ElementType.Image));
+                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m));
+                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(ba), NusysConstants.ElementType.Image));
                             /*
                             await
                                     SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(

@@ -45,7 +45,7 @@ namespace NuSysApp
 
             var msg = new Message( modelToDuplicate );
             var request = new NewElementRequest(msg);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
 
             var duplicateModel = SessionController.Instance.IdToControllers[msg.GetString("id")].Model;
 

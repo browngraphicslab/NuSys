@@ -409,7 +409,6 @@
     <Compile Include="Converters\BoolToManipulationModeConverter.cs" />
     <Compile Include="Converters\ListToStringConverter.cs" />
     <Compile Include="Converters\MutabilityToBrushConverter.cs" />
-    <Compile Include="Models\ContentDataModel.cs" />
     <Compile Include="Models\LibraryElementModelFactory.cs" />
     <Compile Include="Models\LinkLibraryElementModel.cs" />
     <Compile Include="Models\PresentationLinkModel.cs" />
@@ -625,6 +624,7 @@
     <Compile Include="Network\NetworkUser.cs" />
     <Compile Include="Network\NuSysNetworkSession.cs" />
     <Compile Include="Network\Requests\ChatRequest.cs" />
+    <Compile Include="Network\Requests\GetEntireWorkspaceRequest.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
     <Compile Include="Network\Requests\ChangeContentRequest.cs" />
     <Compile Include="Network\Requests\CreateNewLibraryElementRequest.cs" />

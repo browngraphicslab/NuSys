@@ -37,7 +37,7 @@ namespace NuSysApp
         //public static string Password { get; private set; }
         public static string ServerSessionID { get; private set; }
 
-        public static bool TEST_LOCAL_BOOLEAN = false;
+        public static bool TEST_LOCAL_BOOLEAN = true;
 
         public static bool IS_HUB = false;
 
@@ -67,7 +67,8 @@ namespace NuSysApp
 
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
 
-            ServerName = TEST_LOCAL_BOOLEAN ? "localhost:54764" : "nusysrepo.azurewebsites.net";
+            //ServerName = TEST_LOCAL_BOOLEAN ? "localhost:54764" : "nusysrepo.azurewebsites.net";
+            ServerName = TEST_LOCAL_BOOLEAN ? "localhost:2685" : "nusysrepo.azurewebsites.net";
             //ServerName = "172.20.10.4:54764";
             //ServerName = "nusysrepo.azurewebsites.net";
             ServerNameText.Text = ServerName;
@@ -77,11 +78,11 @@ namespace NuSysApp
                 Init();
             };
 
-            Init();
+            //Init();
 
             SlideOutLogin.Completed += SlideOutLoginComplete;
 
-            AutoLogin();
+            //AutoLogin();
         }
 
         private void SlideOutLoginComplete(object sender, object e)
@@ -155,7 +156,7 @@ namespace NuSysApp
         {
             var name = NewWorkspaceName.Text;
             var request = new CreateNewLibraryElementRequest(SessionController.Instance.GenerateId(), null, NusysConstants.ElementType.Collection, name);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
             await Task.Delay(1000);
             Init();
         }
@@ -167,7 +168,9 @@ namespace NuSysApp
 
                 var item = List.SelectedItems.First();
                 var id = ((CollectionTextBox)item).ID;
-                _firstLoadList = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(id);
+                var collectionRequest = new GetEntireWorkspaceRequest(id ?? "test");
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collectionRequest);
+                _firstLoadList = collectionRequest.GetReturnedArgs().AliasMessages;
                 InitialWorkspaceId = id;
                 this.Frame.Navigate(typeof(SessionView));
             }

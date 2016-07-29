@@ -86,7 +86,7 @@ namespace NuSysApp
             var message = new Message(await _inqLineModel.Pack());
 
             var request = new FinalizeInkRequest( message);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
         }
     }
 }

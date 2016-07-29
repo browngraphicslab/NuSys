@@ -178,7 +178,7 @@ namespace NuSysApp
 
         private void Delete_OnClick(object sender, RoutedEventArgs e)
         {
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteLibraryElementRequest(_currentElementModel.LibraryElementId));
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new DeleteLibraryElementRequest(_currentElementModel.LibraryElementId));
         }
 
         private async void EnterCollection_OnClick(object sender, RoutedEventArgs e)
@@ -198,7 +198,7 @@ namespace NuSysApp
                         });
                         Visibility = Visibility.Collapsed;
                         await
-                            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
                                 new UnsubscribeFromCollectionRequest(
                                     SessionController.Instance.ActiveFreeFormViewer.ContentId));
                         await SessionController.Instance.SessionView.LoadWorkspaceFromServer(messages, id);

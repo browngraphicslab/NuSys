@@ -138,7 +138,7 @@ namespace NuSysApp
                     Task.Run(async delegate
                     {
                         await
-                            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
                                 new SubscribeToCollectionRequest(libraryId));
                     });
                 }

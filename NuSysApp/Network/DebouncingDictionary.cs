@@ -111,7 +111,7 @@ namespace NuSysApp
                 {
                     request = new SendableUpdateRequest(message, saveToServer);
                 }
-                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
             }
             _timing = false;
             _dict.Clear();

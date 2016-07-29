@@ -413,7 +413,7 @@ namespace NuSysApp
                     {
                         m["server_url"] = serverURL;
                     }
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(m));
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(m));
                     vm.ClearSelection();
                     //   vm.ClearMultiSelection();
                 }
@@ -463,7 +463,7 @@ namespace NuSysApp
                     dict["autoCreate"] = true;
                     dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
                     var request = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                 }
                 else
                 {
@@ -602,11 +602,11 @@ namespace NuSysApp
             elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             elementMsg["id"] = newCollectionId;
             if (ListContainer.Children[0] == _libraryList)
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Search Results for '"+Searchfield.Text+"'"));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Search Results for '"+Searchfield.Text+"'"));
             else if (ListContainer.Children[0] == _libraryFavorites)
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Favorites"));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Favorites"));
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new SubscribeToCollectionRequest(contentId));
 
             //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
 
@@ -627,7 +627,7 @@ namespace NuSysApp
                     dict["autoCreate"] = true;
                     dict["creator"] = controller.LibraryElementModel.LibraryElementId;
                     var request = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                 }
             }
             else if (ListContainer.Children[0] == _libraryFavorites)
@@ -646,7 +646,7 @@ namespace NuSysApp
                     dict["autoCreate"] = true;
                     dict["creator"] = controller.LibraryElementModel.LibraryElementId;
                     var request = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                 }
             }
         }

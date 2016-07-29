@@ -208,8 +208,8 @@ namespace NuSysApp
 
 
             // await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(data), type.ToString()));
-           await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(data), type));
-           await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
+           await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(data), type));
+           await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m));
 
             // var vm = (TextNodeViewModel) DataContext;
             // await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(vm.ContentId, Convert.ToBase64String(data)));

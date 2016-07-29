@@ -307,7 +307,7 @@ namespace NuSysApp
                     });
                     Visibility = Visibility.Collapsed;
                     await
-                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                        SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
                             new UnsubscribeFromCollectionRequest(
                                 SessionController.Instance.ActiveFreeFormViewer.ContentId));
                     await SessionController.Instance.SessionView.LoadWorkspaceFromServer(messages, id);

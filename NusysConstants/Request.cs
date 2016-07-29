@@ -13,6 +13,8 @@ namespace NusysIntermediate
     {
         protected Message _message;
         private NusysConstants.RequestType _requestType;
+        protected Message _returnMessage;
+        
         public Request(NusysConstants.RequestType requestType, Message message = null)
         {
             _message = message;
@@ -47,6 +49,16 @@ namespace NusysIntermediate
             return _message;
         }
 
+        /// <summary>
+        /// should only be called from the Server itself.
+        /// This method should only have one reference. 
+        /// NUSYSAPP SHOULD NEVER CALL THIS METHOD
+        /// </summary>
+        /// <returns></returns>
+        public Message GetMessage()
+        {
+            return _message;
+        }
         public NusysConstants.RequestType GetRequestType()
         {
             return _requestType;
@@ -61,6 +73,16 @@ namespace NusysIntermediate
         }
 
         /// <summary>
+        /// this method should only ever be called by the server in NusysNetworkSession.  
+        /// Should only have one reference
+        /// </summary>
+        /// <param name="returnMessage"></param>
+        public void SetReturnMessage(Message returnMessage)
+        {
+            _returnMessage = returnMessage;
+        }
+
+        /// <summary>
         ///  THIS METHOD SHOULD ONLY BE USED TO VERIFY THE REQUEST CONTAINS THE CORRECT KEYS AND OBJECTS.  
         /// 
         /// Please do not put any logic or calculations in this method.  
@@ -69,7 +91,6 @@ namespace NusysIntermediate
         /// <returns></returns>
         public virtual async Task CheckOutgoingRequest()
         {
-            return;
         }
 
         /// <summary>
@@ -81,6 +102,24 @@ namespace NusysIntermediate
         /// <returns></returns>
         public virtual async Task ExecuteRequestFunction() { }
 
+        /// <summary>
+        /// tells whether an executed requst was succesful or not.  
+        /// return null if the request hasnt returned yet 
+        /// also returns null if the message wasn't formatted corectly after return
+        /// </summary>
+        /// <returns></returns>
+        public bool? WasSuccessful()
+        {
+            if (_returnMessage == null)
+            {
+                return null;
+            }
+            if (!_returnMessage.ContainsKey(NusysConstants.REQUEST_SUCCESS_BOOL_KEY))
+            {
+                return null;
+            }
+            return _returnMessage.GetBool(NusysConstants.REQUEST_SUCCESS_BOOL_KEY);
+        }
 
         public class InvalidRequestTypeException : Exception
         {

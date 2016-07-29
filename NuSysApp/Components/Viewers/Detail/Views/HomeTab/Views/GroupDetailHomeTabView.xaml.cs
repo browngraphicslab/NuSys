@@ -219,7 +219,7 @@ namespace NuSysApp
                         });
                         Visibility = Visibility.Collapsed;
                         await
-                            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
                                 new UnsubscribeFromCollectionRequest(
                                     SessionController.Instance.ActiveFreeFormViewer.ContentId));
                         await SessionController.Instance.SessionView.LoadWorkspaceFromServer(messages, id);
@@ -441,7 +441,7 @@ namespace NuSysApp
                     dict["autoCreate"] = true;
                     dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
                     var request = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                 }
                 else
                 {

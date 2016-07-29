@@ -121,7 +121,7 @@ namespace NuSysApp
                 }
                 m["type"] = NusysConstants.ElementType.PDF.ToString();
                 m["title"] = vm.Controller.LibraryElementModel.Title + " CAPTURED "+DateTime.Now.ToString();
-                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(m));
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(m));
             });
         }
 

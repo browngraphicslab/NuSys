@@ -579,7 +579,7 @@ namespace NuSysApp
         {
             Debug.Assert(SessionController.Instance.LinksController.GetLinkableIdsOfContentIdInstances(linkLibraryElementID).Count() != 0);
             LinkRemoved?.Invoke(this, linkLibraryElementID);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
                 new DeleteLibraryElementRequest(linkLibraryElementID));
             
         }

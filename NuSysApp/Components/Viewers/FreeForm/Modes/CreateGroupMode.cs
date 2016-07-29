@@ -152,9 +152,9 @@ namespace NuSysApp
                 elementMsg["creator"] = controller2.LibraryElementModel.LibraryElementId;
                 elementMsg["id"] = newCollectionId;
 
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "New Collection"));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "New Collection"));
 
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new SubscribeToCollectionRequest(contentId));
 
                 //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
 

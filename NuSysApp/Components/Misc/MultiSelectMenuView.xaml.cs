@@ -86,9 +86,9 @@ namespace NuSysApp
             elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             elementMsg["id"] = newCollectionId;
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Search Results"));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Search Results"));
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new SubscribeToCollectionRequest(contentId));
 
             //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
 
@@ -120,7 +120,7 @@ namespace NuSysApp
                     }
 
                     var request = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                     elementViewModel.Controller.RequestDelete();
                 }
                 // do something with links here
@@ -178,7 +178,7 @@ namespace NuSysApp
             var model = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel as CollectionLibraryElementModel;
             model.InkLines.Remove(request.Item2);
             deleteMsg["inklines"] = new HashSet<string>(model.InkLines);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(deleteMsg));
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new ChangeContentRequest(deleteMsg));
 
             Visibility = Visibility.Collapsed;
         }

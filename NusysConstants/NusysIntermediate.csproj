@@ -38,11 +38,13 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ContentDataModel.cs" />
     <Compile Include="Keyword.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Request.cs" />
     <Compile Include="NusysConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServerArguments\GetEntireWorkspaceRequestArgs.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

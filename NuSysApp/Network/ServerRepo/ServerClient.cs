@@ -165,7 +165,14 @@ namespace NuSysApp
                     }
                     else
                     {
-                        OnMessageRecieved?.Invoke(new Message(dict));
+                        if (dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING))
+                        {
+                            await ReturnRequestAsync(new Message(dict));
+                        }
+                        else
+                        {
+                            OnMessageRecieved?.Invoke(new Message(dict));
+                        }
                     }
                 }
             }
@@ -681,11 +688,11 @@ namespace NuSysApp
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        private async Task<Message> WaitGetRequestAsync(Message message)
+        public async Task<Message> WaitForRequestRequestAsync(Message message)
         {
-            Debug.Assert(!message.ContainsKey(NusysIntermediate.NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING));
+            Debug.Assert(!message.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING));
             var mreId = SessionController.Instance.GenerateId();
-            message[NusysIntermediate.NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING] = mreId;
+            message[NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING] = mreId;
             var mre = new ManualResetEvent(false);
             _requestEventDictionary.TryAdd(mreId, mre);
             Task.Run(async delegate
@@ -706,15 +713,16 @@ namespace NuSysApp
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        private async Task ReturnGetRequestAsync(Message message)
+        private async Task ReturnRequestAsync(Message message)
         {
-            Debug.Assert(message.ContainsKey(NusysIntermediate.NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING));
-            var mreId = message.GetString(NusysIntermediate.NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING);
-            var mre = _requestEventDictionary[mreId];
-            ManualResetEvent outMre;
-            _requestEventDictionary.TryRemove(mreId, out outMre);
+            Debug.Assert(message.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING));
+            var mreId = message.GetString(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING);
+            Debug.Assert(_requestEventDictionary.ContainsKey(mreId));
+            ManualResetEvent mre;
+            _requestEventDictionary.TryRemove(mreId, out mre);
+            Debug.Assert(mre != null);
             _returnMessages.TryAdd(mreId, message);
-            mre.Set();
+            mre?.Set();
         }
 
         private class SearchIntermediate

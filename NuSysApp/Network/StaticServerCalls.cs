@@ -29,7 +29,7 @@ namespace NuSysApp
             m["title"] = collectionLibraryModel.Title + " SNAPSHOT "+DateTime.Now;
 
             var libraryElementRequest = new CreateNewLibraryElementRequest(m);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(libraryElementRequest);
 
             var children = SessionController.Instance.IdToControllers.Where(item => item.Value.Model.ParentCollectionId == libraryId).ToArray();
 
@@ -38,7 +38,7 @@ namespace NuSysApp
                 var dict = await child.Value.Model.Pack();
                 dict["creator"] = snapshotId;
                 dict["id"] = SessionController.Instance.GenerateId();
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(new Message(dict)));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(new Message(dict)));
             }
 
             return true; 
@@ -60,7 +60,7 @@ namespace NuSysApp
                 message["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
                 message["id"] = newId;
 
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(message));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(message));
 
                 List<Message> messages = new List<Message>();
 

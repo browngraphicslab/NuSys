@@ -131,7 +131,7 @@ namespace NuSysApp
                 var collectionID = SessionController.Instance.GenerateId();
                 var request = new CreateNewLibraryElementRequest(collectionID, "", NusysConstants.ElementType.Collection,
                     "Tool-Generated Collection");
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                 var m = new Message();
                 m["width"] = "300";
                 m["height"] = "300";
@@ -142,7 +142,7 @@ namespace NuSysApp
                 m["autoCreate"] = true;
                 m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Model.LibraryId;
                 var collRequest = new NewElementRequest(m);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(collRequest);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collRequest);
                 foreach (var id in Controller.Model.OutputLibraryIds)
                 {
                     var lem = SessionController.Instance.ContentController.GetContent(id);
@@ -161,7 +161,7 @@ namespace NuSysApp
                     dict["autoCreate"] = true;
                     dict["creator"] = collectionID;
                     var elementRequest = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(elementRequest);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
                 }
 
             });
@@ -194,7 +194,7 @@ namespace NuSysApp
                     dict["autoCreate"] = true;
                     dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Model.LibraryId;
                     var elementRequest = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(elementRequest);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
                     i++;
                 }
 

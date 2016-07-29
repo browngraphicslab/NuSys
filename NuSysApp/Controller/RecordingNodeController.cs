@@ -153,7 +153,7 @@ namespace NuSysApp
 
         public async virtual Task RequestDelete()
         {
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(Model.Id));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new DeleteSendableRequest(Model.Id));
         }
         public async virtual Task RequestDuplicate(double x, double y, Message m = null)
         {
@@ -169,7 +169,7 @@ namespace NuSysApp
             m["height"] = Model.Height;
             m["type"] = Model.ElementType.ToString();
             m["creator"] = Model.ParentCollectionId;
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m));
         }
 
         public Dictionary<string, object> CreateImageDictionary(double x, double y, double height, double width)
@@ -217,8 +217,8 @@ namespace NuSysApp
             m1["autoCreate"] = true;
             m1["creator"] = newCollectionContentID;
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(Model.Id));
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m1));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new DeleteSendableRequest(Model.Id));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m1));
 
         }
 

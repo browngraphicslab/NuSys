@@ -92,6 +92,7 @@ namespace NusysServer
                     catch (Exception e)
                     {
                         ErrorLog.AddError(e);
+                        Send(e.Message);
                     }
                 }
             });
@@ -126,7 +127,7 @@ namespace NusysServer
             dict["user_id"] = client.Client.ID;
             return dict;
         }
-
+        /*
         public static void BroadcastContentUpdate(string id, IEnumerable<string> keysToUpdate,
             HashSet<NuWebSocketHandler> ignoreHandlers = null)
         {
@@ -156,47 +157,8 @@ namespace NusysServer
                 }
                 (client as NuWebSocketHandler)?.Send(dict);
             }
-        }
-        public static void BroadcastPresentationLinkRemove(string id1, string id2)
-        {
-            Dictionary<string, object> dict = new Dictionary<string, object>();
-            dict[Constants.FROM_SERVER_MESSAGE_INDICATOR_STRING] = true;
-            dict["notification_type"] = "remove_presentation_link";
-            dict["id1"] = id1;
-            dict["id2"] = id2;
-            Broadcast(dict);
-        }
-        public static void BroadcastPresentationLinkAdd(string id1, string id2, string contentId)
-        {
-            Dictionary<string, object> dict = new Dictionary<string, object>();
-            dict[Constants.FROM_SERVER_MESSAGE_INDICATOR_STRING] = true;
-            dict["notification_type"] = "add_presentation_link";
-            dict["id1"] = id1;
-            dict["id2"] = id2;
-            if (ActiveClient.CollectionSubscriptions.ContainsKey(contentId))
-            {
-                foreach (var client in ActiveClient.CollectionSubscriptions[contentId])
-                {
-                    client.SocketHandler?.Send(dict);
-                }
-            }
-        }
-        public static void BroadcastRegionUpdate(string region, string id, HashSet<NuWebSocketHandler> ignoreHandlers)
-        {
-            Dictionary<string, object> dict = new Dictionary<string, object>();
-            dict[Constants.FROM_SERVER_MESSAGE_INDICATOR_STRING] = true;
-            dict["notification_type"] = "region_update";
-            dict["region_string"] = region;
-            dict["region_id"] = id;
-            foreach (var client in clients)
-            {
-                if (ignoreHandlers.Contains(client))
-                {
-                    continue;
-                }
-                (client as NuWebSocketHandler)?.Send(dict);
-            }
-        }
+        }*/
+        /*
         public static void BroadcastContentDataUpdate(NusysContent content)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
@@ -233,29 +195,26 @@ namespace NusysServer
             dict["notification_type"] = "content_available";
             dict["id"] = content.GetID();
             Broadcast(dict);
-        }
-        public static void BroadcastToSubset(string message, IEnumerable<string> collectionIDs, HashSet<NuWebSocketHandler> exclusions = null)
+        }*/
+
+        /// <summary>
+        /// broadcasts a message to all clients except the ones in the exclusions list
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="exclusions"></param>
+        public static void BroadcastToSubset(Message message, HashSet<NuWebSocketHandler> exclusions = null)
         {
             exclusions = exclusions ?? new HashSet<NuWebSocketHandler>();
             HashSet<NuWebSocketHandler> socketsToBroadcast = new HashSet<NuWebSocketHandler>();
-            foreach (string collectionID in collectionIDs)
-            {
-                if (ActiveClient.CollectionSubscriptions.ContainsKey(collectionID))
-                {
-                    foreach (var activeClient in ActiveClient.CollectionSubscriptions[collectionID])
-                    {
-                        socketsToBroadcast.Add(activeClient.SocketHandler);
-                    }
-                }
-            }
             foreach (var socket in socketsToBroadcast)
             {
                 if (!exclusions.Contains(socket))
                 {
-                    socket.Send(message);
+                    socket.Send(message.GetSerialized());
                 }
             }
         }
+
         public static void BroadcastToSubset(Dictionary<string, object> dict, Func<WebSocketHandler, bool> func)
         {
             var message = JsonConvert.SerializeObject(dict, settings);

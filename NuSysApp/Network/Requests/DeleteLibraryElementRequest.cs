@@ -38,7 +38,7 @@ namespace NuSysApp
                     {
                         await Task.Run(async delegate
                         {
-                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
                                 new DeleteLibraryElementRequest(linkModel.LibraryElementId));
                         });
                     }

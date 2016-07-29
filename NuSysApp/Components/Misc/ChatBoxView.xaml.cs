@@ -56,7 +56,7 @@ namespace NuSysApp
                         new ChatRequest(
                             SessionController.Instance.NuSysNetworkSession.NetworkMembers[
                                 SessionController.Instance.LocalUserID], text);
-                    SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                    SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                 }
             }
             //if it gets handled, for whatever reason, you can't type in the chatbox
