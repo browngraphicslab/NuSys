@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -256,6 +257,103 @@ namespace NusysServer
             var cmd = GetInsertCommand(SQLTableType.Properties, new Message(new Dictionary<string, object>() {{propertyKey, value}}));
             var successInt = cmd.ExecuteNonQuery();
             return successInt > 0;
+        }
+
+        /// <summary>
+        /// returns the contentDataModel, if any, of the specified contentDataModelId.  
+        /// Will throw errors if there isn't one
+        /// </summary>
+        /// <param name="contentDataModelId"></param>
+        /// <returns></returns>
+        public ContentDataModel GetContentDataModel(string contentDataModelId)
+        {
+            var statement = GetSelectCommand(SQLTableType.Content, new Message(new Dictionary<string, object>()
+            {
+                { NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY,contentDataModelId}
+            }),GetAcceptedKeys(SQLTableType.Content));
+            using (var reader = statement.ExecuteReader())
+            {
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        
+                    }
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// returns amn IEnumerable with all the column keys for a given sql table.  
+        /// populated by string lists in the constants class
+        /// </summary>
+        /// <param name="tableType"></param>
+        /// <returns></returns>
+        private IEnumerable<string> GetAcceptedKeys(SQLTableType tableType)
+        {
+            switch (tableType)
+            {
+                case SQLTableType.Alias:
+                    return NusysConstants.ALIAS_ACCEPTED_KEYS.Keys;
+                case SQLTableType.LibrayElement:
+                    return NusysConstants.LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS.Keys;
+                case SQLTableType.Content:
+                    return NusysConstants.ACCEPTED_CONTENT_TABLE_KEYS;
+                case SQLTableType.Metadata:
+                    return NusysConstants.ACCEPTED_METADATA_TABLE_KEYS;
+                case SQLTableType.Properties:
+                    return NusysConstants.ACCEPTED_PROPERTIES_TABLE_KEYS;
+            }
+            return new List<string>();
+        }
+
+        /// <summary>
+        /// returns to you a a new message where all the keys/values in your given message 
+        /// are present if they are valid column names in the speicified SQL table
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="tableType"></param>
+        /// <returns></returns>
+        private Message GetCleanMessageOfDatabaseKeys(Message message, SQLTableType tableType)
+        {
+            IEnumerable<string> acceptedKeys = GetAcceptedKeys(tableType);
+            var cleanedMessage = new Message();
+            foreach (var key in acceptedKeys)
+            {
+                if(message.ContainsKey(key))
+                {
+                    cleanedMessage[key] = message[key];
+                }
+            }
+            return cleanedMessage;
+        }
+
+        /// <summary>
+        /// Creates a SIMPLE select command for a specified table.  
+        /// Will AND or OR the message key-value pairs together.  
+        /// 
+        /// </summary>
+        /// <param name="tableType"></param>
+        /// <param name="selectionParameterMessage"></param>
+        /// <returns></returns>
+        private SqlCommand GetSelectCommand(SQLTableType tableType, Message selectionParameterMessage, IEnumerable<string> columnsToGet) // TODO ADD IN AND/OR OPERATOR
+        {
+            var cleanedMessage = GetCleanMessageOfDatabaseKeys(selectionParameterMessage, tableType);
+            var cleanedColumnsToGet = columnsToGet.Intersect(GetAcceptedKeys(tableType));
+            var sqlStatement = "SELECT "+String.Join(",",cleanedColumnsToGet)+" FROM " + GetTableName(tableType) + " WHERE ";
+            if (cleanedMessage.Any())
+            {
+                var first = cleanedMessage.First();
+                sqlStatement += first.Key + "='" + first.Value + "' ";
+                cleanedMessage.Remove(first.Key);
+            }
+            foreach (var kvp in cleanedMessage)
+            {
+                sqlStatement += "AND "+kvp.Key + "='" + kvp.Value + "' "; //TODO add in and/or operators
+            }
+            sqlStatement += ";";
+            return MakeCommand(sqlStatement);
         }
 
         /// <summary>

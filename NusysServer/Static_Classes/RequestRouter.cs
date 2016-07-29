@@ -51,7 +51,7 @@ namespace NusysServer
                     case NusysConstants.RequestType.DeleteSendableRequest:
                         break;*/
                     case NusysConstants.RequestType.GetContentDataModelRequest:
-
+                        requestHandler = new GetContentDataModelRequestHandler();
                         break;
                     case NusysConstants.RequestType.CreateNewLibrayElementRequest:
                         requestHandler = new CreateNewLibraryElementRequestHandler();

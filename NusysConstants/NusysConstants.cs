@@ -254,6 +254,17 @@ namespace NusysIntermediate
         /// PROBABLY ONLY FOR SERVER-SIDE USE
         /// </summary>
         public static readonly string METADATA_VALUE_COLUMN_KEY = "value_string";
+
+        /// <summary>
+        /// the list of all the column names for the metadata table.
+        /// Should be populated by other constants as strings
+        /// </summary>
+        public static readonly HashSet<string> ACCEPTED_METADATA_TABLE_KEYS = new HashSet<string>()
+        {
+            METADATA_LIBRARY_ELEMENT_ID_KEY,
+            METADATA_KEY_COLUMN_KEY,
+            METADATA_VALUE_COLUMN_KEY
+        };
         #endregion metadata
 
         #region propertiesTable
@@ -285,6 +296,19 @@ namespace NusysIntermediate
         /// PROBABLY ONLY FOR SERVER-SIDE USE
         /// </summary>
         public static readonly string PROPERTIES_DATE_VALUE_COLUMN_KEY = "date_value";
+
+        /// <summary>
+        /// the list of all the column names for the properties table.
+        /// Should be populated by other constants as strings
+        /// </summary>
+        public static readonly HashSet<string> ACCEPTED_PROPERTIES_TABLE_KEYS = new HashSet<string>()
+        {
+            PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY,
+            PROPERTIES_KEY_COLUMN_KEY,
+            PROPERTIES_STRING_VALUE_COLUMN_KEY,
+            PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY,
+            PROPERTIES_DATE_VALUE_COLUMN_KEY
+        };
         #endregion propertiesTable
 
         #region Content
