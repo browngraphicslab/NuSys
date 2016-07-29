@@ -302,6 +302,17 @@ namespace NusysIntermediate
         /// varchar url of the content
         /// </summary>
         public static readonly string CONTENT_TABLE_CONTENT_URL = "content_ur";
+
+        /// <summary>
+        /// the list of keys that will safely be entered into the contents table.  
+        /// Use this to make sure that you're entering correct keys into the database
+        /// </summary>
+        public static readonly HashSet<string> ACCEPTED_CONTENT_TABLE_KEYS = new HashSet<string>()
+        {
+            CONTENT_TABLE_CONTENT_ID_KEY,
+            CONTENT_TABLE_TYPE_KEY,
+            CONTENT_TABLE_CONTENT_URL
+        };
         #endregion Content
         #endregion SQLColumnNames
         #region SQLTableNames
@@ -372,7 +383,6 @@ namespace NusysIntermediate
             NewLinkRequest,
             SendableUpdateRequest,
             NewThumbnailRequest,
-            NewContentRequest,
             ChangeContentRequest,
             SetTagsRequest,
             ChatDialogRequest,
@@ -408,6 +418,8 @@ namespace NusysIntermediate
         /// <summary>
         /// this method will take in a message and return a new message (new instance) 
         /// with network and managment keys removed
+        /// 
+        /// 
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>

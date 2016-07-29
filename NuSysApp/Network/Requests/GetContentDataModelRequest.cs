@@ -25,7 +25,7 @@ namespace NuSysApp
         /// <param name="contentId"></param>
         public GetContentDataModelRequest(string contentDataModelId) : base(NusysConstants.RequestType.GetContentDataModelRequest)
         {
-            _returnMessage[NusysConstants.GET_CONTENT_DATA_MODEL_REQUEST_CONTENT_ID_KEY] = contentDataModelId;
+            _message[NusysConstants.GET_CONTENT_DATA_MODEL_REQUEST_CONTENT_ID_KEY] = contentDataModelId;
         }
 
         /// <summary>
@@ -53,8 +53,8 @@ namespace NuSysApp
                 //If this fails here, check with .WasSuccessful() before calling this method.
                 throw new Exception("The request hasn't returned yet or was unsuccessful");
             }
-            Debug.Assert(_message.ContainsKey(NusysConstants.GET_CONTENT_DATA_MODEL_REQUEST_RETURNED_CONTENT_DATA_MODEL_KEY));
-            return _message.Get<ContentDataModel>(NusysConstants.GET_CONTENT_DATA_MODEL_REQUEST_RETURNED_CONTENT_DATA_MODEL_KEY);
+            Debug.Assert(_returnMessage.ContainsKey(NusysConstants.GET_CONTENT_DATA_MODEL_REQUEST_RETURNED_CONTENT_DATA_MODEL_KEY));
+            return _returnMessage.Get<ContentDataModel>(NusysConstants.GET_CONTENT_DATA_MODEL_REQUEST_RETURNED_CONTENT_DATA_MODEL_KEY);
         }
     }
 }

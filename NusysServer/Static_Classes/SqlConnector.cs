@@ -227,7 +227,19 @@ namespace NusysServer
             {
                 return false;
             }
-            var cmd = GetInsertCommand(SQLTableType.Content, message);
+
+            //makes sure that the message used to get the insert sql command only contains keys that exist in the 
+            //content sql table. This is to make sure that there are no errors when executing the command.
+            var safeInsertMessage = new Message();
+            foreach (var acceptedKey in NusysConstants.ACCEPTED_CONTENT_TABLE_KEYS)
+            {
+                if (message.ContainsKey(acceptedKey))
+                {
+                    safeInsertMessage[acceptedKey] = message[acceptedKey];
+                }
+            }
+
+            var cmd = GetInsertCommand(SQLTableType.Content, safeInsertMessage);
             var successInt = cmd.ExecuteNonQuery();
             return successInt > 0;
         }

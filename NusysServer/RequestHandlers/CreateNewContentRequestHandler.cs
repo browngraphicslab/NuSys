@@ -4,7 +4,7 @@ using NusysIntermediate;
 
 namespace NusysServer
 {
-    public class CreateNewContentRequestHander : RequestHandler
+    public class CreateNewContentRequestHandler : RequestHandler
     {
         public override Message HandleRequest(Request request, NuWebSocketHandler senderHandler)
         {

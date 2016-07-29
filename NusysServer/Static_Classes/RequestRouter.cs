@@ -38,8 +38,6 @@ namespace NusysServer
                         break;
                     case NusysConstants.RequestType.FinalizeInkRequest:
                         break;
-                    case NusysConstants.RequestType.NewContentRequest:
-                        break;
                     case NusysConstants.RequestType.NewLinkRequest:
                         break;
                     case NusysConstants.RequestType.NewNodeRequest:
@@ -52,14 +50,17 @@ namespace NusysServer
                         break;
                     case NusysConstants.RequestType.DeleteSendableRequest:
                         break;*/
+                    case NusysConstants.RequestType.GetContentDataModelRequest:
+
+                        break;
                     case NusysConstants.RequestType.CreateNewLibrayElementRequest:
                         requestHandler = new CreateNewLibraryElementRequestHandler();
                         break;
                     case NusysConstants.RequestType.GetEntireWorkspaceRequest:
                         requestHandler = new GetEntireWorkspaceRequestHandler();
                         break;
-                    case NusysConstants.RequestType.NewContentRequest:
-                        requestHandler = new CreateNewContentRequestHander();
+                    case NusysConstants.RequestType.CreateNewContentRequest:
+                        requestHandler = new CreateNewContentRequestHandler();
                         break;
                     default:
                         requestHandler = null;
