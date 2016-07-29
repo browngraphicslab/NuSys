@@ -114,62 +114,46 @@ namespace NuSysApp
             {
                 return;
             }
-
             var rt = ((CompositeTransform)this.RenderTransform);
             if (rt == null)
             {
                 return;
             }
 
+            //Because editing is done only in region editor tab, this is probably safe to cast.
             var ivm = vm.RectangleWrapper as RectangleWrapper;
-            var horizontalMargin = 0;// (-ivm.GetWidth() + ivm.GetViewWidth())/2;
-            var verticalMargin = 0;// (-ivm.GetHeight() + ivm.GetViewHeight())/2;
+            if (ivm == null)
+            {
+                return;
+            }
+
+            var horizontalMargin = 0;// (ivm.GetViewWidth() - ivm.GetWidth()) / 2;
+            var verticalMargin = 0;// (ivm.GetViewHeight() - ivm.GetHeight()) / 2;
 
             var leftXBound = horizontalMargin;
-            var rightXBound = horizontalMargin + ivm.GetWidth() - vm.Width;
-
+            var rightXBound = horizontalMargin + ivm.GetWidth();
 
             var upYBound = verticalMargin;
-            var downYBound = verticalMargin + ivm.GetHeight() - vm.Height;
+            var downYBound = verticalMargin + ivm.GetHeight();
 
-            _tx += e.Delta.Translation.X * ResizerTransform.ScaleX;
-            _ty += e.Delta.Translation.Y * ResizerTransform.ScaleY;
+            //CHANGE IN WIDTH
+            if (vm.Width + rt.TranslateX + e.Delta.Translation.X <= rightXBound)
+            {
+                // xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
+                vm.Width = Math.Max(vm.Width + e.Delta.Translation.X * ResizerTransform.ScaleX, 25);
 
-            //Translating X
-            if (_tx < leftXBound)
-            {
-                rt.TranslateX = leftXBound;
             }
-            else if (_tx > rightXBound)
+            //CHANGE IN HEIGHT
+
+            if (vm.Height + rt.TranslateY + e.Delta.Translation.Y <= downYBound)
             {
-                rt.TranslateX = rightXBound;
-            }
-            else
-            {
-                rt.TranslateX = _tx;
+                //   xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
+                vm.Height = Math.Max(vm.Height + e.Delta.Translation.Y * ResizerTransform.ScaleY, 25);
             }
 
+            //Updates viewmodel
+            vm.SetNewSize(vm.Width, vm.Height);
 
-            //Translating Y
-            if (_ty < upYBound)
-            {
-                rt.TranslateY = upYBound;
-            }
-            else if (_ty > downYBound)
-            {
-                rt.TranslateY = vm.RectangleWrapper.GetHeight() - vm.OriginalHeight;
-            }
-            else
-            {
-                rt.TranslateY = _ty;
-            }
-
-            var composite = RenderTransform as CompositeTransform;
-            //Makes sure the location of the point is generalized -- not relative to the margined container.
-            var topLeft = new Point(composite.TranslateX - leftXBound, composite.TranslateY - upYBound);
-            //Updates the viewmodel
-            vm.SetNewLocation(topLeft);
-            e.Handled = true;
         }
 
 

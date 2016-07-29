@@ -40,7 +40,7 @@
             </Path.RenderTransform>
         </Path>
 
-        <Image x:Name="xDelete" Width="25" Height="25" Margin="0,5,5,0" PointerPressed="xDelete_PointerPressed"  HorizontalAlignment="Right"  VerticalAlignment="Top" Stretch="Uniform" Source="ms-appx:///Assets/icon_delete_color.png">
+        <Image x:Name="xDelete" Width="25" Height="25" Margin="0,5,5,0" PointerPressed="xDelete_PointerPressed"  HorizontalAlignment="Left"  VerticalAlignment="Top" Stretch="Uniform" Source="ms-appx:///Assets/icon_delete_color.png">
             <Image.RenderTransform>
                 <CompositeTransform x:Name="DeleteTransform"  TranslateX="{Binding Width}"></CompositeTransform>
             </Image.RenderTransform>
