@@ -32,6 +32,8 @@ namespace NuSysApp
 
         public ObservableCollection<FrameworkElement> AtomViewList { get; set; } = new ObservableCollection<FrameworkElement>();
         public ObservableCollection<ElementViewModel> Elements { get; set; } = new ObservableCollection<ElementViewModel>();
+        public ObservableCollection<LinkViewModel> Links { get; set; } = new ObservableCollection<LinkViewModel>();
+
         protected INodeViewFactory _nodeViewFactory = new FreeFormNodeViewFactory();
         protected FreeFormElementViewModelFactory _elementVmFactory = new FreeFormElementViewModelFactory();
        

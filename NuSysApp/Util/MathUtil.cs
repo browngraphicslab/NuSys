@@ -186,5 +186,17 @@ namespace NuSysApp
         {
             return (val >= min && val <= max);
         }
+
+        public static Point GetPointOnBezierCurve(Point p0, Point p1, Point p2, Point p3, double t )
+        {
+            var x = (1 - t) * (1 - t) * (1 - t) * p0.X + 3 * (1 - t) * (1 - t) * t * p1.X + 3 * (1 - t) * t * t * p2.X + t * t * t * p3.X;
+            var y = (1 - t) * (1 - t) * (1 - t) * p0.Y + 3 * (1 - t) * (1 - t) * t * p1.Y + 3 * (1 - t) * t * t * p2.Y + t * t * t * p3.Y;
+            return new Point(x,y);
+        }
+
+        public static double Dist(Point p0, Point p1)
+        {
+            return Math.Sqrt( Math.Pow(p1.X - p0.X, 2) + Math.Pow(p1.Y - p0.Y, 2));
+        }
     }
 }

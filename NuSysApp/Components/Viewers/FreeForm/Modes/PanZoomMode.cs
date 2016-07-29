@@ -27,12 +27,19 @@ namespace NuSysApp
         public PanZoomMode(FrameworkElement view) : base(view)
         {
             _cview = view as FreeFormViewer;
+
+            var vm = (FreeFormViewerViewModel)_view.DataContext;
+            var compositeTransform = vm.CompositeTransform;
+            var inv = (MatrixTransform)compositeTransform.Inverse.Inverse;
+            var m = new Matrix3x2((float)inv.Matrix.M11, (float)inv.Matrix.M12, (float)inv.Matrix.M21,
+                (float)inv.Matrix.M22, (float)inv.Matrix.OffsetX, (float)inv.Matrix.OffsetY);
+
+            NuSysRenderer.T = m;
         }
     
         public void UpdateTempTransform( CompositeTransform compositeTransform )
         {
 
-            Debug.WriteLine(compositeTransform.TranslateX);
             _tempTransform = new CompositeTransform
             {
                 TranslateX = compositeTransform.TranslateX,
@@ -250,9 +257,10 @@ namespace NuSysApp
             var m = new Matrix3x2((float)inv.Matrix.M11, (float)inv.Matrix.M12, (float)inv.Matrix.M21,
                 (float)inv.Matrix.M22, (float)inv.Matrix.OffsetX, (float)inv.Matrix.OffsetY);
 
-            NuSysRenderer.T = m;
-            var wv = new WebView();
-
+            NuSysRenderer.T = Matrix3x2.CreateTranslation((float)compositeTransform.TranslateX,(float)compositeTransform.TranslateY);
+            NuSysRenderer.C = Matrix3x2.CreateTranslation((float)compositeTransform.CenterX,(float)compositeTransform.CenterY);
+            NuSysRenderer.S = Matrix3x2.CreateScale((float) compositeTransform.ScaleX, (float) compositeTransform.ScaleY);
+           
             e.Handled = true;
 
         }

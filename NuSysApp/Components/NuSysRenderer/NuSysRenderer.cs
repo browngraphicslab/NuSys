@@ -29,6 +29,7 @@ namespace NuSysApp
        
         public static Matrix3x2 T = Matrix3x2.Identity;
         public static Matrix3x2 S = Matrix3x2.Identity;
+        public static Matrix3x2 C = Matrix3x2.Identity;
 
         public NuSysRenderer(CanvasAnimatedControl canvas)
         {
@@ -115,7 +116,9 @@ namespace NuSysApp
             using (var ds = args.DrawingSession)
             {
                 ds.Clear(Colors.LightGoldenrodYellow);
-                ds.Transform = T;
+                var cp = Matrix3x2.Identity;
+                Matrix3x2.Invert(C, out cp);
+                ds.Transform = cp*S*C*T;
                 foreach (var item in _renderItems0)
                     item.Draw(ds);
 

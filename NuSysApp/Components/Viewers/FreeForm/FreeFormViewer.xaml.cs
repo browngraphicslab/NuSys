@@ -9,6 +9,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Input.Inking;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Windows.UI;
 using Microsoft.Graphics.Canvas.Geometry;
 
@@ -65,6 +66,8 @@ namespace NuSysApp
 
                 _nusysRenderer = new NuSysRenderer(xRenderCanvas);
 
+                xRenderCanvas.PointerPressed += XRenderCanvasOnPointerPressed;
+
                 _inqCanvas = new NuSysInqCanvas(wetCanvas, dryCanvas);
                 _inqCanvas.Transform = vm.CompositeTransform;
                 _inqCanvas.InkStrokeAdded += InkStrokedAdded;
@@ -73,9 +76,6 @@ namespace NuSysApp
                 _inqCanvas.AdornmentRemoved += AdornmentRemoved;
 
                 var collectionModel = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(vm.Controller.LibraryElementModel.LibraryElementId);
-
-              
-
                 collectionModel.OnInkAdded += delegate(string id)
                 {
                     var x = InkStorage._inkStrokes[id];
@@ -121,6 +121,61 @@ namespace NuSysApp
                 xInqCanvasContainer.Width = args.NewSize.Width;
                 xInqCanvasContainer.Height = args.NewSize.Height;
             };
+        }
+
+        private void XRenderCanvasOnPointerPressed(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
+        {
+            var sp = pointerRoutedEventArgs.GetCurrentPoint(null).Position;
+            var vSp = new Vector2((float)sp.X, (float)sp.Y);
+            var invTransform = Matrix3x2.Identity;
+            Matrix3x2.Invert(NuSysRenderer.T, out invTransform);
+
+            var os = Vector2.Transform(vSp, invTransform);
+            var vm = (FreeFormViewerViewModel)DataContext;
+
+            foreach (var elemVm in vm.Elements)
+            {
+                var rect = new Rect
+                {
+                    X = elemVm.X,
+                    Y = elemVm.Y,
+                    Width = elemVm.Width,
+                    Height = elemVm.Height
+                };
+
+                if (rect.Contains(new Point(os.X, os.Y)))
+                {
+                    SessionController.Instance.SessionView.ShowDetailView(SessionController.Instance.ContentController.GetLibraryElementController(elemVm.Controller.LibraryElementModel.LibraryElementId));
+                    return;
+                }
+            }
+
+            foreach (var linkVm in vm.Links)
+            {
+                var controller = linkVm.Controller;
+                var anchor1 = new Point((float)controller.InElement.Anchor.X, (float)controller.InElement.Anchor.Y);
+                var anchor2 = new Point((float)controller.OutElement.Anchor.X, (float)controller.OutElement.Anchor.Y);
+
+                var distanceX = (float)anchor1.X - anchor2.X;
+
+                var p2 = new Point(anchor1.X - distanceX / 2, anchor2.Y);
+                var p1 = new Point(anchor2.X + distanceX / 2, anchor1.Y);
+                var p0 = anchor1;
+                var p3 = anchor2;
+
+                var pointsOnCurve = new List<Point>();
+                var numPoints = 10;
+                for(var i = 10; i >= 0; i--)
+                    pointsOnCurve.Add(MathUtil.GetPointOnBezierCurve(p0, p1, p2, p3, 1.0/numPoints * i));
+
+                var minDist = pointsOnCurve.Select(point => MathUtil.Dist(point, new Point(os.X, os.Y))).Concat(new[] {double.PositiveInfinity}).Min();
+
+                if (minDist < 50)
+                {
+                    SessionController.Instance.SessionView.ShowDetailView(SessionController.Instance.ContentController.GetLibraryElementController(linkVm.Controller.LibraryElementController.ContentId));
+                    break;
+                }
+            }
         }
 
         private void AdornmentRemoved(WetDryInkCanvas canvas, InkStroke stroke)

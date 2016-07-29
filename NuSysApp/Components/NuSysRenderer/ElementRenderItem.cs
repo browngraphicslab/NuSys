@@ -29,9 +29,17 @@ namespace NuSysApp
         
         public override void Draw(CanvasDrawingSession ds)
         {
-            ds.DrawText(_vm.Title, new Vector2((float)_vm.X, (float)(_vm.Y-30)), Colors.Black);
-            ds.FillRectangle( new Rect {X=_vm.X, Y= _vm.Y, Width = _vm.Width, Height=_vm.Height}, Colors.Black);
+            var old = ds.Transform;
+            ds.FillRectangle(new Rect { X = _vm.X, Y = _vm.Y, Width = _vm.Width, Height = _vm.Height }, Colors.Black);
 
+            var x = old.M31;
+            var y = old.M32;
+            var newT = Matrix3x2.Identity;
+            newT.M31 = x;
+            newT.M32 = y;
+            ds.Transform = newT;
+            ds.DrawText(_vm.Title, new Vector2((float)_vm.X, (float)(_vm.Y-30)), Colors.Black);
+            ds.Transform = old;
         }
     }
 }

@@ -25,59 +25,48 @@ namespace NuSysApp
     {
         private TextNodeViewModel _vm;
         private IRandomAccessStream _stream;
-        private CanvasBitmap _bmp;
         private ICanvasResourceCreator _ds;
-        private CanvasGeometry _geometry;
 
         public TextElementRenderItem(TextNodeViewModel vm, ICanvasResourceCreator ds)
         {
             _vm = vm;
             _ds = ds;
-            _geometry = CanvasGeometry.CreateRectangle(_ds, new Rect { X = _vm.X, Y = _vm.Y, Width = _vm.Width, Height = _vm.Height });
-            
         }
 
         public async override void Draw(CanvasDrawingSession ds)
         {
-            ds.DrawText(_vm.Title, new Vector2((float)_vm.X, (float)(_vm.Y-30)), Colors.Black);
-            ds.FillRectangle( new Rect {X=_vm.X, Y= _vm.Y, Width = _vm.Width, Height=_vm.Height}, Colors.White);
+            var to = Matrix3x2.CreateTranslation(new Vector2((float) _vm.X, (float) (_vm.Y - 30)));
+            var top = Matrix3x2.Identity;
+            Matrix3x2.Invert(to, out top);
+
+
+            var old = ds.Transform;
+            var x = old.M31;
+            var y = old.M32;
+            var sp = Matrix3x2.Identity;
+            Matrix3x2.Invert(NuSysRenderer.S, out sp);
+            var tt = Matrix3x2.CreateTranslation(0, -30);
+            var newT = tt * top * sp * to *ds.Transform;
+
+            ds.Transform = newT;
+
+            var target = Vector2.Transform(new Vector2((float) _vm.X, (float) (_vm.Y)), newT);
+
+            ds.DrawText(_vm.Title, new Vector2((float)_vm.X, (float)(_vm.Y - 30)), Colors.Black);
+            ds.Transform = old;
+
+            //ds.DrawText(_vm.Title, new Vector2((float)_vm.X, (float)(_vm.Y-30)), Colors.Black);
+
+           ds.FillRectangle( new Rect {X=_vm.X, Y= _vm.Y, Width = _vm.Width, Height=_vm.Height}, Colors.White);
             
             var f = new CanvasTextFormat();
             f.WordWrapping = CanvasWordWrapping.Wrap;
             f.FontSize = 12;
             if (_vm.Text != null) { 
                 var l = new CanvasTextLayout(_ds, _vm.Text, f, (float)_vm.Width, (float)_vm.Height);
-
                 ds.DrawTextLayout(l, (float)_vm.X, (float)_vm.Y, Colors.Black);
             }
 
-        }
-    }
-
-    sealed class WebviewRenderer
-    {
-        private static volatile WebviewRenderer instance;
-        private static object syncRoot = new Object();
-
-        private WebviewRenderer() { }
-
-        private BlockingQueue<TextElementRenderItem> _queue = new BlockingQueue<TextElementRenderItem>(100); 
-
-        public static WebviewRenderer Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    lock (syncRoot)
-                    {
-                        if (instance == null)
-                            instance = new WebviewRenderer();
-                    }
-                }
-
-                return instance;
-            }
         }
     }
 }
