@@ -117,6 +117,7 @@ namespace NuSysApp
             LocationChanged?.Invoke(this, new Point(model.TopLeftPoint.X * containerWidth, model.TopLeftPoint.Y * containerHeight));
         }
 
+
         private void RegionController_TitleChanged(object source, string title)
         {
             Name = title;

@@ -76,15 +76,6 @@ namespace NuSysApp
             composite.TranslateX = topLeft.X;
             composite.TranslateY = topLeft.Y;
 
-            //If in detail view, adjust to the right to account for difference between view and actual image.
-            if (vm.ContainerViewModel is PdfDetailHomeTabViewModel)
-            {
-                var pvm = vm.ContainerViewModel as PdfDetailHomeTabViewModel;
-                var horizontalMargin = (pvm.GetViewWidth() - pvm.GetWidth()) / 2;
-                var verticalMargin = (pvm.GetViewHeight() - pvm.GetHeight()) / 2;
-                composite.TranslateX += horizontalMargin;
-                composite.TranslateY += verticalMargin;
-            }
         }
         /// <summary>
         /// Changes size of view according to element that contains it.

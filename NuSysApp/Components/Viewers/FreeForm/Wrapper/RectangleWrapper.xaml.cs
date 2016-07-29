@@ -152,7 +152,8 @@ namespace NuSysApp
                     compositeTransform.TranslateY = -regionModel.TopLeftPoint.Y * xClippingContent.ActualHeight * scaleY;
                     compositeTransform.ScaleX = scaleX;
                     compositeTransform.ScaleY = scaleY;
-                    WrapperTransform = compositeTransform;
+//                    compositeTransform.CenterX = regionModel.TopLeftPoint.X * xClippingContent.ActualWidth * scaleX;
+//                    compositeTransform.CenterY = regionModel.TopLeftPoint.Y * xClippingContent.ActualHeight * scaleY;
                 }
                 WrapperTransform = compositeTransform;
 
@@ -160,11 +161,16 @@ namespace NuSysApp
                 foreach (var item in xClippingCanvas.Items)
                 {
                     var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
+                    FrameworkElement region;
                     switch (regionViewModel.Model.Type)
                     {
                         case ElementType.ImageRegion:
-                            var region = item as ImageRegionView;
-                            region.RescaleComponents(WrapperTransform.ScaleX, WrapperTransform.ScaleY);
+                            region = item as ImageRegionView;
+                            (region as ImageRegionView).RescaleComponents(WrapperTransform.ScaleX, WrapperTransform.ScaleY);
+                            break;
+                        case ElementType.PdfRegion:
+                            region = item as PDFRegionView;
+                            (region as PDFRegionView).RescaleComponents(WrapperTransform.ScaleX,WrapperTransform.ScaleY);
                             break;
                         default:
                             break;
