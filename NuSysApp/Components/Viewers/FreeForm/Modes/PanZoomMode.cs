@@ -23,14 +23,11 @@ namespace NuSysApp
 
         private List<UIElement> _allElements = new List<UIElement>();
 
-        public bool PanningEnabled { get; set; }
-
         public PanZoomMode(FrameworkElement view) : base(view)
         {
             _cview = view as FreeFormViewer;
             CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
             CoreWindow.GetForCurrentThread().KeyUp += OnKeyUp;
-            PanningEnabled = true;
         }
         /// <summary>
         /// Resets the virtual key once any key is released
@@ -261,19 +258,15 @@ namespace NuSysApp
 
             //And consider a translational shift
 
-            if (PanningEnabled)
+            if (((FrameworkElement) e.OriginalSource).DataContext == _view.DataContext)
             {
-
-                if (((FrameworkElement) e.OriginalSource).DataContext == _view.DataContext)
-                {
-                    compositeTransform.TranslateX += e.Delta.Translation.X;
-                    compositeTransform.TranslateY += e.Delta.Translation.Y;
-                }
-                if (_cview?.InqCanvas != null)
-                {
-                    _cview.InqCanvas.Transform = compositeTransform;
-                    _cview.InqCanvas.Redraw();
-                }
+                compositeTransform.TranslateX += e.Delta.Translation.X;
+                compositeTransform.TranslateY += e.Delta.Translation.Y;
+            }
+            if (_cview?.InqCanvas != null)
+            {
+                _cview.InqCanvas.Transform = compositeTransform;
+                _cview.InqCanvas.Redraw();
             }
 
 

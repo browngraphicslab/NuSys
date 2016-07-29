@@ -107,7 +107,15 @@ namespace NuSysApp
 
                 SwitchMode(Options.SelectNode, false);
 
-
+                var colElementModel = vm.Controller.Model as CollectionElementModel;
+                if (colElementModel.CollectionLibraryElementModel.IsFinite)
+                {
+                    LimitManipulation();
+                    if (colElementModel.CollectionLibraryElementModel.ShapePoints.Count != 0)
+                    {
+                        
+                    }
+                }
             };
 
             SizeChanged += delegate(object sender, SizeChangedEventArgs args)
@@ -116,11 +124,6 @@ namespace NuSysApp
                 xInqCanvasContainer.Height = args.NewSize.Height;
             };
 
-            var controller = vm.Controller as ElementCollectionController;
-            if ((controller.Model as CollectionElementModel).CollectionLibraryElementModel.IsFinite)
-            {
-                DisablePanning();
-            }
         }
 
         private void AdornmentRemoved(WetDryInkCanvas canvas, InkStroke stroke)
@@ -335,9 +338,12 @@ namespace NuSysApp
             SwitchMode(mode, false);
         }
 
-        public void DisablePanning()
+        public void LimitManipulation()
         {
-            _panZoomMode.PanningEnabled = false;
+            if (_nodeManipulationMode != null)
+            {
+                _nodeManipulationMode.Limited = true;
+            }
         }
     }
 }

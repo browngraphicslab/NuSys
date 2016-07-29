@@ -19,7 +19,7 @@ namespace NuSysApp
         private bool _isPinAnimating;
         private bool _isFreeForm;
         public List<UserControl> ActiveNodes { get; private set; }
-
+        public bool Limited { get; set; }
         public NodeManipulationMode(FrameworkElement view) : base(view) { }
 
     
@@ -115,7 +115,7 @@ namespace NuSysApp
                 dx = dx/areaViewVM.CompositeTransform.ScaleX;
                 dy = dy / areaViewVM.CompositeTransform.ScaleX;
             }
-                if (SessionController.Instance.ActiveFreeFormViewer.Selections.Contains(vm))
+            if (SessionController.Instance.ActiveFreeFormViewer.Selections.Contains(vm))
             {
                 if (_view is FreeFormViewer)
                 {
@@ -136,8 +136,22 @@ namespace NuSysApp
             }
             else {
                 if (!vm.IsEditing)
+                {
+                    if (Limited)
+                    {
+                        if (CheckInBounds(new Point(vm.Transform.TranslateX + dx,vm.Transform.TranslateY +dy), new List<Point>())
+                        {
+                            
+                        }
+                    }
                     vm.Controller.SetPosition(vm.Transform.TranslateX + dx, vm.Transform.TranslateY + dy);
+                }
             }
+        }
+
+        public bool CheckInBounds(Point p, List<Point> shape)
+        {
+            return true;
         }
     }
 }
