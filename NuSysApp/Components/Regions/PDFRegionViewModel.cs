@@ -51,22 +51,22 @@ namespace NuSysApp
                 RaisePropertyChanged("Name");
             }
         }
-        public bool Editable
-        {
-            set
-            {
+        //public bool Editable
+        //{
+        //    set
+        //    {
 
-                _editable = value;
+        //        _editable = value;
 
-                RaisePropertyChanged("Editable");
-            }
-            get
-            {
-                return _editable;
-            }
-        }
+        //        RaisePropertyChanged("Editable");
+        //    }
+        //    get
+        //    {
+        //        return _editable;
+        //    }
+        //}
 
-        private bool _editable;
+        //private bool _editable;
 
         public double OriginalHeight { get; set; }
         public double OriginalWidth { get; set; }

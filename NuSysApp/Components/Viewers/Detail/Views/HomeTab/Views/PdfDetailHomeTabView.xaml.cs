@@ -40,6 +40,12 @@ namespace NuSysApp
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
             vm.View = this;
 
+            if (vm.LibraryElementController.LibraryElementModel.Type == ElementType.PdfRegion)
+            {
+                pageLeft.Visibility = Visibility.Collapsed;
+                pageRight.Visibility = Visibility.Collapsed;
+            }
+
             DataContext = vm;
 
             this.Loaded += PdfDetailHomeTabView_Loaded;

@@ -24,6 +24,7 @@ namespace NuSysApp
         public PdfNodeView(PdfNodeViewModel vm)
         {
             _vm = vm;
+
             vm.View = this;
             InitializeComponent();
             //  IsDoubleTapEnabled = true;
@@ -57,6 +58,15 @@ namespace NuSysApp
             await xClippingWrapper.ProcessLibraryElementController();
             UpdateRegionViews(vm.CurrentPageNumber);
 
+            // disable page left and page right buttons for pdf regions
+            if (vm.Model.ElementType == ElementType.PdfRegion)
+            {
+                pageLeft.Height = 0;
+                pageLeft.Width = 0;
+                pageRight.Height = 0;
+                pageRight.Width = 0;
+
+            }
 
             //vm?.CreatePdfRegionViews();
         }
