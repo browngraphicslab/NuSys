@@ -333,11 +333,9 @@ namespace NuSysApp
                     case ElementType.Video:
                         return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_large.jpg");
                         break;
-                    case ElementType.PdfRegion:
                     case ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
                         break;
-                    case ElementType.AudioRegion:
                     case ElementType.Audio:
                         return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
                         break;
@@ -372,11 +370,9 @@ namespace NuSysApp
                     case ElementType.Video:
                         return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_medium.jpg");
                         break;
-                    case ElementType.PdfRegion:
                     case ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
                         break;
-                    case ElementType.AudioRegion:
                     case ElementType.Audio:
                         return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
                         break;
@@ -408,17 +404,13 @@ namespace NuSysApp
                 }
                 switch (LibraryElementModel.Type)
                 {
-                    case ElementType.ImageRegion:
                     case ElementType.Image:
-                    case ElementType.VideoRegion:
                     case ElementType.Video:
                         return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_small.jpg");
                         break;
-                    case ElementType.PdfRegion:
                     case ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
                         break;
-                    case ElementType.AudioRegion:
                     case ElementType.Audio:
                         return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
                         break;
