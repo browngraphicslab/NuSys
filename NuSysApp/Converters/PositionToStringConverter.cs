@@ -12,11 +12,11 @@ namespace NuSysApp
             String minutes = "";
             String seconds = "";
             TimeSpan position = (TimeSpan) value;
-            if (position.Hours.ToString().Length == 1)
+            if (position.Hours.ToString().Length == 1 && position.Hours != 0)
             {
                 hours = "0" + position.Hours.ToString();
             }
-            else
+            else if (position.Hours != 0)
             {
                 hours = position.Hours.ToString();
             }
