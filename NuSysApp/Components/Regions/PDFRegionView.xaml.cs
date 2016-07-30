@@ -301,8 +301,9 @@ namespace NuSysApp
                 return;
             }
 
-            var libraryElementController = vm.RegionLibraryElementController;
-            //TODO add in delte region request aka delete library element request
+            // delete the region library elment from the library
+            var removeRequest = new DeleteLibraryElementRequest(vm.RegionLibraryElementController.LibraryElementModel.LibraryElementId);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(removeRequest);
         }
 
         private void xNameTextBox_TextChanged(object sender, TextChangedEventArgs e)

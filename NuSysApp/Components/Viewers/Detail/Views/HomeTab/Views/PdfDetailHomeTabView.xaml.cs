@@ -53,8 +53,6 @@ namespace NuSysApp
 
             xClippingWrapper.Controller = vm.LibraryElementController;
             xClippingWrapper.ProcessLibraryElementController();
-
-            vm.LibraryElementController.Disposed += ControllerOnDisposed;
         }
 
         private async void PdfDetailHomeTabView_Loaded(object sender, RoutedEventArgs e)
@@ -73,7 +71,7 @@ namespace NuSysApp
         private void ControllerOnDisposed(object source, object args)
         {
             var vm = (PdfDetailHomeTabViewModel)DataContext;
-            vm.LibraryElementController.Disposed += ControllerOnDisposed;
+            vm.LibraryElementController.Disposed -= ControllerOnDisposed;
             DataContext = null;
         }
         

@@ -333,9 +333,11 @@ namespace NuSysApp
                     case ElementType.Video:
                         return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_large.jpg");
                         break;
+                    case ElementType.PdfRegion:
                     case ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
                         break;
+                    case ElementType.AudioRegion:
                     case ElementType.Audio:
                         return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
                         break;
@@ -370,9 +372,11 @@ namespace NuSysApp
                     case ElementType.Video:
                         return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_medium.jpg");
                         break;
+                    case ElementType.PdfRegion:
                     case ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
                         break;
+                    case ElementType.AudioRegion:
                     case ElementType.Audio:
                         return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
                         break;
@@ -390,6 +394,49 @@ namespace NuSysApp
                         break;
                     default:
                         return new Uri("ms-appx:///Assets/icon_chat.png");
+                }
+            }
+        }
+
+        public Uri SmallIconUri
+        {
+            get
+            {
+                if (LibraryElementModel.SmallIconUrl != null)
+                {
+                    return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.SmallIconUrl);
+                }
+                switch (LibraryElementModel.Type)
+                {
+                    case ElementType.ImageRegion:
+                    case ElementType.Image:
+                    case ElementType.VideoRegion:
+                    case ElementType.Video:
+                        return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_small.jpg");
+                        break;
+                    case ElementType.PdfRegion:
+                    case ElementType.PDF:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
+                        break;
+                    case ElementType.AudioRegion:
+                    case ElementType.Audio:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
+                        break;
+                    case ElementType.Text:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/text.png");
+                        break;
+                    case ElementType.Collection:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/collection_1.png");
+                        break;
+                    case ElementType.Word:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/word.png");
+                        break;
+                    case ElementType.Link:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/link.png");
+                        break;
+                    default:
+                        return new Uri("ms-appx:///Assets/icon_chat.png");
+                        break;
                 }
             }
         }
@@ -449,44 +496,7 @@ namespace NuSysApp
             SetBlockServerBoolean(false);
         }
 
-        public Uri SmallIconUri
-        {
-            get
-            {
-                if (LibraryElementModel.SmallIconUrl != null)
-                {
-                    return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.SmallIconUrl);
-                }
-                switch (LibraryElementModel.Type)
-                {
-                    case ElementType.Image:
-                    case ElementType.Video:
-                        return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_small.jpg");
-                        break;
-                    case ElementType.PDF:
-                        return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
-                        break;
-                    case ElementType.Audio:
-                        return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
-                        break;
-                    case ElementType.Text:
-                        return new Uri("ms-appx:///Assets/library_thumbnails/text.png");
-                        break;
-                    case ElementType.Collection:
-                        return new Uri("ms-appx:///Assets/library_thumbnails/collection_1.png");
-                        break;
-                    case ElementType.Word:
-                        return new Uri("ms-appx:///Assets/library_thumbnails/word.png");
-                        break;
-                    case ElementType.Link:
-                        return new Uri("ms-appx:///Assets/library_thumbnails/link.png");
-                        break;
-                    default:
-                        return new Uri("ms-appx:///Assets/icon_chat.png");
-                        break;
-                }
-            }
-        }
+
         public Dictionary<string, MetadataEntry> GetMetadata()
         {
             return _libraryElementModel.FullMetadata;

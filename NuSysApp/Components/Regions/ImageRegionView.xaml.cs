@@ -307,10 +307,9 @@ namespace NuSysApp
                 return;
             }
 
-            //TODO add in remove region requests aka remove librayr element request
+            // delete all the references to this region from the library
             var removeRequest = new DeleteLibraryElementRequest(vm.RegionLibraryElementController.LibraryElementModel.LibraryElementId);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(removeRequest);
-
         }
 
         private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
