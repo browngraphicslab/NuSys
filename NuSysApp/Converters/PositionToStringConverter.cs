@@ -14,11 +14,11 @@ namespace NuSysApp
             TimeSpan position = (TimeSpan) value;
             if (position.Hours.ToString().Length == 1)
             {
-                minutes = "0" + position.Hours.ToString();
+                hours = "0" + position.Hours.ToString();
             }
             else
             {
-                minutes = position.Hours.ToString();
+                hours = position.Hours.ToString();
             }
             if (position.Minutes.ToString().Length == 1)
             {
@@ -36,7 +36,17 @@ namespace NuSysApp
             {
                 seconds = position.Seconds.ToString();
             }
-            return minutes + ":" + seconds;
+
+            // if we've set hours to a value
+            if (!string.IsNullOrEmpty(hours))
+            {
+                return hours + ":" + minutes + ":" + seconds;
+            }
+            else
+            {
+                return minutes + ":" + seconds;
+            }
+
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

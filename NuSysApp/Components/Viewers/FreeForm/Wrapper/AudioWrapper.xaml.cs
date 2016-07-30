@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -119,7 +120,7 @@ namespace NuSysApp
         /// <summary>
         /// Adds a new region view to the wrapper
         /// </summary>
-        public void AddRegionView(string regionLibraryElementId)
+        public Task AddRegionView(string regionLibraryElementId)
         {
             UITask.Run(async delegate
             {
@@ -166,6 +167,7 @@ namespace NuSysApp
 
                 xClippingCanvas.Items.Add(view);
             });
+            return null;
         }
 
         public void RemoveRegionView(string regionLibraryElementId)

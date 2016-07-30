@@ -48,7 +48,7 @@ namespace NuSysApp
             // loaded in the detail view. i.e. for images top left point, width, and height.
             var detailHomeTabViewModel = vm.RegionView.DataContext as DetailHomeTabViewModel;
             Message message = null;
-            ElementType type = ElementType.ImageRegion;
+            ElementType type;
             switch (vm.CurrentElementController.LibraryElementModel.Type)
             {
                 case ElementType.ImageRegion:
@@ -72,8 +72,8 @@ namespace NuSysApp
                     type = ElementType.PdfRegion;
                     break;
                 default:
-                    message = null;
-                    break;
+                    Debug.Fail("This should never occur, if it does we just return to be safe but this is a massive bug");
+                    return;
             }
             Debug.Assert(message != null);
 
@@ -83,7 +83,10 @@ namespace NuSysApp
             message["content__id"] = vm.CurrentElementController.LibraryElementModel.ContentDataModelId;
             message["type"] = type.ToString();
             message["clipping_parent_library_id"] = vm.CurrentElementController.LibraryElementModel.LibraryElementId;
-            message["server_url"] = vm.CurrentElementController.LibraryElementModel.ServerUrl;
+            if (vm.CurrentElementController.LibraryElementModel.ServerUrl != null)
+            {
+                message["server_url"] = vm.CurrentElementController.LibraryElementModel.ServerUrl;
+            }
             var request = new CreateNewLibraryElementRequest(message);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }

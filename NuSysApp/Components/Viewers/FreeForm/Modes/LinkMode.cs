@@ -58,10 +58,10 @@ namespace NuSysApp {
 
             /*
             // Don't allow links where the start and end atom are identical
-            if (startVm == null || endVm == null || startVm == endVm || startVm.Id == endVm.Id || startVm.LinkList.Contains( endVm.Controller) || endVm.LinkList.Contains(startVm.Controller))
+            if (startVm == null || endVm == null || startVm == endVm || startVm.Id == endVm.Id || startVm.LinkList.Contains( endVm.LibraryElementController) || endVm.LinkList.Contains(startVm.LibraryElementController))
                 return;*/
 
-        //    startVm.Controller.RequestLinkTo(endVm.ContentId);
+        //    startVm.LibraryElementController.RequestLinkTo(endVm.ContentId);
 
             lineModel.Delete();
             

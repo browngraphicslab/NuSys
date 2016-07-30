@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.UI.Xaml;
 
 namespace NuSysApp
 {
@@ -14,6 +15,7 @@ namespace NuSysApp
         public event PropertyChangedEventHandler PropertyChanged;
         public double ContainerHeight { get; set; }
         public double ContainerWidth { get; set; }
+        public RectangleWrapper RectangleWrapper { get; private set; }
         private double _height;
         private double _width;
 
@@ -49,22 +51,6 @@ namespace NuSysApp
                 RaisePropertyChanged("Name");
             }
         }
-        public bool Editable
-        {
-            set
-            {
-
-                _editable = value;
-
-                RaisePropertyChanged("Editable");
-            }
-            get
-            {
-                return _editable;
-            }
-        }
-
-        private bool _editable;
 
         public double OriginalHeight { get; set; }
         public double OriginalWidth { get; set; }
@@ -75,7 +61,7 @@ namespace NuSysApp
 
         public delegate void LocationChangedEventHandler(object sender, Point topLeft);
         public event LocationChangedEventHandler LocationChanged;
-        public PdfRegionViewModel(PdfRegionModel model, PdfRegionLibraryElementController regionLibraryElementController, Sizeable sizeable) : base(model, regionLibraryElementController, sizeable)
+        public PdfRegionViewModel(PdfRegionModel model, PdfRegionLibraryElementController regionLibraryElementController, RectangleWrapper wrapper) : base(model, regionLibraryElementController, null)
         {
             if (model == null)
             {
@@ -83,10 +69,13 @@ namespace NuSysApp
             }
 
             ContainerSizeChanged += BaseSizeChanged;
-            ContainerHeight = sizeable.GetHeight();
-            ContainerWidth = sizeable.GetWidth();
+            ContainerHeight = wrapper.GetHeight();
+            ContainerWidth = wrapper.GetWidth();
             Height = model.Height * ContainerHeight;
             Width = model.Width * ContainerWidth;
+            RectangleWrapper = wrapper;
+            RectangleWrapper.SizeChanged += RectangleWrapper_SizeChanged;
+
             //RegionLibraryElementController.RegionUpdated += RegionUpdated;
 
 
@@ -100,6 +89,18 @@ namespace NuSysApp
             Editable = true;
 
         }
+
+        private void RectangleWrapper_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var model = this.RegionLibraryElementController.LibraryElementModel as RectangleRegion;
+            var containerHeight = RectangleWrapper.GetHeight();
+            var containerWidth = RectangleWrapper.GetWidth();
+            Height = model.Height * containerHeight;
+            Width = model.Width * containerWidth;
+
+            LocationChanged?.Invoke(this, new Point(model.TopLeftPoint.X * containerWidth, model.TopLeftPoint.Y * containerHeight));
+        }
+
 
         private void RegionController_TitleChanged(object source, string title)
         {
@@ -115,7 +116,7 @@ namespace NuSysApp
             }
 
 
-            var denormalizedTopLeft = new Point(model.TopLeftPoint.X * ContainerViewModel.GetWidth(), model.TopLeftPoint.Y * ContainerViewModel.GetHeight());
+            var denormalizedTopLeft = new Point(model.TopLeftPoint.X * RectangleWrapper.GetWidth(), model.TopLeftPoint.Y * RectangleWrapper.GetHeight());
 
             LocationChanged?.Invoke(this, denormalizedTopLeft);
         }
@@ -128,8 +129,8 @@ namespace NuSysApp
                 return;
             }
 
-            Height = model.Height * ContainerViewModel.GetHeight();
-            Width = model.Width * ContainerViewModel.GetWidth();
+            Height = model.Height * RectangleWrapper.GetHeight();
+            Width = model.Width * RectangleWrapper.GetWidth();
             SizeChanged?.Invoke(this, Width, Height);
         }
         /*
@@ -188,10 +189,10 @@ namespace NuSysApp
             {
                 return;
             }
-            var normalTopLeftX = topLeft.X / ContainerViewModel.GetWidth();
-            var normalTopLeftY = topLeft.Y / ContainerViewModel.GetHeight();
-            var normalBottomRightX = bottomRight.X / ContainerViewModel.GetWidth();
-            var normalBottomRightY = bottomRight.Y / ContainerViewModel.GetHeight();
+            var normalTopLeftX = topLeft.X / RectangleWrapper.GetWidth();
+            var normalTopLeftY = topLeft.Y / RectangleWrapper.GetHeight();
+            var normalBottomRightX = bottomRight.X / RectangleWrapper.GetWidth();
+            var normalBottomRightY = bottomRight.Y / RectangleWrapper.GetHeight();
 
             var normalWidth = normalBottomRightX - normalTopLeftX;
             var normalHeight = normalBottomRightY - normalTopLeftY;
@@ -211,8 +212,8 @@ namespace NuSysApp
             {
                 return;
             }
-            var normalTopLeftX = topLeft.X / ContainerViewModel.GetWidth();
-            var normalTopLeftY = topLeft.Y / ContainerViewModel.GetHeight();
+            var normalTopLeftX = topLeft.X / RectangleWrapper.GetWidth();
+            var normalTopLeftY = topLeft.Y / RectangleWrapper.GetHeight();
 
             model.TopLeftPoint = new Point(normalTopLeftX, normalTopLeftY);
             //model.BottomRightPoint = new Point(normalBottomRightX, normalBottomRightY);
@@ -228,8 +229,8 @@ namespace NuSysApp
             {
                 return;
             }
-            var normalWidth = width / ContainerViewModel.GetWidth();
-            var normalHeight = height / ContainerViewModel.GetHeight();
+            var normalWidth = width / RectangleWrapper.GetWidth();
+            var normalHeight = height / RectangleWrapper.GetHeight();
 
 
 

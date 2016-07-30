@@ -526,7 +526,7 @@ namespace NuSysApp
         //        RectanglePoints rectangle = new RectanglePoints(leftRatio, topRatio, widthRatio, heightRatio);
 
         //        // add to controller
-        //        (DataContext as ImageElementViewModel).Controller.SetRegion(rectangle);
+        //        (DataContext as ImageElementViewModel).LibraryElementController.SetRegion(rectangle);
         //        Rectangle rect = rectangle.getRectangle();
 
         //        rect.Width = width * rectangle.getWidthRatio();

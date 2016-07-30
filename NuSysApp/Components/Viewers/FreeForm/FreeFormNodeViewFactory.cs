@@ -44,9 +44,11 @@ namespace NuSysApp
                 case ElementType.Audio:
                     view = new AudioNodeView(new AudioNodeViewModel(controller));
                     break;
+                case ElementType.PdfRegion:
                 case ElementType.PDF:
                     view = new PdfNodeView(new PdfNodeViewModel(controller));
                     break;
+                case ElementType.VideoRegion:
                 case ElementType.Video:
                     view = new VideoNodeView(new VideoNodeViewModel(controller));
                     break;

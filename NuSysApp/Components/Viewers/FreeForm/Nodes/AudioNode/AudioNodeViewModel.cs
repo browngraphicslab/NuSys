@@ -143,7 +143,7 @@ namespace NuSysApp
         public ObservableCollection<AudioRegionView> Regions { get
             {
                 var collection = new ObservableCollection<AudioRegionView>();
-                var elementController = Controller.LibraryElementController;
+                var elementController = LibraryElementController.LibraryElementController;
                 var regionHashSet = elementController.LibraryElementModel.Regions;
 
                 if (regionHashSet == null)

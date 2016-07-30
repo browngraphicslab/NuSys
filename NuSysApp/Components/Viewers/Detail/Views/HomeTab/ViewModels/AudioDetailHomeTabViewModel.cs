@@ -12,12 +12,13 @@ namespace NuSysApp
     public class AudioDetailHomeTabViewModel : DetailHomeTabViewModel, Sizeable
     {
         public double Duration { set; get; }
-        public LibraryElementController Controller { get; }
+        public LibraryElementController LibraryElementController { get; }
+
         public delegate void OnRegionSeekPassingHandler(double time);
         public event OnRegionSeekPassingHandler OnRegionSeekPassing;
         public AudioDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
-            Controller = controller;
+            LibraryElementController = controller;
             
         }
         public void RegionAdded(Region newRegion, AudioDetailHomeTabView contentview)

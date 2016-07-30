@@ -208,7 +208,7 @@ namespace NuSysApp
             m["contentId"] = contentId;
             var request = new NewLinkRequest(m);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-            //SessionController.Instance.ActiveFreeFormViewer.AllContent.First().Controller.RequestVisualLinkTo(contentId);
+            //SessionController.Instance.ActiveFreeFormViewer.AllContent.First().LibraryElementController.RequestVisualLinkTo(contentId);
         }
 
         /// <summary>

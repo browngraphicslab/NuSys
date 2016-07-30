@@ -28,14 +28,14 @@
                 <StackPanel x:Name="buttons" Orientation="Vertical" Background="{StaticResource color3}" VerticalAlignment="Top" HorizontalAlignment="Center"  Height="30" Visibility="Collapsed">
                     <Button Click="ButtonBase_OnClick" Foreground="{StaticResource foreground6}" Background="Transparent">INK</Button>
                     <Button Name="SourceBttn" Foreground="{StaticResource foreground6}" Click="OnGoToSource" Background="Transparent">GO TO SOURCE</Button>
-                </StackPanel> 
+                </StackPanel>
 
                 <local:RectangleWrapper x:Name="xClippingWrapper" SizeChanged="xClippingWrapper_SizeChanged">
                     <local:RectangleWrapper.RenderTransform>
                         <CompositeTransform x:Name="WrapperTransform"/>
                     </local:RectangleWrapper.RenderTransform>
                     <local:RectangleWrapper.Content>
-                        <Image x:Name="xImg" PointerPressed="xImg_PointerPressed" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Center" SizeChanged="XImg_OnSizeChanged" Source="{Binding Image}"/>
+                        <Image x:Name="xImg" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Center" SizeChanged="XImg_OnSizeChanged" Source="{Binding Image}"/>
                     </local:RectangleWrapper.Content>
                 </local:RectangleWrapper>
 

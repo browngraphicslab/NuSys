@@ -44,16 +44,16 @@ namespace NuSysApp
 
         public override void AddRegion(object sender, RegionLibraryElementController regionLibraryElementController)
         {
-            var rectRegionController = regionLibraryElementController as RectangleRegionLibraryElementController;
-            var imageRegion = rectRegionController?.LibraryElementModel as RectangleRegion;
-            if (imageRegion == null)
-            {
-                return;
-            }
-          //  var vm = new ImageRegionViewModel(imageRegion, rectRegionController, this);
+          //  var rectRegionController = regionLibraryElementController as RectangleRegionLibraryElementController;
+          //  var imageRegion = rectRegionController?.LibraryElementModel as RectangleRegion;
+          //  if (imageRegion == null)
+          //  {
+          //      return;
+          //  }
+          ////  var vm = new ImageRegionViewModel(imageRegion, rectRegionController, this);
 
 
-            RaisePropertyChanged("RegionViews");
+          //  RaisePropertyChanged("RegionViews");
         }
 
 
@@ -141,7 +141,7 @@ namespace NuSysApp
             m["rectangle_width"] = .5;
             m["rectangle_height"] = .5;
            
-            // if the library element controller is a region noramlize top left point, height, and width for original content
+            // if the library element LibraryElementController is a region noramlize top left point, height, and width for original content
             if (LibraryElementController is RectangleRegionLibraryElementController)
             {
                 var imageRegionLibraryElementController =

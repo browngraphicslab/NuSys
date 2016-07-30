@@ -60,7 +60,7 @@ namespace NuSysApp
         public VideoNodeViewModel(ElementController controller) : base(controller)
         {
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
-            //Controller.LibraryElementController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
+            //LibraryElementController.LibraryElementController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
             Controller.SizeChanged += Controller_SizeChanged;
             Controller.LibraryElementController.Loaded += LibraryElementController_Loaded;
 

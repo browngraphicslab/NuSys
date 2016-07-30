@@ -50,10 +50,10 @@ namespace NuSysApp
             _timeBlocks = new List<LinkedTimeBlockViewModel>();
             //scrubBar.SetValue(Canvas.ZIndexProperty, 1);
             //playbackElement.MediaFailed += PlaybackElement_MediaFailed;
-            //((AudioNodeModel)(vm.Model)).Controller = new MediaController(playbackElement);
-            //((AudioNodeModel)(vm.Model)).Controller.OnPlay += Controller_OnPlay;
-            //((AudioNodeModel)(vm.Model)).Controller.OnPause += Controller_OnPause;
-            //((AudioNodeModel)(vm.Model)).Controller.OnStop += Controller_OnStop;
+            //((AudioNodeModel)(vm.Model)).LibraryElementController = new MediaController(playbackElement);
+            //((AudioNodeModel)(vm.Model)).LibraryElementController.OnPlay += Controller_OnPlay;
+            //((AudioNodeModel)(vm.Model)).LibraryElementController.OnPause += Controller_OnPause;
+            //((AudioNodeModel)(vm.Model)).LibraryElementController.OnStop += Controller_OnStop;
 
             //_temporaryLinkVisual = new Line();
             //_temporaryLinkVisual.Stroke = new SolidColorBrush(Colors.Aqua);
@@ -97,7 +97,7 @@ namespace NuSysApp
                 {
                     foreach (var element in (DataContext as AudioNodeViewModel).LinkedTimeModels)
                     {
-                        var timeBlockVM = new LinkedTimeBlockViewModel(element, ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan, scrubBar);
+                        var timeBlockVM = new LinkedTimeBlockViewModel(element, ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).LibraryElementController.PlaybackElement.NaturalDuration.TimeSpan, scrubBar);
                         LinkedTimeBlock line = new LinkedTimeBlock(timeBlockVM);
                         line.SetValue(Canvas.ZIndexProperty, 1);
                         line.OnTimeChange += ReSaveLinkModels;
@@ -140,7 +140,7 @@ namespace NuSysApp
 
             _timeBlocks.Add(timeBlockVM);
             grid.Children.Add(line);
-            (DataContext as ElementViewModel).Controller.SaveTimeBlock();
+            (DataContext as ElementViewModel).LibraryElementController.SaveTimeBlock();
         }
 /*
         private void OnStop_Click(object sender, TappedRoutedEventArgs e)
@@ -150,7 +150,7 @@ namespace NuSysApp
             pause.Opacity = 1;
             e.Handled = true;
             playbackElement.Position = new TimeSpan(0);
-            ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Stop();
+            ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).LibraryElementController.Stop();
 
         }
 
@@ -167,7 +167,7 @@ namespace NuSysApp
             pause.Opacity = 1;
             playbackElement.MediaEnded += PlaybackElementOnMediaEnded;
             
-            ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Play();
+            ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).LibraryElementController.Play();
             
 
         }
@@ -250,7 +250,7 @@ namespace NuSysApp
           double millliseconds = playbackElement.NaturalDuration.TimeSpan.TotalMilliseconds * ratio;
 
             TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)millliseconds);
-            ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.ScrubJump(time);
+            ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).LibraryElementController.ScrubJump(time);
             
 
         }
@@ -262,10 +262,10 @@ namespace NuSysApp
                 if (_addTimeBlockMode == false)
                 {
                     double ratio = e.GetCurrentPoint((UIElement)sender).Position.X / scrubBar.ActualWidth;
-                    double milliseconds = ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds * ratio;
+                    double milliseconds = ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).LibraryElementController.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds * ratio;
 
                     TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)milliseconds);
-                    ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.ScrubJump(time);
+                    ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).LibraryElementController.ScrubJump(time);
 
                 }
                 else if (_addTimeBlockMode == true)
@@ -350,7 +350,7 @@ namespace NuSysApp
                     {
                         xwithinscrub = (int)(Canvas.GetLeft(scrubBar) + scrubBar.ActualWidth);
                     }
-                    int start = (int)((xwithinscrub / (scrubBar.ActualWidth)) * ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds);
+                    int start = (int)((xwithinscrub / (scrubBar.ActualWidth)) * ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).LibraryElementController.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds);
                     int x2withinscrub = (int)(_temporaryLinkVisual.X2 - (Canvas.GetLeft(scrubBar) + scrubBar.Margin.Left));
                     if (x2withinscrub < 0)
                     {
@@ -360,7 +360,7 @@ namespace NuSysApp
                     {
                         x2withinscrub = (int)(Canvas.GetLeft(scrubBar) + scrubBar.ActualWidth);
                     }
-                    int end = (int)((x2withinscrub / (scrubBar.ActualWidth)) * ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds);
+                    int end = (int)((x2withinscrub / (scrubBar.ActualWidth)) * ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).LibraryElementController.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds);
                     CreateTimeBlock(new TimeSpan(0, 0, 0, 0, start), new TimeSpan(0, 0, 0, 0, end));
                     grid.Children.Remove(_temporaryLinkVisual);
                     ((UIElement)sender).ReleasePointerCapture(e.Pointer);

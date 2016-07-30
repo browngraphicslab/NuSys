@@ -45,7 +45,7 @@ namespace NuSysApp
         public AudioDetailHomeTabView(AudioDetailHomeTabViewModel vm)
         {
             this.DataContext = vm;
-            _libraryElementId = vm.Controller.ContentId;
+            _libraryElementId = vm.LibraryElementController.ContentId;
             this.InitializeComponent();
             _loaded = false;
             _addTimeBlockMode = false;
@@ -53,20 +53,20 @@ namespace NuSysApp
             _timeRegions = new List<AudioRegionViewModel>();
             //scrubBar.SetValue(Canvas.ZIndexProperty, 1);
 
-            AudioMediaPlayer.AudioSource = vm.Controller.GetSource();
+            AudioMediaPlayer.AudioSource = vm.LibraryElementController.GetSource();
             AudioMediaPlayer.MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
             AudioMediaPlayer.ScrubBar.ValueChanged += vm.ScrubBarOnValueChanged;
 
 
 
 
-            //((AudioNodeModel)(vm.Model)).Controller.OnScrub += ControllerOnScrub;
-            //((AudioNodeModel)(vm.Model)).Controller.OnPlay += Controller_OnPlay1;
-            //((AudioNodeModel)(vm.Model)).Controller.OnPause += Controller_OnPause1;
-            //((AudioNodeModel)(vm.Model)).Controller.OnStop += Controller_OnStop1;
-            //scrubBar.Maximum = ((AudioNodeModel)(vm.Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+            //((AudioNodeModel)(vm.Model)).LibraryElementController.OnScrub += ControllerOnScrub;
+            //((AudioNodeModel)(vm.Model)).LibraryElementController.OnPlay += Controller_OnPlay1;
+            //((AudioNodeModel)(vm.Model)).LibraryElementController.OnPause += Controller_OnPause1;
+            //((AudioNodeModel)(vm.Model)).LibraryElementController.OnStop += Controller_OnStop1;
+            //scrubBar.Maximum = ((AudioNodeModel)(vm.Model)).LibraryElementController.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds;
             //scrubBar.Loaded += ScrubBarOnLoaded;
-            //((AudioNodeModel)(vm.Model)).Controller.Scrub();
+            //((AudioNodeModel)(vm.Model)).LibraryElementController.Scrub();
 
             //(DataContext as AudioNodeViewModel).OnVisualizationLoaded += LoadPlaybackElement;
 
@@ -81,7 +81,7 @@ namespace NuSysApp
              _temporaryLinkVisual.PointerReleased += ScrubBar_OnPointerReleased;
              _temporaryLinkVisual.Opacity = 1;
  */
-            vm.Controller.Disposed += ControllerOnDisposed;
+            vm.LibraryElementController.Disposed += ControllerOnDisposed;
             vm.OnRegionSeekPassing += MediaPlayer.onSeekedTo;
             vm.View = this;
             
@@ -110,7 +110,7 @@ namespace NuSysApp
 //            displayedRegion.OnSelected += DisplayedRegion_OnSelected;
 //            DisplayedRegion_OnSelected(displayedRegion, true);
 //            (this.DataContext as AudioDetailHomeTabViewModel).RegionAdded(rectangleRegion,this);
-//            (this.DataContext as AudioDetailHomeTabViewModel).Controller.AddRegion(rectangleRegion);
+//            (this.DataContext as AudioDetailHomeTabViewModel).LibraryElementController.AddRegion(rectangleRegion);
         }
         private void DisplayedRegion_OnSelected(object sender, bool selected)
         {
@@ -137,13 +137,13 @@ namespace NuSysApp
             //scrubBar.ContainerSizeChanged -= ScrubBar_OnSizeChanged;
             vm.Controller.Disposed -= ControllerOnDisposed;
 
-            /*if (((AudioNodeModel)(vm.Model)).Controller != null) { 
-                ((AudioNodeModel)(vm.Model)).Controller.OnScrub -= ControllerOnScrub;
-                ((AudioNodeModel)(vm.Model)).Controller.OnPlay -= Controller_OnPlay1;
-                ((AudioNodeModel)(vm.Model)).Controller.OnPause -= Controller_OnPause1;
-                ((AudioNodeModel)(vm.Model)).Controller.OnStop -= Controller_OnStop1;
+            /*if (((AudioNodeModel)(vm.Model)).LibraryElementController != null) { 
+                ((AudioNodeModel)(vm.Model)).LibraryElementController.OnScrub -= ControllerOnScrub;
+                ((AudioNodeModel)(vm.Model)).LibraryElementController.OnPlay -= Controller_OnPlay1;
+                ((AudioNodeModel)(vm.Model)).LibraryElementController.OnPause -= Controller_OnPause1;
+                ((AudioNodeModel)(vm.Model)).LibraryElementController.OnStop -= Controller_OnStop1;
                 scrubBar.Loaded -= ScrubBarOnLoaded;
-                ((AudioNodeModel)(vm.Model)).Controller.Scrub();
+                ((AudioNodeModel)(vm.Model)).LibraryElementController.Scrub();
             }*/
             
 
@@ -350,7 +350,7 @@ namespace NuSysApp
         public async void CheckBlocksForHit(double value)
         {
             double time = value/scrubBar.Maximum*
-                          ((AudioNodeModel) ((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement
+                          ((AudioNodeModel) ((DataContext as AudioNodeViewModel).Model)).LibraryElementController.PlaybackElement
                               .NaturalDuration.TimeSpan.TotalMilliseconds;
             foreach (var block in _timeRegions)
             {
@@ -394,13 +394,13 @@ namespace NuSysApp
 */
         /*        private void LinkedTimeBlocks_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
                 {
-                    var timeBlockVM = new LinkedTimeBlockViewModel((DataContext as AudioNodeViewModel).LinkedTimeModels.Last(), ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan, scrubBar);
+                    var timeBlockVM = new LinkedTimeBlockViewModel((DataContext as AudioNodeViewModel).LinkedTimeModels.Last(), ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).LibraryElementController.PlaybackElement.NaturalDuration.TimeSpan, scrubBar);
                     LinkedTimeBlock line = new LinkedTimeBlock(timeBlockVM);
                     _timeBlocks.Add(timeBlockVM);
                     grid.Children.Add(line);
                     timeBlockVM.setUpHandlers(line.getLine());
 
-                    AudioRegionViewModel vm = new AudioRegionViewModel((AudioRegionModel)(DataContext as AudioNodeViewModel).Controller.LibraryElementModel.Regions.Last(), scrubBar);
+                    AudioRegionViewModel vm = new AudioRegionViewModel((AudioRegionModel)(DataContext as AudioNodeViewModel).LibraryElementController.LibraryElementModel.Regions.Last(), scrubBar);
                     AudioRegionView region = new AudioRegionView(vm);
                     _timeRegions.Add(vm);
                     grid.Children.Add(region);
@@ -412,7 +412,7 @@ namespace NuSysApp
                 {
                     foreach (var element in (DataContext as AudioNodeViewModel).LinkedTimeModels)
                     {
-                        var timeBlockVM = new LinkedTimeBlockViewModel(element, ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan, scrubBar);
+                        var timeBlockVM = new LinkedTimeBlockViewModel(element, ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).LibraryElementController.PlaybackElement.NaturalDuration.TimeSpan, scrubBar);
                         LinkedTimeBlock line = new LinkedTimeBlock(timeBlockVM);
                         _timeRegions.Add(timeBlockVM);
                         grid.Children.Add(line);
@@ -438,10 +438,10 @@ namespace NuSysApp
                     if (_addTimeBlockMode == false)
                     {
                         double ratio = e.GetPosition((UIElement)sender).X / scrubBar.ActualWidth;
-                        double millliseconds = ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds * ratio;
+                        double millliseconds = ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).LibraryElementController.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds * ratio;
 
                         TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)millliseconds);
-                        ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.ScrubJump(time);
+                        ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).LibraryElementController.ScrubJump(time);
 
                     }
                 }
@@ -449,7 +449,7 @@ namespace NuSysApp
                 public void CreateTimeBlock(TimeSpan start, TimeSpan end)
                 {
                     LinkedTimeBlockModel model = new LinkedTimeBlockModel(start, end);
-                    LinkedTimeBlockViewModel link = new LinkedTimeBlockViewModel(model, ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan, scrubBar);
+                    LinkedTimeBlockViewModel link = new LinkedTimeBlockViewModel(model, ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).LibraryElementController.PlaybackElement.NaturalDuration.TimeSpan, scrubBar);
 
                     (DataContext as AudioNodeViewModel).AddLinkTimeModel(model);
 
@@ -463,10 +463,10 @@ namespace NuSysApp
                         if (_addTimeBlockMode == false)
                         {
                             double ratio = e.GetCurrentPoint((UIElement)sender).Position.X / scrubBar.ActualWidth;
-                            double milliseconds = ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds * ratio;
+                            double milliseconds = ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).LibraryElementController.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds * ratio;
 
                             TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)milliseconds);
-                            ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.ScrubJump(time);
+                            ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).LibraryElementController.ScrubJump(time);
 
                         }
                         else if (_addTimeBlockMode == true)
@@ -509,14 +509,14 @@ namespace NuSysApp
                 {
                     Play.Opacity = .3;
                     Pause.Opacity = 1;
-                    ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Play();
+                    ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).LibraryElementController.Play();
 
                 }
                 private void Pause_OnTapped(object sender, TappedRoutedEventArgs e)
                 {
                     Play.Opacity = 1;
                     Pause.Opacity = 0.3;
-                    ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Pause();
+                    ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).LibraryElementController.Pause();
 
 
                 }
@@ -526,7 +526,7 @@ namespace NuSysApp
                     Play.Opacity = 1;
                     Pause.Opacity = 1;
                     e.Handled = true;
-                    ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Stop();
+                    ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).LibraryElementController.Stop();
 
                 }
 
@@ -560,7 +560,7 @@ namespace NuSysApp
                             {
                                 xwithinscrub = (int)(Canvas.GetLeft(scrubBar) + scrubBar.ActualWidth);
                             }
-                            int start = (int)((xwithinscrub / (scrubBar.ActualWidth)) * ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds);
+                            int start = (int)((xwithinscrub / (scrubBar.ActualWidth)) * ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).LibraryElementController.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds);
                             int x2withinscrub = (int)(_temporaryLinkVisual.X2 - (Canvas.GetLeft(scrubBar) + scrubBar.Margin.Left));
                             if (x2withinscrub < 0)
                             {
@@ -570,7 +570,7 @@ namespace NuSysApp
                             {
                                 x2withinscrub = (int)(Canvas.GetLeft(scrubBar) + scrubBar.ActualWidth);
                             }
-                            int end = (int)((x2withinscrub / (scrubBar.ActualWidth)) * ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds);
+                            int end = (int)((x2withinscrub / (scrubBar.ActualWidth)) * ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).LibraryElementController.PlaybackElement.NaturalDuration.TimeSpan.TotalMilliseconds);
                             CreateTimeBlock(new TimeSpan(0, 0, 0, 0, start), new TimeSpan(0, 0, 0, 0, end));
                             grid.Children.Remove(_temporaryLinkVisual);
                             ((UIElement)sender).ReleasePointerCapture(e.Pointer);

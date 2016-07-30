@@ -11,10 +11,10 @@ namespace NuSysApp
         public delegate void TextChangedHandler(object source, string text);
         public event TextChangedHandler TextChanged;
 
-        public LibraryElementController Controller { get; }
+        public LibraryElementController LibraryElementController { get; }
         public TextDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
-            Controller = controller;
+            LibraryElementController = controller;
             controller.ContentChanged += ContentChanged;
         }
 

@@ -34,7 +34,7 @@ namespace NuSysApp
             if (DataContext is AudioDetailHomeTabViewModel)
             {
                 var vm = DataContext as AudioDetailHomeTabViewModel;
-                xAudioWrapper.Controller = vm.Controller;
+                xAudioWrapper.Controller = vm.LibraryElementController;
             }
             else if (DataContext is AudioNodeViewModel)
             {
@@ -89,14 +89,14 @@ namespace NuSysApp
 
             //double width = this.ActualWidth;
             //double height = this.ActualHeight;
-            //vm.Controller.SetSize(width, height);
+            //vm.LibraryElementController.SetSize(width, height);
 
             MediaElement.Position = new TimeSpan(0);
 
             if (DataContext is AudioDetailHomeTabViewModel)
             {
                 var vm = DataContext as AudioDetailHomeTabViewModel;
-                xAudioWrapper.Controller = vm.Controller;
+                xAudioWrapper.Controller = vm.LibraryElementController;
             }
             else if (DataContext is AudioNodeViewModel)
             {
