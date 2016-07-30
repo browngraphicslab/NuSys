@@ -40,6 +40,7 @@ namespace NuSysApp
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
             vm.View = this;
 
+            // disable page left and page right buttons for pdf regions
             if (vm.LibraryElementController.LibraryElementModel.Type == ElementType.PdfRegion)
             {
                 pageLeft.Visibility = Visibility.Collapsed;

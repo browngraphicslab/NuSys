@@ -42,7 +42,7 @@
                         <CompositeTransform x:Name="WrapperTransform"></CompositeTransform>
                     </local:RectangleWrapper.RenderTransform>
                     <local:RectangleWrapper.Content>
-                        <Image x:Name="xRenderedPdf"  Margin="3,3,3,3" Source="{Binding ImageSource}" Stretch="Fill" Height="{Binding Height}" Width="{Binding Width}"/>
+                        <Image x:Name="xRenderedPdf" Source="{Binding ImageSource}" Stretch="Fill"/>
                     </local:RectangleWrapper.Content>
                 </local:RectangleWrapper>
                 <!--<Canvas x:Name="Canvas" VerticalAlignment ="Top" HorizontalAlignment="Left" ManipulationMode="None" >

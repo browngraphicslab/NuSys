@@ -196,47 +196,32 @@ namespace NuSysApp
             {
                 var rect = Controller.LibraryElementModel as PdfRegionModel;
 
-                if (ImageSource.PixelWidth*rect.Width > ImageSource.PixelHeight*rect.Height)
+                if (ImageSource.PixelWidth * rect.Width > ImageSource.PixelHeight * rect.Height)
                 {
-                    var r = ((double) ImageSource.PixelHeight*rect.Height)/((double) ImageSource.PixelWidth*rect.Width);
-                    base.SetSize(width, width*r);
+                    var r = ((double)ImageSource.PixelHeight * rect.Height) / ((double)ImageSource.PixelWidth * rect.Width);
+                    base.SetSize(width, width * r);
                 }
                 else
                 {
-                    var r = ((double) ImageSource.PixelWidth*rect.Width)/((double) ImageSource.PixelHeight*rect.Height);
-                    base.SetSize(height*r, height);
+                    var r = ((double)ImageSource.PixelWidth * rect.Width) / ((double)ImageSource.PixelHeight * rect.Height);
+                    base.SetSize(height * r, height);
                 }
             }
             else
             {
                 if (ImageSource.PixelWidth > ImageSource.PixelHeight)
                 {
-                    var r = ImageSource.PixelHeight/(double) ImageSource.PixelWidth;
-                    base.SetSize(width, width*r);
+                    var r = ImageSource.PixelHeight / (double)ImageSource.PixelWidth;
+                    base.SetSize(width, width * r);
                 }
                 else
                 {
-                    var r = ImageSource.PixelWidth/(double) ImageSource.PixelHeight;
-                    base.SetSize(height*r, height);
+                    var r = ImageSource.PixelWidth / (double)ImageSource.PixelHeight;
+                    base.SetSize(height * r, height);
                 }
             }
 
         }
-
-        //public override double GetRatio()
-        //{
-        //    if (ImageSource == null)
-        //    {
-        //        return 1;
-        //    }
-        //    if (Controller.LibraryElementModel is PdfRegionModel)
-        //    {
-        //        var rect = Controller.LibraryElementModel as PdfRegionModel;
-        //        return ((double)ImageSource.PixelHeight * rect.Height) / ((double)ImageSource.PixelWidth * rect.Width);
-        //    }
-        //    return (double)ImageSource.PixelHeight / (double)ImageSource.PixelWidth;
-
-        //}
 
         protected override void OnSizeChanged(object source, double width, double height)
         {
@@ -248,8 +233,6 @@ namespace NuSysApp
             }
 
             SetSize(width, height);
-
-            //SetSize(width, height);
         }
 
 
