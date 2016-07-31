@@ -59,10 +59,6 @@ namespace NuSysApp
             var vm = this.DataContext as AudioRegionViewModel;
             if (Rect.Width + e.Delta.Translation.X > 0 && vm.RightHandleX + e.Delta.Translation.X < vm.AudioWrapper.ActualWidth)
             {
-                //            (Bound2.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
-                //         Bound2.X2 += e.Delta.Translation.X;
-                //        Bound2.X1 += e.Delta.Translation.X;
-                //        Rect.Width += e.Delta.Translation.X;
                 vm.SetNewPoints(0,e.Delta.Translation.X);
             }
         }
