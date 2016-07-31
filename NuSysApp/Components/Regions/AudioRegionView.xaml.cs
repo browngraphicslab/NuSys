@@ -35,8 +35,6 @@ namespace NuSysApp
             this.DataContext = vm;
             this.InitializeComponent();
             this.Deselect();
-
-
         }
 
         private void Bound1_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)

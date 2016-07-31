@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -66,7 +67,11 @@ namespace NuSysApp
                 _contentController = value;
             }
         }
+        //denormalized start of audio
+        public double AudioStart { set; get; }
 
+        //denormalized end of audio
+        public double AudioEnd { set; get; }
 
         public AudioWrapper()
         {
@@ -80,7 +85,14 @@ namespace NuSysApp
 
             if (Constants.IsRegionType(type))
             {
-                // rectangle region width and height are normalized so this is something like scaleX = 1 / .5
+                var regionController = Controller as AudioRegionLibraryElementController;
+                AudioStart = regionController.AudioRegionModel.Start;
+                AudioEnd = regionController.AudioRegionModel.End;
+            }
+            else
+            {
+                AudioStart = 0;
+                AudioEnd = 1;
             }
 
             // clear the items control
@@ -170,7 +182,105 @@ namespace NuSysApp
 
         private void xClippingGrid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
+            //// if the controller hasn't been set yet don't try to resize
+            //if (Controller == null)
+            //{
+            //    return;
+            //}
+            //var type = Controller.LibraryElementModel.Type;
+            //var contentView = xClippingContent;
+            //Debug.Assert(contentView != null);
+            //if (Constants.IsRegionType(type))
+            //{
+            //    var regionController = Controller as AudioRegionLibraryElementController;
+            //    Debug.Assert(regionController != null);
+            //    var regionModel = regionController.LibraryElementModel as AudioRegionModel;
+            //    Debug.Assert(regionModel != null);
 
+            //    var startX = regionModel.Start 
+
+
+            //    // creates a clipping rectangle using parameters topleftX, topleftY, width, height
+            //    // the regionModel Width and points are all normalized
+            //    var topLeftX = regionModel.TopLeftPoint.X * contentView.ActualWidth;
+            //    var topLeftY = regionModel.TopLeftPoint.Y * contentView.ActualHeight;
+            //    var rectWidth = regionModel.Width * contentView.ActualWidth;
+            //    var rectHeight = regionModel.Height * contentView.ActualHeight;
+
+            //    var rect = new Rect(topLeftX, topLeftY, rectWidth, rectHeight);
+
+            //    xClippingRectangle.Rect = rect;
+            //    //This section onwards is for resizing 
+
+
+            //    var scaleX = 1 / regionModel.Width;
+            //    var scaleY = 1 / regionModel.Height;
+            //    var lesserScale = scaleX < scaleY ? scaleX : scaleY;
+            //    // shifts the clipped rectangle so its upper left corner is in the upper left corner of the node
+            //    var compositeTransform = WrapperTransform;
+            //    if (DataContext is DetailHomeTabViewModel)
+            //    {
+            //        var regionHalfWidth = regionModel.Width * xClippingContent.ActualWidth / 2.0;
+            //        var regionHalfHeight = regionModel.Height * xClippingContent.ActualHeight / 2.0;
+
+            //        var detailViewHalfWidth = xClippingContent.ActualWidth / 2.0;
+            //        var detailViewHalfHeight = xClippingContent.ActualHeight / 2.0;
+
+            //        var regionTopLeftX = xClippingContent.ActualWidth * regionModel.TopLeftPoint.X;
+            //        var regionTopLeftY = xClippingContent.ActualHeight * regionModel.TopLeftPoint.Y;
+
+            //        var regionCenterX = -(regionTopLeftX + regionHalfWidth - detailViewHalfWidth);
+            //        var regionCenterY = -(regionTopLeftY + regionHalfHeight - detailViewHalfHeight);
+
+
+
+            //        compositeTransform.TranslateX = regionCenterX;
+            //        compositeTransform.TranslateY = regionCenterY;
+
+            //        compositeTransform.ScaleX = lesserScale;
+            //        compositeTransform.ScaleY = lesserScale;
+
+            //        compositeTransform.CenterX = regionTopLeftX + regionHalfWidth;
+            //        compositeTransform.CenterY = regionTopLeftY + regionHalfHeight;
+            //    }
+            //    else
+            //    {
+            //        // shifts the clipped rectangle so its upper left corner is in the upper left corner of the node
+            //        compositeTransform.TranslateX = -regionModel.TopLeftPoint.X * xClippingContent.ActualWidth * scaleX;
+            //        compositeTransform.TranslateY = -regionModel.TopLeftPoint.Y * xClippingContent.ActualHeight * scaleY;
+            //        compositeTransform.ScaleX = scaleX;
+            //        compositeTransform.ScaleY = scaleY;
+            //        //                    compositeTransform.CenterX = regionModel.TopLeftPoint.X * xClippingContent.ActualWidth * scaleX;
+            //        //                    compositeTransform.CenterY = regionModel.TopLeftPoint.Y * xClippingContent.ActualHeight * scaleY;
+            //    }
+            //    WrapperTransform = compositeTransform;
+
+            //    //now we want to resize the components of the imageregionview so that it isn't too big
+            //    foreach (var item in xClippingCanvas.Items)
+            //    {
+            //        var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
+            //        FrameworkElement region;
+            //        switch (regionViewModel.Model.Type)
+            //        {
+            //            case ElementType.ImageRegion:
+            //                region = item as ImageRegionView;
+            //                (region as ImageRegionView).RescaleComponents(WrapperTransform.ScaleX, WrapperTransform.ScaleY);
+            //                break;
+            //            case ElementType.PdfRegion:
+            //                region = item as PDFRegionView;
+            //                (region as PDFRegionView).RescaleComponents(WrapperTransform.ScaleX, WrapperTransform.ScaleY);
+            //                break;
+            //            default:
+            //                break;
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    // since we aren't in a rectangle, the clipping rectangle contains the entire image
+            //    var rect = new Rect(0, 0, contentView.ActualWidth, contentView.ActualHeight);
+            //    xClippingRectangle.Rect = rect;
+            //}
         }
     }
 }
