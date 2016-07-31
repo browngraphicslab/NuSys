@@ -41,10 +41,29 @@
     <Compile Include="ContentDataModel.cs" />
     <Compile Include="Keyword.cs" />
     <Compile Include="Message.cs" />
+    <Compile Include="Models\AudioNodeModel.cs" />
+    <Compile Include="Models\CollectionElementModel.cs" />
+    <Compile Include="Models\ElementModel.cs" />
+    <Compile Include="Models\PdfNodeModel.cs" />
+    <Compile Include="Models\Sendable.cs" />
+    <Compile Include="Models\TextElementModel.cs" />
+    <Compile Include="Models\VideoNodeModel.cs" />
+    <Compile Include="Models\WordNodeModel.cs" />
     <Compile Include="Request.cs" />
     <Compile Include="NusysConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerArguments\GetEntireWorkspaceRequestArgs.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Windows.Foundation.UniversalApiContract">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\References\Windows.Foundation.UniversalApiContract\1.0.0.0\Windows.Foundation.UniversalApiContract.winmd</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MuPDFWinRT\Win8\MuPDFWinRT.vcxproj">
+      <Project>{56c66c4f-3c21-4929-baf1-2eda2ec56823}</Project>
+      <Name>MuPDFWinRT</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

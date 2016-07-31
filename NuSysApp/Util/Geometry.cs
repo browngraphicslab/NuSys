@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Windows.Foundation;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
+using NusysIntermediate;
 
 namespace NuSysApp
 {

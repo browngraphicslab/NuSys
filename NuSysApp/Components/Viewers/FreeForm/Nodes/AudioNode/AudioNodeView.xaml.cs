@@ -20,6 +20,7 @@ using Windows.UI.Xaml.Navigation;
 using System.Diagnostics;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
+using NusysIntermediate;
 using NuSysApp.Components.Nodes;
 using NuSysApp.Controller;
 using NuSysApp.Nodes.AudioNode;
@@ -90,26 +91,9 @@ namespace NuSysApp
 
         public void AudioNodeView_OnJump(TimeSpan time)
         {
-            ((AudioNodeModel) ((DataContext as AudioNodeViewModel).Model)).Controller.ScrubJump(time);
+            //(((DataContext as AudioNodeViewModel).Controller).ScrubJump(time);
         }
-        /*
-                private void AddAllLinksVisually()
-                {
-                    foreach (var element in (DataContext as AudioNodeViewModel).LinkedTimeModels)
-                    {
-                        var timeBlockVM = new LinkedTimeBlockViewModel(element, ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.PlaybackElement.NaturalDuration.TimeSpan, scrubBar);
-                        LinkedTimeBlock line = new LinkedTimeBlock(timeBlockVM);
-                        line.SetValue(Canvas.ZIndexProperty, 1);
-                        line.OnTimeChange += ReSaveLinkModels;
-                        _timeBlocks.Add(timeBlockVM);
-                        grid.Children.Add(line);
-                        timeBlockVM.setUpHandlers(line.getLine());
-                    }
-                    scrubBar.ContainerSizeChanged += ScrubBar_OnSizeChanged;
 
-
-                }
-        */
         private void PlaybackElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
         {
             
@@ -199,20 +183,6 @@ namespace NuSysApp
 
         }
 */
-
-
-        private async void OnPause_Click(object sender, RoutedEventArgs e)
-        {
-            //play.Opacity = 1;
-            //pause.Opacity = 0.3;
-            ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Pause();
-
-
-
-        }
-
-
-
         private void Node_SelectionChanged(object sender, PropertyChangedEventArgs e)
         {
             /*
@@ -321,11 +291,6 @@ namespace NuSysApp
             }
         }
 
-        private void ScrubBar_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-        {
-            if (DataContext != null) // CPTTE fix
-                ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).Controller.Scrub();
-        }
 
         private void Region_OnClick(object sender, RoutedEventArgs e)
         {

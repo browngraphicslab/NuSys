@@ -21,6 +21,11 @@ namespace NusysServer
 
             var returnArgs = new GetEntireWorkspaceRequestArgs();
             returnArgs.AliasMessages = new HashSet<Message>() {new Message( new Dictionary<string,object>() { { "test",1}})};
+
+            returnArgs.AliasMessages = null; //TODO fill this in
+            returnArgs.ContentMessages = null; //TODO fill this in
+            returnArgs.LibraryElementMessages = null; //TODO fill this in
+
             var returnMessage = new Message();
             returnMessage[NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY] = returnArgs;
             return returnMessage;

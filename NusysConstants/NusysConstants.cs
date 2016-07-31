@@ -44,7 +44,7 @@ namespace NusysIntermediate
         /// <summary>
         /// The key whose value should be the returned, json serialized, ContentDataModel requested
         /// </summary>
-        public static readonly string GET_CONTENT_DATA_MODEL_REQUEST_RETURNED_CONTENT_DATA_MODEL_KEY = "content_data_model_id";
+        public static readonly string GET_CONTENT_DATA_MODEL_REQUEST_RETURNED_CONTENT_DATA_MODEL_KEY = "returned_content_data_model";
 
         #endregion GetContentDataModelRequest
 
@@ -167,11 +167,13 @@ namespace NusysIntermediate
 
         /// <summary>
         /// string that represents the json-stringified dictionary of keywords
+        /// approximately 2048 characters max
         /// </summary>
         public static readonly string LIBRARY_ELEMENT_KEYWORDS_KEY = "keywords";
 
         /// <summary>
         /// string title for the library element
+        /// approximately 2048 characters max
         /// </summary>
         public static readonly string LIBRARY_ELEMENT_TITLE_KEY = "title";
 
@@ -182,36 +184,37 @@ namespace NusysIntermediate
 
         /// <summary>
         /// URL for the large icon for this library element model.  
+        /// approximately 512 characters max
         /// </summary>
         public static readonly string LIBRARY_ELEMENT_LARGE_ICON_URL_KEY = "large_icon_url";
 
         /// <summary>
-        /// key that represents the data for every object being made
-        /// </summary>
-        public static readonly string LIBRARY_ELEMENT_DATA_KEY = "library_element_data";
-
-        /// <summary>
         /// URL for the medium icon for this library element model.  
+        /// approximately 512 characters max
         /// </summary>
         public static readonly string LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY = "medium_icon_url";
 
         /// <summary>
         /// URL for the small icon for this library element model.  
+        /// approximately 512 characters max
         /// </summary>
         public static readonly string LIBRARY_ELEMENT_SMALL_ICON_URL_KEY = "small_icon_url";
 
         /// <summary>
-        /// string id (NOT A REGULAR, 32-CHAR STRING ID) for the user creator of this object.  
+        /// string id (NOT A REGULAR, 32-CHAR STRING ID) for the user creator of this object.
+        /// approximately 2048 characters max  
         /// </summary>
         public static readonly string LIBRARY_ELEMENT_CREATOR_USER_ID_KEY = "creator_user_id";
 
         /// <summary>
         /// datetime-parseable string for the creation of the current libraryelementmodel. 
+        /// approximately 512 characters max
         /// </summary>
         public static readonly string LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY = "creation_timestamp";
 
         /// <summary>
-        /// datetime-parseable string for the last edited time of the current libraryElementModel
+        /// datetime-parseable string for the last edited time of the current libraryElementModel. 
+        /// approximately 512 characters max
         /// </summary>
         public static readonly string LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY = "last_edited_timestamp";
 
@@ -225,7 +228,7 @@ namespace NusysIntermediate
             { LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY, typeof(string)},
             { LIBRARY_ELEMENT_CREATOR_USER_ID_KEY,typeof(string)},
             { LIBRARY_ELEMENT_SMALL_ICON_URL_KEY,typeof(string)},
-            {LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY,typeof(string)},
+            { LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY,typeof(string)},
             { LIBRARY_ELEMENT_LARGE_ICON_URL_KEY,typeof(string)},
             { LIBRARY_ELEMENT_FAVORITED_KEY,typeof(bool)},
             { LIBRARY_ELEMENT_TITLE_KEY,typeof(string)},
@@ -244,12 +247,14 @@ namespace NusysIntermediate
 
         /// <summary>
         /// the string used as the name of the 'key' column for metadata.  
+        /// approximately 512 characters max
         /// PROBABLY ONLY FOR SERVER-SIDE USE
         /// </summary>
         public static readonly string METADATA_KEY_COLUMN_KEY = "key_string";
 
         /// <summary>
         /// the string used as the name of the 'value' column for metadata.  
+        /// approximately 2048 characters max
         /// PROBABLY ONLY FOR SERVER-SIDE USE
         /// </summary>
         public static readonly string METADATA_VALUE_COLUMN_KEY = "value_string";
@@ -275,12 +280,14 @@ namespace NusysIntermediate
         /// <summary>
         /// the string used as the name of the 'key' column for unique properties.  
         /// PROBABLY ONLY FOR SERVER-SIDE USE
+        /// approximately 512 characters max
         /// </summary>
         public static readonly string PROPERTIES_KEY_COLUMN_KEY = "key_string";
 
         /// <summary>
         /// the string used as the name of the string 'value' column for properties.  
         /// PROBABLY ONLY FOR SERVER-SIDE USE
+        /// approximately 2048 characters max
         /// </summary>
         public static readonly string PROPERTIES_STRING_VALUE_COLUMN_KEY = "string_value";
 
@@ -322,9 +329,10 @@ namespace NusysIntermediate
         public static readonly string CONTENT_TABLE_TYPE_KEY = "content_type";
 
         /// <summary>
-        /// varchar url of the content
+        /// varchar url of the content.
+        /// approximately 512 characters max
         /// </summary>
-        public static readonly string CONTENT_TABLE_CONTENT_URL = "content_ur";
+        public static readonly string CONTENT_TABLE_CONTENT_URL_KEY = "content_ur";
 
         /// <summary>
         /// the list of keys that will safely be entered into the contents table.  
@@ -334,7 +342,7 @@ namespace NusysIntermediate
         {
             CONTENT_TABLE_CONTENT_ID_KEY,
             CONTENT_TABLE_TYPE_KEY,
-            CONTENT_TABLE_CONTENT_URL
+            CONTENT_TABLE_CONTENT_URL_KEY
         };
         #endregion Content
         #endregion SQLColumnNames
@@ -366,17 +374,6 @@ namespace NusysIntermediate
         public static readonly string CONTENTS_SQL_TABLE_NAME = "contents";
         #endregion SQLTableNames
 
-        /// <summary>
-        /// A hashset of strings that should never be stored as properties in any of the sql databases.
-        /// should be comprised of other string constants defined above.
-        /// Example: strings used to parse request types for network communication
-        /// </summary>
-        public static readonly HashSet<string> ILLEGAL_DATABASE_KEYS = new HashSet<string>()
-        {
-            RETURN_AWAITABLE_REQUEST_ID_STRING,
-            REQUEST_TYPE_STRING_KEY,
-            REQUEST_SUCCESS_BOOL_KEY
-        };
 
         /// <summary>
         /// The base types for every content.  ElementTypes can have the same content Types.
@@ -391,19 +388,12 @@ namespace NusysIntermediate
             Audio
         }
 
-        public enum Operator
-        {
-            And,
-            Or
-        }
-
         /// <summary>
         /// the list of the request types 
         /// as of 7/25/16, many are depricated but still exist.  We should figure out which are which...
         /// </summary>
         public enum RequestType
         {
-            GetContentDataModelRequest,
             DeleteSendableRequest,
             NewNodeRequest,
             FinalizeInkRequest,
@@ -415,14 +405,20 @@ namespace NusysIntermediate
             ChangeContentRequest,
             SetTagsRequest,
             ChatDialogRequest,
-            CreateNewLibrayElementRequest,
             SubscribeToCollectionRequest,
             UnsubscribeFromCollectionRequest,
             DeleteLibraryElementRequest,
             AddInkRequest,
             RemoveInkRequest,
             ChatRequest,
+            //below this line should be the new-server-approved requests
+            GetContentDataModelRequest,
+            CreateNewLibrayElementRequest,
             GetEntireWorkspaceRequest,
+            /// <summary>
+            /// This request will create a new content AND a default new library element for that content
+            /// Therefore this request should be called when someone uploads a new content to the library
+            /// </summary>
             CreateNewContentRequest
         }
 
@@ -443,25 +439,7 @@ namespace NusysIntermediate
         }
 
         #region staticMethods
-
-        /// <summary>
-        /// this method will take in a message and return a new message (new instance) 
-        /// with network and managment keys removed
-        /// 
-        /// 
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public static Message CleanForDatabaseInsertion(Message message)
-        {
-            var returnMessage = new Message(message);
-            foreach (var invalid_key in ILLEGAL_DATABASE_KEYS)
-            {
-                //this will remove the key if it exists
-                returnMessage.Remove(invalid_key);
-            }
-            return returnMessage;
-        }
+        
         #endregion staticMethods
     }
 }

@@ -29,7 +29,6 @@ namespace NuSysApp
             var has = SessionController.Instance.IdToControllers.ContainsKey(props.GetString("canvasNodeID"));
             if (!has)
                 return;
-            var canvas = SessionController.Instance.IdToControllers[props.GetString("canvasNodeID")].Model.InqCanvas;
             if (props.ContainsKey("inkType") && props["inkType"] == "partial")
             {
                 var one = new Point2d(Double.Parse(props.GetString("x1")), Double.Parse(props.GetString("y1")));
@@ -46,14 +45,12 @@ namespace NuSysApp
                 {
                     lineModel.Stroke = new SolidColorBrush(Colors.Yellow);
                 }
-                canvas.AddTemporaryInqline(lineModel, id);
                     
             }
             else if (props.GetString("inkType") == "full" )
             {
                 var lineModel = new InqLineModel(id);
                 await lineModel.UnPack(props);
-                canvas.FinalizeLine(lineModel);
             }
         }
     }

@@ -16,7 +16,7 @@ namespace NuSysApp
 {
     public class InqCanvasModel : Sendable
     {
- 
+
         public event LineHandler LineFinalized;
         public event LineHandler LineFinalizedLocally;
         public event LineHandler LineRemoved;
@@ -26,18 +26,20 @@ namespace NuSysApp
         public delegate void PageChangeHandler(int page);
         public delegate void LineHandler(InqLineModel lineModel);
         public delegate void DisposeInqHandler();
-        
+
         private HashSet<InqLineModel> _lines = new HashSet<InqLineModel>();
         private Dictionary<string, HashSet<InqLineModel>> _partialLines;
         private int _page;
 
-        public int Page {
+        public int Page
+        {
             get { return _page; }
             set
             {
                 _page = value;
                 PageChanged?.Invoke(_page);
-            } }
+            }
+        }
 
         public InqCanvasModel(string id) : base(id)
         {
@@ -64,9 +66,10 @@ namespace NuSysApp
             _lines = new HashSet<InqLineModel>();
         }
 
-        public HashSet<InqLineModel> Lines {
+        public HashSet<InqLineModel> Lines
+        {
             get { return _lines; }
-         
+
         }
 
         public void FinalizeLineLocally(InqLineModel line)
@@ -79,7 +82,7 @@ namespace NuSysApp
         {
             line.Page = Page;
             _lines.Add(line);
-            LineFinalized?.Invoke( line );
+            LineFinalized?.Invoke(line);
         }
 
         public void DisposeInq()
@@ -113,7 +116,7 @@ namespace NuSysApp
             {
                 foreach (InqLineModel l in _partialLines[oldID])
                 {
-//                    l.Delete();
+                    //                    l.Delete();
                     _lines.Remove(l);
                 }
                 _partialLines.Remove(oldID);
@@ -122,7 +125,7 @@ namespace NuSysApp
 
         public override async Task<Dictionary<string, object>> Pack()
         {
-            var dict =  await base.Pack();
+            var dict = await base.Pack();
             dict["page"] = Page;
             dict["lines"] = JsonConvert.SerializeObject(Lines.ToArray());
             return dict;
@@ -146,3 +149,4 @@ namespace NuSysApp
         }
     }
 }
+

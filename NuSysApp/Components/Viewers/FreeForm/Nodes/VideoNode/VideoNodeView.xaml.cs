@@ -57,7 +57,7 @@ namespace NuSysApp
             
 
             _isRecording = false;
-            vm.LinkedTimeModels.CollectionChanged += LinkedTimeBlocks_CollectionChanged;
+
             _timeBlocks = new List<LinkedTimeBlockViewModel>();
             //scrubBar.SetValue(Canvas.ZIndexProperty, 1);
             //  playbackElement.Play();
@@ -65,8 +65,6 @@ namespace NuSysApp
             //playbackElement.Stop();
 
             vm.Controller.Disposed += ControllerOnDisposed;
-
-            ((VideoNodeModel)vm.Model).OnJump += VideoNodeView_OnJump;
 
            // playbackElement.MediaEnded += MediaEnded;
             vm.OnGetMediaPlayerWidth += OnGetMediaPlayerWidth;
@@ -138,7 +136,6 @@ namespace NuSysApp
             var vm = (VideoNodeViewModel) DataContext;
             vm.Controller.LibraryElementController.Loaded -= LoadVideo;
             vm.PropertyChanged -= Node_SelectionChanged;
-            vm.LinkedTimeModels.CollectionChanged -= LinkedTimeBlocks_CollectionChanged;
             vm.Controller.Disposed -= ControllerOnDisposed;
             nodeTpl.Dispose();
             DataContext = null;

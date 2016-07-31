@@ -139,6 +139,19 @@ namespace NusysIntermediate
             return ContainsKey(key) ? bool.Parse(Get(key)) : defaultValue;
         }
 
+        /// <summary>
+        /// returns an enum of the specified type.  The type passed in must be an enum type or this will probably crash.  
+        /// The key must also be present in the dictionary
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public T GetEnum<T>(string key)
+        {
+            Debug.Assert(ContainsKey(key));
+            var e = (T)(Enum.Parse(typeof(T), Get(key),true));
+            return e;
+        }
         public byte[] GetByteArray(string key)
         {
             return ContainsKey(key) ? Convert.FromBase64String(Get(key)) : null;

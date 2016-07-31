@@ -124,13 +124,6 @@ namespace NuSysApp
                     break;
                 case NusysConstants.ElementType.Text:
                     break;
-                case NusysConstants.ElementType.Audio:
-                    _debouncingDictionary.Add("linkedTimeModels", ((AudioNodeModel)Model).LinkedTimeModels);
-
-                    break;
-                case NusysConstants.ElementType.Video:
-                    _debouncingDictionary.Add("linkedTimeModels", ((VideoNodeModel)Model).LinkedTimeModels);
-                    break;
             }
         }
 

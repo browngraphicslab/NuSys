@@ -104,7 +104,7 @@ namespace NusysIntermediate
 
         /// <summary>
         /// tells whether an executed requst was succesful or not.  
-        /// return null if the request hasnt returned yet 
+        /// returns null if the request hasnt returned yet.  
         /// also returns null if the message wasn't formatted corectly after return
         /// </summary>
         /// <returns></returns>

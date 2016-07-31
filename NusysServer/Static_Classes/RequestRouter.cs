@@ -10,6 +10,12 @@ namespace NusysServer
 {
     public class RequestRouter
     {
+        /// <summary>
+        /// this requst will 
+        /// </summary>
+        /// <param name="originalMessage"></param>
+        /// <param name="webSocketHandler"></param>
+        /// <returns></returns>
         public static async Task<bool> HandleRequest(Message originalMessage, NuWebSocketHandler webSocketHandler)
         {
             try
@@ -78,7 +84,7 @@ namespace NusysServer
                     return false;
                 }
 
-
+                //if a return is required but we don't send a message, the client will have a thread waiting forever
                 if (requiresReturn)
                 {
                     //defaults to returning successful request if the individual handler hasn't specified it 

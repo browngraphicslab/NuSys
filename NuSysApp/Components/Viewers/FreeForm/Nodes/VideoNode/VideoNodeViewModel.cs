@@ -10,6 +10,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media;
+using NusysIntermediate;
 using NuSysApp.Nodes.AudioNode;
 using NuSysApp.Util;
 
@@ -141,17 +142,6 @@ namespace NuSysApp
                 var r = model.ResolutionX / (double)model.ResolutionY;
                 base.SetSize(height * r, height + 150);
             }
-        }
-
-        public ObservableCollection<LinkedTimeBlockModel> LinkedTimeModels
-        {
-            get { return (Model as VideoNodeModel).LinkedTimeModels; }
-        }
-
-
-        public void AddLinkTimeModel(LinkedTimeBlockModel model)
-        {
-            (Model as VideoNodeModel).LinkedTimeModels.Add(model);
         }
 
         protected override void OnSizeChanged(object source, double width, double height)

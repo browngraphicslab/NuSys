@@ -18,11 +18,18 @@ namespace NusysServer
 {
     public class NuWebSocketHandler : WebSocketHandler
     {
-        private static WebSocketCollection clients = new WebSocketCollection();
+        /// <summary>
+        /// the list of all the current connected clients.  Each client is one websockethandler
+        /// </summary>
+        private static WebSocketCollection AllClients = new WebSocketCollection();
         private static JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+
+        /// <summary>
+        /// essentially the constructor.  Called whenever a new client, and therefore new nuwebsockethandler, is made
+        /// </summary>
         public override void OnOpen()
         {
-            clients.Add(this);
+            AllClients.Add(this);
             var ip = this.WebSocketContext.UserHostAddress;
 
             this.MaxIncomingMessageSize = Int32.MaxValue;//TODO broadcast this openeing somewhere
@@ -38,16 +45,22 @@ namespace NusysServer
             }
         }
 
+        /// <summary>
+        /// the event handler whenever the socket is closed by either end
+        /// </summary>
         public override void OnClose()
         {
             if (ActiveClient.ActiveClients.ContainsKey(this))
             {
                 BroadcastRemovingUser(ActiveClient.ActiveClients[this]);
                 ActiveClient.ActiveClients[this].Disconnect();
-            }//TODO Broadcast this closing somewhere
+            }
         }
 
-
+        /// <summary>
+        /// called automatically whenever a socketHandler gets a message from its client
+        /// </summary>
+        /// <param name="message"></param>
         public override void OnMessage(string message)
         {
             Task.Run(delegate
@@ -111,18 +124,29 @@ namespace NusysServer
             Broadcast(dict);
         }
 
+        /// <summary>
+        /// THIS SHOULD BE DEPRICATED
+        /// </summary>
+        /// <param name="client"></param>
+        /// <returns></returns>
         private static Dictionary<string, object> GetUserAdditionDict(ActiveClient client)
         {
             var dict = client.Client.GetDict();
-            dict[Constants.FROM_SERVER_MESSAGE_INDICATOR_STRING] = true;
+            //dict[Constants.FROM_SERVER_MESSAGE_INDICATOR_STRING] = true;
             dict["notification_type"] = "add_user";
             dict["user_id"] = client.Client.ID;
             return dict;
         }
+
+        /// <summary>
+        /// THIS SHOULD BE DEPRICATED
+        /// </summary>
+        /// <param name="client"></param>
+        /// <returns></returns>
         private static Dictionary<string, object> GetUserRemoveDict(ActiveClient client)
         {
             var dict = new Dictionary<string, object>();
-            dict[Constants.FROM_SERVER_MESSAGE_INDICATOR_STRING] = true;
+            //dict[Constants.FROM_SERVER_MESSAGE_INDICATOR_STRING] = true;
             dict["notification_type"] = "remove_user";
             dict["user_id"] = client.Client.ID;
             return dict;
@@ -205,8 +229,7 @@ namespace NusysServer
         public static void BroadcastToSubset(Message message, HashSet<NuWebSocketHandler> exclusions = null)
         {
             exclusions = exclusions ?? new HashSet<NuWebSocketHandler>();
-            HashSet<NuWebSocketHandler> socketsToBroadcast = new HashSet<NuWebSocketHandler>();
-            foreach (var socket in socketsToBroadcast)
+            foreach (var socket in AllClients)
             {
                 if (!exclusions.Contains(socket))
                 {
@@ -215,41 +238,45 @@ namespace NusysServer
             }
         }
 
-        public static void BroadcastToSubset(Dictionary<string, object> dict, Func<WebSocketHandler, bool> func)
+        /// <summary>
+        /// sends a dictionary to the client instance
+        /// </summary>
+        /// <param name="dict"></param>
+        public void Send(Dictionary<string, object> dict)
         {
-            var message = JsonConvert.SerializeObject(dict, settings);
-            foreach (var socket in clients)
-            {
-                if (func(socket))
-                {
-                    socket.Send(message);
-                }
-            }
+            Send(JsonConvert.SerializeObject(dict, settings));
         }
-        public static void BroadcastToSubset(string message, IEnumerable<WebSocketHandler> set, IEnumerable<WebSocketHandler> exclusions)
+
+
+        /// <summary>
+        /// STATIC.  
+        /// sends a message to all clients
+        /// </summary>
+        /// <param name="message"></param>
+        public static void Broadcast(Message message)
         {
-            foreach (var socket in set)
-            {
-                if (!exclusions.Contains(socket))
-                {
-                    socket.Send(message);
-                }
-            }
+            Broadcast(message.GetSerialized());
         }
+
+        /// <summary>
+        /// STATIC.  
+        /// broadcasts a dictionary to all clients.  Should probably be replaced by the overload taking in a message
+        /// </summary>
+        /// <param name="dict"></param>
         private static void Broadcast(Dictionary<string, object> dict)
         {
             var message = JsonConvert.SerializeObject(dict, settings);
             Broadcast(message);
         }
 
+        /// <summary>
+        /// STATIC.  
+        /// lowest-level broadcast method that takes in a string and sends it to all the clients
+        /// </summary>
+        /// <param name="message"></param>
         private static void Broadcast(string message)
         {
-            clients.Broadcast(message);
-        }
-
-        public void Send(Dictionary<string, object> dict)
-        {
-            Send(JsonConvert.SerializeObject(dict, settings));
+            AllClients.Broadcast(message);
         }
     }
 }

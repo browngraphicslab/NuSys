@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Windows.UI.Xaml.Media;
 using Newtonsoft.Json;
 using NusysIntermediate;
 
-namespace NuSysApp
+namespace NusysIntermediate
 {
     public class CollectionElementModel : ElementModel
     {
-        public CollectionLibraryElementModel CollectionLibraryElementModel { get; set; }
 
         public enum CollectionViewType { List, FreeForm, Timeline }
 

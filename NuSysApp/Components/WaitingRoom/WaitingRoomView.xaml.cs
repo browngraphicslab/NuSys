@@ -174,6 +174,12 @@ namespace NuSysApp
                 InitialWorkspaceId = id;
                 this.Frame.Navigate(typeof(SessionView));
             }
+            if (false || true)
+            {
+                var request = new GetContentDataModelRequest("test_id");
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                var model = request.GetReturnedContentDataModel();
+            }
         }
 
         public static IEnumerable<Message> GetFirstLoadList()

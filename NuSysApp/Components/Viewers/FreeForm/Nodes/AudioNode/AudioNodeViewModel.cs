@@ -19,6 +19,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Linq;
 using Windows.UI.Xaml.Controls.Primitives;
 using System.Diagnostics;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -127,21 +128,6 @@ namespace NuSysApp
             Controller.LibraryElementController.Loaded -= InitWhenReady;
             Controller.Disposed -= ControllerOnDisposed;
         }
-
-        public void removeTimeBlockChange(
-                System.Collections.Specialized.NotifyCollectionChangedEventHandler onCollectionChanged)
-        {
-            (Model as AudioNodeModel).LinkedTimeModels.CollectionChanged -= onCollectionChanged;
-        }
-
-        public void addTimeBlockChange(
-            System.Collections.Specialized.NotifyCollectionChangedEventHandler onCollectionChanged)
-        {
-            (Model as AudioNodeModel).LinkedTimeModels.CollectionChanged += onCollectionChanged;
-        }
-
-
-
 
         public override void SetSize(double width, double height)
         {
@@ -339,17 +325,6 @@ namespace NuSysApp
         public Grid VisualGrid
         {
             get { return _visualGrid; }
-        }
-
-        public ObservableCollection<LinkedTimeBlockModel> LinkedTimeModels
-        {
-            get { return (Model as AudioNodeModel).LinkedTimeModels; }
-        }
-
-
-        public void AddLinkTimeModel(LinkedTimeBlockModel model)
-        {
-            (Model as AudioNodeModel).LinkedTimeModels.Add(model);
         }
 
         public double GetWidth()

@@ -14,15 +14,6 @@ namespace NusysServer
 {
     public class SQLConnector
     {
-        public enum SQLTableType
-        {
-            Alias,
-            LibrayElement,
-            Metadata,
-            Properties,
-            Content
-        }
-
         /// <summary>
         /// this string is used to connect to the azure SQL database
         /// </summary>
@@ -49,6 +40,13 @@ namespace NusysServer
         {
             _db = new SqlConnection(SQLSTRING);
             _db.Open(); //open database
+            var m = new Message();
+            ResetTables(true);
+            SetUpTables();
+            m[NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY] = "test.jpg";
+            m[NusysConstants.CONTENT_TABLE_TYPE_KEY] = NusysConstants.ContentType.Image;
+            m[NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY] = "test_id";
+            var s = AddContent(m);
         }
 
         /// <summary>
@@ -57,45 +55,45 @@ namespace NusysServer
         private void SetUpTables()
         {
 
-            var contentTable = MakeCommand("CREATE TABLE " + GetTableName(SQLTableType.Content) + " (" +
-                NusysIntermediate.NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY + " char(32), " +
-                NusysIntermediate.NusysConstants.CONTENT_TABLE_TYPE_KEY + " char(32), " +
-                NusysIntermediate.NusysConstants.CONTENT_TABLE_CONTENT_URL + " varchar);");
+            var contentTable = MakeCommand("CREATE TABLE " + GetTableName(Constants.SQLTableType.Content) + " (" +
+                NusysIntermediate.NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY + " varchar(128), " +
+                NusysIntermediate.NusysConstants.CONTENT_TABLE_TYPE_KEY + " varchar(128), " +
+                NusysIntermediate.NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY + " varchar(1024));");
 
-            var libraryElementTable = MakeCommand("CREATE TABLE " + GetTableName(SQLTableType.LibrayElement) + " (" +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY + " char(32), " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY + " char(32), " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_TYPE_KEY + " char(32), " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY + " varchar, " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY + " varchar, " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_CREATOR_USER_ID_KEY + " varchar, " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_FAVORITED_KEY + " char(5), " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY + " varchar, " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_TITLE_KEY + " varchar, " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_SMALL_ICON_URL_KEY + " varchar, " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY + " varchar, " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_LARGE_ICON_URL_KEY + " varchar);");
+            var libraryElementTable = MakeCommand("CREATE TABLE " + GetTableName(Constants.SQLTableType.LibrayElement) + " (" +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY + " varchar(128), " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY + " varchar(128), " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_TYPE_KEY + " varchar(128), " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY + " varchar(1024), " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY + " varchar(1024), " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_CREATOR_USER_ID_KEY + " varchar(4096), " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_FAVORITED_KEY + " varchar(32), " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY + " varchar(4096), " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_TITLE_KEY + " varchar(4096), " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_SMALL_ICON_URL_KEY + " varchar(1024), " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY + " varchar(1024), " +
+                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_LARGE_ICON_URL_KEY + " varchar(1024));");
 
-            var aliasTable = MakeCommand("CREATE TABLE "+GetTableName(SQLTableType.Alias)+" ("+
-                NusysIntermediate.NusysConstants.ALIAS_ID_KEY + " char(32), " +
-                NusysIntermediate.NusysConstants.ALIAS_LIBRARY_ID_KEY + " char(32), " +
+            var aliasTable = MakeCommand("CREATE TABLE "+GetTableName(Constants.SQLTableType.Alias)+" ("+
+                NusysIntermediate.NusysConstants.ALIAS_ID_KEY + " varchar(128), " +
+                NusysIntermediate.NusysConstants.ALIAS_LIBRARY_ID_KEY + " varchar(128), " +
                 NusysIntermediate.NusysConstants.ALIAS_LOCATION_X_KEY + " float, " +
                 NusysIntermediate.NusysConstants.ALIAS_LOCATION_Y_KEY + " float, " +
                 NusysIntermediate.NusysConstants.ALIAS_SIZE_WIDTH_KEY + " float, " +
                 NusysIntermediate.NusysConstants.ALIAS_SIZE_HEIGHT_KEY + " float, " + 
-                NusysIntermediate.NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY + " char(32));");
+                NusysIntermediate.NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY + " varchar(128));");
 
-            var metadataTable = MakeCommand("CREATE TABLE "+GetTableName(SQLTableType.Metadata)+" ("+
-                NusysIntermediate.NusysConstants.METADATA_LIBRARY_ELEMENT_ID_KEY + " char(32)," +
-                NusysIntermediate.NusysConstants.METADATA_KEY_COLUMN_KEY + " varchar," +
-                NusysIntermediate.NusysConstants.METADATA_VALUE_COLUMN_KEY + " varchar,);");
+            var metadataTable = MakeCommand("CREATE TABLE "+GetTableName(Constants.SQLTableType.Metadata)+" ("+
+                NusysIntermediate.NusysConstants.METADATA_LIBRARY_ELEMENT_ID_KEY + " varchar(128)," +
+                NusysIntermediate.NusysConstants.METADATA_KEY_COLUMN_KEY + " varchar(1028)," +
+                NusysIntermediate.NusysConstants.METADATA_VALUE_COLUMN_KEY + " varchar(4096));");
 
-            var propertiesTable = MakeCommand("CREATE TABLE " + GetTableName(SQLTableType.Properties) + " (" +
-                NusysIntermediate.NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY + " char(32), " +
-                NusysIntermediate.NusysConstants.PROPERTIES_KEY_COLUMN_KEY + " varchar, " +
+            var propertiesTable = MakeCommand("CREATE TABLE " + GetTableName(Constants.SQLTableType.Properties) + " (" +
+                NusysIntermediate.NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY + " varchar(128), " +
+                NusysIntermediate.NusysConstants.PROPERTIES_KEY_COLUMN_KEY + " varchar(1028), " +
                 NusysIntermediate.NusysConstants.PROPERTIES_DATE_VALUE_COLUMN_KEY + " datetime, " +
                 NusysIntermediate.NusysConstants.PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY + " float, " +
-                NusysIntermediate.NusysConstants.PROPERTIES_STRING_VALUE_COLUMN_KEY + " varchar);");
+                NusysIntermediate.NusysConstants.PROPERTIES_STRING_VALUE_COLUMN_KEY + " varchar(4096));");
 
             libraryElementTable.ExecuteNonQuery();
             aliasTable.ExecuteNonQuery();
@@ -115,11 +113,11 @@ namespace NusysServer
             if (delete)
             {
 
-                var dropAliases = MakeCommand("DROP TABLE " + GetTableName(SQLTableType.Alias));
-                var dropLibraryElements = MakeCommand("DROP TABLE " + GetTableName(SQLTableType.LibrayElement));
-                var dropProperties = MakeCommand("DROP TABLE " + GetTableName(SQLTableType.Properties));
-                var dropMetadata = MakeCommand("DROP TABLE " + GetTableName(SQLTableType.Metadata));
-                var dropContent = MakeCommand("DROP TABLE " + GetTableName(SQLTableType.Content));
+                var dropAliases = MakeCommand("DROP TABLE " + GetTableName(Constants.SQLTableType.Alias));
+                var dropLibraryElements = MakeCommand("DROP TABLE " + GetTableName(Constants.SQLTableType.LibrayElement));
+                var dropProperties = MakeCommand("DROP TABLE " + GetTableName(Constants.SQLTableType.Properties));
+                var dropMetadata = MakeCommand("DROP TABLE " + GetTableName(Constants.SQLTableType.Metadata));
+                var dropContent = MakeCommand("DROP TABLE " + GetTableName(Constants.SQLTableType.Content));
 
                 dropAliases.ExecuteNonQuery();
                 dropLibraryElements.ExecuteNonQuery();
@@ -129,11 +127,11 @@ namespace NusysServer
             }
             else
             {
-                var clearAliases = MakeCommand("TRUNCATE TABLE " + GetTableName(SQLTableType.Alias));
-                var clearLibraryElements = MakeCommand("TRUNCATE TABLE " + GetTableName(SQLTableType.LibrayElement));
-                var clearProperties = MakeCommand("TRUNCATE TABLE " + GetTableName(SQLTableType.Properties));
-                var clearMetadata = MakeCommand("TRUNCATE TABLE " + GetTableName(SQLTableType.Metadata));
-                var clearContent = MakeCommand("TRUNCATE TABLE " + GetTableName(SQLTableType.Content));
+                var clearAliases = MakeCommand("TRUNCATE TABLE " + GetTableName(Constants.SQLTableType.Alias));
+                var clearLibraryElements = MakeCommand("TRUNCATE TABLE " + GetTableName(Constants.SQLTableType.LibrayElement));
+                var clearProperties = MakeCommand("TRUNCATE TABLE " + GetTableName(Constants.SQLTableType.Properties));
+                var clearMetadata = MakeCommand("TRUNCATE TABLE " + GetTableName(Constants.SQLTableType.Metadata));
+                var clearContent = MakeCommand("TRUNCATE TABLE " + GetTableName(Constants.SQLTableType.Content));
 
                 clearAliases.ExecuteNonQuery();
                 clearLibraryElements.ExecuteNonQuery();
@@ -160,19 +158,19 @@ namespace NusysServer
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        private static string GetTableName(SQLTableType type)
+        private static string GetTableName(Constants.SQLTableType type)
         {
             switch (type)
             {
-                case SQLTableType.Alias:
+                case Constants.SQLTableType.Alias:
                     return NusysIntermediate.NusysConstants.ALIASES_SQL_TABLE_NAME;
-                case SQLTableType.LibrayElement:
+                case Constants.SQLTableType.LibrayElement:
                     return NusysIntermediate.NusysConstants.LIBRARY_ELEMENTS_SQL_TABLE_NAME;
-                case SQLTableType.Metadata:
+                case Constants.SQLTableType.Metadata:
                     return NusysIntermediate.NusysConstants.METADATA_SQL_TABLE_NAME;
-                case SQLTableType.Properties:
+                case Constants.SQLTableType.Properties:
                     return NusysIntermediate.NusysConstants.PROPERTIES_SQL_TABLE_NAME;
-                case SQLTableType.Content:
+                case Constants.SQLTableType.Content:
                     return NusysIntermediate.NusysConstants.CONTENTS_SQL_TABLE_NAME;
             }
             return null;
@@ -211,7 +209,7 @@ namespace NusysServer
                     acceptedKeysDictionary.Add(kvp.Key, kvp.Value);
                 }
             }
-            var cmd = GetInsertCommand(SQLTableType.LibrayElement, acceptedKeysDictionary);
+            var cmd = GetInsertCommand(Constants.SQLTableType.LibrayElement, acceptedKeysDictionary);
             var successInt = cmd.ExecuteNonQuery();
             return successInt > 0;
         }
@@ -230,16 +228,9 @@ namespace NusysServer
 
             //makes sure that the message used to get the insert sql command only contains keys that exist in the 
             //content sql table. This is to make sure that there are no errors when executing the command.
-            var safeInsertMessage = new Message();
-            foreach (var acceptedKey in NusysConstants.ACCEPTED_CONTENT_TABLE_KEYS)
-            {
-                if (message.ContainsKey(acceptedKey))
-                {
-                    safeInsertMessage[acceptedKey] = message[acceptedKey];
-                }
-            }
+            var safeInsertMessage = Constants.GetCleanedMessageForDatabase(message, Constants.SQLTableType.Content);
 
-            var cmd = GetInsertCommand(SQLTableType.Content, safeInsertMessage);
+            var cmd = GetInsertCommand(Constants.SQLTableType.Content, safeInsertMessage);
             var successInt = cmd.ExecuteNonQuery();
             return successInt > 0;
         }
@@ -258,7 +249,7 @@ namespace NusysServer
             var safeInsertMessage = new Message();
             safeInsertMessage[NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY] =
                 message[NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY];
-            var cmd = GetDeleteCommand(SQLTableType.LibrayElement, safeInsertMessage, NusysConstants.Operator.And);
+            var cmd = GetDeleteCommand(Constants.SQLTableType.LibrayElement, safeInsertMessage, Constants.Operator.And);
             var successInt = cmd.ExecuteNonQuery();
             return successInt > 0;
         }
@@ -272,12 +263,10 @@ namespace NusysServer
         /// <returns></returns>
         private bool AddStringProperty(string objectId, string propertyKey, string value)
         {
-            var cmd = GetInsertCommand(SQLTableType.Properties, new Message(new Dictionary<string, object>() {{propertyKey, value}}));
+            var cmd = GetInsertCommand(Constants.SQLTableType.Properties, new Message(new Dictionary<string, object>() {{propertyKey, value}}));
             var successInt = cmd.ExecuteNonQuery();
             return successInt > 0;
         }
-
-
 
         /// <summary>
         /// returns the contentDataModel, if any, of the specified contentDataModelId.  
@@ -287,67 +276,41 @@ namespace NusysServer
         /// <returns></returns>
         public ContentDataModel GetContentDataModel(string contentDataModelId)
         {
-            var statement = GetSelectCommand(SQLTableType.Content, new Message(new Dictionary<string, object>()
+            //create new query args class
+            var queryArgs = new SqlSelectQueryArgs();
+            queryArgs.SelectProperties = new Message(new Dictionary<string, object>()
             {
-                { NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY,contentDataModelId}
-            }),GetAcceptedKeys(SQLTableType.Content));
+                {NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY, contentDataModelId}
+            });
+            queryArgs.TableType = Constants.SQLTableType.Content;
+            queryArgs.ColumnsToGet = Constants.GetAcceptedKeys(Constants.SQLTableType.Content);
+
+            //get SQl Command from query args
+            var statement = GetSelectCommand(queryArgs);
+
+            //execute query command
             using (var reader = statement.ExecuteReader())
             {
                 if (reader.HasRows)
                 {
                     while (reader.Read())
                     {
-                        
+                        var m = new Message();
+                        var i = 0;
+                        foreach (var columnName in Constants.GetAcceptedKeys(Constants.SQLTableType.Content))
+                        {
+                            m[columnName] = reader[i];
+                            i++;
+                        }
+                        var dataModel = Constants.ParseContentDataModelFromDatabaseMessage(m);
+                        return dataModel;
                     }
                 }
             }
-            return null;
+            throw new Exception("the requested contentDataModel wasn't found on the database");
         }
 
-        /// <summary>
-        /// returns amn IEnumerable with all the column keys for a given sql table.  
-        /// populated by string lists in the constants class
-        /// </summary>
-        /// <param name="tableType"></param>
-        /// <returns></returns>
-        private IEnumerable<string> GetAcceptedKeys(SQLTableType tableType)
-        {
-            switch (tableType)
-            {
-                case SQLTableType.Alias:
-                    return NusysConstants.ALIAS_ACCEPTED_KEYS.Keys;
-                case SQLTableType.LibrayElement:
-                    return NusysConstants.LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS.Keys;
-                case SQLTableType.Content:
-                    return NusysConstants.ACCEPTED_CONTENT_TABLE_KEYS;
-                case SQLTableType.Metadata:
-                    return NusysConstants.ACCEPTED_METADATA_TABLE_KEYS;
-                case SQLTableType.Properties:
-                    return NusysConstants.ACCEPTED_PROPERTIES_TABLE_KEYS;
-            }
-            return new List<string>();
-        }
 
-        /// <summary>
-        /// returns to you a a new message where all the keys/values in your given message 
-        /// are present if they are valid column names in the speicified SQL table
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="tableType"></param>
-        /// <returns></returns>
-        private Message GetCleanMessageOfDatabaseKeys(Message message, SQLTableType tableType)
-        {
-            IEnumerable<string> acceptedKeys = GetAcceptedKeys(tableType);
-            var cleanedMessage = new Message();
-            foreach (var key in acceptedKeys)
-            {
-                if(message.ContainsKey(key))
-                {
-                    cleanedMessage[key] = message[key];
-                }
-            }
-            return cleanedMessage;
-        }
 
         /// <summary>
         /// Creates a SIMPLE select command for a specified table.  
@@ -357,11 +320,11 @@ namespace NusysServer
         /// <param name="tableType"></param>
         /// <param name="selectionParameterMessage"></param>
         /// <returns></returns>
-        private SqlCommand GetSelectCommand(SQLTableType tableType, Message selectionParameterMessage, IEnumerable<string> columnsToGet) // TODO ADD IN AND/OR OPERATOR
+        private SqlCommand GetSelectCommand(SqlSelectQueryArgs queryArgs)
         {
-            var cleanedMessage = GetCleanMessageOfDatabaseKeys(selectionParameterMessage, tableType);
-            var cleanedColumnsToGet = columnsToGet.Intersect(GetAcceptedKeys(tableType));
-            var sqlStatement = "SELECT "+String.Join(",",cleanedColumnsToGet)+" FROM " + GetTableName(tableType) + " WHERE ";
+            var cleanedMessage = Constants.GetCleanedMessageForDatabase(queryArgs.SelectProperties, queryArgs.TableType);
+            var cleanedColumnsToGet = queryArgs.ColumnsToGet.Intersect(Constants.GetAcceptedKeys(queryArgs.TableType));
+            var sqlStatement = "SELECT "+String.Join(",",cleanedColumnsToGet)+" FROM " + GetTableName(queryArgs.TableType) + " WHERE ";
             if (cleanedMessage.Any())
             {
                 var first = cleanedMessage.First();
@@ -370,21 +333,21 @@ namespace NusysServer
             }
             foreach (var kvp in cleanedMessage)
             {
-                sqlStatement += "AND "+kvp.Key + "='" + kvp.Value + "' "; //TODO add in and/or operators
+                sqlStatement += queryArgs.GroupOperator.ToString()+" "+kvp.Key + "='" + kvp.Value + "' "; 
             }
             sqlStatement += ";";
             return MakeCommand(sqlStatement);
         }
 
         /// <summary>
-        /// creates an insert command for the table t
+        /// creates an insert command for the table specified
         /// </summary>
         /// <param name="tableType"></param>
         /// <param name="columnValueMessage"></param>
         /// <returns></returns>
-        private SqlCommand GetInsertCommand (SQLTableType tableType, Message columnValueMessage)
+        private SqlCommand GetInsertCommand (Constants.SQLTableType tableType, Message columnValueMessage)
         {
-            var cleanedMessage = NusysConstants.CleanForDatabaseInsertion(columnValueMessage);
+            var cleanedMessage = Constants.GetCleanedMessageForDatabase(columnValueMessage,tableType);
             var sqlStatement = "INSERT INTO " + GetTableName(tableType) + " ";
             var columnNames = "(";
             var values = "(";
@@ -419,13 +382,13 @@ namespace NusysServer
         /// <param name="columnValueMessage"></param>
         /// <param name="deleteOperator"></param>
         /// <returns></returns>
-        private SqlCommand GetDeleteCommand(SQLTableType tableType, Message columnValueMessage, NusysConstants.Operator deleteOperator )
+        private SqlCommand GetDeleteCommand(Constants.SQLTableType tableType, Message columnValueMessage, Constants.Operator deleteOperator )
         {
-            //TODO Clean message
+            var cleanedMessage = Constants.GetCleanedMessageForDatabase(columnValueMessage, tableType);
             var deleteOperatorString = deleteOperator.ToString();
             var deleteStringCmd = "DELETE FROM " + GetTableName(tableType) + " WHERE ";
             int i = 0;
-            foreach (var kvp in columnValueMessage)
+            foreach (var kvp in cleanedMessage)
             {
                 if (i == 0)
                 {
@@ -440,6 +403,5 @@ namespace NusysServer
             deleteStringCmd = deleteStringCmd + ";";
             return MakeCommand(deleteStringCmd);
         }
-
     }
 }

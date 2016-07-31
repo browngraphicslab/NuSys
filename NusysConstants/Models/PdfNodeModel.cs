@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using NusysIntermediate;
 
-namespace NuSysApp
+namespace NusysIntermediate
 {
     public class PdfNodeModel : ElementModel
     {

@@ -53,7 +53,6 @@ namespace NuSysApp
             this.InitializeComponent();
 
             vm.SelectionChanged += VmOnSelectionChanged;
-            vm.Controller.Model.InqCanvas.LineFinalized += InqCanvasOnLineFinalized;
             vm.Controller.Disposed += ControllerOnDisposed;
 
             Loaded += delegate(object sender, RoutedEventArgs args)
@@ -195,42 +194,15 @@ namespace NuSysApp
             _linkMode?.Deactivate();
             _mainMode?.Deactivate();
             _simpleEditMode?.Deactivate();
- 
-        
 
-            var vm = (FreeFormViewerViewModel)DataContext;
+
+
+            var vm = (FreeFormViewerViewModel) DataContext;
             vm.SelectionChanged -= VmOnSelectionChanged;
-            vm.Controller.Model.InqCanvas.LineFinalized -= InqCanvasOnLineFinalized;
             vm.Controller.Disposed -= ControllerOnDisposed;
             _mode = null;
 
             _inqCanvas = null;
-        }
-
-        private void InqCanvasOnLineFinalized(InqLineModel model)
-        {
-            var vm = (FreeFormViewerViewModel)DataContext;
-            if (!model.IsGesture)
-            {
-                //var createdTag = await CheckForTagCreation(model);
-                //if (createdTag)
-                //{
-                //    model.Delete();
-                //}
-                return;
-            }
-
-            var gestureType = GestureRecognizer.Classify(model);
-            switch (gestureType)
-            {
-                case GestureRecognizer.GestureType.None:
-                    break;
-                case GestureRecognizer.GestureType.Scribble:
-                    var deletedSome = vm.CheckForInkNodeIntersection(model);
-                    if (deletedSome)
-                        model.Delete();
-                    break;
-            }
         }
 
         private void VmOnSelectionChanged(object source)

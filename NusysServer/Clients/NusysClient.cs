@@ -12,7 +12,7 @@ namespace NusysServer
     public class NusysClient
     {
         private static JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-        private static string _filepath = Constants.BASE_FOLDER + "Users";
+        private static string _filepath = Constants.FILE_FOLDER + "Users";
         public static ConcurrentDictionary<string, NusysClient> Users = new ConcurrentDictionary<string, NusysClient>();
         public static ConcurrentDictionary<string, NusysClient> IDtoUsers = new ConcurrentDictionary<string, NusysClient>();
         private string _hashedUsername;
@@ -88,9 +88,9 @@ namespace NusysServer
             }
             var s = JsonConvert.SerializeObject(saveDict, settings);
 
-            if (!Directory.Exists(Constants.BASE_FOLDER))
+            if (!Directory.Exists(Constants.FILE_FOLDER))
             {
-                Directory.CreateDirectory(Constants.BASE_FOLDER);
+                Directory.CreateDirectory(Constants.FILE_FOLDER);
             }
             try
             {
@@ -110,7 +110,7 @@ namespace NusysServer
             try
             {
                 return;
-                if (!Directory.Exists(Constants.BASE_FOLDER) || !File.Exists(_filepath))
+                if (!Directory.Exists(Constants.FILE_FOLDER) || !File.Exists(_filepath))
                 {
                     return;
                 }

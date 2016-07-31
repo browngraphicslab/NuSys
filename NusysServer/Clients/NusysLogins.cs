@@ -70,10 +70,5 @@ namespace NusysServer
             Buffer.BlockCopy(second, 0, ret, first.Length, second.Length);
             return ret;
         }
-
-        public static bool IsLoginRequest(Dictionary<string, object> dict)
-        {
-            return dict.ContainsKey(Constants.LOGIN_REQUEST_STRING);
-        }
     }
 }

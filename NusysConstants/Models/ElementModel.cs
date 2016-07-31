@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Windows.UI.Xaml.Media;
 using NusysIntermediate;
+using Windows.UI.Xaml.Media;
 
-namespace NuSysApp
+namespace NusysIntermediate
 {
     public class ElementModel : Sendable
     {       
@@ -23,13 +23,11 @@ namespace NuSysApp
 
         public ElementModel(string id) : base(id)
         {
-            InqCanvas = new InqCanvasModel(id);
+            
         }
 
         public NusysConstants.ElementType ElementType { get; set; }
-
-        public InqCanvasModel InqCanvas { get; set; }
-
+        
         public string LibraryId { set; get; }
 
         public string ParentCollectionId { get; set; }
@@ -134,14 +132,6 @@ namespace NuSysApp
             dict.Add("title", Title);
             dict.Add("type", ElementType.ToString());
             dict.Add("contentId", LibraryId);
-
-            var lines = new List<Dictionary<string, object>>();
-            foreach (var inqLineModel in InqCanvas.Lines)
-            {
-                lines.Add(await inqLineModel.Pack());
-            }
-
-            dict.Add("inqLines", lines);
             return dict;
         }
 
@@ -157,13 +147,6 @@ namespace NuSysApp
             Title = props.GetString("title", "");
             CreatorId = props.GetString("creator_user_id", null);
 
-            if (props.ContainsKey("system_sender_ip") && SessionController.Instance.NuSysNetworkSession != null && SessionController.Instance.NuSysNetworkSession.NetworkMembers != null &&
-                SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(
-                    props.GetString("system_sender_ip")))
-            {
-               // TODO: Refactor
-               // LastNetworkUser = SessionController.Instance.NuSysNetworkSession.NetworkMembers[props.GetString("system_sender_ip")];
-            }
 
             if (props.ContainsKey("type"))
             {
@@ -183,8 +166,6 @@ namespace NuSysApp
             {
                 ParentCollectionId = props.GetString("creator", ParentCollectionId);
             }
-
-            InqCanvas.UnPack(props);
 
             await base.UnPack(props);
         }

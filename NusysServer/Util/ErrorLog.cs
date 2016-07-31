@@ -8,7 +8,7 @@ namespace NusysServer
 {
     public class ErrorLog
     {
-        private static readonly string _filepath = Constants.BASE_FOLDER + "errorlog";
+        private static readonly string _filepath = Constants.FILE_FOLDER + "errorlog";
 
         public static void AddError(Exception e)
         {
@@ -36,7 +36,7 @@ namespace NusysServer
             {
                 try
                 {
-                    Directory.CreateDirectory(Constants.BASE_FOLDER);
+                    Directory.CreateDirectory(Constants.FILE_FOLDER);
                     File.Create(_filepath);
                     if (!secondAttempt)
                     {
