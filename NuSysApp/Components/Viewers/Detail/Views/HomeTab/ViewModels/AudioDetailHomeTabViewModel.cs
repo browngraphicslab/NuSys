@@ -21,14 +21,7 @@ namespace NuSysApp
             LibraryElementController = controller;
             
         }
-        public void RegionAdded(Region newRegion, AudioDetailHomeTabView contentview)
-        {
-            //var rectangle = JsonConvert.DeserializeObject<Region>(newRegion.ToString());
-           // Regions.Add(newRegion);
-            //RegionViews.Add(new AudioRegionView(new AudioRegionViewModel(newRegion as AudioRegionModel, contentview)));
-            //RaisePropertyChanged("RegionViews");
-        }
-        
+
         public void ScrubBarOnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             double position = e.NewValue / Duration;

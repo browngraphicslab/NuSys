@@ -19,19 +19,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
-    /// 
-    ///  xaml - wrap your content like this
-    /// 
-    ///             <local:AudioWrapper x:Name="xClippingWrapper">
-    ///                 <local:AudioWrapper.Content>
-    ///                    <MediaElement... />
-    ///                 </local:AudioWrapper.Content>
-    ///             </local:AudioWrapper>
-    /// 
-    ///  code behind -  place this in on loaded
-    ///     xClippingWrapper.Controller = _vm.LibraryElementController;
-    /// 
-    /// </summary>
+
     public sealed partial class AudioWrapper : Page
     {
 
@@ -55,7 +43,7 @@ namespace NuSysApp
 
 
         /// <summary>
-        /// The content of the wrapper, basically any rectangle based format, ideally images
+        /// The content of the wrapper, a media element in this case
         /// </summary>
         public FrameworkElement Content
         {
@@ -76,7 +64,6 @@ namespace NuSysApp
             set
             {
                 _contentController = value;
-                ProcessLibraryElementController();
             }
         }
 
@@ -86,7 +73,7 @@ namespace NuSysApp
             this.InitializeComponent();
         }
 
-        private void ProcessLibraryElementController()
+        public void ProcessLibraryElementController()
         {
             Debug.Assert(Controller != null);
             var type = Controller.LibraryElementModel.Type;
@@ -140,7 +127,6 @@ namespace NuSysApp
                     return;
                 }
                 // create the view and vm based on the region type
-                // todo add pdf, and video functionality
                 FrameworkElement view = null;
                 RegionViewModel vm = null;
                 switch (regionLibraryElementController.LibraryElementModel.Type)
@@ -149,10 +135,6 @@ namespace NuSysApp
                         vm = new AudioRegionViewModel(regionLibraryElementController.LibraryElementModel as AudioRegionModel,
                                 regionLibraryElementController as AudioRegionLibraryElementController, this);
                         view = new AudioRegionView(vm as AudioRegionViewModel);
-                        break;
-                    default:
-                        vm = null;
-                        view = null;
                         break;
                 }
 
@@ -164,7 +146,6 @@ namespace NuSysApp
                 }
 
                 // add the region to thew view
-
                 xClippingCanvas.Items.Add(view);
             });
             return null;

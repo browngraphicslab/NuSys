@@ -34,8 +34,6 @@ namespace NuSysApp
                 return AudioWrapper.ActualWidth * model.Start;
             } 
         }
-        public double LefthandleY1 { get; set; }
-        public double LefthandleY2 { get; set; }
 
         public double RightHandleX
         {
@@ -45,8 +43,7 @@ namespace NuSysApp
                 return AudioWrapper.ActualWidth * model.End;
             } 
         }
-        public double RightHandleY1 { get; set; }
-        public double RightHandleY2 { get; set; }
+
         public double RegionHeight { get; set; }
         public double RegionWidth { get; set; }
         private string _name;
@@ -68,18 +65,15 @@ namespace NuSysApp
 
         public AudioRegionViewModel(AudioRegionModel model, AudioRegionLibraryElementController regionLibraryElementController, AudioWrapper wrapper) : base(model, regionLibraryElementController, null)
         {
-        //    ContainerSizeChanged += BaseSizeChanged;
+            ContainerSizeChanged += BaseSizeChanged;
 
 
-
-            Name = Model.Title;
 
             regionLibraryElementController.TimeChanged += RegionController_TimeChanged;
             regionLibraryElementController.TitleChanged += RegionController_TitleChanged;
-            LefthandleY1 = 0;
-            LefthandleY2 = 110; //+ contentView.ActualHeight;
-            RightHandleY1 = 0;
-            RightHandleY2 = 110; //+ contentView.ActualHeight;
+            Name = Model.Title;
+
+
             AudioWrapper = wrapper;
             AudioWrapper.SizeChanged += AudioWrapper_SizeChanged;
         }

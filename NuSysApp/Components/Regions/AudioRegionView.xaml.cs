@@ -54,7 +54,7 @@ namespace NuSysApp
             }
         }
 
-        private void Handle_OnManipulationDelta2(object sender, ManipulationDeltaRoutedEventArgs e)
+        private void Bound2_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = this.DataContext as AudioRegionViewModel;
             if (Rect.Width + e.Delta.Translation.X > 0 && vm.RightHandleX + e.Delta.Translation.X < vm.AudioWrapper.ActualWidth)

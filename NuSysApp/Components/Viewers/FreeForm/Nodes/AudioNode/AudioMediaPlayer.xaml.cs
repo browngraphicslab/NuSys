@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Media;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -30,17 +32,6 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             MediaElement.SetValue(Canvas.ZIndexProperty, 1);
-
-            if (DataContext is AudioDetailHomeTabViewModel)
-            {
-                var vm = DataContext as AudioDetailHomeTabViewModel;
-                xAudioWrapper.Controller = vm.LibraryElementController;
-            }
-            else if (DataContext is AudioNodeViewModel)
-            {
-                var vm = DataContext as AudioNodeViewModel;
-                xAudioWrapper.Controller = vm.Controller.LibraryElementController;
-            }
         }
 
         private void Stop_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -80,17 +71,7 @@ namespace NuSysApp
 
         private void MediaElement_OnMediaOpened(object sender, RoutedEventArgs e)
         {
-            //var vm = this.DataContext as AudioNodeViewModel;
-            //if (vm == null)
-            //{
-            //    return;
-            //}
-
-
-            //double width = this.ActualWidth;
-            //double height = this.ActualHeight;
-            //vm.LibraryElementController.SetSize(width, height);
-
+            // todo remove this... want to dynamically set the start time
             MediaElement.Position = new TimeSpan(0);
 
             if (DataContext is AudioDetailHomeTabViewModel)
@@ -103,6 +84,12 @@ namespace NuSysApp
                 var vm = DataContext as AudioNodeViewModel;
                 xAudioWrapper.Controller = vm.Controller.LibraryElementController;
             }
+            else
+            {
+                Debug.Fail("We should always be in a node or the detail view, if not we must add functionality here");
+            }
+            xAudioWrapper.ProcessLibraryElementController();
+
         }
 
         private void ProgressBar_OnTapped(object sender, TappedRoutedEventArgs e)

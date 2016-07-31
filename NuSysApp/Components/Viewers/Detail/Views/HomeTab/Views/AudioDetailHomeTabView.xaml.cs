@@ -44,7 +44,7 @@ namespace NuSysApp
         
         public AudioDetailHomeTabView(AudioDetailHomeTabViewModel vm)
         {
-            this.DataContext = vm;
+            this.DataContext = vm; // has to be set before initComponent so child xaml elements inherit it
             _libraryElementId = vm.LibraryElementController.ContentId;
             this.InitializeComponent();
             _loaded = false;

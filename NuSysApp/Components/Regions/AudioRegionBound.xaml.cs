@@ -22,33 +22,33 @@ namespace NuSysApp
     public sealed partial class AudioRegionBound : UserControl
     {
         public static readonly DependencyProperty X1Dp = DependencyProperty.Register
-    (
-         "X1",
-         typeof(double),
-         typeof(AudioRegionBound),
-         new PropertyMetadata(0)
-    );
+        (
+             "X1",
+             typeof(double),
+             typeof(AudioRegionBound),
+             new PropertyMetadata(0)
+        );
         public static readonly DependencyProperty X2Dp = DependencyProperty.Register
-    (
-         "X2",
-         typeof(double),
-         typeof(AudioRegionBound),
-         new PropertyMetadata(0)
-    );
+        (
+             "X2",
+             typeof(double),
+             typeof(AudioRegionBound),
+             new PropertyMetadata(0)
+        );
         public static readonly DependencyProperty Y1Dp = DependencyProperty.Register
-    (
-         "Y1",
-         typeof(double),
-         typeof(AudioRegionBound),
-         new PropertyMetadata(0)
-    );
+        (
+             "Y1",
+             typeof(double),
+             typeof(AudioRegionBound),
+             new PropertyMetadata(0)
+        );
         public static readonly DependencyProperty Y2Dp = DependencyProperty.Register
-    (
-         "Y2",
-         typeof(double),
-         typeof(AudioRegionBound),
-         new PropertyMetadata(0)
-    );
+        (
+             "Y2",
+             typeof(double),
+             typeof(AudioRegionBound),
+             new PropertyMetadata(0)
+        );
 
         private Line _handle;
         private Ellipse _ellipse;
