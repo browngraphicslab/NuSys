@@ -23,7 +23,7 @@ namespace NuSysApp
         private PdfNodeViewModel _vm;
         private CanvasBitmap _bmp;
 
-        public PdfElementRenderItem(PdfNodeViewModel vm, ICanvasResourceCreator resourceCreator):base(vm, resourceCreator)
+        public PdfElementRenderItem(PdfNodeViewModel vm, CanvasAnimatedControl resourceCreator):base(vm, resourceCreator)
         {
             _vm = vm;
             _vm.PropertyChanged += OnPropertyChanged;
@@ -39,20 +39,23 @@ namespace NuSysApp
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
+
             if (_bmp == null && args.PropertyName == "ImageSource")
             {
-                _bmp = CanvasBitmap.CreateFromBytes(ResourceCreator, _vm.Buffer, (int)_vm.Width, (int)_vm.Height, DirectXPixelFormat.B8G8R8A8UIntNormalized);
+                _bmp?.Dispose();
+                _bmp = CanvasBitmap.CreateFromBytes(ResourceCreator, _vm.Buffer, (int)_vm.PdfSize.Width, (int)_vm.PdfSize.Height, DirectXPixelFormat.B8G8R8A8UIntNormalized);
+                _vm.Controller.SetSize(_bmp.Size.Width, _bmp.Size.Height);
+                _vm.DisposeData();
             }
         }
 
         public override void Draw(CanvasDrawingSession ds)
         {
             base.Draw(ds);
-            if (_vm.Title.Contains("greel"))
-                Debug.WriteLine("");
+
             if (_bmp != null)
             {
-                ds.DrawImage(_bmp, new Rect {X = _vm.X, Y = _vm.Y, Width = 200, Height = 300});
+                ds.DrawImage(_bmp, new Rect {X = _vm.X, Y = _vm.Y, Width = _vm.Width, Height = _vm.Height});
             }
         }
     }

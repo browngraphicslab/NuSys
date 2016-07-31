@@ -15,11 +15,16 @@ using Windows.UI.Xaml.Media;
 using MyToolkit.Utilities;
 using System.Numerics;
 using Windows.Devices.Input;
+using MyToolkit.Controls;
 
 namespace NuSysApp
 {
     public class SelectMode : AbstractWorkspaceViewMode
     {
+        public delegate void RenderItemSelectedHandler(BaseRenderItem element);
+
+        public event RenderItemSelectedHandler ItemSelected;
+        
         private enum Mode { PanZoom, MoveNode}
 
         private Mode _mode = Mode.PanZoom;
@@ -29,6 +34,7 @@ namespace NuSysApp
         private Point _centerPoint;
         private double _twoFingerDist;
         private double _distanceTraveled;
+        private Stopwatch _stopwatch = new Stopwatch();
 
         public SelectMode(FreeFormViewer view):base(view)
         {
@@ -48,9 +54,7 @@ namespace NuSysApp
             ffview.RenderCanvas.PointerPressed += OnPointerPressed;
             ffview.RenderCanvas.PointerReleased += OnPointerReleased;
         }
-
-
-
+        
         private void UpdateCenterPoint()
         {
             var points = _pointerPoints.Values.ToArray();
@@ -69,6 +73,9 @@ namespace NuSysApp
 
         private async void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
+            if (_pointerPoints.Count >= 1)
+                _stopwatch.Start();
+
             if (e.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
                 _pointerPoints.Clear();
 
@@ -94,6 +101,7 @@ namespace NuSysApp
                     _mode = Mode.MoveNode;
                 }
             }
+           
             ffView.RenderCanvas.PointerMoved += OnPointerMoved;
             /*
             var ffView = (FreeFormViewer)_view;
@@ -120,6 +128,8 @@ namespace NuSysApp
 
         private async void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
+            _stopwatch.Stop();
+
             if (_pointerPoints.ContainsKey(e.Pointer.PointerId))
                 _pointerPoints.Remove(e.Pointer.PointerId);
 
@@ -127,16 +137,17 @@ namespace NuSysApp
                 _startPoint = _pointerPoints.Values.First();
 
             var ffView = (FreeFormViewer)_view;
-            if (_pointerPoints.Count == 0) { 
-                ffView.RenderCanvas.PointerMoved -= OnPointerMoved;
+            if (_pointerPoints.Count == 0) {
 
-                if (_distanceTraveled < 5)
+                ffView.RenderCanvas.PointerMoved -= OnPointerMoved;
+                if (_distanceTraveled < 5 && _stopwatch.ElapsedMilliseconds < 150)
                 {
-                    Debug.WriteLine("activate!");
+                    ItemSelected?.Invoke(_selectedRenderItem);
                 }
 
                 _distanceTraveled = 0;
             }
+            _stopwatch.Reset();
         }
 
         private void OnPointerMoved(object sender, PointerRoutedEventArgs args)
@@ -185,7 +196,21 @@ namespace NuSysApp
 
                     var newX = elem.ViewModel.X + deltaX / compositeTransform.ScaleX;
                     var newY = elem.ViewModel.Y + deltaY / compositeTransform.ScaleX;
-                    elem.ViewModel.Controller.SetPosition(newX, newY);
+
+                    if (!vm.Selections.Contains(elem.ViewModel))
+                    {
+                        elem.ViewModel.Controller.SetPosition(newX, newY);
+                    }
+                    else
+                    {
+                        foreach (var selectable in vm.Selections)
+                        {
+                            var e = (ElementViewModel) selectable;
+                            var newXe = e.X + deltaX / compositeTransform.ScaleX;
+                            var newYe = e.Y + deltaY / compositeTransform.ScaleX;
+                            e.Controller.SetPosition(newXe, newYe);
+                        }
+                    }
                 }
             }
         }

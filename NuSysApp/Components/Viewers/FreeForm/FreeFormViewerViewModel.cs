@@ -63,8 +63,6 @@ namespace NuSysApp
                     _currentlyEditing = (IEditable) Selections[0];
                     _currentlyEditing.IsEditing = true;
                 }
-                
-                
             }
         }
 
@@ -190,30 +188,15 @@ namespace NuSysApp
         /// <param name="selected"></param>
         public void AddSelection(ISelectable selected)
         {
-            selected.IsSelected = true;
-          
             if (!_selections.Contains(selected))
+            {
+                selected.IsSelected = true;
                 _selections.Add(selected);
-   
-            var selectedElements = AtomViewList.Where(a => a.DataContext == selected);
-            if (!selectedElements.Any())
-                return;
-
-
-            // set the z indexing if the libElemModel is a ElementViewModel
-            var libElemModel = (selectedElements.First().DataContext as ElementViewModel)?.Controller.LibraryElementController.LibraryElementModel;
-            // If we've selected an element view model
-            if (libElemModel != null)
-            {
-                Canvas.SetZIndex(selectedElements.First(), NodeManipulationMode._zIndexCounter++);
             }
-            else // we've selected something else
-            {
-                Canvas.SetZIndex(selectedElements.First(), -2);
+            else {
+                selected.IsSelected = false;
+                _selections.Remove(selected);
             }
-            
-         
-
             SelectionChanged?.Invoke(this);
         }
 

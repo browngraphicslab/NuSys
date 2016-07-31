@@ -7,15 +7,16 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.UI.Xaml;
 
 namespace NuSysApp
 {
     public class BaseRenderItem : IDisposable
     {
-        protected ICanvasResourceCreator ResourceCreator;
+        protected CanvasAnimatedControl ResourceCreator;
         public bool IsDirty { get; set; } = true;
 
-        public BaseRenderItem(ICanvasResourceCreator resourceCreator)
+        public BaseRenderItem(CanvasAnimatedControl resourceCreator)
         {
             ResourceCreator = resourceCreator;
         }

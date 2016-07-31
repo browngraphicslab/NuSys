@@ -8,6 +8,7 @@ using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
+using Microsoft.Graphics.Canvas.UI.Xaml;
 using SharpDX.Direct2D1;
 
 namespace NuSysApp
@@ -17,7 +18,7 @@ namespace NuSysApp
         private LinkViewModel _vm;
         private CanvasGeometry _path;
 
-        public LinkRenderItem(LinkViewModel vm, ICanvasResourceCreator resourceCreator):base(resourceCreator)
+        public LinkRenderItem(LinkViewModel vm, CanvasAnimatedControl resourceCreator):base(resourceCreator)
         {
             _vm = vm;
         }

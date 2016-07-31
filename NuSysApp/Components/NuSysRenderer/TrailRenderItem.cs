@@ -8,6 +8,7 @@ using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
+using Microsoft.Graphics.Canvas.UI.Xaml;
 using SharpDX.Direct2D1;
 
 namespace NuSysApp
@@ -16,7 +17,7 @@ namespace NuSysApp
     {
         private PresentationLinkViewModel _vm;
 
-        public TrailRenderItem(PresentationLinkViewModel vm, ICanvasResourceCreator resourceCreator):base(resourceCreator)
+        public TrailRenderItem(PresentationLinkViewModel vm, CanvasAnimatedControl resourceCreator):base(resourceCreator)
         {
             _vm = vm;
         }

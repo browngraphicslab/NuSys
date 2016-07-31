@@ -9,6 +9,7 @@ using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 
@@ -22,7 +23,7 @@ namespace NuSysApp
 
         public ElementViewModel ViewModel => _vm;
 
-        public ElementRenderItem(ElementViewModel vm, ICanvasResourceCreator resourceCreator) :base(resourceCreator)
+        public ElementRenderItem(ElementViewModel vm, CanvasAnimatedControl resourceCreator) :base(resourceCreator)
         {
             _vm = vm;
         }
@@ -39,10 +40,14 @@ namespace NuSysApp
                 return;
             var format = new CanvasTextFormat { FontSize = 12f, WordWrapping = CanvasWordWrapping.NoWrap };
             _textLayout = new CanvasTextLayout(ResourceCreator, _vm.Title, format, 0.0f, 0.0f);
+
+            IsDirty = false;
         }
 
         public override void Draw(CanvasDrawingSession ds)
         {
+
+
             if (_textLayout == null)
                 return;
 

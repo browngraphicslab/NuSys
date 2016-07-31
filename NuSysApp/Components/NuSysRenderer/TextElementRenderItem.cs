@@ -25,7 +25,7 @@ namespace NuSysApp
     {
         private TextNodeViewModel _vm;
 
-        public TextElementRenderItem(TextNodeViewModel vm, ICanvasResourceCreator resourceCreator):base(vm, resourceCreator)
+        public TextElementRenderItem(TextNodeViewModel vm, CanvasAnimatedControl resourceCreator):base(vm, resourceCreator)
         {
             _vm = vm;
         }

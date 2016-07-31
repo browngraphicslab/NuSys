@@ -29,9 +29,6 @@ namespace NuSysApp
 
             Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
             Controller.LibraryElementController.RegionRemoved += LibraryElementControllerOnRegionRemoved;
-
-
-
         }
 
         private void LibraryElementControllerOnRegionRemoved(object source, Region region)
@@ -116,6 +113,7 @@ namespace NuSysApp
 
         public override async Task Init()
         {
+            return;
             if (Controller.LibraryElementController.IsLoaded)
             {
                 await DisplayImage();
@@ -125,7 +123,6 @@ namespace NuSysApp
                 Controller.LibraryElementController.Loaded += LibraryElementModelOnOnLoaded;
             }
             RaisePropertyChanged("Image");
-
 
         }
 
@@ -175,8 +172,6 @@ namespace NuSysApp
 
             SetSize(width,height);
 
-            var newHeight = View.GetHeight();
-            var newWidth = View.GetWidth();
 
             foreach (var rv in Regions)
             {

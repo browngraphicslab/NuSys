@@ -19,7 +19,7 @@ namespace NuSysApp
         private ImageElementViewModel _vm;
         private CanvasBitmap _bmp;
 
-        public ImageElementRenderItem(ImageElementViewModel vm, ICanvasResourceCreator resourceCreator) :base(vm, resourceCreator)
+        public ImageElementRenderItem(ImageElementViewModel vm, CanvasAnimatedControl resourceCreator) :base(vm, resourceCreator)
         {
             _vm = vm;
         }
@@ -35,7 +35,8 @@ namespace NuSysApp
         public override async Task Load()
         {
             var url = _vm.Controller.LibraryElementController.GetSource();
-            _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, url);
+            _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, url, ResourceCreator.Dpi);
+            _vm.Controller.SetSize(_bmp.Size.Width, _bmp.Size.Height);
         }
 
         public override void Draw(CanvasDrawingSession ds)

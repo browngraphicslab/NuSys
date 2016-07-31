@@ -19,7 +19,7 @@ namespace NuSysApp
         private ConcurrentBag<InkStroke> _inkStrokes = new ConcurrentBag<InkStroke>(); 
 
 
-        public InkRenderItem(ICanvasResourceCreator resourceCreator):base(resourceCreator)
+        public InkRenderItem(CanvasAnimatedControl resourceCreator):base(resourceCreator)
         {
         }
 

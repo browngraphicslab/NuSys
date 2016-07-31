@@ -119,7 +119,8 @@ namespace NuSysApp
                         controller = new ElementController(null);
                         break;
                     default:
-                        throw new InvalidOperationException("This node type is not yet supported");
+                        //throw new InvalidOperationException("This node type is not yet supported");
+                        return;
                 }
 
                 foreach (var tag in controller?.LibraryElementModel?.Keywords ?? new HashSet<Keyword>())

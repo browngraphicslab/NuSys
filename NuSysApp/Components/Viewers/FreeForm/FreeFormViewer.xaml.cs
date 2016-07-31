@@ -10,7 +10,9 @@ using Windows.UI.Input.Inking;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Windows.System;
 using Windows.UI;
+using Windows.UI.Core;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 
@@ -69,12 +71,8 @@ namespace NuSysApp
 
             //    xRenderCanvas.PointerPressed += XRenderCanvasOnPointerPressed;
 
-                _inqCanvas = new NuSysInqCanvas(wetCanvas, dryCanvas);
-                _inqCanvas.Transform = vm.CompositeTransform;
-                _inqCanvas.InkStrokeAdded += InkStrokedAdded;
-                _inqCanvas.InkStrokeRemoved += InkStrokedRemoved;
-                _inqCanvas.AdornmentAdded += AdormnentAdded;
-                _inqCanvas.AdornmentRemoved += AdornmentRemoved;
+    //            _inqCanvas = new NuSysInqCanvas(wetCanvas, dryCanvas);
+
 
                 var collectionModel = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(vm.Controller.LibraryElementModel.LibraryElementId);
                 collectionModel.OnInkAdded += delegate(string id)
@@ -88,8 +86,8 @@ namespace NuSysApp
                     }
                     else
                     {
-                        _inqCanvas.AddAdorment(x.Stroke, x.Color, false);
-                        _inqCanvas.Redraw();
+                      //  _inqCanvas.AddAdorment(x.Stroke, x.Color, false);
+                   //     _inqCanvas.Redraw();
                     }
                 };
 
@@ -111,8 +109,9 @@ namespace NuSysApp
                 _simpleEditMode = new MultiMode(this, _panZoomMode, _selectMode, _nodeManipulationMode, _floatingMenuMode);
                 _simpleEditGroupMode = new MultiMode(this,  _panZoomMode, _selectMode, _floatingMenuMode);
                 _explorationMode = new MultiMode(this, _panZoomMode, _exploreMode);
+                _selectMode.ItemSelected += OnItemSelected;
 
-                SwitchMode(Options.SelectNode, false);
+                _selectMode.Activate();
 
 
             };
@@ -124,8 +123,19 @@ namespace NuSysApp
             };
         }
 
-        private void XRenderCanvasOnPointerPressed(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
+        private void OnItemSelected(BaseRenderItem element)
         {
+            var elementRenderItem = element as ElementRenderItem;
+            var vm = (FreeFormViewerViewModel)DataContext;
+            if (elementRenderItem == null)
+            {
+                vm.ClearSelection();
+            }
+            else { 
+                if (CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.None)
+                    vm.ClearSelection();
+                vm.AddSelection(elementRenderItem.ViewModel);
+            }
         }
 
         private void AdornmentRemoved(WetDryInkCanvas canvas, InkStroke stroke)
@@ -246,21 +256,7 @@ namespace NuSysApp
         private void VmOnSelectionChanged(object source)
         {
             var vm = (FreeFormViewerViewModel) DataContext;
-            if (vm.Selections.Count == 0)
-            {
-                SetViewMode(_mainMode);
-            }
-            else if (vm.Selections.Count == 1)
-            {
-                if ((vm.Selections[0] as ElementViewModel)?.ElementType == ElementType.Collection)
-                    SetViewMode(_simpleEditGroupMode);
-                else
-                    SetViewMode(_simpleEditMode);
-            }
-            else
-            {
-                SetViewMode(_mainMode);
-            }
+           
         }
 
         public void Dispose()
@@ -307,6 +303,7 @@ namespace NuSysApp
 
         public async void SwitchMode(Options mode, bool isFixed)
         {
+            return;
            
             switch (mode)
             {

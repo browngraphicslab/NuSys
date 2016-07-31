@@ -16,6 +16,7 @@ using MuPDFWinRT;
 using LdaLibrary;
 using System.Collections.ObjectModel;
 using Windows.ApplicationModel;
+using Windows.Foundation;
 using Windows.Graphics.Imaging;
 using Windows.UI;
 using Windows.UI.Text;
@@ -35,6 +36,8 @@ namespace NuSysApp
 
         public Sizeable View { get; set; }
 
+        public Size PdfSize { get; set; }
+
         public PdfNodeViewModel(ElementController controller) : base(controller)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
@@ -48,6 +51,12 @@ namespace NuSysApp
             Controller.LibraryElementController.RegionAdded += LibraryElementControllerOnRegionAdded;
             Controller.LibraryElementController.RegionRemoved += LibraryElementController_RegionRemoved; 
             
+        }
+
+        public void DisposeData()
+        {
+            _document.Dispose();
+            Buffer = null;
         }
 
         private void LibraryElementController_RegionRemoved(object source, Region region)
@@ -222,35 +231,14 @@ namespace NuSysApp
             var width = pageSize.X;
             var height = pageSize.Y;
             var image = new WriteableBitmap(width, height);
-            IBuffer buf = new Windows.Storage.Streams.Buffer(image.PixelBuffer.Capacity);
+            var buf = new Windows.Storage.Streams.Buffer(image.PixelBuffer.Capacity);
             buf.Length = image.PixelBuffer.Length;
             
             _document.DrawPage(pageNumber, buf, 0, 0, width, height, false);
-            Width = width;
-            Height = height;
             Buffer = buf;
-            //await s.ReadAsync(Bytes, 0, (int) s.Length);
-
-           // var s= buf.AsStream();
-
-            //RandomAccessStream.
-           // await s.CopyToAsync(image.PixelBuffer.AsStream());
-           // image.Invalidate();
-
-      //      Image x = (Bitmap)((new ImageConverter()).ConvertFrom(jpegByteArray))
-            /*
-            InMemoryRandomAccessStream ras = new InMemoryRandomAccessStream();
-
-            using (Stream stream = image.PixelBuffer)
-            {
-                await stream.CopyToAsync(ras.AsStreamForWrite());
-            }
-            */
-            //ImageSource = image;
+            PdfSize = new Size(width, height);
 
             RaisePropertyChanged("ImageSource");
-
-
         }
 
         public IBuffer Buffer { get; set; }

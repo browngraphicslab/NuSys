@@ -25,9 +25,11 @@ namespace NuSysApp
 
         private ConcurrentBag<BaseRenderItem> _renderItems0 = new ConcurrentBag<BaseRenderItem>();
         private ConcurrentBag<BaseRenderItem> _renderItems1 = new ConcurrentBag<BaseRenderItem>();
-        private ConcurrentBag<BaseRenderItem>   _renderItems2 = new ConcurrentBag<BaseRenderItem>();
+        private ConcurrentBag<BaseRenderItem>  _renderItems2 = new ConcurrentBag<BaseRenderItem>();
+        private ConcurrentBag<BaseRenderItem>  _renderItems3 = new ConcurrentBag<BaseRenderItem>();
 
         private InkRenderItem _inkRenderItem;
+        private ElementSelectionRenderItem _elementSelectionRenderItem;
        
         public static Matrix3x2 T = Matrix3x2.Identity;
         public static Matrix3x2 S = Matrix3x2.Identity;
@@ -42,6 +44,9 @@ namespace NuSysApp
             
             var vm = (FreeFormViewerViewModel)_canvas.DataContext;
             vm.Elements.CollectionChanged += ElementsChanged;
+
+            _elementSelectionRenderItem = new ElementSelectionRenderItem(vm, _canvas);
+            _renderItems3.Add(_elementSelectionRenderItem);
 
             _inkRenderItem = new InkRenderItem(canvas);
             _renderItems0.Add(_inkRenderItem);
@@ -141,6 +146,9 @@ namespace NuSysApp
             foreach (var item in _renderItems2)
                 item.Update();
 
+            foreach (var item in _renderItems3)
+                item.Update();
+
         }
 
         private void CanvasOnDraw(ICanvasAnimatedControl sender, CanvasAnimatedDrawEventArgs args)
@@ -158,6 +166,9 @@ namespace NuSysApp
                     item.Draw(ds);
 
                 foreach (var item in _renderItems2)
+                    item.Draw(ds);
+
+                foreach (var item in _renderItems3)
                     item.Draw(ds);
             }
         }
