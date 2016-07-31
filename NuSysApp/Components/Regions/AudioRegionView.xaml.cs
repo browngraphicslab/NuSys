@@ -21,7 +21,6 @@ namespace NuSysApp
 {
     public sealed partial class AudioRegionView
     {
-        private bool _toggleManipulation;
         public delegate void RegionSelectedEventHandler(object sender, bool selected);
         public event RegionSelectedEventHandler OnSelected;
         public delegate void OnRegionSeekHandler(double time);
@@ -36,13 +35,8 @@ namespace NuSysApp
             this.DataContext = vm;
             this.InitializeComponent();
             this.Deselect();
-            _toggleManipulation = false;
 
 
-        }
-        private void Handle_OnPointerPressed(object sender, PointerRoutedEventArgs e)
-       {
-            _toggleManipulation = true;
         }
 
         private void Bound1_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -63,18 +57,6 @@ namespace NuSysApp
             }
         }
 
- 
-        private void Handle_OnPointerReleased(object sender, PointerRoutedEventArgs e)
-        {
-            _toggleManipulation = false;
-        }
-
-        private void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-        {
-           
-        }
-
-
         public void Deselect()
         {
             Rect.Fill = new SolidColorBrush(Color.FromArgb(255, 219, 151, 179));
@@ -82,7 +64,6 @@ namespace NuSysApp
             Rect.IsHitTestVisible = true;
             xDelete.Visibility = Visibility.Collapsed;
             Selected = false;
-
         }
 
         public void Select()
@@ -96,24 +77,8 @@ namespace NuSysApp
                 xDelete.Visibility = Visibility.Visible;
             }
             Selected = true;
-
         }
 
-        private void Rect_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            var vm = DataContext as AudioRegionViewModel;
-            /*
-            if (!vm.Editable)
-                return;
-
-            if (Selected)
-                this.Deselect();
-            else
-                this.Select();
-                */
-            e.Handled = true;
-
-        }
         private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             _isSingleTap = false;
@@ -142,8 +107,6 @@ namespace NuSysApp
 
         private void xDelete_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-
-
             var vm = this.DataContext as AudioRegionViewModel;
             if (vm == null)
             {
