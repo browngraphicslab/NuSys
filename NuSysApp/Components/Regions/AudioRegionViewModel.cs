@@ -44,14 +44,6 @@ namespace NuSysApp
             } 
         }
 
-        public double RegionHeight
-        {
-            get
-            {
-                return AudioWrapper.ActualHeight;
-            }
-        }
-
         public double RegionWidth
         {
             get
@@ -84,14 +76,12 @@ namespace NuSysApp
             regionLibraryElementController.TitleChanged += RegionController_TitleChanged;
             Name = Model.Title;
 
-
             AudioWrapper = wrapper;
             AudioWrapper.SizeChanged += AudioWrapper_SizeChanged;
         }
 
         private void AudioWrapper_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            RaisePropertyChanged("RegionHeight");
             RaisePropertyChanged("RegionWidth");
             RaisePropertyChanged("LeftHandleX");
             RaisePropertyChanged("RightHandleX");
