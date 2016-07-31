@@ -57,6 +57,7 @@ namespace NuSysApp
 
         private void Play_OnTapped(object sender, TappedRoutedEventArgs e)
         {
+
             if (MediaElement.CurrentState != MediaElementState.Playing)
             {
                 Binding b = new Binding();
@@ -64,8 +65,6 @@ namespace NuSysApp
                 b.Path = new PropertyPath("Position.TotalMilliseconds");
                 ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
                 MediaElement.Play();
-                _wasPlaying = true;
-
             }
         }
 
@@ -90,31 +89,26 @@ namespace NuSysApp
             xAudioWrapper.ProcessLibraryElementController();
 
             //After updating audiowrapper, set position dyanmically:
-            var timeInMilliseconds = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
-            MediaElement.Position = new TimeSpan(0, 0, 0, 0, (int)(timeInMilliseconds * xAudioWrapper.AudioStart));
+            double normalizedMediaElementPosition = xAudioWrapper.AudioStart;
+            double totalDuration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+            double denormalizedMediaElementPosition = normalizedMediaElementPosition * totalDuration;
+            MediaElement.Position = new TimeSpan(0, 0, 0, 0, (int)denormalizedMediaElementPosition);
 
-            ScrubBar.Minimum = timeInMilliseconds*xAudioWrapper.AudioStart;
-            ScrubBar.Maximum = timeInMilliseconds*xAudioWrapper.AudioEnd;
+            ScrubBar.Minimum = totalDuration * xAudioWrapper.AudioStart;
+            ScrubBar.Maximum = totalDuration * xAudioWrapper.AudioEnd;
 
-            //ScrubBarPosition = new TimeSpan(0,0,0,0);
-
-            Binding b = new Binding();
-            b.ElementName = "MediaElement";
-            b.Path = new PropertyPath("Position.TotalMilliseconds");
-            ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
-
-
-
+            // set the right time stamp
+            var converter = new PositionToStringConverter();
+            var timeSpan = new TimeSpan(0,0,0,0, (int) (totalDuration * xAudioWrapper.AudioEnd));
+            xRightTimeStampTextBlock.Text = (string)converter.Convert(timeSpan, null, null, null); // this looks weird cause its a xaml converter 
         }
 
         private void ProgressBar_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            //MediaElement.Position = new TimeSpan(Convert.ToInt64(e.GetPosition(ProgressBar).X * MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds));
-
             double position = e.GetPosition((UIElement)sender).X / ProgressBar.ActualWidth;
             double normalizedMediaElementPosition = xAudioWrapper.AudioStart + position*(xAudioWrapper.AudioEnd - xAudioWrapper.AudioStart);
-            double denormalizedMediaElementPosition = normalizedMediaElementPosition*
-                                                      MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+            double totalDuration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+            double denormalizedMediaElementPosition = normalizedMediaElementPosition* totalDuration;
             TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)denormalizedMediaElementPosition);
             MediaElement.Position = time;
 
@@ -155,23 +149,15 @@ namespace NuSysApp
         }
         private void ProgressBar_OnPointerMoved(object sender, PointerRoutedEventArgs e)
         {
-            /*
-            if (e.GetCurrentPoint((UIElement) sender).Properties.IsLeftButtonPressed)
-            {
-                double jumpToRatio = e.GetCurrentPoint((UIElement) sender).Position.X/ProgressBar.ActualWidth;
-                double milliseconds = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds*jumpToRatio;
-
-                TimeSpan time = new TimeSpan(0, 0, 0, 0, (int) milliseconds);
-                MediaElement.Position = time;
-            }*/
-
             if (e.GetCurrentPoint((UIElement)sender).Properties.IsLeftButtonPressed)
             {
-                double ratio = e.GetCurrentPoint((UIElement)sender).Position.X / ProgressBar.ActualWidth;
-                double seconds = MediaElement.NaturalDuration.TimeSpan.TotalSeconds * ratio;
-
-                TimeSpan time = new TimeSpan(0, 0, (int)seconds);
+                double position = e.GetCurrentPoint((UIElement)sender).Position.X / ProgressBar.ActualWidth;
+                double normalizedMediaElementPosition = xAudioWrapper.AudioStart + position * (xAudioWrapper.AudioEnd - xAudioWrapper.AudioStart);
+                double totalDuration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+                double denormalizedMediaElementPosition = normalizedMediaElementPosition * totalDuration;
+                TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)denormalizedMediaElementPosition);
                 MediaElement.Position = time;
+
                 if (MediaElement.CurrentState != MediaElementState.Playing)
                 {
                     Binding b = new Binding();
