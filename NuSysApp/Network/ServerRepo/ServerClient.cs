@@ -13,6 +13,7 @@ using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using Newtonsoft.Json;
 using Windows.UI.Input.Inking;
+using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {

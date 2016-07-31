@@ -106,7 +106,8 @@ namespace NuSysApp
                 return;
             }
 
-
+            X = x;
+            Y = y;
             Transform.TranslateX = x;
             Transform.TranslateY = y;
             RaisePropertyChanged("Transform");

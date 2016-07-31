@@ -14,27 +14,33 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 
 namespace NuSysApp
 {
-    public class ImageElementRenderItem : BaseRenderItem
+    public class ImageElementRenderItem : ElementRenderItem
     {
         private ImageElementViewModel _vm;
-        private ICanvasResourceCreator _ds;
         private CanvasBitmap _bmp;
 
-        public ImageElementRenderItem(ImageElementViewModel vm, ICanvasResourceCreator ds)
+        public ImageElementRenderItem(ImageElementViewModel vm, ICanvasResourceCreator resourceCreator) :base(vm, resourceCreator)
         {
             _vm = vm;
-            _ds = ds;
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _vm = null;
+            _bmp.Dispose();
+            _bmp = null;
         }
 
         public override async Task Load()
         {
             var url = _vm.Controller.LibraryElementController.GetSource();
-            _bmp = await CanvasBitmap.LoadAsync(_ds, url);
+            _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, url);
         }
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            ds.DrawText(_vm.Title, new Vector2((float)_vm.X, (float)(_vm.Y-30)), Colors.Black);
+            base.Draw(ds);
             if (_bmp != null)
                 ds.DrawImage(_bmp, new Rect { X = _vm.X, Y = _vm.Y, Width = _vm.Width, Height = _vm.Height});
         }

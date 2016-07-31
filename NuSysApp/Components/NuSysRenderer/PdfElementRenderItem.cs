@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -17,36 +18,38 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 
 namespace NuSysApp
 {
-    public class PdfElementRenderItem : BaseRenderItem
+    public class PdfElementRenderItem : ElementRenderItem
     {
         private PdfNodeViewModel _vm;
-        private ICanvasResourceCreator _ds;
         private CanvasBitmap _bmp;
 
-        public PdfElementRenderItem(PdfNodeViewModel vm, ICanvasResourceCreator ds)
+        public PdfElementRenderItem(PdfNodeViewModel vm, ICanvasResourceCreator resourceCreator):base(vm, resourceCreator)
         {
             _vm = vm;
-            _ds = ds;
-
-            _vm.PropertyChanged += async delegate(object sender, PropertyChangedEventArgs args)
-            {
-                //_bmp = CanvasBitmap.CreateFromSoftwareBitmap(_vm.SwBitmap)
-                if (_bmp == null && args.PropertyName == "ImageSource") { 
-                 //   _bmp = await CanvasBitmap.LoadAsync(_ds, _vm.RandomAccessStream);
-                    _bmp = CanvasBitmap.CreateFromBytes(_ds, _vm.Buffer, (int)_vm.Width, (int)_vm.Height, DirectXPixelFormat.B8G8R8A8UIntNormalized);
-                }
-            };
+            _vm.PropertyChanged += OnPropertyChanged;
         }
 
-        public override async Task Load()
+        public override void Dispose()
         {
-        //    await _vm.Init();
-            
+            base.Dispose();
+            _vm = null;
+            _bmp.Dispose();
+            _bmp = null;
+        }
+
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+            if (_bmp == null && args.PropertyName == "ImageSource")
+            {
+                _bmp = CanvasBitmap.CreateFromBytes(ResourceCreator, _vm.Buffer, (int)_vm.Width, (int)_vm.Height, DirectXPixelFormat.B8G8R8A8UIntNormalized);
+            }
         }
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            ds.DrawText(_vm.Title, new Vector2((float)_vm.X, (float)(_vm.Y-30)), Colors.Black);
+            base.Draw(ds);
+            if (_vm.Title.Contains("greel"))
+                Debug.WriteLine("");
             if (_bmp != null)
             {
                 ds.DrawImage(_bmp, new Rect {X = _vm.X, Y = _vm.Y, Width = 200, Height = 300});

@@ -21,11 +21,13 @@ namespace NuSysApp
         //private DispatcherTimer _timer;
         private FreeFormViewer _cview;
         private CompositeTransform _tempTransform;
+        private bool _isEnabled;
 
         private List<UIElement> _allElements = new List<UIElement>();
 
         public PanZoomMode(FrameworkElement view) : base(view)
         {
+            return;
             _cview = view as FreeFormViewer;
 
             var vm = (FreeFormViewerViewModel)_view.DataContext;
@@ -34,11 +36,14 @@ namespace NuSysApp
             var m = new Matrix3x2((float)inv.Matrix.M11, (float)inv.Matrix.M12, (float)inv.Matrix.M21,
                 (float)inv.Matrix.M22, (float)inv.Matrix.OffsetX, (float)inv.Matrix.OffsetY);
 
-            NuSysRenderer.T = m;
+            NuSysRenderer.T = Matrix3x2.CreateTranslation((float)compositeTransform.TranslateX, (float)compositeTransform.TranslateY);
+            NuSysRenderer.C = Matrix3x2.CreateTranslation((float)compositeTransform.CenterX, (float)compositeTransform.CenterY);
+            NuSysRenderer.S = Matrix3x2.CreateScale((float)compositeTransform.ScaleX, (float)compositeTransform.ScaleY);
         }
     
         public void UpdateTempTransform( CompositeTransform compositeTransform )
         {
+            return;
 
             _tempTransform = new CompositeTransform
             {
@@ -100,6 +105,7 @@ namespace NuSysApp
 
         public override async Task Activate()
         {
+            return;
             var vm = (FreeFormViewerViewModel)_view.DataContext;
             //UpdateTempTransform(vm.CompositeTransform);
             _view.ManipulationMode = ManipulationModes.All;
@@ -128,15 +134,22 @@ namespace NuSysApp
         {
             if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen)
                 return;
-         //   _timer.Tick -= OnTick;
-         //   _timer.Tick += OnTick;
-         //   _timer.Start();
+
+            
+            var ffview = _view as FreeFormViewer;
+            _isEnabled = ffview.NuSysRenderer.GetRenderItemAt(e.Position) == null;
+
+
+            //   _timer.Tick -= OnTick;
+            //   _timer.Tick += OnTick;
+            //   _timer.Start();
         }
 
         private void ViewOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen)
                 return;
+            _isEnabled = false;
        //     _timer.Stop();
        //     _timer.Tick -= OnTick;
         //    _view.ManipulationCompleted -= ViewOnManipulationCompleted;
@@ -197,6 +210,8 @@ namespace NuSysApp
 
         protected void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+            if (!_isEnabled)
+                return;
             if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen)
                 return;
 

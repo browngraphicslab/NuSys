@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,135 +13,263 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using MyToolkit.Utilities;
+using System.Numerics;
+using Windows.Devices.Input;
 
 namespace NuSysApp
 {
     public class SelectMode : AbstractWorkspaceViewMode
     {
+        private enum Mode { PanZoom, MoveNode}
 
-        private bool _released;
-        private bool _doubleTapped;
-        private PointerEventHandler _pointerPressedHandler;
-        private PointerEventHandler _pointerReleasedHandler;
-        private DoubleTappedEventHandler _doubleTappedHandler;
+        private Mode _mode = Mode.PanZoom;
+        private Dictionary<uint, Point> _pointerPoints = new Dictionary<uint, Point>(); 
+        private BaseRenderItem _selectedRenderItem;
+        private Point _startPoint;
+        private Point _centerPoint;
+        private double _twoFingerDist;
+        private double _distanceTraveled;
 
         public SelectMode(FreeFormViewer view):base(view)
         {
-            _pointerPressedHandler = OnPointerPressed;
-            _pointerReleasedHandler = OnPointerReleased;
-            _doubleTappedHandler = OnDoubleTapped;
+            var vm = (FreeFormViewerViewModel)_view.DataContext;
+            var compositeTransform = vm.CompositeTransform;
+            NuSysRenderer.T = Matrix3x2.CreateTranslation((float)compositeTransform.TranslateX, (float)compositeTransform.TranslateY);
+            NuSysRenderer.C = Matrix3x2.CreateTranslation((float)compositeTransform.CenterX, (float)compositeTransform.CenterY);
+            NuSysRenderer.S = Matrix3x2.CreateScale((float)compositeTransform.ScaleX, (float)compositeTransform.ScaleY);
         }
 
         public SelectMode(AreaNodeView view) : base(view)
         {
-            _pointerPressedHandler = OnPointerPressed;
-            _pointerReleasedHandler = OnPointerReleased;
-            _doubleTappedHandler = OnDoubleTapped;
         }
         public override async Task Activate()
         {
-            _view.IsDoubleTapEnabled = true;
-
-            _view.ManipulationMode = ManipulationModes.All;
-
-            _view.AddHandler(UIElement.PointerPressedEvent, _pointerPressedHandler, false );
-            _view.AddHandler(UIElement.PointerReleasedEvent, _pointerReleasedHandler, false );
-            _view.AddHandler(UIElement.DoubleTappedEvent, _doubleTappedHandler, false );
+            var ffview = (FreeFormViewer) _view;
+            ffview.RenderCanvas.PointerPressed += OnPointerPressed;
+            ffview.RenderCanvas.PointerReleased += OnPointerReleased;
         }
 
-        public override async Task Deactivate()
+
+
+        private void UpdateCenterPoint()
         {
-            _view.IsDoubleTapEnabled = false;
+            var points = _pointerPoints.Values.ToArray();
+            var p0 = points[0];
+            var p1 = points[1];
+            _centerPoint = new Point((p0.X + p1.X) / 2.0, (p0.Y + p1.Y) / 2.0);
+        }
 
-            _view.RemoveHandler(UIElement.PointerPressedEvent, _pointerPressedHandler);
-            _view.RemoveHandler(UIElement.PointerReleasedEvent, _pointerReleasedHandler);
-            _view.RemoveHandler(UIElement.DoubleTappedEvent, _doubleTappedHandler);
-
-            _view.ManipulationMode = ManipulationModes.None;
-  
-        //    var vm = _view.DataContext as FreeFormViewerViewModel;
-        //    vm.ClearSelection();
+        private void UpdateDist()
+        {
+            var points = _pointerPoints.Values.ToArray();
+            var p0 = points[0];
+            var p1 = points[1];
+            _twoFingerDist = MathUtil.Dist(p0, p1);
         }
 
         private async void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            if (SessionController.Instance.SessionView.FreeFormViewer.MultiMenu.Visibility == Visibility.Visible)
+            if (e.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
+                _pointerPoints.Clear();
+
+            var ffView = (FreeFormViewer)_view;
+            var cp = e.GetCurrentPoint(null).Position;
+            _pointerPoints.Add(e.Pointer.PointerId, e.GetCurrentPoint(null).Position);
+            if (_pointerPoints.Count >= 2)
             {
-                return;
-            }
-
-            _released = false;
-            await Task.Delay(200);
-            if (!_released)
-                return;
-
-            await Task.Delay(50);
-            if (_doubleTapped)
-            {
-                _doubleTapped = false;
-                return;
-            }
-
-
-            // try to explore the selected object, only does something if we're in explorationmode
-            var frameWorkElemToBeExplored = e.OriginalSource as FrameworkElement;
-            if (frameWorkElemToBeExplored != null)
-            {
-                SessionController.Instance.SessionView.ExploreSelectedObject(frameWorkElemToBeExplored.DataContext);
-            }
-
-            var dc = ((FrameworkElement)e.OriginalSource).DataContext as ISelectable;
-            if (dc == null)
-            {
-                return;
-            }
-
-            var viwerVm = _view.DataContext as FreeFormViewerViewModel;
-            var isCtrlDown = (CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Control) &
-                                CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
-
-            if (!isCtrlDown)
-            {
-
-
-                if (dc == viwerVm)
-                {
-                    viwerVm?.ClearSelection();
-                    return;
-                }
-
-                viwerVm?.ClearSelection();
-                viwerVm?.AddSelection(dc);
+                UpdateCenterPoint();
+                UpdateDist();
+                _mode = Mode.PanZoom;
             }
             else
             {
-                if (dc is FreeFormViewerViewModel)
+                _startPoint = e.GetCurrentPoint(null).Position;
+                _selectedRenderItem = ffView.NuSysRenderer.GetRenderItemAt(cp);
+                if (_selectedRenderItem == null)
                 {
-                    return;
-                }
-
-                if (dc.IsSelected)
-                {
-                    viwerVm?.RemoveSelection(dc);
+                    _mode = Mode.PanZoom;
                 }
                 else
                 {
-                    viwerVm?.AddSelection(dc);
+                    _mode = Mode.MoveNode;
                 }
-
             }
+            ffView.RenderCanvas.PointerMoved += OnPointerMoved;
+            /*
+            var ffView = (FreeFormViewer)_view;
+            _startPoint = e.GetCurrentPoint(ffView).Position;
+            _selectedRenderItem = ffView.NuSysRenderer.GetRenderItemAt(_startPoint);
 
+            if (_selectedRenderItem == null)
+                return;
+            var elem = _selectedRenderItem as ElementRenderItem;
+            if (elem == null)
+                return;
+
+            var os = ffView.NuSysRenderer.ScreenPointToObjectPoint(new Vector2((float)_startPoint.X, (float)_startPoint.Y));
+            if (elem.HitTestTitle(os))
+            {
+                Debug.WriteLine("Title hit");
+                ffView.RenderCanvas.PointerMoved += OnPointerMoved;
+            }
+            else
+            {
+                Debug.WriteLine("Activate Element");
+            }*/
         }
 
         private async void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            _released = true;
-       //     e.Handled = true;
+            if (_pointerPoints.ContainsKey(e.Pointer.PointerId))
+                _pointerPoints.Remove(e.Pointer.PointerId);
+
+            if (_pointerPoints.Count == 1)
+                _startPoint = _pointerPoints.Values.First();
+
+            var ffView = (FreeFormViewer)_view;
+            if (_pointerPoints.Count == 0) { 
+                ffView.RenderCanvas.PointerMoved -= OnPointerMoved;
+
+                if (_distanceTraveled < 5)
+                {
+                    Debug.WriteLine("activate!");
+                }
+
+                _distanceTraveled = 0;
+            }
         }
+
+        private void OnPointerMoved(object sender, PointerRoutedEventArgs args)
+        {
+            if (!_pointerPoints.ContainsKey(args.Pointer.PointerId))
+                return;
+
+            _pointerPoints[args.Pointer.PointerId] = args.GetCurrentPoint(null).Position;
+
+            if (_pointerPoints.Count >= 2)
+            {
+                var prevCenterPoint = _centerPoint;
+                var prevDist = _twoFingerDist;
+                UpdateCenterPoint();
+                UpdateDist();
+                var dx = _centerPoint.X - prevCenterPoint.X;
+                var dy = _centerPoint.Y - prevCenterPoint.Y;
+                var ds = _twoFingerDist/prevDist;
+                PanZoom(_centerPoint, dx,dy, ds);
+                
+            } else if (_pointerPoints.Count == 1)
+            {
+                if (_mode == Mode.PanZoom)
+                {
+                    var currPos = args.GetCurrentPoint(null).Position;
+                    var deltaX = currPos.X - _startPoint.X;
+                    var deltaY = currPos.Y - _startPoint.Y;
+                    _startPoint = currPos;
+                    PanZoom(_startPoint, deltaX, deltaY, 1);
+                }
+                else
+                {
+                    var currPos = args.GetCurrentPoint(null).Position;
+                    var deltaX = currPos.X - _startPoint.X;
+                    var deltaY = currPos.Y - _startPoint.Y;
+                    _distanceTraveled += Math.Abs(deltaX) + Math.Abs(deltaY);
+                    _startPoint = currPos;
+
+                  //  PanZoom(_startPoint, deltaX, deltaY, 1);
+                    var elem = _selectedRenderItem as ElementRenderItem;
+                    if (elem == null)
+                        return;
+
+                    var vm = (FreeFormViewerViewModel)_view.DataContext;
+                    var compositeTransform = vm.CompositeTransform;
+
+                    var newX = elem.ViewModel.X + deltaX / compositeTransform.ScaleX;
+                    var newY = elem.ViewModel.Y + deltaY / compositeTransform.ScaleX;
+                    elem.ViewModel.Controller.SetPosition(newX, newY);
+                }
+            }
+        }
+
+        protected void PanZoom(Point centerPoint, double dx, double dy, double ds)
+        {
+            var vm = (FreeFormViewerViewModel)_view.DataContext;
+            var compositeTransform = vm.CompositeTransform;
+
+            var tmpTranslate = new TranslateTransform
+            {
+                X = compositeTransform.CenterX,
+                Y = compositeTransform.CenterY
+            };
+
+            var center = compositeTransform.Inverse.TransformPoint(centerPoint);
+
+            var localPoint = tmpTranslate.Inverse.TransformPoint(center);
+
+            //Now scale the point in local space
+            localPoint.X *= compositeTransform.ScaleX;
+            localPoint.Y *= compositeTransform.ScaleY;
+
+            //Transform local space into world space again
+            var worldPoint = tmpTranslate.TransformPoint(localPoint);
+
+            //Take the actual scaling...
+            var distance = new Point(
+                worldPoint.X - center.X,
+                worldPoint.Y - center.Y);
+
+            //...and balance the jump of the changed scaling origin by changing the translation            
+
+            compositeTransform.TranslateX += distance.X;
+            compositeTransform.TranslateY += distance.Y;
+
+            //Also set the scaling values themselves, especially set the new scale center...
+            compositeTransform.ScaleX *= ds;
+            compositeTransform.ScaleY *= ds;
+
+            compositeTransform.CenterX = center.X;
+            compositeTransform.CenterY = center.Y;
+
+            //And consider a translational shift
+            compositeTransform.TranslateX += dx;
+            compositeTransform.TranslateY += dy;
+
+            NuSysRenderer.T = Matrix3x2.CreateTranslation((float)compositeTransform.TranslateX, (float)compositeTransform.TranslateY);
+            NuSysRenderer.C = Matrix3x2.CreateTranslation((float)compositeTransform.CenterX, (float)compositeTransform.CenterY);
+            NuSysRenderer.S = Matrix3x2.CreateScale((float)compositeTransform.ScaleX, (float)compositeTransform.ScaleY);
+        }
+
+        
+
+        public override async Task Deactivate()
+        {
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            _doubleTapped = true;
+            var ffView = (FreeFormViewer)_view;
+            var elem = ffView.NuSysRenderer.GetRenderItemAt(e.GetPosition(null));
+            if (elem == null)
+                return;
+
+            Debug.WriteLine("Showing detail view");
+
+            /*
             var dc = (e.OriginalSource as FrameworkElement)?.DataContext;
             if ((dc is ElementViewModel || dc is LinkViewModel) && !(dc is FreeFormViewerViewModel) )
             {
@@ -166,6 +295,7 @@ namespace NuSysApp
 
                 }
             }   
+            */
         }
     }
 }

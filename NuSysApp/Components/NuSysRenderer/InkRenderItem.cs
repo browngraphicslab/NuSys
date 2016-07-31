@@ -16,13 +16,18 @@ namespace NuSysApp
     public class InkRenderItem : BaseRenderItem
     {
         private ElementViewModel _vm;
-
         private ConcurrentBag<InkStroke> _inkStrokes = new ConcurrentBag<InkStroke>(); 
 
 
-        public InkRenderItem()
+        public InkRenderItem(ICanvasResourceCreator resourceCreator):base(resourceCreator)
         {
+        }
 
+        public override void Dispose()
+        {
+            base.Dispose();
+            _vm = null;
+            _inkStrokes = null;
         }
 
         public void AddStroke(InkStroke stroke)
@@ -30,8 +35,11 @@ namespace NuSysApp
             _inkStrokes.Add(stroke);
         }
 
-        public override void Draw(CanvasDrawingSession ds)
+        public override void Update()
         {
+            if (!IsDirty)
+                return;
+
             var aa = GetDrawingAttributes();
             foreach (var s in _inkStrokes)
             {
@@ -39,7 +47,10 @@ namespace NuSysApp
                 attr.Color = Colors.Black;
                 s.DrawingAttributes = attr;
             }
+        }
 
+        public override void Draw(CanvasDrawingSession ds)
+        {
             ds.DrawInk(_inkStrokes);
         }
 

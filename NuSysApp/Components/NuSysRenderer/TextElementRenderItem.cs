@@ -21,49 +21,33 @@ using SharpDX.DirectWrite;
 
 namespace NuSysApp
 {
-    public class TextElementRenderItem : BaseRenderItem
+    public class TextElementRenderItem : ElementRenderItem
     {
         private TextNodeViewModel _vm;
-        private IRandomAccessStream _stream;
-        private ICanvasResourceCreator _ds;
 
-        public TextElementRenderItem(TextNodeViewModel vm, ICanvasResourceCreator ds)
+        public TextElementRenderItem(TextNodeViewModel vm, ICanvasResourceCreator resourceCreator):base(vm, resourceCreator)
         {
             _vm = vm;
-            _ds = ds;
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _vm = null;
         }
 
         public async override void Draw(CanvasDrawingSession ds)
         {
-            var to = Matrix3x2.CreateTranslation(new Vector2((float) _vm.X, (float) (_vm.Y - 30)));
-            var top = Matrix3x2.Identity;
-            Matrix3x2.Invert(to, out top);
+            base.Draw(ds);
 
-
-            var old = ds.Transform;
-            var x = old.M31;
-            var y = old.M32;
-            var sp = Matrix3x2.Identity;
-            Matrix3x2.Invert(NuSysRenderer.S, out sp);
-            var tt = Matrix3x2.CreateTranslation(0, -30);
-            var newT = tt * top * sp * to *ds.Transform;
-
-            ds.Transform = newT;
-
-            var target = Vector2.Transform(new Vector2((float) _vm.X, (float) (_vm.Y)), newT);
-
-            ds.DrawText(_vm.Title, new Vector2((float)_vm.X, (float)(_vm.Y - 30)), Colors.Black);
-            ds.Transform = old;
-
-            //ds.DrawText(_vm.Title, new Vector2((float)_vm.X, (float)(_vm.Y-30)), Colors.Black);
-
-           ds.FillRectangle( new Rect {X=_vm.X, Y= _vm.Y, Width = _vm.Width, Height=_vm.Height}, Colors.White);
+            ds.FillRectangle( new Rect {X=_vm.X, Y= _vm.Y, Width = _vm.Width, Height=_vm.Height}, Colors.White);
             
             var f = new CanvasTextFormat();
             f.WordWrapping = CanvasWordWrapping.Wrap;
-            f.FontSize = 12;
+            f.FontSize = 10;
             if (_vm.Text != null) { 
-                var l = new CanvasTextLayout(_ds, _vm.Text, f, (float)_vm.Width, (float)_vm.Height);
+                var l = new CanvasTextLayout(ResourceCreator, _vm.Text, f, (float)_vm.Width, (float)_vm.Height);
+                l.HorizontalAlignment = CanvasHorizontalAlignment.Center;
                 ds.DrawTextLayout(l, (float)_vm.X, (float)_vm.Y, Colors.Black);
             }
 

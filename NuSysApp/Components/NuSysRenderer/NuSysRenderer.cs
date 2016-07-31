@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.Foundation.Numerics;
 using Windows.UI;
 using Windows.UI.Input.Inking;
@@ -14,6 +15,7 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 using MyToolkit.Mathematics;
 using SharpDX.Direct2D1;
 using Matrix3x2 = System.Numerics.Matrix3x2;
+using System.Numerics;
 
 namespace NuSysApp
 {
@@ -23,9 +25,9 @@ namespace NuSysApp
 
         private ConcurrentBag<BaseRenderItem> _renderItems0 = new ConcurrentBag<BaseRenderItem>();
         private ConcurrentBag<BaseRenderItem> _renderItems1 = new ConcurrentBag<BaseRenderItem>();
-        private ConcurrentBag<BaseRenderItem> _renderItems2 = new ConcurrentBag<BaseRenderItem>();
+        private ConcurrentBag<BaseRenderItem>   _renderItems2 = new ConcurrentBag<BaseRenderItem>();
 
-        private InkRenderItem _inkRenderItem = new InkRenderItem();
+        private InkRenderItem _inkRenderItem;
        
         public static Matrix3x2 T = Matrix3x2.Identity;
         public static Matrix3x2 S = Matrix3x2.Identity;
@@ -41,6 +43,7 @@ namespace NuSysApp
             var vm = (FreeFormViewerViewModel)_canvas.DataContext;
             vm.Elements.CollectionChanged += ElementsChanged;
 
+            _inkRenderItem = new InkRenderItem(canvas);
             _renderItems0.Add(_inkRenderItem);
         }
 
@@ -49,9 +52,24 @@ namespace NuSysApp
             //throw new NotImplementedException();
         }
 
+        public BaseRenderItem GetRenderItemAt(Point sp)
+        {
+            var os = ScreenPointToObjectPoint(new Vector2((float) sp.X, (float) sp.Y));
+            var elems = _renderItems0.Concat(_renderItems1).Concat(_renderItems2);
+
+            foreach (var renderItem in elems)
+            {
+                if (renderItem.HitTest(os))
+                {   
+                    return renderItem;
+                }
+            }
+            return null;
+        }
+
         public void AddAdornment(InkStroke stroke)
         {
-            _renderItems0.Add(new AdornmentRenderItem(stroke));
+            _renderItems0.Add(new AdornmentRenderItem(stroke, _canvas));
         }
 
         public void AddStroke(InkStroke stroke)
@@ -61,12 +79,12 @@ namespace NuSysApp
 
         public void AddLink(LinkViewModel vm)
         {
-            _renderItems1.Add(new LinkRenderItem(vm));
+            _renderItems1.Add(new LinkRenderItem(vm, _canvas));
         }
 
         public void AddTrail(PresentationLinkViewModel vm)
         {
-            _renderItems1.Add(new TrailRenderItem(vm));
+            _renderItems1.Add(new TrailRenderItem(vm, _canvas));
         }
 
         private async void ElementsChanged(object sender, NotifyCollectionChangedEventArgs args)
@@ -77,25 +95,39 @@ namespace NuSysApp
                 var vm = (ElementViewModel) newItem;
                 if (vm is TextNodeViewModel) { 
                     item = new TextElementRenderItem((TextNodeViewModel) vm, _canvas);
+                    await item.Load();
                     _renderItems0.Add(item);
                 }
                 else if (vm is ImageElementViewModel) { 
                     item = new ImageElementRenderItem((ImageElementViewModel) vm, _canvas);
+                    await item.Load();
                     _renderItems1.Add(item);
                 }
                 else if (vm is PdfNodeViewModel)
                 {
                     item = new PdfElementRenderItem((PdfNodeViewModel)vm, _canvas);
+                    await item.Load();
                     _renderItems1.Add(item);
                 }
                 else { 
                     item = new ElementRenderItem(vm, _canvas);
+                    await item.Load();
                     _renderItems2.Add(item);
                 }
-                await item.Load();
+               
                 
             }
         }
+
+        public Vector2 ScreenPointToObjectPoint(Vector2 sp)
+        {
+            var invTransform = Matrix3x2.Identity;
+            var cp = Matrix3x2.Identity;
+            Matrix3x2.Invert(C, out cp);
+            var t = cp*S*C*T;
+            Matrix3x2.Invert(t, out invTransform);
+            return Vector2.Transform(sp, invTransform);
+    }
 
 
         private void CanvasOnUpdate(ICanvasAnimatedControl sender, CanvasAnimatedUpdateEventArgs args)
@@ -129,5 +161,7 @@ namespace NuSysApp
                     item.Draw(ds);
             }
         }
+        
+
     }
 }

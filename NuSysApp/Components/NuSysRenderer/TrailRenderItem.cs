@@ -16,9 +16,15 @@ namespace NuSysApp
     {
         private PresentationLinkViewModel _vm;
 
-        public TrailRenderItem(PresentationLinkViewModel vm)
+        public TrailRenderItem(PresentationLinkViewModel vm, ICanvasResourceCreator resourceCreator):base(resourceCreator)
         {
             _vm = vm;
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _vm = null;
         }
 
         public override void Draw(CanvasDrawingSession ds) {
@@ -40,8 +46,6 @@ namespace NuSysApp
             cb.EndFigure(CanvasFigureLoop.Open);
             var path = CanvasGeometry.CreatePath(cb);
             ds.DrawGeometry(path, Colors.PaleVioletRed, 20);
-            //ds.DrawGeometry( new BezierSegment {Point1 = Point1, Point2 = Point2, Point3 = Point3}, Colors.Black);
-            //ds.FillRectangle( new Rect {X=_vm., Y= _vm.Y, Width = 100, Height=100}, Colors.Black);
         }
     }
 }
