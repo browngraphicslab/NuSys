@@ -33,8 +33,8 @@ namespace NuSysApp
 
         public AudioRegionView(AudioRegionViewModel vm)
         {
-            this.InitializeComponent();
             this.DataContext = vm;
+            this.InitializeComponent();
             this.Deselect();
             _toggleManipulation = false;
 
