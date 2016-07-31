@@ -56,6 +56,7 @@ namespace NuSysApp
             vm.View = this;
 
             xClippingWrapper.Controller = vm.LibraryElementController;
+            xClippingWrapper.ProcessLibraryElementController();
         }
 
         public void RefreshRegions()
@@ -67,7 +68,7 @@ namespace NuSysApp
         public double GetImgHeight()
         {
             //return ActualHeight;
-            return xImg.ActualHeight;
+            return xClippingWrapper.GetHeight();
         }
 
         private double _nonZeroPrevActualWidth = 0;
@@ -75,7 +76,7 @@ namespace NuSysApp
         // TODO: Very hacky, change later so that the width binds instead of xaml stretching
         public double GetImgWidth()
         {
-            return xImg.ActualWidth;
+            return xClippingWrapper.GetWidth();
             //return actualWidth;
             //if (actualWidth.Equals(0))
             //{
@@ -165,23 +166,6 @@ namespace NuSysApp
             }
 
             await AccessList.OpenFile(token);
-        }
-
-        private void xImg_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            var vm = DataContext as ImageDetailHomeTabViewModel;
-            //foreach (var regionView in vm.RegionViews)
-            //{
-            //    regionView.Deselect();
-            //}
-        }
-
-        private void BitmapImage_ImageOpened(object sender, RoutedEventArgs e)
-        {
-            var vm = (ImageDetailHomeTabViewModel) DataContext;
-            vm.SetExistingRegions();
-            ContentLoaded?.Invoke(this);
-            xClippingWrapper.Controller = vm.LibraryElementController;
         }
 
 #region addToCollection
@@ -323,12 +307,16 @@ namespace NuSysApp
             });
         }
 
-#endregion addToCollection
+        #endregion addToCollection
 
         private void XImg_OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            var vm = (ImageDetailHomeTabViewModel)DataContext;
-            xClippingWrapper.Controller = vm.LibraryElementController;
+
+        }
+
+        private void xClippingWrapper_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            
         }
     }
 }

@@ -49,16 +49,16 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             DataContext = vm;
-            _libraryElementId = vm.Controller.ContentId;
+            _libraryElementId = vm.LibraryElementController.ContentId;
 
-            VideoMediaPlayer.Source = vm.Controller.GetSource();
+            VideoMediaPlayer.Source = vm.LibraryElementController.GetSource();
             VideoMediaPlayer.MediaPlayer.MediaOpened += vm.VideoMediaPlayer_Loaded;
 
             _isRecording = false;
             //vm.LinkedTimeModels.CollectionChanged += LinkedTimeBlocks_CollectionChanged;
             _timeBlocks = new List<LinkedTimeBlockViewModel>();
             
-            vm.Controller.Disposed += ControllerOnDisposed;
+            vm.LibraryElementController.Disposed += ControllerOnDisposed;
             vm.View = this;
             VideoMediaPlayer.MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
             

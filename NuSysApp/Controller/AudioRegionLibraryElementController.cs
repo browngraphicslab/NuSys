@@ -36,7 +36,7 @@ namespace NuSysApp
             TimeChanged?.Invoke(this, AudioRegionModel.Start, AudioRegionModel.End);
             if (!_blockServerInteraction)
             {
-                _debouncingDictionary.Add("end", AudioRegionModel.Start);
+                _debouncingDictionary.Add("end", AudioRegionModel.End);
             }
         }
         public override void UnPack(Message message)

@@ -98,7 +98,7 @@ namespace NuSysApp
             if (LibraryElementController.LibraryElementModel is RectangleRegion)
             {
                 var rect = LibraryElementController.LibraryElementModel as RectangleRegion;
-                return rect.Height/rect.Width;
+                return ((double)Image.PixelHeight* rect.Height)/((double)Image.PixelWidth*rect.Width);
             }
             return (double)Image.PixelHeight / (double)Image.PixelWidth;
             

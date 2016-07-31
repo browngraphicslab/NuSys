@@ -16,9 +16,8 @@ namespace NuSysApp
         private double _height;
         private double _width;
         private string _name;
-        private bool _editable;
-
         
+
         public string Name {
             get { return _name; }
             set
@@ -48,21 +47,6 @@ namespace NuSysApp
             }
         }
 
-        public bool Editable
-        {
-            set
-            {
-
-                _editable = value;
-
-                RaisePropertyChanged("Editable");
-            }
-            get
-            {
-                return _editable;
-            }
-        }
-        public bool Selected { set; get; }
         public double OriginalHeight { get; set; }
         public double OriginalWidth { get; set; }
         public RectangleWrapper RectangleWrapper { get; set; } 
@@ -80,34 +64,27 @@ namespace NuSysApp
             {
                 return;
             }
-            ContainerSizeChanged += BaseSizeChanged;
 
             regionLibraryElementController.SizeChanged += RegionController_SizeChanged;
             regionLibraryElementController.LocationChanged += RegionController_LocationChanged;
             regionLibraryElementController.TitleChanged += RegionController_TitleChanged;
-            regionLibraryElementController.OnSelect += RegionController_OnSelect;
             Name = Model.Title;
             Editable = true;
-            Selected = false;
             RectangleWrapper = rectangleWrapper;
             rectangleWrapper.SizeChanged += RectangleWrapper_SizeChanged;
         }
 
+
         private void RectangleWrapper_SizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)
         {
             var model = this.RegionLibraryElementController.LibraryElementModel as RectangleRegion;
-            var ContainerHeight = RectangleWrapper.GetHeight();
-            var ContainerWidth = RectangleWrapper.GetWidth();
-            Height = model.Height * ContainerHeight;
-            Width = model.Width * ContainerWidth;
-        }
+            var containerHeight = RectangleWrapper.GetHeight();
+            var containerWidth = RectangleWrapper.GetWidth();
+            Height = model.Height * containerHeight;
+            Width = model.Width * containerWidth;
 
-        //Not currently implemented
-        private void RegionController_OnSelect(RegionLibraryElementController regionLibraryElementController)
-        {
-            RaisePropertyChanged("Selected");
-            Selected = true;
-
+            // do not remove this location changed, it breaks everything if you do
+            LocationChanged?.Invoke(this,new Point(model.TopLeftPoint.X * containerWidth,model.TopLeftPoint.Y * containerHeight));
         }
 
         private void RegionController_TitleChanged(object source, string title)
@@ -140,37 +117,6 @@ namespace NuSysApp
             Height = model.Height * RectangleWrapper.GetHeight();
             Width = model.Width * RectangleWrapper.GetWidth();
             SizeChanged?.Invoke(this, Width, Height);
-
-        }
-
-        private void resetRegions()
-        {
-            var model = Model as RectangleRegion;
-            LocationChanged?.Invoke(this, new Point(model.TopLeftPoint.X, model.TopLeftPoint.Y));
-        }
-
-        private void BaseSizeChanged(object sender, double width, double height)
-        {
-            
-            var model = Model as RectangleRegion;
-            if (model == null)
-            {
-                return;
-            }
-
-            Point topLeft;
-
-            //Width and height passed in are the width and height of image itself.
-            Height = model.Height * height;
-            Width = model.Width * width;
-
-            topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
-
-            SizeChanged?.Invoke(this, Width, Height);
-            LocationChanged?.Invoke(this, topLeft);
-
-            RaisePropertyChanged("Height");
-            RaisePropertyChanged("Width");
 
         }
 

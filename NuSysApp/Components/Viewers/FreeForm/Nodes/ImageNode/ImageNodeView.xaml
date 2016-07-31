@@ -43,7 +43,10 @@
         <local:NodeTemplate.Inner>
             
             <Grid PointerPressed="XImage_OnPointerPressed" PointerExited="XImage_PointerExited" PointerReleased="XImage_OnPointerReleased" PointerMoved="XImage_OnPointerMoved">
-                <local:RectangleWrapper x:Name="xClippingWrapper">
+                <local:RectangleWrapper x:Name="xClippingWrapper" SizeChanged="xClippingWrapper_SizeChanged">
+                    <local:RectangleWrapper.RenderTransform>
+                        <CompositeTransform x:Name="WrapperTransform"></CompositeTransform>
+                    </local:RectangleWrapper.RenderTransform>
                     <local:RectangleWrapper.Content>
                         <Image x:Name="xImage" Source="{Binding Image}" Stretch="Fill" />
                     </local:RectangleWrapper.Content>

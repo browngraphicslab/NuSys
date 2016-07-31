@@ -46,7 +46,7 @@ namespace NuSysApp
                         continue;
                     
                     _nodeModel = (ElementModel)vm.Model; // access model
-                    //Controller.LibraryElementController.AddMetadata(new MetadataEntry("creator", new List<string> {_nodeModel.CreatorId}, MetadataMutability.MUTABLE));
+                    //LibraryElementController.LibraryElementController.AddMetadata(new MetadataEntry("creator", new List<string> {_nodeModel.CreatorId}, MetadataMutability.MUTABLE));
 
                     var id = _nodeModel.Id;
                     var timeStamp = Controller.LibraryElementController.GetMetadata("node_creation_date")?.First();

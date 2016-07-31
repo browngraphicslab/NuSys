@@ -184,7 +184,7 @@ namespace NuSysApp
 
                 RegionCollection.Clear();
 
-                var regions = SessionController.Instance.RegionsController.GetRegionLibraryElementIds(CurrentElementController.LibraryElementModel.LibraryElementId);
+                var regions = SessionController.Instance.RegionsController.GetClippingParentRegionLibraryElementIds(CurrentElementController.LibraryElementModel.LibraryElementId);
 
                 if (regions?.Count > 0)
                 {

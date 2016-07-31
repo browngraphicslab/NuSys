@@ -37,7 +37,7 @@ namespace NuSysApp
         //public static string Password { get; private set; }
         public static string ServerSessionID { get; private set; }
 
-        public static bool TEST_LOCAL_BOOLEAN = true;
+        public static bool TEST_LOCAL_BOOLEAN = false;
 
         public static bool IS_HUB = false;
 
@@ -167,14 +167,15 @@ namespace NuSysApp
                 SessionController.Instance.ContentController.OnNewContent -= ContentControllerOnOnNewContent;
 
                 var item = List.SelectedItems.First();
-                var id = ((CollectionTextBox)item).ID;
+                var id = ((CollectionTextBox) item).ID;
                 var collectionRequest = new GetEntireWorkspaceRequest(id ?? "test");
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collectionRequest);
                 _firstLoadList = collectionRequest.GetReturnedArgs().AliasMessages;
                 InitialWorkspaceId = id;
                 this.Frame.Navigate(typeof(SessionView));
+                
             }
-            if (false || true)
+            if (false)
             {
                 var request = new GetContentDataModelRequest("test_id");
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);

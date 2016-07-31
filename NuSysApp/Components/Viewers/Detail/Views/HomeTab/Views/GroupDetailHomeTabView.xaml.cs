@@ -39,11 +39,11 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             DataContext = vm;
-            _libraryElementId = vm.Controller.ContentId;
+            _libraryElementId = vm.LibraryElementController.ContentId;
 
             var model = vm.Model;
             //If same collection, disable enter collection button
-            var id = ((GroupDetailHomeTabViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
+            var id = ((GroupDetailHomeTabViewModel)DataContext).LibraryElementController.LibraryElementModel.LibraryElementId;
 
             // Show the return to origin button if you are currently in the collection
             if (id == SessionController.Instance.ActiveFreeFormViewer.ContentId)
@@ -89,13 +89,13 @@ namespace NuSysApp
             MyWebView.ScriptNotify += wvBrowser_ScriptNotify;
 
 
-            vm.Controller.Disposed += ControllerOnDisposed;
+            vm.LibraryElementController.Disposed += ControllerOnDisposed;
         }
 
 
         private void UpdateModelText(String s)
         {
-             ((GroupDetailHomeTabViewModel)DataContext).Controller.SetContentData(s);
+             ((GroupDetailHomeTabViewModel)DataContext).LibraryElementController.SetContentData(s);
         }
 
         void wvBrowser_ScriptNotify(object sender, NotifyEventArgs e)
@@ -113,9 +113,9 @@ namespace NuSysApp
 
         private void MyWebViewOnNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
         {
-            if (((GroupDetailHomeTabViewModel)DataContext).Controller.LibraryElementModel.Data != "")
+            if (((GroupDetailHomeTabViewModel)DataContext).LibraryElementController.LibraryElementModel.Data != "")
             {
-                UpdateText(((GroupDetailHomeTabViewModel)DataContext).Controller.LibraryElementModel.Data);
+                UpdateText(((GroupDetailHomeTabViewModel)DataContext).LibraryElementController.LibraryElementModel.Data);
             }
         }
 
@@ -140,7 +140,7 @@ namespace NuSysApp
             var vm = (GroupDetailHomeTabViewModel)DataContext;
             MyWebView.NavigationCompleted -= MyWebViewOnNavigationCompleted;
             MyWebView.ScriptNotify -= wvBrowser_ScriptNotify;
-            vm.Controller.Disposed -= ControllerOnDisposed;
+            vm.LibraryElementController.Disposed -= ControllerOnDisposed;
             DataContext = null;
         }
 
@@ -204,7 +204,7 @@ namespace NuSysApp
         {
 
             
-            var id = ((GroupDetailHomeTabViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
+            var id = ((GroupDetailHomeTabViewModel)DataContext).LibraryElementController.LibraryElementModel.LibraryElementId;
             if (id != SessionController.Instance.ActiveFreeFormViewer.ContentId)
             {
                 UITask.Run(async delegate

@@ -48,19 +48,12 @@ namespace NuSysApp
             Loaded += ViewLoaded;
 
             vm.Controller.Disposed += ControllerOnDisposed;
-            SizeChanged += ImageNodeView_SizeChanged;
         }
 
         private void ViewLoaded(object sender, RoutedEventArgs e)
         {
             xClippingWrapper.Controller = _vm.LibraryElementController;
-        }
-
-        private void ImageNodeView_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-
-            var vm = DataContext as ImageElementViewModel;
-            vm?.SizeChanged(this, xImage.ActualWidth, xImage.ActualHeight);
+            xClippingWrapper.ProcessLibraryElementController();
         }
 
         private void ControllerOnDisposed(object source, object args)
@@ -173,6 +166,11 @@ namespace NuSysApp
         public double GetHeight()
         {
             return xImage.ActualHeight;
+        }
+
+        private void xClippingWrapper_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+
         }
     }
 }

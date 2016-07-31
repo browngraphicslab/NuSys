@@ -509,7 +509,7 @@ namespace NuSysApp
                     case 0:
                         vm.TabDictionary[_currentDetailViewable.TabId()] = DetailViewTabType.Home;
                         var home = vm.View.DataContext as DetailHomeTabViewModel;
-                        home.SetExistingRegions();
+                     //   home.SetExistingRegions();
                         break;
                     case 1:
                         vm.TabDictionary[_currentDetailViewable.TabId()] = DetailViewTabType.Metadata;
@@ -520,7 +520,7 @@ namespace NuSysApp
                     case 3:
                         vm.TabDictionary[_currentDetailViewable.TabId()] = DetailViewTabType.Regions;
                         var region = vm.RegionView.DataContext as DetailHomeTabViewModel;
-                        region.SetExistingRegions();
+                      //  region.SetExistingRegions();
                         break;
 
                 }
@@ -533,7 +533,7 @@ namespace NuSysApp
                     case 0:
                         vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Home);
                         var home = vm.View.DataContext as DetailHomeTabViewModel;
-                        home.SetExistingRegions();
+                     //   home.SetExistingRegions();
                         break;
                     case 1:
                         vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Metadata);
@@ -544,7 +544,7 @@ namespace NuSysApp
                     case 3:
                         vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Regions);
                         var region = vm.RegionView.DataContext as DetailHomeTabViewModel;
-                        region.SetExistingRegions();
+                    //    region.SetExistingRegions();
                         break;
                 }
             }

@@ -38,13 +38,11 @@ namespace NuSysApp
         public delegate void OnRegionSeekPassingHandler(double time);
         public event OnRegionSeekPassingHandler OnRegionSeekPassing;
         public double AudioDuration { set; get; }
-        public ObservableCollection<AudioRegionView> Regions { private set; get; }
         public AudioNodeViewModel(ElementController controller) : base(controller)
         {
             Width = controller.Model.Width;
             Height = controller.Model.Height;
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
-            Regions = new ObservableCollection<AudioRegionView>();
 
             this.CreateAudioRegionViews();
 
@@ -55,11 +53,7 @@ namespace NuSysApp
 
         private void Controller_SizeChanged(object source, double width, double height)
         {
-            foreach (var rv in Regions)
-            {
-                var regionViewViewModel = rv.DataContext as AudioRegionViewModel;
-                regionViewViewModel?.ChangeSize(this, width, height);
-            }
+
         }
 
         private void LibraryElementControllerOnRegionRemoved(object source, Region region)
@@ -70,14 +64,9 @@ namespace NuSysApp
                 return;
             }
 
-            foreach (var regionView in Regions.ToList<AudioRegionView>())
-            {
-                if ((regionView.DataContext as AudioRegionViewModel).Model.LibraryElementId == audioRegion.LibraryElementId)
-                    Regions.Remove(regionView);
-            }
 
 
-            RaisePropertyChanged("Regions");
+
         }
 
         private void LibraryElementController_Loaded(object sender)
@@ -88,28 +77,13 @@ namespace NuSysApp
 
         public void CreateAudioRegionViews()
         {
-            Regions.Clear();
-            foreach (var regionId in SessionController.Instance.RegionsController.GetRegionLibraryElementIds(Controller.LibraryElementModel.LibraryElementId))
-            {
-                var audioRegionController = SessionController.Instance.ContentController.GetLibraryElementController(regionId) as AudioRegionLibraryElementController;
-                if (audioRegionController == null)
-                {
-                    return;
-                }
-                var vm = new AudioRegionViewModel(audioRegionController.AudioRegionModel, audioRegionController, this);
-                vm.Editable = false;
-                var view = new AudioRegionView(vm);
-                view.OnRegionSeek += View_OnRegionSeek;
-                Regions.Add(view);
 
-            }
-            RaisePropertyChanged("Regions");
             
         }
         public void ScrubBarOnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             double position = e.NewValue / AudioDuration;
-            foreach (var regionview in Regions)
+         /*   foreach (var regionview in Regions)
             {
                 if (((regionview.DataContext as AudioRegionViewModel).Model as AudioRegionModel).Start <= position &&
                     ((regionview.DataContext as AudioRegionViewModel).Model as AudioRegionModel).End >= position)
@@ -121,7 +95,7 @@ namespace NuSysApp
                     regionview.Deselect();
 
                 }
-            }
+            }*/
         }
         private void ControllerOnDisposed(object source, object args)
         {
@@ -155,7 +129,7 @@ namespace NuSysApp
         public ObservableCollection<AudioRegionView> Regions { get
             {
                 var collection = new ObservableCollection<AudioRegionView>();
-                var elementController = Controller.LibraryElementController;
+                var elementController = LibraryElementController.LibraryElementController;
                 var regionHashSet = elementController.LibraryElementModel.Regions;
 
                 if (regionHashSet == null)
@@ -206,19 +180,7 @@ namespace NuSysApp
         }
         private void LibraryElementControllerOnRegionAdded(object source, RegionLibraryElementController regionLibraryElementController)
         {
-            var audioRegionController = regionLibraryElementController as AudioRegionLibraryElementController;
-            var audioRegion = audioRegionController?.LibraryElementModel as AudioRegionModel;
-            if (audioRegion == null)
-            {
-                return;
-            }
-            var vm = new AudioRegionViewModel(audioRegion, audioRegionController, this);
-            var view = new AudioRegionView(vm);
-            vm.Editable = false;
-            Regions.Add(view);
-            view.OnRegionSeek += View_OnRegionSeek;
 
-            RaisePropertyChanged("Regions");
         }
 
         private void LibraryElementControllerOnRegionUpdated(object source, Region region)

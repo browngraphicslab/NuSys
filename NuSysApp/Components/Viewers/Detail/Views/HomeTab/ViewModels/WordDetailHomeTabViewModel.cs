@@ -15,22 +15,22 @@ namespace NuSysApp
 {
     public class WordDetailHomeTabViewModel : DetailHomeTabViewModel, Sizeable
     {
-        public LibraryElementController Controller { get; }
+        public LibraryElementController LibraryElementController { get; }
         public WriteableBitmap ImageSource { get; set; }
 
         private int _pageNumber = 0;
         private MuPDFWinRT.Document _document;
         public WordDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
-            Controller = controller;
+            LibraryElementController = controller;
             Editable = true;
-            Controller.ContentChanged += ChangeContent;
+            LibraryElementController.ContentChanged += ChangeContent;
         }
 
         private void ChangeContent(object source, string contentData)
         {
             Task.Run(async delegate {
-                _document = await MediaUtil.DataToPDF(Controller.LibraryElementModel.Data);
+                _document = await MediaUtil.DataToPDF(LibraryElementController.LibraryElementModel.Data);
                 await UITask.Run(async delegate { await Goto(_pageNumber); });
             });
         }
@@ -38,7 +38,7 @@ namespace NuSysApp
         public override async Task Init()
         {
             await Task.Run(async delegate {
-                _document = await MediaUtil.DataToPDF(Controller.LibraryElementModel.Data);
+                _document = await MediaUtil.DataToPDF(LibraryElementController.LibraryElementModel.Data);
             });
             await Goto(_pageNumber);
         }
@@ -88,7 +88,7 @@ namespace NuSysApp
                 var test = new List<string>();
 
                 // parameters for our LDA algorithm
-                string filename = Controller.LibraryElementModel.Title;
+                string filename = LibraryElementController.LibraryElementModel.Title;
                 test.Add(filename);
                 test.Add("niters 8");
                 test.Add("ntopics 5");
@@ -119,7 +119,7 @@ namespace NuSysApp
                     {
                         topicKeywords.Add(new Keyword(topic, Keyword.KeywordSource.TopicModeling));
                     }
-                    Controller.SetKeywords((topicKeywords));
+                    LibraryElementController.SetKeywords((topicKeywords));
                     RaisePropertyChanged("Tags");
                 });
             });

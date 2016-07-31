@@ -9,9 +9,9 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid x:Name="Canvas" DoubleTapped="XGrid_OnDoubleTapped">
+    <Grid x:Name="Canvas" DoubleTapped="XGrid_OnDoubleTapped" VerticalAlignment="Top">
         <Grid.RenderTransform>
-        <CompositeTransform TranslateY="10"></CompositeTransform>
+        <CompositeTransform TranslateY="-50"></CompositeTransform>
     </Grid.RenderTransform>
         <Rectangle x:Name="Rect" ManipulationDelta="Rect_OnManipulationDelta" Width="{Binding RegionWidth}" Fill="#DB97B3" Height="100"  Opacity=".42" HorizontalAlignment="Left" VerticalAlignment="Top" ManipulationMode="{Binding Path=Editable, Converter={StaticResource mConverter}}" Tapped="Rect_OnTapped" >
             <Rectangle.RenderTransform>
@@ -34,13 +34,13 @@
         </Grid>
 
         <local:AudioRegionBound x:Name="Bound1"  Y1="0" Y2="100"  ManipulationMode="{Binding Path=Editable, Converter={StaticResource mConverter}}" 
-                                PointerPressed="Handle_OnPointerPressed" ManipulationDelta="Bound1_OnManipulationDelta" PointerReleased="Handle_OnPointerReleased" ManipulationCompleted="OnManipulationCompleted">
+                                ManipulationDelta="Bound1_OnManipulationDelta">
             <local:AudioRegionBound.RenderTransform>
                 <CompositeTransform TranslateX="{Binding LeftHandleX}"/>
             </local:AudioRegionBound.RenderTransform>
         </local:AudioRegionBound>
         <local:AudioRegionBound x:Name="Bound2"  Y1="0" Y2="100" ManipulationMode="{Binding Path=Editable, Converter={StaticResource mConverter}}" 
-                                PointerPressed="Handle_OnPointerPressed" ManipulationDelta="Handle_OnManipulationDelta2" PointerReleased="Handle_OnPointerReleased"  ManipulationCompleted="OnManipulationCompleted" >
+                                ManipulationDelta="Bound2_OnManipulationDelta">
             <local:AudioRegionBound.RenderTransform>
                 <CompositeTransform TranslateX="{Binding RightHandleX}"/>
             </local:AudioRegionBound.RenderTransform>

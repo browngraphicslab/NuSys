@@ -52,8 +52,14 @@ namespace NuSysApp
             {
                 return;
             }
+            if (libraryElementController is RegionLibraryElementController)
+            {
+                SessionController.Instance.RegionsController.RemoveRegion(libraryElementController.LibraryElementModel as Region);
+            }
             SessionController.Instance.LinksController.RemoveContent(libraryElementController);
             libraryElementController.Delete();
+            // This checks if this LibraryElementRequest is a region and if so then call the regionscontroller remove region method
+
         }
     }
 }

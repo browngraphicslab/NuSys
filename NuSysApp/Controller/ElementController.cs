@@ -133,17 +133,6 @@ namespace NuSysApp
             _debouncingDictionary.Add("y", y);
         }
 
-        public void SaveTimeBlock()
-        {
-            switch (Model.ElementType)
-            {
-                case NusysConstants.ElementType.Image:
-                    break;
-                case NusysConstants.ElementType.Text:
-                    break;
-            }
-        }
-
         public void SetAlpha(double alpha)
         {
             Model.Alpha = alpha;
@@ -171,7 +160,7 @@ namespace NuSysApp
                 m = new Message();
 
             m.Remove("id");
-            m["contentId"] = Model.LibraryId;
+            m["libraryId"] = Model.LibraryId;
             m["data"] = "";
             m["x"] = x;
             m["y"] = y;

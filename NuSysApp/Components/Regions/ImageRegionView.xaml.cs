@@ -44,34 +44,23 @@ namespace NuSysApp
             CompositeTransform composite = new CompositeTransform();
             this.RenderTransform = composite;
 
-            vm.PropertyChanged += PropertyChanged;
             //vm.SizeChanged += ChangeSize;
             vm.LocationChanged += ChangeLocation;
 
 
             var parentWidth = vm.RectangleWrapper.GetWidth();
             var parentHeight = vm.RectangleWrapper.GetHeight();
-            
+
             composite.TranslateX = model.TopLeftPoint.X * parentWidth;
             composite.TranslateY = model.TopLeftPoint.Y * parentHeight;
             vm.Width = (model.Width) * parentWidth;
             vm.Height = (model.Height) * parentHeight;
 
-            //If in detail view, adjust to the right to account for difference between view and actual image.
-       /*     if (vm.ContainerViewModel is ImageDetailHomeTabViewModel)
-            {
-                var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
-
-                var horizontalMargin = (ivm.GetViewWidth() - parentWidth)/2;
-                var verticalMargin = (ivm.GetViewHeight() - parentHeight)/2;
-                composite.TranslateX += horizontalMargin;
-                composite.TranslateY += verticalMargin;
-            }*/
-
             _tx = composite.TranslateX;
             _ty = composite.TranslateY;
-
         }
+
+
 
         /// <summary>
         /// Changes location of view according to the element that contains it.
@@ -122,21 +111,6 @@ namespace NuSysApp
             vm.Width = width;
             vm.Height = height;
         }
-        private void PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case "Selected":
-                    var vm = DataContext as ImageRegionViewModel;
-                    if (vm.Selected)
-                    {
-                        this.Select();
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
 
 
         /// <summary>
@@ -172,13 +146,12 @@ namespace NuSysApp
 
             var upYBound = verticalMargin;
             var downYBound = verticalMargin + ivm.GetHeight();
-
-
+           
             //CHANGE IN WIDTH
             if (vm.Width + rt.TranslateX + e.Delta.Translation.X <= rightXBound)
             {
                // xMainRectangle.Width = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
-                vm.Width = Math.Max(vm.Width + e.Delta.Translation.X, 25);
+                vm.Width = Math.Max(vm.Width + e.Delta.Translation.X * ResizerTransform.ScaleX, 25);
 
             }
             //CHANGE IN HEIGHT
@@ -186,7 +159,7 @@ namespace NuSysApp
             if (vm.Height + rt.TranslateY + e.Delta.Translation.Y <= downYBound)
             {
              //   xMainRectangle.Height = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
-                vm.Height = Math.Max(vm.Height + e.Delta.Translation.Y, 25);
+                vm.Height = Math.Max(vm.Height + e.Delta.Translation.Y * ResizerTransform.ScaleY, 25);
             }
 
             //Updates viewmodel
@@ -228,8 +201,8 @@ namespace NuSysApp
             var upYBound = verticalMargin;
             var downYBound = verticalMargin + ivm.GetHeight() - vm.Height;
 
-            _tx += e.Delta.Translation.X;
-            _ty += e.Delta.Translation.Y;
+            _tx += e.Delta.Translation.X * ResizerTransform.ScaleX;
+            _ty += e.Delta.Translation.Y * ResizerTransform.ScaleY;
 
             //Translating X
             if (_tx < leftXBound)
@@ -244,6 +217,7 @@ namespace NuSysApp
             {
                 rt.TranslateX = _tx;
             }
+
 
             //Translating Y
             if (_ty < upYBound)
@@ -288,8 +262,7 @@ namespace NuSysApp
 
         public void Deselect()
         {
-            xMainRectangle.StrokeThickness = 3;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
+            xMainRectangleBorder.BorderThickness = new Thickness(3 * ResizerTransform.ScaleY, 3 * ResizerTransform.ScaleX, 3 * ResizerTransform.ScaleY, 3 * ResizerTransform.ScaleX);
             xResizingTriangle.Visibility = Visibility.Collapsed;
             xDelete.Visibility = Visibility.Collapsed;
             xNameTextBox.Visibility = Visibility.Collapsed;
@@ -299,8 +272,8 @@ namespace NuSysApp
 
         public void Select()
         {
-            xMainRectangle.StrokeThickness = 6;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
+            xMainRectangleBorder.BorderThickness = new Thickness(6 * ResizerTransform.ScaleY, 6 * ResizerTransform.ScaleX, 6 * ResizerTransform.ScaleY,6 * ResizerTransform.ScaleX);
+
             xResizingTriangle.Visibility = Visibility.Visible;
             xDelete.Visibility = Visibility.Visible;
             xNameTextBox.Visibility = Visibility.Visible;
@@ -334,9 +307,9 @@ namespace NuSysApp
                 return;
             }
 
-            //TODO add in remove region requests aka remove librayr element request
-
-
+            // delete all the references to this region from the library
+            var removeRequest = new DeleteLibraryElementRequest(vm.RegionLibraryElementController.LibraryElementModel.LibraryElementId);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(removeRequest);
         }
 
         private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
@@ -351,6 +324,38 @@ namespace NuSysApp
             var vm = DataContext as ImageRegionViewModel;
             vm.SetNewName((sender as TextBox).Text);
 
+        }
+
+        public void RescaleComponents(double scaleX,double scaleY)
+        {
+            /// How this works
+            /// We scale the entire region based on the image being scaled. But we then want to invert the scaling on the visual components, 
+            /// but not on the size of the region as a whole. To revert the scale, we divide the transforms by their current scale. using scaleX = 1/scaleX etc.
+            /// we then shift the transforms over by certain margins. The math is simple even though the numbers look like "magic numbers."
+            /// 
+            /// The width of the rectangle borders is 3. The size of the delete button and resizing triangle is 25. So these magic numbers are simply
+            /// the result of shifting things over by values relative to 25 and 3.
+
+            //Updates scale of delete button
+            DeleteTransform.ScaleX = 1 / scaleX;
+            DeleteTransform.ScaleY = 1 / scaleY;
+            xDelete.Margin = new Thickness(5/ scaleX, -28/scaleY, 0, 0); // move button so its left side is 2 px to the right of the rectangle border, and bottom is in line with rectangle broder
+
+            //Updates scale of text box
+
+            NameTextTransform.ScaleX = 1 / scaleX;
+            NameTextTransform.ScaleY = 1 / scaleY;
+            //Updates margin so that it is directly on top of the rectangle.
+            xNameTextBox.Margin = new Thickness(0, -30/scaleY, 0, 0);
+
+            //UPdates scale of Resizing Triangle
+            ResizerTransform.ScaleX = 1 / scaleX;
+            ResizerTransform.ScaleY = 1 / scaleY;
+            xResizingTriangle.Margin = new Thickness(-25 / scaleX ,-25 / scaleY, 0, 0); // move resizing triangle so bottom and left are in line with the bottom and right side of the rectangle border
+
+               
+            //xMainRectangle.StrokeThickness = 3 / scaleX;
+            xMainRectangleBorder.BorderThickness = new Thickness(3/scaleX, 3/scaleY, 3/scaleX, 3/scaleY);
         }
     }
 }

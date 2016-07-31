@@ -29,6 +29,7 @@ namespace NuSysApp
         public void SetPageLocation(int page)
         {
             PdfRegionModel.PageLocation = page;
+            _debouncingDictionary.Add("page_location", page);
             PageLocationChanged?.Invoke(this, page);
         }
 

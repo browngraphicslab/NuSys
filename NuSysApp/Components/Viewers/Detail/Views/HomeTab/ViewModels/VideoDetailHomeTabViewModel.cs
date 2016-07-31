@@ -16,14 +16,14 @@ namespace NuSysApp
     {
         public delegate void OnRegionSeekPassingHandler(double time);
         public event OnRegionSeekPassingHandler OnRegionSeekPassing;
-        public LibraryElementController Controller { get; }
+        public LibraryElementController LibraryElementController { get; }
         public ObservableCollection<VideoRegionView> RegionViews { set; get; }
         
         public VideoDetailHomeTabViewModel(LibraryElementController controller) :  base(controller)
         {
-            Controller = controller;
+            LibraryElementController = controller;
             RegionViews = new ObservableCollection<VideoRegionView>();
-            Controller.Loaded += Controller_Loaded;
+            LibraryElementController.Loaded += Controller_Loaded;
             
         }
 
@@ -121,7 +121,7 @@ namespace NuSysApp
         {
 
             RegionViews.Clear();
-            foreach (var regionId in SessionController.Instance.RegionsController.GetRegionLibraryElementIds(Controller.LibraryElementModel.LibraryElementId))
+            foreach (var regionId in SessionController.Instance.RegionsController.GetClippingParentRegionLibraryElementIds(LibraryElementController.LibraryElementModel.LibraryElementId))
             {
                 var videoRegionController = SessionController.Instance.ContentController.GetLibraryElementController(regionId) as VideoRegionLibraryElementController;
                 if (videoRegionController == null)

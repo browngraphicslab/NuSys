@@ -45,16 +45,16 @@ namespace NuSysApp
 
         public override void AddRegion(object sender, RegionLibraryElementController regionLibraryElementController)
         {
-            var rectRegionController = regionLibraryElementController as RectangleRegionLibraryElementController;
-            var imageRegion = rectRegionController?.LibraryElementModel as RectangleRegion;
-            if (imageRegion == null)
-            {
-                return;
-            }
-          //  var vm = new ImageRegionViewModel(imageRegion, rectRegionController, this);
+          //  var rectRegionController = regionLibraryElementController as RectangleRegionLibraryElementController;
+          //  var imageRegion = rectRegionController?.LibraryElementModel as RectangleRegion;
+          //  if (imageRegion == null)
+          //  {
+          //      return;
+          //  }
+          ////  var vm = new ImageRegionViewModel(imageRegion, rectRegionController, this);
 
 
-            RaisePropertyChanged("RegionViews");
+          //  RaisePropertyChanged("RegionViews");
         }
 
 
@@ -83,7 +83,6 @@ namespace NuSysApp
                 Debug.WriteLine("Image Width: " + this.GetWidth());
 
             }
-
             
             //foreach (var rv in RegionViews)
             //{
@@ -119,7 +118,7 @@ namespace NuSysApp
             //RegionViews.Clear();
 
             //var regionsLibraryElementIds=
-            //    SessionController.Instance.RegionsController.GetRegionLibraryElementIds(
+            //    SessionController.Instance.RegionsController.GetClippingParentRegionLibraryElementIds(
             //        LibraryElementController.LibraryElementModel.LibraryElementId);
             //foreach (var regionLibraryElementId in regionsLibraryElementIds)
             //{
@@ -142,6 +141,22 @@ namespace NuSysApp
             m["rectangle_location"] = new Point(.25, .25);
             m["rectangle_width"] = .5;
             m["rectangle_height"] = .5;
+           
+            // if the library element LibraryElementController is a region noramlize top left point, height, and width for original content
+            if (LibraryElementController is RectangleRegionLibraryElementController)
+            {
+                var imageRegionLibraryElementController =
+                    LibraryElementController as RectangleRegionLibraryElementController;
+                var rectangleRegionModel = imageRegionLibraryElementController?.RectangleRegionModel;
+
+                // normalizes the top left point so that it is in the correct place on the original content
+                m["rectangle_location"] = new Point(.25 * rectangleRegionModel.Width + rectangleRegionModel.TopLeftPoint.X, 
+                                                    .25 * rectangleRegionModel.Height + rectangleRegionModel.TopLeftPoint.Y);
+                // same for width and height
+                m["rectangle_width"] = .5 * rectangleRegionModel.Width;
+                m["rectangle_height"] = .5 * rectangleRegionModel.Height;
+            }
+
             return m;
         }
 

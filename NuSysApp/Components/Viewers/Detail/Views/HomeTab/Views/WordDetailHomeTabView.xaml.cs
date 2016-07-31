@@ -32,7 +32,7 @@ namespace NuSysApp
         public WordDetailHomeTabView(WordDetailHomeTabViewModel vm)
         {
             InitializeComponent();
-            vm.Controller.Disposed += ControllerOnDisposed;
+            vm.LibraryElementController.Disposed += ControllerOnDisposed;
             vm.PropertyChanged += PropertyChanged;
             vm.View = this;
 
@@ -46,7 +46,7 @@ namespace NuSysApp
 
             //vm.MakeTagList();
 
-            vm.Controller.Disposed += ControllerOnDisposed;
+            vm.LibraryElementController.Disposed += ControllerOnDisposed;
         }
         private void PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -65,7 +65,7 @@ namespace NuSysApp
         private void ControllerOnDisposed(object source, object args)
         {
             var vm = (WordDetailHomeTabViewModel)DataContext;
-            vm.Controller.Disposed += ControllerOnDisposed;
+            vm.LibraryElementController.Disposed += ControllerOnDisposed;
             DataContext = null;
         }
 
@@ -103,7 +103,7 @@ namespace NuSysApp
                 var m = new Message();
 
                 // Get text from the pdf
-                var myDoc = await MediaUtil.DataToPDF(vm.Controller.LibraryElementModel.Data);
+                var myDoc = await MediaUtil.DataToPDF(vm.LibraryElementController.LibraryElementModel.Data);
                 string pdf_text = "";
                 int numPages = myDoc.PageCount;
                 int currPage = 0;
@@ -114,13 +114,13 @@ namespace NuSysApp
                 }
 
                 m["id"] = SessionController.Instance.GenerateId();
-                m["data"] = vm.Controller.LibraryElementModel.Data;
+                m["data"] = vm.LibraryElementController.LibraryElementModel.Data;
                 if (!string.IsNullOrEmpty(pdf_text))
                 {
                     m["pdf_text"] = pdf_text;
                 }
                 m["type"] = NusysConstants.ElementType.PDF.ToString();
-                m["title"] = vm.Controller.LibraryElementModel.Title + " CAPTURED "+DateTime.Now.ToString();
+                m["title"] = vm.LibraryElementController.LibraryElementModel.Title + " CAPTURED "+DateTime.Now.ToString();
                 SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(m));
             });
         }
@@ -137,10 +137,10 @@ namespace NuSysApp
             {
                 Debug.Assert(DataContext is WordDetailHomeTabViewModel);
                 var vm = DataContext as WordDetailHomeTabViewModel;
-                Debug.Assert(vm?.Controller?.LibraryElementModel?.LibraryElementId != null);
+                Debug.Assert(vm?.LibraryElementController?.LibraryElementModel?.LibraryElementId != null);
                 string path = null;
                 await System.Threading.Tasks.Task.Run( async delegate{
-                        path = await SessionController.Instance.NuSysNetworkSession.DownloadDocx( vm.Controller.LibraryElementModel.LibraryElementId);
+                        path = await SessionController.Instance.NuSysNetworkSession.DownloadDocx( vm.LibraryElementController.LibraryElementModel.LibraryElementId);
                         
                 });
                 if (path == null)

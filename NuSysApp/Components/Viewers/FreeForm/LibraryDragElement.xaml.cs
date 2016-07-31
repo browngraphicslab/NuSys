@@ -52,18 +52,22 @@ namespace NuSysApp
                 case NusysConstants.ElementType.Text:
                     text.Visibility = Visibility.Visible;
                     break;
+                case NusysConstants.ElementType.ImageRegion:
                 case NusysConstants.ElementType.Image:
                     image.Visibility = Visibility.Visible;
                     break;
                 case NusysConstants.ElementType.Collection:
                     collection.Visibility = Visibility.Visible;
                     break;
+                case NusysConstants.ElementType.PdfRegion:
                 case NusysConstants.ElementType.PDF:
                     pdf.Visibility = Visibility.Visible;
                     break;
+                case NusysConstants.ElementType.AudioRegion:
                 case NusysConstants.ElementType.Audio:
                     audio.Visibility = Visibility.Visible;
                     break;
+                case NusysConstants.ElementType.VideoRegion:
                 case NusysConstants.ElementType.Video:
                     video.Visibility = Visibility.Visible;
                     break;
@@ -107,9 +111,6 @@ namespace NuSysApp
                     SwitchType(element.Type);
                     break;
             }
-
-
-
 
         }
     }

@@ -73,17 +73,21 @@ namespace NuSysApp
                         await elementModel.UnPack(_message);
                         controller = new ElementController(elementModel);
                         break;
+                    case NusysConstants.ElementType.PdfRegion:
                     case NusysConstants.ElementType.PDF:
                         elementModel = new PdfNodeModel(id);
                         await elementModel.UnPack(_message);
                         controller = new ElementController(elementModel);
                         break;
+                    case NusysConstants.ElementType.AudioRegion:
                     case NusysConstants.ElementType.Audio:
                         elementModel = new AudioNodeModel(id);
                         await elementModel.UnPack(_message);
                         controller = new ElementController(elementModel);
                         break;
+                    case NusysConstants.ElementType.VideoRegion:
                     case NusysConstants.ElementType.Video:
+
                         elementModel = new VideoNodeModel(id);
                         await elementModel.UnPack(_message);
                         controller = new ElementController(elementModel);

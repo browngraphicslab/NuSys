@@ -9,12 +9,12 @@ namespace NuSysApp
 {
     public class GroupDetailHomeTabViewModel : DetailHomeTabViewModel
     {
-        public LibraryElementController Controller { get; }
+        public LibraryElementController LibraryElementController { get; }
 
         public LibraryElementModel Model { get; }
         public GroupDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
-            Controller = controller;
+            LibraryElementController = controller;
             Model = controller.LibraryElementModel;
             
         }

@@ -135,7 +135,8 @@ namespace NuSysApp
         /// </returns>
         public async Task<Message> ExecuteRequestAsync(Request request)
         {
-            return await Task.Run(async delegate {
+            return await Task.Run(async delegate
+            {
                 //if CheckOutgoingRequest created a valid thing
                 await request.CheckOutgoingRequest();
                 Message message = request.GetFinalMessage();

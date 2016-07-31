@@ -21,7 +21,6 @@ namespace NuSysApp
 {
     public sealed partial class AudioRegionView
     {
-        private bool _toggleManipulation;
         public delegate void RegionSelectedEventHandler(object sender, bool selected);
         public event RegionSelectedEventHandler OnSelected;
         public delegate void OnRegionSeekHandler(double time);
@@ -33,16 +32,11 @@ namespace NuSysApp
 
         public AudioRegionView(AudioRegionViewModel vm)
         {
-            this.InitializeComponent();
             this.DataContext = vm;
+            this.InitializeComponent();
             this.Deselect();
-            _toggleManipulation = false;
 
 
-        }
-        private void Handle_OnPointerPressed(object sender, PointerRoutedEventArgs e)
-       {
-            _toggleManipulation = true;
         }
 
         private void Bound1_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -54,30 +48,14 @@ namespace NuSysApp
             }
         }
 
-        private void Handle_OnManipulationDelta2(object sender, ManipulationDeltaRoutedEventArgs e)
+        private void Bound2_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = this.DataContext as AudioRegionViewModel;
-            if (Rect.Width + e.Delta.Translation.X > 0 && vm.RightHandleX + e.Delta.Translation.X < vm.ContainerViewModel.GetWidth())
+            if (Rect.Width + e.Delta.Translation.X > 0 && vm.RightHandleX + e.Delta.Translation.X < vm.AudioWrapper.ActualWidth)
             {
-                //            (Bound2.RenderTransform as CompositeTransform).TranslateX += e.Delta.Translation.X;
-                //         Bound2.X2 += e.Delta.Translation.X;
-                //        Bound2.X1 += e.Delta.Translation.X;
-                //        Rect.Width += e.Delta.Translation.X;
                 vm.SetNewPoints(0,e.Delta.Translation.X);
             }
         }
-
- 
-        private void Handle_OnPointerReleased(object sender, PointerRoutedEventArgs e)
-        {
-            _toggleManipulation = false;
-        }
-
-        private void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-        {
-           
-        }
-
 
         public void Deselect()
         {
@@ -86,7 +64,6 @@ namespace NuSysApp
             Rect.IsHitTestVisible = true;
             xDelete.Visibility = Visibility.Collapsed;
             Selected = false;
-
         }
 
         public void Select()
@@ -100,24 +77,8 @@ namespace NuSysApp
                 xDelete.Visibility = Visibility.Visible;
             }
             Selected = true;
-
         }
 
-        private void Rect_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            var vm = DataContext as AudioRegionViewModel;
-            /*
-            if (!vm.Editable)
-                return;
-
-            if (Selected)
-                this.Deselect();
-            else
-                this.Select();
-                */
-            e.Handled = true;
-
-        }
         private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             _isSingleTap = false;
@@ -130,7 +91,7 @@ namespace NuSysApp
         private void Rect_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = this.DataContext as AudioRegionViewModel;
-            if (Rect.Width + e.Delta.Translation.X > 0 && vm.RightHandleX + e.Delta.Translation.X < vm.ContainerViewModel.GetWidth() && vm.LeftHandleX + e.Delta.Translation.X > 0)
+            if (Rect.Width + e.Delta.Translation.X > 0 && vm.RightHandleX + e.Delta.Translation.X < vm.AudioWrapper.ActualWidth && vm.LeftHandleX + e.Delta.Translation.X > 0)
             {
 
                 vm.SetNewPoints(e.Delta.Translation.X, e.Delta.Translation.X);
@@ -146,8 +107,6 @@ namespace NuSysApp
 
         private void xDelete_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-
-
             var vm = this.DataContext as AudioRegionViewModel;
             if (vm == null)
             {
