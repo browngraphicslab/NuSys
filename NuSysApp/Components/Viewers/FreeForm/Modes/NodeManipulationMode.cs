@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
@@ -18,8 +19,10 @@ namespace NuSysApp
         public static int _zIndexCounter = 10000;
         private bool _isPinAnimating;
         private bool _isFreeForm;
+        private FrameworkElement _bounds;
         public List<UserControl> ActiveNodes { get; private set; }
         public bool Limited { get; set; }
+        private FreeFormViewer _viewer;
         public NodeManipulationMode(FrameworkElement view) : base(view) { }
 
     
@@ -29,6 +32,10 @@ namespace NuSysApp
 
         }
 
+        public void SetViewer(FreeFormViewer viewer)
+        {
+            _viewer = viewer;
+        }
         public override async Task Activate()
         {
             ActiveNodes = new List<UserControl>();
@@ -137,21 +144,29 @@ namespace NuSysApp
             else {
                 if (!vm.IsEditing)
                 {
+                    Point p = new Point(vm.Transform.TranslateX + dx, vm.Transform.TranslateY + dy);
                     if (Limited)
                     {
-                        if (CheckInBounds(new Point(vm.Transform.TranslateX + dx,vm.Transform.TranslateY +dy), new List<Point>())
+                        if (CheckInBounds(p))
                         {
-                            
+                            return;
                         }
                     }
-                    vm.Controller.SetPosition(vm.Transform.TranslateX + dx, vm.Transform.TranslateY + dy);
+                    vm.Controller.SetPosition(p.X, p.Y);
+                    Debug.WriteLine(p);
                 }
             }
         }
 
-        public bool CheckInBounds(Point p, List<Point> shape)
+        public bool CheckInBounds(Point p)
         {
-            return true;
+            var adjustedPt = new Point(p.X - 50000, p.Y - 50000);
+            var bounds = _viewer.GetAdornment();
+            IEnumerable<UIElement> elements = VisualTreeHelper.FindElementsInHostCoordinates(adjustedPt, bounds);
+            
+            var adornment = elements.Any(a => a == bounds);
+            List<UIElement> elementlist = elements.ToList();
+            return adornment;
         }
     }
 }
