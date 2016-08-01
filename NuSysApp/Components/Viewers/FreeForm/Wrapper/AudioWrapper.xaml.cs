@@ -196,7 +196,21 @@ namespace NuSysApp
                 var compositeTransform = new CompositeTransform();
                 compositeTransform.ScaleX = 1 / (AudioEnd - AudioStart);
                 compositeTransform.CenterX = this.ActualWidth * (AudioStart + (AudioEnd - AudioStart) / 2.0);
-                RenderTransform = compositeTransform;
+                WrapperTransform = compositeTransform;
+                foreach (var item in xClippingCanvas.Items)
+                {
+                    var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
+                    FrameworkElement region;
+                    switch (regionViewModel.Model.Type)
+                    {
+                        case ElementType.AudioRegion:
+                            region = item as AudioRegionView;
+                            (region as AudioRegionView).RescaleComponents(WrapperTransform.ScaleX);
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
 
             //// if the controller hasn't been set yet don't try to resize
