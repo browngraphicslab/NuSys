@@ -223,9 +223,7 @@ namespace NuSysApp
                                     SessionController.Instance.ActiveFreeFormViewer.ContentId));
                         await SessionController.Instance.SessionView.LoadWorkspaceFromServer(messages, id);
                     }
-                });
-
-
+                }); 
             }
 
             SessionController.Instance.SessionView.DetailViewerView.CloseDv();

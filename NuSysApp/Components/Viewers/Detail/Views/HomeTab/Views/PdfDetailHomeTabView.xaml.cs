@@ -289,7 +289,11 @@ namespace NuSysApp
         public void Dispose()
         {
             var vm = DataContext as PdfDetailHomeTabViewModel;
-            vm.PageLocationChanged -= Vm_PageLocationChanged;
+            if (vm != null) // because delete library element request can remove the view model outside of this
+            {
+                vm.PageLocationChanged -= Vm_PageLocationChanged;
+            }
+
             xClippingWrapper.Dispose();
         }
 

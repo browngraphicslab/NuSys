@@ -111,6 +111,29 @@ namespace NuSysApp
             Metadata = new ObservableCollection<StackPanel>();
             RegionCollection = new ObservableCollection<Region>();
             Tabs = new ObservableCollection<IDetailViewable>();
+            SessionController.Instance.ContentController.OnElementDelete += ContentController_OnElementDelete;
+        }
+
+        private void ContentController_OnElementDelete(LibraryElementModel element)
+        {
+            foreach (var tab in _tabs)
+            {
+                if (tab.TabId() == element.LibraryElementId)
+                {
+                    _tabs.Remove(tab);
+                    break;
+                }
+            }
+            Tabs = _tabs;
+            if (_tabs.Count > 1)
+            {
+                TabVisibility = Visibility.Visible;
+            }
+            else
+            {
+                TabVisibility = Visibility.Collapsed;
+            }
+            TabHeight = TabPaneWidth / Tabs.Count;
         }
 
         private void OnSizeChanged_InvokeTabVMSizeChanged(object source, double left, double width, double height)

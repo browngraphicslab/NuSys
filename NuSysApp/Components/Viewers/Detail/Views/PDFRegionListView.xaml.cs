@@ -64,8 +64,10 @@ namespace NuSysApp
             {
                 if (model.LibraryElementId == regionLibraryElementModelId)
                 {
-                    RegionModelList.Remove(model);
-
+                    await UITask.Run(() =>
+                    {
+                        RegionModelList.Remove(model);
+                    });
                     break;
                 }
             }
@@ -76,10 +78,14 @@ namespace NuSysApp
             var region = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementModelId);
             var model = region.LibraryElementModel as PdfRegionModel;
             Debug.Assert(model != null);
-            RegionModelList.Add(model);
+            await UITask.Run(() =>
+            {
+                RegionModelList.Add(model);
+            });
+            
         }
 
-        private void PopulateRegionModelList(string contentDataModelId)
+        private async void PopulateRegionModelList(string contentDataModelId)
         {
             var regionIds = SessionController.Instance.RegionsController.GetContentDataModelRegionLibraryElementIds(contentDataModelId);
             foreach (var regionId in regionIds)
@@ -87,7 +93,10 @@ namespace NuSysApp
                 var region = SessionController.Instance.ContentController.GetLibraryElementController(regionId);
                 var model = region.LibraryElementModel as PdfRegionModel;
                 Debug.Assert(model != null);
-                RegionModelList.Add(model);
+                await UITask.Run(() =>
+                {
+                    RegionModelList.Add(model);
+                });
             }
         }
 
