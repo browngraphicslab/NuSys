@@ -61,19 +61,21 @@ namespace NusysServer
                         throw new Exception("the file extension cannot be null when creating a new data file with Audio, Video, or Image contentTypes");
                     }
                     filePath = Constants.WWW_ROOT + contentDataModelId + fileExtension;
+                    File.Create(filePath);
+                    File.WriteAllText(filePath, contentData);
                     break;
                 case NusysConstants.ContentType.PDF:
                 case NusysConstants.ContentType.Text:
                     var extension = contentType == NusysConstants.ContentType.PDF ? Constants.PDF_DATA_FILE_FILE_EXTENSION : Constants.TEXT_DATA_FILE_FILE_EXTENSION;
-                    filePath = Constants.FILE_FOLDER + contentDataModelId + extension;
+                    filePath = contentDataModelId + extension;
+                    File.Create(Constants.FILE_FOLDER + filePath);
+                    File.WriteAllText(Constants.FILE_FOLDER + filePath, contentData);
                     break;
             }
             if (filePath == null)
             {
                 throw new Exception("this content type is not supported yet for creating Content Data Files");
             }
-            File.Create(filePath);
-            File.WriteAllText(filePath, contentData);
             return filePath;
         }
 
