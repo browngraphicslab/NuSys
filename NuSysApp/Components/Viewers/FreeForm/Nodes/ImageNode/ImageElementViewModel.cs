@@ -25,20 +25,13 @@ namespace NuSysApp
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));       
         }
 
-        public void SizeChanged(object sender, double width, double height)
-        {
-
-        }
         public override void Dispose()
         {
-            if (Controller != null)
-            {
-                Controller.LibraryElementController.Loaded -= LibraryElementModelOnOnLoaded;
-            }
             if (Image != null)
             {
                 Image.ImageOpened -= UpdateSizeFromModel;
             }
+            base.Dispose();
         }
 
         public BitmapImage Image { get; set; }
@@ -62,6 +55,7 @@ namespace NuSysApp
         private async void LibraryElementModelOnOnLoaded(object sender)
         {
             await DisplayImage();
+            Controller.LibraryElementController.Loaded -= LibraryElementModelOnOnLoaded;
         }
 
         private async Task DisplayImage()

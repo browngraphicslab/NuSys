@@ -60,33 +60,13 @@ namespace NuSysApp
         public VideoNodeViewModel(ElementController controller) : base(controller)
         {
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
-            //LibraryElementController.LibraryElementController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
-            Controller.SizeChanged += Controller_SizeChanged;
-            Controller.LibraryElementController.Loaded += LibraryElementController_Loaded;
-
         }
-        //Eventually, we will refactor video regions to be more like audio/image/pdf so we don' thave to do this.
-        public void UpdateRegions()
-        {
-            RaisePropertyChanged("RegionViews");
-        }
-
-        private void LibraryElementController_Loaded(object sender)
-        {
-            RaisePropertyChanged("RegionViews");
-        }
-
-        private void Controller_SizeChanged(object source, double width, double height)
-        {
-            RaisePropertyChanged("RegionViews");
-        }
-       
 
         public override void Dispose()
         {
-            Controller.LibraryElementController.Loaded -= LibraryElementModelOnOnLoaded;
             base.Dispose();
         }
+
         public void ScrubBarOnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             double position = e.NewValue/VideoDuration;
@@ -121,6 +101,7 @@ namespace NuSysApp
         private void LibraryElementModelOnOnLoaded(object sender)
         {
             Controller.SetSize(Model.Width, Model.Height);
+            Controller.LibraryElementController.Loaded -= LibraryElementModelOnOnLoaded;
         }
 
         public override void SetSize(double width, double height)
@@ -141,17 +122,6 @@ namespace NuSysApp
                 var r = model.ResolutionX / (double)model.ResolutionY;
                 base.SetSize(height * r, height + 150);
             }
-        }
-
-        public ObservableCollection<LinkedTimeBlockModel> LinkedTimeModels
-        {
-            get { return (Model as VideoNodeModel).LinkedTimeModels; }
-        }
-
-
-        public void AddLinkTimeModel(LinkedTimeBlockModel model)
-        {
-            (Model as VideoNodeModel).LinkedTimeModels.Add(model);
         }
 
         protected override void OnSizeChanged(object source, double width, double height)
@@ -185,14 +155,5 @@ namespace NuSysApp
             return 0;
         }
 
-        public double GetViewWidth()
-        {
-            throw new NotImplementedException();
-        }
-
-        public double GetViewHeight()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
