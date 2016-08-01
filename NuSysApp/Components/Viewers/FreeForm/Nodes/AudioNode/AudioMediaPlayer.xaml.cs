@@ -60,6 +60,7 @@ namespace NuSysApp
 
             if (MediaElement.CurrentState != MediaElementState.Playing)
             {
+
                 Binding b = new Binding();
                 b.ElementName = "MediaElement";
                 b.Path = new PropertyPath("Position.TotalMilliseconds");
@@ -94,6 +95,7 @@ namespace NuSysApp
             double denormalizedMediaElementPosition = normalizedMediaElementPosition * totalDuration;
             MediaElement.Position = new TimeSpan(0, 0, 0, 0, (int)denormalizedMediaElementPosition);
 
+
             ScrubBar.Minimum = totalDuration * xAudioWrapper.AudioStart;
             ScrubBar.Maximum = totalDuration * xAudioWrapper.AudioEnd;
 
@@ -116,11 +118,12 @@ namespace NuSysApp
 
             if (MediaElement.CurrentState != MediaElementState.Playing)
             {
+
                 Binding b = new Binding();
                 b.ElementName = "MediaElement";
                 b.Path = new PropertyPath("Position.TotalMilliseconds");
                 ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
-                MediaElement.Pause();
+                //    MediaElement.Pause();
             }
         }
 
@@ -236,6 +239,18 @@ namespace NuSysApp
             MediaElement.Stop();
         }
 
+        private void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var wrapperTransform = xAudioWrapper.RenderTransform as CompositeTransform;
+            if (wrapperTransform == null)
+            {
+                return;
+            }
+            var rect = new Rect(10+ xAudioWrapper.AudioStart * ProgressBar.ActualWidth / wrapperTransform.ScaleX, 0,this.ActualWidth / wrapperTransform.ScaleX,this.ActualHeight);
+            var rectangleGeometry = new RectangleGeometry();
+            rectangleGeometry.Rect = rect;
+            xAudioWrapper.Clip = rectangleGeometry;
+        }
     }
 
 }

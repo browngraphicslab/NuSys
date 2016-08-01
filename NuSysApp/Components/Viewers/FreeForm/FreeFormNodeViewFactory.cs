@@ -41,6 +41,7 @@ namespace NuSysApp
                 case ElementType.Powerpoint:
                     view = new PowerpointNodeView(new PowerpointNodeViewModel(controller));
                     break;
+                case ElementType.AudioRegion:
                 case ElementType.Audio:
                     view = new AudioNodeView(new AudioNodeViewModel(controller));
                     break;
@@ -66,6 +67,7 @@ namespace NuSysApp
                         view = new BezierLinkView(new LinkViewModel((LinkController)controller));
                     break;*/
             }
+            Debug.Assert(view != null, "this should never return null");
             await ((ElementViewModel)view.DataContext).Init();
 
             return view;
