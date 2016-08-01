@@ -32,8 +32,6 @@ namespace NuSysApp
     {
         private bool _loaded;
         
-
-
         public AudioNodeView(AudioNodeViewModel vm)
         {
             this.DataContext = vm; // has to be set before initComponent so child xaml elements inherit it
@@ -43,7 +41,6 @@ namespace NuSysApp
 
             vm.Controller.Disposed += ControllerOnDisposed;
 
-            ((AudioNodeModel)vm.Model).OnJump += AudioNodeView_OnJump;
 
             //I'm sorry for the stupid name. I don't think it was me, but I'm too lazy to fix it.
             MediaPlayer.MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
@@ -51,7 +48,6 @@ namespace NuSysApp
 
             MediaPlayer.AudioSource = vm.AudioSource;
             vm.OnRegionSeekPassing += MediaPlayer.onSeekedTo;
-            //playbackElement.MediaEnded += MediaEnded;
         }
 
         private void MediaPlayer_MediaOpened(object sender, RoutedEventArgs e)
@@ -60,42 +56,13 @@ namespace NuSysApp
             vm.AudioDuration = MediaPlayer.MediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
         }
 
-        private void MediaEnded(object sender, RoutedEventArgs e)
-        {
-            AudioNodeView_OnJump(new TimeSpan(0));
-        }
-
-        public void AudioNodeView_OnJump(TimeSpan time)
-        {
-            ((AudioNodeModel) ((DataContext as AudioNodeViewModel).Model)).Controller.ScrubJump(time);
-        }
-        /*
-                private void AddAllLinksVisually()
-                {
-                    foreach (var element in (DataContext as AudioNodeViewModel).LinkedTimeModels)
-                    {
-                        var timeBlockVM = new LinkedTimeBlockViewModel(element, ((AudioNodeModel)((DataContext as AudioNodeViewModel).Model)).LibraryElementController.PlaybackElement.NaturalDuration.TimeSpan, scrubBar);
-                        LinkedTimeBlock line = new LinkedTimeBlock(timeBlockVM);
-                        line.SetValue(Canvas.ZIndexProperty, 1);
-                        line.OnTimeChange += ReSaveLinkModels;
-                        _timeBlocks.Add(timeBlockVM);
-                        grid.Children.Add(line);
-                        timeBlockVM.setUpHandlers(line.getLine());
-                    }
-                    scrubBar.ContainerSizeChanged += ScrubBar_OnSizeChanged;
-
-
-                }
-        */
-        private void PlaybackElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
-        {
-            
-        }
-
         private void ControllerOnDisposed(object source, object args)
         {
             var vm = (AudioNodeViewModel)DataContext;
 
+            vm.OnRegionSeekPassing -= MediaPlayer.onSeekedTo;
+            MediaPlayer.MediaPlayer.MediaOpened -= MediaPlayer_MediaOpened;
+            MediaPlayer.ScrubBar.ValueChanged -= vm.ScrubBarOnValueChanged;
             (DataContext as AudioNodeViewModel).OnVisualizationLoaded -= LoadPlaybackElement;
             nodeTpl.Dispose();
 

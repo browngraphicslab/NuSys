@@ -57,6 +57,8 @@ namespace NuSysApp
         public delegate void LocationChangedEventHandler(object sender, Point topLeft);
         public event LocationChangedEventHandler LocationChanged;
 
+        private RectangleRegionLibraryElementController _regionLibraryElementController;
+
 
         public ImageRegionViewModel(RectangleRegion model, RectangleRegionLibraryElementController regionLibraryElementController, RectangleWrapper rectangleWrapper) : base(model, regionLibraryElementController, null)
         {
@@ -64,6 +66,7 @@ namespace NuSysApp
             {
                 return;
             }
+            _regionLibraryElementController = regionLibraryElementController;
 
             regionLibraryElementController.SizeChanged += RegionController_SizeChanged;
             regionLibraryElementController.LocationChanged += RegionController_LocationChanged;
@@ -153,6 +156,14 @@ namespace NuSysApp
         {
             Name = text;
             RegionLibraryElementController.SetTitle(Name);
+        }
+
+        internal void Dispose()
+        {
+            _regionLibraryElementController.SizeChanged -= RegionController_SizeChanged;
+            _regionLibraryElementController.LocationChanged -= RegionController_LocationChanged;
+            _regionLibraryElementController.TitleChanged -= RegionController_TitleChanged;
+            RectangleWrapper.SizeChanged -= RectangleWrapper_SizeChanged;
         }
     }
 }

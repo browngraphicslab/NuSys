@@ -61,7 +61,6 @@ namespace NuSysApp
         }
 
         public ObservableCollection<SearchResultTemplate> PageElements { get; set; }
-        private string _searchString = string.Empty;
         private double _resultWidth;
 
         public double ResultWidth

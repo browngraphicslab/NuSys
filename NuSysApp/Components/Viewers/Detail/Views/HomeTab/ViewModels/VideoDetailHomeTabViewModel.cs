@@ -21,21 +21,12 @@ namespace NuSysApp
         public VideoDetailHomeTabViewModel(LibraryElementController controller) :  base(controller)
         {
             LibraryElementController = controller;
-            RegionViews = new ObservableCollection<VideoRegionView>();
-            LibraryElementController.Loaded += Controller_Loaded;
-            
+            RegionViews = new ObservableCollection<VideoRegionView>();            
         }
 
-        private void Controller_Loaded(object sender)
-        {
-            RegionViews.Clear();
-            SetExistingRegions();
-            //RaisePropertyChanged("RegionViews");
-        }
+
         public void VideoMediaPlayer_Loaded(object sender, RoutedEventArgs e)
         {
-            RegionViews.Clear();
-            SetExistingRegions();
         }
 
         public override void AddRegion(object sender, RegionLibraryElementController libraryElementController)

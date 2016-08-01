@@ -36,5 +36,7 @@ namespace NuSysApp
             TitleChanged?.Invoke(source,title);
         }
         public virtual async Task Init() { }
+
+        
     }
 }

@@ -44,9 +44,7 @@ namespace NuSysApp
             CompositeTransform composite = new CompositeTransform();
             this.RenderTransform = composite;
 
-            //vm.SizeChanged += ChangeSize;
             vm.LocationChanged += ChangeLocation;
-
 
             var parentWidth = vm.RectangleWrapper.GetWidth();
             var parentHeight = vm.RectangleWrapper.GetHeight();
@@ -80,16 +78,6 @@ namespace NuSysApp
 
             composite.TranslateX = topLeft.X;
             composite.TranslateY = topLeft.Y;
-
-            //If in detail view, adjust to the right to account for difference between view and actual image.
-       /*     if (vm.ContainerViewModel is ImageDetailHomeTabViewModel)
-            {
-                var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
-                var horizontalMargin = (ivm.GetViewWidth() - ivm.GetWidth())/ 2;
-                var verticalMargin = (ivm.GetViewHeight() - ivm.GetHeight()) / 2;
-                composite.TranslateX += horizontalMargin;
-                composite.TranslateY += verticalMargin;
-            }*/
         }
         /// <summary>
         /// Changes size of view according to element that contains it.
@@ -356,6 +344,14 @@ namespace NuSysApp
                
             //xMainRectangle.StrokeThickness = 3 / scaleX;
             xMainRectangleBorder.BorderThickness = new Thickness(3/scaleX, 3/scaleY, 3/scaleX, 3/scaleY);
+        }
+
+        public void Dispose(object sender, EventArgs e)
+        {
+            (sender as RectangleWrapper).Disposed -= Dispose;
+            var vm = DataContext as ImageRegionViewModel;
+            vm.LocationChanged -= ChangeLocation;
+            vm.Dispose();
         }
     }
 }

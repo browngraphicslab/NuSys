@@ -28,12 +28,12 @@
             <Border x:Name="xBorder"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid x:Name="xWrapper" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-                    <local:RectangleWrapper x:Name="xClippingWrapper" SizeChanged="xClippingWrapper_SizeChanged">
+                    <local:RectangleWrapper x:Name="xClippingWrapper" >
                         <local:RectangleWrapper.RenderTransform>
                             <CompositeTransform x:Name="WrapperTransform"/>
                         </local:RectangleWrapper.RenderTransform>
                         <local:RectangleWrapper.Content>
-                            <Image x:Name="xImg" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Center" SizeChanged="XImg_OnSizeChanged" Source="{Binding ImageSource}"/>
+                            <Image x:Name="xImg" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Center" Source="{Binding ImageSource}"/>
                         </local:RectangleWrapper.Content>
                     </local:RectangleWrapper>
 

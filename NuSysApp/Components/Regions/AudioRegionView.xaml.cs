@@ -40,18 +40,18 @@ namespace NuSysApp
         private void Bound1_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = this.DataContext as AudioRegionViewModel;
-            if (Rect.Width + e.Delta.Translation.X > 0 && vm.LeftHandleX + e.Delta.Translation.X > 0 && vm.LeftHandleX + e.Delta.Translation.X < vm.RightHandleX)
+            if (Rect.Width + e.Delta.Translation.X * Bound1Transform.ScaleX > 0 && vm.LeftHandleX + e.Delta.Translation.X * Bound1Transform.ScaleX > 0 && vm.LeftHandleX + e.Delta.Translation.X * Bound1Transform.ScaleX < vm.RightHandleX)
             {
-                vm.SetNewPoints(e.Delta.Translation.X,0);
+                vm.SetNewPoints(e.Delta.Translation.X * Bound1Transform.ScaleX, 0);
             }
         }
 
         private void Bound2_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = this.DataContext as AudioRegionViewModel;
-            if (Rect.Width + e.Delta.Translation.X > 0 && vm.RightHandleX + e.Delta.Translation.X < vm.AudioWrapper.ActualWidth)
+            if (Rect.Width + e.Delta.Translation.X * Bound2Transform.ScaleX > 0 && vm.RightHandleX + e.Delta.Translation.X * Bound2Transform.ScaleX < vm.AudioWrapper.ActualWidth)
             {
-                vm.SetNewPoints(0,e.Delta.Translation.X);
+                vm.SetNewPoints(0,e.Delta.Translation.X * Bound2Transform.ScaleX);
             }
         }
 
@@ -89,10 +89,10 @@ namespace NuSysApp
         private void Rect_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = this.DataContext as AudioRegionViewModel;
-            if (Rect.Width + e.Delta.Translation.X > 0 && vm.RightHandleX + e.Delta.Translation.X < vm.AudioWrapper.ActualWidth && vm.LeftHandleX + e.Delta.Translation.X > 0)
+            if (Rect.Width + e.Delta.Translation.X * Bound2Transform.ScaleX > 0 && vm.RightHandleX + e.Delta.Translation.X * Bound2Transform.ScaleX < vm.AudioWrapper.ActualWidth && vm.LeftHandleX + e.Delta.Translation.X * Bound2Transform.ScaleX > 0)
             {
 
-                vm.SetNewPoints(e.Delta.Translation.X, e.Delta.Translation.X);
+                vm.SetNewPoints(e.Delta.Translation.X * Bound2Transform.ScaleX, e.Delta.Translation.X * Bound2Transform.ScaleX);
             }
             e.Handled = true;
         }
@@ -132,5 +132,10 @@ namespace NuSysApp
             e.Handled = true;
         }
 
+        internal void RescaleComponents(double scaleX)
+        {
+            Bound1Transform.ScaleX = 1.0 / scaleX;
+            Bound2Transform.ScaleX = 1.0 / scaleX;
+        }
     }
 }

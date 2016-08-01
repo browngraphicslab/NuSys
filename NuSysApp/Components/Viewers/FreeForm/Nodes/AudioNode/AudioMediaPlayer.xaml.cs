@@ -278,15 +278,10 @@ namespace NuSysApp
         }
         private void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            var wrapperTransform = xAudioWrapper.RenderTransform as CompositeTransform;
-            if (wrapperTransform == null)
-            {
-                return;
-            }
-            var rect = new Rect(10+ xAudioWrapper.AudioStart * ProgressBar.ActualWidth / wrapperTransform.ScaleX, 0,this.ActualWidth / wrapperTransform.ScaleX,this.ActualHeight);
+            var rect = new Rect(0, 0,this.ActualWidth,this.ActualHeight);
             var rectangleGeometry = new RectangleGeometry();
             rectangleGeometry.Rect = rect;
-            xAudioWrapper.Clip = rectangleGeometry;
+            this.Clip = rectangleGeometry;
         }
     }
 

@@ -86,6 +86,12 @@ namespace NuSysApp
             var m = new Message();
             m["start"] = .25;
             m["end"] = .75;
+            if (LibraryElementController is AudioRegionLibraryElementController)
+            {
+                var region = LibraryElementController.LibraryElementModel as AudioRegionModel;
+                m["start"] = region.Start + (region.End - region.Start) * 0.25;
+                m["end"] = region.Start + (region.End - region.Start) * 0.75;
+            }
             return m;
         }
 
