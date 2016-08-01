@@ -99,9 +99,16 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string DELETE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
 
-            #endregion DeleteLibraryElementRequest
+        #endregion DeleteLibraryElementRequest
 
-            #region NewElementRequest
+        #region DeleteElementRequest
+        /// <summary>
+        /// the key used to send the element id key of the element (alias) to be deleted
+        /// </summary>
+        public static readonly string DELETE_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
+        #endregion DeleteElementRequest
+
+        #region NewElementRequest
         /// <summary>
         /// the key used to send the element id of the new element to be created
         /// </summary>
@@ -475,7 +482,6 @@ namespace NusysIntermediate
         /// </summary>
         public enum RequestType
         {
-            DeleteSendableRequest,
             FinalizeInkRequest,
             DuplicateNodeRequest,
             SystemRequest,
@@ -496,6 +502,7 @@ namespace NusysIntermediate
             GetEntireWorkspaceRequest,
             NewElementRequest,
             DeleteLibraryElementRequest,
+            DeleteElementRequest,
 
             /// <summary>
             /// This request will create a new content AND a default new library element for that content

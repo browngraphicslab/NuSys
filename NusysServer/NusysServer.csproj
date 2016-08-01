@@ -182,6 +182,7 @@
     <Compile Include="RequestHandlers\CreateNewContentRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateNewElementRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateNewLibraryElementRequestHandler.cs" />
+    <Compile Include="RequestHandlers\DeleteElementRequestHandler.cs" />
     <Compile Include="RequestHandlers\DeleteLibraryElementRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetContentDataModelRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetEntireWorkspaceRequestHandler.cs" />
