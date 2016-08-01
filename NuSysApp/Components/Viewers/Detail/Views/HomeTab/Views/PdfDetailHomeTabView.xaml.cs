@@ -48,11 +48,26 @@ namespace NuSysApp
             }
 
             DataContext = vm;
-
+            vm.PageLocationChanged += Vm_PageLocationChanged;
             this.Loaded += PdfDetailHomeTabView_Loaded;
 
             xClippingWrapper.Controller = vm.LibraryElementController;
             xClippingWrapper.ProcessLibraryElementController();
+
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            detailViewerView.Disposed += DetailViewerView_Disposed; 
+        }
+
+        private void DetailViewerView_Disposed(object sender, EventArgs e)
+        {
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            detailViewerView.Disposed -= DetailViewerView_Disposed;
+            Dispose(); 
+        }
+
+        private void Vm_PageLocationChanged(object sender, int pageLocation)
+        {
+            UpdateRegionViews(pageLocation);
         }
 
         private async void PdfDetailHomeTabView_Loaded(object sender, RoutedEventArgs e)
@@ -60,7 +75,7 @@ namespace NuSysApp
             var vm = DataContext as PdfDetailHomeTabViewModel;
             xClippingWrapper.Controller = vm.LibraryElementController;
             await xClippingWrapper.ProcessLibraryElementController();
-            UpdateRegionViews(vm.CurrentPageNumber);
+            //UpdateRegionViews(vm.CurrentPageNumber);
         }
 
         private void XBorderOnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -81,7 +96,7 @@ namespace NuSysApp
             if (vm == null)
                 return;
             await vm.FlipLeft();
-            UpdateRegionViews(vm.CurrentPageNumber);
+            //UpdateRegionViews(vm.CurrentPageNumber);
             //(_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
             //  nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
             //  nodeTpl.inkCanvas.ReRenderLines();
@@ -94,7 +109,7 @@ namespace NuSysApp
             if (vm == null)
                 return;
             await vm.FlipRight();
-            UpdateRegionViews(vm.CurrentPageNumber);
+            //UpdateRegionViews(vm.CurrentPageNumber);
             //(_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
             // (_inqCanvasView.DataContext as InqCanvasViewModel).Lines.Clear();
             //   nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
@@ -103,75 +118,9 @@ namespace NuSysApp
 
         private async void OnGoToSource(object sender, RoutedEventArgs e)
         {
-            var model = (PdfNodeModel)((PdfNodeViewModel)DataContext).Model;
             var libraryElementController = (DataContext as PdfDetailHomeTabViewModel)?.LibraryElementController;
             string token = libraryElementController.GetMetadata("Token")?.ToString();
             await AccessList.OpenFile(token);
-        }
-
-        protected void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen)
-                return;
-            /*
-            var compositeTransform = (CompositeTransform)xImg.RenderTransform;
-
-            var tmpTranslate = new TranslateTransform
-            {
-                X = compositeTransform.CenterX,
-                Y = compositeTransform.CenterY
-            };
-
-            var center = compositeTransform.Inverse.TransformPoint(e.Position);
-
-            var localPoint = tmpTranslate.Inverse.TransformPoint(center);
-
-            //Now scale the point in local space
-            localPoint.X *= compositeTransform.ScaleX;
-            localPoint.Y *= compositeTransform.ScaleY;
-
-            //Transform local space into world space again
-            var worldPoint = tmpTranslate.TransformPoint(localPoint);
-
-            //Take the actual scaling...
-            var distance = new Point(
-                worldPoint.X - center.X,
-                worldPoint.Y - center.Y);
-
-            //...and balance the jump of the changed scaling origin by changing the translation            
-            
-            compositeTransform.TranslateX += distance.X;
-            compositeTransform.TranslateY += distance.Y;
-
-            //Also set the scaling values themselves, especially set the new scale center...
-            compositeTransform.ScaleX *= e.Delta.Scale;
-            compositeTransform.ScaleY *= e.Delta.Scale;
-
-            compositeTransform.CenterX = center.X;
-            compositeTransform.CenterY = center.Y;
-
-            //And consider a translational shift
-
-
-           compositeTransform.TranslateX += e.Delta.Translation.X;
-           compositeTransform.TranslateY += e.Delta.Translation.Y;
-
-            var minY = 0;
-            var maxY = Math.Max(xBorder.ActualHeight - xImg.ActualHeight*compositeTransform.ScaleY, 0);
-            compositeTransform.TranslateY = Math.Max(compositeTransform.TranslateY, minY);
-
-            e.Handled = true;
-            */
-        }
-
-        private void XImg_OnSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-
-        }
-
-        private void xClippingWrapper_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-
         }
 
         public double GetPdfHeight()
@@ -335,6 +284,17 @@ namespace NuSysApp
                     regionView.Visibility = model?.PageLocation == currentPageNumber ? Visibility.Visible : Visibility.Collapsed;
                 });
             }
+        }
+
+        public void Dispose()
+        {
+            var vm = DataContext as PdfDetailHomeTabViewModel;
+            if (vm != null) // because delete library element request can remove the view model outside of this
+            {
+                vm.PageLocationChanged -= Vm_PageLocationChanged;
+            }
+
+            xClippingWrapper.Dispose();
         }
 
         #endregion addToCollection

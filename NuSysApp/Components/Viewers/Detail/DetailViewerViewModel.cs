@@ -72,10 +72,10 @@ namespace NuSysApp
             }
         }
         // Tab Pane Height is a reference to the height of the Tab pane 
-        public double TabPaneHeight { get; set; }
+        public double TabPaneWidth { get; set; }
         private double _tabHeight;
 
-        // TabHeight controls the standard height that tabs have. It is some factor of the TabPaneHeight
+        // TabHeight controls the standard height that tabs have. It is some factor of the TabPaneWidth
         public double TabHeight
         {
             get { return _tabHeight; }
@@ -92,30 +92,6 @@ namespace NuSysApp
 
         public ObservableCollection<Region> RegionCollection { set; get; }
 
-        public ObservableCollection<Region> OrderedRegionCollection
-        {
-            get
-            {
-                if (CurrentElementController.LibraryElementModel.Type == ElementType.PDF)
-                {
-                    var list = RegionCollection.ToList<Region>();
-                    var orderedList = (list.OrderBy(a => (a as PdfRegionModel).PageLocation)).ToList<Region>();
-                    var collection = new ObservableCollection<Region>();
-                    foreach (var region in orderedList)
-                    {
-                        //(region as PdfRegionModel).PageLocation += 1;
-                        collection.Add(region);
-                        
-
-                    }
-                    return collection;
-                }
-                else
-                {
-                    return new ObservableCollection<Region>();
-                }
-            }
-        }
         private DetailHomeTabViewModel _regionableRegionTabViewModel;
         private DetailHomeTabViewModel _regionableHomeTabViewModel;
 
@@ -126,9 +102,6 @@ namespace NuSysApp
 
         public delegate void TitleChangedHandler(object source, string newTitle);
         public event TitleChangedHandler TitleChanged;
-
-        public delegate void SizeChangedEventHandler(object source, double left, double width, double height);
-        public event SizeChangedEventHandler SizeChanged;
         
         public DetailViewerViewModel()
 
@@ -138,9 +111,29 @@ namespace NuSysApp
             Metadata = new ObservableCollection<StackPanel>();
             RegionCollection = new ObservableCollection<Region>();
             Tabs = new ObservableCollection<IDetailViewable>();
-            //  TabVisibility = Visibility.Collapsed;
+            SessionController.Instance.ContentController.OnElementDelete += ContentController_OnElementDelete;
+        }
 
-            SizeChanged += OnSizeChanged_InvokeTabVMSizeChanged;
+        private void ContentController_OnElementDelete(LibraryElementModel element)
+        {
+            foreach (var tab in _tabs)
+            {
+                if (tab.TabId() == element.LibraryElementId)
+                {
+                    _tabs.Remove(tab);
+                    break;
+                }
+            }
+            Tabs = _tabs;
+            if (_tabs.Count > 1)
+            {
+                TabVisibility = Visibility.Visible;
+            }
+            else
+            {
+                TabVisibility = Visibility.Collapsed;
+            }
+            TabHeight = TabPaneWidth / Tabs.Count;
         }
 
         private void OnSizeChanged_InvokeTabVMSizeChanged(object source, double left, double width, double height)
@@ -152,10 +145,10 @@ namespace NuSysApp
         public void Dispose()
         {
             CurrentDetailViewable.TitleChanged -= ControllerTitleChanged;
-            
 
+            // If this is null remove it 
+            CurrentElementController.KeywordsChanged -= KeywordsChanged;
             _nodeModel = null;
-
         }
         public async Task<bool> ShowElement(IDetailViewable viewable)
         {      
@@ -275,7 +268,7 @@ namespace NuSysApp
             {
                 TabVisibility = Visibility.Collapsed;
             }
-            TabHeight = TabPaneHeight/Tabs.Count;
+            TabHeight = TabPaneWidth/Tabs.Count;
             Tabs = _tabs;
         }
         
@@ -286,18 +279,6 @@ namespace NuSysApp
             //MakeSuggestedTagList();
         }
         
-        public void ChangeSize(object sender, double left, double width, double height)
-        {
-            //Debug.WriteLine("DetailViewerViewModel ChangeSize being called");
-            SizeChanged?.Invoke(sender, left, width, height);
-        }
-
-        public void ChangeRegionsSize(object sender, double width, double height)
-        {
-            _regionableRegionTabViewModel?.SizeChanged(sender, width, height);
-            _regionableHomeTabViewModel?.SizeChanged(sender, width, height);
-        }
-
         private void ControllerTitleChanged(object sender, string title)
         {
             Title = title;
@@ -527,8 +508,8 @@ namespace NuSysApp
             CurrentDetailViewable.SetTitle(title);
             CurrentDetailViewable.TitleChanged += ControllerTitleChanged;
 
-            Tabs.Remove(CurrentDetailViewable);
-            Tabs.Add(CurrentDetailViewable);
+            //Tabs.Remove(CurrentDetailViewable);
+            //Tabs.Add(CurrentDetailViewable);
 
             /*
             // TODO make the exploration mode related list box show up

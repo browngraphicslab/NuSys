@@ -34,7 +34,7 @@ namespace NuSysApp
     ///     xClippingWrapper.LibraryElementController = _vm.LibraryElementController;
     /// 
     /// </summary>
-    public sealed partial class RectangleWrapper : UserControl
+    public sealed partial class RectangleWrapper : UserControl, INuSysDisposable
     {
 
         /// <summary>
@@ -51,6 +51,8 @@ namespace NuSysApp
         public static readonly DependencyProperty ContentProperty =
             DependencyProperty.Register(
                 "Content", typeof(FrameworkElement), typeof(object), new PropertyMetadata(null));
+
+        public event EventHandler Disposed;
 
         private LibraryElementController _contentController;
 
@@ -211,6 +213,7 @@ namespace NuSysApp
             // for each region id create a new view and put it into the canvas
             foreach (var regionId in regionsLibraryElementIds)
             {
+                Debug.Assert(DataContext != null);
                 await AddRegionView(regionId);
             }
 
@@ -226,9 +229,7 @@ namespace NuSysApp
         /// </summary>
         public async Task AddRegionView(string regionLibraryElementId)
         {
-            await UITask.Run(async delegate {
-                // used to check if the wrapper is in an editable detailhometabviewmodel
-                var ParentDetailDC = DataContext as DetailHomeTabViewModel;
+            await UITask.Run(delegate {
 
                 // get the region from the id
                 var regionLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementId) as RectangleRegionLibraryElementController;
@@ -240,8 +241,11 @@ namespace NuSysApp
                 {
                     return;
                 }
-                // create the view and vm based on the region type
+
                 // todo video functionality
+                // used to check if the wrapper is in an editable detailhometabviewmodel
+                DetailHomeTabViewModel ParentDetailDC = null;
+                // create the view and vm based on the region type
                 FrameworkElement view = null;
                 RegionViewModel vm = null;
                 switch (regionLibraryElementController.LibraryElementModel.Type)
@@ -250,37 +254,59 @@ namespace NuSysApp
                         vm = new ImageRegionViewModel(regionLibraryElementController.LibraryElementModel as RectangleRegion,
                                 regionLibraryElementController, this);
                         view = new ImageRegionView(vm as ImageRegionViewModel);
-                        // view loaded probably not necessary
+                        Disposed += (view as ImageRegionView).Dispose;
+                        // get all the data context stuff in a view.loaded delegate, because it comes from xaml and must be loaded to be accessed in a ui thread
                         view.Loaded += delegate
                         {
+                            ParentDetailDC = DataContext as DetailHomeTabViewModel;
                             (view as ImageRegionView).RescaleComponents(WrapperTransform.ScaleX, WrapperTransform.ScaleY);
+
+                            // set editable based on the parent data context
+                            vm.Editable = false;
+                            if (ParentDetailDC != null)
+                            {
+                                vm.Editable = ParentDetailDC.Editable;
+                            }
                         };
+
+
 
                         break;
                     case ElementType.PdfRegion:
                         vm = new PdfRegionViewModel(regionLibraryElementController.LibraryElementModel as PdfRegionModel, 
                                 regionLibraryElementController as PdfRegionLibraryElementController, this);
                         view = new PDFRegionView(vm as PdfRegionViewModel);
-                        (view as PDFRegionView).RescaleComponents(WrapperTransform.ScaleX, WrapperTransform.ScaleY);
+                        Disposed += (view as PDFRegionView).Dispose;
 
-                        // check the page number of detail view parent data context and node view parent data context and set visibility
-                        var ParentNodeDC = DataContext as PdfNodeViewModel;
-                        if (ParentNodeDC != null)
+                        // get all the data context stuff in a view.loaded delegate, because it comes from xaml and must be loaded to be accessed in a ui thread
+                        view.Loaded += delegate
                         {
-                            view.Visibility = ParentNodeDC.CurrentPageNumber == (vm.Model as PdfRegionModel).PageLocation ? Visibility.Visible : Visibility.Collapsed;
-                        }
-                        else if (ParentDetailDC != null)
-                        {
-                            var PdfParentDetailDC = ParentDetailDC as PdfDetailHomeTabViewModel;
-                            view.Visibility = PdfParentDetailDC.CurrentPageNumber == (vm.Model as PdfRegionModel).PageLocation ? Visibility.Visible : Visibility.Collapsed;
-                        }
-                        else
-                        {
-                            Debug.Fail("the parent data context should always be a detail view or node view, if not the visibility should be taken care of here");
-                        }
+                            (view as PDFRegionView).RescaleComponents(WrapperTransform.ScaleX, WrapperTransform.ScaleY);
+                            // check the page number of detail view parent data context and node view parent data context and set visibility
+                            var ParentNodeDC = DataContext as PdfNodeViewModel;
+                            ParentDetailDC = DataContext as DetailHomeTabViewModel;
+                            if (ParentNodeDC != null)
+                            {
+                                view.Visibility = ParentNodeDC.CurrentPageNumber == (vm.Model as PdfRegionModel).PageLocation ? Visibility.Visible : Visibility.Collapsed;
+                            }
+                            else if (ParentDetailDC != null)
+                            {
+                                var PdfParentDetailDC = ParentDetailDC as PdfDetailHomeTabViewModel;
+                                view.Visibility = PdfParentDetailDC.CurrentPageNumber == (vm.Model as PdfRegionModel).PageLocation ? Visibility.Visible : Visibility.Collapsed;
+                            }
+                            else
+                            {
+                                Debug.Fail("the parent data context should always be a detail view or node view, if not the visibility should be taken care of here");
+                            }
 
+                            // set editable based on the parent data context
+                            vm.Editable = false;
+                            if (ParentDetailDC != null)
+                            {
+                                vm.Editable = ParentDetailDC.Editable;
+                            }
 
-
+                        };
                         break;
                     default:
                         vm = null;
@@ -288,15 +314,14 @@ namespace NuSysApp
                         break;
                 }
 
-                // set editable based on the parent data context
-                vm.Editable = false;
-                if (ParentDetailDC != null)
-                {
-                    vm.Editable = ParentDetailDC.Editable;
-                }
+                //// set editable based on the parent data context
+                //vm.Editable = false;
+                //if (ParentDetailDC != null)
+                //{
+                //    vm.Editable = ParentDetailDC.Editable;
+                //}
 
                 // add the region to thew view
-
                 xClippingCanvas.Items.Add(view);
             });
         }
@@ -338,6 +363,11 @@ namespace NuSysApp
         public ItemCollection GetRegionItems()
         {
             return xClippingCanvas.Items;
+        }
+
+        public void Dispose()
+        {
+            Disposed?.Invoke(this, EventArgs.Empty);
         }
 
         // My code is slick yo - Sahil, July 2016

@@ -77,9 +77,5 @@
 
         <ContentPresenter Grid.Column="2" x:Name="xListViewPresenter" VerticalAlignment="Stretch"></ContentPresenter>
         
-
-
-
     </Grid>
-    <!--</Grid>-->
 </UserControl>

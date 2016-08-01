@@ -54,7 +54,7 @@ namespace NuSysApp
             VideoMediaPlayer.MediaPlayer.MediaOpened += vm.VideoMediaPlayer_Loaded;
 
             _isRecording = false;
-            //vm.LinkedTimeModels.CollectionChanged += LinkedTimeBlocks_CollectionChanged;
+            
             _timeBlocks = new List<LinkedTimeBlockViewModel>();
             
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
@@ -63,15 +63,17 @@ namespace NuSysApp
             
             VideoMediaPlayer.ScrubBar.ValueChanged += vm.ScrubBarOnValueChanged;
             vm.OnRegionSeekPassing += VideoMediaPlayer.onSeekedTo;
-            //Loaded += delegate (object sender, RoutedEventArgs args)
-            //{
-            //    var sw = SessionController.Instance.SessionView.ActualWidth / 2;
-            //    var sh = SessionController.Instance.SessionView.ActualHeight / 2;
 
-            //    var ratio = playbackElement.ActualWidth > playbackElement.ActualHeight ? playbackElement.ActualWidth / sw : playbackElement.ActualHeight / sh;
-            //    playbackElement.Width = playbackElement.ActualWidth / ratio;
-            //    playbackElement.Height = playbackElement.ActualHeight / ratio;
-            //};
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            detailViewerView.Disposed += DetailViewerView_Disposed; 
+
+        }
+
+        private void DetailViewerView_Disposed(object sender, EventArgs e)
+        {
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            detailViewerView.Disposed -= DetailViewerView_Disposed;
+            Dispose();
         }
 
         private async void MediaPlayer_MediaOpened(object sender, RoutedEventArgs e)
@@ -87,6 +89,7 @@ namespace NuSysApp
 
         public void Dispose()
         {
+            StopVideo();
         }
 
         private void ControllerOnDisposed(object source, object args)
