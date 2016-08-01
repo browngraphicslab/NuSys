@@ -136,7 +136,14 @@ namespace NusysIntermediate
 
         public bool GetBool(string key, bool defaultValue = false)
         {
-            return ContainsKey(key) ? bool.Parse(Get(key)) : defaultValue;
+            try
+            {
+                return ContainsKey(key) ? bool.Parse(Get(key)) : defaultValue;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
         }
 
         /// <summary>

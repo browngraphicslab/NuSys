@@ -37,7 +37,7 @@ namespace NuSysApp
         //public static string Password { get; private set; }
         public static string ServerSessionID { get; private set; }
 
-        public static bool TEST_LOCAL_BOOLEAN = false;
+        public static bool TEST_LOCAL_BOOLEAN = true;
 
         public static bool IS_HUB = false;
 
@@ -350,12 +350,12 @@ namespace NuSysApp
 
                         await Task.Run(async delegate
                         {
-                            var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
-                            foreach (var kvp in dictionaries)
+                            var models = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
+                            foreach (var model in models)
                             {
                                 try
                                 {
-                                    SessionController.Instance.ContentController.CreateAndAddModelFromMessage(new Message(kvp.Value));
+                                    SessionController.Instance.ContentController.Add(model);
                                 }
                                 catch (NullReferenceException e)
                                 {

@@ -16,19 +16,6 @@ namespace NusysIntermediate
 
             var id = message.GetString(NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY);
 
-            //TODO add back in this debug assertion somehow.  although we can't access the sessioncontroller from here...
-            //Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementModel(id) == null);
-
-            var title = message.GetString(NusysConstants.LIBRARY_ELEMENT_TITLE_KEY);
-            Dictionary<string, MetadataEntry> metadata = new Dictionary<string, MetadataEntry>();
-            foreach (
-                var kvp in
-                    message.GetDict<string, MetadataEntry>(NusysConstants.LIBRARY_ELEMENT_METADATA_KEY) ?? new Dictionary<string, MetadataEntry>())
-            {
-                metadata.Add(kvp.Key, new MetadataEntry(kvp.Value.Key, new List<string>(new HashSet<string>(kvp.Value.Values)), kvp.Value.Mutability));
-            }
-            var favorited = message.GetBool(NusysConstants.LIBRARY_ELEMENT_FAVORITED_KEY);
-
             Debug.Assert(id != null);
             switch (type)
             {
@@ -45,18 +32,30 @@ namespace NusysIntermediate
                     model = new AudioRegionModel(id);
                     break;
                 case NusysConstants.ElementType.Collection:
-                    model = new CollectionLibraryElementModel(id, metadata, title, favorited);
+                    model = new CollectionLibraryElementModel(id);
                     break;
                 case NusysConstants.ElementType.Link:
-                    Debug.Assert(message.ContainsKey("id1") && message.ContainsKey("id2"));
-                    var id1 = message.Get("id1");
-                    var id2 = message.Get("id2");
+                    Debug.Assert(message.ContainsKey(NusysConstants.LINK_LIBRARY_ELEMENT_IN_ID_KEY) && message.ContainsKey(NusysConstants.LINK_LIBRARY_ELEMENT_OUT_ID_KEY));
+                    var id1 = message.Get(NusysConstants.LINK_LIBRARY_ELEMENT_IN_ID_KEY);
+                    var id2 = message.Get(NusysConstants.LINK_LIBRARY_ELEMENT_OUT_ID_KEY);
 
                     model = new LinkLibraryElementModel(id1, id2, id);
                     break;
                 default:
-                    model = new LibraryElementModel(id, type, metadata, title, favorited);
+                    model = new LibraryElementModel(id, type);
                     break;
+            }
+            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_TITLE_KEY))
+            {
+                model.Title = message.GetString(NusysConstants.LIBRARY_ELEMENT_TITLE_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY))
+            {
+                model.ContentDataModelId = message.GetString(NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_FAVORITED_KEY))
+            {
+                model.Favorited = message.GetBool(NusysConstants.LIBRARY_ELEMENT_FAVORITED_KEY);
             }
             return model;
         }

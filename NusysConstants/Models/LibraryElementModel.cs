@@ -38,48 +38,12 @@ namespace NusysIntermediate
         public string LastEditedTimestamp { get; set; }
 
         public string ServerUrl { get; set; } 
-        public Dictionary<string, MetadataEntry> FullMetadata
-        {
-            get
-            {
-                var metadata = new Dictionary<string, MetadataEntry>(Metadata);
-                if (!metadata.ContainsKey("Timestamp"))
-                {
-                    metadata.Add("Timestamp", new MetadataEntry("Timestamp", new List<string> { Timestamp }, MetadataMutability.IMMUTABLE));
-                }
-                if (!metadata.ContainsKey("Creator"))
-                {
-                    metadata.Add("Creator", new MetadataEntry("Creator", new List<string> { Creator }, MetadataMutability.IMMUTABLE));
-                }
-                if (!metadata.ContainsKey("Title"))
-                {
-                    metadata.Add("Title", new MetadataEntry("Title", new List<string> { Title }, MetadataMutability.IMMUTABLE));
-                }
-                if (!metadata.ContainsKey("Type"))
-                {
-                    metadata.Add("Type", new MetadataEntry("Type", new List<string> { Type.ToString() }, MetadataMutability.IMMUTABLE));
-                }
-                if (!metadata.ContainsKey("Keywords"))
-                {
-                    var keywords = Keywords.Select(key => key.Text);
-                    metadata.Add("Keywords", new MetadataEntry("Keywords", new List<string>(keywords), MetadataMutability.IMMUTABLE));
-                }
-                return metadata;
-            }
-        }
-        public LibraryElementModel(string libraryElementId, NusysConstants.ElementType elementType, Dictionary<string, MetadataEntry> metadata = null, string contentName = null, bool favorited = false)
-        {
-            ContentDataModelId = libraryElementId;
-            LibraryElementId = libraryElementId;
-            Title = contentName;
-            Type = elementType;
-            Favorited = favorited;
-            Keywords = new HashSet<Keyword>();
-            Metadata = new ConcurrentDictionary<string, MetadataEntry>(metadata ?? new Dictionary<string, MetadataEntry>());
-        }
-        //FOR PDF DOWNLOADING  --HACKY AF
-        //public static List<string> PDFStrings = new List<string>();
 
+        public LibraryElementModel(string libraryElementId, NusysConstants.ElementType elementType)
+        {
+            LibraryElementId = libraryElementId;
+            Type = elementType;
+        }
         protected virtual void OnSessionControllerEnterNewCollection()
         {
         }

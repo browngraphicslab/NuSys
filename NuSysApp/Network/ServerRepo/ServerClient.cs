@@ -107,7 +107,7 @@ namespace NuSysApp
                     };
                     var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(read, settings);
                     string id = null;
-                    if (dict.ContainsKey("server_indication_from_server"))
+                    if (dict.ContainsKey("server_indication_from_server") || dict.ContainsKey("notification_type"))
                     {
                         if (dict.ContainsKey("notification_type"))
                         {
@@ -165,7 +165,13 @@ namespace NuSysApp
                     }
                     else
                     {
-                        if (dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING))
+                        if (dict.ContainsKey(NusysConstants.REQUEST_ERROR_MESSAGE_KEY))
+                        {
+                            Debug.WriteLine("  ******************* BEGIN SERVER ERROR MESSAGE *******************  ");
+                            Debug.WriteLine(dict[NusysConstants.REQUEST_ERROR_MESSAGE_KEY].ToString());
+                            Debug.WriteLine("  ******************* END SERVER ERROR MESSAGE *******************  ");
+                        }
+                        else if (dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING))
                         {
                             await ReturnRequestAsync(new Message(dict));
                         }

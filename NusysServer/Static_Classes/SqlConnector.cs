@@ -40,13 +40,7 @@ namespace NusysServer
         {
             _db = new SqlConnection(SQLSTRING);
             _db.Open(); //open database
-            var m = new Message();
-            ResetTables(true);
-            SetUpTables();
-            m[NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY] = "test.jpg";
-            m[NusysConstants.CONTENT_TABLE_TYPE_KEY] = NusysConstants.ContentType.Image;
-            m[NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY] = "test_id";
-            var s = AddContent(m);
+            ResetTables();
         }
 
         /// <summary>
@@ -303,7 +297,21 @@ namespace NusysServer
             var returnArgs = GetSelectCommand(queryArgs);
 
             //execute query command
-            using (var reader = returnArgs.Command.ExecuteReader())
+            var executeMessages = ExecuteSelectQueryAsMessages(returnArgs);
+            var dataModel = Constants.ParseContentDataModelFromDatabaseMessage(executeMessages.FirstOrDefault());
+            return dataModel;
+            throw new Exception("the requested contentDataModel wasn't found on the database");
+        }
+
+        /// <summary>
+        /// executes a select query and returns the selected objects as messages
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public IEnumerable<Message> ExecuteSelectQueryAsMessages(SelectCommandReturnArgs args)
+        {
+            var messages = new List<Message>();
+            using (var reader = args.Command.ExecuteReader())
             {
                 if (reader.HasRows)
                 {
@@ -311,17 +319,16 @@ namespace NusysServer
                     {
                         var m = new Message();
                         var i = 0;
-                        foreach (var columnName in returnArgs.Columns)
+                        foreach (var columnName in args.Columns)
                         {
                             m[columnName] = reader[i];
                             i++;
                         }
-                        var dataModel = Constants.ParseContentDataModelFromDatabaseMessage(m);
-                        return dataModel;
+                        messages.Add(m);
                     }
                 }
             }
-            throw new Exception("the requested contentDataModel wasn't found on the database");
+            return messages;
         }
 
         /// <summary>
@@ -333,13 +340,15 @@ namespace NusysServer
         /// <param name="tableType"></param>
         /// <param name="selectionParameterMessage"></param>
         /// <returns></returns>
-        private SelectCommandReturnArgs GetSelectCommand(SqlSelectQueryArgs queryArgs)
+        public SelectCommandReturnArgs GetSelectCommand(SqlSelectQueryArgs queryArgs)
         {
-            var cleanedMessage = Constants.GetCleanedMessageForDatabase(queryArgs.SelectProperties, queryArgs.TableType);
+            var cleanedMessage = Constants.GetCleanedMessageForDatabase(queryArgs.SelectProperties ?? new Message(), queryArgs.TableType);
             var cleanedColumnsToGet = new List<string>(queryArgs.ColumnsToGet.Intersect(Constants.GetAcceptedKeys(queryArgs.TableType)));
-            var sqlStatement = "SELECT "+String.Join(",",cleanedColumnsToGet)+" FROM " + GetTableName(queryArgs.TableType) + " WHERE ";
+            var sqlStatement = "SELECT " + String.Join(",", cleanedColumnsToGet) + " FROM " + GetTableName(queryArgs.TableType);
+
             if (cleanedMessage.Any())
             {
+                sqlStatement += " WHERE ";
                 var first = cleanedMessage.First();
                 sqlStatement += first.Key + "='" + first.Value + "' ";
                 cleanedMessage.Remove(first.Key);
@@ -361,6 +370,10 @@ namespace NusysServer
         private SqlCommand GetInsertCommand (Constants.SQLTableType tableType, Message columnValueMessage)
         {
             var cleanedMessage = Constants.GetCleanedMessageForDatabase(columnValueMessage,tableType);
+            if (!cleanedMessage.Any())
+            {
+                throw new Exception("didn't find any valid keys in requested sql insert command");
+            }
             var sqlStatement = "INSERT INTO " + GetTableName(tableType) + " ";
             var columnNames = "(";
             var values = "(";
@@ -413,36 +426,6 @@ namespace NusysServer
             }
             deleteStringCmd = deleteStringCmd + ";";
             return MakeCommand(deleteStringCmd);
-        }
-
-        /// <summary>
-        /// class for when you make a SQL select command.  This class should be returned.
-        /// The columns will tell you exactly which columns and in what order they have been queried for on the database.
-        /// The command itself is the select command to execute
-        /// </summary>
-        private class SelectCommandReturnArgs
-        {
-            /// <summary>
-            /// the columns that the command actually queries from the database
-            /// </summary>
-            public IEnumerable<string> Columns { get; private set; }
-
-            /// <summary>
-            /// the command to execute to actually query the database
-            /// </summary>
-            public SqlCommand Command { get; private set; }
-
-
-            /// <summary>
-            /// simple constructor that takes in the command and the columns
-            /// </summary>
-            /// <param name="command"></param>
-            /// <param name="columns"></param>
-            public SelectCommandReturnArgs(SqlCommand command, IEnumerable<string> columns)
-            {
-                Columns = columns;
-                Command = command;
-            }
         }
     }
 

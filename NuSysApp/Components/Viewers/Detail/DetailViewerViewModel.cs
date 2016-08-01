@@ -427,7 +427,7 @@ namespace NuSysApp
                     suggestedTags.AddRange(metaDataDict["system_suggested_dates"].Values);
                 }
 
-                foreach (var kvp in CurrentElementController.LibraryElementModel.FullMetadata ?? new Dictionary<string, MetadataEntry>())
+                foreach (var kvp in CurrentElementController.FullMetadata ?? new Dictionary<string, MetadataEntry>())
                 {
                     suggestedTags.AddRange(new HashSet<string>(kvp.Value.Values));
                 }
@@ -445,7 +445,7 @@ namespace NuSysApp
                         continue;
                     }
                     suggestedTags.AddRange(opposite.LibraryElementModel.Keywords.Select(key => key.Text));
-                    foreach (var kvp in opposite.LibraryElementModel.FullMetadata ?? new Dictionary<string, MetadataEntry>())
+                    foreach (var kvp in opposite.FullMetadata ?? new Dictionary<string, MetadataEntry>())
                     {
                         if (kvp.Key != "system_suggested_dates")
                         {

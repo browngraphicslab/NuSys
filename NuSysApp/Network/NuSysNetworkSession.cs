@@ -472,9 +472,12 @@ namespace NuSysApp
             }
             return path;
         }
-        public async Task<Dictionary<string, Dictionary<string, object>>> GetAllLibraryElements()
+        public async Task<IEnumerable<LibraryElementModel>> GetAllLibraryElements()
         {
-            return await _serverClient.GetRepo();
+            var request = new GetAllLibraryElementsRequest();
+            await ExecuteRequestAsync(request);
+            var libraryElementModels = request.GetReturnedLibraryElementModels();
+            return libraryElementModels;
         }
 
         /// <summary>

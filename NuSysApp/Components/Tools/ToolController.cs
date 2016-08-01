@@ -264,7 +264,7 @@ namespace NuSysApp
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryId);
             if (controller != null)
             {
-                var metadata = (controller?.LibraryElementModel?.FullMetadata?.ToDictionary(k=>k.Key,v=>v.Value?.Values ?? new List<string>()) ?? new Dictionary<string, List<string>>());
+                var metadata = (controller?.FullMetadata?.ToDictionary(k=>k.Key,v=>v.Value?.Values ?? new List<string>()) ?? new Dictionary<string, List<string>>());
 
                 var element = controller.LibraryElementModel;
                 Debug.Assert(element != null);

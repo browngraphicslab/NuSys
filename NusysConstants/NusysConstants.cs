@@ -99,18 +99,27 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string DELETE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
 
-            #endregion DeleteLibraryElementRequest
+        #endregion DeleteLibraryElementRequest
+
+            #region GetAllLibraryElementsRequest
+
+        /// <summary>
+        /// The key that represents the returned list of libraryElementModels serialzed as json strings.
+        /// </summary>
+        public static readonly string GET_ALL_LIBRARY_ELEMENTS_REQUEST_RETURNED_LIBRARY_ELEMENT_MODELS_KEY = "returned_library_element_models";
+
+        #endregion GetAllLibraryElementsRequst
 
         #endregion RequestKeys
 
         #region SQLColumnNames
 
-            #region alias
+        #region alias
 
-            /// <summary>
-            /// 32 character string, aka an ID.  
-            /// </summary>
-            public static readonly string ALIAS_ID_KEY = "id";
+        /// <summary>
+        /// 32 character string, aka an ID.  
+        /// </summary>
+        public static readonly string ALIAS_ID_KEY = "id";
 
             /// <summary>
             /// 32 character string, aka an ID. 
@@ -339,7 +348,8 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly HashSet<string> ILLEGAL_PROPERTIES_TABLE_KEY_NAMES = new HashSet<string>()
             {
-                
+                RETURN_AWAITABLE_REQUEST_ID_STRING,
+                REQUEST_TYPE_STRING_KEY
             };
 
             #endregion propertiesTable
@@ -408,16 +418,30 @@ namespace NusysIntermediate
 
             #region LibraryElementModel
 
-        /// <summary>
-        /// This key is used to hold the metadata for library element models when represented in message form.
-        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-        /// </summary>
-        public static readonly string LIBRARY_ELEMENT_METADATA_KEY = "library_element_metadata";
+            /// <summary>
+            /// This key is used to hold the metadata for library element models when represented in message form.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// </summary>
+            public static readonly string LIBRARY_ELEMENT_METADATA_KEY = "library_element_metadata";
+
+            #region LinkLibraryElementModel
+
+            /// <summary>
+            /// The key that will hold the LibraryElementId for the IN libary element
+            /// </summary>
+            public static readonly string LINK_LIBRARY_ELEMENT_IN_ID_KEY = "link_in_id";
+
+            /// <summary>
+            /// The key that will hold the LibraryElementId for the OUT libary element
+            /// </summary>
+            public static readonly string LINK_LIBRARY_ELEMENT_OUT_ID_KEY = "link_out_id";
+
+            #endregion LinkLibraryElementModel
 
         #endregion LibraryElementModel
 
         #endregion UnPackingModelKeys
-        
+
         #region Enums
         /// <summary>
         /// The base types for every content.  ElementTypes can have the same content Types.
@@ -463,7 +487,12 @@ namespace NusysIntermediate
             /// This request will create a new content AND a default new library element for that content
             /// Therefore this request should be called when someone uploads a new content to the library
             /// </summary>
-            CreateNewContentRequest
+            CreateNewContentRequest,
+            /// <summary>
+            /// this request will get you all of the library elements that exist.  
+            /// However, no contents will be loaded with this request
+            /// </summary>
+            GetAllLibraryElementsRequest
         }
 
         /// <summary>

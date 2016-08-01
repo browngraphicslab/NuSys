@@ -10,9 +10,8 @@ namespace NusysIntermediate
     public class CollectionLibraryElementModel : LibraryElementModel
     {
         public HashSet<string> Children { get; private set; }
-        public CollectionLibraryElementModel(string id, Dictionary<String, MetadataEntry> metadata = null, string contentName = null, bool favorited = false) : base(id, NusysConstants.ElementType.Collection, metadata, contentName)
+        public CollectionLibraryElementModel(string id, Dictionary<String, MetadataEntry> metadata = null) : base(id, NusysConstants.ElementType.Collection)
         {
-            this.Favorited = favorited;
             Children = new HashSet<string>();
         }
 

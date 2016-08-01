@@ -99,6 +99,36 @@ namespace NuSysApp
         
         public bool IsLoaded { get; private set; }
 
+        public Dictionary<string, MetadataEntry> FullMetadata
+        {
+            get
+            {
+                var metadata = new Dictionary<string, MetadataEntry>(LibraryElementModel.Metadata);
+                if (!metadata.ContainsKey("Timestamp"))
+                {
+                    metadata.Add("Timestamp", new MetadataEntry("Timestamp", new List<string> { LibraryElementModel.Timestamp }, MetadataMutability.IMMUTABLE));
+                }
+                if (!metadata.ContainsKey("Creator"))
+                {
+                    metadata.Add("Creator", new MetadataEntry("Creator", new List<string> { LibraryElementModel.Creator }, MetadataMutability.IMMUTABLE));
+                }
+                if (!metadata.ContainsKey("Title"))
+                {
+                    metadata.Add("Title", new MetadataEntry("Title", new List<string> { Title }, MetadataMutability.IMMUTABLE));
+                }
+                if (!metadata.ContainsKey("Type"))
+                {
+                    metadata.Add("Type", new MetadataEntry("Type", new List<string> { LibraryElementModel.Type.ToString() }, MetadataMutability.IMMUTABLE));
+                }
+                if (!metadata.ContainsKey("Keywords"))
+                {
+                    var keywords = LibraryElementModel.Keywords.Select(key => key.Text);
+                    metadata.Add("Keywords", new MetadataEntry("Keywords", new List<string>(keywords), MetadataMutability.IMMUTABLE));
+                }
+                return metadata;
+            }
+        }
+
         /// <summary>
         /// Constuctor just takes in the library element model it will be libraryElementController
         /// </summary>
@@ -254,7 +284,7 @@ namespace NuSysApp
             // Updates the metadata entry
             var newEntry = new MetadataEntry(key, values, original.Mutability);
             _libraryElementModel.Metadata.TryUpdate(original.Key, newEntry,newEntry);
-            ChangeMetadata(LibraryElementModel.FullMetadata);
+            ChangeMetadata(FullMetadata);
             return true;
         }
 
@@ -264,7 +294,7 @@ namespace NuSysApp
         /// </summary>
         public List<string> GetMetadata(string key)
         {
-            var full = LibraryElementModel.FullMetadata;
+            var full = FullMetadata;
             if (string.IsNullOrEmpty(key) || !full.ContainsKey(key) || string.IsNullOrWhiteSpace(key))
             {
                 return null;
@@ -525,7 +555,7 @@ namespace NuSysApp
 
         public Dictionary<string, MetadataEntry> GetMetadata()
         {
-            return _libraryElementModel.FullMetadata;
+            return FullMetadata;
         }
         public Uri GetSource()
         {
