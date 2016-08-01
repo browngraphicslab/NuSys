@@ -99,9 +99,9 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string DELETE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
 
-        #endregion DeleteLibraryElementRequest
+            #endregion DeleteLibraryElementRequest
 
-        #region NewElementRequest
+            #region NewElementRequest
         /// <summary>
         /// the key used to send the element id of the new element to be created
         /// </summary>
@@ -142,7 +142,7 @@ namespace NusysIntermediate
 
         #region SQLColumnNames
 
-        #region alias
+            #region alias
 
         /// <summary>
         /// 32 character string, aka an ID.  
@@ -487,7 +487,6 @@ namespace NusysIntermediate
             ChatDialogRequest,
             SubscribeToCollectionRequest,
             UnsubscribeFromCollectionRequest,
-            DeleteLibraryElementRequest,
             AddInkRequest,
             RemoveInkRequest,
             ChatRequest,
@@ -496,6 +495,8 @@ namespace NusysIntermediate
             CreateNewLibrayElementRequest,
             GetEntireWorkspaceRequest,
             NewElementRequest,
+            DeleteLibraryElementRequest,
+
             /// <summary>
             /// This request will create a new content AND a default new library element for that content
             /// Therefore this request should be called when someone uploads a new content to the library
