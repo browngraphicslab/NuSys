@@ -59,6 +59,7 @@ namespace NuSysApp
             if (e.Equals(LinkDirectionEnum.Mono1))
             {
                 image.Source = new BitmapImage(new Uri("ms-appx:///Assets/mono2.png"));
+                arrow.Visibility = Visibility.Visible;
             }
             else if (e.Equals(LinkDirectionEnum.Mono2))
             {
@@ -67,6 +68,7 @@ namespace NuSysApp
             else
             {
                 image.Source = new BitmapImage(new Uri("ms-appx:///Assets/mono1.png"));
+                arrow.Visibility = Visibility.Collapsed;
             }
         }
 

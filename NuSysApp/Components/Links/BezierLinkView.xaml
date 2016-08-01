@@ -79,10 +79,12 @@
         <StackPanel x:Name="TitleContainer" Orientation="Vertical">
             <Grid>
                 <Rectangle x:Name="Rect" Fill="LightGray" Width="260"  HorizontalAlignment="Left"/>
-                <StackPanel Orientation="Horizontal" IsHitTestVisible="{Binding IsSelected}" >
-                    <TextBox x:Name ="Title" HorizontalAlignment="Stretch" Height="32" VerticalAlignment="Top" Text="{Binding Title}" TextAlignment="Center" GotFocus="Title_GotFocus" LostFocus="Title_LostFocus"/>
-                    <Button x:Name="LinkDirectionButton" Padding ="2" Click="LinkDirectionButton_OnClick" Style="{StaticResource CircleButton}" Background="{StaticResource color4}" Width="32" Height="32">
-                        <Image x:Name="image" Source="ms-appx:///Assets/mono1.png" Width="25" Height="25" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal" IsHitTestVisible="{Binding IsSelected}" >
+                        <TextBox x:Name ="Title" HorizontalAlignment="Stretch" Height="32" VerticalAlignment="Top" Text="{Binding Title}" TextAlignment="Center" GotFocus="Title_GotFocus" LostFocus="Title_LostFocus"/>
+                    </StackPanel>
+                    <Button x:Name="LinkDirectionButton" Padding ="0" Click="LinkDirectionButton_OnClick" Style="{StaticResource CircleButton}" Background="{StaticResource color4}" Width="32" Height="32">
+                        <Image x:Name="image" Source="ms-appx:///Assets/mono1.png" Width="32" Height="32" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
                     </Button>
                 </StackPanel>
             </Grid>
