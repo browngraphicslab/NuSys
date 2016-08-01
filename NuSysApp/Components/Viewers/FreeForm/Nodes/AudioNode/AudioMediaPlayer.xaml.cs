@@ -256,8 +256,6 @@ namespace NuSysApp
         {
             MediaElement.Stop();
         }
-
-<<<<<<< HEAD
         private void MediaElement_MarkerReached(object sender, TimelineMarkerRoutedEventArgs e)
         {
             if (e.Marker.Time == StartMarker.Time)
@@ -271,7 +269,8 @@ namespace NuSysApp
                 Audio_OnJump(StartMarker.Time);
 
             }
-=======
+
+        }
         private void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             var wrapperTransform = xAudioWrapper.RenderTransform as CompositeTransform;
@@ -283,7 +282,6 @@ namespace NuSysApp
             var rectangleGeometry = new RectangleGeometry();
             rectangleGeometry.Rect = rect;
             xAudioWrapper.Clip = rectangleGeometry;
->>>>>>> ab62f2193c5bdbd03f26283b8ff60597071a6132
         }
     }
 
