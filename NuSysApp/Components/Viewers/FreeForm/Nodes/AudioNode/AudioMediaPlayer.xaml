@@ -11,7 +11,7 @@
     d:DesignWidth="400">
     
 
-    <Grid x:Name ="Grid" Width="{Binding Width}">
+    <Grid x:Name ="Grid" Width="{Binding Width}" SizeChanged="Grid_SizeChanged">
         <Grid.Resources>
             <nuSysApp:PositionToStringConverter x:Key="PositionToStringConverter"/>
         </Grid.Resources>
