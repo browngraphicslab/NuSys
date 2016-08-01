@@ -101,6 +101,8 @@ namespace NuSysApp
             var converter = new PositionToStringConverter();
             var timeSpan = new TimeSpan(0,0,0,0, (int) (totalDuration * xAudioWrapper.AudioEnd));
             xRightTimeStampTextBlock.Text = (string)converter.Convert(timeSpan, null, null, null); // this looks weird cause its a xaml converter 
+
+
         }
 
         private void ProgressBar_OnTapped(object sender, TappedRoutedEventArgs e)

@@ -88,6 +88,9 @@ namespace NuSysApp
                 var regionController = Controller as AudioRegionLibraryElementController;
                 AudioStart = regionController.AudioRegionModel.Start;
                 AudioEnd = regionController.AudioRegionModel.End;
+
+
+
             }
             else
             {
@@ -114,6 +117,11 @@ namespace NuSysApp
             var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(Controller.LibraryElementModel.ContentDataModelId);
             contentDataModel.OnRegionAdded += AddRegionView;
             contentDataModel.OnRegionRemoved += RemoveRegionView;
+
+            var compositeTransform = new CompositeTransform();
+            compositeTransform.ScaleX = 1 / (AudioEnd - AudioStart);
+            compositeTransform.CenterX = this.ActualWidth * (AudioStart + (AudioEnd - AudioStart) / 2.0);
+            RenderTransform = compositeTransform;
         }
 
         /// <summary>
@@ -182,6 +190,15 @@ namespace NuSysApp
 
         private void xClippingGrid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
+
+            if (AudioEnd != 0 || AudioStart != 0)
+            {
+                var compositeTransform = new CompositeTransform();
+                compositeTransform.ScaleX = 1 / (AudioEnd - AudioStart);
+                compositeTransform.CenterX = this.ActualWidth * (AudioStart + (AudioEnd - AudioStart) / 2.0);
+                RenderTransform = compositeTransform;
+            }
+
             //// if the controller hasn't been set yet don't try to resize
             //if (Controller == null)
             //{
