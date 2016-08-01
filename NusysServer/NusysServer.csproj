@@ -180,8 +180,11 @@
     <Compile Include="Misc\SqlSelectQueryArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestHandlers\CreateNewContentRequestHandler.cs" />
+    <Compile Include="RequestHandlers\CreateNewElementRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateNewLibraryElementRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetAllLibraryElementsRequestHandler.cs" />
+    <Compile Include="RequestHandlers\DeleteElementRequestHandler.cs" />
+    <Compile Include="RequestHandlers\DeleteLibraryElementRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetContentDataModelRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetEntireWorkspaceRequestHandler.cs" />
     <Compile Include="RequestHandlers\RequestHandler.cs" />

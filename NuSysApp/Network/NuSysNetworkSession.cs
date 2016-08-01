@@ -261,10 +261,10 @@ namespace NuSysApp
             }
             switch (requestType)
             {
-                case NusysConstants.RequestType.DeleteSendableRequest:
+                case NusysConstants.RequestType.DeleteElementRequest:
                     request = new DeleteSendableRequest(message);
                     break;
-                case NusysConstants.RequestType.NewNodeRequest:
+                case NusysConstants.RequestType.NewElementRequest:
                     request = new NewElementRequest(message);
                     break;
                 case NusysConstants.RequestType.NewLinkRequest:

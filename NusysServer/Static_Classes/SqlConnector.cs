@@ -226,11 +226,24 @@ namespace NusysServer
                 return false;
             }
 
-            //makes sure that the message used to get the insert sql command only contains keys that exist in the 
-            //content sql table. This is to make sure that there are no errors when executing the command.
-            var safeInsertMessage = Constants.GetCleanedMessageForDatabase(message, Constants.SQLTableType.Content);
+            var cmd = GetInsertCommand(Constants.SQLTableType.Content, message);
+            var successInt = cmd.ExecuteNonQuery();
+            return successInt > 0;
+        }
 
-            var cmd = GetInsertCommand(Constants.SQLTableType.Content, safeInsertMessage);
+        /// <summary>
+        /// To add an alias to the database.  Returns true if successful, false otherwise
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public bool AddAlias(Message message)
+        {
+            if (!message.ContainsKey(NusysConstants.ALIAS_ID_KEY))
+            {
+                return false;
+            }
+
+            var cmd = GetInsertCommand(Constants.SQLTableType.Alias, message);
             var successInt = cmd.ExecuteNonQuery();
             return successInt > 0;
         }
@@ -246,11 +259,26 @@ namespace NusysServer
             {
                 return false;
             }
-            var safeInsertMessage = new Message();
-            safeInsertMessage[NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY] = message[NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY];
-            var cmd = GetDeleteCommand(Constants.SQLTableType.LibrayElement, safeInsertMessage, Constants.Operator.And);
+            var cmd = GetDeleteCommand(Constants.SQLTableType.LibrayElement, message, Constants.Operator.And);
             var successInt = cmd.ExecuteNonQuery();
             return successInt > 0;
+        }
+
+        /// <summary>
+        /// To remove a single alias from the server, the passed in message should contain the ALIAS_ID_KEY.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public bool DeleteAlias(Message message)
+        {
+            if (!message.ContainsKey(NusysConstants.ALIAS_ID_KEY))
+            {
+                return false;
+            }
+            var cmd = GetDeleteCommand(Constants.SQLTableType.Alias, message, Constants.Operator.And);
+            var successInt = cmd.ExecuteNonQuery();
+            return successInt > 0;
+
         }
 
         public IEnumerable<ElementModel> GetAliasesOfCollection(string collectionLibraryId)

@@ -13,25 +13,74 @@ namespace NusysServer
     {
         public static readonly string SERVER_SESSION_ID_STRING = "server_session_id";
         public static readonly string VALID_CREDENTIALS_BOOLEAN_STRING = "valid";
+        private static readonly string user = "leandro";
 
-        public static readonly string WWW_ROOT = Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/")
-            ? "C:/Users/graphics_lab/Documents/NuRepo_Test/"
-            : "D:/home/site/wwwroot/";
+        public static string WWW_ROOT {
+            get
+            {
+                switch (user)
+                {
+                    case "leandro":
+                        return Directory.Exists("C:/Users/Leandro Bengzon/Documents/NuSys Server/") ? "C:/Users/Leandro Bengzon/Documents/NuSys Server/" : "D:/home/site/wwwroot/";
+                    case "trent":
+                        return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "C:/Users/graphics_lab/Documents/NuRepo_Test/" : "D:/home/site/wwwroot/";
+                    default:
+                        return "";
+                }
+            }
+        }
+        
+        //public static readonly string WWW_ROOT = Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/")
+        //    ? "C:/Users/graphics_lab/Documents/NuRepo_Test/"
+        //    : "D:/home/site/wwwroot/";
+
+
+        public static string FILE_FOLDER
+        {
+            get
+            {
+                switch (user)
+                {
+                    case "leandro":
+                        return Directory.Exists("C:/Users/Leandro Bengzon/Documents/NuSys Server/") ? "C:/Users/Leandro Bengzon/Documents/NuSys Server/" : "D:/home/site/wwwroot/files/";
+                    case "trent":
+                        return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "C:/Users/graphics_lab/Documents/NuRepo_Test/" : "D:/home/site/wwwroot/files/";
+                    default:
+                        return "";
+                }
+            }
+        }
 
         /// <summary>
         /// the folder on the server where all the content files will be saved.  
         /// Should only be storing .txt and .pdf files as of 7/31/16
         /// </summary>
-        public static readonly string FILE_FOLDER = Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/")
-            ? "C:/Users/graphics_lab/Documents/NuRepo_Test/"
-            : "D:/home/site/wwwroot/files/";
+        //public static readonly string FILE_FOLDER = Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/")
+        //    ? "C:/Users/graphics_lab/Documents/NuRepo_Test/"
+        //    : "D:/home/site/wwwroot/files/";
+
+
+        public static string SERVER_ADDRESS {
+            get
+            {
+                switch (user)
+                {
+                    case "leandro":
+                        return Directory.Exists("C:/Users/Leandro Bengzon/Documents/NuSys Server/") ? "localhost:2685" : "http://nusysrepo.azurewebsites.net/";
+                    case "trent":
+                        return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "localhost:2685" : "http://nusysrepo.azurewebsites.net/";
+                    default:
+                        return "";
+                }
+            }
+        }
 
         /// <summary>
         /// the address of the server so files can be stored in the database
         /// </summary>
-        public static readonly string SERVER_ADDRESS = Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/")
-            ? "localhost:2685"
-            : "http://nusysrepo.azurewebsites.net/";
+        //public static readonly string SERVER_ADDRESS = Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/")
+        //    ? "localhost:2685"
+        //    : "http://nusysrepo.azurewebsites.net/";
 
         /// <summary>
         /// the file extension for saving pdf data files

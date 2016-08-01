@@ -10,7 +10,7 @@ namespace NuSysApp
     public class DeleteSendableRequest : Request
     {
         public string Id;
-        public DeleteSendableRequest(string id) : base(NusysConstants.RequestType.DeleteSendableRequest)//maybe make an abstract delete sendable class and have this extend that
+        public DeleteSendableRequest(string id) : base(NusysConstants.RequestType.DeleteElementRequest)//maybe make an abstract delete sendable class and have this extend that
         {
             Id = id;
             _message["id"] = id;

@@ -9,7 +9,7 @@ namespace NuSysApp
 {
     public class NewElementRequest : Request
     {
-        public NewElementRequest(Message message) : base(NusysConstants.RequestType.NewNodeRequest, message)
+        public NewElementRequest(Message message) : base(NusysConstants.RequestType.NewElementRequest, message)
         {
         }
 

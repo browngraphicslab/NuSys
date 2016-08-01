@@ -99,16 +99,60 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string DELETE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
 
-        #endregion DeleteLibraryElementRequest
+            #endregion DeleteLibraryElementRequest
 
             #region GetAllLibraryElementsRequest
 
-        /// <summary>
-        /// The key that represents the returned list of libraryElementModels serialzed as json strings.
-        /// </summary>
-        public static readonly string GET_ALL_LIBRARY_ELEMENTS_REQUEST_RETURNED_LIBRARY_ELEMENT_MODELS_KEY = "returned_library_element_models";
+            /// <summary>
+            /// The key that represents the returned list of libraryElementModels serialzed as json strings.
+            /// </summary>
+            public static readonly string GET_ALL_LIBRARY_ELEMENTS_REQUEST_RETURNED_LIBRARY_ELEMENT_MODELS_KEY = "returned_library_element_models";
 
-        #endregion GetAllLibraryElementsRequst
+            #endregion GetAllLibraryElementsRequst
+
+            #region DeleteElementRequest
+            /// <summary>
+            /// the key used to send the element id key of the element (alias) to be deleted
+            /// </summary>
+            public static readonly string DELETE_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
+            #endregion DeleteElementRequest
+
+            #region NewElementRequest
+            /// <summary>
+            /// the key used to send the element id of the new element to be created
+            /// </summary>
+            public static readonly string NEW_ELEMENT_REQUEST_ELEMENT_ID_KEY = "id";
+
+            /// <summary>
+            /// the key used to send the library element id of the new element to be created
+            /// </summary>
+            public static readonly string NEW_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID_KEY = "library_id";
+
+            /// <summary>
+            /// the key used to send the x coordinate of the new element to be created
+            /// </summary>
+            public static readonly string NEW_ELEMENT_REQUEST_LOCATION_X_KEY = "x";
+
+            /// <summary>
+            /// the key used to send the y coordinate of the new element to be created
+            /// </summary>
+            public static readonly string NEW_ELEMENT_REQUEST_LOCATION_Y_KEY = "y";
+
+            /// <summary>
+            /// the key used to send the width of the new element to be created
+            /// </summary>
+            public static readonly string NEW_ELEMENT_REQUEST_SIZE_WIDTH_KEY = "width";
+
+            /// <summary>
+            /// the key used to send the height of the new element to be created
+            /// </summary>
+            public static readonly string NEW_ELEMENT_REQUEST_SIZE_HEIGHT_KEY = "height";
+
+            /// <summary>
+            /// the key used to send the collection id of the collection the element belongs to
+            /// </summary>
+            public static readonly string NEW_ELEMENT_REQUEST_ELEMENT_PARENT_COLLECTION_ID_KEY = "parent_collection_id";
+            #endregion NewElementRequest
 
         #endregion RequestKeys
 
@@ -462,8 +506,6 @@ namespace NusysIntermediate
         /// </summary>
         public enum RequestType
         {
-            DeleteSendableRequest,
-            NewNodeRequest,
             FinalizeInkRequest,
             DuplicateNodeRequest,
             SystemRequest,
@@ -475,7 +517,6 @@ namespace NusysIntermediate
             ChatDialogRequest,
             SubscribeToCollectionRequest,
             UnsubscribeFromCollectionRequest,
-            DeleteLibraryElementRequest,
             AddInkRequest,
             RemoveInkRequest,
             ChatRequest,
@@ -483,6 +524,10 @@ namespace NusysIntermediate
             GetContentDataModelRequest,
             CreateNewLibrayElementRequest,
             GetEntireWorkspaceRequest,
+            NewElementRequest,
+            DeleteLibraryElementRequest,
+            DeleteElementRequest,
+
             /// <summary>
             /// This request will create a new content AND a default new library element for that content
             /// Therefore this request should be called when someone uploads a new content to the library
