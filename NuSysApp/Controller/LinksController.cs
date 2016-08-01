@@ -198,8 +198,8 @@ namespace NuSysApp
             // don't create a link between two library element models, if there is already a link
             // element controller between them
             if(
-                SessionController.Instance.ContentController.GetContent(m.GetString("id1")) != null &&
-                SessionController.Instance.ContentController.GetContent(m.GetString("id2")) != null &&
+                SessionController.Instance.ContentController.GetLibraryElementModel(m.GetString("id1")) != null &&
+                SessionController.Instance.ContentController.GetLibraryElementModel(m.GetString("id2")) != null &&
                 GetLinkLibraryElementControllerBetweenContent(m.GetString("id1"), m.GetString("id2")) != null)
             {
                 return;
@@ -429,7 +429,7 @@ namespace NuSysApp
             LinkLibraryElementController linkController)
         {
             Debug.Assert(libraryElementId != null);
-            Debug.Assert(SessionController.Instance.ContentController.GetContent(libraryElementId) != null);
+            Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementModel(libraryElementId) != null);
 
             var inId = linkController?.LinkLibraryElementModel?.InAtomId;
             var outId = linkController?.LinkLibraryElementModel?.OutAtomId;

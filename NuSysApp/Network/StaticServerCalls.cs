@@ -13,8 +13,8 @@ namespace NuSysApp
         {
             string libraryId = SessionController.Instance.ActiveFreeFormViewer.Controller.Model.LibraryId;
             return await SessionController.Instance.NuSysNetworkSession.DuplicateLibraryElement(libraryId) != null;
-            var collectionLibraryModel = SessionController.Instance.ContentController.GetContent(libraryId) as CollectionLibraryElementModel;
-            if (collectionLibraryModel == null)
+            var collectionLibraryController = SessionController.Instance.ContentController.GetLibraryElementController(libraryId) as CollectionLibraryElementController;
+            if (collectionLibraryController == null)
             {
                 return false;
             }
@@ -24,9 +24,9 @@ namespace NuSysApp
             var m = new Message();
             m["id"] = snapshotId;
             m["type"] = NusysConstants.ElementType.Collection.ToString();
-            m["inklines"] = collectionLibraryModel.InkLines;
+            m["inklines"] = collectionLibraryController.InkLines;
             m["favorited"] = true;
-            m["title"] = collectionLibraryModel.Title + " SNAPSHOT "+DateTime.Now;
+            m["title"] = collectionLibraryController.LibraryElementModel.Title + " SNAPSHOT "+DateTime.Now;
 
             var libraryElementRequest = new CreateNewLibraryElementRequest(m);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(libraryElementRequest);
@@ -75,7 +75,7 @@ namespace NuSysApp
                     {
                         await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(m));
                         var newNodeContentId = m.GetString("contentId");
-                        if (SessionController.Instance.ContentController.GetContent(newNodeContentId) == null)
+                        if (SessionController.Instance.ContentController.GetLibraryElementModel(newNodeContentId) == null)
                         {
                             Task.Run(async delegate
                             {

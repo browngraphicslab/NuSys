@@ -79,7 +79,7 @@ namespace NuSysApp
             Debug.Assert(Controller != null);
             var type = Controller.LibraryElementModel.Type;
 
-            if (Constants.IsRegionType(type))
+            if (NusysConstants.IsRegionType(type))
             {
                 // rectangle region width and height are normalized so this is something like scaleX = 1 / .5
             }

@@ -262,7 +262,7 @@ namespace NuSysApp
         {
             if (props.ContainsKey("data"))
             {
-                var content = SessionController.Instance.ContentController.GetContent(props.GetString("contentId", ""));
+                var content = SessionController.Instance.ContentController.GetLibraryElementController(props.GetString("contentId", ""));
                 if (content != null)
                 {
                     content.Data = props.GetString("data", "");

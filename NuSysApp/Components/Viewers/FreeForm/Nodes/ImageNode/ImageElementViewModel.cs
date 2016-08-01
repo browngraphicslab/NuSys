@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Windows.UI.Xaml.Media;
 using NuSysApp.Util;
 using System.Diagnostics;
+using NusysIntermediate;
 
 namespace NuSysApp
 {

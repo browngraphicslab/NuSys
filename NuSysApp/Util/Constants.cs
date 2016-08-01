@@ -184,7 +184,7 @@ namespace NuSysApp
             }
             return
                 GetTimestampTicksOfLibraryElementModel(
-                    SessionController.Instance.ContentController.GetContent(template.ContentID));
+                    SessionController.Instance.ContentController.GetLibraryElementModel(template.ContentID));
         }
         public static long GetTimestampTicksOfLibraryElementModel(LibraryElementModel model)
         {
@@ -201,12 +201,6 @@ namespace NuSysApp
             }
 
             return 0;
-        }
-
-        public static bool IsRegionType(NusysConstants.ElementType type)
-        {
-            return type == NusysConstants.ElementType.AudioRegion || type == NusysConstants.ElementType.ImageRegion || type == NusysConstants.ElementType.VideoRegion ||
-                   type == NusysConstants.ElementType.PdfRegion;
         }
         #endregion StaticMethods
     }

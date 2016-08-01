@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,10 +8,8 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    public class CollectionLibraryElementModel : LibraryElementModel
+    public class CollectionLibraryElementController : LibraryElementController
     {
-        private HashSet<string> _children;
-
         public HashSet<string> InkLines;
 
         public delegate void InkEventHandler(string id);
@@ -22,16 +21,19 @@ namespace NuSysApp
 
         public delegate void ChildRemovedEventHandler(string id);
         public event ChildRemovedEventHandler OnChildRemoved;
-
-        public CollectionLibraryElementModel(string id, Dictionary<String, MetadataEntry> metadata = null, string contentName = null, bool favorited = false) : base(id, NusysConstants.ElementType.Collection, metadata, contentName)
+        public CollectionLibraryElementModel CollectionModel
         {
-            _children = new HashSet<string>();
-
-            this.Favorited = favorited;
-
+            get
+            {
+                Debug.Assert(base.LibraryElementModel is CollectionLibraryElementModel);
+                return base.LibraryElementModel as CollectionLibraryElementModel;
+                ;
+            }
+        }
+        public CollectionLibraryElementController(CollectionLibraryElementModel libraryElementModel) : base(libraryElementModel)
+        {
             InkLines = new HashSet<string>();
         }
-
         public void AddInk(string id)
         {
             InkLines.Add(id);
@@ -46,42 +48,37 @@ namespace NuSysApp
 
         public bool AddChild(string id)
         {
-            if (!_children.Contains(id))
+            if (!CollectionModel.Children.Contains(id))
             {
                 var elementController = SessionController.Instance.IdToControllers[id];
                 elementController.Deleted += ElementControllerOnDeleted;
 
-                _children.Add(id);
+                CollectionModel.Children.Add(id);
                 OnChildAdded?.Invoke(id);
                 return true;
             }
             return false;
         }
 
+
         private void ElementControllerOnDeleted(object source)
         {
             var elementController = (ElementController)source;
-            Children.Remove(elementController.Model.Id);
+            CollectionModel.Children.Remove(elementController.Model.Id);
         }
 
-        protected override void OnSessionControllerEnterNewCollection()
-        {
-            _children.Clear();
-            base.OnSessionControllerEnterNewCollection();
-        }
 
         public bool RemoveChild(string id)
         {
-            if (_children.Contains(id))
+            if (CollectionModel.Children.Contains(id))
             {
                 var elementController = SessionController.Instance.IdToControllers[id];
-                elementController.Deleted += ElementControllerOnDeleted;
-                _children.Remove(id);
+                elementController.Deleted -= ElementControllerOnDeleted;
+                CollectionModel.Children.Remove(id);
                 OnChildRemoved?.Invoke(id);
                 return true;
             }
             return false;
         }
-        public HashSet<string> Children { get { return _children; } }
     }
 }

@@ -50,7 +50,7 @@ namespace NuSysApp
         public override async Task Init()
         {
             await Task.Run(async delegate {
-                _document = await MediaUtil.DataToPDF(LibraryElementController.LibraryElementModel.Data);
+                _document = await MediaUtil.DataToPDF(LibraryElementController.Data);
             });
             await Goto(_pageNumber);
         }

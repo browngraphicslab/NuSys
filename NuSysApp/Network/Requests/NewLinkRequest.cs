@@ -54,7 +54,7 @@ namespace NuSysApp
             NusysConstants.ElementType type = (NusysConstants.ElementType)Enum.Parse(typeof(NusysConstants.ElementType), (string)_message["type"], true);
 
 
-            var libraryElement = LibraryElementModelFactory.CreateFromMessage(_message);
+            var libraryElement = SessionController.Instance.ContentController.CreateAndAddModelFromMessage(_message);
 
             var controller =
                 SessionController.Instance.ContentController.GetLibraryElementController(
@@ -83,7 +83,7 @@ namespace NuSysApp
 
             //var link = LibraryElementModelFactory.CreateFromMessage(_message);
 
-            var parentCollectionLibraryElement = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(creator);
+            var parentCollectionLibraryElement = (CollectionLibraryElementController)SessionController.Instance.ContentController.GetLibraryElementController(creator);
             parentCollectionLibraryElement.AddChild(id);
 
             AddLinks(id1, id2, id);

@@ -37,7 +37,7 @@ namespace NuSysApp
 
             NusysConstants.ElementType type = (NusysConstants.ElementType) Enum.Parse(typeof(NusysConstants.ElementType), (string) _message["type"], true);
 
-            LibraryElementModel libraryElement = LibraryElementModelFactory.CreateFromMessage(new Message(_message.GetSerialized()));
+            LibraryElementModel libraryElement = SessionController.Instance.ContentController.CreateAndAddModelFromMessage(new Message(_message.GetSerialized()));
             if (libraryElement != null)
             {
                 SessionController.Instance.ContentController.Add(libraryElement);

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using NusysIntermediate;
 
-namespace NuSysApp
+namespace NusysIntermediate
 {
     public class RectangleRegion : Region
     {
@@ -15,7 +15,7 @@ namespace NuSysApp
         {
         }
 
-        public Point TopLeftPoint { set; get; }
+        public PointModel TopLeftPoint { set; get; }
         public double Width { set; get; }
         public double Height { set; get; }
     }

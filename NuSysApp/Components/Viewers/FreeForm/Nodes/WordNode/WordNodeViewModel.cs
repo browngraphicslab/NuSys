@@ -51,7 +51,7 @@ namespace NuSysApp
         private void ChangeContent(object source, string contentData)
         {
             Task.Run(async delegate {
-                _document = await MediaUtil.DataToPDF(Controller.LibraryElementModel.Data);
+                _document = await MediaUtil.DataToPDF(Controller.LibraryElementController.Data);
                 await UITask.Run(async delegate { await Goto(CurrentPageNumber); });
             });
         }
@@ -96,17 +96,17 @@ namespace NuSysApp
 
         private async Task DisplayPdf()
         {
-            if (Controller.LibraryElementModel == null || Controller.LibraryElementModel.Data == null)
+            if (Controller.LibraryElementModel == null || Controller.LibraryElementController.Data == null)
             {
                 return;
             }
-            if (Controller.LibraryElementModel.Data == "docx too large")
+            if (Controller.LibraryElementController.Data == "docx too large")
             {
                 _document = null;
             }
             else
             {
-                _document = await MediaUtil.DataToPDF(Controller.LibraryElementModel.Data);
+                _document = await MediaUtil.DataToPDF(Controller.LibraryElementController.Data);
             }
             await Goto(CurrentPageNumber);
             SetSize(Width, Height);

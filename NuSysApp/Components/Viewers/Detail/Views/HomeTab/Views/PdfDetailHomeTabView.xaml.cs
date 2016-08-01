@@ -195,7 +195,7 @@ namespace NuSysApp
 
         private void AddToCollection_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(_libraryElementId);
+            LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(_libraryElementId);
             if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element?.LibraryElementId) ||
                 (element?.Type == NusysConstants.ElementType.Link))
             {
@@ -229,7 +229,7 @@ namespace NuSysApp
 
         private void AddToCollection_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(_libraryElementId);
+            LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(_libraryElementId);
             if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
@@ -263,7 +263,7 @@ namespace NuSysApp
 
         private async void AddToCollection_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(_libraryElementId);
+            LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(_libraryElementId);
             if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
@@ -292,7 +292,7 @@ namespace NuSysApp
             {
                 if (elementType != NusysConstants.ElementType.Collection)
                 {
-                    var element = SessionController.Instance.ContentController.GetContent(libraryId);
+                    var element = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId);
                     var dict = new Message();
                     Dictionary<string, object> metadata;
 

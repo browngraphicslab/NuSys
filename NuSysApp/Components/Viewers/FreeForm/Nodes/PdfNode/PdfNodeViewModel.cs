@@ -109,10 +109,10 @@ namespace NuSysApp
 
         private async Task DisplayPdf()
         {
-            if (Controller.LibraryElementModel == null || Controller.LibraryElementModel.Data == null) {
+            if (Controller.LibraryElementModel == null || Controller.LibraryElementController.Data == null) {
                 return;
             }
-            _document = await MediaUtil.DataToPDF(Controller.LibraryElementModel.Data);
+            _document = await MediaUtil.DataToPDF(Controller.LibraryElementController.Data);
             await Goto(CurrentPageNumber);
             SetSize(Width, Height);
             //LaunchLDA((PdfNodeModel)this.Model);

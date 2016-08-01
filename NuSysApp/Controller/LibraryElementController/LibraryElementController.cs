@@ -31,7 +31,38 @@ namespace NuSysApp
                 LibraryElementModel.Title = value;
             } 
         }
-        
+
+        /// <summary>
+        /// To replace the old data stored in the libraryElementModel.  
+        /// Will use the contentDataModel Id of the library element model to fetch the string data.  
+        /// </summary>
+        public string Data
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(LibraryElementModel.ContentDataModelId))
+                {
+                    return null;
+                }
+                var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(LibraryElementModel.ContentDataModelId);
+                Debug.Assert(contentDataModel != null);
+
+                return contentDataModel.Data;
+            }
+            set // TODO delete this set, we should be setting it here at all.  We should only be setting it in the unpack and setContentData methods in this class
+            {
+                if (string.IsNullOrEmpty(LibraryElementModel.ContentDataModelId))
+                {
+                    return;
+                }
+                if (!SessionController.Instance.ContentController.ContentExists(LibraryElementModel.ContentDataModelId))
+                {
+                    SessionController.Instance.ContentController.AddContentDataModel(LibraryElementModel.ContentDataModelId, value);
+                }
+                SessionController.Instance.ContentController.GetContentDataModel(LibraryElementModel.ContentDataModelId)?.SetData(value);
+            }
+        }
+
         #region Events
         public delegate void ContentChangedEventHandler(object source, string contentData);
         public delegate void MetadataChangedEventHandler(object source);
@@ -78,6 +109,7 @@ namespace NuSysApp
             _libraryElementModel = libraryElementModel;
             _debouncingDictionary = new DebouncingDictionary(libraryElementModel.LibraryElementId, true);
             Title = libraryElementModel.Title;
+            Data = null;
         }
 
         /// <summary>
@@ -86,7 +118,8 @@ namespace NuSysApp
         /// </summary>
         public void SetContentData (string contentData)
         {
-            _libraryElementModel.Data = contentData;
+            //TODO add in checks and error handling for the line below
+            SessionController.Instance.ContentController.GetContentDataModel(LibraryElementModel.ContentDataModelId).SetData(contentData);
             ContentChanged?.Invoke(this, contentData);
             if (!_blockServerInteraction)
             {
@@ -311,7 +344,8 @@ namespace NuSysApp
             {
                 if (LibraryElementModel.Type != NusysConstants.ElementType.PdfRegion)
                 {
-                    _libraryElementModel.Data = e.Data;
+                    //TODO add in checks and error handling for the line below
+                    SessionController.Instance.ContentController.GetContentDataModel(LibraryElementModel.ContentDataModelId).SetData(e.Data);
                     ContentChanged?.Invoke(this, e.Data);
                 }
             }

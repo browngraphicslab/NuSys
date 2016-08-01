@@ -165,7 +165,7 @@ namespace NuSysApp
             foreach (var linkLibraryElementId in linkLibraryElementIds)
             {
                 //sorry about this - should also be in frontend and not in viewmodel
-                var linkLibraryElementModel = SessionController.Instance.ContentController.GetContent(linkLibraryElementId) as LinkLibraryElementModel;
+                var linkLibraryElementModel = SessionController.Instance.ContentController.GetLibraryElementModel(linkLibraryElementId) as LinkLibraryElementModel;
                 Debug.Assert(linkLibraryElementModel != null);
                 if (linkLibraryElementModel != null)
                 {
@@ -182,7 +182,8 @@ namespace NuSysApp
 
                     circlelink.Disposed += Circlelink_Disposed;
 
-                    Color color = linkLibraryElementModel.Color;
+                    //Color color = linkLibraryElementModel.Color; //TODO add back in link color
+                    var color = Colors.MediumVioletRed;
                     circlelink.Circle.Fill = new SolidColorBrush(color);
 
                     CircleLinks.Add(circlelink);

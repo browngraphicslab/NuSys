@@ -19,6 +19,13 @@ namespace NusysIntermediate
         /// the value for this key should be an stringified ElementType with the .ToString() method called
         /// </summary>
         public static readonly string REQUEST_TYPE_STRING_KEY = "request_type";
+
+        /// <summary>
+        /// This key is used to hold the metadata for library element models when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string LIBRARY_ELEMENT_METADATA_KEY = "library_element_metadata";
+
         #region RequestKeys
 
         #region AllRequests
@@ -92,259 +99,259 @@ namespace NusysIntermediate
         #endregion RequestKeys
         #region SQLColumnNames
 
-        #region alias
-        /// <summary>
-        /// 32 character string, aka an ID.  
-        /// </summary>
-        public static readonly string ALIAS_ID_KEY = "id";
+            #region alias
+            /// <summary>
+            /// 32 character string, aka an ID.  
+            /// </summary>
+            public static readonly string ALIAS_ID_KEY = "id";
 
-        /// <summary>
-        /// 32 character string, aka an ID. 
-        /// the library element ID that this alias points to
-        /// </summary>
-        public static readonly string ALIAS_LIBRARY_ID_KEY = "library_id";
+            /// <summary>
+            /// 32 character string, aka an ID. 
+            /// the library element ID that this alias points to
+            /// </summary>
+            public static readonly string ALIAS_LIBRARY_ID_KEY = "library_id";
 
-        /// <summary>
-        /// double, the x coordinate of this alias
-        /// </summary>
-        public static readonly string ALIAS_LOCATION_X_KEY = "x";
+            /// <summary>
+            /// double, the x coordinate of this alias
+            /// </summary>
+            public static readonly string ALIAS_LOCATION_X_KEY = "x";
 
-        /// <summary>
-        /// double, the y coordinate of this alias
-        /// </summary>
-        public static readonly string ALIAS_LOCATION_Y_KEY = "y";
+            /// <summary>
+            /// double, the y coordinate of this alias
+            /// </summary>
+            public static readonly string ALIAS_LOCATION_Y_KEY = "y";
 
-        /// <summary>
-        /// double, the width of this alias
-        /// </summary>
-        public static readonly string ALIAS_SIZE_WIDTH_KEY = "width";
+            /// <summary>
+            /// double, the width of this alias
+            /// </summary>
+            public static readonly string ALIAS_SIZE_WIDTH_KEY = "width";
 
-        /// <summary>
-        /// double, the height of this alias
-        /// </summary>
-        public static readonly string ALIAS_SIZE_HEIGHT_KEY = "height";
+            /// <summary>
+            /// double, the height of this alias
+            /// </summary>
+            public static readonly string ALIAS_SIZE_HEIGHT_KEY = "height";
 
-        /// <summary>
-        /// 32 character string, aka an ID.  
-        /// the id of the collection that this alias belongs inside of
-        /// </summary>
-        public static readonly string ALIAS_PARENT_COLLECTION_ID_KEY = "parent_collection_id";
+            /// <summary>
+            /// 32 character string, aka an ID.  
+            /// the id of the collection that this alias belongs inside of
+            /// </summary>
+            public static readonly string ALIAS_PARENT_COLLECTION_ID_KEY = "parent_collection_id";
 
-        /// <summary>
-        /// the dictionary from keys that are accepted and put into the Alias table to their type. 
-        /// the keys not included in this list are put into the properties table
-        /// </summary>
-        public static readonly Dictionary<string, Type> ALIAS_ACCEPTED_KEYS = new Dictionary<string, Type>()
-        {
-            {ALIAS_ID_KEY, typeof(string)},
-            { ALIAS_LIBRARY_ID_KEY, typeof(string)},
-            { ALIAS_LOCATION_X_KEY,typeof(float)},
-            { ALIAS_LOCATION_Y_KEY,typeof(float)},
-            {ALIAS_SIZE_WIDTH_KEY,typeof(float)},
-            { ALIAS_SIZE_HEIGHT_KEY,typeof(float)},
-            { ALIAS_PARENT_COLLECTION_ID_KEY,typeof(string)},
-        };
-        #endregion alias
+            /// <summary>
+            /// the dictionary from keys that are accepted and put into the Alias table to their type. 
+            /// the keys not included in this list are put into the properties table
+            /// </summary>
+            public static readonly Dictionary<string, Type> ALIAS_ACCEPTED_KEYS = new Dictionary<string, Type>()
+            {
+                {ALIAS_ID_KEY, typeof(string)},
+                { ALIAS_LIBRARY_ID_KEY, typeof(string)},
+                { ALIAS_LOCATION_X_KEY,typeof(float)},
+                { ALIAS_LOCATION_Y_KEY,typeof(float)},
+                {ALIAS_SIZE_WIDTH_KEY,typeof(float)},
+                { ALIAS_SIZE_HEIGHT_KEY,typeof(float)},
+                { ALIAS_PARENT_COLLECTION_ID_KEY,typeof(string)},
+            };
+            #endregion alias
 
-        #region libraryElementModel
-        /// <summary>
-        /// element type enum in string form.  call ElementType.ToString() to get this string when you have an elementtype variable
-        /// 32 characters max
-        /// </summary>
-        public static readonly string LIBRARY_ELEMENT_TYPE_KEY = "type";
+            #region libraryElementModel
+            /// <summary>
+            /// element type enum in string form.  call ElementType.ToString() to get this string when you have an elementtype variable
+            /// 32 characters max
+            /// </summary>
+            public static readonly string LIBRARY_ELEMENT_TYPE_KEY = "type";
 
-        /// <summary>
-        /// 32 character string, aka an ID.  
-        /// the id of this library element
-        /// </summary>
-        public static readonly string LIBRARY_ELEMENT_LIBRARY_ID_KEY = "library_id";
+            /// <summary>
+            /// 32 character string, aka an ID.  
+            /// the id of this library element
+            /// </summary>
+            public static readonly string LIBRARY_ELEMENT_LIBRARY_ID_KEY = "library_id";
 
-        /// <summary>
-        /// 32 character string, aka an ID.  
-        /// the content that this library element points to
-        /// </summary>
-        public static readonly string LIBRARY_ELEMENT_CONTENT_ID_KEY = "content_id";
+            /// <summary>
+            /// 32 character string, aka an ID.  
+            /// the content that this library element points to
+            /// </summary>
+            public static readonly string LIBRARY_ELEMENT_CONTENT_ID_KEY = "content_id";
 
-        /// <summary>
-        /// string that represents the json-stringified dictionary of keywords
-        /// approximately 2048 characters max
-        /// </summary>
-        public static readonly string LIBRARY_ELEMENT_KEYWORDS_KEY = "keywords";
+            /// <summary>
+            /// string that represents the json-stringified dictionary of keywords
+            /// approximately 2048 characters max
+            /// </summary>
+            public static readonly string LIBRARY_ELEMENT_KEYWORDS_KEY = "keywords";
 
-        /// <summary>
-        /// string title for the library element
-        /// approximately 2048 characters max
-        /// </summary>
-        public static readonly string LIBRARY_ELEMENT_TITLE_KEY = "title";
+            /// <summary>
+            /// string title for the library element
+            /// approximately 2048 characters max
+            /// </summary>
+            public static readonly string LIBRARY_ELEMENT_TITLE_KEY = "title";
 
-        /// <summary>
-        /// boolean representing if the library element model is favorited
-        /// </summary>
-        public static readonly string LIBRARY_ELEMENT_FAVORITED_KEY = "favorited";
+            /// <summary>
+            /// boolean representing if the library element model is favorited
+            /// </summary>
+            public static readonly string LIBRARY_ELEMENT_FAVORITED_KEY = "favorited";
 
-        /// <summary>
-        /// URL for the large icon for this library element model.  
-        /// approximately 512 characters max
-        /// </summary>
-        public static readonly string LIBRARY_ELEMENT_LARGE_ICON_URL_KEY = "large_icon_url";
+            /// <summary>
+            /// URL for the large icon for this library element model.  
+            /// approximately 512 characters max
+            /// </summary>
+            public static readonly string LIBRARY_ELEMENT_LARGE_ICON_URL_KEY = "large_icon_url";
 
-        /// <summary>
-        /// URL for the medium icon for this library element model.  
-        /// approximately 512 characters max
-        /// </summary>
-        public static readonly string LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY = "medium_icon_url";
+            /// <summary>
+            /// URL for the medium icon for this library element model.  
+            /// approximately 512 characters max
+            /// </summary>
+            public static readonly string LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY = "medium_icon_url";
 
-        /// <summary>
-        /// URL for the small icon for this library element model.  
-        /// approximately 512 characters max
-        /// </summary>
-        public static readonly string LIBRARY_ELEMENT_SMALL_ICON_URL_KEY = "small_icon_url";
+            /// <summary>
+            /// URL for the small icon for this library element model.  
+            /// approximately 512 characters max
+            /// </summary>
+            public static readonly string LIBRARY_ELEMENT_SMALL_ICON_URL_KEY = "small_icon_url";
 
-        /// <summary>
-        /// string id (NOT A REGULAR, 32-CHAR STRING ID) for the user creator of this object.
-        /// approximately 2048 characters max  
-        /// </summary>
-        public static readonly string LIBRARY_ELEMENT_CREATOR_USER_ID_KEY = "creator_user_id";
+            /// <summary>
+            /// string id (NOT A REGULAR, 32-CHAR STRING ID) for the user creator of this object.
+            /// approximately 2048 characters max  
+            /// </summary>
+            public static readonly string LIBRARY_ELEMENT_CREATOR_USER_ID_KEY = "creator_user_id";
 
-        /// <summary>
-        /// datetime-parseable string for the creation of the current libraryelementmodel. 
-        /// approximately 512 characters max
-        /// </summary>
-        public static readonly string LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY = "creation_timestamp";
+            /// <summary>
+            /// datetime-parseable string for the creation of the current libraryelementmodel. 
+            /// approximately 512 characters max
+            /// </summary>
+            public static readonly string LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY = "creation_timestamp";
 
-        /// <summary>
-        /// datetime-parseable string for the last edited time of the current libraryElementModel. 
-        /// approximately 512 characters max
-        /// </summary>
-        public static readonly string LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY = "last_edited_timestamp";
+            /// <summary>
+            /// datetime-parseable string for the last edited time of the current libraryElementModel. 
+            /// approximately 512 characters max
+            /// </summary>
+            public static readonly string LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY = "last_edited_timestamp";
 
-        /// <summary>
-        /// the dictionary from keys that are accepted and put into the library elmeent table to their type. 
-        /// the keys not included in this list are put into the properties table
-        /// </summary>
-        public static readonly Dictionary<string, Type> LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS = new Dictionary<string, Type>()
-        {
-            {LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY, typeof(string)},
-            { LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY, typeof(string)},
-            { LIBRARY_ELEMENT_CREATOR_USER_ID_KEY,typeof(string)},
-            { LIBRARY_ELEMENT_SMALL_ICON_URL_KEY,typeof(string)},
-            { LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY,typeof(string)},
-            { LIBRARY_ELEMENT_LARGE_ICON_URL_KEY,typeof(string)},
-            { LIBRARY_ELEMENT_FAVORITED_KEY,typeof(bool)},
-            { LIBRARY_ELEMENT_TITLE_KEY,typeof(string)},
-            { LIBRARY_ELEMENT_KEYWORDS_KEY,typeof(string)},
-            { LIBRARY_ELEMENT_LIBRARY_ID_KEY,typeof(string)},
-            { LIBRARY_ELEMENT_CONTENT_ID_KEY,typeof(string)},
-            { LIBRARY_ELEMENT_TYPE_KEY,typeof(string)},
-        };
-        #endregion libraryElementModel
+            /// <summary>
+            /// the dictionary from keys that are accepted and put into the library elmeent table to their type. 
+            /// the keys not included in this list are put into the properties table
+            /// </summary>
+            public static readonly Dictionary<string, Type> LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS = new Dictionary<string, Type>()
+            {
+                {LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY, typeof(string)},
+                { LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY, typeof(string)},
+                { LIBRARY_ELEMENT_CREATOR_USER_ID_KEY,typeof(string)},
+                { LIBRARY_ELEMENT_SMALL_ICON_URL_KEY,typeof(string)},
+                { LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY,typeof(string)},
+                { LIBRARY_ELEMENT_LARGE_ICON_URL_KEY,typeof(string)},
+                { LIBRARY_ELEMENT_FAVORITED_KEY,typeof(bool)},
+                { LIBRARY_ELEMENT_TITLE_KEY,typeof(string)},
+                { LIBRARY_ELEMENT_KEYWORDS_KEY,typeof(string)},
+                { LIBRARY_ELEMENT_LIBRARY_ID_KEY,typeof(string)},
+                { LIBRARY_ELEMENT_CONTENT_ID_KEY,typeof(string)},
+                { LIBRARY_ELEMENT_TYPE_KEY,typeof(string)},
+            };
+            #endregion libraryElementModel
 
-        #region metadata
-        /// <summary>
-        /// 32 character ID of the library element this metadata entry belongs to
-        /// </summary>
-        public static readonly string METADATA_LIBRARY_ELEMENT_ID_KEY = "library_id";
+            #region metadata
+            /// <summary>
+            /// 32 character ID of the library element this metadata entry belongs to
+            /// </summary>
+            public static readonly string METADATA_LIBRARY_ELEMENT_ID_KEY = "library_id";
 
-        /// <summary>
-        /// the string used as the name of the 'key' column for metadata.  
-        /// approximately 512 characters max
-        /// PROBABLY ONLY FOR SERVER-SIDE USE
-        /// </summary>
-        public static readonly string METADATA_KEY_COLUMN_KEY = "key_string";
+            /// <summary>
+            /// the string used as the name of the 'key' column for metadata.  
+            /// approximately 512 characters max
+            /// PROBABLY ONLY FOR SERVER-SIDE USE
+            /// </summary>
+            public static readonly string METADATA_KEY_COLUMN_KEY = "key_string";
 
-        /// <summary>
-        /// the string used as the name of the 'value' column for metadata.  
-        /// approximately 2048 characters max
-        /// PROBABLY ONLY FOR SERVER-SIDE USE
-        /// </summary>
-        public static readonly string METADATA_VALUE_COLUMN_KEY = "value_string";
+            /// <summary>
+            /// the string used as the name of the 'value' column for metadata.  
+            /// approximately 2048 characters max
+            /// PROBABLY ONLY FOR SERVER-SIDE USE
+            /// </summary>
+            public static readonly string METADATA_VALUE_COLUMN_KEY = "value_string";
 
-        /// <summary>
-        /// the list of all the column names for the metadata table.
-        /// Should be populated by other constants as strings
-        /// </summary>
-        public static readonly HashSet<string> ACCEPTED_METADATA_TABLE_KEYS = new HashSet<string>()
-        {
-            METADATA_LIBRARY_ELEMENT_ID_KEY,
-            METADATA_KEY_COLUMN_KEY,
-            METADATA_VALUE_COLUMN_KEY
-        };
-        #endregion metadata
+            /// <summary>
+            /// the list of all the column names for the metadata table.
+            /// Should be populated by other constants as strings
+            /// </summary>
+            public static readonly HashSet<string> ACCEPTED_METADATA_TABLE_KEYS = new HashSet<string>()
+            {
+                METADATA_LIBRARY_ELEMENT_ID_KEY,
+                METADATA_KEY_COLUMN_KEY,
+                METADATA_VALUE_COLUMN_KEY
+            };
+            #endregion metadata
 
-        #region propertiesTable
-        /// <summary>
-        /// 32 character ID of the library element or alias that this property belongs to
-        /// </summary>
-        public static readonly string PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY = "library_id";
+            #region propertiesTable
+            /// <summary>
+            /// 32 character ID of the library element or alias that this property belongs to
+            /// </summary>
+            public static readonly string PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY = "library_id";
 
-        /// <summary>
-        /// the string used as the name of the 'key' column for unique properties.  
-        /// PROBABLY ONLY FOR SERVER-SIDE USE
-        /// approximately 512 characters max
-        /// </summary>
-        public static readonly string PROPERTIES_KEY_COLUMN_KEY = "key_string";
+            /// <summary>
+            /// the string used as the name of the 'key' column for unique properties.  
+            /// PROBABLY ONLY FOR SERVER-SIDE USE
+            /// approximately 512 characters max
+            /// </summary>
+            public static readonly string PROPERTIES_KEY_COLUMN_KEY = "key_string";
 
-        /// <summary>
-        /// the string used as the name of the string 'value' column for properties.  
-        /// PROBABLY ONLY FOR SERVER-SIDE USE
-        /// approximately 2048 characters max
-        /// </summary>
-        public static readonly string PROPERTIES_STRING_VALUE_COLUMN_KEY = "string_value";
+            /// <summary>
+            /// the string used as the name of the string 'value' column for properties.  
+            /// PROBABLY ONLY FOR SERVER-SIDE USE
+            /// approximately 2048 characters max
+            /// </summary>
+            public static readonly string PROPERTIES_STRING_VALUE_COLUMN_KEY = "string_value";
 
-        /// <summary>
-        /// the string used as the name of the numerical 'value' column for properties.  
-        /// PROBABLY ONLY FOR SERVER-SIDE USE
-        /// </summary>
-        public static readonly string PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY = "numerical_value";
+            /// <summary>
+            /// the string used as the name of the numerical 'value' column for properties.  
+            /// PROBABLY ONLY FOR SERVER-SIDE USE
+            /// </summary>
+            public static readonly string PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY = "numerical_value";
 
-        /// <summary>
-        /// the string used as the name of the date 'value' column for properties.  
-        /// PROBABLY ONLY FOR SERVER-SIDE USE
-        /// </summary>
-        public static readonly string PROPERTIES_DATE_VALUE_COLUMN_KEY = "date_value";
+            /// <summary>
+            /// the string used as the name of the date 'value' column for properties.  
+            /// PROBABLY ONLY FOR SERVER-SIDE USE
+            /// </summary>
+            public static readonly string PROPERTIES_DATE_VALUE_COLUMN_KEY = "date_value";
 
-        /// <summary>
-        /// the list of all the column names for the properties table.
-        /// Should be populated by other constants as strings
-        /// </summary>
-        public static readonly HashSet<string> ACCEPTED_PROPERTIES_TABLE_KEYS = new HashSet<string>()
-        {
-            PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY,
-            PROPERTIES_KEY_COLUMN_KEY,
-            PROPERTIES_STRING_VALUE_COLUMN_KEY,
-            PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY,
-            PROPERTIES_DATE_VALUE_COLUMN_KEY
-        };
-        #endregion propertiesTable
+            /// <summary>
+            /// the list of all the column names for the properties table.
+            /// Should be populated by other constants as strings
+            /// </summary>
+            public static readonly HashSet<string> ACCEPTED_PROPERTIES_TABLE_KEYS = new HashSet<string>()
+            {
+                PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY,
+                PROPERTIES_KEY_COLUMN_KEY,
+                PROPERTIES_STRING_VALUE_COLUMN_KEY,
+                PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY,
+                PROPERTIES_DATE_VALUE_COLUMN_KEY
+            };
+            #endregion propertiesTable
 
-        #region Content
-        /// <summary>
-        /// 32 character ID of the content
-        /// </summary>
-        public static readonly string CONTENT_TABLE_CONTENT_ID_KEY = "content_id";
+            #region Content
+            /// <summary>
+            /// 32 character ID of the content
+            /// </summary>
+            public static readonly string CONTENT_TABLE_CONTENT_ID_KEY = "content_id";
 
-        /// <summary>
-        /// 32 character type of content. e.g. image, video, pdf
-        /// </summary>
-        public static readonly string CONTENT_TABLE_TYPE_KEY = "content_type";
+            /// <summary>
+            /// 32 character type of content. e.g. image, video, pdf
+            /// </summary>
+            public static readonly string CONTENT_TABLE_TYPE_KEY = "content_type";
 
-        /// <summary>
-        /// varchar url of the content.
-        /// approximately 512 characters max
-        /// </summary>
-        public static readonly string CONTENT_TABLE_CONTENT_URL_KEY = "content_ur";
+            /// <summary>
+            /// varchar url of the content.
+            /// approximately 512 characters max
+            /// </summary>
+            public static readonly string CONTENT_TABLE_CONTENT_URL_KEY = "content_ur";
 
-        /// <summary>
-        /// the list of keys that will safely be entered into the contents table.  
-        /// Use this to make sure that you're entering correct keys into the database
-        /// </summary>
-        public static readonly HashSet<string> ACCEPTED_CONTENT_TABLE_KEYS = new HashSet<string>()
-        {
-            CONTENT_TABLE_CONTENT_ID_KEY,
-            CONTENT_TABLE_TYPE_KEY,
-            CONTENT_TABLE_CONTENT_URL_KEY
-        };
-        #endregion Content
+            /// <summary>
+            /// the list of keys that will safely be entered into the contents table.  
+            /// Use this to make sure that you're entering correct keys into the database
+            /// </summary>
+            public static readonly HashSet<string> ACCEPTED_CONTENT_TABLE_KEYS = new HashSet<string>()
+            {
+                CONTENT_TABLE_CONTENT_ID_KEY,
+                CONTENT_TABLE_TYPE_KEY,
+                CONTENT_TABLE_CONTENT_URL_KEY
+            };
+            #endregion Content
         #endregion SQLColumnNames
         #region SQLTableNames
 
@@ -374,7 +381,7 @@ namespace NusysIntermediate
         public static readonly string CONTENTS_SQL_TABLE_NAME = "contents";
         #endregion SQLTableNames
 
-
+        #region Enums
         /// <summary>
         /// The base types for every content.  ElementTypes can have the same content Types.
         /// For instance, Image and ImageRegion both have ContentType Image
@@ -438,8 +445,16 @@ namespace NusysIntermediate
             Tools
         }
 
+        #endregion Enums
+
         #region staticMethods
-        
+
+        public static bool IsRegionType(NusysConstants.ElementType type)
+        {
+            return type == NusysConstants.ElementType.AudioRegion || type == NusysConstants.ElementType.ImageRegion || type == NusysConstants.ElementType.VideoRegion ||
+                   type == NusysConstants.ElementType.PdfRegion;
+        }
+
         #endregion staticMethods
     }
 }

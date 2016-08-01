@@ -256,10 +256,10 @@ namespace NuSysApp
         {
             if (props.ContainsKey("data"))
             {
-                var content = SessionController.Instance.ContentController.GetContent(props.GetString("contentId", ""));
+                var content = SessionController.Instance.ContentController.GetLibraryElementController(props.GetString("contentId", ""));
                 if (content != null)
                 {
-                    content.Data = props.GetString("data", "");
+                    content.SetContentData(props.GetString("data", ""));
                 }
             }
             if (props.ContainsKey("x") || props.ContainsKey("y"))

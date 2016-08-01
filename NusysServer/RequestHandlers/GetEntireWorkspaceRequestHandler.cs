@@ -19,8 +19,9 @@ namespace NusysServer
 
             //todo actually get the info
 
+            //create new args to return
             var returnArgs = new GetEntireWorkspaceRequestArgs();
-            returnArgs.AliasMessages = new HashSet<Message>() {new Message( new Dictionary<string,object>() { { "test",1}})};
+            returnArgs.AliasMessages = new HashSet<Message>() {new Message( new Dictionary<string,object>() { { "test", 1}})};
 
             returnArgs.AliasMessages = null; //TODO fill this in
             returnArgs.ContentMessages = null; //TODO fill this in

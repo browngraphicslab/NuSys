@@ -398,6 +398,7 @@
     </Compile>
     <Compile Include="Components\Viewers\RecordingNodeViewModel.cs" />
     <Compile Include="Controller\AudioRegionLibraryElementController.cs" />
+    <Compile Include="Controller\CollectionLibraryElementController.cs" />
     <Compile Include="Controller\LibraryElementController\LibraryElementControllerFactory.cs" />
     <Compile Include="Controller\LibraryElementController\LinkLibraryElementController.cs" />
     <Compile Include="Controller\LibraryElementController\WordNodeLibraryElementController.cs" />
@@ -414,11 +415,7 @@
     <Compile Include="Converters\MutabilityToBrushConverter.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
-    <Compile Include="Models\LibraryElementModelFactory.cs" />
-    <Compile Include="Models\LinkLibraryElementModel.cs" />
     <Compile Include="Models\PresentationLinkModel.cs" />
-    <Compile Include="Models\Regions\PdfRegionModel.cs" />
-    <Compile Include="Models\Regions\AudioRegionModel.cs" />
     <Compile Include="Components\Viewers\Detail\Regionable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\AudioDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\DetailHomeTabViewModel.cs" />
@@ -427,7 +424,6 @@
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\PdfDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\TextDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\VideoDetailHomeTabViewModel.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\MetadataEntry.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\ElementCollectionDetailHomeTabView.xaml.cs">
       <DependentUpon>ElementCollectionDetailHomeTabView.xaml</DependentUpon>
     </Compile>
@@ -610,11 +606,7 @@
     <Compile Include="Effects\AnimatableUserControl.cs" />
     <Compile Include="Effects\AnimatableNodeView.cs" />
     <Compile Include="Models\AreaModel.cs" />
-    <Compile Include="Models\CollectionLibraryElementModel.cs" />
     <Compile Include="Models\PowerpointNodeModel.cs" />
-    <Compile Include="Models\Regions\RectangleRegion.cs" />
-    <Compile Include="Models\Regions\Region.cs" />
-    <Compile Include="Models\Regions\VideoRegionModel.cs" />
     <Compile Include="Models\TagNodeModel.cs" />
     <Compile Include="Models\WebNodeModel.cs" />
     <Compile Include="Models\WorkSpaceModel.cs" />
@@ -755,7 +747,6 @@
     <Compile Include="Util\OfficeIntermediate.cs" />
     <Compile Include="Util\PdfRenderer.cs" />
     <Compile Include="Util\StorageUtil.cs" />
-    <Compile Include="Models\LibraryElementModel.cs" />
     <Compile Include="Models\ImageElementModel.cs" />
     <Compile Include="Models\LinkModel.cs" />
     <Compile Include="Models\PinModel.cs" />
@@ -1298,6 +1289,7 @@
   <ItemGroup>
     <Folder Include="Components\Keywords\" />
     <Folder Include="Icons\" />
+    <Folder Include="Models\Regions\" />
     <Folder Include="Util\Regions\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

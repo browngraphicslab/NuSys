@@ -44,9 +44,9 @@ namespace NuSysApp
             {
                 return;
             }
-            var model = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel as CollectionLibraryElementModel;
+            var collectionController = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController as CollectionLibraryElementController;
 
-            if (model != null && model.InkLines.Contains(id))
+            if (collectionController != null && collectionController.InkLines.Contains(id))
             {
 
                 if (type == "adornment")

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -215,11 +216,11 @@ namespace NuSysApp
             var normalTopLeftX = topLeft.X / RectangleWrapper.GetWidth();
             var normalTopLeftY = topLeft.Y / RectangleWrapper.GetHeight();
 
-            model.TopLeftPoint = new Point(normalTopLeftX, normalTopLeftY);
+            model.TopLeftPoint = new PointModel(normalTopLeftX, normalTopLeftY);
             //model.BottomRightPoint = new Point(normalBottomRightX, normalBottomRightY);
 
 
-            (RegionLibraryElementController as PdfRegionLibraryElementController).SetLocation(model.TopLeftPoint);
+            (RegionLibraryElementController as PdfRegionLibraryElementController).SetLocation(new Point(model.TopLeftPoint.X, model.TopLeftPoint.Y));
         }
 
         public void SetNewSize(double width, double height)

@@ -41,6 +41,11 @@ namespace NuSysApp
                     controller = new WordNodeLibraryElementController(model);
                     SessionController.Instance.NuSysNetworkSession.LockController.AddLockable((ILockable)controller);
                     break;
+                case NusysConstants.ElementType.Collection:
+                    var collectionModel = model as CollectionLibraryElementModel;
+                    Debug.Assert(collectionModel != null);
+                    controller = new CollectionLibraryElementController(collectionModel);
+                    break;
                 case NusysConstants.ElementType.Link:
                     Debug.Assert(model is LinkLibraryElementModel);
                     controller = new LinkLibraryElementController(model as LinkLibraryElementModel);
@@ -50,6 +55,7 @@ namespace NuSysApp
                     controller = new LibraryElementController(model);
                     break;
             }
+
             return controller;
         }
     }

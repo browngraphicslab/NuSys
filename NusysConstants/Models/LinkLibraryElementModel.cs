@@ -9,18 +9,18 @@ using Windows.UI;
 using Newtonsoft.Json;
 using NusysIntermediate;
 
-namespace NuSysApp
+namespace NusysIntermediate
 {
     public class LinkLibraryElementModel: LibraryElementModel
     {
         public string InAtomId { get; set; }
         public string OutAtomId { get; set; }
-        public Color Color { get; set; }
+        //public Color Color { get; set; }
         public LinkLibraryElementModel(string id1, string id2, string id): base(id, NusysConstants.ElementType.Link)
         {
             InAtomId = id1;
             OutAtomId = id2;
-            Color = Colors.DarkGoldenrod;
+            //Color = Colors.DarkGoldenrod;
         }
     }
 }

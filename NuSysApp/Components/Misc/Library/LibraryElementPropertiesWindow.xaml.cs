@@ -188,7 +188,7 @@ namespace NuSysApp
             {
                 UITask.Run(async delegate
                 {
-                    var content = SessionController.Instance.ContentController.GetContent(id);
+                    var content = SessionController.Instance.ContentController.GetLibraryElementModel(id);
                     if (content != null && content.Type == NusysConstants.ElementType.Collection)
                     {
                         List<Message> messages = new List<Message>();

@@ -175,9 +175,9 @@ namespace NuSysApp
 
             var deleteMsg = new Message();
             deleteMsg["contentId"] = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.LibraryElementId;
-            var model = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel as CollectionLibraryElementModel;
-            model.InkLines.Remove(request.Item2);
-            deleteMsg["inklines"] = new HashSet<string>(model.InkLines);
+            var collectionController = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController as CollectionLibraryElementController;
+            collectionController.InkLines.Remove(request.Item2);
+            deleteMsg["inklines"] = new HashSet<string>(collectionController.InkLines);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new ChangeContentRequest(deleteMsg));
 
             Visibility = Visibility.Collapsed;

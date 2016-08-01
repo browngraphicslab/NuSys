@@ -355,7 +355,7 @@ namespace NuSysApp
                             {
                                 try
                                 {
-                                    LibraryElementModelFactory.CreateFromMessage(new Message(kvp.Value));
+                                    SessionController.Instance.ContentController.CreateAndAddModelFromMessage(new Message(kvp.Value));
                                 }
                                 catch (NullReferenceException e)
                                 {

@@ -190,8 +190,8 @@ namespace NuSysApp
                 {
                     foreach (var regionLibraryId in regions)
                     {
-                        Debug.Assert(SessionController.Instance.ContentController.GetContent(regionLibraryId) is Region);
-                        RegionCollection.Add(SessionController.Instance.ContentController.GetContent(regionLibraryId) as Region);
+                        Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementModel(regionLibraryId) is Region);
+                        RegionCollection.Add(SessionController.Instance.ContentController.GetLibraryElementModel(regionLibraryId) as Region);
                     }
                 }
                 RaisePropertyChanged("OrderedRegionCollection");

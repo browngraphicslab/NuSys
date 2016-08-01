@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
-using SharpDX.Direct2D1;
 
-namespace NuSysApp
+namespace NusysIntermediate
 {
     /// <summary>
     /// Wraps a metadata entry, which is defined by a key, value, 

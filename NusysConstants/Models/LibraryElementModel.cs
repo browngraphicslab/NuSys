@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using SQLite.Net.Attributes;
 using Windows.UI.Xaml.Media;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
@@ -13,45 +12,16 @@ using System.Linq;
 using Newtonsoft.Json;
 using NusysIntermediate;
 
-namespace NuSysApp
+namespace NusysIntermediate
 {
-    public class LibraryElementModel : BaseINPC
+    public class LibraryElementModel
     {
         public HashSet<Keyword> Keywords {get; set; }
 
         public NusysConstants.ElementType Type { get; set; }
 
-        public string Data
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(ContentDataModelId))
-                {
-                    return null;
-                }
-                var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(ContentDataModelId);
-                Debug.Assert(contentDataModel != null);
-
-                return contentDataModel.Data;
-            }
-            set
-            {
-                if (string.IsNullOrEmpty(ContentDataModelId))
-                {
-                    return;
-                }
-                if (!SessionController.Instance.ContentController.ContentExists(ContentDataModelId))
-                {
-                    SessionController.Instance.ContentController.AddContentDataModel(ContentDataModelId, value);
-                }
-                SessionController.Instance.ContentController.GetContentDataModel(ContentDataModelId)?.SetData(value);
-            }
-        }
-
         public string LibraryElementId { get; set; }
-        public string ContentDataModelId { get;
-
-            set; }
+        public string ContentDataModelId { get; set; }
 
         public string Title { get; set; }
 
@@ -101,20 +71,17 @@ namespace NuSysApp
         {
             ContentDataModelId = libraryElementId;
             LibraryElementId = libraryElementId;
-            Data = null;
             Title = contentName;
             Type = elementType;
             Favorited = favorited;
             Keywords = new HashSet<Keyword>();
             Metadata = new ConcurrentDictionary<string, MetadataEntry>(metadata ?? new Dictionary<string, MetadataEntry>());
-            Debug.Assert(!(Type == NusysConstants.ElementType.Link && !(this is LinkLibraryElementModel)));
         }
         //FOR PDF DOWNLOADING  --HACKY AF
         //public static List<string> PDFStrings = new List<string>();
 
         protected virtual void OnSessionControllerEnterNewCollection()
         {
-            Data = null;
         }
 
         public void SetMetadata(Dictionary<string, MetadataEntry> metadata)

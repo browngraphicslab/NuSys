@@ -43,7 +43,7 @@ namespace NuSysApp
             // unused
             this.Id = model.LibraryElementId;
             this.Model = model;
-            this.Data = model.Data;
+            this.Data = controller.Data;
         }
 
         //formatting helper class

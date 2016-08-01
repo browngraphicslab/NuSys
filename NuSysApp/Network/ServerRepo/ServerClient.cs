@@ -444,7 +444,7 @@ namespace NuSysApp
                         data = await responseContent.ReadAsStringAsync();
                     }
 
-                    if (SessionController.Instance.ContentController.GetContent(libraryId) != null && SessionController.Instance.ContentController.GetContent(libraryId).Type == NusysConstants.ElementType.Video)
+                    if (SessionController.Instance.ContentController.GetLibraryElementModel(libraryId) != null && SessionController.Instance.ContentController.GetLibraryElementModel(libraryId).Type == NusysConstants.ElementType.Video)
                     {
                         if (data == "{}")
                         {
@@ -510,8 +510,8 @@ namespace NuSysApp
                     m["data"] = inkline;
                     m["id"] = inkid;
                     var model =
-                        SessionController.Instance.ContentController.GetContent(libraryId) as
-                            CollectionLibraryElementModel;
+                        SessionController.Instance.ContentController.GetLibraryElementController(libraryId) as
+                            CollectionLibraryElementController;
                     if (!model.InkLines.Contains(inkid))
                     {
                         model.InkLines.Add(inkid);
@@ -520,10 +520,10 @@ namespace NuSysApp
                 }
             }
 
-            LibraryElementModel content = SessionController.Instance.ContentController.GetContent(libraryId);
+            LibraryElementModel content = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId);
             if (content == null)
             {
-                content = LibraryElementModelFactory.CreateFromMessage(new Message(dict));
+                content = SessionController.Instance.ContentController.CreateAndAddModelFromMessage(new Message(dict));
             }
             if (content != null)
             {

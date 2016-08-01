@@ -34,10 +34,10 @@ namespace NuSysApp
             ElementModel elementModel = null;
             ElementController controller = null;
 
-            var libraryElement = SessionController.Instance.ContentController.GetContent(libraryId);
+            var libraryElement = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId);
             if (libraryElement == null)
             {
-                libraryElement = LibraryElementModelFactory.CreateFromMessage(_message);
+                libraryElement = SessionController.Instance.ContentController.CreateAndAddModelFromMessage(_message);
             }
             if (libraryElement != null)
             {
@@ -132,11 +132,11 @@ namespace NuSysApp
 
                 SessionController.Instance.IdToControllers[id] = controller;
 
-                var parentCollectionLibraryElement =
-                    (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(creator);
-                parentCollectionLibraryElement.AddChild(id);
+                var parentCollectionLibraryElementController =
+                    (CollectionLibraryElementController)SessionController.Instance.ContentController.GetLibraryElementController(creator);
+                parentCollectionLibraryElementController.AddChild(id);
 
-                if (parentCollectionLibraryElement.LibraryElementId ==
+                if (parentCollectionLibraryElementController.CollectionModel.LibraryElementId ==
                     SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.LibraryElementId)
                 {
                     Task.Run(async delegate

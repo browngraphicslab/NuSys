@@ -98,7 +98,7 @@ namespace NuSysApp
             var type = Controller.LibraryElementModel.Type;
             var contentView = xClippingContent;
             Debug.Assert(contentView != null);
-            if (Constants.IsRegionType(type))
+            if (NusysConstants.IsRegionType(type))
             {
                 var regionController = Controller as RectangleRegionLibraryElementController;
                 Debug.Assert(regionController != null);
@@ -195,7 +195,7 @@ namespace NuSysApp
             Debug.Assert(Controller != null);
             var type = Controller.LibraryElementModel.Type;
 
-            if (Constants.IsRegionType(type))
+            if (NusysConstants.IsRegionType(type))
             {
                 // rectangle region width and height are normalized so this is something like scaleX = 1 / .5
             }

@@ -64,11 +64,11 @@ namespace NuSysApp
                 _inqCanvas.AdornmentAdded += AdormnentAdded;
                 _inqCanvas.AdornmentRemoved += AdornmentRemoved;
 
-                var collectionModel = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(vm.Controller.LibraryElementModel.LibraryElementId);
+                var collectionController = (CollectionLibraryElementController)SessionController.Instance.ContentController.GetLibraryElementController(vm.Controller.LibraryElementModel.LibraryElementId);
 
-              
 
-                collectionModel.OnInkAdded += delegate(string id)
+
+                collectionController.OnInkAdded += delegate(string id)
                 {
                     if (InkStorage._inkStrokes.ContainsKey(id))
                     {
@@ -126,9 +126,9 @@ namespace NuSysApp
 
             var m = new Message();
             m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
-            var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
-            model.InkLines.Remove(request.Item2);
-            m["inklines"] = new HashSet<string>(model.InkLines);
+            var collectionController = ((ElementViewModel)DataContext).Controller.LibraryElementController as CollectionLibraryElementController;
+            collectionController.InkLines.Remove(request.Item2);
+            m["inklines"] = new HashSet<string>(collectionController.InkLines);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new ChangeContentRequest(m));
 
         }
@@ -143,9 +143,9 @@ namespace NuSysApp
 
             var m = new Message();
             m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
-            var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
-            model.InkLines.Add(id);
-            m["inklines"] = new HashSet<string>(model.InkLines);
+            var collectionController = ((ElementViewModel)DataContext).Controller.LibraryElementController as CollectionLibraryElementController;
+            collectionController.InkLines.Add(id);
+            m["inklines"] = new HashSet<string>(collectionController.InkLines);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new ChangeContentRequest(m));
         }
 
@@ -159,9 +159,9 @@ namespace NuSysApp
 
             var m = new Message();
             m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
-            var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
-            model.InkLines.Add(id);
-            m["inklines"] = new HashSet<string>(model.InkLines);
+            var collectionController = ((ElementViewModel)DataContext).Controller.LibraryElementController as CollectionLibraryElementController;
+            collectionController.InkLines.Add(id);
+            m["inklines"] = new HashSet<string>(collectionController.InkLines);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new ChangeContentRequest(m));
         }
 
@@ -174,9 +174,9 @@ namespace NuSysApp
 
             var m = new Message();
             m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
-            var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
-            model.InkLines.Remove(request.Item2);
-            m["inklines"] = new HashSet<string>(model.InkLines);
+            var collectionController = ((ElementViewModel)DataContext).Controller.LibraryElementController as CollectionLibraryElementController;
+            collectionController.InkLines.Remove(request.Item2);
+            m["inklines"] = new HashSet<string>(collectionController.InkLines);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new ChangeContentRequest(m));
         }
 

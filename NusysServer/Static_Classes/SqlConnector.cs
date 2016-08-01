@@ -56,49 +56,48 @@ namespace NusysServer
         {
 
             var contentTable = MakeCommand("CREATE TABLE " + GetTableName(Constants.SQLTableType.Content) + " (" +
-                NusysIntermediate.NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY + " varchar(128), " +
-                NusysIntermediate.NusysConstants.CONTENT_TABLE_TYPE_KEY + " varchar(128), " +
-                NusysIntermediate.NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY + " varchar(1024));");
+                NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
+                NusysConstants.CONTENT_TABLE_TYPE_KEY + " varchar(128), " +
+                NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY + " varchar(1024));");
 
             var libraryElementTable = MakeCommand("CREATE TABLE " + GetTableName(Constants.SQLTableType.LibrayElement) + " (" +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY + " varchar(128), " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY + " varchar(128), " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_TYPE_KEY + " varchar(128), " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY + " varchar(1024), " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY + " varchar(1024), " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_CREATOR_USER_ID_KEY + " varchar(4096), " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_FAVORITED_KEY + " varchar(32), " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY + " varchar(4096), " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_TITLE_KEY + " varchar(4096), " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_SMALL_ICON_URL_KEY + " varchar(1024), " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY + " varchar(1024), " +
-                NusysIntermediate.NusysConstants.LIBRARY_ELEMENT_LARGE_ICON_URL_KEY + " varchar(1024));");
+                NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
+                NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY + " varchar(128), " +
+                NusysConstants.LIBRARY_ELEMENT_TYPE_KEY + " varchar(128), " +
+                NusysConstants.LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY + " varchar(1024), " +
+                NusysConstants.LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY + " varchar(1024), " +
+                NusysConstants.LIBRARY_ELEMENT_CREATOR_USER_ID_KEY + " varchar(4096), " +
+                NusysConstants.LIBRARY_ELEMENT_FAVORITED_KEY + " varchar(32), " +
+                NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY + " varchar(4096), " +
+                NusysConstants.LIBRARY_ELEMENT_TITLE_KEY + " varchar(4096), " +
+                NusysConstants.LIBRARY_ELEMENT_SMALL_ICON_URL_KEY + " varchar(1024), " +
+                NusysConstants.LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY + " varchar(1024), " +
+                NusysConstants.LIBRARY_ELEMENT_LARGE_ICON_URL_KEY + " varchar(1024));");
 
             var aliasTable = MakeCommand("CREATE TABLE "+GetTableName(Constants.SQLTableType.Alias)+" ("+
-                NusysIntermediate.NusysConstants.ALIAS_ID_KEY + " varchar(128), " +
-                NusysIntermediate.NusysConstants.ALIAS_LIBRARY_ID_KEY + " varchar(128), " +
-                NusysIntermediate.NusysConstants.ALIAS_LOCATION_X_KEY + " float, " +
-                NusysIntermediate.NusysConstants.ALIAS_LOCATION_Y_KEY + " float, " +
-                NusysIntermediate.NusysConstants.ALIAS_SIZE_WIDTH_KEY + " float, " +
-                NusysIntermediate.NusysConstants.ALIAS_SIZE_HEIGHT_KEY + " float, " + 
-                NusysIntermediate.NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY + " varchar(128));");
+                NusysConstants.ALIAS_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
+                NusysConstants.ALIAS_LIBRARY_ID_KEY + " varchar(128), " +
+                NusysConstants.ALIAS_LOCATION_X_KEY + " float, " +
+                NusysConstants.ALIAS_LOCATION_Y_KEY + " float, " +
+                NusysConstants.ALIAS_SIZE_WIDTH_KEY + " float, " +
+                NusysConstants.ALIAS_SIZE_HEIGHT_KEY + " float, " + 
+                NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY + " varchar(128));");
 
             var metadataTable = MakeCommand("CREATE TABLE "+GetTableName(Constants.SQLTableType.Metadata)+" ("+
-                NusysIntermediate.NusysConstants.METADATA_LIBRARY_ELEMENT_ID_KEY + " varchar(128)," +
-                NusysIntermediate.NusysConstants.METADATA_KEY_COLUMN_KEY + " varchar(1028)," +
-                NusysIntermediate.NusysConstants.METADATA_VALUE_COLUMN_KEY + " varchar(4096));");
+                NusysConstants.METADATA_LIBRARY_ELEMENT_ID_KEY + " varchar(128)," +
+                NusysConstants.METADATA_KEY_COLUMN_KEY + " varchar(1028)," +
+                NusysConstants.METADATA_VALUE_COLUMN_KEY + " varchar(4096));");
 
             var propertiesTable = MakeCommand("CREATE TABLE " + GetTableName(Constants.SQLTableType.Properties) + " (" +
-                NusysIntermediate.NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY + " varchar(128), " +
-                NusysIntermediate.NusysConstants.PROPERTIES_KEY_COLUMN_KEY + " varchar(1028), " +
-                NusysIntermediate.NusysConstants.PROPERTIES_DATE_VALUE_COLUMN_KEY + " datetime, " +
-                NusysIntermediate.NusysConstants.PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY + " float, " +
-                NusysIntermediate.NusysConstants.PROPERTIES_STRING_VALUE_COLUMN_KEY + " varchar(4096));");
+                NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY + " varchar(128), " +
+                NusysConstants.PROPERTIES_KEY_COLUMN_KEY + " varchar(1028), " +
+                NusysConstants.PROPERTIES_DATE_VALUE_COLUMN_KEY + " datetime, " +
+                NusysConstants.PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY + " float, " +
+                NusysConstants.PROPERTIES_STRING_VALUE_COLUMN_KEY + " varchar(4096));");
 
             libraryElementTable.ExecuteNonQuery();
             aliasTable.ExecuteNonQuery();
             metadataTable.ExecuteNonQuery();
-
             propertiesTable.ExecuteNonQuery();
             contentTable.ExecuteNonQuery();
         }
@@ -247,11 +246,15 @@ namespace NusysServer
                 return false;
             }
             var safeInsertMessage = new Message();
-            safeInsertMessage[NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY] =
-                message[NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY];
+            safeInsertMessage[NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY] = message[NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY];
             var cmd = GetDeleteCommand(Constants.SQLTableType.LibrayElement, safeInsertMessage, Constants.Operator.And);
             var successInt = cmd.ExecuteNonQuery();
             return successInt > 0;
+        }
+
+        public IEnumerable<ElementModel> GetAliasesOfCollection(string collectionLibraryId)
+        {
+            return null;
         }
 
         /// <summary>
@@ -286,10 +289,10 @@ namespace NusysServer
             queryArgs.ColumnsToGet = Constants.GetAcceptedKeys(Constants.SQLTableType.Content);
 
             //get SQl Command from query args
-            var statement = GetSelectCommand(queryArgs);
+            var returnArgs = GetSelectCommand(queryArgs);
 
             //execute query command
-            using (var reader = statement.ExecuteReader())
+            using (var reader = returnArgs.Command.ExecuteReader())
             {
                 if (reader.HasRows)
                 {
@@ -297,7 +300,7 @@ namespace NusysServer
                     {
                         var m = new Message();
                         var i = 0;
-                        foreach (var columnName in Constants.GetAcceptedKeys(Constants.SQLTableType.Content))
+                        foreach (var columnName in returnArgs.Columns)
                         {
                             m[columnName] = reader[i];
                             i++;
@@ -310,20 +313,19 @@ namespace NusysServer
             throw new Exception("the requested contentDataModel wasn't found on the database");
         }
 
-
-
         /// <summary>
         /// Creates a SIMPLE select command for a specified table.  
+        /// Returns a private class with the select command and a list of queried columns.  
         /// Will AND or OR the message key-value pairs together.  
         /// 
         /// </summary>
         /// <param name="tableType"></param>
         /// <param name="selectionParameterMessage"></param>
         /// <returns></returns>
-        private SqlCommand GetSelectCommand(SqlSelectQueryArgs queryArgs)
+        private SelectCommandReturnArgs GetSelectCommand(SqlSelectQueryArgs queryArgs)
         {
             var cleanedMessage = Constants.GetCleanedMessageForDatabase(queryArgs.SelectProperties, queryArgs.TableType);
-            var cleanedColumnsToGet = queryArgs.ColumnsToGet.Intersect(Constants.GetAcceptedKeys(queryArgs.TableType));
+            var cleanedColumnsToGet = new List<string>(queryArgs.ColumnsToGet.Intersect(Constants.GetAcceptedKeys(queryArgs.TableType)));
             var sqlStatement = "SELECT "+String.Join(",",cleanedColumnsToGet)+" FROM " + GetTableName(queryArgs.TableType) + " WHERE ";
             if (cleanedMessage.Any())
             {
@@ -336,7 +338,7 @@ namespace NusysServer
                 sqlStatement += queryArgs.GroupOperator.ToString()+" "+kvp.Key + "='" + kvp.Value + "' "; 
             }
             sqlStatement += ";";
-            return MakeCommand(sqlStatement);
+            return new SelectCommandReturnArgs(MakeCommand(sqlStatement), cleanedColumnsToGet);
         }
 
         /// <summary>
@@ -371,9 +373,7 @@ namespace NusysServer
             sqlStatement = sqlStatement + columnNames + " VALUES " + values + ";";
             return MakeCommand(sqlStatement);
         }
-
-
-
+        
         /// <summary>
         /// This returns an sql delete command where either all or any (depending on the delete operator passed in) 
         /// of the key value pairs of columnValueMessage is is contained in the table.
@@ -403,5 +403,36 @@ namespace NusysServer
             deleteStringCmd = deleteStringCmd + ";";
             return MakeCommand(deleteStringCmd);
         }
+
+        /// <summary>
+        /// class for when you make a SQL select command.  This class should be returned.
+        /// The columns will tell you exactly which columns and in what order they have been queried for on the database.
+        /// The command itself is the select command to execute
+        /// </summary>
+        private class SelectCommandReturnArgs
+        {
+            /// <summary>
+            /// the columns that the command actually queries from the database
+            /// </summary>
+            public IEnumerable<string> Columns { get; private set; }
+
+            /// <summary>
+            /// the command to execute to actually query the database
+            /// </summary>
+            public SqlCommand Command { get; private set; }
+
+
+            /// <summary>
+            /// simple constructor that takes in the command and the columns
+            /// </summary>
+            /// <param name="command"></param>
+            /// <param name="columns"></param>
+            public SelectCommandReturnArgs(SqlCommand command, IEnumerable<string> columns)
+            {
+                Columns = columns;
+                Command = command;
+            }
+        }
     }
+
 }

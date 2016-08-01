@@ -183,7 +183,7 @@ namespace NuSysApp
                 }
 
                 UITask.Run(async delegate {
-                    if (SessionController.Instance.ContentController.GetContent(id) != null)
+                    if (SessionController.Instance.ContentController.GetLibraryElementModel(id) != null)
                     {
                         var controller = SessionController.Instance.ContentController.GetLibraryElementController(id);
                         //Debug.Assert(title != null);
@@ -216,7 +216,7 @@ namespace NuSysApp
                     if (dict.ContainsKey("favorited"))
                     {
                         bool favorited = bool.Parse(dict["favorited"].ToString());
-                        var model = SessionController.Instance.ContentController.GetContent(id);
+                        var model = SessionController.Instance.ContentController.GetLibraryElementModel(id);
                         if (model != null)
                         {
                             model.Favorited = favorited;
@@ -396,7 +396,7 @@ namespace NuSysApp
         }
         public async Task FetchLibraryElementData(string id)
         {
-            if (SessionController.Instance.ContentController.GetContent(id)?.Type == NusysConstants.ElementType.PDF && SessionController.Instance.ContentController.GetLibraryElementController(id) != null && !SessionController.Instance.ContentController.GetLibraryElementController(id).IsLoaded)
+            if (SessionController.Instance.ContentController.GetLibraryElementModel(id)?.Type == NusysConstants.ElementType.PDF && SessionController.Instance.ContentController.GetLibraryElementController(id) != null && !SessionController.Instance.ContentController.GetLibraryElementController(id).IsLoaded)
             {
                 bool fileExists = await CachePDF.isFilePresent(id);
 
@@ -415,7 +415,7 @@ namespace NuSysApp
                 else
                 {
                     await _serverClient.FetchLibraryElementData(id);
-                    var data = SessionController.Instance.ContentController.GetContent(id).Data;
+                    var data = SessionController.Instance.ContentController.GetLibraryElementController(id).Data;
 
                     CachePDF.createWriteFile(id, data); //save the data
                 }

@@ -20,11 +20,11 @@ namespace NuSysApp
 
         public ElementCollectionController(ElementModel model) : base(model)
         {
-            var contentModel = SessionController.Instance.ContentController.GetContent(model.LibraryId);
-            if (contentModel != null)
+            var collectionController = SessionController.Instance.ContentController.GetLibraryElementController(model.LibraryId) as CollectionLibraryElementController;
+            if (collectionController != null)
             {
-                ((CollectionLibraryElementModel) contentModel).OnChildAdded += AddChildById;
-                ((CollectionLibraryElementModel) contentModel).OnChildRemoved += RemoveChildById;
+                collectionController.OnChildAdded += AddChildById;
+                collectionController.OnChildRemoved += RemoveChildById;
             }
 
             Disposed += OnDisposed;
@@ -32,11 +32,11 @@ namespace NuSysApp
 
         private void OnDisposed(object source, object args)
         {
-            var contentModel = SessionController.Instance.ContentController.GetContent(Model.LibraryId);
-            if (contentModel != null)
+            var collectionController = SessionController.Instance.ContentController.GetLibraryElementController(Model.LibraryId) as CollectionLibraryElementController;
+            if (collectionController != null)
             {
-                ((CollectionLibraryElementModel)contentModel).OnChildAdded -= AddChildById;
-                ((CollectionLibraryElementModel)contentModel).OnChildRemoved -= RemoveChildById;
+                collectionController.OnChildAdded -= AddChildById;
+                collectionController.OnChildRemoved -= RemoveChildById;
             }
 
             Disposed -= OnDisposed;

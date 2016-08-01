@@ -71,7 +71,7 @@ namespace NuSysApp
             _linkTabable.RequestRemoveLink(linkId);
 
             //Removes the link from the content at the other end of the Link
-            var linkModel = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
+            var linkModel = SessionController.Instance.ContentController.GetLibraryElementModel(linkId) as LinkLibraryElementModel;
             if (linkModel?.InAtomId == _linkTabable.ContentId)
             {
                 var otherController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel?.OutAtomId);

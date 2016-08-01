@@ -103,7 +103,7 @@ namespace NuSysApp
                 var m = new Message();
 
                 // Get text from the pdf
-                var myDoc = await MediaUtil.DataToPDF(vm.LibraryElementController.LibraryElementModel.Data);
+                var myDoc = await MediaUtil.DataToPDF(vm.LibraryElementController.Data);
                 string pdf_text = "";
                 int numPages = myDoc.PageCount;
                 int currPage = 0;
@@ -114,7 +114,7 @@ namespace NuSysApp
                 }
 
                 m["id"] = SessionController.Instance.GenerateId();
-                m["data"] = vm.LibraryElementController.LibraryElementModel.Data;
+                m["data"] = vm.LibraryElementController.Data;
                 if (!string.IsNullOrEmpty(pdf_text))
                 {
                     m["pdf_text"] = pdf_text;

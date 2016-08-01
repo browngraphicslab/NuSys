@@ -35,7 +35,7 @@ namespace NuSysApp
             controller.ChildRemoved += OnChildRemoved;
             //(libraryElementController.LibraryElementModel as CollectionLibraryElementModel).OnLinkAdded += OnOnLinkAdded;
             //(libraryElementController.LibraryElementModel as CollectionLibraryElementModel).OnLinkRemoved += ElementCollectionViewModel_OnLinkRemoved;
-            Text = controller.LibraryElementModel?.Data;
+            Text = controller.LibraryElementController?.Data;
 
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
             AtomViewList = new ObservableCollection<FrameworkElement>();
@@ -110,7 +110,7 @@ namespace NuSysApp
         {
             var libraryElementIds = new HashSet<string>();
             var collectionLibraryElementModel =
-                SessionController.Instance.ContentController.GetContent(Model.LibraryId) as
+                SessionController.Instance.ContentController.GetLibraryElementModel(Model.LibraryId) as
                     CollectionLibraryElementModel;
             foreach (var node in collectionLibraryElementModel.Children)
             {

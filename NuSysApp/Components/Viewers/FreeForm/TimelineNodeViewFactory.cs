@@ -67,7 +67,7 @@ namespace NuSysApp
                     break;
                 case NusysConstants.ElementType.PDF:
                     view = new Image();
-                    var data = controller.LibraryElementModel.Data;
+                    var data = controller.LibraryElementController.Data;
                     var dataBytes = Convert.FromBase64String(data);
                     var ms = new MemoryStream(dataBytes);
                     using (IInputStream inputStreamAt = ms.AsInputStream())

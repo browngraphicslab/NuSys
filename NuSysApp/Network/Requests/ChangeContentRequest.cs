@@ -29,8 +29,8 @@ namespace NuSysApp
 
         public override async Task ExecuteRequestFunction()
         {
-            LibraryElementModel content = SessionController.Instance.ContentController.GetContent(_message.GetString("contentId"));
-            var controller = SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId);
+            LibraryElementModel libraryElementModel = SessionController.Instance.ContentController.GetLibraryElementModel(_message.GetString("contentId"));
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModel.LibraryElementId);
             controller.UnPack(_message);
             if (_message.ContainsKey("favorited"))
             {
@@ -40,19 +40,19 @@ namespace NuSysApp
             {
 
                 var inkIds = _message.GetList<string>("inklines");
-                var libModel = (CollectionLibraryElementModel)content;
-                var oldInkLines = libModel.InkLines;
+                var collectionController = (CollectionLibraryElementController)controller;
+                var oldInkLines = collectionController.InkLines;
                 var added = inkIds.Except(oldInkLines).ToArray();
                 var removed = oldInkLines.Except(inkIds).ToArray();
 
                 foreach (var idremoved in removed)
                 {
-                    libModel.RemoveInk(idremoved);
+                    collectionController.RemoveInk(idremoved);
                 }
 
                 foreach (var idadded in added)
                 {
-                    libModel.AddInk(idadded);
+                    collectionController.AddInk(idadded);
                 }
 
             }

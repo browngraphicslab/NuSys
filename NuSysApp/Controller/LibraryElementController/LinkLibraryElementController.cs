@@ -39,7 +39,7 @@ namespace NuSysApp
                 byte r = byte.Parse(hexColor.Substring(3, 2), NumberStyles.HexNumber);
                 byte g = byte.Parse(hexColor.Substring(5, 2), NumberStyles.HexNumber);
                 byte b = byte.Parse(hexColor.Substring(7, 2), NumberStyles.HexNumber);
-                LinkLibraryElementModel.Color = Color.FromArgb(a, r, g, b);
+                //LinkLibraryElementModel.Color = Color.FromArgb(a, r, g, b);  TODO put back in the color
                 //Color = Color.FromArgb(message.GetString("color"));
             }
             base.UnPack(message);

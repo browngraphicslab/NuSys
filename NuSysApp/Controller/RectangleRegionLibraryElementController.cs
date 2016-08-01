@@ -51,8 +51,8 @@ namespace NuSysApp
         public void SetLocation(Point topLeft)
         {
 
-            RectangleRegionModel.TopLeftPoint = new Point(Math.Max(0.001, topLeft.X), Math.Max(0.001, topLeft.Y));
-            LocationChanged?.Invoke(this, RectangleRegionModel.TopLeftPoint);
+            RectangleRegionModel.TopLeftPoint = new PointModel(Math.Max(0.001, topLeft.X), Math.Max(0.001, topLeft.Y));
+            LocationChanged?.Invoke(this, new Point(RectangleRegionModel.TopLeftPoint.X, RectangleRegionModel.TopLeftPoint.Y));
             if (!_blockServerInteraction)
             {
                 _debouncingDictionary.Add("rectangle_location", RectangleRegionModel.TopLeftPoint);

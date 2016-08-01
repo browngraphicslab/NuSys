@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using NusysIntermediate;
 
-namespace NuSysApp
+namespace NusysIntermediate
 {
     public abstract class Region : LibraryElementModel
     {

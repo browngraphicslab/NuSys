@@ -34,7 +34,7 @@ namespace NuSysApp
         {
             get { return new HashSet<string>(_contents.Keys); }
         }
-        public LibraryElementModel GetContent(string id)
+        public LibraryElementModel GetLibraryElementModel(string id)
         {
             Debug.Assert(id != null);
             return _contents.ContainsKey(id) ? _contents[id] : null;
@@ -55,6 +55,38 @@ namespace NuSysApp
         {
             return _contentControllers.ContainsKey(id) && _contentControllers[id].IsLoaded;
         }
+
+        /// <summary>
+        /// will create and add a LibraryElementModel based off a message.  
+        /// This message will probably be from the server.  
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public LibraryElementModel CreateAndAddModelFromMessage(Message message)
+        {
+            Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementModel(message.GetString(NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY)) == null);
+            var model = LibraryElementModelFactory.CreateFromMessage(message);
+
+            SessionController.Instance.ContentController.Add(model);
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(model.LibraryElementId);
+            Debug.Assert(controller != null);
+            controller.UnPack(message);
+            if (NusysConstants.IsRegionType(model.Type))
+            {
+                Debug.Assert(model is Region);
+                SessionController.Instance.RegionsController.AddRegion(model as Region);
+            }
+            if (model.Type == NusysConstants.ElementType.Link)
+            {
+                var linkController =
+                    SessionController.Instance.ContentController.GetLibraryElementController(model.LibraryElementId) as
+                        LinkLibraryElementController;
+                Debug.Assert(linkController != null);
+                SessionController.Instance.LinksController.AddLinkLibraryElementController(linkController);
+            }
+            return model;
+        }
+
         public string Add(LibraryElementModel model)
         {
             if (!String.IsNullOrEmpty(model.LibraryElementId) && !_contents.ContainsKey(model.LibraryElementId))
