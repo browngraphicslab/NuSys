@@ -24,11 +24,36 @@ namespace NuSysApp
     public class PdfNodeViewModel : ElementViewModel, Sizeable
     {
         private CompositeTransform _inkScale;
+        private bool _isSelected;
         public int CurrentPageNumber { get;  private set; }
         public MuPDFWinRT.Document _document;
         public ObservableCollection<Button> SuggestedTags { get; set; }
         private List<string> _suggestedTags = new List<string>();
         public ObservableCollection<PDFRegionView> RegionViews { private set; get; }
+
+        /// <summary>
+        /// Override the IsSelected setter to also remove the thumbnail and load the pdf
+        /// </summary>
+        public override bool IsSelected
+        {
+            get { return _isSelected; }
+            set
+            {
+                if (_isSelected == value)
+                {
+                    return;
+                }
+
+                _isSelected = value;
+                Controller.Selected(value);
+                RaisePropertyChanged("IsSelected");
+                if (value)
+                {
+                    this.DisplayPdf();
+                    this.CreatePdfRegionViews();
+                }
+            }
+        }
 
         public Sizeable View { get; set; }
 
@@ -88,7 +113,8 @@ namespace NuSysApp
         {
             if (Controller.LibraryElementController.IsLoaded)
             {
-                await DisplayPdf();
+                //await DisplayPdf();
+                await DisplayPlaceholderThumbnail();
             }
             else
             {
@@ -98,14 +124,13 @@ namespace NuSysApp
 
         private async void LibraryElementModelOnOnLoaded(object sender)
         {
-            await DisplayPdf();
-            this.CreatePdfRegionViews();
-
+            this.DisplayPlaceholderThumbnail();
         }
 
 
         private async Task DisplayPdf()
         {
+
             if (Controller.LibraryElementModel == null || Controller.LibraryElementModel.Data == null) {
                 return;
             }
@@ -113,6 +138,31 @@ namespace NuSysApp
             await Goto(CurrentPageNumber);
             SetSize(Width, Height);
             //LaunchLDA((PdfNodeModel)this.Model);
+        }
+
+        /// <summary>
+        /// Displays the placeholder thumbnail by retreiving the placholder image and setting the ImageSource to it
+        /// </summary>
+        /// <returns></returns>
+        private async Task DisplayPlaceholderThumbnail()
+        {
+            // Get the storage file of the placeholder thumbnail
+            string root =
+               Windows.ApplicationModel.Package.Current.InstalledLocation.Path;
+            string path = root + @"\Assets";
+            StorageFile file =
+                await StorageFile.GetFileFromPathAsync(path + @"\placeholder_pdf_thumbnail.png");
+
+            // Save the storage file as a writeable bitmap and set the ImageSource to this bitmap
+            using (var stream = await file.OpenReadAsync())
+            {
+                WriteableBitmap bitmap = new WriteableBitmap(400, 600);
+                await bitmap.SetSourceAsync(stream);
+                bitmap.Invalidate();
+                ImageSource = bitmap;
+                RaisePropertyChanged("ImageSource");
+            }
+            
         }
 
         private async void OnPageChange(int page)

@@ -28,12 +28,12 @@ namespace NuSysApp
             InitializeComponent();
             //  IsDoubleTapEnabled = true;
             DataContext = vm;
-
             vm.Controller.Disposed += ControllerOnDisposed;
             SizeChanged += PdfNodeView_SizeChanged;
 
             Loaded += PdfNodeView_Loaded;
         }
+
 
         private void PdfNodeView_Loaded(object sender, RoutedEventArgs e)
         {
@@ -119,6 +119,8 @@ namespace NuSysApp
         {
             return xRenderedPdf.ActualHeight;
         }
-        
+
+     
+
     }
 }

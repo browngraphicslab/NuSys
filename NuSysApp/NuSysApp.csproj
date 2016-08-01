@@ -845,6 +845,7 @@
     <Content Include="Assets\icon_node_x.png" />
     <Content Include="Assets\icon_node_x2.png" />
     <Content Include="Assets\pdf.png" />
+    <Content Include="Assets\placeholder_pdf_thumbnail.png" />
     <Content Include="Assets\plus_icon.png" />
     <Content Include="Assets\piegraph bluegreen.png" />
     <Content Include="Assets\powerpointIcon.png" />
