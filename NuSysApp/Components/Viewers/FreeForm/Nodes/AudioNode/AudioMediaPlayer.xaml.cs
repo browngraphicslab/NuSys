@@ -179,6 +179,11 @@ namespace NuSysApp
                 double totalDuration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
                 double denormalizedMediaElementPosition = normalizedMediaElementPosition * totalDuration;
                 TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)denormalizedMediaElementPosition);
+                //If not in bounds of current audio, don't update mediaelement position
+                if (time.CompareTo(StartMarker.Time) < 0 || time.CompareTo(EndMarker.Time) > 0)
+                {
+                    return;
+                }
                 MediaElement.Position = time;
 
                 if (MediaElement.CurrentState != MediaElementState.Playing)
