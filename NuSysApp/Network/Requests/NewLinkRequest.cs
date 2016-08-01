@@ -59,13 +59,16 @@ namespace NuSysApp
             Color c = Constants.linkColors[rand.Next(0, Constants.linkColors.Count)];
             _message["color"] = c.ToString();
             ElementType type = (ElementType)Enum.Parse(typeof(ElementType), (string)_message["type"], true);
-            _message["isBiDirectional"] = "false";
 
             var libraryElement = LibraryElementModelFactory.CreateFromMessage(_message);
 
             var controller =
                 SessionController.Instance.ContentController.GetLibraryElementController(
                     libraryElement.LibraryElementId);
+            //var linkLibElemCont = controller as LinkLibraryElementController;
+            //Debug.WriteLine(linkLibElemCont != null);
+            _message["isBiDirectional"] = true;//linkLibElemCont.LinkLibraryElementModel.IsBiDirectional.ToString();
+
             libraryElement.Timestamp = time;
             var loadEventArgs = new LoadContentEventArgs(_message["data"]?.ToString());
             if (_message.ContainsKey("data") && _message["data"] != null)
@@ -114,7 +117,8 @@ namespace NuSysApp
                 linkController as LinkLibraryElementController);
             }
 
-         }
+        }
 
     }
 }
+

@@ -11,10 +11,10 @@ namespace NuSysApp
 {
     public class LinkViewModel : BaseINPC, IEditable
     {
-        public ObservableCollection<LinkController> LinkList{ get; set; }
+        public ObservableCollection<LinkController> LinkList { get; set; }
 
 
-        
+
         private string _title;
         private string _annotation;
         private int _numDirectionButtonClicks;
@@ -22,8 +22,8 @@ namespace NuSysApp
         private bool _selected;
         private SolidColorBrush _color;
 
-        private SolidColorBrush _selectedColor = new SolidColorBrush( ColorHelper.FromArgb(0xFF, 0x98, 0x1A, 0x4D));
-        private SolidColorBrush _notSelectedColor = new SolidColorBrush(ColorHelper.FromArgb(0xFF,0x11,0x3D,0x40));
+        private SolidColorBrush _selectedColor = new SolidColorBrush(ColorHelper.FromArgb(0xFF, 0x98, 0x1A, 0x4D));
+        private SolidColorBrush _notSelectedColor = new SolidColorBrush(ColorHelper.FromArgb(0xFF, 0x11, 0x3D, 0x40));
 
         public LinkModel LinkModel
         {
@@ -35,12 +35,13 @@ namespace NuSysApp
         }
 
 
-        public LinkController Controller {
+        public LinkController Controller
+        {
             get
             {
                 Debug.Assert(_controller != null);
                 return _controller;
-            } 
+            }
         }
         public Point2d Anchor
         {
@@ -85,7 +86,7 @@ namespace NuSysApp
         {
             Controller.TitleChanged -= TitleChanged;
         }
-      
+
 
         public void UpdateAnchor()
         {
@@ -101,21 +102,26 @@ namespace NuSysApp
 
         public void DirectionButtonClicked()
         {
-            _numDirectionButtonClicks++;
+
+            var linkLibElemCont = _controller.LibraryElementController as LinkLibraryElementController;
+            Debug.Assert(linkLibElemCont != null);
+            linkLibElemCont.NumDirectionButtonClicks++;
             //switching to monodirectional
-            if (_numDirectionButtonClicks % 3 == 1)
+            if (linkLibElemCont.NumDirectionButtonClicks % 3 == 1)
             {
-                Debug.WriteLine("make mono");
+                linkLibElemCont.RaiseLinkDirectionChanged(linkLibElemCont, LinkDirectionEnum.Mono1);
+                linkLibElemCont.LinkLibraryElementModel.IsBiDirectional = false;
             }
             //swapping direction
-            else if (_numDirectionButtonClicks % 3 == 2)
+            else if (linkLibElemCont.NumDirectionButtonClicks % 3 == 2)
             {
-                Debug.WriteLine("swap mono");
+                linkLibElemCont.RaiseLinkDirectionChanged(linkLibElemCont, LinkDirectionEnum.Mono2);
             }
             //going back to bidirectional
             else
             {
-                Debug.WriteLine("make bi");
+                linkLibElemCont.RaiseLinkDirectionChanged(linkLibElemCont, LinkDirectionEnum.Bi);
+                linkLibElemCont.LinkLibraryElementModel.IsBiDirectional = true;
             }
         }
 

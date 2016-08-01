@@ -8,8 +8,11 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
+using NuSysApp;
 using NuSysApp.Controller;
 using NuSysApp.Util;
+using WinRTXamlToolkit.Controls.DataVisualization;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -27,11 +30,15 @@ namespace NuSysApp
             DataContext = vm;
 
             vm.PropertyChanged += OnPropertyChanged;
-           
-          //  vm.Controller.LibraryElementModel.OnTitleChanged+= ControllerOnTitleChanged;
+
+            //  vm.Controller.LibraryElementModel.OnTitleChanged+= ControllerOnTitleChanged;
             vm.Controller.Disposed += OnDisposed;
 
-             Title.SizeChanged += delegate (object sender, SizeChangedEventArgs args)
+            var linkLibElemCont = vm.Controller.LibraryElementController as LinkLibraryElementController;
+            Debug.Assert(linkLibElemCont != null);
+            linkLibElemCont.LinkDirectionChanged += OnLinkDirectionChanged;
+
+            Title.SizeChanged += delegate (object sender, SizeChangedEventArgs args)
             {
                 Rect.Width = args.NewSize.Width;
                 Rect.Height = args.NewSize.Height;
@@ -47,17 +54,33 @@ namespace NuSysApp
 
         }
 
-        private void LinkControllerOnAnnotationChanged(string text)
+        public void OnLinkDirectionChanged(object sender, LinkDirectionEnum e)
         {
-            var vm = (LinkViewModel)DataContext;
-             Title.Text = text;
-            if (text != "")//TODO put visibility settings back in
+            if (e.Equals(LinkDirectionEnum.Mono1))
             {
-                 Title.Visibility = Visibility.Visible;
+                image.Source = new BitmapImage(new Uri("ms-appx:///Assets/mono2.png"));
+            }
+            else if (e.Equals(LinkDirectionEnum.Mono2))
+            {
+                image.Source = new BitmapImage(new Uri("ms-appx:///Assets/bi1.png"));
             }
             else
             {
-                 Title.Visibility = Visibility.Collapsed;
+                image.Source = new BitmapImage(new Uri("ms-appx:///Assets/mono1.png"));
+            }
+        }
+
+        private void LinkControllerOnAnnotationChanged(string text)
+        {
+            var vm = (LinkViewModel)DataContext;
+            Title.Text = text;
+            if (text != "")//TODO put visibility settings back in
+            {
+                Title.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                Title.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -72,6 +95,9 @@ namespace NuSysApp
         private void OnDisposed(object source, object nothing = null)
         {
             var vm = (LinkViewModel)DataContext;
+            var linkLibElemCont = vm.Controller.LibraryElementController as LinkLibraryElementController;
+            Debug.Assert(linkLibElemCont != null);
+            linkLibElemCont.LinkDirectionChanged -= OnLinkDirectionChanged;
             vm.PropertyChanged -= OnPropertyChanged;
             vm.Controller.Disposed -= OnDisposed;
             SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Remove(this);
@@ -80,11 +106,11 @@ namespace NuSysApp
 
         private async void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
-            
+
             this.UpdateControlPoints();
 
         }
-        
+
 
         private void OnAtomPropertyChanged(object sender, PropertyChangedEventArgs e)
         {

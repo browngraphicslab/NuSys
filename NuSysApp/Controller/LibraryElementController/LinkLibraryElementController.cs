@@ -11,11 +11,19 @@ namespace NuSysApp
 {
     public class LinkLibraryElementController : LibraryElementController
     {
+        public event EventHandler<LinkDirectionEnum> LinkDirectionChanged;
         public LinkLibraryElementModel LinkLibraryElementModel { get; private set; }
+        public int NumDirectionButtonClicks { get; set; }
         public LinkLibraryElementController(LinkLibraryElementModel model) : base(model)
         {
             Debug.Assert(model != null);
             LinkLibraryElementModel = model;
+            NumDirectionButtonClicks = 0;
+        }
+
+        public void RaiseLinkDirectionChanged(object sender, LinkDirectionEnum e)
+        {
+            LinkDirectionChanged(sender, e);
         }
 
         public override void UnPack(Message message)

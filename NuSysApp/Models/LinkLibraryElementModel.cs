@@ -10,13 +10,13 @@ using Newtonsoft.Json;
 
 namespace NuSysApp
 {
-    public class LinkLibraryElementModel: LibraryElementModel
+    public class LinkLibraryElementModel : LibraryElementModel
     {
         public string InAtomId { get; set; }
         public string OutAtomId { get; set; }
         public Color Color { get; set; }
         public bool IsBiDirectional { get; set; }
-        public LinkLibraryElementModel(string id1, string id2, string id): base(id, ElementType.Link)
+        public LinkLibraryElementModel(string id1, string id2, string id) : base(id, ElementType.Link)
         {
             InAtomId = id1;
             OutAtomId = id2;
