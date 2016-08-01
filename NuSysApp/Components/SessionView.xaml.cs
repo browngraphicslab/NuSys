@@ -257,7 +257,7 @@ namespace NuSysApp
 
             // change the proper visibilities
             xFloatingMenu.Visibility = Visibility.Collapsed;
-            this.xDetailViewer.Visibility = Visibility.Collapsed;
+            this.xDetailViewer.CloseDv();
 
 
             // center the buttons, make them visibile
@@ -290,7 +290,7 @@ namespace NuSysApp
 
             // change the proper visibilities
             xFloatingMenu.Visibility = Visibility.Collapsed;
-            this.xDetailViewer.Visibility = Visibility.Collapsed;
+            this.xDetailViewer.CloseDv();
 
             // center the buttons, make them visibile
             var buttonMargin = 10;

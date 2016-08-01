@@ -152,10 +152,11 @@ namespace NuSysApp
         public void Dispose()
         {
             CurrentDetailViewable.TitleChanged -= ControllerTitleChanged;
-            
+            SizeChanged -= OnSizeChanged_InvokeTabVMSizeChanged;
 
+            // If this is null remove it 
+            CurrentElementController.KeywordsChanged -= KeywordsChanged;
             _nodeModel = null;
-
         }
         public async Task<bool> ShowElement(IDetailViewable viewable)
         {      
@@ -527,8 +528,8 @@ namespace NuSysApp
             CurrentDetailViewable.SetTitle(title);
             CurrentDetailViewable.TitleChanged += ControllerTitleChanged;
 
-            Tabs.Remove(CurrentDetailViewable);
-            Tabs.Add(CurrentDetailViewable);
+            //Tabs.Remove(CurrentDetailViewable);
+            //Tabs.Add(CurrentDetailViewable);
 
             /*
             // TODO make the exploration mode related list box show up

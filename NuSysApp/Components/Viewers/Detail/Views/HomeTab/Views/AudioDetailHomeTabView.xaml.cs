@@ -81,11 +81,18 @@ namespace NuSysApp
              _temporaryLinkVisual.PointerReleased += ScrubBar_OnPointerReleased;
              _temporaryLinkVisual.Opacity = 1;
  */
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            detailViewerView.Disposed += DetailViewerView_Disposed;
+
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
             vm.OnRegionSeekPassing += MediaPlayer.onSeekedTo;
             vm.View = this;
             
+        }
 
+        private void DetailViewerView_Disposed(object sender, EventArgs e)
+        {
+            Dispose();
         }
 
         private void MediaPlayer_MediaOpened(object sender, RoutedEventArgs e)
@@ -155,6 +162,7 @@ namespace NuSysApp
 
         public void Dispose()
         {
+            StopAudio();
         }
 
         #region addToCollection
