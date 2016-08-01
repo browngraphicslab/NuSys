@@ -71,6 +71,8 @@ namespace NuSysApp
 
         private void DetailViewerView_Disposed(object sender, EventArgs e)
         {
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            detailViewerView.Disposed -= DetailViewerView_Disposed;
             Dispose();
         }
 

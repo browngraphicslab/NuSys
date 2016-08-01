@@ -34,7 +34,7 @@ namespace NuSysApp
     ///     xClippingWrapper.LibraryElementController = _vm.LibraryElementController;
     /// 
     /// </summary>
-    public sealed partial class RectangleWrapper : UserControl
+    public sealed partial class RectangleWrapper : UserControl, INuSysDisposable
     {
 
         /// <summary>
@@ -51,6 +51,8 @@ namespace NuSysApp
         public static readonly DependencyProperty ContentProperty =
             DependencyProperty.Register(
                 "Content", typeof(FrameworkElement), typeof(object), new PropertyMetadata(null));
+
+        public event EventHandler Disposed;
 
         private LibraryElementController _contentController;
 
@@ -227,7 +229,7 @@ namespace NuSysApp
         /// </summary>
         public async Task AddRegionView(string regionLibraryElementId)
         {
-            await UITask.Run(async delegate {
+            await UITask.Run(delegate {
 
                 // get the region from the id
                 var regionLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementId) as RectangleRegionLibraryElementController;
@@ -252,7 +254,7 @@ namespace NuSysApp
                         vm = new ImageRegionViewModel(regionLibraryElementController.LibraryElementModel as RectangleRegion,
                                 regionLibraryElementController, this);
                         view = new ImageRegionView(vm as ImageRegionViewModel);
-
+                        Disposed += (view as ImageRegionView).Dispose;
                         // get all the data context stuff in a view.loaded delegate, because it comes from xaml and must be loaded to be accessed in a ui thread
                         view.Loaded += delegate
                         {
@@ -274,6 +276,7 @@ namespace NuSysApp
                         vm = new PdfRegionViewModel(regionLibraryElementController.LibraryElementModel as PdfRegionModel, 
                                 regionLibraryElementController as PdfRegionLibraryElementController, this);
                         view = new PDFRegionView(vm as PdfRegionViewModel);
+                        Disposed += (view as PDFRegionView).Dispose;
 
                         // get all the data context stuff in a view.loaded delegate, because it comes from xaml and must be loaded to be accessed in a ui thread
                         view.Loaded += delegate
@@ -360,6 +363,11 @@ namespace NuSysApp
         public ItemCollection GetRegionItems()
         {
             return xClippingCanvas.Items;
+        }
+
+        public void Dispose()
+        {
+            Disposed?.Invoke(this, EventArgs.Empty);
         }
 
         // My code is slick yo - Sahil, July 2016

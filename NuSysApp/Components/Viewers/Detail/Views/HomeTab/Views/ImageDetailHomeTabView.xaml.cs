@@ -39,16 +39,6 @@ namespace NuSysApp
             DataContext = vm;
             _libraryElementId = vm.LibraryElementController.ContentId;
             InitializeComponent();
-
-            //var token = model.GetMetaData("Token");
-            //if (token == null || String.IsNullOrEmpty(token?.ToString()))
-            //{
-            //    SourceBttn.Visibility = Visibility.Collapsed;
-            //}
-            //else if (!Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token?.ToString()))
-            //{
-            //    SourceBttn.Visibility = Visibility.Collapsed;
-            //}
             
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
             vm.PropertyChanged += PropertyChanged;
@@ -56,6 +46,21 @@ namespace NuSysApp
 
             xClippingWrapper.Controller = vm.LibraryElementController;
             xClippingWrapper.ProcessLibraryElementController();
+
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            detailViewerView.Disposed += DetailViewerView_Disposed;
+        }
+
+        private void DetailViewerView_Disposed(object sender, EventArgs e)
+        {
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            detailViewerView.Disposed -= DetailViewerView_Disposed;
+            Dispose();
+        }
+
+        private void Dispose()
+        {
+            xClippingWrapper.Dispose();
         }
 
         public void RefreshRegions()

@@ -23,12 +23,9 @@ using System.Threading.Tasks;
 namespace NuSysApp
 {
     public sealed partial class RegionEditorTabView : UserControl
-    {
-        public DetailViewerView DetailViewerView { set; get; }
-        
+    {        
         private bool _edgeCaseButtonExited;
         public  RegionEditorTabView()
-
         {
             this.InitializeComponent();
 
@@ -38,7 +35,9 @@ namespace NuSysApp
 
         private void AddRegion_Clicked(object sender, RoutedEventArgs e)
         {
-            var vm = DetailViewerView.DataContext as DetailViewerViewModel;
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            Debug.Assert(detailViewerView != null);
+            var vm = detailViewerView.DataContext as DetailViewerViewModel;
             if (vm == null)
             {
                 return;
@@ -106,7 +105,9 @@ namespace NuSysApp
             {
                 if (type == ElementType.PDF)
                 {
-                    xListViewPresenter.Content = new PDFRegionListView(DetailViewerView);
+                    var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+                    Debug.Assert(detailViewerView != null);
+                    xListViewPresenter.Content = new PDFRegionListView(detailViewerView);
                     if (!xMainGrid.ColumnDefinitions.Contains(xSecondColumn))
                     {
                         xMainGrid.ColumnDefinitions.Add(xSecondColumn);

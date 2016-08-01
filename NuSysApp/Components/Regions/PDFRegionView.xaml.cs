@@ -45,9 +45,7 @@ namespace NuSysApp
             CompositeTransform composite = new CompositeTransform();
             this.RenderTransform = composite;
 
-            //vm.SizeChanged += ChangeSize;
             regionVM.LocationChanged += ChangeLocation;
-
 
             var parentWidth = regionVM.RectangleWrapper.GetWidth();
             var parentHeight = regionVM.RectangleWrapper.GetHeight();
@@ -77,25 +75,6 @@ namespace NuSysApp
             composite.TranslateY = topLeft.Y;
 
         }
-        /// <summary>
-        /// Changes size of view according to element that contains it.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        private void ChangeSize(object sender, double width, double height)
-        {
-            var vm = DataContext as PdfRegionViewModel;
-
-            var composite = RenderTransform as CompositeTransform;
-            if (composite == null)
-            {
-                return;
-            }
-            vm.Width = width;
-            vm.Height = height;
-        }
-
         
         private void XResizingTriangle_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
@@ -315,29 +294,45 @@ namespace NuSysApp
 
         public void RescaleComponents(double scaleX, double scaleY)
         {
+            /// How this works
+            /// We scale the entire region based on the image being scaled. But we then want to invert the scaling on the visual components, 
+            /// but not on the size of the region as a whole. To revert the scale, we divide the transforms by their current scale. using scaleX = 1/scaleX etc.
+            /// we then shift the transforms over by certain margins. The math is simple even though the numbers look like "magic numbers."
+            /// 
+            /// The width of the rectangle borders is 3. The size of the delete button and resizing triangle is 25. So these magic numbers are simply
+            /// the result of shifting things over by values relative to 25 and 3.
+
             //Updates scale of delete button
             DeleteTransform.ScaleX = 1 / scaleX;
             DeleteTransform.ScaleY = 1 / scaleY;
-
+            xDelete.Margin = new Thickness(5 / scaleX, -28 / scaleY, 0, 0); // move button so its left side is 2 px to the right of the rectangle border, and bottom is in line with rectangle broder
 
             //Updates scale of text box
-            
+
             NameTextTransform.ScaleX = 1 / scaleX;
             NameTextTransform.ScaleY = 1 / scaleY;
             //Updates margin so that it is directly on top of the rectangle.
             xNameTextBox.Margin = new Thickness(0, -30 / scaleY, 0, 0);
-            xNameTextBox.MinWidth = (DataContext as PdfRegionViewModel).Width / scaleX;
 
             //UPdates scale of Resizing Triangle
             ResizerTransform.ScaleX = 1 / scaleX;
             ResizerTransform.ScaleY = 1 / scaleY;
-            xResizingTriangle.Margin = new Thickness(-28 / scaleX, -28 / scaleY, 0, 0);
+            xResizingTriangle.Margin = new Thickness(-25 / scaleX, -25 / scaleY, 0, 0); // move resizing triangle so bottom and left are in line with the bottom and right side of the rectangle border
+
 
             //xMainRectangle.StrokeThickness = 3 / scaleX;
             xMainRectangleBorder.BorderThickness = new Thickness(3 / scaleX, 3 / scaleY, 3 / scaleX, 3 / scaleY);
 
+        }
 
+        public void Dispose(object sender, EventArgs e)
+        {
+            var rectangleWrapper = sender as RectangleWrapper;
+            rectangleWrapper.Disposed -= Dispose;
 
+            var vm = DataContext as PdfRegionViewModel;
+            vm.LocationChanged -= ChangeLocation;
+            vm.Dispose();
         }
     }
 }

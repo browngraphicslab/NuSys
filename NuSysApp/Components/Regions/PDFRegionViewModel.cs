@@ -13,11 +13,11 @@ namespace NuSysApp
     public class PdfRegionViewModel : RegionViewModel
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public double ContainerHeight { get; set; }
-        public double ContainerWidth { get; set; }
         public RectangleWrapper RectangleWrapper { get; private set; }
         private double _height;
         private double _width;
+
+        private RectangleRegionLibraryElementController _regionLibraryElementController;
 
         public double Height
         {
@@ -47,7 +47,6 @@ namespace NuSysApp
             set
             {
                 _name = value;
-                //Model.Name = _name;
                 RaisePropertyChanged("Name");
             }
         }
@@ -68,16 +67,9 @@ namespace NuSysApp
                 return;
             }
 
-            ContainerSizeChanged += BaseSizeChanged;
-            ContainerHeight = wrapper.GetHeight();
-            ContainerWidth = wrapper.GetWidth();
-            Height = model.Height * ContainerHeight;
-            Width = model.Width * ContainerWidth;
+            _regionLibraryElementController = regionLibraryElementController;
             RectangleWrapper = wrapper;
             RectangleWrapper.SizeChanged += RectangleWrapper_SizeChanged;
-
-            //RegionLibraryElementController.RegionUpdated += RegionUpdated;
-
 
             regionLibraryElementController.SizeChanged += RegionController_SizeChanged;
             regionLibraryElementController.LocationChanged += RegionController_LocationChanged;
@@ -132,55 +124,7 @@ namespace NuSysApp
             Height = model.Height * RectangleWrapper.GetHeight();
             Width = model.Width * RectangleWrapper.GetWidth();
             SizeChanged?.Invoke(this, Width, Height);
-        }
-        /*
-        private void RegionUpdated(object source, Region region)
-        {
-            if (region.ContentId != Model.ContentDataModelId)
-            {
-                return;
-            }
-            var model = Model as PdfRegionModel;
-            if (model == null)
-            {
-                return;
-            }
-            Height = model.BottomRightPoint.Y * ContainerViewModel.GetHeight() - model.TopLeftPoint.Y * ContainerViewModel.GetHeight();
-            Width = model.BottomRightPoint.X * ContainerViewModel.GetWidth() - model.TopLeftPoint.X * ContainerViewModel.GetWidth();
-
-            RegionChanged?.Invoke(this, Height, Width);
-            var topLeft = new Point(model.TopLeftPoint.X * ContainerViewModel.GetWidth(), model.TopLeftPoint.Y * ContainerViewModel.GetHeight());
-            var bottomRight = new Point(model.BottomRightPoint.X * ContainerViewModel.GetWidth(), model.BottomRightPoint.Y * ContainerViewModel.GetHeight());
-            SizeChanged?.Invoke(this, topLeft, bottomRight);
-
-            RaisePropertyChanged("Height"); 
-            RaisePropertyChanged("Width");
-        }
-        */
-        private void BaseSizeChanged(object sender, double width, double height)
-        {
-
-            var model = Model as PdfRegionModel;
-            if (model == null)
-            {
-                return;
-            }
-
-
-            //Width and height passed in are the width and height of PDF itself.
-            Height = model.Height * height;
-            Width = model.Width * width;
-            ContainerHeight = height;
-            ContainerWidth = width;
-            var topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
-
-            SizeChanged?.Invoke(this, Width, Height);
-            LocationChanged?.Invoke(this, topLeft);
-            RaisePropertyChanged("Height");
-            RaisePropertyChanged("Width");
-            RaisePropertyChanged("ContainerHeight");
-            RaisePropertyChanged("ContainerWidth");
-        }
+        }        
 
         public void SetNewPoints(Point topLeft, Point bottomRight)
         {
@@ -197,9 +141,6 @@ namespace NuSysApp
             var normalWidth = normalBottomRightX - normalTopLeftX;
             var normalHeight = normalBottomRightY - normalTopLeftY;
 
-            //model.TopLeftPoint = new Point(normalTopLeftX, normalTopLeftY);
-            //model.BottomRightPoint = new Point(normalBottomRightX, normalBottomRightY);
-            //RegionLibraryElementController.UpdateRegion(Model);
             var pdfRegionController = RegionLibraryElementController as PdfRegionLibraryElementController;
             pdfRegionController?.SetLocation(new Point(normalTopLeftX, normalTopLeftY));
             pdfRegionController?.SetSize(normalWidth, normalHeight);
@@ -216,9 +157,7 @@ namespace NuSysApp
             var normalTopLeftY = topLeft.Y / RectangleWrapper.GetHeight();
 
             model.TopLeftPoint = new Point(normalTopLeftX, normalTopLeftY);
-            //model.BottomRightPoint = new Point(normalBottomRightX, normalBottomRightY);
-
-
+            
             (RegionLibraryElementController as PdfRegionLibraryElementController).SetLocation(model.TopLeftPoint);
         }
 
@@ -241,6 +180,14 @@ namespace NuSysApp
         {
             Name = text;
             RegionLibraryElementController.SetTitle(Name);
+        }
+
+        internal void Dispose()
+        {
+            RectangleWrapper.SizeChanged -= RectangleWrapper_SizeChanged;
+            _regionLibraryElementController.SizeChanged -= RegionController_SizeChanged;
+            _regionLibraryElementController.LocationChanged -= RegionController_LocationChanged;
+            _regionLibraryElementController.TitleChanged -= RegionController_TitleChanged;
         }
     }
 }

@@ -60,51 +60,5 @@ namespace NuSysApp
             await ((DetailHomeTabViewModel)view.DataContext).Init();
             return view;
         }
-        //public async Task<UserControl> CreateFromSendable(ElementController controller)
-        //{
-        //    UserControl view = null; 
-
-        //    switch (controller.Model.ElementType)
-        //    {
-        //        case ElementType.Text:
-        //            var tvm = new TextNodeViewModel(controller);
-        //            view = new TextDetailHomeTabView(tvm);
-        //            break;
-        //        case ElementType.Image:
-        //            var ivm = new ImageElementViewModel(controller);
-        //            view = new ImageDetailHomeTabView(ivm);
-        //            break;
-        //        case ElementType.Word:
-        //            view = new WordDetailView(new WordNodeViewModel(controller));
-        //            break;
-        //        case ElementType.Powerpoint:
-        //            view = new PowerpointDetailView(new PowerpointNodeViewModel(controller));
-        //            break;
-        //        case ElementType.PDF:
-        //            view = new PdfDetailHomeTabView(new PdfNodeViewModel(controller));
-        //            break;
-        //        case ElementType.Web:
-        //            view = new WebDetailView(new WebNodeViewModel(controller));
-        //            break;
-        //        case ElementType.Video:
-        //            view = new VideoDetailHomeTabView(new VideoNodeViewModel(controller));
-        //            break;
-        //        case ElementType.Audio:
-        //            AudioNodeViewModel audioVM = new AudioNodeViewModel(controller);
-        //            view = new AudioDetailHomeTabView(audioVM);
-        //            break;
-        //        case ElementType.Collection:
-        //            view = new GroupDetailHomeTabView(new ElementCollectionViewModel((ElementCollectionController)controller));
-        //            break;
-        //    }
-
-        //    if (view == null)
-        //        return null; 
-
-        //    await ((ElementViewModel)view.DataContext).Init();
-        //    return view;
-        //}
-
-
     }
 }
