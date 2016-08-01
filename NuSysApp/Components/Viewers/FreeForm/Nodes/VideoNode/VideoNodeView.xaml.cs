@@ -56,9 +56,6 @@ namespace NuSysApp
         {
             var vm = DataContext as VideoNodeViewModel;
             vm.VideoDuration = VideoMediaPlayer.MediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
-            //HACKY DELETE AFTER DEMO
-            await Task.Delay(500);
-            vm.UpdateRegions();
         }
 
         private void ControllerOnDisposed(object source, object args)
