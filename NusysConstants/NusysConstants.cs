@@ -99,18 +99,55 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string DELETE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
 
-            #endregion DeleteLibraryElementRequest
+        #endregion DeleteLibraryElementRequest
+
+        #region NewElementRequest
+        /// <summary>
+        /// the key used to send the element id of the new element to be created
+        /// </summary>
+        public static readonly string NEW_ELEMENT_REQUEST_ELEMENT_ID_KEY = "id";
+
+        /// <summary>
+        /// the key used to send the library element id of the new element to be created
+        /// </summary>
+        public static readonly string NEW_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID_KEY = "library_id";
+
+        /// <summary>
+        /// the key used to send the x coordinate of the new element to be created
+        /// </summary>
+        public static readonly string NEW_ELEMENT_REQUEST_LOCATION_X_KEY = "x";
+
+        /// <summary>
+        /// the key used to send the y coordinate of the new element to be created
+        /// </summary>
+        public static readonly string NEW_ELEMENT_REQUEST_LOCATION_Y_KEY = "y";
+
+        /// <summary>
+        /// the key used to send the width of the new element to be created
+        /// </summary>
+        public static readonly string NEW_ELEMENT_REQUEST_SIZE_WIDTH_KEY = "width";
+
+        /// <summary>
+        /// the key used to send the height of the new element to be created
+        /// </summary>
+        public static readonly string NEW_ELEMENT_REQUEST_SIZE_HEIGHT_KEY = "height";
+
+        /// <summary>
+        /// the key used to send the collection id of the collection the element belongs to
+        /// </summary>
+        public static readonly string NEW_ELEMENT_REQUEST_ELEMENT_PARENT_COLLECTION_ID_KEY = "parent_collection_id";
+        #endregion NewElementRequest
 
         #endregion RequestKeys
 
         #region SQLColumnNames
 
-            #region alias
+        #region alias
 
-            /// <summary>
-            /// 32 character string, aka an ID.  
-            /// </summary>
-            public static readonly string ALIAS_ID_KEY = "id";
+        /// <summary>
+        /// 32 character string, aka an ID.  
+        /// </summary>
+        public static readonly string ALIAS_ID_KEY = "id";
 
             /// <summary>
             /// 32 character string, aka an ID. 
@@ -439,7 +476,6 @@ namespace NusysIntermediate
         public enum RequestType
         {
             DeleteSendableRequest,
-            NewNodeRequest,
             FinalizeInkRequest,
             DuplicateNodeRequest,
             SystemRequest,
@@ -459,6 +495,7 @@ namespace NusysIntermediate
             GetContentDataModelRequest,
             CreateNewLibrayElementRequest,
             GetEntireWorkspaceRequest,
+            NewElementRequest,
             /// <summary>
             /// This request will create a new content AND a default new library element for that content
             /// Therefore this request should be called when someone uploads a new content to the library

@@ -232,11 +232,24 @@ namespace NusysServer
                 return false;
             }
 
-            //makes sure that the message used to get the insert sql command only contains keys that exist in the 
-            //content sql table. This is to make sure that there are no errors when executing the command.
-            var safeInsertMessage = Constants.GetCleanedMessageForDatabase(message, Constants.SQLTableType.Content);
+            var cmd = GetInsertCommand(Constants.SQLTableType.Content, message);
+            var successInt = cmd.ExecuteNonQuery();
+            return successInt > 0;
+        }
 
-            var cmd = GetInsertCommand(Constants.SQLTableType.Content, safeInsertMessage);
+        /// <summary>
+        /// To add an alias to the database.  Returns true if successful, false otherwise
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public bool AddAlias(Message message)
+        {
+            if (!message.ContainsKey(NusysConstants.ALIAS_ID_KEY))
+            {
+                return false;
+            }
+
+            var cmd = GetInsertCommand(Constants.SQLTableType.Alias, message);
             var successInt = cmd.ExecuteNonQuery();
             return successInt > 0;
         }
