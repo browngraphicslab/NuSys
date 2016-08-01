@@ -16,12 +16,16 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 namespace NuSysApp
 {
 
-    public class ElementRenderItem : BaseRenderItem
+    public class ElementRenderItem : BaseRenderItem, I2dTransformable
     {
         private ElementViewModel _vm;
         private CanvasTextLayout _textLayout;
 
         public ElementViewModel ViewModel => _vm;
+
+        public Matrix3x2 T { get; set; } = Matrix3x2.Identity;
+        public Matrix3x2 S { get; set; } = Matrix3x2.Identity;
+        public Matrix3x2 C { get; set; } = Matrix3x2.Identity;
 
         public ElementRenderItem(ElementViewModel vm, CanvasAnimatedControl resourceCreator) :base(resourceCreator)
         {
@@ -46,8 +50,6 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
-
-
             if (_textLayout == null)
                 return;
 
@@ -57,7 +59,7 @@ namespace NuSysApp
 
             var oldTransform = ds.Transform;
             var sp = Matrix3x2.Identity;
-            Matrix3x2.Invert(NuSysRenderer.S, out sp);
+            Matrix3x2.Invert(NuSysRenderer.Instance.S, out sp);
             var tt = Matrix3x2.CreateTranslation(0, -30);
             var newTransform = tt * top * sp * to * ds.Transform;
 

@@ -45,9 +45,6 @@ namespace NuSysApp
         private ExploreMode _exploreMode;
         private MultiMode _explorationMode;
 
-        private NuSysRenderer _nusysRenderer;
-
-        public NuSysRenderer NuSysRenderer => _nusysRenderer;
         public CanvasAnimatedControl RenderCanvas => xRenderCanvas;
 
         public Brush CanvasColor
@@ -67,7 +64,7 @@ namespace NuSysApp
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
 
-                _nusysRenderer = new NuSysRenderer(xRenderCanvas);
+                NuSysRenderer.Instance.Canvas = xRenderCanvas;
 
             //    xRenderCanvas.PointerPressed += XRenderCanvasOnPointerPressed;
 
@@ -80,7 +77,7 @@ namespace NuSysApp
                     var x = InkStorage._inkStrokes[id];
                     if (x.Type == "ink")
                     {
-                        SessionController.Instance.SessionView.FreeFormViewer.NuSysRenderer.AddStroke(x.Stroke);
+                        NuSysRenderer.Instance.AddStroke(x.Stroke);
                         //  _inqCanvas.AddStroke(x.Stroke);
                         //   _inqCanvas.Redraw();
                     }

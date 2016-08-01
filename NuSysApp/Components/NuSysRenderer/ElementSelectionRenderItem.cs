@@ -32,6 +32,7 @@ namespace NuSysApp
             {
                 var elem = (ElementViewModel)selectedItem;
                 elem.Controller.PositionChanged -= OnSelectedItemPositionChanged;
+                elem.Controller.SizeChanged -= OnSelectedItemSizeChanged;
             }
 
             _selectedItems = _vm.Selections.ToList();
@@ -39,8 +40,14 @@ namespace NuSysApp
             {
                 var elem = (ElementViewModel) selectedItem;
                 elem.Controller.PositionChanged += OnSelectedItemPositionChanged;
+                elem.Controller.SizeChanged += OnSelectedItemSizeChanged;
             }
 
+            IsDirty = true;
+        }
+
+        private void OnSelectedItemSizeChanged(object source, double width, double height)
+        {
             IsDirty = true;
         }
 

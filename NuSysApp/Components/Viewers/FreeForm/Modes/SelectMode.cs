@@ -19,6 +19,14 @@ using MyToolkit.Controls;
 
 namespace NuSysApp
 {
+
+    internal class Transformable : I2dTransformable
+    {
+        public Matrix3x2 T { get; set; } = Matrix3x2.Identity;
+        public Matrix3x2 S { get; set; } = Matrix3x2.Identity;
+        public Matrix3x2 C { get; set; } = Matrix3x2.Identity;
+    }
+
     public class SelectMode : AbstractWorkspaceViewMode
     {
         public delegate void RenderItemSelectedHandler(BaseRenderItem element);
@@ -28,21 +36,24 @@ namespace NuSysApp
         private enum Mode { PanZoom, MoveNode}
 
         private Mode _mode = Mode.PanZoom;
-        private Dictionary<uint, Point> _pointerPoints = new Dictionary<uint, Point>(); 
+        private Dictionary<uint, Vector2> _pointerPoints = new Dictionary<uint, Vector2>(); 
         private BaseRenderItem _selectedRenderItem;
-        private Point _startPoint;
-        private Point _centerPoint;
+        private Vector2 _startPoint;
+        private Vector2 _centerPoint;
         private double _twoFingerDist;
         private double _distanceTraveled;
         private Stopwatch _stopwatch = new Stopwatch();
+        private Transformable _transformable = new Transformable();
+        private Size _prevObjSize = new Size();
+        private Point _prevObjPos = new Point();
 
         public SelectMode(FreeFormViewer view):base(view)
         {
             var vm = (FreeFormViewerViewModel)_view.DataContext;
             var compositeTransform = vm.CompositeTransform;
-            NuSysRenderer.T = Matrix3x2.CreateTranslation((float)compositeTransform.TranslateX, (float)compositeTransform.TranslateY);
-            NuSysRenderer.C = Matrix3x2.CreateTranslation((float)compositeTransform.CenterX, (float)compositeTransform.CenterY);
-            NuSysRenderer.S = Matrix3x2.CreateScale((float)compositeTransform.ScaleX, (float)compositeTransform.ScaleY);
+            NuSysRenderer.Instance.T = Matrix3x2.CreateTranslation((float)compositeTransform.TranslateX, (float)compositeTransform.TranslateY);
+            NuSysRenderer.Instance.C = Matrix3x2.CreateTranslation((float)compositeTransform.CenterX, (float)compositeTransform.CenterY);
+            NuSysRenderer.Instance.S = Matrix3x2.CreateScale((float)compositeTransform.ScaleX, (float)compositeTransform.ScaleY);
         }
 
         public SelectMode(AreaNodeView view) : base(view)
@@ -60,14 +71,14 @@ namespace NuSysApp
             var points = _pointerPoints.Values.ToArray();
             var p0 = points[0];
             var p1 = points[1];
-            _centerPoint = new Point((p0.X + p1.X) / 2.0, (p0.Y + p1.Y) / 2.0);
+            _centerPoint = new Vector2((float)(p0.X + p1.X) / 2f, (float)(p0.Y + p1.Y) / 2f);
         }
 
         private void UpdateDist()
         {
             var points = _pointerPoints.Values.ToArray();
-            var p0 = points[0];
-            var p1 = points[1];
+            var p0 = new Vector2(points[0].X, points[0].Y);
+            var p1 = new Vector2(points[1].X, points[1].Y);
             _twoFingerDist = MathUtil.Dist(p0, p1);
         }
 
@@ -81,7 +92,8 @@ namespace NuSysApp
 
             var ffView = (FreeFormViewer)_view;
             var cp = e.GetCurrentPoint(null).Position;
-            _pointerPoints.Add(e.Pointer.PointerId, e.GetCurrentPoint(null).Position);
+            var p = e.GetCurrentPoint(null).Position;
+            _pointerPoints.Add(e.Pointer.PointerId, new Vector2((float)p.X, (float)p.Y));
             if (_pointerPoints.Count >= 2)
             {
                 UpdateCenterPoint();
@@ -90,8 +102,9 @@ namespace NuSysApp
             }
             else
             {
-                _startPoint = e.GetCurrentPoint(null).Position;
-                _selectedRenderItem = ffView.NuSysRenderer.GetRenderItemAt(cp);
+                var pp = e.GetCurrentPoint(null).Position;
+                _startPoint = new Vector2((float)pp.X, (float)pp.Y);
+                _selectedRenderItem = NuSysRenderer.Instance.GetRenderItemAt(cp);
                 if (_selectedRenderItem == null)
                 {
                     _mode = Mode.PanZoom;
@@ -99,6 +112,9 @@ namespace NuSysApp
                 else
                 {
                     _mode = Mode.MoveNode;
+                    var elem = (ElementRenderItem) _selectedRenderItem;
+                    _prevObjPos = new Point(elem.ViewModel.X, elem.ViewModel.Y);
+                    _prevObjSize = new Size(elem.ViewModel.Width, elem.ViewModel.Height);
                 }
             }
            
@@ -142,6 +158,7 @@ namespace NuSysApp
                 ffView.RenderCanvas.PointerMoved -= OnPointerMoved;
                 if (_distanceTraveled < 5 && _stopwatch.ElapsedMilliseconds < 150)
                 {
+                    _transformable = new Transformable();
                     ItemSelected?.Invoke(_selectedRenderItem);
                 }
 
@@ -155,7 +172,8 @@ namespace NuSysApp
             if (!_pointerPoints.ContainsKey(args.Pointer.PointerId))
                 return;
 
-            _pointerPoints[args.Pointer.PointerId] = args.GetCurrentPoint(null).Position;
+            var p = args.GetCurrentPoint(null).Position;
+            _pointerPoints[args.Pointer.PointerId] = new Vector2((float)p.X, (float)p.Y);
 
             if (_pointerPoints.Count >= 2)
             {
@@ -165,9 +183,26 @@ namespace NuSysApp
                 UpdateDist();
                 var dx = _centerPoint.X - prevCenterPoint.X;
                 var dy = _centerPoint.Y - prevCenterPoint.Y;
-                var ds = _twoFingerDist/prevDist;
-                PanZoom(_centerPoint, dx,dy, ds);
-                
+                var ds = _twoFingerDist/ prevDist;
+
+                var vm = (FreeFormViewerViewModel)_view.DataContext;
+                if (vm.Selections.Count == 1)
+                {
+                    var elem = (ElementRenderItem) _selectedRenderItem;
+                    var imgCenter = new Vector2((float)(elem.ViewModel.X + elem.ViewModel.Width/2), (float)(elem.ViewModel.Y + elem.ViewModel.Height / 2));
+                    var newCenter = NuSysRenderer.Instance.ObjectPointToScreenPoint(imgCenter);
+
+                    PanZoom(_transformable, newCenter, dx,dy, ds);
+                  //  Debug.WriteLine(_transformable.T.M31.ToString(), _transformable.T.M32.ToString());
+                    elem.ViewModel.Controller.SetSize(_prevObjSize.Width * _transformable.S.M11, _prevObjSize.Height * _transformable.S.M22);
+                    var nx = _prevObjPos.X - (_prevObjSize.Width*_transformable.S.M11 - _prevObjSize.Width)/2;
+                    var ny = _prevObjPos.Y - (_prevObjSize.Height * _transformable.S.M22 - _prevObjSize.Height) /2;
+                    elem.ViewModel.Controller.SetPosition(nx,ny);
+
+                }
+                else
+                    PanZoom(NuSysRenderer.Instance, _centerPoint, dx, dy, ds);
+
             } else if (_pointerPoints.Count == 1)
             {
                 if (_mode == Mode.PanZoom)
@@ -175,8 +210,9 @@ namespace NuSysApp
                     var currPos = args.GetCurrentPoint(null).Position;
                     var deltaX = currPos.X - _startPoint.X;
                     var deltaY = currPos.Y - _startPoint.Y;
-                    _startPoint = currPos;
-                    PanZoom(_startPoint, deltaX, deltaY, 1);
+                    _startPoint = new Vector2((float)currPos.X, (float)currPos.Y);
+
+                    PanZoom(NuSysRenderer.Instance, _startPoint, deltaX, deltaY, 1);
                 }
                 else
                 {
@@ -184,7 +220,7 @@ namespace NuSysApp
                     var deltaX = currPos.X - _startPoint.X;
                     var deltaY = currPos.Y - _startPoint.Y;
                     _distanceTraveled += Math.Abs(deltaX) + Math.Abs(deltaY);
-                    _startPoint = currPos;
+                    _startPoint = new Vector2((float)currPos.X, (float)currPos.Y);
 
                   //  PanZoom(_startPoint, deltaX, deltaY, 1);
                     var elem = _selectedRenderItem as ElementRenderItem;
@@ -192,10 +228,9 @@ namespace NuSysApp
                         return;
 
                     var vm = (FreeFormViewerViewModel)_view.DataContext;
-                    var compositeTransform = vm.CompositeTransform;
 
-                    var newX = elem.ViewModel.X + deltaX / compositeTransform.ScaleX;
-                    var newY = elem.ViewModel.Y + deltaY / compositeTransform.ScaleX;
+                    var newX = elem.ViewModel.X + deltaX / NuSysRenderer.Instance.S.M11;
+                    var newY = elem.ViewModel.Y + deltaY / NuSysRenderer.Instance.S.M22;
 
                     if (!vm.Selections.Contains(elem.ViewModel))
                     {
@@ -206,8 +241,8 @@ namespace NuSysApp
                         foreach (var selectable in vm.Selections)
                         {
                             var e = (ElementViewModel) selectable;
-                            var newXe = e.X + deltaX / compositeTransform.ScaleX;
-                            var newYe = e.Y + deltaY / compositeTransform.ScaleX;
+                            var newXe = e.X + deltaX/NuSysRenderer.Instance.S.M11;
+                            var newYe = e.Y + deltaY / NuSysRenderer.Instance.S.M11;
                             e.Controller.SetPosition(newXe, newYe);
                         }
                     }
@@ -215,52 +250,51 @@ namespace NuSysApp
             }
         }
 
-        protected void PanZoom(Point centerPoint, double dx, double dy, double ds)
+        protected void PanZoom(I2dTransformable target, Vector2 centerPoint, double dx, double dy, double ds)
         {
-            var vm = (FreeFormViewerViewModel)_view.DataContext;
-            var compositeTransform = vm.CompositeTransform;
+            if (target == null)
+                target = NuSysRenderer.Instance;
 
-            var tmpTranslate = new TranslateTransform
-            {
-                X = compositeTransform.CenterX,
-                Y = compositeTransform.CenterY
-            };
+            var tmpTranslate = Matrix3x2.CreateTranslation(target.C.M31, target.C.M32);
+            Matrix3x2 tmpTranslateInv;
+            Matrix3x2.Invert(tmpTranslate, out tmpTranslateInv);
 
-            var center = compositeTransform.Inverse.TransformPoint(centerPoint);
+            Matrix3x2 cInv;
+            Matrix3x2.Invert(target.C, out cInv);
 
-            var localPoint = tmpTranslate.Inverse.TransformPoint(center);
+            Matrix3x2 inverse;
+            Matrix3x2.Invert(cInv * target.S * target.C * target.T, out inverse);
+
+            var center = Vector2.Transform(new Vector2((float)centerPoint.X, (float)centerPoint.Y), inverse );
+
+            //var center = compositeTransform.Inverse.TransformPoint(centerPoint);
+
+            var localPoint = Vector2.Transform(center, tmpTranslateInv);
 
             //Now scale the point in local space
-            localPoint.X *= compositeTransform.ScaleX;
-            localPoint.Y *= compositeTransform.ScaleY;
+            localPoint.X *= target.S.M11;
+            localPoint.Y *= target.S.M22;
 
             //Transform local space into world space again
-            var worldPoint = tmpTranslate.TransformPoint(localPoint);
+            var worldPoint = Vector2.Transform(localPoint, tmpTranslate);
 
             //Take the actual scaling...
-            var distance = new Point(
-                worldPoint.X - center.X,
-                worldPoint.Y - center.Y);
+            var distance = new Vector2(worldPoint.X - center.X, worldPoint.Y - center.Y);
 
             //...and balance the jump of the changed scaling origin by changing the translation            
 
-            compositeTransform.TranslateX += distance.X;
-            compositeTransform.TranslateY += distance.Y;
+            var ntx = target.T.M31 + distance.X + dx;
+            var nty = target.T.M32 + distance.Y + dy;
 
-            //Also set the scaling values themselves, especially set the new scale center...
-            compositeTransform.ScaleX *= ds;
-            compositeTransform.ScaleY *= ds;
+            var nsx = target.S.M11*ds;
+            var nsy = target.S.M22*ds;
 
-            compositeTransform.CenterX = center.X;
-            compositeTransform.CenterY = center.Y;
+            var ncx = center.X;
+            var ncy = center.Y;
 
-            //And consider a translational shift
-            compositeTransform.TranslateX += dx;
-            compositeTransform.TranslateY += dy;
-
-            NuSysRenderer.T = Matrix3x2.CreateTranslation((float)compositeTransform.TranslateX, (float)compositeTransform.TranslateY);
-            NuSysRenderer.C = Matrix3x2.CreateTranslation((float)compositeTransform.CenterX, (float)compositeTransform.CenterY);
-            NuSysRenderer.S = Matrix3x2.CreateScale((float)compositeTransform.ScaleX, (float)compositeTransform.ScaleY);
+            target.T = Matrix3x2.CreateTranslation((float)ntx, (float)nty);
+            target.C = Matrix3x2.CreateTranslation(ncx, ncy);
+            target.S = Matrix3x2.CreateScale((float)nsx,(float)nsy);
         }
 
         
@@ -288,7 +322,7 @@ namespace NuSysApp
         private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var ffView = (FreeFormViewer)_view;
-            var elem = ffView.NuSysRenderer.GetRenderItemAt(e.GetPosition(null));
+            var elem = NuSysRenderer.Instance.GetRenderItemAt(e.GetPosition(null));
             if (elem == null)
                 return;
 

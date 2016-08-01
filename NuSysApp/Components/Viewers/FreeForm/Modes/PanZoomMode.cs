@@ -36,9 +36,6 @@ namespace NuSysApp
             var m = new Matrix3x2((float)inv.Matrix.M11, (float)inv.Matrix.M12, (float)inv.Matrix.M21,
                 (float)inv.Matrix.M22, (float)inv.Matrix.OffsetX, (float)inv.Matrix.OffsetY);
 
-            NuSysRenderer.T = Matrix3x2.CreateTranslation((float)compositeTransform.TranslateX, (float)compositeTransform.TranslateY);
-            NuSysRenderer.C = Matrix3x2.CreateTranslation((float)compositeTransform.CenterX, (float)compositeTransform.CenterY);
-            NuSysRenderer.S = Matrix3x2.CreateScale((float)compositeTransform.ScaleX, (float)compositeTransform.ScaleY);
         }
     
         public void UpdateTempTransform( CompositeTransform compositeTransform )
@@ -137,7 +134,7 @@ namespace NuSysApp
 
             
             var ffview = _view as FreeFormViewer;
-            _isEnabled = ffview.NuSysRenderer.GetRenderItemAt(e.Position) == null;
+            _isEnabled = NuSysRenderer.Instance.GetRenderItemAt(e.Position) == null;
 
 
             //   _timer.Tick -= OnTick;
@@ -272,9 +269,7 @@ namespace NuSysApp
             var m = new Matrix3x2((float)inv.Matrix.M11, (float)inv.Matrix.M12, (float)inv.Matrix.M21,
                 (float)inv.Matrix.M22, (float)inv.Matrix.OffsetX, (float)inv.Matrix.OffsetY);
 
-            NuSysRenderer.T = Matrix3x2.CreateTranslation((float)compositeTransform.TranslateX,(float)compositeTransform.TranslateY);
-            NuSysRenderer.C = Matrix3x2.CreateTranslation((float)compositeTransform.CenterX,(float)compositeTransform.CenterY);
-            NuSysRenderer.S = Matrix3x2.CreateScale((float) compositeTransform.ScaleX, (float) compositeTransform.ScaleY);
+
            
             e.Handled = true;
 

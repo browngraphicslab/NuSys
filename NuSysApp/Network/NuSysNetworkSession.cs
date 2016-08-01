@@ -109,7 +109,7 @@ namespace NuSysApp
                         return;
                     }
                     
-                    SessionController.Instance.SessionView.FreeFormViewer.NuSysRenderer.AddTrail(vm);
+                    NuSysRenderer.Instance.AddTrail(vm);
 
                     // create a new presentation link
                     //PresentationLinkViewModel.Models.Add(presentationlink);

@@ -42,8 +42,16 @@ namespace NuSysApp
         public override void Draw(CanvasDrawingSession ds)
         {
             base.Draw(ds);
+
+            var orgTransform = ds.Transform;
+            var CObjectInv = Matrix3x2.Identity;
+            Matrix3x2.Invert(C, out CObjectInv);
+            ds.Transform = ds.Transform * CObjectInv* S *C;
+
             if (_bmp != null)
                 ds.DrawImage(_bmp, new Rect { X = _vm.X, Y = _vm.Y, Width = _vm.Width, Height = _vm.Height});
+
+            ds.Transform = orgTransform;
         }
     }
 }
