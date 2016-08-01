@@ -24,12 +24,9 @@ namespace NuSysApp
 {
     public sealed partial class RegionEditorTabView : UserControl
     {        
-        private bool _edgeCaseButtonExited;
         public  RegionEditorTabView()
         {
             this.InitializeComponent();
-
-            _edgeCaseButtonExited = true;
             Canvas.SetZIndex(xButtonStack, 20);
         }
 

@@ -92,30 +92,6 @@ namespace NuSysApp
 
         public ObservableCollection<Region> RegionCollection { set; get; }
 
-        public ObservableCollection<Region> OrderedRegionCollection
-        {
-            get
-            {
-                if (CurrentElementController.LibraryElementModel.Type == ElementType.PDF)
-                {
-                    var list = RegionCollection.ToList<Region>();
-                    var orderedList = (list.OrderBy(a => (a as PdfRegionModel).PageLocation)).ToList<Region>();
-                    var collection = new ObservableCollection<Region>();
-                    foreach (var region in orderedList)
-                    {
-                        //(region as PdfRegionModel).PageLocation += 1;
-                        collection.Add(region);
-                        
-
-                    }
-                    return collection;
-                }
-                else
-                {
-                    return new ObservableCollection<Region>();
-                }
-            }
-        }
         private DetailHomeTabViewModel _regionableRegionTabViewModel;
         private DetailHomeTabViewModel _regionableHomeTabViewModel;
 

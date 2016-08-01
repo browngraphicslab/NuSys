@@ -37,9 +37,6 @@ namespace NuSysApp
         }
         public virtual async Task Init() { }
 
-        public void Dispose()
-        {
-            
-        }
+        
     }
 }

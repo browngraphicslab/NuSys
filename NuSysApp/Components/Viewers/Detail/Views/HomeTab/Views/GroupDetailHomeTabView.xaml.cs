@@ -228,7 +228,7 @@ namespace NuSysApp
 
             }
 
-            SessionController.Instance.SessionView.DetailViewerView.Visibility = Visibility.Collapsed;
+            SessionController.Instance.SessionView.DetailViewerView.CloseDv();
 
         }
 
