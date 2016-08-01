@@ -120,7 +120,8 @@ namespace NuSysApp
 
             var compositeTransform = new CompositeTransform();
             compositeTransform.ScaleX = 1 / (AudioEnd - AudioStart);
-            compositeTransform.CenterX = this.ActualWidth * (AudioStart + (AudioEnd - AudioStart) / 2.0);
+            //    compositeTransform.CenterX = this.ActualWidth * (AudioStart + (AudioEnd - AudioStart) / 2.0);
+            compositeTransform.TranslateX = -AudioStart * this.ActualWidth / (AudioEnd - AudioStart);
             RenderTransform = compositeTransform;
         }
 
@@ -149,12 +150,14 @@ namespace NuSysApp
                 // create the view and vm based on the region type
                 FrameworkElement view = null;
                 RegionViewModel vm = null;
+                var renderTransform = RenderTransform as CompositeTransform ?? new CompositeTransform();
                 switch (regionLibraryElementController.LibraryElementModel.Type)
                 {
                     case ElementType.AudioRegion:
                         vm = new AudioRegionViewModel(regionLibraryElementController.LibraryElementModel as AudioRegionModel,
                                 regionLibraryElementController as AudioRegionLibraryElementController, this);
                         view = new AudioRegionView(vm as AudioRegionViewModel);
+                        (view as AudioRegionView).RescaleComponents(renderTransform.ScaleX);
                         break;
                 }
 
@@ -188,15 +191,35 @@ namespace NuSysApp
             }
         }
 
+        public HashSet<TimelineMarker> GetTimelineMarkers(double time)
+        {
+            var timelineMarkers = new HashSet<TimelineMarker>();
+            foreach (var item in xClippingCanvas.Items)
+            {
+                var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
+                switch (regionViewModel.Model.Type)
+                {
+                    case ElementType.AudioRegion:
+                   //     var start = new TimelineMarker(0,0,0,0,regionViewModel as AudioRegionViewModel).L
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return timelineMarkers;
+        }
+
         private void xClippingGrid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
 
             if (AudioEnd != 0 || AudioStart != 0)
             {
-                var compositeTransform = new CompositeTransform();
-                compositeTransform.ScaleX = 1 / (AudioEnd - AudioStart);
-                compositeTransform.CenterX = this.ActualWidth * (AudioStart + (AudioEnd - AudioStart) / 2.0);
-                WrapperTransform = compositeTransform;
+                         var compositeTransform = new CompositeTransform();
+                         compositeTransform.ScaleX = 1 / (AudioEnd - AudioStart);
+                compositeTransform.TranslateX = -AudioStart * this.ActualWidth / (AudioEnd - AudioStart);
+
+                //   compositeTransform.CenterX = this.ActualWidth * (AudioStart + (AudioEnd - AudioStart) / 2.0);
+                RenderTransform = compositeTransform;
                 foreach (var item in xClippingCanvas.Items)
                 {
                     var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
@@ -205,7 +228,7 @@ namespace NuSysApp
                     {
                         case ElementType.AudioRegion:
                             region = item as AudioRegionView;
-                            (region as AudioRegionView).RescaleComponents(WrapperTransform.ScaleX);
+                            (region as AudioRegionView).RescaleComponents(compositeTransform.ScaleX);
                             break;
                         default:
                             break;
