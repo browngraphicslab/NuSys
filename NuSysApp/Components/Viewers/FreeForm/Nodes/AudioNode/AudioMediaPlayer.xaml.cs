@@ -29,6 +29,9 @@ namespace NuSysApp
         public MediaElement MediaPlayer => this.MediaElement;
 
         public TimeSpan ScrubBarPosition { set; get; }
+
+        public TimelineMarker StartMarker { set; get; }
+        public TimelineMarker EndMarker { set; get; }
         public AudioMediaPlayer()
         {
             this.InitializeComponent();
@@ -92,14 +95,29 @@ namespace NuSysApp
             double normalizedMediaElementPosition = xAudioWrapper.AudioStart;
             double totalDuration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
             double denormalizedMediaElementPosition = normalizedMediaElementPosition * totalDuration;
-            MediaElement.Position = new TimeSpan(0, 0, 0, 0, (int)denormalizedMediaElementPosition);
+
+            TimeSpan startTime = new TimeSpan(0, 0, 0, 0, (int)denormalizedMediaElementPosition);
+            TimeSpan endTime = new TimeSpan(0, 0, 0, 0, (int)(totalDuration * xAudioWrapper.AudioEnd));
+
+            MediaElement.Position = startTime;
+
+            MediaElement.Markers.Clear();
+
+            StartMarker = new TimelineMarker();
+            StartMarker.Time = startTime;
+            EndMarker = new TimelineMarker();
+            EndMarker.Time = endTime;
+
+            MediaElement.Markers.Add(StartMarker);
+            MediaElement.Markers.Add(EndMarker);
 
             ScrubBar.Minimum = totalDuration * xAudioWrapper.AudioStart;
             ScrubBar.Maximum = totalDuration * xAudioWrapper.AudioEnd;
 
+
             // set the right time stamp
             var converter = new PositionToStringConverter();
-            var timeSpan = new TimeSpan(0,0,0,0, (int) (totalDuration * xAudioWrapper.AudioEnd));
+            var timeSpan = new TimeSpan(0, 0, 0, 0, (int)(totalDuration * xAudioWrapper.AudioEnd));
             xRightTimeStampTextBlock.Text = (string)converter.Convert(timeSpan, null, null, null); // this looks weird cause its a xaml converter 
 
 
@@ -108,9 +126,9 @@ namespace NuSysApp
         private void ProgressBar_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             double position = e.GetPosition((UIElement)sender).X / ProgressBar.ActualWidth;
-            double normalizedMediaElementPosition = xAudioWrapper.AudioStart + position*(xAudioWrapper.AudioEnd - xAudioWrapper.AudioStart);
+            double normalizedMediaElementPosition = xAudioWrapper.AudioStart + position * (xAudioWrapper.AudioEnd - xAudioWrapper.AudioStart);
             double totalDuration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
-            double denormalizedMediaElementPosition = normalizedMediaElementPosition* totalDuration;
+            double denormalizedMediaElementPosition = normalizedMediaElementPosition * totalDuration;
             TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)denormalizedMediaElementPosition);
             MediaElement.Position = time;
 
@@ -236,6 +254,20 @@ namespace NuSysApp
             MediaElement.Stop();
         }
 
+        private void MediaElement_MarkerReached(object sender, TimelineMarkerRoutedEventArgs e)
+        {
+            if (e.Marker.Time == StartMarker.Time)
+            {
+                //MediaElement.Stop();
+            }
+            else if (e.Marker.Time == EndMarker.Time)
+            {
+                //MediaElement.Stop();
+                MediaElement.Pause();
+                Audio_OnJump(StartMarker.Time);
+
+            }
+        }
     }
 
 }

@@ -32,7 +32,7 @@
         </Grid>
         <local:AudioWrapper x:Name="xAudioWrapper" HorizontalAlignment="Stretch">
             <local:AudioWrapper.Content>
-                <MediaElement x:Name="MediaElement" MediaOpened="MediaElement_OnMediaOpened" MediaEnded="MediaElement_OnMediaEnded" Stretch="Fill" AudioCategory="Speech" AutoPlay="False" Position ="0"/>
+                <MediaElement x:Name="MediaElement" MediaOpened="MediaElement_OnMediaOpened" MediaEnded="MediaElement_OnMediaEnded" Stretch="Fill" AudioCategory="Speech" AutoPlay="False" Position ="0" MarkerReached="MediaElement_MarkerReached"/>
             </local:AudioWrapper.Content>
         </local:AudioWrapper>
         <StackPanel Grid.Row="2"  Orientation="Horizontal" HorizontalAlignment="Center"  Margin="0,28,0,0" VerticalAlignment="Top">
