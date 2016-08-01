@@ -184,7 +184,7 @@ namespace NusysServer
         {
             if (!message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY))
             {
-                return false;
+                throw new Exception("cannot add library element to database without a library element Id");
             } 
             var libraryId = message.GetString(NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY);
 
@@ -195,6 +195,13 @@ namespace NusysServer
             {
                 if (!NusysConstants.LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS.Keys.Contains(kvp.Key))
                 {
+                    //if the custom property is known to not be allowed, ignore it
+                    if (NusysConstants.ILLEGAL_PROPERTIES_TABLE_KEY_NAMES.Contains(kvp.Key))
+                    {
+                        continue;
+                    }
+
+                    //if we reach here then the key has passed the bar of allowed to be a custom property
                     if (!AddStringProperty(libraryId, kvp.Key, kvp.Value.ToString()))
                     {
                         //TODO remove all the already-added properties
@@ -266,6 +273,10 @@ namespace NusysServer
         /// <returns></returns>
         private bool AddStringProperty(string objectId, string propertyKey, string value)
         {
+            if (NusysConstants.ILLEGAL_PROPERTIES_TABLE_KEY_NAMES.Contains(propertyKey))
+            {
+                throw new Exception("Tried to add ilegal key to the properties table");
+            }
             var cmd = GetInsertCommand(Constants.SQLTableType.Properties, new Message(new Dictionary<string, object>() {{propertyKey, value}}));
             var successInt = cmd.ExecuteNonQuery();
             return successInt > 0;

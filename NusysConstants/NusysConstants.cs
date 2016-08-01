@@ -7,6 +7,9 @@ namespace NusysIntermediate
 {
     public class NusysConstants
     {
+
+        #region RequestManagementKeys
+
         /// <summary>
         /// key for the 32-char value id that represents the id of this request.
         /// This will be used to stop a thread and await this id returning from the server to resume that thead. 
@@ -20,86 +23,90 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string REQUEST_TYPE_STRING_KEY = "request_type";
 
-        /// <summary>
-        /// This key is used to hold the metadata for library element models when represented in message form.
-        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-        /// </summary>
-        public static readonly string LIBRARY_ELEMENT_METADATA_KEY = "library_element_metadata";
+        #endregion RequestManagementKeys
 
         #region RequestKeys
 
-        #region AllRequests
-        /// <summary>
-        /// should be returned by all requests if it is successful
-        /// </summary>
-        public static readonly string REQUEST_SUCCESS_BOOL_KEY = "successful_request";
+            #region AllRequests
+            /// <summary>
+            /// should be returned by all requests if it is successful
+            /// </summary>
+            public static readonly string REQUEST_SUCCESS_BOOL_KEY = "successful_request";
 
-        /// <summary>
-        /// MIGHT be returned as the key that hold the error message 
-        /// if an error occurs during the request handling
-        /// </summary>
-        public static readonly string REQUEST_ERROR_MESSAGE_KEY = "error_message";
-        #endregion AllRequests
+            /// <summary>
+            /// MIGHT be returned as the key that hold the error message 
+            /// if an error occurs during the request handling
+            /// </summary>
+            public static readonly string REQUEST_ERROR_MESSAGE_KEY = "error_message";
 
-        #region GetContentDataModelRequest
+            #endregion AllRequests
 
-        /// <summary>
-        /// The key whose value will be the 32 character string for the id of the contentDataModel you are fetching
-        /// </summary>
-        public static readonly string GET_CONTENT_DATA_MODEL_REQUEST_CONTENT_ID_KEY = "content_data_model_id";
+            #region GetContentDataModelRequest
+
+            /// <summary>
+            /// The key whose value will be the 32 character string for the id of the contentDataModel you are fetching
+            /// </summary>
+            public static readonly string GET_CONTENT_DATA_MODEL_REQUEST_CONTENT_ID_KEY = "content_data_model_id";
         
-        /// <summary>
-        /// The key whose value should be the returned, json serialized, ContentDataModel requested
-        /// </summary>
-        public static readonly string GET_CONTENT_DATA_MODEL_REQUEST_RETURNED_CONTENT_DATA_MODEL_KEY = "returned_content_data_model";
+            /// <summary>
+            /// The key whose value should be the returned, json serialized, ContentDataModel requested
+            /// </summary>
+            public static readonly string GET_CONTENT_DATA_MODEL_REQUEST_RETURNED_CONTENT_DATA_MODEL_KEY = "returned_content_data_model";
 
-        #endregion GetContentDataModelRequest
+            #endregion GetContentDataModelRequest
 
-        #region GetEntireWorkspaceRequest
-        /// <summary>
-        /// the key used to send the 32-char value of the libraryId of the collection being asked for 
-        /// </summary>
-        public static readonly string GET_ENTIRE_WORKSPACE_REQUEST_COLLECTION_ID_KEY = "collection_id_to_get";
+            #region GetEntireWorkspaceRequest
+            /// <summary>
+            /// the key used to send the 32-char value of the libraryId of the collection being asked for 
+            /// </summary>
+            public static readonly string GET_ENTIRE_WORKSPACE_REQUEST_COLLECTION_ID_KEY = "collection_id_to_get";
 
-        /// <summary>
-        /// The key used to hold the GetEntireWorkspaceRequestArgs class
-        /// </summary>
-        public static readonly string GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY = "returned_workspace_arguments";
-        #endregion GetEntireWorkspaceRequest
+            /// <summary>
+            /// The key used to hold the GetEntireWorkspaceRequestArgs class
+            /// </summary>
+            public static readonly string GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY = "returned_workspace_arguments";
 
-        #region CreateNewContentRequest
-        /// <summary>
-        /// The key used to hold the type of content being added
-        /// </summary>
-        public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY = "content_type_key";
+            #endregion GetEntireWorkspaceRequest
 
-        /// <summary>
-        /// The key used to hold the content id.
-        /// </summary>
-        public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY = "content_id_key";
+            #region CreateNewContentRequest
 
-        /// <summary>
-        /// The key used to hold the base 64 string of the contents data bytes
-        /// </summary>
-        public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES = "content_id_key";
+            /// <summary>
+            /// The key used to hold the type of content being added
+            /// </summary>
+            public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY = "content_type_key";
 
-        /// <summary>
-        /// The key used to hold the string file extention required when creating audio, video, or image content (e.g .jpeg, .mp3, .mp4)
-        /// </summary>
-        public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_FILE_EXTENTION = "content_file_extention";
+            /// <summary>
+            /// The key used to hold the content id.
+            /// </summary>
+            public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY = "content_id_key";
 
-        #endregion CreateNewContentRequest
+            /// <summary>
+            /// The key used to hold the base 64 string of the contents data bytes
+            /// </summary>
+            public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES = "content_id_key";
 
-        #region DeleteLibraryElementRequest
-        /// <summary>
-        /// the key used to send the library element id key of the library element to be deleted
-        /// </summary>
-        public static readonly string DELETE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
-        #endregion DeleteLibraryElementRequest
+            /// <summary>
+            /// The key used to hold the string file extention required when creating audio, video, or image content (e.g .jpeg, .mp3, .mp4)
+            /// </summary>
+            public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_FILE_EXTENTION = "content_file_extention";
+
+            #endregion CreateNewContentRequest
+
+            #region DeleteLibraryElementRequest
+
+            /// <summary>
+            /// the key used to send the library element id key of the library element to be deleted
+            /// </summary>
+            public static readonly string DELETE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
+
+            #endregion DeleteLibraryElementRequest
+
         #endregion RequestKeys
+
         #region SQLColumnNames
 
             #region alias
+
             /// <summary>
             /// 32 character string, aka an ID.  
             /// </summary>
@@ -151,6 +158,7 @@ namespace NusysIntermediate
                 { ALIAS_SIZE_HEIGHT_KEY,typeof(float)},
                 { ALIAS_PARENT_COLLECTION_ID_KEY,typeof(string)},
             };
+
             #endregion alias
 
             #region libraryElementModel
@@ -279,6 +287,7 @@ namespace NusysIntermediate
             #endregion metadata
 
             #region propertiesTable
+
             /// <summary>
             /// 32 character ID of the library element or alias that this property belongs to
             /// </summary>
@@ -322,6 +331,17 @@ namespace NusysIntermediate
                 PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY,
                 PROPERTIES_DATE_VALUE_COLUMN_KEY
             };
+            
+            /// <summary>
+            /// List of strings that cannot be used to populate the properties table.  
+            /// Keys used to manage Networking and Requests should not be stored as properties.  
+            /// This list should be populated by other constants.  
+            /// </summary>
+            public static readonly HashSet<string> ILLEGAL_PROPERTIES_TABLE_KEY_NAMES = new HashSet<string>()
+            {
+                
+            };
+
             #endregion propertiesTable
 
             #region Content
@@ -352,7 +372,9 @@ namespace NusysIntermediate
                 CONTENT_TABLE_CONTENT_URL_KEY
             };
             #endregion Content
+
         #endregion SQLColumnNames
+
         #region SQLTableNames
 
         /// <summary>
@@ -379,8 +401,23 @@ namespace NusysIntermediate
         /// The string name of the metadata SQL table in our database
         /// </summary>
         public static readonly string CONTENTS_SQL_TABLE_NAME = "contents";
+
         #endregion SQLTableNames
 
+        #region UnPackingModelKeys
+
+            #region LibraryElementModel
+
+        /// <summary>
+        /// This key is used to hold the metadata for library element models when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string LIBRARY_ELEMENT_METADATA_KEY = "library_element_metadata";
+
+        #endregion LibraryElementModel
+
+        #endregion UnPackingModelKeys
+        
         #region Enums
         /// <summary>
         /// The base types for every content.  ElementTypes can have the same content Types.

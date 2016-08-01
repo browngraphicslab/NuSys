@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,6 +41,7 @@ namespace NuSysApp
             LibraryElementModel libraryElement = SessionController.Instance.ContentController.CreateAndAddModelFromMessage(new Message(_message.GetSerialized()));
             if (libraryElement != null)
             {
+                Debug.Fail("just wanted to make sure this code isn't being used.  If it is, tell trent");
                 SessionController.Instance.ContentController.Add(libraryElement);
                 var controller =
                     SessionController.Instance.ContentController.GetLibraryElementController(

@@ -67,10 +67,35 @@ namespace NuSysApp
             Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementModel(message.GetString(NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY)) == null);
             var model = LibraryElementModelFactory.CreateFromMessage(message);
 
-            SessionController.Instance.ContentController.Add(model);
-            var controller = SessionController.Instance.ContentController.GetLibraryElementController(model.LibraryElementId);
+            
+            var controller = LibraryElementControllerFactory.CreateFromModel(model);
             Debug.Assert(controller != null);
+            _contentControllers.TryAdd(model.LibraryElementId, controller);
+            
             controller.UnPack(message);
+            Add(model);
+
+            return model;
+        }
+
+        public string Add(LibraryElementModel model)
+        {
+            if (!String.IsNullOrEmpty(model.LibraryElementId) && !_contents.ContainsKey(model.LibraryElementId))
+            {
+                _contents.TryAdd(model.LibraryElementId, model);
+
+                AddModelToControllers(model);
+
+                OnNewContent?.Invoke(model);
+                return model.LibraryElementId;
+            }
+            Debug.WriteLine("content failed to add directly due to invalid id");
+            return null;
+        }
+
+        private void AddModelToControllers(LibraryElementModel model)
+        {
+
             if (NusysConstants.IsRegionType(model.Type))
             {
                 Debug.Assert(model is Region);
@@ -84,25 +109,6 @@ namespace NuSysApp
                 Debug.Assert(linkController != null);
                 SessionController.Instance.LinksController.AddLinkLibraryElementController(linkController);
             }
-            return model;
-        }
-
-        public string Add(LibraryElementModel model)
-        {
-            if (!String.IsNullOrEmpty(model.LibraryElementId) && !_contents.ContainsKey(model.LibraryElementId))
-            {
-                _contents.TryAdd(model.LibraryElementId, model);
-                var controller = LibraryElementControllerFactory.CreateFromModel(model);
-                _contentControllers.TryAdd(model.LibraryElementId, controller);
-
-
-
-                Debug.WriteLine("content directly added with ID: " + model.LibraryElementId);
-                OnNewContent?.Invoke(model);
-                return model.LibraryElementId;
-            }
-            Debug.WriteLine("content failed to add directly due to invalid id");
-            return null;
         }
 
         public bool Remove(LibraryElementModel model)
