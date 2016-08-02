@@ -142,7 +142,7 @@ namespace NuSysApp
             e.Handled = true;
         }
 
-        internal void RescaleComponents(double scaleX)
+        public void RescaleComponents(double scaleX)
         {
             Bound1Transform.ScaleX = 1.0 / scaleX;
             Bound2Transform.ScaleX = 1.0 / scaleX;

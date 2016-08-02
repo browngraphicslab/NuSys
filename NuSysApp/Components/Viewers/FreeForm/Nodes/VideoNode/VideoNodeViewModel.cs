@@ -26,29 +26,6 @@ namespace NuSysApp
 
         public delegate void OnRegionSeekPassingHandler(double time);
         public event OnRegionSeekPassingHandler OnRegionSeekPassing;
-        public ObservableCollection<VideoRegionView> RegionViews
-        {
-            get
-            {
-                _regionViews.Clear();
-                foreach (var regionId in SessionController.Instance.RegionsController.GetClippingParentRegionLibraryElementIds(Controller.LibraryElementModel.LibraryElementId))
-                {
-                    var videoRegionController = SessionController.Instance.ContentController.GetLibraryElementController(regionId) as VideoRegionLibraryElementController;
-                    if (videoRegionController == null)
-                    {
-                        return _regionViews;
-                    }
-                    var vm = new VideoRegionViewModel(videoRegionController.VideoRegionModel, videoRegionController, this);
-                    vm.Editable = false;
-                    var view = new VideoRegionView(vm);
-                    view.OnRegionSeek += View_OnRegionSeek;
-                    _regionViews.Add(view);
-
-                }
-                return _regionViews;
-                
-            }
-        }
 
         private void View_OnRegionSeek(double time)
         {

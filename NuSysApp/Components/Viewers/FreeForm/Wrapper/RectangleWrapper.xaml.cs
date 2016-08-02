@@ -314,6 +314,7 @@ namespace NuSysApp
 
                         };
                         break;
+
                     default:
                         vm = null;
                         view = null;
