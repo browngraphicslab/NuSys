@@ -26,7 +26,6 @@ namespace NuSysApp
 {
     public sealed partial class PdfDetailHomeTabView : UserControl
     {
-        //private InqCanvasView _inqCanvasView;
 
         private double _x;
         private double _y;
@@ -38,7 +37,6 @@ namespace NuSysApp
             _libraryElementId = vm.LibraryElementController.ContentId;
 
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
-            vm.View = this;
 
             // disable page left and page right buttons for pdf regions
             if (vm.LibraryElementController.LibraryElementModel.Type == ElementType.PdfRegion)
@@ -49,7 +47,7 @@ namespace NuSysApp
 
             DataContext = vm;
             vm.PageLocationChanged += Vm_PageLocationChanged;
-            this.Loaded += PdfDetailHomeTabView_Loaded;
+            Loaded += PdfDetailHomeTabView_Loaded;
 
             xClippingWrapper.Controller = vm.LibraryElementController;
             xClippingWrapper.ProcessLibraryElementController();
@@ -75,12 +73,6 @@ namespace NuSysApp
             var vm = DataContext as PdfDetailHomeTabViewModel;
             xClippingWrapper.Controller = vm.LibraryElementController;
             await xClippingWrapper.ProcessLibraryElementController();
-            //UpdateRegionViews(vm.CurrentPageNumber);
-        }
-
-        private void XBorderOnSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            //xBorder.Clip = new RectangleGeometry {Rect= new Rect(0,0,e.NewSize.Width, e.NewSize.Height)};
         }
 
         private void ControllerOnDisposed(object source, object args)
@@ -96,11 +88,6 @@ namespace NuSysApp
             if (vm == null)
                 return;
             await vm.FlipLeft();
-            //UpdateRegionViews(vm.CurrentPageNumber);
-            //(_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
-            //  nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
-            //  nodeTpl.inkCanvas.ReRenderLines();
-
         }
 
         private async void OnPageRightClick(object sender, RoutedEventArgs e)
@@ -109,28 +96,6 @@ namespace NuSysApp
             if (vm == null)
                 return;
             await vm.FlipRight();
-            //UpdateRegionViews(vm.CurrentPageNumber);
-            //(_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
-            // (_inqCanvasView.DataContext as InqCanvasViewModel).Lines.Clear();
-            //   nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
-            //   nodeTpl.inkCanvas.ReRenderLines();
-        }
-
-        private async void OnGoToSource(object sender, RoutedEventArgs e)
-        {
-            var libraryElementController = (DataContext as PdfDetailHomeTabViewModel)?.LibraryElementController;
-            string token = libraryElementController.GetMetadata("Token")?.ToString();
-            await AccessList.OpenFile(token);
-        }
-
-        public double GetPdfHeight()
-        {
-            return xImg.ActualHeight;
-        }
-
-        public double GetPdfWidth()
-        {
-            return xImg.ActualWidth;
         }
 
         #region addToCollection

@@ -60,7 +60,7 @@ namespace NuSysApp
         private RectangleRegionLibraryElementController _regionLibraryElementController;
 
 
-        public ImageRegionViewModel(RectangleRegion model, RectangleRegionLibraryElementController regionLibraryElementController, RectangleWrapper rectangleWrapper) : base(model, regionLibraryElementController, null)
+        public ImageRegionViewModel(RectangleRegion model, RectangleRegionLibraryElementController regionLibraryElementController, RectangleWrapper rectangleWrapper) : base(model, regionLibraryElementController)
         {
             if (model == null)
             {

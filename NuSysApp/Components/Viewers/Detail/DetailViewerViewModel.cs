@@ -44,7 +44,7 @@ namespace NuSysApp
 
         public ObservableCollection<FrameworkElement> SuggestedTags { get; set; }
 
-        public ObservableCollection<DetailViewTabTemplate> Tabs { get; set; }
+        public ObservableCollection<DetailViewTabTemplate> Tabs { get; private set; }
 
 
 
@@ -172,24 +172,6 @@ namespace NuSysApp
             _regionableHomeTabViewModel = View.DataContext as DetailHomeTabViewModel;
             _regionableHomeTabViewModel.Editable = false;
 
-            RaisePropertyChanged("View");
-            RaisePropertyChanged("RegionView");
-
-            RegionView.Loaded += delegate
-            {
-
-                _regionableRegionTabViewModel.SetExistingRegions();
-
-            };
-
-            View.Loaded += delegate
-            {
-                _regionableHomeTabViewModel.SetExistingRegions();
-            };
-
-
-            //SizeChanged += (sender, left, width, height) => _regionableRegionTabViewModel.SizeChanged(sender, width, height);
-            //SizeChanged += (sender, left, width, height) => _regionableHomeTabViewModel.SizeChanged(sender, width, height);
                 
             Title = controller.LibraryElementModel.Title;
 

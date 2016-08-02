@@ -15,54 +15,13 @@ using NuSysApp.Util;
 
 namespace NuSysApp
 {
-    public class VideoNodeViewModel : ElementViewModel, Sizeable
+    public class VideoNodeViewModel : ElementViewModel
     {
-        private ObservableCollection<VideoRegionView> _regionViews = new ObservableCollection<VideoRegionView>();
-
-        public delegate double GetWidthEventHandler(object sender);
-        public event GetWidthEventHandler OnGetMediaPlayerWidth;
-        public delegate double GetHeightEventHandler(object sender);
-        public event GetHeightEventHandler OnGetMediaPlayerHeight;
-
-        public delegate void OnRegionSeekPassingHandler(double time);
-        public event OnRegionSeekPassingHandler OnRegionSeekPassing;
-
-        private void View_OnRegionSeek(double time)
-        {
-            OnRegionSeekPassing?.Invoke(time);
-        }
-
-        public double VideoDuration { get; set; }
-
         public VideoNodeViewModel(ElementController controller) : base(controller)
         {
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
         }
 
-        public override void Dispose()
-        {
-            base.Dispose();
-        }
-
-        public void ScrubBarOnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-        {
-            double position = e.NewValue/VideoDuration;
-            foreach (var regionview in _regionViews)
-            {
-                if (((regionview.DataContext as VideoRegionViewModel).Model as VideoRegionModel).Start <= position &&
-                    ((regionview.DataContext as VideoRegionViewModel).Model as VideoRegionModel).End >= position)
-                {
-                    regionview.RegionRectangle.Visibility = Visibility.Visible;
-                    regionview.Select();
-                }
-                else
-                {
-                    regionview.RegionRectangle.Visibility = Visibility.Collapsed;
-                    regionview.Deselect();
-
-                }
-            }
-        }
         public override async Task Init()
         {
             if (Controller.LibraryElementController.IsLoaded)
@@ -112,25 +71,5 @@ namespace NuSysApp
 
             SetSize(width, height);
         }
-        public double GetWidth()
-        {
-            var width = OnGetMediaPlayerWidth?.Invoke(this);
-            if (width != null)
-            {
-                return width.Value;
-            }
-            return 0;
-        }
-
-        public double GetHeight()
-        {
-            var height = OnGetMediaPlayerHeight?.Invoke(this);
-            if (height != null)
-            {
-                return height.Value;
-            }
-            return 0;
-        }
-
     }
 }

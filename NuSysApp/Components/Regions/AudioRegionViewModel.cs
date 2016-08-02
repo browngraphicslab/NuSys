@@ -71,7 +71,7 @@ namespace NuSysApp
 
         public AudioWrapper AudioWrapper { get; set; }
 
-        public AudioRegionViewModel(AudioRegionModel model, AudioRegionLibraryElementController regionLibraryElementController, AudioWrapper wrapper) : base(model, regionLibraryElementController, null)
+        public AudioRegionViewModel(AudioRegionModel model, AudioRegionLibraryElementController regionLibraryElementController, AudioWrapper wrapper) : base(model, regionLibraryElementController)
         {
             _regionLibraryElementController = regionLibraryElementController;
             _regionLibraryElementController.TimeChanged += RegionController_TimeChanged;

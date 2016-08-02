@@ -46,17 +46,8 @@ namespace NuSysApp
             }
             
             vm.Controller.Disposed += ControllerOnDisposed;
-
-            VideoMediaPlayer.MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
-            VideoMediaPlayer.ScrubBar.ValueChanged += vm.ScrubBarOnValueChanged;
-            vm.OnRegionSeekPassing += VideoMediaPlayer.onSeekedTo;
         }
 
-        private async void MediaPlayer_MediaOpened(object sender, RoutedEventArgs e)
-        {
-            var vm = DataContext as VideoNodeViewModel;
-            vm.VideoDuration = VideoMediaPlayer.MediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
-        }
 
         private void ControllerOnDisposed(object source, object args)
         {

@@ -137,7 +137,7 @@ namespace NuSysApp
 
         public AudioWrapper AudioWrapper { get; set; }
 
-        public VideoRegionViewModel(VideoRegionModel model, VideoRegionLibraryElementController regionLibraryElementController, AudioWrapper audioWrapper) : base(model, regionLibraryElementController,null)
+        public VideoRegionViewModel(VideoRegionModel model, VideoRegionLibraryElementController regionLibraryElementController, AudioWrapper audioWrapper) : base(model, regionLibraryElementController)
         {
             audioWrapper.SizeChanged += RectangleWrapper_SizeChanged;
             regionLibraryElementController.SizeChanged += SizeChanged;
@@ -232,6 +232,11 @@ namespace NuSysApp
         {
             var controller = RegionLibraryElementController as VideoRegionLibraryElementController;
             controller?.SetLocation(new Point(topLeft.X / AudioWrapper.GetWidth(), topLeft.Y / AudioWrapper.GetHeight()));
+        }
+
+        public override void Dispose(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 

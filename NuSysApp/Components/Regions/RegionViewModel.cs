@@ -13,7 +13,6 @@ namespace NuSysApp
         private bool _editable;
 
         #region Public variables
-        public Sizeable ContainerViewModel;
         public Region Model { get; private set; }
         public bool Editable
         {
@@ -36,10 +35,9 @@ namespace NuSysApp
         #endregion Public variables
         public RegionLibraryElementController RegionLibraryElementController;
 
-        public RegionViewModel(Region model, RegionLibraryElementController regionLibraryElementController, Sizeable sizeable)
+        public RegionViewModel(Region model, RegionLibraryElementController regionLibraryElementController)
         {
             Model = model;
-            ContainerViewModel = sizeable;
             RegionLibraryElementController = regionLibraryElementController;
         }
 
@@ -48,9 +46,7 @@ namespace NuSysApp
             ContainerSizeChanged?.Invoke(sender,width,height);
         }
 
-        public virtual void Dispose(object sender, EventArgs e)
-        {
-            
-        }
+        public abstract void Dispose(object sender, EventArgs e);
+
     }
 }

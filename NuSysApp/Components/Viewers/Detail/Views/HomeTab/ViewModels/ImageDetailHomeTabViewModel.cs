@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace NuSysApp
 {
-    public class ImageDetailHomeTabViewModel : DetailHomeTabViewModel, Sizeable
+    public class ImageDetailHomeTabViewModel : DetailHomeTabViewModel
     {
 
         public LibraryElementController LibraryElementController { get; }
@@ -25,56 +25,7 @@ namespace NuSysApp
             Model = controller.LibraryElementModel;
 
             Image = controller.GetSource();
-            Editable = true;
-           
-        }
-
-        public override void AddRegion(object sender, RegionLibraryElementController regionLibraryElementController)
-        {
-            // todo remove
-        }
-
-        public override void RemoveRegion(object sender, Region displayedRegion)
-        {
-            // todo remove
-        }
-
-        public override void SizeChanged(object sender, double width, double height)
-        {
-            if (!Editable)
-            {
-                Debug.WriteLine("The detail view size is: " + width);
-                Debug.WriteLine("Image Width: " + this.GetWidth());
-
-            }
-           
-            
-        }
-        public double GetHeight()
-        {
-            var view = (View as ImageDetailHomeTabView);
-            if (view == null)
-            {
-                return 0;
-            }
-            //return view.ActualHeight;
-            return view.GetImgHeight();
-        }
-
-
-        public double GetWidth()
-        {
-            var view = (View as ImageDetailHomeTabView);
-            if (view == null)
-            {
-                return 0;
-            }
-           //return view.ActualWidth;
-            return view.GetImgWidth();
-        }
-        public override void SetExistingRegions()
-        {
-            // todo remove
+            Editable = true;         
         }
 
         public override Message GetNewRegionMessage()
@@ -101,27 +52,5 @@ namespace NuSysApp
 
             return m;
         }
-
-
-        public double GetViewWidth()
-        {
-            var view = (View as ImageDetailHomeTabView);
-            if (view == null)
-            {
-                return 0;
-            }
-            return view.ActualWidth;
-        }
-
-        public double GetViewHeight()
-        {
-            var view = (View as ImageDetailHomeTabView);
-            if (view == null)
-            {
-                return 0;
-            }
-            return view.ActualHeight;
-        }
-
     }
 }

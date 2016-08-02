@@ -46,14 +46,11 @@ namespace NuSysApp
 
             AudioMediaPlayer.AudioSource = vm.LibraryElementController.GetSource();
             AudioMediaPlayer.MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
-            AudioMediaPlayer.ScrubBar.ValueChanged += vm.ScrubBarOnValueChanged;
             
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
             detailViewerView.Disposed += DetailViewerView_Disposed;
 
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
-            vm.OnRegionSeekPassing += MediaPlayer.onSeekedTo;
-            vm.View = this;            
         }
 
         private void DetailViewerView_Disposed(object sender, EventArgs e)
@@ -67,8 +64,6 @@ namespace NuSysApp
         {
             var vm = DataContext as AudioDetailHomeTabViewModel;
             vm.Duration = AudioMediaPlayer.MediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
-            vm.SetExistingRegions();
-
             ContentLoaded?.Invoke(this);
         }
 

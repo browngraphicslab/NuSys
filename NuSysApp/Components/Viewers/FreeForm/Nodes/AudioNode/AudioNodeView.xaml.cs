@@ -37,35 +37,17 @@ namespace NuSysApp
             this.DataContext = vm; // has to be set before initComponent so child xaml elements inherit it
             InitializeComponent();
             _loaded = false;
-
-
             vm.Controller.Disposed += ControllerOnDisposed;
-
-
-            //I'm sorry for the stupid name. I don't think it was me, but I'm too lazy to fix it.
-            MediaPlayer.MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
-            MediaPlayer.ScrubBar.ValueChanged += vm.ScrubBarOnValueChanged;
-
             MediaPlayer.AudioSource = vm.AudioSource;
-        }
-
-        private void MediaPlayer_MediaOpened(object sender, RoutedEventArgs e)
-        {
-            var vm = DataContext as AudioNodeViewModel;
-            vm.AudioDuration = MediaPlayer.MediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
         }
 
         private void ControllerOnDisposed(object source, object args)
         {
             var vm = (AudioNodeViewModel)DataContext;
-
-            MediaPlayer.MediaPlayer.MediaOpened -= MediaPlayer_MediaOpened;
-            MediaPlayer.ScrubBar.ValueChanged -= vm.ScrubBarOnValueChanged;
-            (DataContext as AudioNodeViewModel).OnVisualizationLoaded -= LoadPlaybackElement;
+            // relic from wave forms still might be added back though
+            //(DataContext as AudioNodeViewModel).OnVisualizationLoaded -= LoadPlaybackElement; 
             nodeTpl.Dispose();
-
             vm.Controller.Disposed -= ControllerOnDisposed;
-            DataContext = null;
         }
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)

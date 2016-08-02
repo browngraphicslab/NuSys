@@ -23,15 +23,14 @@ using Point = Windows.Foundation.Point;
 
 namespace NuSysApp
 {
-    public class PdfDetailHomeTabViewModel : DetailHomeTabViewModel, Sizeable
+    public class PdfDetailHomeTabViewModel : DetailHomeTabViewModel
     {
         public delegate void PageLocationChangedEventHandler(object sender, int pageLocation);
         public event PageLocationChangedEventHandler PageLocationChanged;
         public LibraryElementController LibraryElementController { get; }
-        //public ObservableCollection<PDFRegionView> RegionViews { set; get; }
         public WriteableBitmap ImageSource { get; set; }
-        
-        private int _pageNumber = 0;
+
+        private int _pageNumber;
 
         public int CurrentPageNumber => _pageNumber;
 
@@ -42,9 +41,7 @@ namespace NuSysApp
         public PdfDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
             LibraryElementController = controller;
-            //RegionViews = new ObservableCollection<PDFRegionView>();
             Editable = true;
-
             _pageNumber = InitialPageNumber;
         }
 
@@ -141,54 +138,6 @@ namespace NuSysApp
             });
         }
 
-        public override void AddRegion(object sender, RegionLibraryElementController regionLibraryElementController)
-        {
-        }
-
-
-        public override void RemoveRegion(object sender, Region displayedRegion)
-        {
-        }
-
-        public override void SizeChanged(object sender, double width, double height)
-        {
-        }
-
-        public double GetHeight()
-        {
-            var view = (View as PdfDetailHomeTabView);
-            if (view == null)
-            {
-                return 0;
-            }
-
-            return view.GetPdfHeight();
-        }
-        public double GetWidth()
-        {
-            var view = (View as PdfDetailHomeTabView);
-            if (view == null)
-            {
-                return 0;
-            }
-            return view.GetPdfWidth();
-        }
-
-        public double GetViewWidth()
-        {
-            var view = (View as PdfDetailHomeTabView);
-            if (view == null)
-            {
-                return 0;
-            }
-            //return view.ActualWidth;
-            return view.ActualWidth;
-        }
-
-        public override void SetExistingRegions()
-        {
-        }
-
         public override Message GetNewRegionMessage()
         {
             var m = new Message();
@@ -214,19 +163,6 @@ namespace NuSysApp
             }
 
             return m;
-
-
-        }
-
-        public double GetViewHeight()
-        {
-            var view = (View as PdfDetailHomeTabView);
-            if (view == null)
-            {
-                return 0;
-            }
-            //return view.ActualWidth;
-            return view.ActualHeight;
         }
     }
 }

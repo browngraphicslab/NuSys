@@ -80,34 +80,13 @@ namespace NuSysApp
 
         public void UpdateAnnotation(string text)
         {
-
             _controller.SetContentData(text); 
         }
 
-        public override void AddRegion(object sender, RegionLibraryElementController regionLibraryElementController)
-        {
-            //throw new NotImplementedException();
-        }
-
-        public override void RemoveRegion(object sender, Region displayedRegion)
-        {
-            //throw new NotImplementedException();
-        }
-
-        public override void SizeChanged(object sender, double width, double height)
-        {
-            //throw new NotImplementedException();
-        }
-
-        public override void SetExistingRegions()
-        {
-            //throw new NotImplementedException();
-        }
-
+        // we don't have regions on links so this should never happen
         public override Message GetNewRegionMessage()
         {
-            return null;
-            //throw new NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

@@ -61,7 +61,7 @@ namespace NuSysApp
 
         public delegate void LocationChangedEventHandler(object sender, Point topLeft);
         public event LocationChangedEventHandler LocationChanged;
-        public PdfRegionViewModel(PdfRegionModel model, PdfRegionLibraryElementController regionLibraryElementController, RectangleWrapper wrapper) : base(model, regionLibraryElementController, null)
+        public PdfRegionViewModel(PdfRegionModel model, PdfRegionLibraryElementController regionLibraryElementController, RectangleWrapper wrapper) : base(model, regionLibraryElementController)
         {
             if (model == null)
             {

@@ -12,12 +12,12 @@ using LdaLibrary;
 
 namespace NuSysApp
 {
-    public class WordDetailHomeTabViewModel : DetailHomeTabViewModel, Sizeable
+    public class WordDetailHomeTabViewModel : DetailHomeTabViewModel
     {
         public LibraryElementController LibraryElementController { get; }
         public WriteableBitmap ImageSource { get; set; }
 
-        private int _pageNumber = 0;
+        private int _pageNumber;
         private MuPDFWinRT.Document _document;
         public WordDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
@@ -124,41 +124,11 @@ namespace NuSysApp
             });
         }
 
-        public override void AddRegion(object sender, RegionLibraryElementController regionLibraryElementController)
-        {
-        }
-
-
-        public override void RemoveRegion(object sender, Region displayedRegion)
-        {
-        }
-
-        public override void SizeChanged(object sender, double width, double height)
-        {
-        }
-
-        public double GetHeight()
-        {
-            return 0;
-        }
-        public double GetWidth()
-        {
-            return 0;
-        }
-
-        public override void SetExistingRegions()
-        {
-            
-        }
-
+        // we don't have regions on word nodes so this is fine
         public override Message GetNewRegionMessage()
         {
             throw new NotImplementedException();
         }
 
-        public double GetViewHeight()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

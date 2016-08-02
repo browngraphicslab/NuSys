@@ -17,9 +17,6 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <StackPanel  VerticalAlignment="Top" Orientation="Horizontal" Background="#565F6D" Visibility="Collapsed">
-            <Button Name="SourceBttn" Foreground="{StaticResource foreground6}" Click="OnGoToSource">GO TO SOURCE</Button>
-        </StackPanel>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
