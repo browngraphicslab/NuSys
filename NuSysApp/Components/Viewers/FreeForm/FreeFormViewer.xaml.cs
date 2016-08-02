@@ -10,6 +10,7 @@ using Windows.UI.Input.Inking;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Windows.Devices.Input;
 using Windows.System;
 using Windows.UI;
 using Windows.UI.Core;
@@ -44,6 +45,7 @@ namespace NuSysApp
         private NuSysInqCanvas _inqCanvas;
         private ExploreMode _exploreMode;
         private MultiMode _explorationMode;
+        private List<uint> _activePointers = new List<uint>();
 
         public CanvasAnimatedControl RenderCanvas => xRenderCanvas;
 
@@ -65,6 +67,9 @@ namespace NuSysApp
             {
 
                 NuSysRenderer.Instance.Canvas = xRenderCanvas;
+
+                xRenderCanvas.PointerPressed += XRenderCanvasOnPointerPressed;
+                xRenderCanvas.PointerReleased += XRenderCanvasOnPointerReleased;
 
             //    xRenderCanvas.PointerPressed += XRenderCanvasOnPointerPressed;
 
@@ -120,7 +125,19 @@ namespace NuSysApp
             };
         }
 
-        private void OnItemSelected(BaseRenderItem element)
+        private void XRenderCanvasOnPointerReleased(object sender, PointerRoutedEventArgs args)
+        {
+            if (args.Pointer.PointerDeviceType == PointerDeviceType.Touch)
+                _activePointers.Remove(args.Pointer.PointerId);
+        }
+
+        private void XRenderCanvasOnPointerPressed(object sender, PointerRoutedEventArgs args)
+        {
+            if (args.Pointer.PointerDeviceType == PointerDeviceType.Touch)
+                _activePointers.Add(args.Pointer.PointerId);
+        }
+
+        private void OnItemSelected(BaseRenderItem element, PointerDeviceType device)
         {
             var elementRenderItem = element as ElementRenderItem;
             var vm = (FreeFormViewerViewModel)DataContext;
@@ -128,10 +145,22 @@ namespace NuSysApp
             {
                 vm.ClearSelection();
             }
-            else { 
-                if (CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.None)
-                    vm.ClearSelection();
-                vm.AddSelection(elementRenderItem.ViewModel);
+            else
+            {
+                if (device == PointerDeviceType.Mouse)
+                {
+                    var keyState = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift);
+                    if (keyState != CoreVirtualKeyStates.Down)
+                        vm.ClearSelection();
+                    vm.AddSelection(elementRenderItem.ViewModel);
+                }
+
+                if (device == PointerDeviceType.Touch)
+                {
+                    if (_activePointers.Count == 0)
+                        vm.ClearSelection();
+                    vm.AddSelection(elementRenderItem.ViewModel);
+                }
             }
         }
 

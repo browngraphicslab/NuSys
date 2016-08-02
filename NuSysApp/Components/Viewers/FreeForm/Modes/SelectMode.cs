@@ -25,11 +25,15 @@ namespace NuSysApp
         public Matrix3x2 T { get; set; } = Matrix3x2.Identity;
         public Matrix3x2 S { get; set; } = Matrix3x2.Identity;
         public Matrix3x2 C { get; set; } = Matrix3x2.Identity;
+
+        public Size Size { get; set; }
+
+        public Point Position { get; set; }
     }
 
     public class SelectMode : AbstractWorkspaceViewMode
     {
-        public delegate void RenderItemSelectedHandler(BaseRenderItem element);
+        public delegate void RenderItemSelectedHandler(BaseRenderItem element, PointerDeviceType device);
 
         public event RenderItemSelectedHandler ItemSelected;
         
@@ -37,15 +41,15 @@ namespace NuSysApp
 
         private Mode _mode = Mode.PanZoom;
         private Dictionary<uint, Vector2> _pointerPoints = new Dictionary<uint, Vector2>(); 
+        private Dictionary<ElementViewModel, Transformable> _transformables = new Dictionary<ElementViewModel, Transformable>(); 
         private BaseRenderItem _selectedRenderItem;
         private Vector2 _startPoint;
         private Vector2 _centerPoint;
         private double _twoFingerDist;
         private double _distanceTraveled;
+        private DateTime _lastReleased = DateTime.Now;
         private Stopwatch _stopwatch = new Stopwatch();
-        private Transformable _transformable = new Transformable();
-        private Size _prevObjSize = new Size();
-        private Point _prevObjPos = new Point();
+        private Stopwatch _firstPointerStopWatch = new Stopwatch();
 
         public SelectMode(FreeFormViewer view):base(view)
         {
@@ -84,6 +88,9 @@ namespace NuSysApp
 
         private async void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
+            if (_pointerPoints.Count == 0)
+                _firstPointerStopWatch.Restart();
+
             if (_pointerPoints.Count >= 1)
                 _stopwatch.Start();
 
@@ -99,6 +106,7 @@ namespace NuSysApp
                 UpdateCenterPoint();
                 UpdateDist();
                 _mode = Mode.PanZoom;
+                _transformables.Clear();
             }
             else
             {
@@ -112,9 +120,6 @@ namespace NuSysApp
                 else
                 {
                     _mode = Mode.MoveNode;
-                    var elem = (ElementRenderItem) _selectedRenderItem;
-                    _prevObjPos = new Point(elem.ViewModel.X, elem.ViewModel.Y);
-                    _prevObjSize = new Size(elem.ViewModel.Width, elem.ViewModel.Height);
                 }
             }
            
@@ -148,22 +153,46 @@ namespace NuSysApp
 
             if (_pointerPoints.ContainsKey(e.Pointer.PointerId))
                 _pointerPoints.Remove(e.Pointer.PointerId);
+            
+            if (_pointerPoints.Count == 0)
+                _firstPointerStopWatch.Stop();
 
             if (_pointerPoints.Count == 1)
+            {
                 _startPoint = _pointerPoints.Values.First();
 
-            var ffView = (FreeFormViewer)_view;
-            if (_pointerPoints.Count == 0) {
-
-                ffView.RenderCanvas.PointerMoved -= OnPointerMoved;
-                if (_distanceTraveled < 5 && _stopwatch.ElapsedMilliseconds < 150)
+                var dt = _stopwatch.ElapsedMilliseconds;
+                if (dt < 200)
                 {
-                    _transformable = new Transformable();
-                    ItemSelected?.Invoke(_selectedRenderItem);
+                    var pp = e.GetCurrentPoint(null).Position;
+                    var item = NuSysRenderer.Instance.GetRenderItemAt(pp);
+                    ItemSelected?.Invoke(item, e.Pointer.PointerDeviceType);
+                }
+            }
+            else if (_pointerPoints.Count == 0)
+            {
+                var vm = (FreeFormViewerViewModel)_view.DataContext;
+                if (vm.Selections.Count == 0)
+                    _transformables.Clear();
+
+                var dt = (DateTime.Now - _lastReleased).TotalMilliseconds;
+                if (dt < 200)
+                {
+                    _lastReleased = DateTime.Now;
+                    _stopwatch.Reset();
+                    return;
+                }
+
+                var ffView = (FreeFormViewer)_view;
+                ffView.RenderCanvas.PointerMoved -= OnPointerMoved;
+                if (_distanceTraveled < 5 && _stopwatch.ElapsedMilliseconds < 150 && _firstPointerStopWatch.ElapsedMilliseconds < 150)
+                {
+                    ItemSelected?.Invoke(_selectedRenderItem, e.Pointer.PointerDeviceType);
                 }
 
                 _distanceTraveled = 0;
             }
+            _lastReleased = DateTime.Now;
             _stopwatch.Reset();
         }
 
@@ -186,18 +215,35 @@ namespace NuSysApp
                 var ds = _twoFingerDist/ prevDist;
 
                 var vm = (FreeFormViewerViewModel)_view.DataContext;
-                if (vm.Selections.Count == 1)
+                if (vm.Selections.Count > 0)
                 {
-                    var elem = (ElementRenderItem) _selectedRenderItem;
-                    var imgCenter = new Vector2((float)(elem.ViewModel.X + elem.ViewModel.Width/2), (float)(elem.ViewModel.Y + elem.ViewModel.Height / 2));
-                    var newCenter = NuSysRenderer.Instance.ObjectPointToScreenPoint(imgCenter);
 
-                    PanZoom(_transformable, newCenter, dx,dy, ds);
-                  //  Debug.WriteLine(_transformable.T.M31.ToString(), _transformable.T.M32.ToString());
-                    elem.ViewModel.Controller.SetSize(_prevObjSize.Width * _transformable.S.M11, _prevObjSize.Height * _transformable.S.M22);
-                    var nx = _prevObjPos.X - (_prevObjSize.Width*_transformable.S.M11 - _prevObjSize.Width)/2;
-                    var ny = _prevObjPos.Y - (_prevObjSize.Height * _transformable.S.M22 - _prevObjSize.Height) /2;
-                    elem.ViewModel.Controller.SetPosition(nx,ny);
+                    foreach (var selection in vm.Selections)
+                    {
+                        var elem = (ElementViewModel)selection;
+                        var imgCenter = new Vector2((float)(elem.X + elem.Width / 2), (float)(elem.Y + elem.Height / 2));
+                        var newCenter = NuSysRenderer.Instance.ObjectPointToScreenPoint(imgCenter);
+
+                        Transformable t;
+                        if (_transformables.ContainsKey(elem))
+                            t = _transformables[elem];
+                        else
+                        {
+                            t = new Transformable();
+                            _transformables.Add(elem, t);
+                            t.Position = new Point(elem.X, elem.Y);
+                            t.Size = new Size(elem.Width, elem.Height);
+                        }
+                        
+                        PanZoom(t, newCenter, dx, dy, ds);
+
+                        elem.Controller.SetSize(t.Size.Width * t.S.M11, t.Size.Height * t.S.M22);
+                        var nx = t.Position.X - (t.Size.Width * t.S.M11 - t.Size.Width) / 2;
+                        var ny = t.Position.Y - (t.Size.Height * t.S.M22 - t.Size.Height) / 2;
+                        elem.Controller.SetPosition(nx, ny);
+                    }
+
+
 
                 }
                 else
@@ -222,7 +268,6 @@ namespace NuSysApp
                     _distanceTraveled += Math.Abs(deltaX) + Math.Abs(deltaY);
                     _startPoint = new Vector2((float)currPos.X, (float)currPos.Y);
 
-                  //  PanZoom(_startPoint, deltaX, deltaY, 1);
                     var elem = _selectedRenderItem as ElementRenderItem;
                     if (elem == null)
                         return;
