@@ -61,7 +61,7 @@ namespace NuSysApp
         public double RectangleHeight {
             get
             {
-                return Math.Max(0, _height * ContainerViewModel.GetHeight());
+                return Math.Max(0, _height * AudioWrapper.GetHeight());
             }
             set
             {
@@ -70,7 +70,7 @@ namespace NuSysApp
             }
         }
         public double RectangleWidth {
-            get { return Math.Max(0, _width*ContainerViewModel.GetWidth()); }
+            get { return Math.Max(0, _width* AudioWrapper.GetWidth()); }
             set
             {
                 _width = value;
@@ -81,7 +81,7 @@ namespace NuSysApp
         {
             get
             {
-                return Math.Max(0, (_intervalEnd - _intervalStart) * (ContainerViewModel.GetWidth() - 2 * _progressbarMargin));
+                return Math.Max(0, (_intervalEnd - _intervalStart) * (AudioWrapper.GetWidth() - 2 * _progressbarMargin));
             }
             set
             {
@@ -93,7 +93,7 @@ namespace NuSysApp
         {
             get
             {
-                return Math.Max(0, _intervalRegionTranslateY * ContainerViewModel.GetHeight() + _progressbarMargin);
+                return Math.Max(0, _intervalRegionTranslateY * AudioWrapper.GetHeight() + _progressbarMargin);
             }
             set
             {
@@ -103,7 +103,7 @@ namespace NuSysApp
         }
         public double IntervalStart
         {
-            get { return Math.Max(0, _intervalStart * (ContainerViewModel.GetWidth() - 2 * _progressbarMargin) + _progressbarMargin); }
+            get { return Math.Max(0, _intervalStart * (AudioWrapper.GetWidth() - 2 * _progressbarMargin) + _progressbarMargin); }
             set
             {
                 Debug.Assert(!Double.IsNaN(value));
@@ -114,7 +114,7 @@ namespace NuSysApp
         }
         public double IntervalEnd
         {
-            get { return Math.Max(0, _intervalEnd * (ContainerViewModel.GetWidth() - 2 * _progressbarMargin) + _progressbarMargin); }
+            get { return Math.Max(0, _intervalEnd * (AudioWrapper.GetWidth() - 2 * _progressbarMargin) + _progressbarMargin); }
             set
             {
                 _intervalEnd = value;
@@ -126,7 +126,7 @@ namespace NuSysApp
         {
             get
             {
-                return new Point(_topLeftPoint.X * ContainerViewModel.GetWidth(), _topLeftPoint.Y * ContainerViewModel.GetHeight()); 
+                return new Point(_topLeftPoint.X * AudioWrapper.GetWidth(), _topLeftPoint.Y * AudioWrapper.GetHeight()); 
             }
             set
             {
@@ -134,9 +134,12 @@ namespace NuSysApp
                 RaisePropertyChanged("TopLeft");
             }
         }
-        public VideoRegionViewModel(VideoRegionModel model, VideoRegionLibraryElementController regionLibraryElementController,Sizeable sizeable) : base(model, regionLibraryElementController,sizeable)
+
+        public AudioWrapper AudioWrapper { get; set; }
+
+        public VideoRegionViewModel(VideoRegionModel model, VideoRegionLibraryElementController regionLibraryElementController, AudioWrapper audioWrapper) : base(model, regionLibraryElementController,null)
         {
-            ContainerSizeChanged += BaseSizeChanged;
+            audioWrapper.SizeChanged += RectangleWrapper_SizeChanged;
             regionLibraryElementController.SizeChanged += SizeChanged;
             regionLibraryElementController.LocationChanged += LocationChanged;
             regionLibraryElementController.IntervalChanged += IntervalChanged;
@@ -150,8 +153,21 @@ namespace NuSysApp
             _intervalRegionTranslateY = 1;
 
             Name = Model.Title;
-
+            AudioWrapper = audioWrapper;
+            
             Editable = true;
+        }
+
+        private void RectangleWrapper_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            RaisePropertyChanged("RectangleWidth");
+            RaisePropertyChanged("RectangleHeight");
+            RaisePropertyChanged("IntervalRegionWidth");
+            RaisePropertyChanged("IntervalStart");
+            RaisePropertyChanged("IntervalEnd");
+            RaisePropertyChanged("TopLeft");
+            RaisePropertyChanged("BottomRight");
+            RaisePropertyChanged("IntervalRegionTranslateY");
         }
 
         private void TitleChanged(object source, string title)
@@ -193,13 +209,13 @@ namespace NuSysApp
         {
             var newstart = Math.Max(0, start-_progressbarMargin);
             var controller = RegionLibraryElementController as VideoRegionLibraryElementController;
-            controller?.SetStartTime(newstart / (ContainerViewModel.GetWidth()-2*_progressbarMargin));
+            controller?.SetStartTime(newstart / (AudioWrapper.GetWidth()-2*_progressbarMargin));
         }
         public void SetIntervalEnd(double end)
         {
             var newEnd = Math.Max(0, end-_progressbarMargin);
             var controller = RegionLibraryElementController as VideoRegionLibraryElementController;
-            controller?.SetEndTime(newEnd / (ContainerViewModel.GetWidth()-2*_progressbarMargin));
+            controller?.SetEndTime(newEnd / (AudioWrapper.GetWidth()-2*_progressbarMargin));
         }
         
         public void SetRegionSize(double width, double height)
@@ -207,14 +223,14 @@ namespace NuSysApp
             var h = Math.Max(0,height);
             var w = Math.Max(0, width);
             var controller = RegionLibraryElementController as VideoRegionLibraryElementController;
-            controller?.SetHeight(h / ContainerViewModel.GetHeight());
-            controller?.SetWidth(w / ContainerViewModel.GetWidth());
+            controller?.SetHeight(h / AudioWrapper.GetHeight());
+            controller?.SetWidth(w / AudioWrapper.GetWidth());
         }
 
         public void SetRegionLocation(Point topLeft)
         {
             var controller = RegionLibraryElementController as VideoRegionLibraryElementController;
-            controller?.SetLocation(new Point(topLeft.X / ContainerViewModel.GetWidth(), topLeft.Y / ContainerViewModel.GetHeight()));
+            controller?.SetLocation(new Point(topLeft.X / AudioWrapper.GetWidth(), topLeft.Y / AudioWrapper.GetHeight()));
         }
     }
 

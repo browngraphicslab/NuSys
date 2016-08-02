@@ -8,7 +8,7 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
-    <Grid x:Name ="Grid" Width="{Binding Width}">
+    <Grid x:Name ="Grid" Width="{Binding Width}" SizeChanged="Grid_SizeChanged">
         <Grid.Resources>
             <local:PositionToStringConverter x:Key="PositionToStringConverter"/>
         </Grid.Resources>
@@ -17,16 +17,23 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <MediaElement x:Name="playbackElement" AreTransportControlsEnabled="False"  Loaded="PlaybackElement_Onloaded" AutoPlay="False" MediaOpened="PlaybackElement_MediaOpened"/>
-        <ProgressBar x:Name ="scrubBar" Height ="25" PointerReleased="ScrubBar_OnPointerReleased"  Grid.Row="1" Margin="10,10,10,10" Value = "0" Maximum="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan.TotalMilliseconds}" Tapped="SrubBar_OnTapped" PointerMoved="ScrubBar_OnPointerMoved"  Opacity="0.3" />
+        <ProgressBar x:Name ="scrubBar" Height ="25" PointerReleased="ScrubBar_OnPointerReleased"  Grid.Row="1" Value = "0" Maximum="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan.TotalMilliseconds}" Tapped="SrubBar_OnTapped" PointerMoved="ScrubBar_OnPointerMoved"  Opacity="0.3" Margin="0,10,0,0" />
 
         <Grid Grid.Row="2" HorizontalAlignment="Left">
             <TextBlock  Margin="10,0,0,0" Text ="{Binding ElementName=playbackElement, Path=Position, Converter={StaticResource PositionToStringConverter}}"></TextBlock>
         </Grid>
         <Grid Grid.Row="2" HorizontalAlignment="Right">
-            <TextBlock Margin="0,0,10,0" Text ="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan, Converter={StaticResource PositionToStringConverter}}"></TextBlock>
+            <TextBlock x:Name="xRightTimeStampTextBlock" Margin="0,0,10,0" Text ="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan, Converter={StaticResource PositionToStringConverter}}"></TextBlock>
         </Grid>
-        <StackPanel Grid.Row ="3" Orientation="Horizontal" HorizontalAlignment="Center"  Margin="0,28,0,0" VerticalAlignment="Top">
+
+              <local:AudioWrapper x:Name="xAudioWrapper">
+                  <local:AudioWrapper.Content>
+                      <MediaElement x:Name="playbackElement" AreTransportControlsEnabled="False"  Loaded="PlaybackElement_Onloaded" AutoPlay="False" MediaOpened="PlaybackElement_MediaOpened" Stretch="Fill" MarkerReached="MediaElement_MarkerReached"/>
+                  </local:AudioWrapper.Content>
+              </local:AudioWrapper>
+
+
+                <StackPanel Grid.Row ="3" Orientation="Horizontal" HorizontalAlignment="Center"  Margin="0,28,0,0" VerticalAlignment="Top">
 
             <Button x:Name="play" Tapped="OnPlay_Click" Style="{StaticResource NodeSubMenuItem}">
                 <Image Source="ms-appx:///Assets/node icons/icon_play_dark.png" Height="20"></Image>

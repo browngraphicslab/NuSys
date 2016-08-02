@@ -32,6 +32,7 @@ namespace NuSysApp
 
         public TimelineMarker StartMarker { set; get; }
         public TimelineMarker EndMarker { set; get; }
+        public Binding positionBinding { get; set; }
         public AudioMediaPlayer()
         {
             this.InitializeComponent();
@@ -39,6 +40,8 @@ namespace NuSysApp
             //When regions are updated (added/removed/timechanged), run method:
             xAudioWrapper.OnRegionsUpdated += XAudioWrapper_OnRegionsUpdated;
             xAudioWrapper.OnRegionSeeked += onSeekedTo;
+            positionBinding = new Binding();
+
         }
 
         /// <summary>
@@ -48,9 +51,10 @@ namespace NuSysApp
         /// <param name="regionMarkers"></param>
         private void XAudioWrapper_OnRegionsUpdated(object sender, List<double> regionMarkers)
         {
+            
             MediaElement.Markers.Clear();
             //Start and end must be preserved
-            MediaElement.Markers.Add(StartMarker);
+       //     MediaElement.Markers.Add(StartMarker);
             MediaElement.Markers.Add(EndMarker);
             
             foreach (var normalizedTimelineMarkerTime in regionMarkers)
@@ -83,23 +87,26 @@ namespace NuSysApp
             }
         }
 
-        private void Play_OnTapped(object sender, TappedRoutedEventArgs e)
+        private async void Play_OnTapped(object sender, TappedRoutedEventArgs e)
         {
 
             if (MediaElement.CurrentState != MediaElementState.Playing)
             {
-
-                Binding b = new Binding();
-                b.ElementName = "MediaElement";
-                b.Path = new PropertyPath("Position.TotalMilliseconds");
-                ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
                 MediaElement.Play();
+
             }
         }
 
 
         private void MediaElement_OnMediaOpened(object sender, RoutedEventArgs e)
         {
+
+
+            positionBinding.ElementName = "MediaElement";
+            positionBinding.Path = new PropertyPath("Position.TotalMilliseconds");
+            positionBinding.Mode = BindingMode.TwoWay;
+
+            ProgressBar.SetBinding(ProgressBar.ValueProperty, positionBinding);
 
             if (DataContext is AudioDetailHomeTabViewModel)
             {
@@ -134,7 +141,7 @@ namespace NuSysApp
             EndMarker = new TimelineMarker();
             EndMarker.Time = endTime;
 
-            MediaElement.Markers.Add(StartMarker);
+        //    MediaElement.Markers.Add(StartMarker);
             MediaElement.Markers.Add(EndMarker);
 
 
@@ -164,10 +171,10 @@ namespace NuSysApp
             if (MediaElement.CurrentState != MediaElementState.Playing)
             {
 
-                Binding b = new Binding();
-                b.ElementName = "MediaElement";
-                b.Path = new PropertyPath("Position.TotalMilliseconds");
-                ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
+                //Binding b = new Binding();
+                //b.ElementName = "MediaElement";
+                //b.Path = new PropertyPath("Position.TotalMilliseconds");
+                //ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
                 //    MediaElement.Pause();
             }
         }
@@ -192,10 +199,10 @@ namespace NuSysApp
 
             TimeSpan timespan = new TimeSpan(0, 0, 0, 0, (int)millliseconds);
             MediaElement.Position = timespan;
-            Binding b = new Binding();
-            b.ElementName = "MediaElement";
-            b.Path = new PropertyPath("Position.TotalMilliseconds");
-            ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
+            //Binding b = new Binding();
+            //b.ElementName = "MediaElement";
+            //b.Path = new PropertyPath("Position.TotalMilliseconds");
+            //ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
         }
         private void ProgressBar_OnPointerMoved(object sender, PointerRoutedEventArgs e)
         {
@@ -215,10 +222,10 @@ namespace NuSysApp
 
                 if (MediaElement.CurrentState != MediaElementState.Playing)
                 {
-                    Binding b = new Binding();
-                    b.ElementName = "MediaElement";
-                    b.Path = new PropertyPath("Position.TotalMilliseconds");
-                    ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
+                    //Binding b = new Binding();
+                    //b.ElementName = "MediaElement";
+                    //b.Path = new PropertyPath("Position.TotalMilliseconds");
+                    //ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
 
                 }
                 else
@@ -244,10 +251,10 @@ namespace NuSysApp
             MediaElement.Position = time;
             if (MediaElement.CurrentState != MediaElementState.Playing)
             {
-                Binding b = new Binding();
-                b.ElementName = "MediaElement";
-                b.Path = new PropertyPath("Position.TotalMilliseconds");
-                ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
+                //Binding b = new Binding();
+                //b.ElementName = "MediaElement";
+                //b.Path = new PropertyPath("Position.TotalMilliseconds");
+                //ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
 
             }
         }
@@ -320,6 +327,11 @@ namespace NuSysApp
             var rectangleGeometry = new RectangleGeometry();
             rectangleGeometry.Rect = rect;
             this.Clip = rectangleGeometry;
+        }
+
+        private void ProgressBar_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+
         }
     }
 

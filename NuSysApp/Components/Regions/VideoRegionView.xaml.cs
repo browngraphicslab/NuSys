@@ -71,9 +71,9 @@ namespace NuSysApp
             if (composite != null &&  vm != null)
             {
                 var newEnd = composite.TranslateX + IntervalRectangle.Width + e.Delta.Translation.X;
-                if (newEnd > vm.ContainerViewModel.GetWidth()-10)
+                if (newEnd > vm.AudioWrapper.GetWidth())
                 {
-                    newEnd = vm.ContainerViewModel.GetWidth()-10;
+                    newEnd = vm.AudioWrapper.GetWidth();
                 }
                 if (newEnd < vm.IntervalStart)
                 {
@@ -98,25 +98,25 @@ namespace NuSysApp
                 return;
             }
 
-            var vvm = vm.ContainerViewModel as VideoDetailHomeTabViewModel;
+            var vvm = vm.AudioWrapper;
 
-            double newWidth = xMainRectangle.Width;
-            double newHeight = xMainRectangle.Height;
+            //double newWidth = xMainRectangle.Width;
+            //double newHeight = xMainRectangle.Height;
 
-            //CHANGE IN WIDTH
-            if (xMainRectangle.Width + vm.TopLeft.X + e.Delta.Translation.X <= vvm.GetWidth())
-            {
-                newWidth = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
+            ////CHANGE IN WIDTH
+            //if (xMainRectangle.Width + vm.TopLeft.X + e.Delta.Translation.X <= vvm.GetWidth())
+            //{
+            //    newWidth = Math.Max(xMainRectangle.Width + e.Delta.Translation.X, 25);
 
-            }
-            //CHANGE IN HEIGHT
+            //}
+            ////CHANGE IN HEIGHT
 
-            if (xMainRectangle.Height + vm.TopLeft.Y + e.Delta.Translation.Y <= vvm.GetHeight())
-            {
-                newHeight = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
-            }
+            //if (xMainRectangle.Height + vm.TopLeft.Y + e.Delta.Translation.Y <= vvm.GetHeight())
+            //{
+            //    newHeight = Math.Max(xMainRectangle.Height + e.Delta.Translation.Y, 25);
+            //}
 
-            vm.SetRegionSize(newWidth, newHeight);
+            //vm.SetRegionSize(newWidth, newHeight);
             e.Handled = true;
         }
         private void xResizingTriangle_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
@@ -142,10 +142,10 @@ namespace NuSysApp
                 
                 vm.TopLeft.X + e.Delta.Translation.X < 0 ||
                 vm.TopLeft.X + e.Delta.Translation.X + vm.RectangleWidth >
-                vm.ContainerViewModel.GetWidth() ||
+                vm.AudioWrapper.GetWidth() ||
                 vm.TopLeft.Y + e.Delta.Translation.Y < 0 ||
                 vm.TopLeft.Y + e.Delta.Translation.Y + vm.RectangleHeight >
-                vm.ContainerViewModel.GetHeight())
+                vm.AudioWrapper.GetHeight())
             {
                 return;
             }
@@ -170,10 +170,10 @@ namespace NuSysApp
         public void Deselect()
         {
             var vm = DataContext as VideoRegionViewModel;
-            xMainRectangle.StrokeThickness = 3;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
+            //xMainRectangle.StrokeThickness = 3;
+            //xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
             IntervalRectangle.Fill = new SolidColorBrush(Color.FromArgb(255, 219, 151, 179));
-            xResizingTriangle.Visibility = Visibility.Collapsed;
+            //xResizingTriangle.Visibility = Visibility.Collapsed;
             xNameTextBox.Visibility = Visibility.Collapsed;
             xDelete.Visibility = Visibility.Collapsed;
             IntervalRectangle.IsHitTestVisible = true;
@@ -186,10 +186,10 @@ namespace NuSysApp
         public void Select()
         {
             var vm = DataContext as VideoRegionViewModel;
-            xMainRectangle.StrokeThickness = 6;
-            xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
+            //xMainRectangle.StrokeThickness = 6;
+            //xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
             IntervalRectangle.Fill = new SolidColorBrush(Color.FromArgb(255, 152, 26, 77));
-            xResizingTriangle.Visibility = Visibility.Visible;
+            //xResizingTriangle.Visibility = Visibility.Visible;
             xNameTextBox.Visibility = Visibility.Visible;
             if (vm.Editable)
             {
@@ -264,9 +264,17 @@ namespace NuSysApp
                 return;
             }
            
-            var libraryElementController = vm.RegionLibraryElementController;
-            // TODO Put in delete region request
-            
+            // delete all the references to this region from the library
+            var removeRequest = new DeleteLibraryElementRequest(vm.RegionLibraryElementController.LibraryElementModel.LibraryElementId);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(removeRequest);
+
+        }
+
+        public void RescaleComponents(double scaleX)
+        {
+            Bound1Transform.ScaleX = 1.0 / scaleX;
+            Bound2Transform.ScaleX = 1.0 / scaleX;
+            xToolBarTransform.ScaleX = 1.0 / scaleX;
         }
     }
 }

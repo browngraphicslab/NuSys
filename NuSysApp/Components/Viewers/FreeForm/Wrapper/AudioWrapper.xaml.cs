@@ -92,9 +92,21 @@ namespace NuSysApp
 
             if (Constants.IsRegionType(type))
             {
-                var regionController = Controller as AudioRegionLibraryElementController;
-                AudioStart = regionController.AudioRegionModel.Start;
-                AudioEnd = regionController.AudioRegionModel.End;
+                RegionLibraryElementController regionController = null;
+                switch (Controller.LibraryElementModel.Type)
+                {
+                    case ElementType.AudioRegion:
+                        regionController = Controller as AudioRegionLibraryElementController;
+                        AudioStart = (regionController as AudioRegionLibraryElementController).AudioRegionModel.Start;
+                        AudioEnd = (regionController as AudioRegionLibraryElementController).AudioRegionModel.End;
+                        break;
+                    case ElementType.VideoRegion:
+                        regionController = Controller as VideoRegionLibraryElementController;
+                        AudioStart = (regionController as VideoRegionLibraryElementController).VideoRegionModel.Start;
+                        AudioEnd = (regionController as VideoRegionLibraryElementController).VideoRegionModel.End;
+                        break;
+                }
+
 
 
 
@@ -129,7 +141,16 @@ namespace NuSysApp
             compositeTransform.ScaleX = 1 / (AudioEnd - AudioStart);
             //    compositeTransform.CenterX = this.ActualWidth * (AudioStart + (AudioEnd - AudioStart) / 2.0);
             compositeTransform.TranslateX = -AudioStart * this.ActualWidth / (AudioEnd - AudioStart);
-            RenderTransform = compositeTransform;
+            xClippingCanvas.RenderTransform = compositeTransform;
+        }
+
+        public double GetWidth()
+        {
+            return this.ActualWidth;
+        }
+        public double GetHeight()
+        {
+            return this.ActualHeight;
         }
 
         /// <summary>
@@ -144,10 +165,6 @@ namespace NuSysApp
 
                 // get the region from the id
                 var regionLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementId);
-                if (regionLibraryElementController.LibraryElementModel.Type == ElementType.VideoRegion)
-                {
-                    return;
-                }
                 Debug.Assert(regionLibraryElementController != null);
        //         Debug.Assert(regionLibraryElementController.LibraryElementModel is RectangleRegion);
                 if (regionLibraryElementController.LibraryElementModel.LibraryElementId == Controller.LibraryElementModel.LibraryElementId)
@@ -157,7 +174,7 @@ namespace NuSysApp
                 // create the view and vm based on the region type
                 FrameworkElement view = null;
                 RegionViewModel vm = null;
-                var renderTransform = RenderTransform as CompositeTransform ?? new CompositeTransform();
+                var renderTransform = xClippingCanvas.RenderTransform as CompositeTransform ?? new CompositeTransform();
                 switch (regionLibraryElementController.LibraryElementModel.Type)
                 {
                     case ElementType.AudioRegion:
@@ -167,8 +184,18 @@ namespace NuSysApp
                         view = new AudioRegionView(vm as AudioRegionViewModel);
                         (view as AudioRegionView).RescaleComponents(renderTransform.ScaleX);
                         (view as AudioRegionView).OnRegionSeek += AudioWrapper_OnRegionSeek;
-                       
                         break;
+                    case ElementType.VideoRegion:
+                        vm = new VideoRegionViewModel(regionLibraryElementController.LibraryElementModel as VideoRegionModel,
+                                regionLibraryElementController as VideoRegionLibraryElementController, this);
+                        view = new VideoRegionView(vm as VideoRegionViewModel);
+                        (view as VideoRegionView).RescaleComponents(renderTransform.ScaleX);
+
+
+                        break;
+                    default:
+                        break;
+
                 }
 
                 // set editable based on the parent data context
@@ -293,7 +320,7 @@ namespace NuSysApp
                 compositeTransform.TranslateX = -AudioStart * this.ActualWidth / (AudioEnd - AudioStart);
 
                 //   compositeTransform.CenterX = this.ActualWidth * (AudioStart + (AudioEnd - AudioStart) / 2.0);
-                RenderTransform = compositeTransform;
+                xClippingCanvas.RenderTransform = compositeTransform;
                 foreach (var item in xClippingCanvas.Items)
                 {
                     var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
@@ -303,6 +330,10 @@ namespace NuSysApp
                         case ElementType.AudioRegion:
                             region = item as AudioRegionView;
                             (region as AudioRegionView).RescaleComponents(compositeTransform.ScaleX);
+                            break;
+                        case ElementType.VideoRegion:
+                            region = item as VideoRegionView;
+                            (region as VideoRegionView).RescaleComponents(compositeTransform.ScaleX);
                             break;
                         default:
                             break;
