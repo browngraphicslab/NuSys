@@ -391,61 +391,34 @@ namespace NuSysApp
 
         private void TabList_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            var viewable = (sender as FrameworkElement)?.DataContext as LibraryElementController;
-            if (viewable == null)
-            {
-                return;
-            }
+            var controllerId = ((sender as FrameworkElement)?.DataContext as DetailViewTabTemplate)?.LibraryElementId;
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(controllerId);
             var vm = DataContext as DetailViewerViewModel;
-            if (vm == null)
+            if (vm == null || controller == null)
             {
                 return;
             }
             DetailViewTabType tabToOpenTo = DetailViewTabType.Home;
-            if (vm.TabDictionary.ContainsKey(viewable?.LibraryElementModel.LibraryElementId))
+            if (vm.TabDictionary.ContainsKey(controllerId))
             {
-                tabToOpenTo = vm.TabDictionary[viewable?.LibraryElementModel.LibraryElementId];
+                tabToOpenTo = vm.TabDictionary[controllerId];
             }
-            if (viewable is RegionLibraryElementController)
-            {
-                ShowElement(viewable as RegionLibraryElementController, tabToOpenTo);
+            ShowElement(controller, tabToOpenTo);
 
-            } else if (viewable is LibraryElementController)
-            {
-                ShowElement(viewable as LibraryElementController, tabToOpenTo);
-            }
-            
+
             e.Handled = true;
         }
 
         private void ExitTab_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            var viewableToClose = (sender as FrameworkElement)?.DataContext as LibraryElementController;
+            var controllerId = ((sender as FrameworkElement)?.DataContext as DetailViewTabTemplate)?.LibraryElementId;
             var vm = DataContext as DetailViewerViewModel;
             if (vm == null)
             {
                 return;
             }
-            var tabs = vm?.Tabs;
-            tabs?.Remove(tabs.First(tab => tab.TabId == viewableToClose?.LibraryElementModel.LibraryElementId));
-            if (tabs?.Count < 2)
-            {
-                vm.TabVisibility = Visibility.Collapsed;
-            }
-            vm.Tabs = tabs;
-            if (tabs?.Count > 0)
-            {
-                var viewable = vm.Tabs?[tabs.Count - 1];
-                DetailViewTabType tabToOpenTo = DetailViewTabType.Home;
-                var controller = SessionController.Instance.ContentController.GetLibraryElementController(viewable?.TabId);
-                if (vm.TabDictionary.ContainsKey(viewable?.TabId))
-                {
-                    tabToOpenTo = vm.TabDictionary[viewable?.TabId];
-                }
-                ShowElement(controller, tabToOpenTo);
-                
-            }
-            vm.TabHeight = vm.TabPaneWidth/vm.Tabs.Count;
+
+            vm.RemoveTab(controllerId);
             e.Handled = true;
         }
 

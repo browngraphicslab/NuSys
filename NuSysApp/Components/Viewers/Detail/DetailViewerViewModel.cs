@@ -44,17 +44,7 @@ namespace NuSysApp
 
         public ObservableCollection<FrameworkElement> SuggestedTags { get; set; }
 
-        // Tabs keeps track of which tabs are open in the DV
-        private ObservableCollection<DetailViewTabTemplate> _tabs;
-        public ObservableCollection<DetailViewTabTemplate> Tabs
-        {
-            get { return _tabs; }
-            set
-            {
-                _tabs = value;
-                RaisePropertyChanged("Tabs");
-            }
-        }
+        public ObservableCollection<DetailViewTabTemplate> Tabs { get; set; }
 
 
 
@@ -116,23 +106,9 @@ namespace NuSysApp
 
         private void ContentController_OnElementDelete(LibraryElementModel element)
         {
-            foreach (var tab in _tabs)
-            {
-                if (tab.TabId == element.LibraryElementId)
-                {
-                    _tabs.Remove(tab);
-                    break;
-                }
-            }
-            Tabs = _tabs;
-            if (_tabs.Count > 1)
-            {
-                TabVisibility = Visibility.Visible;
-            }
-            else
-            {
-                TabVisibility = Visibility.Collapsed;
-            }
+            RemoveTab(element.LibraryElementId);
+            // set tab visibility to true if there is more than one
+            TabVisibility = Tabs.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
             TabHeight = TabPaneWidth / Tabs.Count;
         }
 
@@ -234,35 +210,28 @@ namespace NuSysApp
         public void AddTab(LibraryElementController controller)
         {
             // return if the tab is already in the detail view
-            foreach (var tab in _tabs)
+            foreach (var tab in Tabs)
             {
-                if (tab.TabId == controller.LibraryElementModel.LibraryElementId)
+                if (tab.LibraryElementId == controller.LibraryElementModel.LibraryElementId)
                 {
                     return;
                 }
             }
 
-            if (_tabs.Count < 6)
+            if (Tabs.Count < 6)
             {
-                _tabs.Add(new DetailViewTabTemplate(controller));
+                Tabs.Add(new DetailViewTabTemplate(controller));
             }
             else
             {
-                _tabs.RemoveAt(0);
-                _tabs.Add(new DetailViewTabTemplate(controller));
+                var controllerId = Tabs[0].LibraryElementId;
+                RemoveTab(controllerId);
+                Tabs.Add(new DetailViewTabTemplate(controller));
             }
             TabVisibility = Visibility.Visible;
 
-            if (_tabs.Count > 1)
-            {
-                TabVisibility = Visibility.Visible;
-            }
-            else
-            {
-                TabVisibility = Visibility.Collapsed;
-            }
+            TabVisibility = Tabs.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
             TabHeight = TabPaneWidth/Tabs.Count;
-            Tabs = _tabs;
         }
         
 
@@ -500,6 +469,40 @@ namespace NuSysApp
             CurrentDetailViewable.TitleChanged -= ControllerTitleChanged;
             CurrentDetailViewable.SetTitle(title);
             CurrentDetailViewable.TitleChanged += ControllerTitleChanged;
+        }
+
+        public void RemoveTab(string libraryElementControllerId)
+        {
+            var tabToRemove = Tabs.FirstOrDefault(item => item.LibraryElementId == libraryElementControllerId);
+            if (tabToRemove == null)
+            {
+                return;
+            }
+            tabToRemove.Dispose();
+            Tabs?.Remove(tabToRemove);
+
+            if (Tabs?.Count < 2)
+            {
+                TabVisibility = Visibility.Collapsed;
+            }
+            if (Tabs?.Count > 0)
+            {
+                var viewable = Tabs[Tabs.Count - 1];
+                DetailViewTabType tabToOpenTo = DetailViewTabType.Home;
+                var controller =
+                    SessionController.Instance.ContentController.GetLibraryElementController(viewable?.LibraryElementId);
+                if (TabDictionary.ContainsKey(viewable?.LibraryElementId))
+                {
+                    tabToOpenTo = TabDictionary[viewable?.LibraryElementId];
+                }
+                SessionController.Instance.SessionView.DetailViewerView.ShowElement(controller, tabToOpenTo);
+
+            }
+            else
+            {
+                SessionController.Instance.SessionView.DetailViewerView.CloseDv();
+            }
+            TabHeight = TabPaneWidth / Tabs.Count;
         }
 
     }
