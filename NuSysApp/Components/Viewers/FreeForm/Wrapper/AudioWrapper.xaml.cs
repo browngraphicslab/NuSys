@@ -76,6 +76,9 @@ namespace NuSysApp
         public delegate void RegionsUpdatedEventHandler(object sender, List<double> regionMarkers);
         public event RegionsUpdatedEventHandler OnRegionsUpdated;
 
+        public delegate void RegionSeekedEventHandler(double normalizedTime);
+        public event RegionSeekedEventHandler OnRegionSeeked;
+
 
         public AudioWrapper()
         {
@@ -163,6 +166,7 @@ namespace NuSysApp
                                 regionLibraryElementController as AudioRegionLibraryElementController, this);
                         view = new AudioRegionView(vm as AudioRegionViewModel);
                         (view as AudioRegionView).RescaleComponents(renderTransform.ScaleX);
+                        (view as AudioRegionView).OnRegionSeek += AudioWrapper_OnRegionSeek;
                        
                         break;
                 }
@@ -182,6 +186,37 @@ namespace NuSysApp
             });
             return null;
         }
+
+        public void CheckTimeForRegions(double normalizedMediaElementPosition)
+        {
+            foreach (var item in xClippingCanvas.Items)
+            {
+                var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
+                switch (regionViewModel.Model.Type)
+                {
+                    case ElementType.AudioRegion:
+                        var model = regionViewModel.Model as AudioRegionModel;
+                        if(normalizedMediaElementPosition < model.End && normalizedMediaElementPosition > model.Start)
+                        {
+                            (item as AudioRegionView).Select();
+                        }else
+                        {
+                            (item as AudioRegionView).Deselect();
+                        }
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private void AudioWrapper_OnRegionSeek(double time)
+        {
+
+            OnRegionSeeked?.Invoke(time);
+        }
+
         /// <summary>
         /// Fired when time (start and/or end) is changed.
         /// </summary>

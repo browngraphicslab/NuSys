@@ -111,8 +111,9 @@ namespace NuSysApp
                 return;
             }
 
-            //todo ADD IN remove region request
-
+            // delete all the references to this region from the library
+            var removeRequest = new DeleteLibraryElementRequest(vm.RegionLibraryElementController.LibraryElementModel.LibraryElementId);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(removeRequest);
 
         }
         private async void Rect_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -126,7 +127,8 @@ namespace NuSysApp
 
             if (!Selected)
             {
-                OnRegionSeek?.Invoke(((DataContext as AudioRegionViewModel).RegionLibraryElementController.LibraryElementModel as AudioRegionModel).Start + 0.01);
+                this.Select();
+                OnRegionSeek?.Invoke(((DataContext as AudioRegionViewModel).RegionLibraryElementController.LibraryElementModel as AudioRegionModel).Start);
             }
 
             e.Handled = true;

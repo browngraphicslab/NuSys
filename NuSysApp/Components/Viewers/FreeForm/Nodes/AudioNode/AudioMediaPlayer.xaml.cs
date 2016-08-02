@@ -38,6 +38,7 @@ namespace NuSysApp
             MediaElement.SetValue(Canvas.ZIndexProperty, 1);
             //When regions are updated (added/removed/timechanged), run method:
             xAudioWrapper.OnRegionsUpdated += XAudioWrapper_OnRegionsUpdated;
+            xAudioWrapper.OnRegionSeeked += onSeekedTo;
         }
 
         /// <summary>
@@ -157,6 +158,8 @@ namespace NuSysApp
             double denormalizedMediaElementPosition = normalizedMediaElementPosition * totalDuration;
             TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)denormalizedMediaElementPosition);
             MediaElement.Position = time;
+
+            xAudioWrapper.CheckTimeForRegions(normalizedMediaElementPosition);
 
             if (MediaElement.CurrentState != MediaElementState.Playing)
             {
