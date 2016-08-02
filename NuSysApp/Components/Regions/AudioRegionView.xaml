@@ -28,8 +28,8 @@
             <Image Grid.Column="1" x:Name="xDelete" Width="15" Height="15" PointerPressed="xDelete_PointerPressed"  Stretch="Uniform" Source="ms-appx:///Assets/icon_delete_color.png"></Image>
 
 
-            <Grid.RenderTransform>
-                <CompositeTransform TranslateX="{Binding LeftHandleX}" TranslateY="100"/>
+            <Grid.RenderTransform >
+                <CompositeTransform x:Name="xToolBarTransform" TranslateX="{Binding LeftHandleX}" TranslateY="100"/>
             </Grid.RenderTransform>
         </Grid>
 

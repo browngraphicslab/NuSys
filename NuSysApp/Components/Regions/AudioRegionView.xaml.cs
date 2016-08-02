@@ -136,6 +136,7 @@ namespace NuSysApp
         {
             Bound1Transform.ScaleX = 1.0 / scaleX;
             Bound2Transform.ScaleX = 1.0 / scaleX;
+            xToolBarTransform.ScaleX = 1.0 / scaleX;
         }
     }
 }
