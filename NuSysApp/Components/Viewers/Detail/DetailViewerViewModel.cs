@@ -24,14 +24,14 @@ namespace NuSysApp
         public bool DeleteOnFocus;
         private string _title;
         public Dictionary<string, DetailViewTabType> TabDictionary = new Dictionary<string, DetailViewTabType>();
-         
+        public event TitleChangedHandler OnTitleChanged;
         public string Title
         {
             get { return _title; }
             set
             {
                 _title = value;
-                RaisePropertyChanged("Title");
+                OnTitleChanged?.Invoke(this, _title);
             }
         }
         public string Date { get; set; }
@@ -508,8 +508,8 @@ namespace NuSysApp
             CurrentDetailViewable.SetTitle(title);
             CurrentDetailViewable.TitleChanged += ControllerTitleChanged;
 
-            //Tabs.Remove(CurrentDetailViewable);
-            //Tabs.Add(CurrentDetailViewable);
+            Tabs.Remove(CurrentDetailViewable);
+            Tabs.Add(CurrentDetailViewable);
 
             /*
             // TODO make the exploration mode related list box show up

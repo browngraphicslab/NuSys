@@ -58,8 +58,8 @@ namespace NuSysApp
 
                 var vm = dataContext;
 
-                // Sets the title for the DV
-                vm.PropertyChanged += OnPropertyChanged;
+                // Sets the title for the DV. DO NOT DISPOSE OF THIS. It will break the binding. 
+                vm.OnTitleChanged += Vm_OnTitleChanged;
 
                 // Populates the tags and suggested tags 
                 Tags.ItemsSource = vm.Tags;
@@ -86,6 +86,11 @@ namespace NuSysApp
                 Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);                
               };
             
+        }
+
+        private void Vm_OnTitleChanged(object source, string newTitle)
+        {
+            TitleBox.SetText(newTitle);
         }
 
         public async Task LaunchLDA(string text)
@@ -261,16 +266,7 @@ namespace NuSysApp
             }
 
         }
-
-        private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
-        {
-            var vm = (DetailViewerViewModel) DataContext;
-            var prop = propertyChangedEventArgs.PropertyName;
-
-            // setting here because you Cannot! bind to a local user control (textInputBlock)
-            TitleBox.SetText(vm.Title);
-        }
-
+        
         private async void NewTagBox_OnKeyUp(object sender, KeyRoutedEventArgs e)
         {
             if (e.OriginalKey == VirtualKey.Enter)
@@ -346,7 +342,6 @@ namespace NuSysApp
             Disposed?.Invoke(this, EventArgs.Empty);
             var vm = DataContext as DetailViewerViewModel;
             vm.Tabs.Clear();
-            vm.PropertyChanged -= OnPropertyChanged;
             vm.Dispose();
         }
 

@@ -17,10 +17,11 @@ using NuSysApp.Nodes.AudioNode;
 
 namespace NuSysApp
 {
-    public class AudioRegionViewModel : RegionViewModel 
+    public class AudioRegionViewModel : RegionViewModel, INuSysDisposable
     {
-
+        private AudioRegionLibraryElementController _regionLibraryElementController;
         public event PropertyChangedEventHandler PropertyChanged;
+        public event EventHandler Disposed;
         public delegate void DoubleChanged(object sender, double e);
         public event DoubleChanged WidthChanged;
         public event DoubleChanged Bound1Changed;
@@ -72,12 +73,28 @@ namespace NuSysApp
 
         public AudioRegionViewModel(AudioRegionModel model, AudioRegionLibraryElementController regionLibraryElementController, AudioWrapper wrapper) : base(model, regionLibraryElementController, null)
         {
-            regionLibraryElementController.TimeChanged += RegionController_TimeChanged;
-            regionLibraryElementController.TitleChanged += RegionController_TitleChanged;
+            _regionLibraryElementController = regionLibraryElementController;
+            _regionLibraryElementController.TimeChanged += RegionController_TimeChanged;
+            _regionLibraryElementController.TitleChanged += RegionController_TitleChanged;
+            _regionLibraryElementController.TimeChanged += wrapper.AudioWrapper_TimeChanged;
+            _regionLibraryElementController.Disposed += Dispose;
+
             Name = Model.Title;
 
             AudioWrapper = wrapper;
             AudioWrapper.SizeChanged += AudioWrapper_SizeChanged;
+            AudioWrapper.Disposed += Dispose;
+        }
+
+        public override void Dispose(object sender, EventArgs e)
+        {
+            AudioWrapper.Disposed -= Dispose;
+            AudioWrapper.SizeChanged -= AudioWrapper_SizeChanged;
+            _regionLibraryElementController.TimeChanged -= RegionController_TimeChanged;
+            _regionLibraryElementController.TitleChanged -= RegionController_TitleChanged;
+            _regionLibraryElementController.TimeChanged -= AudioWrapper.AudioWrapper_TimeChanged;
+            _regionLibraryElementController.Disposed -= Dispose;
+            Disposed?.Invoke(sender, e);
         }
 
         private void AudioWrapper_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -119,6 +136,7 @@ namespace NuSysApp
             RaisePropertyChanged("RightHandleX");
             RaisePropertyChanged("RegionWidth");
         }
+
     }
 
 }

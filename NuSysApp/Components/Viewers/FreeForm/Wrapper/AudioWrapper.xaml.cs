@@ -21,7 +21,7 @@ using Windows.UI.Xaml.Navigation;
 namespace NuSysApp
 {
 
-    public sealed partial class AudioWrapper : Page
+    public sealed partial class AudioWrapper : Page, INuSysDisposable
     {
 
 
@@ -39,6 +39,8 @@ namespace NuSysApp
         public static readonly DependencyProperty ContentProperty =
             DependencyProperty.Register(
                 "Content", typeof(FrameworkElement), typeof(object), new PropertyMetadata(null));
+
+        public event EventHandler Disposed;
 
         private LibraryElementController _contentController;
 
@@ -72,6 +74,9 @@ namespace NuSysApp
 
         //denormalized end of audio
         public double AudioEnd { set; get; }
+
+        private FrameworkElement _selectedRegion;
+
 
         public delegate void RegionsUpdatedEventHandler(object sender, List<double> regionMarkers);
         public event RegionsUpdatedEventHandler OnRegionsUpdated;
@@ -108,8 +113,6 @@ namespace NuSysApp
                 }
 
 
-
-
             }
             else
             {
@@ -119,6 +122,10 @@ namespace NuSysApp
 
             // clear the items control
             xClippingCanvas.Items.Clear();
+
+
+            //clear our reference to the selected region
+            _selectedRegion = null;
 
             // get the region ids for the wrapper
             var regionsLibraryElementIds =
@@ -166,7 +173,7 @@ namespace NuSysApp
                 // get the region from the id
                 var regionLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementId);
                 Debug.Assert(regionLibraryElementController != null);
-       //         Debug.Assert(regionLibraryElementController.LibraryElementModel is RectangleRegion);
+                //  Debug.Assert(regionLibraryElementController.LibraryElementModel is RectangleRegion);
                 if (regionLibraryElementController.LibraryElementModel.LibraryElementId == Controller.LibraryElementModel.LibraryElementId)
                 {
                     return;
@@ -178,12 +185,13 @@ namespace NuSysApp
                 switch (regionLibraryElementController.LibraryElementModel.Type)
                 {
                     case ElementType.AudioRegion:
-                        (regionLibraryElementController as AudioRegionLibraryElementController).TimeChanged += AudioWrapper_TimeChanged;
                         vm = new AudioRegionViewModel(regionLibraryElementController.LibraryElementModel as AudioRegionModel,
                                 regionLibraryElementController as AudioRegionLibraryElementController, this);
                         view = new AudioRegionView(vm as AudioRegionViewModel);
-                        (view as AudioRegionView).RescaleComponents(renderTransform.ScaleX);
-                        (view as AudioRegionView).OnRegionSeek += AudioWrapper_OnRegionSeek;
+                        var audioRegionView = view as AudioRegionView;
+                        audioRegionView.RescaleComponents(renderTransform.ScaleX);
+                        audioRegionView.OnRegionSeek += AudioWrapper_OnRegionSeek;
+                        audioRegionView.OnSelectedOrDeselected += Region_OnSelectedOrDeselected;
                         break;
                     case ElementType.VideoRegion:
                         vm = new VideoRegionViewModel(regionLibraryElementController.LibraryElementModel as VideoRegionModel,
@@ -226,9 +234,14 @@ namespace NuSysApp
                         if(normalizedMediaElementPosition < model.End && normalizedMediaElementPosition > model.Start)
                         {
                             (item as AudioRegionView).Select();
-                        }else
+                            Region_OnSelectedOrDeselected(item, true);
+
+                        }
+                        else
                         {
                             (item as AudioRegionView).Deselect();
+                            Region_OnSelectedOrDeselected(item, false);
+
                         }
 
                         break;
@@ -238,9 +251,8 @@ namespace NuSysApp
             }
         }
 
-        private void AudioWrapper_OnRegionSeek(double time)
+        public void AudioWrapper_OnRegionSeek(double time)
         {
-
             OnRegionSeeked?.Invoke(time);
         }
 
@@ -250,9 +262,8 @@ namespace NuSysApp
         /// <param name="sender"></param>
         /// <param name="start"></param>
         /// <param name="end"></param>
-        private void AudioWrapper_TimeChanged(object sender, double start, double end)
+        public void AudioWrapper_TimeChanged(object sender, double start, double end)
         {
-
             FireRegionsUpdated();
         }
         /// <summary>
@@ -271,10 +282,10 @@ namespace NuSysApp
 
             foreach (var item in xClippingCanvas.Items)
             {
-                var region = (item as FrameworkElement).DataContext as RegionViewModel;
-                Debug.Assert(region != null);
-
-                if (region.Model.LibraryElementId == regionLibraryElementId)
+                var regionVM = (item as FrameworkElement).DataContext as AudioRegionViewModel;
+                Debug.Assert(regionVM != null);
+                regionVM.Dispose(null, EventArgs.Empty);
+                if (regionVM.Model.LibraryElementId == regionLibraryElementId)
                 {
                     xClippingCanvas.Items.Remove(item);
                     //Fires ONRegionsUpdated event so that the parent AudioMediaPlayer's MediaElement will have a correct list
@@ -308,6 +319,43 @@ namespace NuSysApp
                 }
             }
             return timelineMarkers;
+        }
+
+        private void Region_OnSelectedOrDeselected(object sender, bool selected)
+        {
+            if (selected)
+            {
+                var region = sender as FrameworkElement;
+                Debug.Assert(region != null);
+                DeselectRegion(_selectedRegion);
+                _selectedRegion = region;
+            }
+            else
+            {
+                var region = sender as FrameworkElement;
+                Debug.Assert(region != null);
+                _selectedRegion = null;
+            }
+        }
+        /// <summary>
+        /// Helper method for deselecting regoins based on type
+        /// </summary>
+        private void DeselectRegion(FrameworkElement item)
+        {
+            if (item == null)
+            {
+                return;
+            }
+            var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
+            switch (regionViewModel.Model.Type)
+            {
+                case ElementType.AudioRegion:
+                    var audioRegionView = item as AudioRegionView;
+                    audioRegionView.Deselect();
+                    break;
+                default:
+                    break;
+            }
         }
 
         private void xClippingGrid_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -368,10 +416,13 @@ namespace NuSysApp
                         if ((int)(audioRegionModel.Start * totalDuration) == denormalizedMarkerTime)
                         {
                             audioRegionView.Select();
+                            Region_OnSelectedOrDeselected(audioRegionView, true);
                         }
                         if ((int)(audioRegionModel.End * totalDuration) == denormalizedMarkerTime)
                         {
                             audioRegionView.Deselect();
+                            Region_OnSelectedOrDeselected(audioRegionView, false);
+
                         }
                         break;
                     default:
@@ -379,5 +430,17 @@ namespace NuSysApp
                 }
             }
         }
+
+        public void Dispose()
+        {
+            if (Controller != null)
+            {
+                var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(Controller.LibraryElementModel.ContentDataModelId);
+                contentDataModel.OnRegionAdded -= AddRegionView;
+                contentDataModel.OnRegionRemoved -= RemoveRegionView;
+            }
+            Disposed?.Invoke(this, EventArgs.Empty);
+        }
+
     }
 }

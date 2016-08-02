@@ -56,6 +56,8 @@ namespace NuSysApp
 
         private LibraryElementController _contentController;
 
+        private FrameworkElement _selectedRegion;
+
 
         /// <summary>
         /// The content of the wrapper, basically any rectangle based format, ideally images
@@ -204,6 +206,9 @@ namespace NuSysApp
             // clear the items control
             xClippingCanvas.Items.Clear();
 
+            //clear our reference to the selected region
+            _selectedRegion = null;
+
             // get the region ids for the wrapper
             var regionsLibraryElementIds =
                 SessionController.Instance.RegionsController.GetContentDataModelRegionLibraryElementIds(
@@ -254,6 +259,7 @@ namespace NuSysApp
                         vm = new ImageRegionViewModel(regionLibraryElementController.LibraryElementModel as RectangleRegion,
                                 regionLibraryElementController, this);
                         view = new ImageRegionView(vm as ImageRegionViewModel);
+                        (view as ImageRegionView).OnSelectedOrDeselected += Region_OnSelectedOrDeselected;
                         Disposed += (view as ImageRegionView).Dispose;
                         // get all the data context stuff in a view.loaded delegate, because it comes from xaml and must be loaded to be accessed in a ui thread
                         view.Loaded += delegate
@@ -276,7 +282,7 @@ namespace NuSysApp
                         vm = new PdfRegionViewModel(regionLibraryElementController.LibraryElementModel as PdfRegionModel, 
                                 regionLibraryElementController as PdfRegionLibraryElementController, this);
                         view = new PDFRegionView(vm as PdfRegionViewModel);
-                        Disposed += (view as PDFRegionView).Dispose;
+                        (view as PDFRegionView).OnSelectedOrDeselected += Region_OnSelectedOrDeselected;
 
                         // get all the data context stuff in a view.loaded delegate, because it comes from xaml and must be loaded to be accessed in a ui thread
                         view.Loaded += delegate
@@ -327,16 +333,33 @@ namespace NuSysApp
             });
         }
 
+        private void Region_OnSelectedOrDeselected(object sender, bool selected)
+        {
+            if (selected)
+            {
+                var region = sender as FrameworkElement;
+                Debug.Assert(region != null);
+                DeselectRegion(_selectedRegion);
+                _selectedRegion = region;                
+            }
+            else
+            {
+                var region = sender as FrameworkElement;
+                Debug.Assert(region != null);
+                _selectedRegion = null;
+            }
+        }
+
         public void RemoveRegionView(string regionLibraryElementId)
         {
-
-
                 foreach (var item in xClippingCanvas.Items)
                 {
-                    var region = (item as FrameworkElement).DataContext as RegionViewModel;
-                    Debug.Assert(region != null);
+                    var regionVM = (item as FrameworkElement).DataContext as RegionViewModel;
+                    Debug.Assert(regionVM != null);
 
-                    if (region.Model.LibraryElementId == regionLibraryElementId)
+                    regionVM.Dispose(null, EventArgs.Empty);
+
+                    if (regionVM.Model.LibraryElementId == regionLibraryElementId)
                     {
                         xClippingCanvas.Items.Remove(item);
                         return;
@@ -368,8 +391,73 @@ namespace NuSysApp
 
         public void Dispose()
         {
+            if (Controller != null)
+            {
+                var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(Controller.LibraryElementModel.ContentDataModelId);
+                contentDataModel.OnRegionAdded -= AddRegionView;
+                contentDataModel.OnRegionRemoved -= RemoveRegionView;
+            }
             Disposed?.Invoke(this, EventArgs.Empty);
         }
+
+        private void xClippingContent_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            foreach (var item in xClippingCanvas.Items)
+            {
+                DeselectRegion(item as FrameworkElement);
+            }
+            _selectedRegion = null;
+        }
+        /// <summary>
+        /// Helper method for selecting regions based on type
+        /// </summary>
+        private void SelectRegion(FrameworkElement item)
+        {
+            if(item == null)
+            {
+                return;
+            }
+            var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
+            switch (regionViewModel.Model.Type)
+            {
+                case ElementType.ImageRegion:
+                    var imageRegionView = item as ImageRegionView;
+                    imageRegionView.Select();
+                    break;
+                case ElementType.PdfRegion:
+                    var pdfRegionView = item as PDFRegionView;
+                    pdfRegionView.Select();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Helper method for deselecting regoins based on type
+        /// </summary>
+        private void DeselectRegion(FrameworkElement item)
+        {
+            if(item == null)
+            {
+                return;
+            }
+            var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
+            switch (regionViewModel.Model.Type)
+            {
+                case ElementType.ImageRegion:
+                    var imageRegionView = item as ImageRegionView;
+                    imageRegionView.Deselect();
+                    break;
+                case ElementType.PdfRegion:
+                    var pdfRegionView = item as PDFRegionView;
+                    pdfRegionView.Deselect();
+                    break;
+                default:
+                    break;
+            }
+        }
+
 
         // My code is slick yo - Sahil, July 2016
 

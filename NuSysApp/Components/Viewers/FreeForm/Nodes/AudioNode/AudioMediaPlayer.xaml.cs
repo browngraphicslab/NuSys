@@ -214,6 +214,13 @@ namespace NuSysApp
                 double denormalizedMediaElementPosition = normalizedMediaElementPosition * totalDuration;
                 TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)denormalizedMediaElementPosition);
                 //If not in bounds of current audio, don't update mediaelement position
+
+                if (StartMarker == null || EndMarker == null)
+                {
+                    return;
+                }
+                Debug.Assert(StartMarker != null);
+                Debug.Assert(EndMarker != null);
                 if (time.CompareTo(StartMarker.Time) < 0 || time.CompareTo(EndMarker.Time) > 0)
                 {
                     return;
@@ -291,10 +298,6 @@ namespace NuSysApp
         {
             get { return MediaElement.Position; }
         }
-        public void StopMusic()
-        {
-            MediaElement.Stop();
-        }
 
         /// <summary>
         /// Called whenever the mediaelement reaches one of its TimelineMarkers.
@@ -329,9 +332,13 @@ namespace NuSysApp
             this.Clip = rectangleGeometry;
         }
 
-        private void ProgressBar_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-        {
 
+        public void Dispose()
+        {
+            MediaElement.Stop();
+            xAudioWrapper.OnRegionsUpdated -= XAudioWrapper_OnRegionsUpdated;
+            xAudioWrapper.OnRegionSeeked -= onSeekedTo;
+            xAudioWrapper.Dispose();
         }
     }
 

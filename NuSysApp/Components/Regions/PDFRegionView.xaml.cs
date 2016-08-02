@@ -29,7 +29,8 @@ namespace NuSysApp
 
         public bool Selected {private set; get; }
 
-
+        public delegate void RegionSelectedDeselectedEventHandler(object sender, bool selected);
+        public event RegionSelectedDeselectedEventHandler OnSelectedOrDeselected;
         public PDFRegionView(PdfRegionViewModel regionVM)
         {
             
@@ -46,6 +47,7 @@ namespace NuSysApp
             this.RenderTransform = composite;
 
             regionVM.LocationChanged += ChangeLocation;
+            regionVM.Disposed += Dispose;
 
             var parentWidth = regionVM.RectangleWrapper.GetWidth();
             var parentHeight = regionVM.RectangleWrapper.GetHeight();
@@ -129,7 +131,7 @@ namespace NuSysApp
 
         private void XResizingTriangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            this.Select();
+            Select();
             e.Handled = true;
         }
 
@@ -211,7 +213,7 @@ namespace NuSysApp
 
             vm.OriginalHeight = vm.Height;
             vm.OriginalWidth = vm.Width;
-            this.Select();
+            Select();
             e.Handled = true;
         }
         public void Deselect()
@@ -243,9 +245,17 @@ namespace NuSysApp
                     return;
 
                 if (Selected)
+                {
                     this.Deselect();
+                    OnSelectedOrDeselected?.Invoke(this, false);
+
+                }
                 else
+                {
                     this.Select();
+                    OnSelectedOrDeselected?.Invoke(this, true);
+
+                }
         }
 
 
@@ -279,7 +289,8 @@ namespace NuSysApp
             {
                 return;
             }
-
+            // If the region is deleted, it needs to dispose of its handlers.
+            vm.Dispose(this, EventArgs.Empty);
             // delete the region library elment from the library
             var removeRequest = new DeleteLibraryElementRequest(vm.RegionLibraryElementController.LibraryElementModel.LibraryElementId);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(removeRequest);
@@ -327,12 +338,9 @@ namespace NuSysApp
 
         public void Dispose(object sender, EventArgs e)
         {
-            var rectangleWrapper = sender as RectangleWrapper;
-            rectangleWrapper.Disposed -= Dispose;
-
             var vm = DataContext as PdfRegionViewModel;
+            vm.Disposed -= Dispose;
             vm.LocationChanged -= ChangeLocation;
-            vm.Dispose();
         }
     }
 }
