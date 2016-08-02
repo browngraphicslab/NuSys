@@ -43,15 +43,6 @@ namespace NusysServer
                     this.Send(dict);
                 }
             }
-
-            var m = new Message();
-            m[NusysConstants.REQUEST_TYPE_STRING_KEY] =
-                NusysConstants.RequestType.CreateNewLibrayElementRequest.ToString();
-            m[NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY] = "Trent test id";
-            m[NusysConstants.LIBRARY_ELEMENT_TYPE_KEY] = NusysConstants.ElementType.Image;
-            m[NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY] = "contetnt idddddd";
-            m[NusysConstants.LIBRARY_ELEMENT_TITLE_KEY] = "my title";
-            OnMessage(m.GetSerialized());
         }
 
         /// <summary>

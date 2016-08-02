@@ -19,14 +19,9 @@ namespace NusysServer
         public Constants.SQLTableType TableType { set; get; }
 
         /// <summary>
-        /// the key-value-pairs that the where statement must satisfy in order to select an item
+        /// the conditional that must be satisfied for the row to be picked
         /// </summary>
-        public Message SelectProperties { get; set; }
-
-        /// <summary>
-        /// the operator to apply to the select properties when logically selecting the rows
-        /// </summary>
-        public Constants.Operator GroupOperator { get; set; }
+        public SqlSelectQueryConditional Conditional;
 
         /// <summary>
         /// the ienumerable of desired columns to fetch from the table

@@ -22,5 +22,18 @@ namespace NusysIntermediate
             OutAtomId = id2;
             //Color = Colors.DarkGoldenrod;
         }
+
+        public override void UnPackFromDatabaseKeys(Message message)
+        {
+            if (message.ContainsKey(NusysConstants.LINK_LIBRARY_ELEMENT_IN_ID_KEY))
+            {
+                InAtomId = message.GetString(NusysConstants.LINK_LIBRARY_ELEMENT_IN_ID_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.LINK_LIBRARY_ELEMENT_OUT_ID_KEY))
+            {
+                OutAtomId = message.GetString(NusysConstants.LINK_LIBRARY_ELEMENT_OUT_ID_KEY);
+            }
+            base.UnPackFromDatabaseKeys(message);
+        }
     }
 }

@@ -37,9 +37,9 @@ namespace NuSysApp
             }
 
             NusysConstants.ElementType type = (NusysConstants.ElementType) Enum.Parse(typeof(NusysConstants.ElementType), (string) _message["type"], true);
-
-            LibraryElementModel libraryElement = SessionController.Instance.ContentController.CreateAndAddModelFromMessage(new Message(_message.GetSerialized()));
-            if (libraryElement != null)
+            /*
+            //LibraryElementModel libraryElement = SessionController.Instance.ContentController.CreateAndAddModelFromMessage(new Message(_message.GetSerialized()));
+            if (libraryElement != null && false)
             {
                 Debug.Fail("just wanted to make sure this code isn't being used.  If it is, tell trent");
                 SessionController.Instance.ContentController.Add(libraryElement);
@@ -56,7 +56,7 @@ namespace NuSysApp
                     }
                 }
                 libraryElement.ServerUrl = url;
-            }
+            }*/
         }
     }
 }

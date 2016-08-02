@@ -197,6 +197,7 @@
     <Compile Include="Util\Constants.cs" />
     <Compile Include="Util\ErrorLog.cs" />
     <Compile Include="Util\FileHelper.cs" />
+    <Compile Include="Util\SQLSelectQueryConditionals.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="apiapp.json" />

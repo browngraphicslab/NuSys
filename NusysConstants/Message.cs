@@ -19,6 +19,11 @@ namespace NusysIntermediate
             _dictionary = new ConcurrentDictionary<string, object>();
         }
 
+        public IEnumerable<string> Keys
+        {
+            get { return _dictionary.Keys; }
+        }
+
         /// <summary>
         /// creates a new message based on the on passed in.
         /// Uses the IEnumerable's builtin constructor for copying ienumerables

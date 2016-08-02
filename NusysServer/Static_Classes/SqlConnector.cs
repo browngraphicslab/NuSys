@@ -299,7 +299,13 @@ namespace NusysServer
             {
                 throw new Exception("Tried to add ilegal key to the properties table");
             }
-            var cmd = GetInsertCommand(Constants.SQLTableType.Properties, new Message(new Dictionary<string, object>() {{propertyKey, value}}));
+            //TODO do some sort of type management
+            var cmd = GetInsertCommand(Constants.SQLTableType.Properties, new Message(new Dictionary<string, object>()
+            {
+                {NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY, objectId},
+                {NusysConstants.PROPERTIES_STRING_VALUE_COLUMN_KEY, value},
+                {NusysConstants.PROPERTIES_KEY_COLUMN_KEY, propertyKey},
+            }));
             var successInt = cmd.ExecuteNonQuery();
             return successInt > 0;
         }
@@ -314,10 +320,7 @@ namespace NusysServer
         {
             //create new query args class
             var queryArgs = new SqlSelectQueryArgs();
-            queryArgs.SelectProperties = new Message(new Dictionary<string, object>()
-            {
-                {NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY, contentDataModelId}
-            });
+            queryArgs.Conditional = new SqlSelectQueryEquals(NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY, contentDataModelId);
             queryArgs.TableType = Constants.SQLTableType.Content;
             queryArgs.ColumnsToGet = Constants.GetAcceptedKeys(Constants.SQLTableType.Content);
 
@@ -336,7 +339,7 @@ namespace NusysServer
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public IEnumerable<Message> ExecuteSelectQueryAsMessages(SelectCommandReturnArgs args)
+        public IEnumerable<Message> ExecuteSelectQueryAsMessages(SelectCommandReturnArgs args, bool includeNulls = true)
         {
             var messages = new List<Message>();
             using (var reader = args.Command.ExecuteReader())
@@ -349,8 +352,11 @@ namespace NusysServer
                         var i = 0;
                         foreach (var columnName in args.Columns)
                         {
-                            m[columnName] = reader[i];
-                            i++;
+                            if (reader[i] != null || includeNulls)
+                            {
+                                m[columnName] = reader[i];
+                                i++;
+                            }
                         }
                         messages.Add(m);
                     }
@@ -370,20 +376,22 @@ namespace NusysServer
         /// <returns></returns>
         public SelectCommandReturnArgs GetSelectCommand(SqlSelectQueryArgs queryArgs)
         {
-            var cleanedMessage = Constants.GetCleanedMessageForDatabase(queryArgs.SelectProperties ?? new Message(), queryArgs.TableType);
+            if (queryArgs.Conditional != null)
+            {
+                var cleanedIEnumerable = Constants.GetCleanIEnumerableForDatabase(queryArgs.Conditional.GetPropertyKeys() ?? new List<string>(), queryArgs.TableType);
+
+                if (cleanedIEnumerable.Count() != queryArgs.Conditional.GetPropertyKeys().Count())
+                {
+                    throw new Exception("One or more of your conditionals referenced a column that doesn't exist in this table: "+queryArgs.TableType);
+                }
+            }
+
             var cleanedColumnsToGet = new List<string>(queryArgs.ColumnsToGet.Intersect(Constants.GetAcceptedKeys(queryArgs.TableType)));
             var sqlStatement = "SELECT " + String.Join(",", cleanedColumnsToGet) + " FROM " + GetTableName(queryArgs.TableType);
 
-            if (cleanedMessage.Any())
+            if (queryArgs.Conditional != null)
             {
-                sqlStatement += " WHERE ";
-                var first = cleanedMessage.First();
-                sqlStatement += first.Key + "='" + first.Value + "' ";
-                cleanedMessage.Remove(first.Key);
-            }
-            foreach (var kvp in cleanedMessage)
-            {
-                sqlStatement += queryArgs.GroupOperator.ToString()+" "+kvp.Key + "='" + kvp.Value + "' "; 
+                sqlStatement += " WHERE " + queryArgs.Conditional.GetQueryString();
             }
             sqlStatement += ";";
             return new SelectCommandReturnArgs(MakeCommand(sqlStatement), cleanedColumnsToGet);

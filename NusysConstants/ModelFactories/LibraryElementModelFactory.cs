@@ -45,18 +45,7 @@ namespace NusysIntermediate
                     model = new LibraryElementModel(id, type);
                     break;
             }
-            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_TITLE_KEY))
-            {
-                model.Title = message.GetString(NusysConstants.LIBRARY_ELEMENT_TITLE_KEY);
-            }
-            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY))
-            {
-                model.ContentDataModelId = message.GetString(NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY);
-            }
-            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_FAVORITED_KEY))
-            {
-                model.Favorited = message.GetBool(NusysConstants.LIBRARY_ELEMENT_FAVORITED_KEY);
-            }
+            model.UnPackFromDatabaseKeys(message);
             return model;
         }
 

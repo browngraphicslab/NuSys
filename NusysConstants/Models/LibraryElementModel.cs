@@ -48,6 +48,27 @@ namespace NusysIntermediate
         {
         }
 
+        /// <summary>
+        /// to be called directly after SQL queries on the server end.  
+        /// Will unpack from a message of all properties
+        /// </summary>
+        /// <param name="message"></param>
+        public virtual void UnPackFromDatabaseKeys(Message message)
+        {
+            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_TITLE_KEY))
+            {
+               Title = message.GetString(NusysConstants.LIBRARY_ELEMENT_TITLE_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY))
+            {
+                ContentDataModelId = message.GetString(NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_FAVORITED_KEY))
+            {
+                Favorited = message.GetBool(NusysConstants.LIBRARY_ELEMENT_FAVORITED_KEY);
+            }
+        }
+
         public void SetMetadata(Dictionary<string, MetadataEntry> metadata)
         {
             Metadata = new ConcurrentDictionary<string, MetadataEntry>(metadata);

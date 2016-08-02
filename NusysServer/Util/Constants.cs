@@ -13,7 +13,7 @@ namespace NusysServer
     {
         public static readonly string SERVER_SESSION_ID_STRING = "server_session_id";
         public static readonly string VALID_CREDENTIALS_BOOLEAN_STRING = "valid";
-        private static readonly string user = "leandro";
+        private static readonly string user = "trent";
 
         public static string WWW_ROOT {
             get
@@ -159,6 +159,18 @@ namespace NusysServer
                 }
             }
             return cleanedMessage;
+        }
+
+        /// <summary>
+        /// Takes a list of possible column keys and returns the same list for every valid key.  
+        /// Used to clean key lists before database entry
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <param name="tableType"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> GetCleanIEnumerableForDatabase(IEnumerable<string> keys, SQLTableType tableType)
+        {
+            return GetAcceptedKeys(tableType).Intersect(keys);
         }
 
         /// <summary>
