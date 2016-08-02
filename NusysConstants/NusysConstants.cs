@@ -163,7 +163,7 @@ namespace NusysIntermediate
 
         #region SQLColumnNames
 
-        #region alias
+            #region alias
 
         /// <summary>
         /// 32 character string, aka an ID.  
@@ -209,6 +209,12 @@ namespace NusysIntermediate
         public static readonly string ALIAS_CREATOR_ID_KEY = "creator_user_id";
 
         /// <summary>
+        /// 32 character string  
+        /// Represents the level of access.
+        /// </summary>
+        public static readonly string ALIAS_ACCESS_KEY = "access";
+
+        /// <summary>
         /// the dictionary from keys that are accepted and put into the Alias table to their type. 
         /// the keys not included in this list are put into the properties table
         /// </summary>
@@ -221,7 +227,8 @@ namespace NusysIntermediate
                 {ALIAS_SIZE_WIDTH_KEY,typeof(float)},
                 { ALIAS_SIZE_HEIGHT_KEY,typeof(float)},
                 { ALIAS_PARENT_COLLECTION_ID_KEY,typeof(string)},
-                {  ALIAS_CREATOR_ID_KEY, typeof(string) }
+                {  ALIAS_CREATOR_ID_KEY, typeof(string) },
+            {ALIAS_ACCESS_KEY, typeof(string) }
             };
 
             #endregion alias
@@ -298,11 +305,17 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY = "last_edited_timestamp";
 
-            /// <summary>
-            /// the dictionary from keys that are accepted and put into the library elmeent table to their type. 
-            /// the keys not included in this list are put into the properties table
-            /// </summary>
-            public static readonly Dictionary<string, Type> LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS = new Dictionary<string, Type>()
+        /// <summary>
+        /// 32 character string  
+        /// Represents the level of access.
+        /// </summary>
+        public static readonly string LIBRARY_ELEMENT_ACCESS_KEY = "access";
+
+        /// <summary>
+        /// the dictionary from keys that are accepted and put into the library elmeent table to their type. 
+        /// the keys not included in this list are put into the properties table
+        /// </summary>
+        public static readonly Dictionary<string, Type> LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS = new Dictionary<string, Type>()
             {
                 {LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY, typeof(string)},
                 { LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY, typeof(string)},
@@ -316,6 +329,7 @@ namespace NusysIntermediate
                 { LIBRARY_ELEMENT_LIBRARY_ID_KEY,typeof(string)},
                 { LIBRARY_ELEMENT_CONTENT_ID_KEY,typeof(string)},
                 { LIBRARY_ELEMENT_TYPE_KEY,typeof(string)},
+                { LIBRARY_ELEMENT_ACCESS_KEY,typeof(string)},
             };
             #endregion libraryElementModel
 
@@ -654,6 +668,13 @@ namespace NusysIntermediate
             Image,
             Video,
             Audio
+        }
+
+        public enum AccessType
+        {
+            Public, 
+            Private,
+            ReadOnly
         }
 
         /// <summary>
