@@ -36,12 +36,19 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             MediaElement.SetValue(Canvas.ZIndexProperty, 1);
+            //When regions are updated (added/removed/timechanged), run method:
             xAudioWrapper.OnRegionsUpdated += XAudioWrapper_OnRegionsUpdated;
         }
 
+        /// <summary>
+        /// Clears MediaElement TimelineMarkers and refreshes them.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="regionMarkers"></param>
         private void XAudioWrapper_OnRegionsUpdated(object sender, List<double> regionMarkers)
         {
             MediaElement.Markers.Clear();
+            //Start and end must be preserved
             MediaElement.Markers.Add(StartMarker);
             MediaElement.Markers.Add(EndMarker);
             
@@ -50,6 +57,7 @@ namespace NuSysApp
                 var marker = new TimelineMarker();
                 double totalDuration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
                 marker.Time = new TimeSpan(0,0,0,0, (int)(normalizedTimelineMarkerTime * totalDuration));
+                //adds each marker to the mediaelement's markers
                 MediaElement.Markers.Add(marker);
             }
         }
@@ -277,19 +285,28 @@ namespace NuSysApp
         {
             MediaElement.Stop();
         }
+
+        /// <summary>
+        /// Called whenever the mediaelement reaches one of its TimelineMarkers.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MediaElement_MarkerReached(object sender, TimelineMarkerRoutedEventArgs e)
         {
             if (e.Marker.Time == StartMarker.Time)
             {
-                //MediaElement.Stop();
             }
             else if (e.Marker.Time == EndMarker.Time)
             {
-                //MediaElement.Stop();
+                //Goes back to start of region
                 MediaElement.Pause();
                 Audio_OnJump(StartMarker.Time);
 
             }
+            //*** To avoid rounding issues, denormalized time of marker, as well as total duration, must both be
+            //*** passed in because accurate check can't be made otherwise
+
+
             double totalDuration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
             var denormalizedTime = e.Marker.Time.TotalMilliseconds;
             xAudioWrapper.CheckMarker(denormalizedTime, totalDuration);

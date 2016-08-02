@@ -177,26 +177,35 @@ namespace NuSysApp
                 // add the region to thew view
                 xClippingCanvas.Items.Add(view);
 
-
+                //Fires RegionsUpdated event so that timeline markers of AudioMediaPlayer's MediaElement are accurate.
                 FireRegionsUpdated();
             });
             return null;
         }
-
+        /// <summary>
+        /// Fired when time (start and/or end) is changed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
         private void AudioWrapper_TimeChanged(object sender, double start, double end)
         {
+
             FireRegionsUpdated();
         }
-
+        /// <summary>
+        /// Gets a list of doubles representing normalized timeline markers and fires event listened to by audiomediaplayer.
+        /// </summary>
         private void FireRegionsUpdated()
         {
+
             var timelineMarkers = GetTimelineMarkers();
             OnRegionsUpdated?.Invoke(this, timelineMarkers);
         }
 
+        
         public void RemoveRegionView(string regionLibraryElementId)
         {
-
 
             foreach (var item in xClippingCanvas.Items)
             {
@@ -206,6 +215,8 @@ namespace NuSysApp
                 if (region.Model.LibraryElementId == regionLibraryElementId)
                 {
                     xClippingCanvas.Items.Remove(item);
+                    //Fires ONRegionsUpdated event so that the parent AudioMediaPlayer's MediaElement will have a correct list
+                    //of TimelineMarkers.
                     FireRegionsUpdated();
                     return;
                 }
@@ -213,7 +224,8 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Returns a list of normalized 
+        /// Returns a list of normalized doubles representing start and end of the audio region. Both of these doubles will be added
+        /// as a timeline marker to the AudioMediaPlayer's MediaElement's Markers.
         /// </summary>
         /// <returns></returns>
         public List<double> GetTimelineMarkers()
@@ -266,6 +278,14 @@ namespace NuSysApp
     
         }
 
+
+        /// <summary>
+        /// Checks marker's time to see if it coincides with the start or end of ALL audio regions.
+        /// If coincides with start, view is selected.
+        /// If coincides with end, view is deselected.
+        /// </summary>
+        /// <param name="denormalizedMarkerTime"></param>
+        /// <param name="totalDuration"></param>
         public void CheckMarker(double denormalizedMarkerTime, double totalDuration)
         {
             foreach (var item in xClippingCanvas.Items)
@@ -279,11 +299,11 @@ namespace NuSysApp
                         var audioRegionViewModel = regionViewModel as AudioRegionViewModel;
                         var audioRegionModel = regionViewModel.Model as AudioRegionModel;
 
-                        if (audioRegionModel.Start * totalDuration == denormalizedMarkerTime)
+                        if ((int)(audioRegionModel.Start * totalDuration) == denormalizedMarkerTime)
                         {
                             audioRegionView.Select();
                         }
-                        if (audioRegionModel.End * totalDuration == denormalizedMarkerTime)
+                        if ((int)(audioRegionModel.End * totalDuration) == denormalizedMarkerTime)
                         {
                             audioRegionView.Deselect();
                         }
