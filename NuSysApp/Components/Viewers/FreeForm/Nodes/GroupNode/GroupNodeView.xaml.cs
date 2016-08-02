@@ -310,7 +310,9 @@ namespace NuSysApp
                         SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
                             new UnsubscribeFromCollectionRequest(
                                 SessionController.Instance.ActiveFreeFormViewer.ContentId));
-                    await SessionController.Instance.SessionView.LoadWorkspaceFromServer(messages, id);
+
+                    //TODO put back in for collction entering
+                    //await SessionController.Instance.SessionView.LoadWorkspaceFromServer(messages, id);
                 }
             }
         }

@@ -631,12 +631,30 @@ namespace NuSysApp
             var type = libraryModel.Type;
 
 
-            if (!made.Contains(element.ParentCollectionId))
+            var controller = ElementControllerFactory.CreateFromModel(element);
+
+            //Copy pasted code
+            SessionController.Instance.IdToControllers[element.Id] = controller;
+
+            var parentCollectionLibraryElementController = (CollectionLibraryElementController)SessionController.Instance.ContentController.GetLibraryElementController(element.ParentCollectionId);
+            parentCollectionLibraryElementController.AddChild(element.Id);
+
+            if (element.ElementType == NusysConstants.ElementType.Collection)
             {
-                Debug.Assert(elementsLeft.ContainsKey(element.ParentCollectionId));
+                //TODO have this code somewhere but not stack overflow.  aka: add in a level checker so we don't recursively load 
+                var existingChildren = ((CollectionLibraryElementModel)(controller.LibraryElementModel))?.Children;
+                foreach (var childId in existingChildren ?? new HashSet<string>())
+                {
+                    if (SessionController.Instance.IdToControllers.ContainsKey(childId))
+                    {
+                        ((ElementCollectionController)controller).AddChild(
+                            SessionController.Instance.IdToControllers[childId]);
+                    }
+                }
             }
+            //end pasted code
+
             ///add element
-            /// 
             elementsLeft.Remove(element.Id);
             made.Add(element.Id);
         }

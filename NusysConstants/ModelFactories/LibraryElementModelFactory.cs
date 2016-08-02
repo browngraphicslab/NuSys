@@ -39,11 +39,7 @@ namespace NusysIntermediate
                     model = new CollectionLibraryElementModel(id);
                     break;
                 case NusysConstants.ElementType.Link:
-                    Debug.Assert(message.ContainsKey(NusysConstants.LINK_LIBRARY_ELEMENT_IN_ID_KEY) && message.ContainsKey(NusysConstants.LINK_LIBRARY_ELEMENT_OUT_ID_KEY));
-                    var id1 = message.Get(NusysConstants.LINK_LIBRARY_ELEMENT_IN_ID_KEY);
-                    var id2 = message.Get(NusysConstants.LINK_LIBRARY_ELEMENT_OUT_ID_KEY);
-
-                    model = new LinkLibraryElementModel(id1, id2, id);
+                    model = new LinkLibraryElementModel(id);
                     break;
                 default:
                     model = new LibraryElementModel(id, type);
