@@ -30,6 +30,7 @@ namespace NusysIntermediate
         {
             Data = data;
         }
+
         /// <summary>
         /// Invokes OnRegionAdded Event which updates the RectangleWrapper's region views
         /// </summary>
@@ -38,6 +39,7 @@ namespace NusysIntermediate
         {
             OnRegionAdded?.Invoke(regionLibraryElementModelId);
         }
+
         /// <summary>
         /// Invokes OnRegionRemoved Event which updates the RectangleWrapper's region views
         /// </summary>

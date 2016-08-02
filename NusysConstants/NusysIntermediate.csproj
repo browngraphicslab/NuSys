@@ -38,7 +38,8 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ContentDataModel.cs" />
+    <Compile Include="ModelFactories\ContentDataModelFactory.cs" />
+    <Compile Include="Models\ContentDataModel.cs" />
     <Compile Include="Keyword.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="MetadataEntry.cs" />

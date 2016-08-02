@@ -22,4 +22,6 @@ using (Stream s =
     c = reader.ReadToEnd();
     Debug.WriteLine(c);
  }
+ 
+ Trent is the most magnificent man in the world.
 

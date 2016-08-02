@@ -480,9 +480,18 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string LINK_LIBRARY_ELEMENT_OUT_ID_KEY = "link_out_id";
 
-            #endregion LinkLibraryElementModel
+        #endregion LinkLibraryElementModel
 
         #endregion LibraryElementModel
+
+        #region ContentDataModel
+
+        /// <summary>
+        /// The key that will hold the actual string data for the library element model.  Used in the factory class
+        /// </summary>
+        public static readonly string CONTENT_DATA_MODEL_DATA_STRING_KEY = "data_string";
+
+        #endregion ContentDataModel
 
         #endregion UnPackingModelKeys
 
