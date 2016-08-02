@@ -7,6 +7,9 @@ namespace NusysIntermediate
 {
     public class ElementModelFactory
     {
+        /// <summary>
+        /// Returns the element model for the passed in message
+        /// </summary>
         public static ElementModel CreateFromMessage(Message message)
         {
             Debug.Assert(message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_TYPE_KEY));
@@ -53,6 +56,11 @@ namespace NusysIntermediate
             elementModel.UnPackFromDatabaseMessage(message);
             return elementModel;
         }
+
+        /// <summary>
+        /// will take in a string that is a serialzed ElementModel.  
+        /// Will return the element model or throw exceptions if it is invalid
+        /// </summary>
         public static ElementModel DeserializeFromString(string elementJSON)
         {
             try

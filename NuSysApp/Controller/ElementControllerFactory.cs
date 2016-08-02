@@ -4,6 +4,11 @@ namespace NuSysApp
 {
     public class ElementControllerFactory
     {
+        /// <summary>
+        /// Returns the element controller for the passed in element model
+        /// </summary>
+        /// <param name="elementModel"></param>
+        /// <returns></returns>
         public static ElementController CreateFromModel(ElementModel elementModel)
         {
             ElementController controller;
