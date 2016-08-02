@@ -39,9 +39,9 @@ namespace NusysIntermediate
 
         public override async Task UnPackFromDatabaseMessage(Message props)
         {
-            if (props.ContainsKey("fileName"))
+            if (props.ContainsKey(NusysConstants.AUDIO_ELEMENT_FILE_NAME_KEY))
             {
-                FileName = props.GetString("fileName");
+                FileName = props.GetString(NusysConstants.AUDIO_ELEMENT_FILE_NAME_KEY);
             }
             await base.UnPackFromDatabaseMessage(props);
         }

@@ -37,9 +37,9 @@ namespace NusysIntermediate
 
         public override async Task UnPackFromDatabaseMessage(Message props)
         {
-            if (props.ContainsKey("page_location"))
+            if (props.ContainsKey(NusysConstants.PDF_ELEMENT_PAGE_LOCATION_KEY))
             {
-                CurrentPageNumber = props.GetInt("page_location", 0);
+                CurrentPageNumber = props.GetInt(NusysConstants.PDF_ELEMENT_PAGE_LOCATION_KEY, 0);
             }
 
             await base.UnPackFromDatabaseMessage(props);

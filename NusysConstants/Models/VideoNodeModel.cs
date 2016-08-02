@@ -73,17 +73,17 @@ namespace NusysIntermediate
 
         public override async Task UnPackFromDatabaseMessage(Message props)
         {
-            if (props.ContainsKey("video"))
+            if (props.ContainsKey(NusysConstants.VIDEO_ELEMENT_VIDEO_DATA_BYTES))
             {
-                ByteArray = Convert.FromBase64String(props.GetString("video"));
+                ByteArray = Convert.FromBase64String(props.GetString(NusysConstants.VIDEO_ELEMENT_VIDEO_DATA_BYTES));
             }
-            if (props.ContainsKey("resolutionX"))
+            if (props.ContainsKey(NusysConstants.VIDEO_ELEMENT_RESOLUTION_X_KEY))
             {
-                ResolutionX = props.GetInt("resolutionX");
+                ResolutionX = props.GetInt(NusysConstants.VIDEO_ELEMENT_RESOLUTION_X_KEY);
             }
-            if (props.ContainsKey("resolutionY"))
+            if (props.ContainsKey(NusysConstants.VIDEO_ELEMENT_RESOLUTION_Y_KEY))
             {
-                ResolutionY = props.GetInt("resolutionY");
+                ResolutionY = props.GetInt(NusysConstants.VIDEO_ELEMENT_RESOLUTION_Y_KEY);
             }
             await base.UnPackFromDatabaseMessage(props);
         }
