@@ -21,9 +21,9 @@ namespace NusysIntermediate
             return props;
         }
 
-        public override async Task UnPack(Message props)
+        public override async Task UnPackFromDatabaseMessage(Message props)
         {
-            await base.UnPack(props);
+            await base.UnPackFromDatabaseMessage(props);
         }
     }
 }

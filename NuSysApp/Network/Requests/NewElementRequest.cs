@@ -54,62 +54,62 @@ namespace NuSysApp
                 {
                     case NusysConstants.ElementType.Text:
                         elementModel = new TextElementModel(id);
-                        await elementModel.UnPack(_message);
+                        await elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new TextNodeController((TextElementModel)elementModel);
                         break;
                     case NusysConstants.ElementType.ImageRegion:
                     case NusysConstants.ElementType.Image:
                         elementModel = new ImageElementModel(id);
-                        await elementModel.UnPack(_message);
+                        await elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new ImageElementIntanceController(elementModel);
                         break;
                     case NusysConstants.ElementType.Word:
                         elementModel = new WordNodeModel(id);
-                        await elementModel.UnPack(_message);
+                        await elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new ElementController(elementModel);
                         break;
                     case NusysConstants.ElementType.Powerpoint:
                         elementModel = new PowerpointNodeModel(id);
-                        await elementModel.UnPack(_message);
+                        await elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new ElementController(elementModel);
                         break;
                     case NusysConstants.ElementType.PdfRegion:
                     case NusysConstants.ElementType.PDF:
                         elementModel = new PdfNodeModel(id);
-                        await elementModel.UnPack(_message);
+                        await elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new ElementController(elementModel);
                         break;
                     case NusysConstants.ElementType.AudioRegion:
                     case NusysConstants.ElementType.Audio:
                         elementModel = new AudioNodeModel(id);
-                        await elementModel.UnPack(_message);
+                        await elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new ElementController(elementModel);
                         break;
                     case NusysConstants.ElementType.VideoRegion:
                     case NusysConstants.ElementType.Video:
 
                         elementModel = new VideoNodeModel(id);
-                        await elementModel.UnPack(_message);
+                        await elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new ElementController(elementModel);
                         break;
                     case NusysConstants.ElementType.Tag:
                         elementModel = new TagNodeModel(id);
-                        await elementModel.UnPack(_message);
+                        await elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new ElementController(elementModel);
                         break;
                     case NusysConstants.ElementType.Web:
                         elementModel = new WebNodeModel(id);
-                        await elementModel.UnPack(_message);
+                        await elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new ElementController(elementModel);
                         break;
                     case NusysConstants.ElementType.Collection:
                         elementModel = new CollectionElementModel(id);
-                        await elementModel.UnPack(_message);
+                        await elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new ElementCollectionController(elementModel);
                         break;
                     case NusysConstants.ElementType.Area:
                         elementModel = new AreaModel(id);
-                        await elementModel.UnPack(_message);
+                        await elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new ElementController(elementModel);
                         break;/*
                     case ElementType.Link:

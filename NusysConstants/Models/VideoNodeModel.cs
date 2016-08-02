@@ -71,7 +71,7 @@ namespace NusysIntermediate
             return props;
         }
 
-        public override async Task UnPack(Message props)
+        public override async Task UnPackFromDatabaseMessage(Message props)
         {
             if (props.ContainsKey("video"))
             {
@@ -85,7 +85,7 @@ namespace NusysIntermediate
             {
                 ResolutionY = props.GetInt("resolutionY");
             }
-            await base.UnPack(props);
+            await base.UnPackFromDatabaseMessage(props);
         }
     }
 }

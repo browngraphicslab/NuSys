@@ -131,7 +131,7 @@ namespace NuSysApp
             return dict;
         }
 
-        public override Task UnPack(Message props)
+        public override Task UnPackFromDatabaseMessage(Message props)
         {
             var lines = props.GetList<InqLineModel>("inqLines");
             if (lines != null)
@@ -145,7 +145,7 @@ namespace NuSysApp
             {
                 Page = props.GetInt("page", 0);
             }
-            return base.UnPack(props);
+            return base.UnPackFromDatabaseMessage(props);
         }
     }
 }

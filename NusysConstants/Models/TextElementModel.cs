@@ -18,9 +18,9 @@ namespace NusysIntermediate
             ElementType = NusysConstants.ElementType.Text;
         }
 
-        public override async Task UnPack(Message props)
+        public override async Task UnPackFromDatabaseMessage(Message props)
         {
-            await base.UnPack(props);
+            await base.UnPackFromDatabaseMessage(props);
         }
 
         public override async Task<Dictionary<string,object>> Pack()

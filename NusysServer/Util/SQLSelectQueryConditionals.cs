@@ -73,7 +73,7 @@ namespace NusysServer
         {
             if (property == null || possibleValues == null || !possibleValues.Any())
             {
-                throw new Exception("cannot create a Sql Query contains conditional with null conditionals");
+                throw new Exception("cannot create a Sql Query contains conditional with null conditionals or no possible values");
             }
             Property = property;
             PossibleValues = possibleValues;

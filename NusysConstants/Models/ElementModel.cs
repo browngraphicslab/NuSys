@@ -135,7 +135,7 @@ namespace NusysIntermediate
             return dict;
         }
 
-        public override async Task UnPack(Message props)
+        public override async Task UnPackFromDatabaseMessage(Message props)
         {
             X = props.GetDouble("x", X);
             Y = props.GetDouble("y", Y);
@@ -167,7 +167,7 @@ namespace NusysIntermediate
                 ParentCollectionId = props.GetString("creator", ParentCollectionId);
             }
 
-            await base.UnPack(props);
+            await base.UnPackFromDatabaseMessage(props);
         }
     }
 }

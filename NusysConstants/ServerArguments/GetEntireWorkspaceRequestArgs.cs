@@ -8,8 +8,7 @@ namespace NusysIntermediate
 {
     public class GetEntireWorkspaceRequestArgs
     {
-        public HashSet<Message> AliasMessages;
-        public HashSet<Message> LibraryElementMessages;
-        public HashSet<Message> ContentMessages;
+        public HashSet<string> AliasStrings;
+        public HashSet<string> ContentMessages;
     }
 }
