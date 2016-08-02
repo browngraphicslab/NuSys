@@ -56,6 +56,7 @@ namespace NuSysApp
             composite.TranslateY = model.TopLeftPoint.Y * parentHeight;
             vm.Width = (model.Width) * parentWidth;
             vm.Height = (model.Height) * parentHeight;
+            vm.Disposed += Dispose;
 
             _tx = composite.TranslateX;
             _ty = composite.TranslateY;
@@ -82,28 +83,7 @@ namespace NuSysApp
             composite.TranslateX = topLeft.X;
             composite.TranslateY = topLeft.Y;
         }
-        /// <summary>
-        /// Changes size of view according to element that contains it.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        private void ChangeSize(object sender, double width, double height)
-        {
-            var vm = DataContext as ImageRegionViewModel;
-
-            var composite = RenderTransform as CompositeTransform;
-            if (composite == null)
-            {
-                return;
-            }
-
-
-            vm.Width = width;
-            vm.Height = height;
-        }
-
-
+       
         /// <summary>
         /// Updates the width and height of the region relative to the position of the resizing triangle.
         /// </summary>
@@ -298,14 +278,13 @@ namespace NuSysApp
 
         private void xDelete_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-
-
             var vm = this.DataContext as ImageRegionViewModel;
             if (vm == null)
             {
                 return;
             }
-
+            // If the region is deleted, it needs to dispose of its handlers.
+            vm.Dispose(this, EventArgs.Empty);
             // delete all the references to this region from the library
             var removeRequest = new DeleteLibraryElementRequest(vm.RegionLibraryElementController.LibraryElementModel.LibraryElementId);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(removeRequest);
@@ -359,10 +338,9 @@ namespace NuSysApp
 
         public void Dispose(object sender, EventArgs e)
         {
-            (sender as RectangleWrapper).Disposed -= Dispose;
             var vm = DataContext as ImageRegionViewModel;
+            vm.Disposed -= Dispose;
             vm.LocationChanged -= ChangeLocation;
-            vm.Dispose();
         }
     }
 }

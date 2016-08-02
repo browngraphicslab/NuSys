@@ -34,8 +34,7 @@ namespace NuSysApp
 
         public delegate void VisualizationLoadedEventHandler();
         public event VisualizationLoadedEventHandler OnVisualizationLoaded;
-        public delegate void OnRegionSeekPassingHandler(double time);
-        public event OnRegionSeekPassingHandler OnRegionSeekPassing;
+        
         public double AudioDuration { set; get; }
         public AudioNodeViewModel(ElementController controller) : base(controller)
         {
@@ -82,40 +81,12 @@ namespace NuSysApp
         public void ScrubBarOnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             double position = e.NewValue / AudioDuration;
-         /*   foreach (var regionview in Regions)
-            {
-                if (((regionview.DataContext as AudioRegionViewModel).Model as AudioRegionModel).Start <= position &&
-                    ((regionview.DataContext as AudioRegionViewModel).Model as AudioRegionModel).End >= position)
-                {
-                    regionview.Select();
-                }
-                else
-                {
-                    regionview.Deselect();
-
-                }
-            }*/
+         
         }
         private void ControllerOnDisposed(object source, object args)
         {
-            Controller.LibraryElementController.Loaded -= InitWhenReady;
             Controller.Disposed -= ControllerOnDisposed;
         }
-
-        public void removeTimeBlockChange(
-                System.Collections.Specialized.NotifyCollectionChangedEventHandler onCollectionChanged)
-        {
-            (Model as AudioNodeModel).LinkedTimeModels.CollectionChanged -= onCollectionChanged;
-        }
-
-        public void addTimeBlockChange(
-            System.Collections.Specialized.NotifyCollectionChangedEventHandler onCollectionChanged)
-        {
-            (Model as AudioNodeModel).LinkedTimeModels.CollectionChanged += onCollectionChanged;
-        }
-
-
-
 
         public override void SetSize(double width, double height)
         {
@@ -139,36 +110,7 @@ namespace NuSysApp
                 return Controller.LibraryElementController.GetSource();
             }
         }
-        /*
-        public ObservableCollection<AudioRegionView> Regions { get
-            {
-                var collection = new ObservableCollection<AudioRegionView>();
-                var elementController = LibraryElementController.LibraryElementController;
-                var regionHashSet = elementController.LibraryElementModel.Regions;
-
-                if (regionHashSet == null)
-                    return collection;
-                
-                foreach (var model in regionHashSet)
-                {
-                    var RegionLibraryElementController = new RegionLibraryElementController(model);
-                    RegionLibraryElementController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
-                    var viewmodel = new AudioRegionViewModel(model as AudioRegionModel, elementController, RegionLibraryElementController,this);
-                    viewmodel.Editable = false;
-                    var view = new AudioRegionView(viewmodel);
-                    view.OnRegionSeek += View_OnRegionSeek;
-                    collection.Add(view);
-                }   
-                return collection;
-            }
-        }
-        */
-
-        private void View_OnRegionSeek(double time)
-        {
-            OnRegionSeekPassing?.Invoke(time);
-        }
-
+        
         public override async Task Init()
         {
             if (SessionController.Instance.ContentController.ContainsAndLoaded(ContentId))
@@ -190,32 +132,9 @@ namespace NuSysApp
             byte[] dataBytes = new byte[(int)response.ContentLength];
             resStream.Read(dataBytes, 0, (int)response.ContentLength);
             resStream.Dispose();
+            Controller.LibraryElementController.Loaded -= InitWhenReady;
             //Visualize(dataBytes);
         }
-        private void LibraryElementControllerOnRegionAdded(object source, RegionLibraryElementController regionLibraryElementController)
-        {
-
-        }
-
-        private void LibraryElementControllerOnRegionUpdated(object source, Region region)
-        {
-            /*
-            var imageRegion = region as RectangleRegion;
-            if (imageRegion == null)
-            {
-                return;
-            }
-
-            foreach (var regionView in Regions.ToList<AudioRegionView>())
-            {
-                if ((regionView.DataContext as ImageRegionViewModel).Model == imageRegion)
-                    Regions.Remove(regionView);
-            }
-            */
-            
-
-            RaisePropertyChanged("Regions");        }
-
         private async void Visualize(byte[] bytes)
         {
             MemoryStream s = new MemoryStream(bytes);

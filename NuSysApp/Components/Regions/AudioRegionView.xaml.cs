@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -35,8 +36,9 @@ namespace NuSysApp
             this.DataContext = vm;
             this.InitializeComponent();
             this.Deselect();
+            vm.Disposed += Dispose;
         }
-
+        
         private void Bound1_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = this.DataContext as AudioRegionViewModel;
@@ -110,7 +112,8 @@ namespace NuSysApp
             {
                 return;
             }
-
+            // If the region is deleted, it needs to dispose of its handlers.
+            vm.Dispose(this, EventArgs.Empty);
             // delete all the references to this region from the library
             var removeRequest = new DeleteLibraryElementRequest(vm.RegionLibraryElementController.LibraryElementModel.LibraryElementId);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(removeRequest);
@@ -140,5 +143,13 @@ namespace NuSysApp
             Bound2Transform.ScaleX = 1.0 / scaleX;
             xToolBarTransform.ScaleX = 1.0 / scaleX;
         }
+
+        public void Dispose(object sender, EventArgs e)
+        {
+            var vm = DataContext as AudioRegionViewModel;
+            vm.Disposed -= Dispose;
+            OnRegionSeek -= vm.AudioWrapper.AudioWrapper_OnRegionSeek;
+        }
+        
     }
 }

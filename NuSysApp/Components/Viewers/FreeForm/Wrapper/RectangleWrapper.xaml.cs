@@ -282,7 +282,7 @@ namespace NuSysApp
                         vm = new PdfRegionViewModel(regionLibraryElementController.LibraryElementModel as PdfRegionModel, 
                                 regionLibraryElementController as PdfRegionLibraryElementController, this);
                         view = new PDFRegionView(vm as PdfRegionViewModel);
-                        Disposed += (view as PDFRegionView).Dispose;
+                        (view as PDFRegionView).OnSelectedOrDeselected += Region_OnSelectedOrDeselected;
 
                         // get all the data context stuff in a view.loaded delegate, because it comes from xaml and must be loaded to be accessed in a ui thread
                         view.Loaded += delegate
@@ -353,10 +353,12 @@ namespace NuSysApp
         {
                 foreach (var item in xClippingCanvas.Items)
                 {
-                    var region = (item as FrameworkElement).DataContext as RegionViewModel;
-                    Debug.Assert(region != null);
+                    var regionVM = (item as FrameworkElement).DataContext as RegionViewModel;
+                    Debug.Assert(regionVM != null);
 
-                    if (region.Model.LibraryElementId == regionLibraryElementId)
+                    regionVM.Dispose(null, EventArgs.Empty);
+
+                    if (regionVM.Model.LibraryElementId == regionLibraryElementId)
                     {
                         xClippingCanvas.Items.Remove(item);
                         return;
@@ -388,6 +390,12 @@ namespace NuSysApp
 
         public void Dispose()
         {
+            if (Controller != null)
+            {
+                var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(Controller.LibraryElementModel.ContentDataModelId);
+                contentDataModel.OnRegionAdded -= AddRegionView;
+                contentDataModel.OnRegionRemoved -= RemoveRegionView;
+            }
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 

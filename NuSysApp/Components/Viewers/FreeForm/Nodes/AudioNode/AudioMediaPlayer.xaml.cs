@@ -284,10 +284,6 @@ namespace NuSysApp
         {
             get { return MediaElement.Position; }
         }
-        public void StopMusic()
-        {
-            MediaElement.Stop();
-        }
 
         /// <summary>
         /// Called whenever the mediaelement reaches one of its TimelineMarkers.
@@ -320,6 +316,14 @@ namespace NuSysApp
             var rectangleGeometry = new RectangleGeometry();
             rectangleGeometry.Rect = rect;
             this.Clip = rectangleGeometry;
+        }
+
+        public void Dispose()
+        {
+            MediaElement.Stop();
+            xAudioWrapper.OnRegionsUpdated -= XAudioWrapper_OnRegionsUpdated;
+            xAudioWrapper.OnRegionSeeked -= onSeekedTo;
+            xAudioWrapper.Dispose();
         }
     }
 

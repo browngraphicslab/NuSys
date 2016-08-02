@@ -8,7 +8,7 @@ using Windows.Foundation;
 
 namespace NuSysApp
 {
-    public class RegionViewModel : BaseINPC
+    public abstract class RegionViewModel : BaseINPC
     {
         private bool _editable;
 
@@ -47,6 +47,10 @@ namespace NuSysApp
         {
             ContainerSizeChanged?.Invoke(sender,width,height);
         }
-        
+
+        public virtual void Dispose(object sender, EventArgs e)
+        {
+            
+        }
     }
 }
