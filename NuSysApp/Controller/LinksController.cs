@@ -310,7 +310,17 @@ namespace NuSysApp
             {
                 var vm = new LinkViewModel(controller);
                 var allContent = SessionController.Instance.ActiveFreeFormViewer.AllContent;
-                var view = new BezierLinkView(vm, linkLibElemController.LinkLibraryElementModel.IsBiDirectional);
+
+                var linkEnum = linkLibElemController.LinkLibraryElementModel.LinkedDirectionEnum;
+                BezierLinkView view = null;
+                if (linkEnum.Equals(LinkDirectionEnum.Mono1) || linkEnum.Equals(LinkDirectionEnum.Mono2))
+                {
+                    view = new BezierLinkView(vm, false);
+                }
+                else
+                {
+                    view = new BezierLinkView(vm, true);
+                }
                 var collectionViewModel =
                     allContent.FirstOrDefault(item => ((item as GroupNodeViewModel)?.ContentId == oneParentCollectionId)) as GroupNodeViewModel;
                 if (collectionViewModel != null)

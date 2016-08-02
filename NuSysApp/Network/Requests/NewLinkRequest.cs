@@ -67,7 +67,6 @@ namespace NuSysApp
                     libraryElement.LibraryElementId);
             //var linkLibElemCont = controller as LinkLibraryElementController;
             //Debug.WriteLine(linkLibElemCont != null);
-            _message["isBiDirectional"] = true;//linkLibElemCont.LinkLibraryElementModel.IsBiDirectional.ToString();
 
             libraryElement.Timestamp = time;
             var loadEventArgs = new LoadContentEventArgs(_message["data"]?.ToString());

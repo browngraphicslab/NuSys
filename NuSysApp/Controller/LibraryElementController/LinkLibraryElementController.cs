@@ -13,17 +13,18 @@ namespace NuSysApp
     {
         public event EventHandler<LinkDirectionEnum> LinkDirectionChanged;
         public LinkLibraryElementModel LinkLibraryElementModel { get; private set; }
-        public int NumDirectionButtonClicks { get; set; }
         public LinkLibraryElementController(LinkLibraryElementModel model) : base(model)
         {
             Debug.Assert(model != null);
             LinkLibraryElementModel = model;
-            NumDirectionButtonClicks = 0;
+            //NumDirectionButtonClicks = 0;
         }
 
         public void RaiseLinkDirectionChanged(object sender, LinkDirectionEnum e)
         {
             LinkDirectionChanged(sender, e);
+            _debouncingDictionary.Add("LinkDirectionEnum", e);
+            LinkLibraryElementModel.LinkedDirectionEnum = e;
         }
 
         public override void UnPack(Message message)
@@ -49,16 +50,30 @@ namespace NuSysApp
                 LinkLibraryElementModel.Color = Color.FromArgb(a, r, g, b);
                 //Color = Color.FromArgb(message.GetString("color"));
             }
-            if (message.ContainsKey("isBiDirectional"))
+            //if (message["creator_user_id"].Equals("grant") || message["creator_user_id"].Equals("tnarg"))
+            //{
+                
+            //}
+            if (message.ContainsKey("LinkDirectionEnum") && (long.Parse(message["LinkDirectionEnum"] as string) != null))
             {
-                if (message.GetString("isBiDirectional").Equals("True"))
+                long enumIndex = message.GetLong("LinkDirectionEnum");
+                if (enumIndex == 0)
                 {
-                    LinkLibraryElementModel.IsBiDirectional = true;
+                    LinkLibraryElementModel.LinkedDirectionEnum = LinkDirectionEnum.Mono1;
+                }
+                else if (enumIndex == 1)
+                {
+                    LinkLibraryElementModel.LinkedDirectionEnum = LinkDirectionEnum.Mono2;
                 }
                 else
                 {
-                    LinkLibraryElementModel.IsBiDirectional = false;
+                    LinkLibraryElementModel.LinkedDirectionEnum = LinkDirectionEnum.Bi;
                 }
+            }
+            else
+            {
+                LinkLibraryElementModel.LinkedDirectionEnum = LinkDirectionEnum.Bi;
+
             }
             base.UnPack(message);
         }
