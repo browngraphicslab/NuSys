@@ -30,7 +30,7 @@ namespace NuSysApp
 
         private ElementViewModel _activeVm;
         private object _regionEditorPivotItem;
-        private IDetailViewable _currentDetailViewable;
+        private LibraryElementController _currentDetailViewable;
 
         public event EventHandler Disposed;
 
@@ -391,7 +391,7 @@ namespace NuSysApp
 
         private void TabList_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            var viewable = (sender as FrameworkElement)?.DataContext as IDetailViewable;
+            var viewable = (sender as FrameworkElement)?.DataContext as LibraryElementController;
             if (viewable == null)
             {
                 return;
@@ -402,9 +402,9 @@ namespace NuSysApp
                 return;
             }
             DetailViewTabType tabToOpenTo = DetailViewTabType.Home;
-            if (vm.TabDictionary.ContainsKey(viewable?.TabId()))
+            if (vm.TabDictionary.ContainsKey(viewable?.LibraryElementModel.LibraryElementId))
             {
-                tabToOpenTo = vm.TabDictionary[viewable?.TabId()];
+                tabToOpenTo = vm.TabDictionary[viewable?.LibraryElementModel.LibraryElementId];
             }
             if (viewable is RegionLibraryElementController)
             {
@@ -420,14 +420,14 @@ namespace NuSysApp
 
         private void ExitTab_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            var viewableToClose = (sender as FrameworkElement)?.DataContext as IDetailViewable;
+            var viewableToClose = (sender as FrameworkElement)?.DataContext as LibraryElementController;
             var vm = DataContext as DetailViewerViewModel;
             if (vm == null)
             {
                 return;
             }
             var tabs = vm?.Tabs;
-            tabs?.Remove(viewableToClose);
+            tabs?.Remove(tabs.First(tab => tab.TabId == viewableToClose?.LibraryElementModel.LibraryElementId));
             if (tabs?.Count < 2)
             {
                 vm.TabVisibility = Visibility.Collapsed;
@@ -437,19 +437,13 @@ namespace NuSysApp
             {
                 var viewable = vm.Tabs?[tabs.Count - 1];
                 DetailViewTabType tabToOpenTo = DetailViewTabType.Home;
-                if (vm.TabDictionary.ContainsKey(viewable?.TabId()))
+                var controller = SessionController.Instance.ContentController.GetLibraryElementController(viewable?.TabId);
+                if (vm.TabDictionary.ContainsKey(viewable?.TabId))
                 {
-                    tabToOpenTo = vm.TabDictionary[viewable?.TabId()];
+                    tabToOpenTo = vm.TabDictionary[viewable?.TabId];
                 }
-                if (viewable is RegionLibraryElementController)
-                {
-                    ShowElement(viewable as RegionLibraryElementController, tabToOpenTo);
-
-                }
-                else if (viewable is LibraryElementController)
-                {
-                    ShowElement(viewable as LibraryElementController);
-                }
+                ShowElement(controller, tabToOpenTo);
+                
             }
             vm.TabHeight = vm.TabPaneWidth/vm.Tabs.Count;
             e.Handled = true;
@@ -477,23 +471,23 @@ namespace NuSysApp
             var index = listView?.SelectedIndex;
 
                         
-            if (vm.TabDictionary.ContainsKey(_currentDetailViewable.TabId()))
+            if (vm.TabDictionary.ContainsKey(_currentDetailViewable.LibraryElementModel.LibraryElementId))
             {
                 switch (index.Value)
                 {
                     case 0:
-                        vm.TabDictionary[_currentDetailViewable.TabId()] = DetailViewTabType.Home;
+                        vm.TabDictionary[_currentDetailViewable.LibraryElementModel.LibraryElementId] = DetailViewTabType.Home;
                         var home = vm.View.DataContext as DetailHomeTabViewModel;
                      //   home.SetExistingRegions();
                         break;
                     case 1:
-                        vm.TabDictionary[_currentDetailViewable.TabId()] = DetailViewTabType.Metadata;
+                        vm.TabDictionary[_currentDetailViewable.LibraryElementModel.LibraryElementId] = DetailViewTabType.Metadata;
                         break;
                     case 2:
-                        vm.TabDictionary[_currentDetailViewable.TabId()] = DetailViewTabType.Links;
+                        vm.TabDictionary[_currentDetailViewable.LibraryElementModel.LibraryElementId] = DetailViewTabType.Links;
                         break;
                     case 3:
-                        vm.TabDictionary[_currentDetailViewable.TabId()] = DetailViewTabType.Regions;
+                        vm.TabDictionary[_currentDetailViewable.LibraryElementModel.LibraryElementId] = DetailViewTabType.Regions;
                         var region = vm.RegionView.DataContext as DetailHomeTabViewModel;
                       //  region.SetExistingRegions();
                         break;
@@ -506,18 +500,18 @@ namespace NuSysApp
                 switch (index.Value)
                 {
                     case 0:
-                        vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Home);
+                        vm.TabDictionary.Add(_currentDetailViewable.LibraryElementModel.LibraryElementId, DetailViewTabType.Home);
                         var home = vm.View.DataContext as DetailHomeTabViewModel;
                      //   home.SetExistingRegions();
                         break;
                     case 1:
-                        vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Metadata);
+                        vm.TabDictionary.Add(_currentDetailViewable.LibraryElementModel.LibraryElementId, DetailViewTabType.Metadata);
                         break;
                     case 2:
-                        vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Links);
+                        vm.TabDictionary.Add(_currentDetailViewable.LibraryElementModel.LibraryElementId, DetailViewTabType.Links);
                         break;
                     case 3:
-                        vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Regions);
+                        vm.TabDictionary.Add(_currentDetailViewable.LibraryElementModel.LibraryElementId, DetailViewTabType.Regions);
                         var region = vm.RegionView.DataContext as DetailHomeTabViewModel;
                     //    region.SetExistingRegions();
                         break;

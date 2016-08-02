@@ -45,8 +45,8 @@ namespace NuSysApp
         public ObservableCollection<FrameworkElement> SuggestedTags { get; set; }
 
         // Tabs keeps track of which tabs are open in the DV
-        private ObservableCollection<IDetailViewable> _tabs;
-        public ObservableCollection<IDetailViewable> Tabs
+        private ObservableCollection<DetailViewTabTemplate> _tabs;
+        public ObservableCollection<DetailViewTabTemplate> Tabs
         {
             get { return _tabs; }
             set
@@ -98,7 +98,7 @@ namespace NuSysApp
         private ElementViewModel _currentElementViewModel;
         public LibraryElementController CurrentElementController { get; set; }
 
-        public IDetailViewable CurrentDetailViewable { get; set; }
+        public LibraryElementController CurrentDetailViewable { get; set; }
 
         public delegate void TitleChangedHandler(object source, string newTitle);
         public event TitleChangedHandler TitleChanged;
@@ -110,7 +110,7 @@ namespace NuSysApp
             SuggestedTags = new ObservableCollection<FrameworkElement>();
             Metadata = new ObservableCollection<StackPanel>();
             RegionCollection = new ObservableCollection<Region>();
-            Tabs = new ObservableCollection<IDetailViewable>();
+            Tabs = new ObservableCollection<DetailViewTabTemplate>();
             SessionController.Instance.ContentController.OnElementDelete += ContentController_OnElementDelete;
         }
 
@@ -118,7 +118,7 @@ namespace NuSysApp
         {
             foreach (var tab in _tabs)
             {
-                if (tab.TabId() == element.LibraryElementId)
+                if (tab.TabId == element.LibraryElementId)
                 {
                     _tabs.Remove(tab);
                     break;
@@ -136,12 +136,6 @@ namespace NuSysApp
             TabHeight = TabPaneWidth / Tabs.Count;
         }
 
-        private void OnSizeChanged_InvokeTabVMSizeChanged(object source, double left, double width, double height)
-        {
-            _regionableRegionTabViewModel?.SizeChanged(source, width, height);
-            _regionableHomeTabViewModel?.SizeChanged(source, width, height);
-        }
-
         public void Dispose()
         {
             CurrentDetailViewable.TitleChanged -= ControllerTitleChanged;
@@ -150,113 +144,112 @@ namespace NuSysApp
             CurrentElementController.KeywordsChanged -= KeywordsChanged;
             _nodeModel = null;
         }
-        public async Task<bool> ShowElement(IDetailViewable viewable)
-        {      
-            if (viewable is LibraryElementController)
+        public async Task<bool> ShowElement(LibraryElementController controller)
+        {                     
+            if (!controller.IsLoaded)
             {
-                var controller = viewable as LibraryElementController;
-                
-                if (!controller.IsLoaded)
-                {
-                    await
-                        SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(
-                            controller.LibraryElementModel.LibraryElementId);
-                }
-                if (CurrentElementController != null)
-                {
-                    CurrentElementController.KeywordsChanged -= KeywordsChanged;
-                    if (CurrentDetailViewable != null)
-                    {
-                        CurrentDetailViewable.TitleChanged -= ControllerTitleChanged;
-                    }
-                }
-                CurrentElementController = controller;
-                CurrentDetailViewable = controller;
-                CurrentElementController.KeywordsChanged += KeywordsChanged;
-
-                RegionCollection.Clear();
-
-                var regions = SessionController.Instance.RegionsController.GetClippingParentRegionLibraryElementIds(CurrentElementController.LibraryElementModel.LibraryElementId);
-
-                if (regions?.Count > 0)
-                {
-                    foreach (var regionLibraryId in regions)
-                    {
-                        Debug.Assert(SessionController.Instance.ContentController.GetContent(regionLibraryId) is Region);
-                        RegionCollection.Add(SessionController.Instance.ContentController.GetContent(regionLibraryId) as Region);
-                    }
-                }
-                RaisePropertyChanged("OrderedRegionCollection");
-
-                View = await _viewHomeTabViewFactory.CreateFromSendable(controller);
-                if (View == null)
-                {
-                    return false;
-                }
-
-                RegionView = await _viewHomeTabViewFactory.CreateFromSendable(controller);
-                if (RegionView == null)
-                {
-                    return false;
-                }
-
-
-                _regionableRegionTabViewModel = RegionView.DataContext as DetailHomeTabViewModel;
-                _regionableRegionTabViewModel.Editable = true;
-                _regionableHomeTabViewModel = View.DataContext as DetailHomeTabViewModel;
-                _regionableHomeTabViewModel.Editable = false;
-
-                RaisePropertyChanged("View");
-                RaisePropertyChanged("RegionView");
-
-                RegionView.Loaded += delegate
-                {
-
-                    _regionableRegionTabViewModel.SetExistingRegions();
-
-                };
-
-                View.Loaded += delegate
-                {
-                    _regionableHomeTabViewModel.SetExistingRegions();
-                };
-
-
-                //SizeChanged += (sender, left, width, height) => _regionableRegionTabViewModel.SizeChanged(sender, width, height);
-                //SizeChanged += (sender, left, width, height) => _regionableHomeTabViewModel.SizeChanged(sender, width, height);
-                
-                Title = controller.LibraryElementModel.Title;
-
-                controller.TitleChanged += ControllerTitleChanged;
-                MakeTagList();
-                MakeSuggestedTagList();
-                RaisePropertyChanged("View");
-                RaisePropertyChanged("SuggestedTags");
-                RaisePropertyChanged("Tags");
-                RaisePropertyChanged("Metadata");
-                RaisePropertyChanged("RegionView");
-
-                AddTab(viewable);
-                return true;
+                await
+                    SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(
+                        controller.LibraryElementModel.LibraryElementId);
             }
-            return false;
+            if (CurrentElementController != null)
+            {
+                CurrentElementController.KeywordsChanged -= KeywordsChanged;
+                if (CurrentDetailViewable != null)
+                {
+                    CurrentDetailViewable.TitleChanged -= ControllerTitleChanged;
+                }
+            }
+            CurrentElementController = controller;
+            CurrentDetailViewable = controller;
+            CurrentElementController.KeywordsChanged += KeywordsChanged;
+
+            RegionCollection.Clear();
+
+            var regions = SessionController.Instance.RegionsController.GetClippingParentRegionLibraryElementIds(CurrentElementController.LibraryElementModel.LibraryElementId);
+
+            if (regions?.Count > 0)
+            {
+                foreach (var regionLibraryId in regions)
+                {
+                    Debug.Assert(SessionController.Instance.ContentController.GetContent(regionLibraryId) is Region);
+                    RegionCollection.Add(SessionController.Instance.ContentController.GetContent(regionLibraryId) as Region);
+                }
+            }
+            RaisePropertyChanged("OrderedRegionCollection");
+
+            View = await _viewHomeTabViewFactory.CreateFromSendable(controller);
+            if (View == null)
+            {
+                return false;
+            }
+
+            RegionView = await _viewHomeTabViewFactory.CreateFromSendable(controller);
+            if (RegionView == null)
+            {
+                return false;
+            }
+
+
+            _regionableRegionTabViewModel = RegionView.DataContext as DetailHomeTabViewModel;
+            _regionableRegionTabViewModel.Editable = true;
+            _regionableHomeTabViewModel = View.DataContext as DetailHomeTabViewModel;
+            _regionableHomeTabViewModel.Editable = false;
+
+            RaisePropertyChanged("View");
+            RaisePropertyChanged("RegionView");
+
+            RegionView.Loaded += delegate
+            {
+
+                _regionableRegionTabViewModel.SetExistingRegions();
+
+            };
+
+            View.Loaded += delegate
+            {
+                _regionableHomeTabViewModel.SetExistingRegions();
+            };
+
+
+            //SizeChanged += (sender, left, width, height) => _regionableRegionTabViewModel.SizeChanged(sender, width, height);
+            //SizeChanged += (sender, left, width, height) => _regionableHomeTabViewModel.SizeChanged(sender, width, height);
+                
+            Title = controller.LibraryElementModel.Title;
+
+            controller.TitleChanged += ControllerTitleChanged;
+            MakeTagList();
+            MakeSuggestedTagList();
+            RaisePropertyChanged("View");
+            RaisePropertyChanged("SuggestedTags");
+            RaisePropertyChanged("Tags");
+            RaisePropertyChanged("Metadata");
+            RaisePropertyChanged("RegionView");
+
+            AddTab(controller);
+            return true;
         }
 
 
-        public void AddTab(IDetailViewable viewable)
+        public void AddTab(LibraryElementController controller)
         {
-            if (_tabs.Contains(viewable))
+            // return if the tab is already in the detail view
+            foreach (var tab in _tabs)
             {
-                return;
+                if (tab.TabId == controller.LibraryElementModel.LibraryElementId)
+                {
+                    return;
+                }
             }
+
             if (_tabs.Count < 6)
             {
-                _tabs.Add(viewable);
+                _tabs.Add(new DetailViewTabTemplate(controller));
             }
             else
             {
                 _tabs.RemoveAt(0);
-                _tabs.Add(viewable);
+                _tabs.Add(new DetailViewTabTemplate(controller));
             }
             TabVisibility = Visibility.Visible;
 
@@ -507,20 +500,6 @@ namespace NuSysApp
             CurrentDetailViewable.TitleChanged -= ControllerTitleChanged;
             CurrentDetailViewable.SetTitle(title);
             CurrentDetailViewable.TitleChanged += ControllerTitleChanged;
-
-            Tabs.Remove(CurrentDetailViewable);
-            Tabs.Add(CurrentDetailViewable);
-
-            /*
-            // TODO make the exploration mode related list box show up
-            var button = sender as Button;
-            var panel = button.Content as StackPanel;
-            //var block = panel.FindVisualChild("tagContent") as TextBlock;
-           // var tag = block.Text;
-           // Debug.WriteLine(tag);
-           */
-
-
         }
 
     }
