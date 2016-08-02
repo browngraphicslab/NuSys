@@ -26,13 +26,8 @@ namespace NuSysApp
 
         public override async Task UnPackFromDatabaseMessage(Message props)
         {
-<<<<<<< HEAD:NusysConstants/Models/AreaModel.cs
-            await base.UnPack(props);
-            Points = props.GetList("points", new List<PointModel>());
-=======
             await base.UnPackFromDatabaseMessage(props);
-            Points = props.GetList("points", new List<Point>());
->>>>>>> 84c15e9142f4749f40a52554665bfc08b7c0d715:NuSysApp/Models/AreaModel.cs
+            Points = props.GetList("points", new List<PointModel>());
         }
     }
 }
