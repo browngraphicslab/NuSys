@@ -27,28 +27,47 @@ namespace NuSysApp
         public VideoMediaPlayer()
         {
             this.InitializeComponent();
+            xAudioWrapper.OnRegionsUpdated += XAudioWrapper_OnRegionsUpdated;
+
+        }
+
+        private void XAudioWrapper_OnRegionsUpdated(object sender, List<double> regionMarkers)
+        {
+            MediaElement.Markers.Clear();
+            //Start and end must be preserved
+            //     MediaElement.Markers.Add(StartMarker);
+            MediaElement.Markers.Add(EndMarker);
+
+            foreach (var normalizedTimelineMarkerTime in regionMarkers)
+            {
+                var marker = new TimelineMarker();
+                double totalDuration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+                marker.Time = new TimeSpan(0, 0, 0, 0, (int)(normalizedTimelineMarkerTime * totalDuration));
+                //adds each marker to the mediaelement's markers
+                MediaElement.Markers.Add(marker);
+            }
         }
 
         public Uri Source
         {
-            get { return playbackElement.Source; }
-            set { playbackElement.Source = value; }
+            get { return MediaElement.Source; }
+            set { MediaElement.Source = value; }
         }
         public TimeSpan Position
         {
-            get { return playbackElement.Position; }
+            get { return MediaElement.Position; }
         }
         public TimelineMarker StartMarker { set; get; }
         public TimelineMarker EndMarker { set; get; }
 
-        public MediaElement MediaPlayer => this.playbackElement;
+        public MediaElement MediaPlayer => this.MediaElement;
         public ProgressBar ScrubBar => this.scrubBar;
 
-        private void PlaybackElement_Onloaded(object sender, RoutedEventArgs e)
+        private void MediaElement_Onloaded(object sender, RoutedEventArgs e)
         {
         }
 
-        private void PlaybackElement_MediaOpened(object sender, RoutedEventArgs e)
+        private void MediaElement_MediaOpened(object sender, RoutedEventArgs e)
         {
             if (DataContext is VideoDetailHomeTabViewModel)
             {
@@ -69,32 +88,32 @@ namespace NuSysApp
             {
                 var vm = this.DataContext as VideoNodeViewModel;
                 var model = vm.Model as VideoNodeModel;
-                model.ResolutionX = playbackElement.AspectRatioWidth;
-                model.ResolutionY = playbackElement.AspectRatioHeight;
+                model.ResolutionX = MediaElement.AspectRatioWidth;
+                model.ResolutionY = MediaElement.AspectRatioHeight;
 
                 double width = this.ActualWidth;
                 double height = this.ActualHeight;
                 vm.Controller.SetSize(width, height);
             }
-         //   playbackElement.Position = new TimeSpan(0);
+         //   MediaElement.Position = new TimeSpan(0);
             double normalizedMediaElementPosition = xAudioWrapper.AudioStart;
-            double totalDuration = playbackElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+            double totalDuration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
             double denormalizedMediaElementPosition = normalizedMediaElementPosition * totalDuration;
 
             TimeSpan startTime = new TimeSpan(0, 0, 0, 0, (int)denormalizedMediaElementPosition);
             TimeSpan endTime = new TimeSpan(0, 0, 0, 0, (int)(totalDuration * xAudioWrapper.AudioEnd));
 
-            playbackElement.Position = startTime;
+            MediaElement.Position = startTime;
 
-            playbackElement.Markers.Clear();
+            MediaElement.Markers.Clear();
 
             StartMarker = new TimelineMarker();
             StartMarker.Time = startTime;
             EndMarker = new TimelineMarker();
             EndMarker.Time = endTime;
 
-            playbackElement.Markers.Add(StartMarker);
-            playbackElement.Markers.Add(EndMarker);
+            MediaElement.Markers.Add(StartMarker);
+            MediaElement.Markers.Add(EndMarker);
 
 
             ScrubBar.Minimum = totalDuration * xAudioWrapper.AudioStart;
@@ -107,14 +126,14 @@ namespace NuSysApp
             xRightTimeStampTextBlock.Text = (string)converter.Convert(timeSpan, null, null, null); // this looks weird cause its a xaml converter 
 
         }
-        public int AspectHeight { get { return playbackElement.AspectRatioHeight; } }
-        public int AspectWidth { get { return playbackElement.AspectRatioWidth; } }
-        private void PlaybackElementOnMediaEnded(object sender, RoutedEventArgs routedEventArgs)
+        public int AspectHeight { get { return MediaElement.AspectRatioHeight; } }
+        public int AspectWidth { get { return MediaElement.AspectRatioWidth; } }
+        private void MediaElementOnMediaEnded(object sender, RoutedEventArgs routedEventArgs)
         {
             play.Opacity = 1;
         }
 
-        private void PlaybackElement_OnMediaOpened(object sender, RoutedEventArgs e)
+        private void MediaElement_OnMediaOpened(object sender, RoutedEventArgs e)
         {
 //            _temporaryLinkVisual = new Line();
 //            _temporaryLinkVisual.Stroke = new SolidColorBrush(Colors.Aqua);
@@ -126,11 +145,11 @@ namespace NuSysApp
 //            _temporaryLinkVisual.PointerReleased += ScrubBar_OnPointerReleased;
 //            _temporaryLinkVisual.Opacity = 1;
 //                Binding b = new Binding();
-//                b.ElementName = "playbackElement";
+//                b.ElementName = "MediaElement";
 //                b.Path = new PropertyPath("Position.TotalMilliseconds");
 //                scrubBar.SetBinding(ProgressBar.ValueProperty, b);
 //
-//                playbackElement.Play();
+//                MediaElement.Play();
             
         }
 
@@ -138,7 +157,7 @@ namespace NuSysApp
 
         private void OnStop_Click(object sender, TappedRoutedEventArgs e)
         {
-            playbackElement.Pause();
+            MediaElement.Pause();
             _wasPlaying = false;
 
         }
@@ -148,22 +167,22 @@ namespace NuSysApp
         {
 
             Binding b = new Binding();
-            b.ElementName = "playbackElement";
+            b.ElementName = "MediaElement";
             b.Path = new PropertyPath("Position.TotalMilliseconds");
             scrubBar.SetBinding(ProgressBar.ValueProperty, b);
-            playbackElement.Play();
+            MediaElement.Play();
             _wasPlaying = true;
         }
 
         public void StopVideo()
         {
-            playbackElement.Pause();
+            MediaElement.Pause();
             _wasPlaying = false;
         }
 
         private void OnPause_Click(object sender, RoutedEventArgs e)
         {
-            playbackElement.Stop();
+            MediaElement.Stop();
             scrubBar.Value = 0;
             _wasPlaying = false;
 
@@ -179,11 +198,11 @@ namespace NuSysApp
 
         public void VideoNodeView_OnJump(TimeSpan time)
         {
-            playbackElement.Position = time;
-            if (playbackElement.CurrentState != MediaElementState.Playing)
+            MediaElement.Position = time;
+            if (MediaElement.CurrentState != MediaElementState.Playing)
             {
                 Binding b = new Binding();
-                b.ElementName = "playbackElement";
+                b.ElementName = "MediaElement";
                 b.Path = new PropertyPath("Position.TotalMilliseconds");
                 scrubBar.SetBinding(ProgressBar.ValueProperty, b);
 
@@ -192,18 +211,18 @@ namespace NuSysApp
 
         public void onSeekedTo(double time)
         {
-            double millliseconds = playbackElement.NaturalDuration.TimeSpan.TotalMilliseconds * time;
+            double millliseconds = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds * time;
 
             TimeSpan timespan = new TimeSpan(0, 0, 0, 0, (int)millliseconds);
-            playbackElement.Position = timespan;
+            MediaElement.Position = timespan;
             Binding b = new Binding();
-            b.ElementName = "playbackElement";
+            b.ElementName = "MediaElement";
             b.Path = new PropertyPath("Position.TotalMilliseconds");
             scrubBar.SetBinding(ProgressBar.ValueProperty, b);
         }
         private void ControllerOnDisposed(object source, object args)
         {
-            playbackElement.Stop();
+            MediaElement.Stop();
             var vm = (VideoNodeViewModel) DataContext;
             vm.Controller.LibraryElementController.Loaded -= LoadVideo;
             vm.Controller.Disposed -= ControllerOnDisposed;
@@ -213,25 +232,25 @@ namespace NuSysApp
         private void LoadVideo(object sender)
         {
             var vm = DataContext as VideoNodeViewModel;
-            playbackElement.Source = vm.Controller.LibraryElementController.GetSource();
+            MediaElement.Source = vm.Controller.LibraryElementController.GetSource();
         }
 
         private void SrubBar_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             double position = e.GetPosition((UIElement)sender).X / scrubBar.ActualWidth;
             double normalizedMediaElementPosition = xAudioWrapper.AudioStart + position * (xAudioWrapper.AudioEnd - xAudioWrapper.AudioStart);
-            double totalDuration = playbackElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+            double totalDuration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
             double denormalizedMediaElementPosition = normalizedMediaElementPosition * totalDuration;
             TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)denormalizedMediaElementPosition);
-            playbackElement.Position = time;
+            MediaElement.Position = time;
 
             xAudioWrapper.CheckTimeForRegions(normalizedMediaElementPosition);
 
-            if (playbackElement.CurrentState != MediaElementState.Playing)
+            if (MediaElement.CurrentState != MediaElementState.Playing)
             {
 
                 Binding b = new Binding();
-                b.ElementName = "playbackElement";
+                b.ElementName = "MediaElement";
                 b.Path = new PropertyPath("Position.TotalMilliseconds");
                 scrubBar.SetBinding(ProgressBar.ValueProperty, b);
                 //    MediaElement.Pause();
@@ -246,7 +265,7 @@ namespace NuSysApp
             {
                 double position = e.GetCurrentPoint((UIElement)sender).Position.X / scrubBar.ActualWidth;
                 double normalizedMediaElementPosition = xAudioWrapper.AudioStart + position * (xAudioWrapper.AudioEnd - xAudioWrapper.AudioStart);
-                double totalDuration = playbackElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+                double totalDuration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
                 double denormalizedMediaElementPosition = normalizedMediaElementPosition * totalDuration;
                 TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)denormalizedMediaElementPosition);
                 //If not in bounds of current audio, don't update mediaelement position
@@ -254,12 +273,12 @@ namespace NuSysApp
                 {
                     return;
                 }
-                playbackElement.Position = time;
+                MediaElement.Position = time;
 
-                if (playbackElement.CurrentState != MediaElementState.Playing)
+                if (MediaElement.CurrentState != MediaElementState.Playing)
                 {
                     Binding b = new Binding();
-                    b.ElementName = "playbackElement";
+                    b.ElementName = "MediaElement";
                     b.Path = new PropertyPath("Position.TotalMilliseconds");
                     scrubBar.SetBinding(ProgressBar.ValueProperty, b);
 
@@ -297,12 +316,12 @@ namespace NuSysApp
         {
             if (_wasPlaying)
             {
-                playbackElement.Play();
+                MediaElement.Play();
 
             }
             else
             {
-                playbackElement.Pause();
+                MediaElement.Pause();
 
             }
                 ((UIElement)sender).ReleasePointerCapture(e.Pointer);
@@ -310,7 +329,7 @@ namespace NuSysApp
 
         public void StopMedia()
         {
-            playbackElement.Stop();
+            MediaElement.Stop();
         }
 
         private void MediaElement_MarkerReached(object sender, TimelineMarkerRoutedEventArgs e)
@@ -321,7 +340,7 @@ namespace NuSysApp
             else if (e.Marker.Time == EndMarker.Time)
             {
                 //Goes back to start of region
-                playbackElement.Pause();
+                MediaElement.Pause();
                 VideoNodeView_OnJump(StartMarker.Time);
 
             }
@@ -329,7 +348,7 @@ namespace NuSysApp
             //*** passed in because accurate check can't be made otherwise
 
 
-            double totalDuration = playbackElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+            double totalDuration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
             var denormalizedTime = e.Marker.Time.TotalMilliseconds;
             xAudioWrapper.CheckMarker(denormalizedTime, totalDuration);
         }

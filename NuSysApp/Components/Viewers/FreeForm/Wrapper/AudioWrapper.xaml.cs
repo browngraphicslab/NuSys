@@ -310,9 +310,14 @@ namespace NuSysApp
                 switch (regionViewModel.Model.Type)
                 {
                     case ElementType.AudioRegion:
-                        var model = regionViewModel.Model as AudioRegionModel;
-                        timelineMarkers.Add(model.Start);
-                        timelineMarkers.Add(model.End);
+                        var audioModel = regionViewModel.Model as AudioRegionModel;
+                        timelineMarkers.Add(audioModel.Start);
+                        timelineMarkers.Add(audioModel.End);
+                        break;
+                    case ElementType.VideoRegion:
+                        var videoModel = regionViewModel.Model as VideoRegionModel;
+                        timelineMarkers.Add(videoModel.Start);
+                        timelineMarkers.Add(videoModel.End);
                         break;
                     default:
                         break;
@@ -425,7 +430,22 @@ namespace NuSysApp
 
                         }
                         break;
-                    default:
+                    case ElementType.VideoRegion:
+                        var videoRegionView = item as VideoRegionView;
+                        var videoRegionViewModel = regionViewModel as VideoRegionViewModel;
+                        var videoRegionModel = regionViewModel.Model as VideoRegionModel;
+
+                        if ((int)(videoRegionModel.Start * totalDuration) == denormalizedMarkerTime)
+                        {
+                            videoRegionView.Select();
+                            Region_OnSelectedOrDeselected(videoRegionView, true);
+                        }
+                        if ((int)(videoRegionModel.End * totalDuration) == denormalizedMarkerTime)
+                        {
+                            videoRegionView.Deselect();
+                            Region_OnSelectedOrDeselected(videoRegionView, false);
+
+                        }
                         break;
                 }
             }

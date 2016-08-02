@@ -144,6 +144,7 @@ namespace NuSysApp
             regionLibraryElementController.LocationChanged += LocationChanged;
             regionLibraryElementController.IntervalChanged += IntervalChanged;
             regionLibraryElementController.TitleChanged += TitleChanged;
+            regionLibraryElementController.IntervalChanged += audioWrapper.AudioWrapper_TimeChanged;
             _height = (model.Height);
             _width = (model.Width);
             _topLeftPoint = new Point(model.TopLeftPoint.X , model.TopLeftPoint.Y );
