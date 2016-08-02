@@ -10,6 +10,11 @@ namespace NuSysApp
 {
     public class LibraryElementControllerFactory
     {
+        /// <summary>
+        /// Takes in a library element model and returns a newly created library element controller for the model
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public static LibraryElementController CreateFromModel(LibraryElementModel model)
         {
             LibraryElementController controller;

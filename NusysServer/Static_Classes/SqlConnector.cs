@@ -41,6 +41,7 @@ namespace NusysServer
             _db = new SqlConnection(SQLSTRING);
             _db.Open(); //open database
             ResetTables();
+            //SetUpTables();
         }
 
         /// <summary>
@@ -74,7 +75,8 @@ namespace NusysServer
                 NusysConstants.ALIAS_LOCATION_X_KEY + " float, " +
                 NusysConstants.ALIAS_LOCATION_Y_KEY + " float, " +
                 NusysConstants.ALIAS_SIZE_WIDTH_KEY + " float, " +
-                NusysConstants.ALIAS_SIZE_HEIGHT_KEY + " float, " + 
+                NusysConstants.ALIAS_SIZE_HEIGHT_KEY + " float, " +
+                NusysConstants.ALIAS_CREATOR_ID_KEY + " varchar(128), " +
                 NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY + " varchar(128));");
 
             var metadataTable = MakeCommand("CREATE TABLE "+GetTableName(Constants.SQLTableType.Metadata)+" ("+

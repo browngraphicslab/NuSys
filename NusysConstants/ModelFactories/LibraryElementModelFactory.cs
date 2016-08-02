@@ -8,6 +8,9 @@ namespace NusysIntermediate
 {
     public class LibraryElementModelFactory
     {
+        /// <summary>
+        /// Returns the library element model for the passed in message
+        /// </summary>
         public static LibraryElementModel CreateFromMessage(Message message)
         {
             Debug.Assert(message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_TYPE_KEY));
