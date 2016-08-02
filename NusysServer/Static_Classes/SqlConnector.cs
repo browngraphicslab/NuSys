@@ -40,8 +40,8 @@ namespace NusysServer
         {
             _db = new SqlConnection(SQLSTRING);
             _db.Open(); //open database
-            ResetTables(true);
-            SetUpTables();
+            ResetTables();
+            //SetUpTables();
         }
 
         /// <summary>

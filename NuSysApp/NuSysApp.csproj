@@ -399,6 +399,7 @@
     <Compile Include="Components\Viewers\RecordingNodeViewModel.cs" />
     <Compile Include="Controller\AudioRegionLibraryElementController.cs" />
     <Compile Include="Controller\CollectionLibraryElementController.cs" />
+    <Compile Include="Controller\ElementControllerFactory.cs" />
     <Compile Include="Controller\LibraryElementController\LibraryElementControllerFactory.cs" />
     <Compile Include="Controller\LibraryElementController\LinkLibraryElementController.cs" />
     <Compile Include="Controller\LibraryElementController\WordNodeLibraryElementController.cs" />
