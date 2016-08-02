@@ -41,7 +41,7 @@ namespace NuSysApp
 
         public static bool IS_HUB = false;
 
-        private static IEnumerable<Message> _firstLoadList;
+        private static IEnumerable<ElementModel> _firstLoadList;
         private bool _loggedIn = false;
         private bool _isLoaded = false;
 
@@ -170,7 +170,11 @@ namespace NuSysApp
                 var id = ((CollectionTextBox) item).ID;
                 var collectionRequest = new GetEntireWorkspaceRequest(id ?? "test");
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collectionRequest);
-                _firstLoadList = null;//collectionRequest.GetReturnedArgs().AliasMessages;
+                foreach (var content in collectionRequest.GetReturnedContentDataModels())
+                {
+                    SessionController.Instance.ContentController.AddContentDataModel(content);
+                }
+                _firstLoadList = collectionRequest.GetReturnedElementModels();
                 InitialWorkspaceId = id;
                 this.Frame.Navigate(typeof(SessionView));
                 
@@ -183,13 +187,13 @@ namespace NuSysApp
             }
         }
 
-        public static IEnumerable<Message> GetFirstLoadList()
+        public static IEnumerable<ElementModel> GetFirstLoadList()
         {
             if (_firstLoadList == null)
             {
-                return new List<Message>();
+                return new List<ElementModel>();
             }
-            var l = new List<Message>(_firstLoadList);
+            var l = new List<ElementModel>(_firstLoadList);
             _firstLoadList = null;
             return l;
         }

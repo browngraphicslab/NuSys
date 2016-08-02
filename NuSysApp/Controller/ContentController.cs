@@ -15,16 +15,24 @@ namespace NuSysApp
 {
     public class ContentController
     {
-        private ConcurrentDictionary<string, LibraryElementModel> _contents = new ConcurrentDictionary<string, LibraryElementModel>();
-        private ConcurrentDictionary<string, LibraryElementController> _contentControllers = new ConcurrentDictionary<string, LibraryElementController>();
+        private ConcurrentDictionary<string, LibraryElementModel> _contents =
+            new ConcurrentDictionary<string, LibraryElementModel>();
+
+        private ConcurrentDictionary<string, LibraryElementController> _contentControllers =
+            new ConcurrentDictionary<string, LibraryElementController>();
+
         //private Dictionary<string, ManualResetEvent> _waitingNodeCreations = new Dictionary<string, ManualResetEvent>();
-        private ConcurrentDictionary<string, ContentDataModel> _contentDataModels = new ConcurrentDictionary<string, ContentDataModel>();
+        private ConcurrentDictionary<string, ContentDataModel> _contentDataModels =
+            new ConcurrentDictionary<string, ContentDataModel>();
 
         public delegate void NewContentEventHandler(LibraryElementModel element);
+
         public event NewContentEventHandler OnNewContent;
 
         public delegate void ElementDeletedEventHandler(LibraryElementModel element);
+
         public event ElementDeletedEventHandler OnElementDelete;
+
         public int Count
         {
             get { return _contents.Count; }
@@ -34,11 +42,13 @@ namespace NuSysApp
         {
             get { return new HashSet<string>(_contents.Keys); }
         }
+
         public LibraryElementModel GetLibraryElementModel(string id)
         {
             Debug.Assert(id != null);
             return _contents.ContainsKey(id) ? _contents[id] : null;
         }
+
         public LibraryElementController GetLibraryElementController(string id)
         {
             if (id == null)
@@ -47,10 +57,12 @@ namespace NuSysApp
             }
             return _contentControllers.ContainsKey(id) ? _contentControllers[id] : null;
         }
+
         public ICollection<LibraryElementModel> ContentValues
         {
             get { return new List<LibraryElementModel>(_contents.Values); }
-        } 
+        }
+
         public bool ContainsAndLoaded(string id)
         {
             return _contentControllers.ContainsKey(id) && _contentControllers[id].IsLoaded;
@@ -64,14 +76,16 @@ namespace NuSysApp
         /// <returns></returns>
         public LibraryElementModel CreateAndAddModelFromMessage(Message message)
         {
-            Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementModel(message.GetString(NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY)) == null);
+            Debug.Assert(
+                SessionController.Instance.ContentController.GetLibraryElementModel(
+                    message.GetString(NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY)) == null);
             var model = LibraryElementModelFactory.CreateFromMessage(message);
 
-            
+
             var controller = LibraryElementControllerFactory.CreateFromModel(model);
             Debug.Assert(controller != null);
             _contentControllers.TryAdd(model.LibraryElementId, controller);
-            
+
             controller.UnPack(message);
             Add(model);
 
@@ -124,6 +138,7 @@ namespace NuSysApp
             OnElementDelete?.Invoke(model);
             return true;
         }
+
         public string OverWrite(LibraryElementModel model)
         {
             if (!String.IsNullOrEmpty(model.LibraryElementId))
@@ -146,6 +161,7 @@ namespace NuSysApp
             Debug.Assert(contentId != null);
             return _contentDataModels.ContainsKey(contentId) ? _contentDataModels[contentId] : null;
         }
+
         public bool AddContentDataModel(string contentId, string data)
         {
             Debug.Assert(contentId != null);
@@ -157,7 +173,17 @@ namespace NuSysApp
             return true;
         }
 
-        public bool ContentExists(string contentId)
+        public bool AddContentDataModel(ContentDataModel contentDataModel)
+        {
+            if (_contentDataModels.ContainsKey(contentDataModel.ContentId))
+            {
+                return false;
+            }
+            _contentDataModels.TryAdd(contentDataModel.ContentId, contentDataModel);
+            return true;
+        }
+
+    public bool ContentExists(string contentId)
         {
             Debug.Assert(contentId != null);
             return _contentDataModels.ContainsKey(contentId);

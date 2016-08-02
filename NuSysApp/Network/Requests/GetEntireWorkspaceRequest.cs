@@ -70,14 +70,14 @@ namespace NuSysApp
                 _returnedElementModels = new List<ElementModel>();
                 foreach (var elementString in args.AliasStrings)
                 {
-                    _returnedElementModels.Add(null);//TODO not add null, obvs
+                    _returnedElementModels.Add(ElementModelFactory.DeserializeFromString(elementString));
                 }
 
                 //create the content data models from the returned args strings
                 _returnedContentDataModels = new List<ContentDataModel>();
                 foreach (var contentString in args.ContentMessages)
                 {
-                    _returnedContentDataModels.Add(null);//TODO not add null, obvs
+                    _returnedContentDataModels.Add(ContentDataModelFactory.DeserializeFromString(contentString));
                 }
 
             }
