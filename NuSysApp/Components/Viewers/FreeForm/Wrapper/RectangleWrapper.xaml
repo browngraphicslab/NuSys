@@ -8,7 +8,7 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid x:Name="xClippingGrid" SizeChanged="XClippingGrid_OnSizeChanged"  VerticalAlignment="Center" HorizontalAlignment="Center" >
+    <Grid x:Name="xClippingGrid" SizeChanged="XClippingGrid_OnSizeChanged"  VerticalAlignment="Center" HorizontalAlignment="Center"  >
         <Grid.RenderTransform>
             <CompositeTransform x:Name="WrapperTransform"/>
         </Grid.RenderTransform>
@@ -16,7 +16,7 @@
             <RectangleGeometry x:Name="xClippingRectangle">
             </RectangleGeometry>
         </Grid.Clip>
-        <ContentPresenter x:Name="xClippingContent" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <ContentPresenter x:Name="xClippingContent"  HorizontalAlignment="Center" VerticalAlignment="Center" PointerPressed="xClippingContent_PointerPressed">
         </ContentPresenter>
         <ItemsControl x:Name="xClippingCanvas">
             <ItemsControl.ItemsPanel>

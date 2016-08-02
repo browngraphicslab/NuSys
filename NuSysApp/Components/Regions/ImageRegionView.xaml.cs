@@ -30,6 +30,9 @@ namespace NuSysApp
 
         public bool Selected {private set; get; }
 
+        public delegate void RegionSelectedDeselectedEventHandler(object sender, bool selected);
+        public event RegionSelectedDeselectedEventHandler OnSelectedOrDeselected;
+
         public ImageRegionView(ImageRegionViewModel vm)
         {
             this.InitializeComponent();
@@ -266,7 +269,7 @@ namespace NuSysApp
             xDelete.Visibility = Visibility.Visible;
             xNameTextBox.Visibility = Visibility.Visible;
             Selected = true;
-
+            
         }
 
 
@@ -279,10 +282,18 @@ namespace NuSysApp
                 return;
 
             if (Selected)
+            {
                 this.Deselect();
+                OnSelectedOrDeselected?.Invoke(this, false);
+
+            }
             else
+            {
                 this.Select();
-                
+                OnSelectedOrDeselected?.Invoke(this, true);
+
+            }
+
         }
 
         private void xDelete_PointerPressed(object sender, PointerRoutedEventArgs e)
