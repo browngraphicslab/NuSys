@@ -17,6 +17,8 @@ namespace NusysServer
             Debug.Assert(message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_LOCATION_Y_KEY));
             Debug.Assert(message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_SIZE_WIDTH_KEY));
             Debug.Assert(message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_SIZE_HEIGHT_KEY));
+            Debug.Assert(message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_CREATOR_ID_KEY));
+
 
             var addAliasMessage = new Message();
             addAliasMessage[NusysConstants.ALIAS_ID_KEY] = message[NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_ID_KEY];
@@ -26,6 +28,7 @@ namespace NusysServer
             addAliasMessage[NusysConstants.ALIAS_LOCATION_Y_KEY] = message[NusysConstants.NEW_ELEMENT_REQUEST_LOCATION_Y_KEY];
             addAliasMessage[NusysConstants.ALIAS_SIZE_HEIGHT_KEY] = message[NusysConstants.NEW_ELEMENT_REQUEST_SIZE_HEIGHT_KEY];
             addAliasMessage[NusysConstants.ALIAS_SIZE_WIDTH_KEY] = message[NusysConstants.NEW_ELEMENT_REQUEST_SIZE_WIDTH_KEY];
+            addAliasMessage[NusysConstants.ALIAS_CREATOR_ID_KEY] = message[NusysConstants.NEW_ELEMENT_REQUEST_CREATOR_ID_KEY];
 
             var success = ContentController.Instance.SqlConnector.AddAlias(addAliasMessage);
 

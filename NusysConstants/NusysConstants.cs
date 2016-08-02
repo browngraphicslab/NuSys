@@ -152,7 +152,12 @@ namespace NusysIntermediate
             /// the key used to send the collection id of the collection the element belongs to
             /// </summary>
             public static readonly string NEW_ELEMENT_REQUEST_ELEMENT_PARENT_COLLECTION_ID_KEY = "parent_collection_id";
-            #endregion NewElementRequest
+
+            /// <summary>
+            /// the key used to send the id of the creator
+            /// </summary>
+            public static readonly string NEW_ELEMENT_REQUEST_CREATOR_ID_KEY = "creator_id_key";
+        #endregion NewElementRequest
 
         #endregion RequestKeys
 
@@ -193,15 +198,21 @@ namespace NusysIntermediate
 
             /// <summary>
             /// 32 character string, aka an ID.  
-            /// the id of the collection that this alias belongs inside of
+            /// the id of the user who created the alias
             /// </summary>
             public static readonly string ALIAS_PARENT_COLLECTION_ID_KEY = "parent_collection_id";
 
-            /// <summary>
-            /// the dictionary from keys that are accepted and put into the Alias table to their type. 
-            /// the keys not included in this list are put into the properties table
-            /// </summary>
-            public static readonly Dictionary<string, Type> ALIAS_ACCEPTED_KEYS = new Dictionary<string, Type>()
+        /// <summary>
+        /// 32 character string, aka an ID.  
+        /// the id of the collection that this alias belongs inside of
+        /// </summary>
+        public static readonly string ALIAS_CREATOR_ID_KEY = "creator_user_id";
+
+        /// <summary>
+        /// the dictionary from keys that are accepted and put into the Alias table to their type. 
+        /// the keys not included in this list are put into the properties table
+        /// </summary>
+        public static readonly Dictionary<string, Type> ALIAS_ACCEPTED_KEYS = new Dictionary<string, Type>()
             {
                 {ALIAS_ID_KEY, typeof(string)},
                 { ALIAS_LIBRARY_ID_KEY, typeof(string)},
@@ -210,6 +221,7 @@ namespace NusysIntermediate
                 {ALIAS_SIZE_WIDTH_KEY,typeof(float)},
                 { ALIAS_SIZE_HEIGHT_KEY,typeof(float)},
                 { ALIAS_PARENT_COLLECTION_ID_KEY,typeof(string)},
+                {  ALIAS_CREATOR_ID_KEY, typeof(string) }
             };
 
             #endregion alias

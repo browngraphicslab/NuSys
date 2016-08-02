@@ -137,16 +137,44 @@ namespace NusysIntermediate
 
         public override async Task UnPack(Message props)
         {
-            X = props.GetDouble("x", X);
-            Y = props.GetDouble("y", Y);
-            Width = props.GetDouble("width", Width);
-            Height = props.GetDouble("height", Height);
+            if (props.ContainsKey(NusysConstants.ALIAS_LOCATION_X_KEY))
+            {
+                X = props.GetDouble(NusysConstants.ALIAS_LOCATION_X_KEY, X);
+            }
+
+            if (props.ContainsKey(NusysConstants.ALIAS_LOCATION_Y_KEY))
+            {
+                Y = props.GetDouble(NusysConstants.ALIAS_LOCATION_Y_KEY, Y);
+            }
+
+            if (props.ContainsKey(NusysConstants.ALIAS_SIZE_WIDTH_KEY))
+            {
+                Width = props.GetDouble(NusysConstants.ALIAS_SIZE_WIDTH_KEY, Width);
+            }
+
+            if (props.ContainsKey(NusysConstants.ALIAS_SIZE_HEIGHT_KEY))
+            {
+                Height = props.GetDouble(NusysConstants.ALIAS_SIZE_HEIGHT_KEY, Height);
+            }
+
+            if (props.ContainsKey(NusysConstants.ALIAS_CREATOR_ID_KEY))
+            {
+                CreatorId = props.GetString(NusysConstants.ALIAS_CREATOR_ID_KEY, null);
+            }
+            if (props.ContainsKey(NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY))
+            {
+                ParentCollectionId = props.GetString(NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY, ParentCollectionId);
+            }
+            if (props.ContainsKey(NusysConstants.ALIAS_LIBRARY_ID_KEY))
+            {
+                LibraryId = props.GetString(NusysConstants.ALIAS_LIBRARY_ID_KEY, "");
+            }
+
+            //may not need some of this stuff below
             Alpha = props.GetDouble("alpha", Alpha);
             ScaleX = props.GetDouble("scaleX", ScaleX);
             ScaleY = props.GetDouble("scaleY", ScaleY);
             Title = props.GetString("title", "");
-            CreatorId = props.GetString("creator_user_id", null);
-
 
             if (props.ContainsKey("type"))
             {
@@ -158,14 +186,8 @@ namespace NusysIntermediate
                 string t = props.GetString("nodeType");
                 ElementType = (NusysConstants.ElementType)Enum.Parse(typeof(NusysConstants.ElementType), t);
             }
-            if (props.ContainsKey("contentId"))
-            {
-                LibraryId = props.GetString("contentId", "");
-            }
-            if (props.ContainsKey("creator"))
-            {
-                ParentCollectionId = props.GetString("creator", ParentCollectionId);
-            }
+            
+            
 
             await base.UnPack(props);
         }

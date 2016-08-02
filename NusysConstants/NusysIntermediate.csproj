@@ -42,11 +42,14 @@
     <Compile Include="Keyword.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="MetadataEntry.cs" />
+    <Compile Include="ModelFactories\ElementModelFactory.cs" />
+    <Compile Include="Models\AreaModel.cs" />
     <Compile Include="Models\AudioNodeModel.cs" />
     <Compile Include="Models\AudioRegionModel.cs" />
     <Compile Include="Models\CollectionElementModel.cs" />
     <Compile Include="Models\CollectionLibraryElementModel.cs" />
     <Compile Include="Models\ElementModel.cs" />
+    <Compile Include="Models\ImageElementModel.cs" />
     <Compile Include="Models\LibraryElementModel.cs" />
     <Compile Include="ModelFactories\LibraryElementModelFactory.cs" />
     <Compile Include="Models\LinkLibraryElementModel.cs" />

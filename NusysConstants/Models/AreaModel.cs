@@ -10,11 +10,11 @@ namespace NuSysApp
 {
     public class AreaModel : CollectionElementModel
     {
-        public List<Point> Points { get; set; } 
+        public List<PointModel> Points { get; set; } 
 
         public AreaModel(string id) : base(id)
         {
-            Points = new List<Point>();
+            Points = new List<PointModel>();
         }
 
         public override async Task<Dictionary<string, object>> Pack()
@@ -27,7 +27,7 @@ namespace NuSysApp
         public override async Task UnPack(Message props)
         {
             await base.UnPack(props);
-            Points = props.GetList("points", new List<Point>());
+            Points = props.GetList("points", new List<PointModel>());
         }
     }
 }
