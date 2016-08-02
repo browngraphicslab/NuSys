@@ -36,6 +36,22 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             MediaElement.SetValue(Canvas.ZIndexProperty, 1);
+            xAudioWrapper.OnRegionsUpdated += XAudioWrapper_OnRegionsUpdated;
+        }
+
+        private void XAudioWrapper_OnRegionsUpdated(object sender, List<double> regionMarkers)
+        {
+            MediaElement.Markers.Clear();
+            MediaElement.Markers.Add(StartMarker);
+            MediaElement.Markers.Add(EndMarker);
+            
+            foreach (var normalizedTimelineMarkerTime in regionMarkers)
+            {
+                var marker = new TimelineMarker();
+                double totalDuration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+                marker.Time = new TimeSpan(0,0,0,0, (int)(normalizedTimelineMarkerTime * totalDuration));
+                MediaElement.Markers.Add(marker);
+            }
         }
 
         private void Stop_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -274,7 +290,9 @@ namespace NuSysApp
                 Audio_OnJump(StartMarker.Time);
 
             }
-
+            double totalDuration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+            var denormalizedTime = e.Marker.Time.TotalMilliseconds;
+            xAudioWrapper.CheckMarker(denormalizedTime, totalDuration);
         }
         private void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
         {

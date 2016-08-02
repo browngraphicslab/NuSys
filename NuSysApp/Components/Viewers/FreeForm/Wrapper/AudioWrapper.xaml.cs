@@ -73,6 +73,10 @@ namespace NuSysApp
         //denormalized end of audio
         public double AudioEnd { set; get; }
 
+        public delegate void RegionsUpdatedEventHandler(object sender, List<double> regionMarkers);
+        public event RegionsUpdatedEventHandler OnRegionsUpdated;
+
+
         public AudioWrapper()
         {
             this.InitializeComponent();
@@ -154,10 +158,12 @@ namespace NuSysApp
                 switch (regionLibraryElementController.LibraryElementModel.Type)
                 {
                     case ElementType.AudioRegion:
+                        (regionLibraryElementController as AudioRegionLibraryElementController).TimeChanged += AudioWrapper_TimeChanged;
                         vm = new AudioRegionViewModel(regionLibraryElementController.LibraryElementModel as AudioRegionModel,
                                 regionLibraryElementController as AudioRegionLibraryElementController, this);
                         view = new AudioRegionView(vm as AudioRegionViewModel);
                         (view as AudioRegionView).RescaleComponents(renderTransform.ScaleX);
+                       
                         break;
                 }
 
@@ -170,8 +176,22 @@ namespace NuSysApp
 
                 // add the region to thew view
                 xClippingCanvas.Items.Add(view);
+
+
+                FireRegionsUpdated();
             });
             return null;
+        }
+
+        private void AudioWrapper_TimeChanged(object sender, double start, double end)
+        {
+            FireRegionsUpdated();
+        }
+
+        private void FireRegionsUpdated()
+        {
+            var timelineMarkers = GetTimelineMarkers();
+            OnRegionsUpdated?.Invoke(this, timelineMarkers);
         }
 
         public void RemoveRegionView(string regionLibraryElementId)
@@ -186,21 +206,28 @@ namespace NuSysApp
                 if (region.Model.LibraryElementId == regionLibraryElementId)
                 {
                     xClippingCanvas.Items.Remove(item);
+                    FireRegionsUpdated();
                     return;
                 }
             }
         }
 
-        public HashSet<TimelineMarker> GetTimelineMarkers(double time)
+        /// <summary>
+        /// Returns a list of normalized 
+        /// </summary>
+        /// <returns></returns>
+        public List<double> GetTimelineMarkers()
         {
-            var timelineMarkers = new HashSet<TimelineMarker>();
+            var timelineMarkers = new List<double>();
             foreach (var item in xClippingCanvas.Items)
             {
                 var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
                 switch (regionViewModel.Model.Type)
                 {
                     case ElementType.AudioRegion:
-                   //     var start = new TimelineMarker(0,0,0,0,regionViewModel as AudioRegionViewModel).L
+                        var model = regionViewModel.Model as AudioRegionModel;
+                        timelineMarkers.Add(model.Start);
+                        timelineMarkers.Add(model.End);
                         break;
                     default:
                         break;
@@ -236,105 +263,35 @@ namespace NuSysApp
                 }
             }
 
-            //// if the controller hasn't been set yet don't try to resize
-            //if (Controller == null)
-            //{
-            //    return;
-            //}
-            //var type = Controller.LibraryElementModel.Type;
-            //var contentView = xClippingContent;
-            //Debug.Assert(contentView != null);
-            //if (Constants.IsRegionType(type))
-            //{
-            //    var regionController = Controller as AudioRegionLibraryElementController;
-            //    Debug.Assert(regionController != null);
-            //    var regionModel = regionController.LibraryElementModel as AudioRegionModel;
-            //    Debug.Assert(regionModel != null);
+    
+        }
 
-            //    var startX = regionModel.Start 
+        public void CheckMarker(double denormalizedMarkerTime, double totalDuration)
+        {
+            foreach (var item in xClippingCanvas.Items)
+            {
+                var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
+                //FrameworkElement region;
+                switch (regionViewModel.Model.Type)
+                {
+                    case ElementType.AudioRegion:
+                        var audioRegionView = item as AudioRegionView;
+                        var audioRegionViewModel = regionViewModel as AudioRegionViewModel;
+                        var audioRegionModel = regionViewModel.Model as AudioRegionModel;
 
-
-            //    // creates a clipping rectangle using parameters topleftX, topleftY, width, height
-            //    // the regionModel Width and points are all normalized
-            //    var topLeftX = regionModel.TopLeftPoint.X * contentView.ActualWidth;
-            //    var topLeftY = regionModel.TopLeftPoint.Y * contentView.ActualHeight;
-            //    var rectWidth = regionModel.Width * contentView.ActualWidth;
-            //    var rectHeight = regionModel.Height * contentView.ActualHeight;
-
-            //    var rect = new Rect(topLeftX, topLeftY, rectWidth, rectHeight);
-
-            //    xClippingRectangle.Rect = rect;
-            //    //This section onwards is for resizing 
-
-
-            //    var scaleX = 1 / regionModel.Width;
-            //    var scaleY = 1 / regionModel.Height;
-            //    var lesserScale = scaleX < scaleY ? scaleX : scaleY;
-            //    // shifts the clipped rectangle so its upper left corner is in the upper left corner of the node
-            //    var compositeTransform = WrapperTransform;
-            //    if (DataContext is DetailHomeTabViewModel)
-            //    {
-            //        var regionHalfWidth = regionModel.Width * xClippingContent.ActualWidth / 2.0;
-            //        var regionHalfHeight = regionModel.Height * xClippingContent.ActualHeight / 2.0;
-
-            //        var detailViewHalfWidth = xClippingContent.ActualWidth / 2.0;
-            //        var detailViewHalfHeight = xClippingContent.ActualHeight / 2.0;
-
-            //        var regionTopLeftX = xClippingContent.ActualWidth * regionModel.TopLeftPoint.X;
-            //        var regionTopLeftY = xClippingContent.ActualHeight * regionModel.TopLeftPoint.Y;
-
-            //        var regionCenterX = -(regionTopLeftX + regionHalfWidth - detailViewHalfWidth);
-            //        var regionCenterY = -(regionTopLeftY + regionHalfHeight - detailViewHalfHeight);
-
-
-
-            //        compositeTransform.TranslateX = regionCenterX;
-            //        compositeTransform.TranslateY = regionCenterY;
-
-            //        compositeTransform.ScaleX = lesserScale;
-            //        compositeTransform.ScaleY = lesserScale;
-
-            //        compositeTransform.CenterX = regionTopLeftX + regionHalfWidth;
-            //        compositeTransform.CenterY = regionTopLeftY + regionHalfHeight;
-            //    }
-            //    else
-            //    {
-            //        // shifts the clipped rectangle so its upper left corner is in the upper left corner of the node
-            //        compositeTransform.TranslateX = -regionModel.TopLeftPoint.X * xClippingContent.ActualWidth * scaleX;
-            //        compositeTransform.TranslateY = -regionModel.TopLeftPoint.Y * xClippingContent.ActualHeight * scaleY;
-            //        compositeTransform.ScaleX = scaleX;
-            //        compositeTransform.ScaleY = scaleY;
-            //        //                    compositeTransform.CenterX = regionModel.TopLeftPoint.X * xClippingContent.ActualWidth * scaleX;
-            //        //                    compositeTransform.CenterY = regionModel.TopLeftPoint.Y * xClippingContent.ActualHeight * scaleY;
-            //    }
-            //    WrapperTransform = compositeTransform;
-
-            //    //now we want to resize the components of the imageregionview so that it isn't too big
-            //    foreach (var item in xClippingCanvas.Items)
-            //    {
-            //        var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
-            //        FrameworkElement region;
-            //        switch (regionViewModel.Model.Type)
-            //        {
-            //            case ElementType.ImageRegion:
-            //                region = item as ImageRegionView;
-            //                (region as ImageRegionView).RescaleComponents(WrapperTransform.ScaleX, WrapperTransform.ScaleY);
-            //                break;
-            //            case ElementType.PdfRegion:
-            //                region = item as PDFRegionView;
-            //                (region as PDFRegionView).RescaleComponents(WrapperTransform.ScaleX, WrapperTransform.ScaleY);
-            //                break;
-            //            default:
-            //                break;
-            //        }
-            //    }
-            //}
-            //else
-            //{
-            //    // since we aren't in a rectangle, the clipping rectangle contains the entire image
-            //    var rect = new Rect(0, 0, contentView.ActualWidth, contentView.ActualHeight);
-            //    xClippingRectangle.Rect = rect;
-            //}
+                        if (audioRegionModel.Start * totalDuration == denormalizedMarkerTime)
+                        {
+                            audioRegionView.Select();
+                        }
+                        if (audioRegionModel.End * totalDuration == denormalizedMarkerTime)
+                        {
+                            audioRegionView.Deselect();
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     }
 }
