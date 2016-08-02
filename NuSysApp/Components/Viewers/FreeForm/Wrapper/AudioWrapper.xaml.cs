@@ -75,6 +75,9 @@ namespace NuSysApp
         //denormalized end of audio
         public double AudioEnd { set; get; }
 
+        private FrameworkElement _selectedRegion;
+
+
         public delegate void RegionsUpdatedEventHandler(object sender, List<double> regionMarkers);
         public event RegionsUpdatedEventHandler OnRegionsUpdated;
 
@@ -98,8 +101,6 @@ namespace NuSysApp
                 AudioStart = regionController.AudioRegionModel.Start;
                 AudioEnd = regionController.AudioRegionModel.End;
 
-
-
             }
             else
             {
@@ -109,6 +110,10 @@ namespace NuSysApp
 
             // clear the items control
             xClippingCanvas.Items.Clear();
+
+
+            //clear our reference to the selected region
+            _selectedRegion = null;
 
             // get the region ids for the wrapper
             var regionsLibraryElementIds =
@@ -165,9 +170,11 @@ namespace NuSysApp
                     case ElementType.AudioRegion:
                         vm = new AudioRegionViewModel(regionLibraryElementController.LibraryElementModel as AudioRegionModel,
                                 regionLibraryElementController as AudioRegionLibraryElementController, this);
-                         view = new AudioRegionView(vm as AudioRegionViewModel);
-                        (view as AudioRegionView).RescaleComponents(renderTransform.ScaleX);
-                        (view as AudioRegionView).OnRegionSeek += AudioWrapper_OnRegionSeek;
+                        view = new AudioRegionView(vm as AudioRegionViewModel);
+                        var audioRegionView = view as AudioRegionView;
+                        audioRegionView.RescaleComponents(renderTransform.ScaleX);
+                        audioRegionView.OnRegionSeek += AudioWrapper_OnRegionSeek;
+                        audioRegionView.OnSelectedOrDeselected += Region_OnSelectedOrDeselected;
                         break;
                 }
 
@@ -199,9 +206,14 @@ namespace NuSysApp
                         if(normalizedMediaElementPosition < model.End && normalizedMediaElementPosition > model.Start)
                         {
                             (item as AudioRegionView).Select();
-                        }else
+                            Region_OnSelectedOrDeselected(item, true);
+
+                        }
+                        else
                         {
                             (item as AudioRegionView).Deselect();
+                            Region_OnSelectedOrDeselected(item, false);
+
                         }
 
                         break;
@@ -281,6 +293,43 @@ namespace NuSysApp
             return timelineMarkers;
         }
 
+        private void Region_OnSelectedOrDeselected(object sender, bool selected)
+        {
+            if (selected)
+            {
+                var region = sender as FrameworkElement;
+                Debug.Assert(region != null);
+                DeselectRegion(_selectedRegion);
+                _selectedRegion = region;
+            }
+            else
+            {
+                var region = sender as FrameworkElement;
+                Debug.Assert(region != null);
+                _selectedRegion = null;
+            }
+        }
+        /// <summary>
+        /// Helper method for deselecting regoins based on type
+        /// </summary>
+        private void DeselectRegion(FrameworkElement item)
+        {
+            if (item == null)
+            {
+                return;
+            }
+            var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
+            switch (regionViewModel.Model.Type)
+            {
+                case ElementType.AudioRegion:
+                    var audioRegionView = item as AudioRegionView;
+                    audioRegionView.Deselect();
+                    break;
+                default:
+                    break;
+            }
+        }
+
         private void xClippingGrid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
 
@@ -335,10 +384,13 @@ namespace NuSysApp
                         if ((int)(audioRegionModel.Start * totalDuration) == denormalizedMarkerTime)
                         {
                             audioRegionView.Select();
+                            Region_OnSelectedOrDeselected(audioRegionView, true);
                         }
                         if ((int)(audioRegionModel.End * totalDuration) == denormalizedMarkerTime)
                         {
                             audioRegionView.Deselect();
+                            Region_OnSelectedOrDeselected(audioRegionView, false);
+
                         }
                         break;
                     default:

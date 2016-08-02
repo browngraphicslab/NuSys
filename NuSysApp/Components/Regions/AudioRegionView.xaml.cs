@@ -22,8 +22,10 @@ namespace NuSysApp
 {
     public sealed partial class AudioRegionView
     {
-        public delegate void RegionSelectedEventHandler(object sender, bool selected);
-        public event RegionSelectedEventHandler OnSelected;
+
+        public delegate void RegionSelectedDeselectedEventHandler(object sender, bool selected);
+        public event RegionSelectedDeselectedEventHandler OnSelectedOrDeselected;
+
         public delegate void OnRegionSeekHandler(double time);
         public event OnRegionSeekHandler OnRegionSeek;
         public bool Selected { get; set; }
@@ -130,8 +132,11 @@ namespace NuSysApp
 
             if (!Selected)
             {
+
                 this.Select();
                 OnRegionSeek?.Invoke(((DataContext as AudioRegionViewModel).RegionLibraryElementController.LibraryElementModel as AudioRegionModel).Start);
+                OnSelectedOrDeselected?.Invoke(this, true);
+
             }
 
             e.Handled = true;

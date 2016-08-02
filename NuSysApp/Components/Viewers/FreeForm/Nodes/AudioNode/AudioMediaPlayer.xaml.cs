@@ -207,6 +207,13 @@ namespace NuSysApp
                 double denormalizedMediaElementPosition = normalizedMediaElementPosition * totalDuration;
                 TimeSpan time = new TimeSpan(0, 0, 0, 0, (int)denormalizedMediaElementPosition);
                 //If not in bounds of current audio, don't update mediaelement position
+
+                if (StartMarker == null || EndMarker == null)
+                {
+                    return;
+                }
+                Debug.Assert(StartMarker != null);
+                Debug.Assert(EndMarker != null);
                 if (time.CompareTo(StartMarker.Time) < 0 || time.CompareTo(EndMarker.Time) > 0)
                 {
                     return;
