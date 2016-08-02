@@ -508,8 +508,8 @@ namespace NuSysApp
             CurrentDetailViewable.SetTitle(title);
             CurrentDetailViewable.TitleChanged += ControllerTitleChanged;
 
-            //Tabs.Remove(CurrentDetailViewable);
-            //Tabs.Add(CurrentDetailViewable);
+            Tabs.Remove(CurrentDetailViewable);
+            Tabs.Add(CurrentDetailViewable);
 
             /*
             // TODO make the exploration mode related list box show up

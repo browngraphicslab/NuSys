@@ -10,9 +10,10 @@ using Windows.UI.Xaml;
 
 namespace NuSysApp
 {
-    public class PdfRegionViewModel : RegionViewModel
+    public class PdfRegionViewModel : RegionViewModel, INuSysDisposable
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        public event EventHandler Disposed;
         public RectangleWrapper RectangleWrapper { get; private set; }
         private double _height;
         private double _width;
@@ -69,11 +70,13 @@ namespace NuSysApp
 
             _regionLibraryElementController = regionLibraryElementController;
             RectangleWrapper = wrapper;
+            RectangleWrapper.Disposed += Dispose;
             RectangleWrapper.SizeChanged += RectangleWrapper_SizeChanged;
 
             regionLibraryElementController.SizeChanged += RegionController_SizeChanged;
             regionLibraryElementController.LocationChanged += RegionController_LocationChanged;
             regionLibraryElementController.TitleChanged += RegionController_TitleChanged;
+            regionLibraryElementController.Disposed += Dispose;
 
 
             Name = Model.Title;
@@ -182,12 +185,16 @@ namespace NuSysApp
             RegionLibraryElementController.SetTitle(Name);
         }
 
-        internal void Dispose()
+        public override void Dispose(object sender, EventArgs e)
         {
+            RectangleWrapper.Disposed -= Dispose;
             RectangleWrapper.SizeChanged -= RectangleWrapper_SizeChanged;
             _regionLibraryElementController.SizeChanged -= RegionController_SizeChanged;
             _regionLibraryElementController.LocationChanged -= RegionController_LocationChanged;
             _regionLibraryElementController.TitleChanged -= RegionController_TitleChanged;
+            _regionLibraryElementController.Disposed -= Dispose;
+            Disposed?.Invoke(this, EventArgs.Empty);
         }
+
     }
 }

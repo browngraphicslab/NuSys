@@ -63,12 +63,7 @@ namespace NuSysApp
             nodeTpl.Dispose();
             DataContext = null;
         }
-
-        private void OnEditInk(object sender, RoutedEventArgs e)
-        {
-            //nodeTpl.ToggleInkMode();
-        }
-
+        
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
             var vm = (ElementViewModel)DataContext;

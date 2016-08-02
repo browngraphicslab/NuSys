@@ -47,7 +47,6 @@ namespace NuSysApp
             MediaPlayer.ScrubBar.ValueChanged += vm.ScrubBarOnValueChanged;
 
             MediaPlayer.AudioSource = vm.AudioSource;
-            vm.OnRegionSeekPassing += MediaPlayer.onSeekedTo;
         }
 
         private void MediaPlayer_MediaOpened(object sender, RoutedEventArgs e)
@@ -60,7 +59,6 @@ namespace NuSysApp
         {
             var vm = (AudioNodeViewModel)DataContext;
 
-            vm.OnRegionSeekPassing -= MediaPlayer.onSeekedTo;
             MediaPlayer.MediaPlayer.MediaOpened -= MediaPlayer_MediaOpened;
             MediaPlayer.ScrubBar.ValueChanged -= vm.ScrubBarOnValueChanged;
             (DataContext as AudioNodeViewModel).OnVisualizationLoaded -= LoadPlaybackElement;

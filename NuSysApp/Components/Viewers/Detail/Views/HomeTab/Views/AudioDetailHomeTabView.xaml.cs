@@ -72,22 +72,17 @@ namespace NuSysApp
             ContentLoaded?.Invoke(this);
         }
 
-        public void StopAudio()
-        {
-            MediaPlayer.StopMusic();
-        }
-
         private void ControllerOnDisposed(object source, object args)
         {
             var vm = (AudioNodeViewModel) DataContext;
-            MediaPlayer.StopMusic();
+            MediaPlayer.Dispose();
             vm.Controller.Disposed -= ControllerOnDisposed;   
         }
 
 
         public void Dispose()
         {
-            StopAudio();
+            MediaPlayer.Dispose();
         }
 
         #region addToCollection

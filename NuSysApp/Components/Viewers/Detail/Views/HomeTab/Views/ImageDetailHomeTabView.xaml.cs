@@ -101,17 +101,7 @@ namespace NuSysApp
                     break;
             }
         }
-
-
-
-        private void SelectRegion(ImageRegionView region)
-        {
-            SelectedRegion?.Deselect();
-            SelectedRegion = region;
-            SelectedRegion.Select();
-        }
-
-
+        
         private void ControllerOnDisposed(object source, object args)
         {
             var vm = (ImageDetailHomeTabViewModel) DataContext;

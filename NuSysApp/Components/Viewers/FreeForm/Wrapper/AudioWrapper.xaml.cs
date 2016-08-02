@@ -21,7 +21,7 @@ using Windows.UI.Xaml.Navigation;
 namespace NuSysApp
 {
 
-    public sealed partial class AudioWrapper : Page
+    public sealed partial class AudioWrapper : Page, INuSysDisposable
     {
 
 
@@ -39,6 +39,8 @@ namespace NuSysApp
         public static readonly DependencyProperty ContentProperty =
             DependencyProperty.Register(
                 "Content", typeof(FrameworkElement), typeof(object), new PropertyMetadata(null));
+
+        public event EventHandler Disposed;
 
         private LibraryElementController _contentController;
 
@@ -149,7 +151,7 @@ namespace NuSysApp
                     return;
                 }
                 Debug.Assert(regionLibraryElementController != null);
-       //         Debug.Assert(regionLibraryElementController.LibraryElementModel is RectangleRegion);
+                //  Debug.Assert(regionLibraryElementController.LibraryElementModel is RectangleRegion);
                 if (regionLibraryElementController.LibraryElementModel.LibraryElementId == Controller.LibraryElementModel.LibraryElementId)
                 {
                     return;
@@ -161,13 +163,11 @@ namespace NuSysApp
                 switch (regionLibraryElementController.LibraryElementModel.Type)
                 {
                     case ElementType.AudioRegion:
-                        (regionLibraryElementController as AudioRegionLibraryElementController).TimeChanged += AudioWrapper_TimeChanged;
                         vm = new AudioRegionViewModel(regionLibraryElementController.LibraryElementModel as AudioRegionModel,
                                 regionLibraryElementController as AudioRegionLibraryElementController, this);
-                        view = new AudioRegionView(vm as AudioRegionViewModel);
+                         view = new AudioRegionView(vm as AudioRegionViewModel);
                         (view as AudioRegionView).RescaleComponents(renderTransform.ScaleX);
                         (view as AudioRegionView).OnRegionSeek += AudioWrapper_OnRegionSeek;
-                       
                         break;
                 }
 
@@ -211,9 +211,8 @@ namespace NuSysApp
             }
         }
 
-        private void AudioWrapper_OnRegionSeek(double time)
+        public void AudioWrapper_OnRegionSeek(double time)
         {
-
             OnRegionSeeked?.Invoke(time);
         }
 
@@ -223,9 +222,8 @@ namespace NuSysApp
         /// <param name="sender"></param>
         /// <param name="start"></param>
         /// <param name="end"></param>
-        private void AudioWrapper_TimeChanged(object sender, double start, double end)
+        public void AudioWrapper_TimeChanged(object sender, double start, double end)
         {
-
             FireRegionsUpdated();
         }
         /// <summary>
@@ -244,10 +242,10 @@ namespace NuSysApp
 
             foreach (var item in xClippingCanvas.Items)
             {
-                var region = (item as FrameworkElement).DataContext as RegionViewModel;
-                Debug.Assert(region != null);
-
-                if (region.Model.LibraryElementId == regionLibraryElementId)
+                var regionVM = (item as FrameworkElement).DataContext as AudioRegionViewModel;
+                Debug.Assert(regionVM != null);
+                regionVM.Dispose(null, EventArgs.Empty);
+                if (regionVM.Model.LibraryElementId == regionLibraryElementId)
                 {
                     xClippingCanvas.Items.Remove(item);
                     //Fires ONRegionsUpdated event so that the parent AudioMediaPlayer's MediaElement will have a correct list
@@ -348,5 +346,17 @@ namespace NuSysApp
                 }
             }
         }
+
+        public void Dispose()
+        {
+            if (Controller != null)
+            {
+                var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(Controller.LibraryElementModel.ContentDataModelId);
+                contentDataModel.OnRegionAdded -= AddRegionView;
+                contentDataModel.OnRegionRemoved -= RemoveRegionView;
+            }
+            Disposed?.Invoke(this, EventArgs.Empty);
+        }
+
     }
 }

@@ -46,6 +46,7 @@ namespace NuSysApp
             this.RenderTransform = composite;
 
             regionVM.LocationChanged += ChangeLocation;
+            regionVM.Disposed += Dispose;
 
             var parentWidth = regionVM.RectangleWrapper.GetWidth();
             var parentHeight = regionVM.RectangleWrapper.GetHeight();
@@ -279,7 +280,8 @@ namespace NuSysApp
             {
                 return;
             }
-
+            // If the region is deleted, it needs to dispose of its handlers.
+            vm.Dispose(this, EventArgs.Empty);
             // delete the region library elment from the library
             var removeRequest = new DeleteLibraryElementRequest(vm.RegionLibraryElementController.LibraryElementModel.LibraryElementId);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(removeRequest);
@@ -327,12 +329,9 @@ namespace NuSysApp
 
         public void Dispose(object sender, EventArgs e)
         {
-            var rectangleWrapper = sender as RectangleWrapper;
-            rectangleWrapper.Disposed -= Dispose;
-
             var vm = DataContext as PdfRegionViewModel;
+            vm.Disposed -= Dispose;
             vm.LocationChanged -= ChangeLocation;
-            vm.Dispose();
         }
     }
 }
