@@ -135,7 +135,7 @@ namespace NusysIntermediate
             return dict;
         }
 
-        public override async Task UnPack(Message props)
+        public override async Task UnPackFromDatabaseMessage(Message props)
         {
             if (props.ContainsKey(NusysConstants.ALIAS_LOCATION_X_KEY))
             {
@@ -189,7 +189,7 @@ namespace NusysIntermediate
             
             
 
-            await base.UnPack(props);
+            await base.UnPackFromDatabaseMessage(props);
         }
     }
 }

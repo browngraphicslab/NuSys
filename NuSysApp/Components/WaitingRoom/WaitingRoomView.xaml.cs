@@ -170,12 +170,12 @@ namespace NuSysApp
                 var id = ((CollectionTextBox) item).ID;
                 var collectionRequest = new GetEntireWorkspaceRequest(id ?? "test");
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collectionRequest);
-                _firstLoadList = collectionRequest.GetReturnedArgs().AliasMessages;
+                _firstLoadList = null;//collectionRequest.GetReturnedArgs().AliasMessages;
                 InitialWorkspaceId = id;
                 this.Frame.Navigate(typeof(SessionView));
                 
             }
-            if (false)
+            if (true)
             {
                 var request = new GetContentDataModelRequest("test_id");
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);

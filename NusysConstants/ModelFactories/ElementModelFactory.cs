@@ -38,7 +38,6 @@ namespace NusysIntermediate
                     break;
                 case NusysConstants.ElementType.VideoRegion:
                 case NusysConstants.ElementType.Video:
-
                     elementModel = new VideoNodeModel(id);
                     break;
                 case NusysConstants.ElementType.Collection:
@@ -51,7 +50,7 @@ namespace NusysIntermediate
                     elementModel = new ElementModel(id);
                     break;
             }
-            elementModel.UnPack(message);
+            elementModel.UnPackFromDatabaseMessage(message);
             return elementModel;
         }
         public static ElementModel DeserializeFromString(string elementJSON)

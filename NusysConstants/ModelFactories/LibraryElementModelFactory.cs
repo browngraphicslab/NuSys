@@ -11,6 +11,7 @@ namespace NusysIntermediate
         public static LibraryElementModel CreateFromMessage(Message message)
         {
             Debug.Assert(message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_TYPE_KEY));
+            Debug.Assert(message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY));
             var type = message.GetEnum<NusysConstants.ElementType>(NusysConstants.LIBRARY_ELEMENT_TYPE_KEY);
             LibraryElementModel model;
 

@@ -35,14 +35,14 @@ namespace NusysIntermediate
             return props;
         }
 
-        public override async Task UnPack(Message props)
+        public override async Task UnPackFromDatabaseMessage(Message props)
         {
             if (props.ContainsKey("page_location"))
             {
                 CurrentPageNumber = props.GetInt("page_location", 0);
             }
 
-            await base.UnPack(props);
+            await base.UnPackFromDatabaseMessage(props);
         }
     }
 }

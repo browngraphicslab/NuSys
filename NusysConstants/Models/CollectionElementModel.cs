@@ -24,14 +24,14 @@ namespace NusysIntermediate
 
         }
 
-        public override async Task UnPack(Message props)
+        public override async Task UnPackFromDatabaseMessage(Message props)
         {
             if (props.ContainsKey("collectionview"))
             {
                 string t = props.GetString("collectionview");
                 ActiveCollectionViewType = (CollectionViewType)Enum.Parse(typeof(CollectionViewType), t);
             }
-            await base.UnPack(props);
+            await base.UnPackFromDatabaseMessage(props);
         }
     }
 }

@@ -37,13 +37,13 @@ namespace NusysIntermediate
             return props;
         }
 
-        public override async Task UnPack(Message props)
+        public override async Task UnPackFromDatabaseMessage(Message props)
         {
             if (props.ContainsKey("fileName"))
             {
                 FileName = props.GetString("fileName");
             }
-            await base.UnPack(props);
+            await base.UnPackFromDatabaseMessage(props);
         }
     }
 }
