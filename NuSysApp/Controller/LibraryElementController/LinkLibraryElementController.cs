@@ -17,14 +17,14 @@ namespace NuSysApp
         {
             Debug.Assert(model != null);
             LinkLibraryElementModel = model;
-            //NumDirectionButtonClicks = 0;
         }
 
         public void RaiseLinkDirectionChanged(object sender, LinkDirectionEnum e)
         {
             LinkDirectionChanged(sender, e);
+            //store the new direction
             _debouncingDictionary.Add("LinkDirectionEnum", e);
-            LinkLibraryElementModel.LinkedDirectionEnum = e;
+            LinkLibraryElementModel.LinkedDirection = e;
         }
 
         public override void UnPack(Message message)
@@ -50,29 +50,30 @@ namespace NuSysApp
                 LinkLibraryElementModel.Color = Color.FromArgb(a, r, g, b);
                 //Color = Color.FromArgb(message.GetString("color"));
             }
-            //if (message["creator_user_id"].Equals("grant") || message["creator_user_id"].Equals("tnarg"))
-            //{
-                
-            //}
             if (message.ContainsKey("LinkDirectionEnum") && (long.Parse(message["LinkDirectionEnum"] as string) != null))
             {
+                //enum somehow gets turned into index of the enum
                 long enumIndex = message.GetLong("LinkDirectionEnum");
+                //first mono
                 if (enumIndex == 0)
                 {
-                    LinkLibraryElementModel.LinkedDirectionEnum = LinkDirectionEnum.Mono1;
+                    LinkLibraryElementModel.LinkedDirection = LinkDirectionEnum.Mono1;
                 }
+                //second mono
                 else if (enumIndex == 1)
                 {
-                    LinkLibraryElementModel.LinkedDirectionEnum = LinkDirectionEnum.Mono2;
+                    LinkLibraryElementModel.LinkedDirection = LinkDirectionEnum.Mono2;
                 }
+                //back to bi
                 else
                 {
-                    LinkLibraryElementModel.LinkedDirectionEnum = LinkDirectionEnum.Bi;
+                    LinkLibraryElementModel.LinkedDirection = LinkDirectionEnum.Bi;
                 }
             }
+            //for link created before LinkDirectionEnum was created
             else
             {
-                LinkLibraryElementModel.LinkedDirectionEnum = LinkDirectionEnum.Bi;
+                LinkLibraryElementModel.LinkedDirection = LinkDirectionEnum.Bi;
 
             }
             base.UnPack(message);

@@ -311,12 +311,14 @@ namespace NuSysApp
                 var vm = new LinkViewModel(controller);
                 var allContent = SessionController.Instance.ActiveFreeFormViewer.AllContent;
 
-                var linkEnum = linkLibElemController.LinkLibraryElementModel.LinkedDirectionEnum;
+                var linkEnum = linkLibElemController.LinkLibraryElementModel.LinkedDirection;
                 BezierLinkView view = null;
+                //if the link should be drawn monodirectionally
                 if (linkEnum.Equals(LinkDirectionEnum.Mono1) || linkEnum.Equals(LinkDirectionEnum.Mono2))
                 {
                     view = new BezierLinkView(vm, false);
                 }
+                //if the link should be drawn bidirectionally
                 else
                 {
                     view = new BezierLinkView(vm, true);

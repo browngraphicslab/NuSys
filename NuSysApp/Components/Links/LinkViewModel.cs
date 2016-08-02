@@ -106,12 +106,12 @@ namespace NuSysApp
             var linkLibElemCont = _controller.LibraryElementController as LinkLibraryElementController;
             Debug.Assert(linkLibElemCont != null);
             //switching to monodirectional
-            if (linkLibElemCont.LinkLibraryElementModel.LinkedDirectionEnum.Equals(LinkDirectionEnum.Mono1))
+            if (linkLibElemCont.LinkLibraryElementModel.LinkedDirection.Equals(LinkDirectionEnum.Mono1))
             {
                 linkLibElemCont.RaiseLinkDirectionChanged(linkLibElemCont, LinkDirectionEnum.Mono2);
             }
             //swapping direction
-            else if (linkLibElemCont.LinkLibraryElementModel.LinkedDirectionEnum.Equals(LinkDirectionEnum.Mono2))
+            else if (linkLibElemCont.LinkLibraryElementModel.LinkedDirection.Equals(LinkDirectionEnum.Mono2))
             {
                 linkLibElemCont.RaiseLinkDirectionChanged(linkLibElemCont, LinkDirectionEnum.Bi);
             }
