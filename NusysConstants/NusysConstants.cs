@@ -157,13 +157,86 @@ namespace NusysIntermediate
             /// the key used to send the id of the creator
             /// </summary>
             public static readonly string NEW_ELEMENT_REQUEST_CREATOR_ID_KEY = "creator_id_key";
+
+        /// <summary>
+        /// the key used to send the access level of the element request key
+        /// </summary>
+        public static readonly string NEW_ELEMENT_REQUEST_ACCESS_KEY = "access";
         #endregion NewElementRequest
+
+        #region NewLibraryElementRequest
+        /// <summary>
+        /// key in message for sending type when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY = "type";
+
+        /// <summary>
+        /// key in message for sending library id when creating new library element request
+
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
+
+        /// <summary>
+        /// key in message for sending content id when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_CONTENT_ID_KEY = "content_id";
+
+        /// <summary>
+        /// key in message for sending keywords when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_KEYWORDS_KEY = "keywords";
+
+        /// <summary>
+        /// key in message for sending title when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY = "title";
+
+        /// <summary>
+        /// key in message for sending favorited bool when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_FAVORITED_KEY = "favorited";
+
+        /// <summary>
+        /// key in message for sending large icon url when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LARGE_ICON_URL_KEY = "large_icon_url";
+
+        /// <summary>
+        /// key in message for sending medium icon url when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_MEDIUM_ICON_URL_KEY = "medium_icon_url";
+
+        /// <summary>
+        /// key in message for sending small icon url when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_SMALL_ICON_URL_KEY = "small_icon_url";
+
+        /// <summary>
+        /// key in message for sending creator id when creating new library element request 
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_CREATOR_USER_ID_KEY = "creator_user_id";
+
+        /// <summary>
+        /// key in message for sending creation date when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_CREATION_TIMESTAMP_KEY = "creation_timestamp";
+
+        /// <summary>
+        /// key in message for sending last edited timestamp when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LAST_EDITED_TIMESTAMP_KEY = "last_edited_timestamp";
+
+        /// <summary>
+        /// key in message for access type when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_ACCESS_KEY = "access";
+        #endregion NewLibraryElementRequest
 
         #endregion RequestKeys
 
         #region SQLColumnNames
 
-            #region alias
+        #region alias
 
         /// <summary>
         /// 32 character string, aka an ID.  
@@ -670,6 +743,12 @@ namespace NusysIntermediate
             Audio
         }
 
+        /// <summary>
+        /// The access type for library elements and elements.
+        /// Public - everyone can see it
+        /// Private - only creator can see it
+        /// ReadOnly - only creator can edit it. 
+        /// </summary>
         public enum AccessType
         {
             Public, 
