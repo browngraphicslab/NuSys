@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 using System.Xml;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media.Imaging;
-using NusysIntermediate;
 
-namespace NuSysApp
+namespace NusysIntermediate
 {
     public class ImageElementModel : ElementModel
     {

@@ -605,7 +605,6 @@
     <Compile Include="Effects\Anim.cs" />
     <Compile Include="Effects\AnimatableUserControl.cs" />
     <Compile Include="Effects\AnimatableNodeView.cs" />
-    <Compile Include="Models\AreaModel.cs" />
     <Compile Include="Models\PowerpointNodeModel.cs" />
     <Compile Include="Models\TagNodeModel.cs" />
     <Compile Include="Models\WebNodeModel.cs" />
@@ -748,7 +747,6 @@
     <Compile Include="Util\OfficeIntermediate.cs" />
     <Compile Include="Util\PdfRenderer.cs" />
     <Compile Include="Util\StorageUtil.cs" />
-    <Compile Include="Models\ImageElementModel.cs" />
     <Compile Include="Models\LinkModel.cs" />
     <Compile Include="Models\PinModel.cs" />
     <Compile Include="Util\BaseINPC.cs" />
