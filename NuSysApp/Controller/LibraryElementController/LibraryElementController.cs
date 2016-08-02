@@ -13,7 +13,7 @@ namespace NuSysApp
     /// Takes care of all the modifying and events invoking for the library element model
     /// Should manage keeping the library element model up to date as well as updating the server
     /// </summary>
-    public class LibraryElementController : IMetadatable, ILinkTabable, IDetailViewable
+    public class LibraryElementController : IMetadatable, ILinkTabable
     {
         protected DebouncingDictionary _debouncingDictionary;
         private LibraryElementModel _libraryElementModel;
@@ -566,11 +566,6 @@ namespace NuSysApp
         {
             LinkAdded?.Invoke(this, linkController);
         }
-        
-        //public void RemoveLink(LinkLibraryElementController linkController)
-        //{
-        //    LinkRemoved?.Invoke(this, linkController.ContentId);
-        //}
 
         #region Linking methods
         public async Task RequestAddNewLink(string idToLinkTo, string title)
@@ -595,11 +590,6 @@ namespace NuSysApp
             var linkedIds = SessionController.Instance.LinksController.GetLinkedIds(LibraryElementModel.LibraryElementId);
             var controllers = linkedIds.Select(id =>SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
             return new HashSet<LinkLibraryElementController>(controllers);
-        }
-
-        public string TabId()
-        {
-            return LibraryElementModel.LibraryElementId;
         }
         #endregion
 
