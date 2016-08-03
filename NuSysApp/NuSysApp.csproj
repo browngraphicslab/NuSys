@@ -304,6 +304,7 @@
     </Compile>
     <Compile Include="Components\Misc\TextInputBlockViewModel.cs" />
     <Compile Include="Components\NuSysRenderer\AdornmentRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\CollectionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\ElementSelectionRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\I2dTransformable.cs" />
     <Compile Include="Components\NuSysRenderer\MinimapRenderItem.cs" />

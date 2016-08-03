@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
@@ -20,24 +21,47 @@ namespace NuSysApp
         private Rect _rect;
         private Rect _bb;
         private CanvasRenderTarget _renderTarget;
-        private List<ElementViewModel> _vms = new List<ElementViewModel>(); 
+        private ElementCollectionViewModel _collection;
 
-        public MinimapRenderItem(CanvasAnimatedControl resourceCreator) : base(resourceCreator)
+        public MinimapRenderItem(ElementCollectionViewModel collection, CanvasAnimatedControl resourceCreator) : base(resourceCreator)
         {
+            _collection = collection;
+            collection.Elements.CollectionChanged += ElementsOnCollectionChanged;
+        }
+
+        public override void Dispose()
+        {
+            _collection.Elements.CollectionChanged -= ElementsOnCollectionChanged;
+            _collection = null;
+            base.Dispose();
+        }
+
+        private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
+        {
+            foreach (var newItem in args.NewItems)
+            {
+                AddElement((ElementViewModel)newItem);
+            }
+
+            if (args.OldItems == null)
+                return;
+
+            foreach (var newItem in args.OldItems)
+            {
+                RemoveElement((ElementViewModel)newItem);
+            }
         }
 
         public void AddElement(ElementViewModel element)
         {
             element.Controller.SizeChanged += ControllerOnSizeChanged;
             element.Controller.PositionChanged += ControllerOnPositionChanged;
-            _vms.Add(element);
         }
         
         public void RemoveElement(ElementViewModel element)
         {
             element.Controller.SizeChanged -= ControllerOnSizeChanged;
             element.Controller.PositionChanged -= ControllerOnPositionChanged;
-            _vms.Remove(element);
         }
 
         public override void CreateResources()
@@ -65,8 +89,11 @@ namespace NuSysApp
             if (!IsDirty)
                 return;
 
-            if (_vms.Count == 0)
+            if (_collection.Elements.Count == 0)
                 return;
+
+            if (_renderTarget == null)
+                CreateResources();
 
             float rh = (float)NuSysRenderer.Instance.Size.Height/(float)NuSysRenderer.Instance.Size.Width;
             float newW;
@@ -87,10 +114,10 @@ namespace NuSysApp
             {
                 var nr = NuSysRenderer.Instance;
                 var screenRect = new Rect(0, 0, nr.Size.Width, nr.Size.Height);
-                var tl = nr.ScreenPointToObjectPoint(new Vector2((float)screenRect.X, (float)screenRect.Y));
-                var tr = nr.ScreenPointToObjectPoint(new Vector2((float)screenRect.X + (float)screenRect.Width, (float)screenRect.Y + (float)screenRect.Height));
+                var tl = nr.ActiveCollection.ScreenPointToObjectPoint(new Vector2((float)screenRect.X, (float)screenRect.Y));
+                var tr = nr.ActiveCollection.ScreenPointToObjectPoint(new Vector2((float)screenRect.X + (float)screenRect.Width, (float)screenRect.Y + (float)screenRect.Height));
 
-                var rects = _vms.Select(vm => new Rect(vm.X, vm.Y, vm.Width, vm.Height)).ToList();
+                var rects = _collection.Elements.Select(vm => new Rect(vm.X, vm.Y, vm.Width, vm.Height)).ToList();
                 rects.Add(new Rect(tl.X, tl.Y, tr.X - tl.X, tr.Y - tl.Y));
                 _bb = GetBoundingRect(rects);
                 var c = Matrix3x2.CreateTranslation((float)_bb.X, (float)_bb.Y);
@@ -101,7 +128,7 @@ namespace NuSysApp
                 var s = Matrix3x2.CreateScale((float)scale);
                 dss.Transform = cp * s;
                 dss.Clear(Color.FromArgb(220,0,0,0));
-                foreach (var vm in _vms)
+                foreach (var vm in _collection.Elements)
                 {
                     dss.FillRectangle((float)vm.X, (float)vm.Y, (float)vm.Width, (float)vm.Height, Color.FromArgb(150,255,255,255));
                 }
@@ -118,7 +145,7 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            if (_renderTarget == null || _vms.Count == 0)
+            if (_renderTarget == null || _collection.Elements.Count == 0)
                 return;
 
             var old = ds.Transform;

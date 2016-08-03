@@ -59,7 +59,7 @@ namespace NuSysApp
 
             var oldTransform = ds.Transform;
             var sp = Matrix3x2.Identity;
-            Matrix3x2.Invert(NuSysRenderer.Instance.S, out sp);
+            Matrix3x2.Invert(NuSysRenderer.Instance.ActiveCollection.S, out sp);
             var tt = Matrix3x2.CreateTranslation(0, -30);
             var newTransform = tt * top * sp * to * ds.Transform;
 

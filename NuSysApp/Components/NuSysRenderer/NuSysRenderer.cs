@@ -16,10 +16,11 @@ using MyToolkit.Mathematics;
 using SharpDX.Direct2D1;
 using Matrix3x2 = System.Numerics.Matrix3x2;
 using System.Numerics;
+using NuSysApp.Components.NuSysRenderer;
 
 namespace NuSysApp
 {
-    public class NuSysRenderer : I2dTransformable
+    public class NuSysRenderer
     {
 
         private static volatile NuSysRenderer instance;
@@ -36,17 +37,12 @@ namespace NuSysApp
 
         public Size Size { get; set; }
 
-        private ConcurrentBag<BaseRenderItem> _renderItems0 = new ConcurrentBag<BaseRenderItem>();
-        private ConcurrentBag<BaseRenderItem> _renderItems1 = new ConcurrentBag<BaseRenderItem>();
-        private ConcurrentBag<BaseRenderItem> _renderItems2 = new ConcurrentBag<BaseRenderItem>();
-        private ConcurrentBag<BaseRenderItem> _renderItems3 = new ConcurrentBag<BaseRenderItem>();
 
-        private InkRenderItem _inkRenderItem;
         private ElementSelectionRenderItem _elementSelectionRenderItem;
 
-        public Matrix3x2 T { get; set; } = Matrix3x2.Identity;
-        public Matrix3x2 S { get; set; } = Matrix3x2.Identity;
-        public Matrix3x2 C { get; set; } = Matrix3x2.Identity;
+        public CollectionRenderItem ActiveCollection { get; private set; }
+
+
 
         private NuSysRenderer()
         {
@@ -56,17 +52,7 @@ namespace NuSysApp
         private void CanvasOnCreateResources(CanvasAnimatedControl sender, CanvasCreateResourcesEventArgs args)
         {
             //throw new NotImplementedException();
-            foreach (var item in _renderItems0)
-                item.CreateResources();
 
-            foreach (var item in _renderItems1)
-                item.CreateResources();
-
-            foreach (var item in _renderItems2)
-                item.CreateResources();
-
-            foreach (var item in _renderItems3)
-                item.CreateResources();
 
         }
 
@@ -79,24 +65,16 @@ namespace NuSysApp
             _canvas.CreateResources += CanvasOnCreateResources;
             _canvas.SizeChanged += CanvasOnSizeChanged;
 
-            var vm = (FreeFormViewerViewModel)_canvas.DataContext;
-            vm.Elements.CollectionChanged += ElementsChanged;
 
+            var vm = (FreeFormViewerViewModel) canvas.DataContext;
+            ActiveCollection = new CollectionRenderItem(vm, canvas);
             _elementSelectionRenderItem = new ElementSelectionRenderItem(vm, _canvas);
-            _renderItems3.Add(_elementSelectionRenderItem);
-
-            _inkRenderItem = new InkRenderItem(canvas);
-            _renderItems0.Add(_inkRenderItem);
-
-            _minimap = new MinimapRenderItem(canvas);
-            _minimap.Load();
-            _renderItems3.Add(_minimap);
+     
+            _minimap = new MinimapRenderItem(vm, canvas);
+         
+            //_renderItems3.Add(_minimap);
         }
 
-        public void Update()
-        {
-            _minimap.IsDirty = true;
-        }
 
         private void CanvasOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
         {
@@ -107,6 +85,7 @@ namespace NuSysApp
 
         public BaseRenderItem GetRenderItemAt(Point sp)
         {
+            /*
             var os = ScreenPointToObjectPoint(new Vector2((float) sp.X, (float) sp.Y));
             var elems = _renderItems0.Concat(_renderItems1).Concat(_renderItems2);
 
@@ -117,119 +96,24 @@ namespace NuSysApp
                     return renderItem;
                 }
             }
+            */
             return null;
         }
 
-        public void AddAdornment(InkStroke stroke)
-        {
-            _renderItems0.Add(new AdornmentRenderItem(stroke, Canvas));
-        }
-
-        public void AddStroke(InkStroke stroke)
-        {
-            _inkRenderItem.AddStroke(stroke);
-        }
-
-        public void AddLink(LinkViewModel vm)
-        {
-            _renderItems1.Add(new LinkRenderItem(vm, Canvas));
-        }
-
-        public void AddTrail(PresentationLinkViewModel vm)
-        {
-            _renderItems1.Add(new TrailRenderItem(vm, Canvas));
-        }
-
-        private async void ElementsChanged(object sender, NotifyCollectionChangedEventArgs args)
-        {
-            foreach (var newItem in args.NewItems)
-            {
-                BaseRenderItem item;
-                var vm = (ElementViewModel) newItem;
-                if (vm is TextNodeViewModel)
-                {
-                    item = new TextElementRenderItem((TextNodeViewModel) vm, Canvas);
-                    await item.Load();
-                    _renderItems0.Add(item);
-                }
-                else if (vm is ImageElementViewModel)
-                {
-                    item = new ImageElementRenderItem((ImageElementViewModel) vm, Canvas);
-                    await item.Load();
-                    _renderItems1.Add(item);
-                }
-                else if (vm is PdfNodeViewModel)
-                {
-                    item = new PdfElementRenderItem((PdfNodeViewModel) vm, Canvas);
-                    await item.Load();
-                    _renderItems1.Add(item);
-                }
-                else
-                {
-                    item = new ElementRenderItem(vm, Canvas);
-                    await item.Load();
-                    _renderItems2.Add(item);
-                }
-
-                _minimap.AddElement(vm);
-            }
-        }
-
-        public Vector2 ScreenPointToObjectPoint(Vector2 sp)
-        {
-            var invTransform = Matrix3x2.Identity;
-            var cp = Matrix3x2.Identity;
-            Matrix3x2.Invert(C, out cp);
-            var t = cp*S*C*T;
-            Matrix3x2.Invert(t, out invTransform);
-            return Vector2.Transform(sp, invTransform);
-        }
-
-        public Vector2 ObjectPointToScreenPoint(Vector2 op)
-        {
-            var invTransform = Matrix3x2.Identity;
-            var cp = Matrix3x2.Identity;
-            Matrix3x2.Invert(C, out cp);
-            var t = cp * S * C * T;
-            return Vector2.Transform(op, t);
-        }
-
-
         private void CanvasOnUpdate(ICanvasAnimatedControl sender, CanvasAnimatedUpdateEventArgs args)
         {
-            foreach (var item in _renderItems0)
-                item.Update();
-
-            foreach (var item in _renderItems1)
-                item.Update();
-
-            foreach (var item in _renderItems2)
-                item.Update();
-
-            foreach (var item in _renderItems3)
-                item.Update();
-
+            ActiveCollection.Update();
+            _minimap.IsDirty = true;
+            _minimap.Update();
+            _elementSelectionRenderItem.Update();
         }
 
         private void CanvasOnDraw(ICanvasAnimatedControl sender, CanvasAnimatedDrawEventArgs args)
         {
-            using (var ds = args.DrawingSession)
-            {
-                ds.Clear(Colors.LightGoldenrodYellow);
-                var cp = Matrix3x2.Identity;
-                Matrix3x2.Invert(C, out cp);
-                ds.Transform = cp*S*C*T;
-                foreach (var item in _renderItems0)
-                    item.Draw(ds);
-
-                foreach (var item in _renderItems1)
-                    item.Draw(ds);
-
-                foreach (var item in _renderItems2)
-                    item.Draw(ds);
-
-                foreach (var item in _renderItems3)
-                    item.Draw(ds);
+            using(var ds = args.DrawingSession) { 
+                ActiveCollection.Draw(ds);
+                _minimap.Draw(ds);
+                _elementSelectionRenderItem.Draw(ds);
             }
         }
 

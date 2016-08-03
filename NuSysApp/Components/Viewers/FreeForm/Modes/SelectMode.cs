@@ -57,9 +57,9 @@ namespace NuSysApp
         {
             var vm = (FreeFormViewerViewModel)_view.DataContext;
             var compositeTransform = vm.CompositeTransform;
-            NuSysRenderer.Instance.T = Matrix3x2.CreateTranslation((float)compositeTransform.TranslateX, (float)compositeTransform.TranslateY);
-            NuSysRenderer.Instance.C = Matrix3x2.CreateTranslation((float)compositeTransform.CenterX, (float)compositeTransform.CenterY);
-            NuSysRenderer.Instance.S = Matrix3x2.CreateScale((float)compositeTransform.ScaleX, (float)compositeTransform.ScaleY);
+            NuSysRenderer.Instance.ActiveCollection.T = Matrix3x2.CreateTranslation((float)compositeTransform.TranslateX, (float)compositeTransform.TranslateY);
+            NuSysRenderer.Instance.ActiveCollection.C = Matrix3x2.CreateTranslation((float)compositeTransform.CenterX, (float)compositeTransform.CenterY);
+            NuSysRenderer.Instance.ActiveCollection.S = Matrix3x2.CreateScale((float)compositeTransform.ScaleX, (float)compositeTransform.ScaleY);
         }
 
         public SelectMode(AreaNodeView view) : base(view)
@@ -226,7 +226,7 @@ namespace NuSysApp
                     {
                         var elem = (ElementViewModel) selection;
                         var imgCenter = new Vector2((float) (elem.X + elem.Width/2), (float) (elem.Y + elem.Height/2));
-                        var newCenter = NuSysRenderer.Instance.ObjectPointToScreenPoint(imgCenter);
+                        var newCenter = NuSysRenderer.Instance.ActiveCollection.ObjectPointToScreenPoint(imgCenter);
 
                         Transformable t;
                         if (_transformables.ContainsKey(elem))
@@ -253,7 +253,7 @@ namespace NuSysApp
                 }
                 else
                 {
-                    PanZoom(NuSysRenderer.Instance, _centerPoint, dx, dy, ds);
+                    PanZoom(NuSysRenderer.Instance.ActiveCollection, _centerPoint, dx, dy, ds);
                 }
 
             } else if (_pointerPoints.Count == 1)
@@ -265,7 +265,7 @@ namespace NuSysApp
                     var deltaY = (float)(currPos.Y - _startPoint.Y);
                     _startPoint = new Vector2((float)currPos.X, (float)currPos.Y);
 
-                    PanZoom(NuSysRenderer.Instance, _startPoint, deltaX, deltaY, 1);
+                    PanZoom(NuSysRenderer.Instance.ActiveCollection, _startPoint, deltaX, deltaY, 1);
                 }
                 else
                 {
@@ -281,8 +281,8 @@ namespace NuSysApp
 
                     var vm = (FreeFormViewerViewModel)_view.DataContext;
 
-                    var newX = elem.ViewModel.X + deltaX / NuSysRenderer.Instance.S.M11;
-                    var newY = elem.ViewModel.Y + deltaY / NuSysRenderer.Instance.S.M22;
+                    var newX = elem.ViewModel.X + deltaX / NuSysRenderer.Instance.ActiveCollection.S.M11;
+                    var newY = elem.ViewModel.Y + deltaY / NuSysRenderer.Instance.ActiveCollection.S.M22;
 
                     if (!vm.Selections.Contains(elem.ViewModel))
                     {
@@ -293,8 +293,8 @@ namespace NuSysApp
                         foreach (var selectable in vm.Selections)
                         {
                             var e = (ElementViewModel) selectable;
-                            var newXe = e.X + deltaX/NuSysRenderer.Instance.S.M11;
-                            var newYe = e.Y + deltaY / NuSysRenderer.Instance.S.M11;
+                            var newXe = e.X + deltaX/NuSysRenderer.Instance.ActiveCollection.S.M11;
+                            var newYe = e.Y + deltaY / NuSysRenderer.Instance.ActiveCollection.S.M11;
                             e.Controller.SetPosition(newXe, newYe);
                         }
                     }
@@ -305,7 +305,7 @@ namespace NuSysApp
         protected void PanZoom(I2dTransformable target, Vector2 centerPoint, float dx, float dy, float ds)
         {
             if (target == null)
-                target = NuSysRenderer.Instance;
+                target = NuSysRenderer.Instance.ActiveCollection;
 
             //Debug.WriteLine(centerPoint);
             //Debug.WriteLine(ds);
