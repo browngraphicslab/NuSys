@@ -23,8 +23,6 @@ namespace NuSysApp
 {
     public sealed partial class AudioMediaPlayer : UserControl
     {
-        //needed for "dragging" through scrub bar
-        private bool _wasPlaying = false;
         public ProgressBar ScrubBar => this.ProgressBar;
         public MediaElement MediaPlayer => this.MediaElement;
 
@@ -72,7 +70,6 @@ namespace NuSysApp
             if (MediaElement.CurrentState != MediaElementState.Stopped)
             {
                 MediaElement.Stop();
-                _wasPlaying = false;
 
             }
         }
@@ -82,7 +79,6 @@ namespace NuSysApp
             if (MediaElement.CurrentState != MediaElementState.Paused)
             {
                 MediaElement.Pause();
-                _wasPlaying = false;
 
             }
         }
@@ -181,7 +177,7 @@ namespace NuSysApp
 
         private void ProgressBar_OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            if (_wasPlaying)
+            if (MediaElement.CurrentState == MediaElementState.Playing)
             {
                 MediaElement.Play();
 
@@ -227,19 +223,6 @@ namespace NuSysApp
                 }
                 MediaElement.Position = time;
 
-                if (MediaElement.CurrentState != MediaElementState.Playing)
-                {
-                    //Binding b = new Binding();
-                    //b.ElementName = "MediaElement";
-                    //b.Path = new PropertyPath("Position.TotalMilliseconds");
-                    //ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
-
-                }
-                else
-                {
-                    ((UIElement)sender).CapturePointer(e.Pointer);
-                    //MediaElement.Pause();
-                }
 
                 e.Handled = true;
             }
@@ -249,7 +232,6 @@ namespace NuSysApp
         private void MediaElement_OnMediaEnded(object sender, RoutedEventArgs e)
         {
             Audio_OnJump(new TimeSpan(0));
-            _wasPlaying = false;
 
         }
 

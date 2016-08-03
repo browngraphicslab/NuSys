@@ -165,7 +165,7 @@ namespace NuSysApp
             if (!Selected)
             {
                 this.Select();
-                OnRegionSeek?.Invoke(((this.DataContext as VideoRegionViewModel).RegionLibraryElementController.LibraryElementModel as VideoRegionModel).Start + 0.001);
+                OnRegionSeek?.Invoke(((this.DataContext as VideoRegionViewModel).RegionLibraryElementController.LibraryElementModel as VideoRegionModel).Start);
 
             }
             e.Handled = true;
@@ -267,7 +267,7 @@ namespace NuSysApp
 
             if (!Selected)
             {
-                OnRegionSeek?.Invoke(((this.DataContext as VideoRegionViewModel).RegionLibraryElementController.LibraryElementModel as VideoRegionModel).Start + 0.001);
+                OnRegionSeek?.Invoke(((this.DataContext as VideoRegionViewModel).RegionLibraryElementController.LibraryElementModel as VideoRegionModel).Start);
             }
 
             FireSelection();

@@ -21,14 +21,12 @@ namespace NuSysApp
 {
     public sealed partial class VideoMediaPlayer : UserControl
     {
-        private bool _loaded = false;
-        //needed for "dragging" through scrub bar
-        private bool _wasPlaying = false;
         public VideoMediaPlayer()
         {
             this.InitializeComponent();
             xAudioWrapper.OnRegionsUpdated += XAudioWrapper_OnRegionsUpdated;
-            
+            xAudioWrapper.OnRegionSeeked += onSeekedTo;
+
         }
 
         private void XAudioWrapper_OnRegionsUpdated(object sender, List<double> regionMarkers)
@@ -64,9 +62,6 @@ namespace NuSysApp
         public MediaElement MediaPlayer => this.MediaElement;
         public ProgressBar ScrubBar => this.scrubBar;
 
-        private void MediaElement_Onloaded(object sender, RoutedEventArgs e)
-        {
-        }
 
         private void MediaElement_MediaOpened(object sender, RoutedEventArgs e)
         {
@@ -142,7 +137,6 @@ namespace NuSysApp
         private void OnStop_Click(object sender, TappedRoutedEventArgs e)
         {
             MediaElement.Pause();
-            _wasPlaying = false;
 
         }
 
@@ -152,27 +146,23 @@ namespace NuSysApp
 
 
             MediaElement.Play();
-            _wasPlaying = true;
         }
 
         public void StopVideo()
         {
             MediaElement.Pause();
-            _wasPlaying = false;
         }
 
         private void OnPause_Click(object sender, RoutedEventArgs e)
         {
             MediaElement.Stop();
             scrubBar.Value = 0;
-            _wasPlaying = false;
 
             // e.Handled = true;
         }
         private void MediaEnded(object sender, RoutedEventArgs e)
         {
             VideoNodeView_OnJump(new TimeSpan(0));
-            _wasPlaying = false;
 
         }
 
@@ -180,9 +170,7 @@ namespace NuSysApp
         public void VideoNodeView_OnJump(TimeSpan time)
         {
             MediaElement.Position = time;
-            if (MediaElement.CurrentState != MediaElementState.Playing)
-            {
-            }
+
         }
 
         public void onSeekedTo(double time)
@@ -249,16 +237,6 @@ namespace NuSysApp
 
         private void ScrubBar_OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            if (_wasPlaying)
-            {
-                MediaElement.Play();
-
-            }
-            else
-            {
-                MediaElement.Pause();
-
-            }
                 ((UIElement)sender).ReleasePointerCapture(e.Pointer);
         }
 

@@ -197,8 +197,10 @@ namespace NuSysApp
                         vm = new VideoRegionViewModel(regionLibraryElementController.LibraryElementModel as VideoRegionModel,
                                 regionLibraryElementController as VideoRegionLibraryElementController, this);
                         view = new VideoRegionView(vm as VideoRegionViewModel);
-                        (view as VideoRegionView).RescaleComponents(renderTransform.ScaleX);
-
+                        var videoRegionView = view as VideoRegionView;
+                        videoRegionView.RescaleComponents(renderTransform.ScaleX);
+                        videoRegionView.OnRegionSeek += AudioWrapper_OnRegionSeek;
+                        videoRegionView.OnSelectedOrDeselected += Region_OnSelectedOrDeselected;
 
                         break;
                     default:
@@ -221,6 +223,7 @@ namespace NuSysApp
             });
             return null;
         }
+
 
         public void CheckTimeForRegions(double normalizedMediaElementPosition)
         {
@@ -364,6 +367,10 @@ namespace NuSysApp
                 case ElementType.AudioRegion:
                     var audioRegionView = item as AudioRegionView;
                     audioRegionView.FireDeselection();
+                    break;
+                case ElementType.VideoRegion:
+                    var videoRegionView = item as VideoRegionView;
+                    videoRegionView.FireDeselection();
                     break;
                 default:
                     break;
