@@ -22,7 +22,6 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Components.Nodes;
 using NuSysApp.Controller;
-using NuSysApp.Nodes.AudioNode;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 

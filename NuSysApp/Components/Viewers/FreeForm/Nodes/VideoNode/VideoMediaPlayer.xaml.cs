@@ -28,7 +28,7 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             xAudioWrapper.OnRegionsUpdated += XAudioWrapper_OnRegionsUpdated;
-
+            
         }
 
         private void XAudioWrapper_OnRegionsUpdated(object sender, List<double> regionMarkers)
@@ -59,6 +59,7 @@ namespace NuSysApp
         }
         public TimelineMarker StartMarker { set; get; }
         public TimelineMarker EndMarker { set; get; }
+        public Binding PositionBinding { get; set; }
 
         public MediaElement MediaPlayer => this.MediaElement;
         public ProgressBar ScrubBar => this.scrubBar;
@@ -69,6 +70,11 @@ namespace NuSysApp
 
         private void MediaElement_MediaOpened(object sender, RoutedEventArgs e)
         {
+            PositionBinding = new Binding();
+            PositionBinding.ElementName = "MediaElement";
+            PositionBinding.Path = new PropertyPath("Position.TotalMilliseconds");
+            PositionBinding.Mode = BindingMode.TwoWay;
+            scrubBar.SetBinding(ProgressBar.ValueProperty, PositionBinding);
             if (DataContext is VideoDetailHomeTabViewModel)
             {
                 var vmodel = DataContext as VideoDetailHomeTabViewModel;
@@ -133,28 +139,6 @@ namespace NuSysApp
             play.Opacity = 1;
         }
 
-        private void MediaElement_OnMediaOpened(object sender, RoutedEventArgs e)
-        {
-//            _temporaryLinkVisual = new Line();
-//            _temporaryLinkVisual.Stroke = new SolidColorBrush(Colors.Aqua);
-//            Grid.SetRow(_temporaryLinkVisual, 1);
-//            _temporaryLinkVisual.StrokeThickness = scrubBar.ActualHeight;
-//            _temporaryLinkVisual.Y1 = scrubBar.ActualHeight / 2 + scrubBar.Margin.Top;
-//            _temporaryLinkVisual.Y2 = scrubBar.ActualHeight / 2 + scrubBar.Margin.Top;
-//            _temporaryLinkVisual.PointerMoved += ScrubBar_OnPointerMoved;
-//            _temporaryLinkVisual.PointerReleased += ScrubBar_OnPointerReleased;
-//            _temporaryLinkVisual.Opacity = 1;
-//                Binding b = new Binding();
-//                b.ElementName = "MediaElement";
-//                b.Path = new PropertyPath("Position.TotalMilliseconds");
-//                scrubBar.SetBinding(ProgressBar.ValueProperty, b);
-//
-//                MediaElement.Play();
-            
-        }
-
-
-
         private void OnStop_Click(object sender, TappedRoutedEventArgs e)
         {
             MediaElement.Pause();
@@ -166,10 +150,7 @@ namespace NuSysApp
         private async void OnPlay_Click(object sender, RoutedEventArgs e)
         {
 
-            Binding b = new Binding();
-            b.ElementName = "MediaElement";
-            b.Path = new PropertyPath("Position.TotalMilliseconds");
-            scrubBar.SetBinding(ProgressBar.ValueProperty, b);
+
             MediaElement.Play();
             _wasPlaying = true;
         }
@@ -201,11 +182,6 @@ namespace NuSysApp
             MediaElement.Position = time;
             if (MediaElement.CurrentState != MediaElementState.Playing)
             {
-                Binding b = new Binding();
-                b.ElementName = "MediaElement";
-                b.Path = new PropertyPath("Position.TotalMilliseconds");
-                scrubBar.SetBinding(ProgressBar.ValueProperty, b);
-
             }
         }
 
@@ -215,10 +191,6 @@ namespace NuSysApp
 
             TimeSpan timespan = new TimeSpan(0, 0, 0, 0, (int)millliseconds);
             MediaElement.Position = timespan;
-            Binding b = new Binding();
-            b.ElementName = "MediaElement";
-            b.Path = new PropertyPath("Position.TotalMilliseconds");
-            scrubBar.SetBinding(ProgressBar.ValueProperty, b);
         }
         private void ControllerOnDisposed(object source, object args)
         {
@@ -246,16 +218,6 @@ namespace NuSysApp
 
             xAudioWrapper.CheckTimeForRegions(normalizedMediaElementPosition);
 
-            if (MediaElement.CurrentState != MediaElementState.Playing)
-            {
-
-                Binding b = new Binding();
-                b.ElementName = "MediaElement";
-                b.Path = new PropertyPath("Position.TotalMilliseconds");
-                scrubBar.SetBinding(ProgressBar.ValueProperty, b);
-                //    MediaElement.Pause();
-            }
-
         }
 
         private void ScrubBar_OnPointerMoved(object sender, PointerRoutedEventArgs e)
@@ -275,41 +237,14 @@ namespace NuSysApp
                 }
                 MediaElement.Position = time;
 
-                if (MediaElement.CurrentState != MediaElementState.Playing)
-                {
-                    Binding b = new Binding();
-                    b.ElementName = "MediaElement";
-                    b.Path = new PropertyPath("Position.TotalMilliseconds");
-                    scrubBar.SetBinding(ProgressBar.ValueProperty, b);
 
-                }
-                else
-                {
-                    ((UIElement)sender).CapturePointer(e.Pointer);
-                    //MediaElement.Pause();
-                }
+               ((UIElement)sender).CapturePointer(e.Pointer);
+
 
                 e.Handled = true;
 
             }
         }
-
-
-
-
-        private void ScrubBar_OnSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-       }
-
-
-
-        private void OnDeleteClick(object sender, RoutedEventArgs e)
-        {
-            var vm = (ElementViewModel)DataContext;
-            vm.Controller.RequestDelete();
-        }
-
-
 
 
         private void ScrubBar_OnPointerReleased(object sender, PointerRoutedEventArgs e)

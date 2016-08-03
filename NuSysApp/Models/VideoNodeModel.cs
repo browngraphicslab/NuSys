@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Windows.Data.Xml.Dom;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Controls;
-using NuSysApp.Nodes.AudioNode;
 
 namespace NuSysApp
 {
@@ -17,7 +16,6 @@ namespace NuSysApp
         private InMemoryRandomAccessStream _recording;
         private int _resX, _resY;
         public MediaElement Test { get; }
-        private ObservableCollection<LinkedTimeBlockModel> _linkedTimeModels;
         public delegate void JumpEventHandler(TimeSpan time);
         public event JumpEventHandler OnJump;
 
@@ -35,27 +33,11 @@ namespace NuSysApp
 
             //Test.AutoPlay = true;
             ElementType = ElementType.Video;
-            _linkedTimeModels = new ObservableCollection<LinkedTimeBlockModel>();
 
             //_resX = 1;
             //_resY = 1;
         }
 
-        public void Jump(TimeSpan time)
-        {
-            OnJump?.Invoke(time);
-        }
-
-        public ObservableCollection<LinkedTimeBlockModel> LinkedTimeModels
-        {
-            get { return _linkedTimeModels; }
-        }
-
-        private void Test_CurrentStateChanged(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            _resX = Test.AspectRatioWidth;
-            _resY = Test.AspectRatioHeight;
-        }
 
         public InMemoryRandomAccessStream Recording
         {
@@ -105,15 +87,6 @@ namespace NuSysApp
             if (props.ContainsKey("resolutionY"))
             {
                 ResolutionY = props.GetInt("resolutionY");
-            }
-            if (props.ContainsKey("linkedTimeModels"))
-            {
-                _linkedTimeModels = new ObservableCollection<LinkedTimeBlockModel>(props.GetList<LinkedTimeBlockModel>("linkedTimeModels"));
-                //Dictionary<string, Dictionary<string, TimeSpan>> linkedTimeBlockDic = props.GetDict<string, Dictionary<string, TimeSpan>>("linkedTimeModels");
-                //for (int i = 0; i < linkedTimeBlockDic.Count; i++)
-                //{
-                //    _linkedTimeModels.Add(new LinkedTimeBlockModel(linkedTimeBlockDic["timeblock" + i]["start"], linkedTimeBlockDic["timeblock" + i]["end"]));
-                //}
             }
             await base.UnPack(props);
         }

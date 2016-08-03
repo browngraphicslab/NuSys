@@ -282,7 +282,7 @@ namespace NuSysApp
 
             foreach (var item in xClippingCanvas.Items)
             {
-                var regionVM = (item as FrameworkElement).DataContext as AudioRegionViewModel;
+                var regionVM = (item as FrameworkElement).DataContext as RegionViewModel;
                 Debug.Assert(regionVM != null);
                 regionVM.Dispose(null, EventArgs.Empty);
                 if (regionVM.Model.LibraryElementId == regionLibraryElementId)

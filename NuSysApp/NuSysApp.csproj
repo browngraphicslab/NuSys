@@ -528,9 +528,6 @@
     <Compile Include="Components\Misc\SearchWindowViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\TimelineNodeViewFactory.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\DragOutMode.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlock.xaml.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlockModel.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlockViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\MediaFoundationReaderUniversal.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeView.xaml.cs">
       <DependentUpon>AreaNodeView.xaml</DependentUpon>
@@ -1093,10 +1090,6 @@
     <Page Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlock.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
