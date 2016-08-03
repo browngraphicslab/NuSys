@@ -11,9 +11,13 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 
 namespace NuSysApp
 {
-    public class BaseRenderItem : IDisposable
+    public class BaseRenderItem : IDisposable, I2dTransformable
     {
-        protected CanvasAnimatedControl ResourceCreator;
+        public Matrix3x2 T { get; set; } = Matrix3x2.Identity;
+        public Matrix3x2 S { get; set; } = Matrix3x2.Identity;
+        public Matrix3x2 C { get; set; } = Matrix3x2.Identity;
+
+        public CanvasAnimatedControl ResourceCreator;
         public bool IsDirty { get; set; } = true;
 
         public BaseRenderItem(CanvasAnimatedControl resourceCreator)

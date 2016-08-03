@@ -19,12 +19,16 @@ namespace NuSysApp
 {
     public class ElementCollectionViewModel: ElementViewModel, ToolStartable
     {
+        public List<ISelectable> Selections { get; private set; } = new List<ISelectable>();
 
         public static Dictionary<ElementViewModel, IRandomAccessStream> Mems = new Dictionary<ElementViewModel, IRandomAccessStream>(); 
 
         public string Text { get; set; }
         public event EventHandler<HashSet<string>> OutputLibraryIdsChanged;
         public event EventHandler<string> Disposed;
+
+        public delegate void SelectionChangedHandler(object source);
+        public event SelectionChangedHandler SelectionChanged;
         /// <summary>
         /// The unique ID used in the tool startable dictionary
         /// </summary>
@@ -71,6 +75,52 @@ namespace NuSysApp
             Disposed?.Invoke(this, _toolStartableId);
             ToolController.ToolControllers.Remove(_toolStartableId);
 
+        }
+
+        public void DeselectAll()
+        {
+            ClearSelection();
+        }
+
+
+        /// <summary>
+        /// Sets the passed in Atom as selected. If there atlready is a selected Atom, the old \
+        /// selection and the new selection are linked.
+        /// </summary>
+        /// <param name="selected"></param>
+        public void AddSelection(ISelectable selected)
+        {
+            if (!Selections.Contains(selected))
+            {
+                selected.IsSelected = true;
+                Selections.Add(selected);
+            }
+            else
+            {
+                selected.IsSelected = false;
+                Selections.Remove(selected);
+            }
+            SelectionChanged?.Invoke(this);
+        }
+
+        public void RemoveSelection(ISelectable selected)
+        {
+            selected.IsSelected = false;
+            Selections.Remove(selected);
+            SelectionChanged?.Invoke(this);
+        }
+
+        /// <summary>
+        /// Unselects the currently selected node.
+        /// </summary> 
+        public void ClearSelection()
+        {
+            foreach (var selectable in Selections)
+            {
+                selectable.IsSelected = false;
+            }
+            Selections.Clear();
+            SelectionChanged?.Invoke(this);
         }
 
         private async void OnChildAdded(object source, ElementController elementController)

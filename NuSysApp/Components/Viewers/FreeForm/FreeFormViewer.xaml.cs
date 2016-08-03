@@ -65,10 +65,7 @@ namespace NuSysApp
 
             Loaded += async delegate(object sender, RoutedEventArgs args)
             {
-                await NuSysRenderer.Instance.Init(xRenderCanvas);
 
-                xRenderCanvas.PointerPressed += XRenderCanvasOnPointerPressed;
-                xRenderCanvas.PointerReleased += XRenderCanvasOnPointerReleased;
 
             //    xRenderCanvas.PointerPressed += XRenderCanvasOnPointerPressed;
 
@@ -92,27 +89,10 @@ namespace NuSysApp
                     }
                 };
 
-                _nodeManipulationMode = new NodeManipulationMode(this);
-                _createGroupMode = new CreateGroupMode(this);
-                _duplicateMode = new DuplicateNodeMode(this);
-                _panZoomMode = new PanZoomMode(this);
-                _panZoomMode.UpdateTempTransform(vm.CompositeTransform);
-                _gestureMode = new GestureMode(this);
-                _selectMode = new SelectMode(this);
-                _floatingMenuMode = new FloatingMenuMode(this);
-                _globalInkMode = new GlobalInkMode(this);
-                _exploreMode = new ExploreMode(this);
+                await NuSysRenderer.Instance.Init(xRenderCanvas);
 
-                _tagMode = new TagNodeMode(this);
-                _linkMode = new LinkMode(this);
-
-                _mainMode = new MultiMode(this, _panZoomMode, _selectMode, _nodeManipulationMode, _gestureMode, _createGroupMode, _floatingMenuMode);
-                _simpleEditMode = new MultiMode(this, _panZoomMode, _selectMode, _nodeManipulationMode, _floatingMenuMode);
-                _simpleEditGroupMode = new MultiMode(this,  _panZoomMode, _selectMode, _floatingMenuMode);
-                _explorationMode = new MultiMode(this, _panZoomMode, _exploreMode);
-                _selectMode.ItemSelected += OnItemSelected;
-
-                _selectMode.Activate();
+                xRenderCanvas.PointerPressed += XRenderCanvasOnPointerPressed;
+                xRenderCanvas.PointerReleased += XRenderCanvasOnPointerReleased;
 
 
             };
@@ -136,32 +116,7 @@ namespace NuSysApp
                 _activePointers.Add(args.Pointer.PointerId);
         }
 
-        private void OnItemSelected(BaseRenderItem element, PointerDeviceType device)
-        {
-            var elementRenderItem = element as ElementRenderItem;
-            var vm = (FreeFormViewerViewModel)DataContext;
-            if (elementRenderItem == null)
-            {
-                vm.ClearSelection();
-            }
-            else
-            {
-                if (device == PointerDeviceType.Mouse)
-                {
-                    var keyState = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift);
-                    if (keyState != CoreVirtualKeyStates.Down)
-                        vm.ClearSelection();
-                    vm.AddSelection(elementRenderItem.ViewModel);
-                }
-
-                if (device == PointerDeviceType.Touch)
-                {
-                    if (_activePointers.Count == 0)
-                        vm.ClearSelection();
-                    vm.AddSelection(elementRenderItem.ViewModel);
-                }
-            }
-        }
+        
 
         private void AdornmentRemoved(WetDryInkCanvas canvas, InkStroke stroke)
         {
@@ -316,6 +271,7 @@ namespace NuSysApp
 
         public async Task SetViewMode(AbstractWorkspaceViewMode mode, bool isFixed = false)
         {
+            return;
             _prevMode = _mode;
             if (mode == _mode)
                 return;
@@ -359,6 +315,7 @@ namespace NuSysApp
 
         public void ChangeMode(object source, Options mode)
         {
+            return;
             SwitchMode(mode, false);
         }
     }

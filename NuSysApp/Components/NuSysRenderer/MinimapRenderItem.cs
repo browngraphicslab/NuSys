@@ -128,7 +128,7 @@ namespace NuSysApp
                 var s = Matrix3x2.CreateScale((float)scale);
                 dss.Transform = cp * s;
                 dss.Clear(Color.FromArgb(220,0,0,0));
-                foreach (var vm in _collection.Elements)
+                foreach (var vm in _collection.Elements.ToArray())
                 {
                     dss.FillRectangle((float)vm.X, (float)vm.Y, (float)vm.Width, (float)vm.Height, Color.FromArgb(150,255,255,255));
                 }

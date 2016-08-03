@@ -2,11 +2,16 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Input;
+using Windows.Foundation;
+using Windows.System;
 using Windows.UI;
+using Windows.UI.Core;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
@@ -14,13 +19,8 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 
 namespace NuSysApp.Components.NuSysRenderer
 {
-    public class CollectionRenderItem : BaseRenderItem, I2dTransformable
+    public class CollectionRenderItem : ElementRenderItem, I2dTransformable
     {
-        public Matrix3x2 T { get; set; }
-        public Matrix3x2 S { get; set; }
-        public Matrix3x2 C { get; set; }
-
-        private ElementCollectionViewModel _vm;
 
         private ConcurrentBag<BaseRenderItem> _renderItems0 = new ConcurrentBag<BaseRenderItem>();
         private ConcurrentBag<BaseRenderItem> _renderItems1 = new ConcurrentBag<BaseRenderItem>();
@@ -28,17 +28,72 @@ namespace NuSysApp.Components.NuSysRenderer
         private ConcurrentBag<BaseRenderItem> _renderItems3 = new ConcurrentBag<BaseRenderItem>();
 
         private InkRenderItem _inkRenderItem;
+        private CollectionInteractionManager _interactionManager;
+        public ElementCollectionViewModel ViewModel;
 
-        public CollectionRenderItem(ElementCollectionViewModel vm, CanvasAnimatedControl canvas) : base(canvas)
+        public Transformable Camera = new Transformable();
+
+        private bool _interactionEnabled;
+
+
+        public CollectionRenderItem(ElementCollectionViewModel vm, CanvasAnimatedControl canvas, bool interactionEnabled = false) : base(vm, canvas)
         {
+            _interactionEnabled = interactionEnabled;
+
+            ViewModel = vm;
+
+            T = Matrix3x2.CreateTranslation((float)vm.X, (float)vm.Y);
+
+            Camera.T = Matrix3x2.CreateTranslation(-Constants.MaxCanvasSize / 2f, -Constants.MaxCanvasSize / 2f);
+            Camera.C = Matrix3x2.CreateTranslation(Constants.MaxCanvasSize / 2f, Constants.MaxCanvasSize / 2f);
+            Camera.S = Matrix3x2.CreateScale(1f, 1f);
+            
+
             vm.Elements.CollectionChanged += ElementsChanged;
 
             _inkRenderItem = new InkRenderItem(canvas);
             _renderItems0.Add(_inkRenderItem);
+
+            if (interactionEnabled)
+            {
+                _interactionManager = new CollectionInteractionManager(this);
+                _interactionManager.ItemSelected += OnItemSelected;
+            }
+
+
+        }
+
+        private void OnItemSelected(BaseRenderItem element, PointerDeviceType device)
+        {
+            var elementRenderItem = element as ElementRenderItem;
+            var vm = (ElementCollectionViewModel)ViewModel;
+            if (elementRenderItem == null)
+            {
+                vm.ClearSelection();
+            }
+            else
+            {
+                if (device == PointerDeviceType.Mouse)
+                {
+                    var keyState = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift);
+                    if (keyState != CoreVirtualKeyStates.Down)
+                        vm.ClearSelection();
+                    vm.AddSelection(elementRenderItem.ViewModel);
+                }
+
+                if (device == PointerDeviceType.Touch)
+                {
+                  //  if (_activePointers.Count == 0)
+                      vm.ClearSelection();
+                    vm.AddSelection(elementRenderItem.ViewModel);
+                }
+            }
         }
 
         public override void Update()
         {
+            base.Update();
+
             foreach (var item in _renderItems0)
                 item.Update();
 
@@ -55,10 +110,12 @@ namespace NuSysApp.Components.NuSysRenderer
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            ds.Clear(Colors.LightGoldenrodYellow);
-            var cp = Matrix3x2.Identity;
-            Matrix3x2.Invert(C, out cp);
-            ds.Transform = cp * S * C * T;
+            var orgTransform = ds.Transform;
+            ds.Transform = Win2dUtil.Invert(C) * S * C * T * ds.Transform;
+            ds.DrawRectangle(new Rect(0, 0, ViewModel.Width, ViewModel.Height), Colors.Blue, 3f);
+
+            ds.Transform = Win2dUtil.Invert(Camera.C) * Camera.S * Camera.C * Camera.T * ds.Transform;
+           
             foreach (var item in _renderItems0)
                 item.Draw(ds);
 
@@ -70,6 +127,8 @@ namespace NuSysApp.Components.NuSysRenderer
 
             foreach (var item in _renderItems3)
                 item.Draw(ds);
+
+            ds.Transform = orgTransform;
         }
 
         private async void ElementsChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -96,6 +155,12 @@ namespace NuSysApp.Components.NuSysRenderer
                     await item.Load();
                     _renderItems1.Add(item);
                 }
+                else if (vm is ElementCollectionViewModel)
+                {
+                    item = new CollectionRenderItem((ElementCollectionViewModel)vm, ResourceCreator);
+                    await item.Load();
+                    _renderItems1.Add(item);
+                }
                 else
                 {
                     item = new ElementRenderItem(vm, ResourceCreator);
@@ -107,21 +172,16 @@ namespace NuSysApp.Components.NuSysRenderer
 
         public Vector2 ScreenPointToObjectPoint(Vector2 sp)
         {
-            var invTransform = Matrix3x2.Identity;
-            var cp = Matrix3x2.Identity;
-            Matrix3x2.Invert(C, out cp);
-            var t = cp * S * C * T;
-            Matrix3x2.Invert(t, out invTransform);
-            return Vector2.Transform(sp, invTransform);
+            var inverse = Win2dUtil.Invert(Win2dUtil.Invert(Camera.C) * Camera.S * Camera.C * Camera.T * Win2dUtil.Invert(C) * S * C * T);
+            return Vector2.Transform(sp, inverse);
         }
 
         public Vector2 ObjectPointToScreenPoint(Vector2 op)
         {
             var invTransform = Matrix3x2.Identity;
-            var cp = Matrix3x2.Identity;
-            Matrix3x2.Invert(C, out cp);
-            var t = cp * S * C * T;
-            return Vector2.Transform(op, t);
+            var inverse = Win2dUtil.Invert(Camera.C) * Camera.S * Camera.C * Camera.T * Win2dUtil.Invert(C) * S * C * T;
+            return Vector2.Transform(op, inverse);
+
         }
 
         public override void CreateResources()
@@ -159,5 +219,10 @@ namespace NuSysApp.Components.NuSysRenderer
         {
             _renderItems1.Add(new TrailRenderItem(vm, ResourceCreator));
         }
+
+        public List<BaseRenderItem> GetRenderItems()
+        {
+            return _renderItems0.Concat(_renderItems1).Concat(_renderItems2).Concat(_renderItems3).ToList();
+        } 
     }
 }

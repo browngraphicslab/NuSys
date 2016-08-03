@@ -15,8 +15,7 @@ namespace NuSysApp
     public class FreeFormViewerViewModel : ElementCollectionViewModel
     {
         private IEditable _currentlyEditing;
-        public delegate void SelectionChangedHandler(object source);
-        public event SelectionChangedHandler SelectionChanged;
+
 
         public delegate void ModeChangedEventHandler(object source, Options mode);
 
@@ -26,15 +25,13 @@ namespace NuSysApp
 
         private CompositeTransform _compositeTransform, _fMTransform;
         private ElementViewModel _preparedElementVm;
-        private List<ISelectable> _selections = new List<ISelectable>();
+
 
         #endregion Private Members
 
         public FreeFormViewerViewModel(ElementCollectionController controller) : base(controller)
         {
             MultiSelectedAtomViewModels = new List<ISelectable>();
-
-            SelectionChanged += OnSelectionChanged;
 
             var model = controller.Model as CollectionElementModel;
             CompositeTransform = new CompositeTransform
@@ -175,51 +172,7 @@ namespace NuSysApp
             }
         }
 
-        public void DeselectAll()
-        {
-            ClearSelection();
-        }
-
-
-        /// <summary>
-        /// Sets the passed in Atom as selected. If there atlready is a selected Atom, the old \
-        /// selection and the new selection are linked.
-        /// </summary>
-        /// <param name="selected"></param>
-        public void AddSelection(ISelectable selected)
-        {
-            if (!_selections.Contains(selected))
-            {
-                selected.IsSelected = true;
-                _selections.Add(selected);
-            }
-            else {
-                selected.IsSelected = false;
-                _selections.Remove(selected);
-            }
-            SelectionChanged?.Invoke(this);
-        }
-
-        public void RemoveSelection(ISelectable selected)
-        {
-            selected.IsSelected = false;
-            _selections.Remove(selected);
-            SelectionChanged?.Invoke(this);
-        }
-
-        /// <summary>
-        /// Unselects the currently selected node.
-        /// </summary> 
-        public void ClearSelection()
-        {
-            foreach (var selectable in _selections)
-            {
-                selectable.IsSelected = false;
-            }
-            _selections.Clear();
-            SelectionChanged?.Invoke(this);
-            FocusManager.TryMoveFocus(FocusNavigationDirection.Next);
-        }
+     
         
 
         #endregion Node Interaction
@@ -248,10 +201,6 @@ namespace NuSysApp
             }
         }
         
-        /// <summary>
-        /// This can be IEditable because IEditable extends ISelectable
-        /// </summary>
-        public List<ISelectable> Selections { get { return _selections; } } 
 
         #endregion Public Members
 

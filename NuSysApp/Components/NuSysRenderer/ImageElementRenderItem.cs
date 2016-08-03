@@ -22,6 +22,8 @@ namespace NuSysApp
         public ImageElementRenderItem(ImageElementViewModel vm, CanvasAnimatedControl resourceCreator) :base(vm, resourceCreator)
         {
             _vm = vm;
+            T = Matrix3x2.CreateTranslation((float)_vm.X, (float)_vm.Y);
+            //T = Matrix3x2.CreateTranslation((float)50000, (float)50000);
         }
 
         public override void Dispose()
@@ -46,10 +48,10 @@ namespace NuSysApp
             var orgTransform = ds.Transform;
             var CObjectInv = Matrix3x2.Identity;
             Matrix3x2.Invert(C, out CObjectInv);
-            ds.Transform = ds.Transform * CObjectInv* S *C;
+            ds.Transform = CObjectInv * S * C * T * ds.Transform ;
 
             if (_bmp != null)
-                ds.DrawImage(_bmp, new Rect { X = _vm.X, Y = _vm.Y, Width = _vm.Width, Height = _vm.Height});
+                ds.DrawImage(_bmp, new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height});
 
             ds.Transform = orgTransform;
         }

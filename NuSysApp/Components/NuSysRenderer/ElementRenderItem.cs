@@ -23,13 +23,15 @@ namespace NuSysApp
 
         public ElementViewModel ViewModel => _vm;
 
-        public Matrix3x2 T { get; set; } = Matrix3x2.Identity;
-        public Matrix3x2 S { get; set; } = Matrix3x2.Identity;
-        public Matrix3x2 C { get; set; } = Matrix3x2.Identity;
-
         public ElementRenderItem(ElementViewModel vm, CanvasAnimatedControl resourceCreator) :base(resourceCreator)
         {
             _vm = vm;
+            _vm.Controller.PositionChanged += ControllerOnPositionChanged;
+        }
+
+        private void ControllerOnPositionChanged(object source, double d, double d1, double dx, double dy)
+        {
+            T = Matrix3x2.CreateTranslation((float) d, (float) d1);
         }
 
         public override void Dispose()
@@ -64,7 +66,7 @@ namespace NuSysApp
             var newTransform = tt * top * sp * to * ds.Transform;
 
             ds.Transform = newTransform;
-            ds.DrawTextLayout(_textLayout, new Vector2((float)_vm.X, (float)(_vm.Y - 20)), Colors.Black);
+          //  ds.DrawTextLayout(_textLayout, new Vector2((float)_vm.X, (float)(_vm.Y - 20)), Colors.Black);
             ds.Transform = oldTransform;
         }
 

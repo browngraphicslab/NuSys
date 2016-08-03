@@ -17,6 +17,7 @@ using SharpDX.Direct2D1;
 using Matrix3x2 = System.Numerics.Matrix3x2;
 using System.Numerics;
 using NuSysApp.Components.NuSysRenderer;
+using Point = Windows.Foundation.Point;
 
 namespace NuSysApp
 {
@@ -29,6 +30,7 @@ namespace NuSysApp
         private CanvasAnimatedControl _canvas;
 
         private MinimapRenderItem _minimap;
+        private SelectMode _selectMode;
 
         public CanvasAnimatedControl Canvas
         {
@@ -46,7 +48,6 @@ namespace NuSysApp
 
         private NuSysRenderer()
         {
-
         }
 
         private void CanvasOnCreateResources(CanvasAnimatedControl sender, CanvasCreateResourcesEventArgs args)
@@ -67,12 +68,14 @@ namespace NuSysApp
 
 
             var vm = (FreeFormViewerViewModel) canvas.DataContext;
-            ActiveCollection = new CollectionRenderItem(vm, canvas);
+            ActiveCollection = new CollectionRenderItem(vm, canvas, true);
+            vm.X = 0;
+            vm.Y = 0;
+            vm.Width = Size.Width;
+            vm.Height = Size.Height;
             _elementSelectionRenderItem = new ElementSelectionRenderItem(vm, _canvas);
      
             _minimap = new MinimapRenderItem(vm, canvas);
-         
-            //_renderItems3.Add(_minimap);
         }
 
 
@@ -85,9 +88,9 @@ namespace NuSysApp
 
         public BaseRenderItem GetRenderItemAt(Point sp)
         {
-            /*
-            var os = ScreenPointToObjectPoint(new Vector2((float) sp.X, (float) sp.Y));
-            var elems = _renderItems0.Concat(_renderItems1).Concat(_renderItems2);
+            
+            var os = ActiveCollection.ScreenPointToObjectPoint(new Vector2((float) sp.X, (float) sp.Y));
+            var elems = ActiveCollection.GetRenderItems();
 
             foreach (var renderItem in elems)
             {
@@ -96,7 +99,7 @@ namespace NuSysApp
                     return renderItem;
                 }
             }
-            */
+            
             return null;
         }
 
@@ -110,8 +113,11 @@ namespace NuSysApp
 
         private void CanvasOnDraw(ICanvasAnimatedControl sender, CanvasAnimatedDrawEventArgs args)
         {
-            using(var ds = args.DrawingSession) { 
+            using(var ds = args.DrawingSession) {
+                ds.Clear(Colors.LightGoldenrodYellow);
+                ds.Transform = Matrix3x2.Identity;
                 ActiveCollection.Draw(ds);
+                ds.Transform = Matrix3x2.Identity;
                 _minimap.Draw(ds);
                 _elementSelectionRenderItem.Draw(ds);
             }
