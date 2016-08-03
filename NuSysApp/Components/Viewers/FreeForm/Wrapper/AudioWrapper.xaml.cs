@@ -230,22 +230,29 @@ namespace NuSysApp
                 switch (regionViewModel.Model.Type)
                 {
                     case ElementType.AudioRegion:
-                        var model = regionViewModel.Model as AudioRegionModel;
-                        if(normalizedMediaElementPosition < model.End && normalizedMediaElementPosition > model.Start)
+                        var audioRegionmodel = regionViewModel.Model as AudioRegionModel;
+                        if(normalizedMediaElementPosition < audioRegionmodel.End && normalizedMediaElementPosition > audioRegionmodel.Start)
                         {
-                            (item as AudioRegionView).Select();
-                            Region_OnSelectedOrDeselected(item, true);
+                            (item as AudioRegionView).FireSelection();
 
                         }
                         else
                         {
-                            (item as AudioRegionView).Deselect();
-                            Region_OnSelectedOrDeselected(item, false);
-
+                            (item as AudioRegionView).FireDeselection();
                         }
 
                         break;
-                    default:
+                    case ElementType.VideoRegion:
+                        var videoRegionModel = regionViewModel.Model as VideoRegionModel;
+                        if (normalizedMediaElementPosition < videoRegionModel.End && normalizedMediaElementPosition > videoRegionModel.Start)
+                        {
+                            (item as VideoRegionView).FireSelection();
+
+                        }
+                        else
+                        {
+                            (item as VideoRegionView).FireDeselection();
+                        }
                         break;
                 }
             }
@@ -356,7 +363,7 @@ namespace NuSysApp
             {
                 case ElementType.AudioRegion:
                     var audioRegionView = item as AudioRegionView;
-                    audioRegionView.Deselect();
+                    audioRegionView.FireDeselection();
                     break;
                 default:
                     break;
@@ -420,13 +427,11 @@ namespace NuSysApp
 
                         if ((int)(audioRegionModel.Start * totalDuration) == denormalizedMarkerTime)
                         {
-                            audioRegionView.Select();
-                            Region_OnSelectedOrDeselected(audioRegionView, true);
+                            audioRegionView.FireSelection();
                         }
                         if ((int)(audioRegionModel.End * totalDuration) == denormalizedMarkerTime)
                         {
-                            audioRegionView.Deselect();
-                            Region_OnSelectedOrDeselected(audioRegionView, false);
+                            audioRegionView.FireDeselection();
 
                         }
                         break;
@@ -437,13 +442,11 @@ namespace NuSysApp
 
                         if ((int)(videoRegionModel.Start * totalDuration) == denormalizedMarkerTime)
                         {
-                            videoRegionView.Select();
-                            Region_OnSelectedOrDeselected(videoRegionView, true);
+                            videoRegionView.FireSelection();
                         }
                         if ((int)(videoRegionModel.End * totalDuration) == denormalizedMarkerTime)
                         {
-                            videoRegionView.Deselect();
-                            Region_OnSelectedOrDeselected(videoRegionView, false);
+                            videoRegionView.FireDeselection();
 
                         }
                         break;

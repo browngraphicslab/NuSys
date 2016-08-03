@@ -40,7 +40,30 @@ namespace NuSysApp
             this.Deselect();
             vm.Disposed += Dispose;
         }
-        
+
+        public void FireSelection()
+        {
+            if (!Selected)
+            {
+
+                Select();
+                OnSelectedOrDeselected?.Invoke(this, true);
+
+            }
+
+        }
+
+        public void FireDeselection()
+        {
+            if (Selected)
+            {
+
+                Deselect();
+                OnSelectedOrDeselected?.Invoke(this, false);
+
+            }
+        }
+
         private void Bound1_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = this.DataContext as AudioRegionViewModel;
@@ -59,7 +82,7 @@ namespace NuSysApp
             }
         }
 
-        public void Deselect()
+        private void Deselect()
         {
             Rect.Fill = new SolidColorBrush(Color.FromArgb(255, 219, 151, 179));
             xNameTextBox.Visibility = Visibility.Collapsed;
@@ -68,7 +91,7 @@ namespace NuSysApp
             Selected = false;
         }
 
-        public void Select()
+        private void Select()
         {
             var vm = DataContext as AudioRegionViewModel;
             Rect.Fill = new SolidColorBrush(Color.FromArgb(255, 152, 26, 77));
@@ -129,16 +152,11 @@ namespace NuSysApp
             await Task.Delay(200);
             if (!_isSingleTap) return;
 
-
             if (!Selected)
             {
-
-                this.Select();
                 OnRegionSeek?.Invoke(((DataContext as AudioRegionViewModel).RegionLibraryElementController.LibraryElementModel as AudioRegionModel).Start);
-                OnSelectedOrDeselected?.Invoke(this, true);
-
             }
-
+            FireSelection();
             e.Handled = true;
         }
 

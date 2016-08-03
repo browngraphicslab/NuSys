@@ -35,8 +35,8 @@ namespace NuSysApp
         {
             
             this.InitializeComponent();
-            this.DataContext = regionVM;
-            this.Deselect();
+            DataContext = regionVM;
+            Deselect();
             var model = regionVM.Model as PdfRegionModel;
             if (model == null)
             {
@@ -131,7 +131,7 @@ namespace NuSysApp
 
         private void XResizingTriangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            Select();
+            FireSelection();
             e.Handled = true;
         }
 
@@ -213,7 +213,7 @@ namespace NuSysApp
 
             vm.OriginalHeight = vm.Height;
             vm.OriginalWidth = vm.Width;
-            Select();
+            FireSelection();
             e.Handled = true;
         }
         public void Deselect()
@@ -239,34 +239,38 @@ namespace NuSysApp
         private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             
-                var vm = DataContext as PdfRegionViewModel;
+            var vm = DataContext as PdfRegionViewModel;
 
-                if (!vm.Editable)
-                    return;
+            if (!vm.Editable)
+                return;
 
-                if (Selected)
-                {
-                    this.Deselect();
-                    OnSelectedOrDeselected?.Invoke(this, false);
-
-                }
-                else
-                {
-                    this.Select();
-                    OnSelectedOrDeselected?.Invoke(this, true);
-
-                }
+            if (Selected)
+            {
+                FireDeselection();
+            }
+            else
+            {
+                FireSelection();
+            }
         }
 
 
-        private void XMainRectangle_OnGotFocus(object sender, RoutedEventArgs e)
+        public void FireSelection()
         {
-            Select();
+            if (!Selected)
+            {
+                Select();
+                OnSelectedOrDeselected?.Invoke(this, true);
+            }
         }
 
-        private void XMainRectangle_OnLostFocus(object sender, RoutedEventArgs e)
+        public void FireDeselection()
         {
-            Deselect();
+            if (Selected)
+            {
+                Deselect();
+                OnSelectedOrDeselected?.Invoke(this, false);
+            }
         }
 
         private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)

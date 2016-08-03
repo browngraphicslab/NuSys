@@ -422,11 +422,11 @@ namespace NuSysApp
             {
                 case ElementType.ImageRegion:
                     var imageRegionView = item as ImageRegionView;
-                    imageRegionView.Select();
+                    imageRegionView.FireSelection();
                     break;
                 case ElementType.PdfRegion:
                     var pdfRegionView = item as PDFRegionView;
-                    pdfRegionView.Select();
+                    pdfRegionView.FireSelection();
                     break;
                 default:
                     break;
@@ -447,11 +447,11 @@ namespace NuSysApp
             {
                 case ElementType.ImageRegion:
                     var imageRegionView = item as ImageRegionView;
-                    imageRegionView.Deselect();
+                    imageRegionView.FireDeselection();
                     break;
                 case ElementType.PdfRegion:
                     var pdfRegionView = item as PDFRegionView;
-                    pdfRegionView.Deselect();
+                    pdfRegionView.FireDeselection();
                     break;
                 default:
                     break;

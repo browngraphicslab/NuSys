@@ -27,9 +27,12 @@ namespace NuSysApp
         private bool _isSingleTap;
 
 
-        public delegate void OnRegionSeekHandler(double time);
+        public delegate void RegionSelectedDeselectedEventHandler(object sender, bool selected);
+        public event RegionSelectedDeselectedEventHandler OnSelectedOrDeselected;
 
+        public delegate void OnRegionSeekHandler(double time);
         public event OnRegionSeekHandler OnRegionSeek;
+
         public Grid RegionRectangle
         {
             get { return xGrid; }
@@ -167,11 +170,9 @@ namespace NuSysApp
             }
             e.Handled = true;
         }
-        public void Deselect()
+        private void Deselect()
         {
             var vm = DataContext as VideoRegionViewModel;
-            //xMainRectangle.StrokeThickness = 3;
-            //xMainRectangle.Stroke = new SolidColorBrush(Windows.UI.Colors.CadetBlue);
             IntervalRectangle.Fill = new SolidColorBrush(Color.FromArgb(255, 219, 151, 179));
             //xResizingTriangle.Visibility = Visibility.Collapsed;
             xNameTextBox.Visibility = Visibility.Collapsed;
@@ -183,7 +184,7 @@ namespace NuSysApp
 
         }
 
-        public void Select()
+        private void Select()
         {
             var vm = DataContext as VideoRegionViewModel;
             //xMainRectangle.StrokeThickness = 6;
@@ -200,6 +201,24 @@ namespace NuSysApp
 
             Selected = true;
 
+        }
+
+        public void FireSelection()
+        {
+            if (!Selected)
+            {
+                Select();
+                OnSelectedOrDeselected?.Invoke(this, true);
+            }
+        }
+
+        public void FireDeselection()
+        {
+            if (Selected)
+            {
+                Deselect();
+                OnSelectedOrDeselected?.Invoke(this, false);
+            }
         }
 
         private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
@@ -251,7 +270,7 @@ namespace NuSysApp
                 OnRegionSeek?.Invoke(((this.DataContext as VideoRegionViewModel).RegionLibraryElementController.LibraryElementModel as VideoRegionModel).Start + 0.001);
             }
 
-
+            FireSelection();
             e.Handled = true;
 
         }

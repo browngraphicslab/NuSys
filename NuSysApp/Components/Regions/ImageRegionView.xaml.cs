@@ -141,8 +141,7 @@ namespace NuSysApp
 
         private void xResizingTriangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-
-            this.Select();
+            FireSelection();
             e.Handled = true;
         }
 
@@ -226,7 +225,7 @@ namespace NuSysApp
 
             vm.OriginalHeight = vm.Height;
             vm.OriginalWidth = vm.Width;
-            this.Select();
+            FireSelection();
             e.Handled = true;
 
         }
@@ -252,8 +251,24 @@ namespace NuSysApp
             
         }
 
+        public void FireSelection()
+        {
+            if (!Selected)
+            {
+                Select();
+                OnSelectedOrDeselected?.Invoke(this, true);
+            }
+        }
 
-        //Selection is currently very primitive.
+        public void FireDeselection()
+        {
+            if (Selected)
+            {
+                Deselect();
+                OnSelectedOrDeselected?.Invoke(this, false);
+            }
+        }
+
         private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             var vm = DataContext as ImageRegionViewModel;
@@ -263,15 +278,11 @@ namespace NuSysApp
 
             if (Selected)
             {
-                this.Deselect();
-                OnSelectedOrDeselected?.Invoke(this, false);
-
+                FireDeselection();
             }
             else
             {
-                this.Select();
-                OnSelectedOrDeselected?.Invoke(this, true);
-
+                FireSelection();
             }
 
         }
