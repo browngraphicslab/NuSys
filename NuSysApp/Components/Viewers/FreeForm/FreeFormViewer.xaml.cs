@@ -63,10 +63,9 @@ namespace NuSysApp
             vm.Controller.Model.InqCanvas.LineFinalized += InqCanvasOnLineFinalized;
             vm.Controller.Disposed += ControllerOnDisposed;
 
-            Loaded += delegate(object sender, RoutedEventArgs args)
+            Loaded += async delegate(object sender, RoutedEventArgs args)
             {
-
-                NuSysRenderer.Instance.Canvas = xRenderCanvas;
+                await NuSysRenderer.Instance.Init(xRenderCanvas);
 
                 xRenderCanvas.PointerPressed += XRenderCanvasOnPointerPressed;
                 xRenderCanvas.PointerReleased += XRenderCanvasOnPointerReleased;
@@ -120,8 +119,8 @@ namespace NuSysApp
 
             SizeChanged += delegate(object sender, SizeChangedEventArgs args)
             {
-                xInqCanvasContainer.Width = args.NewSize.Width;
-                xInqCanvasContainer.Height = args.NewSize.Height;
+                xRenderCanvas.Width = args.NewSize.Width;
+                xRenderCanvas.Height = args.NewSize.Height;
             };
         }
 

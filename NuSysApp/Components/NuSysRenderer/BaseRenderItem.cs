@@ -27,6 +27,10 @@ namespace NuSysApp
 
         public virtual void Draw(CanvasDrawingSession ds) {}
 
+        public virtual void CreateResources()
+        {
+            
+        }
 
         public virtual void Dispose()
         {

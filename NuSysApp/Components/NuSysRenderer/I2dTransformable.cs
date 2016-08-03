@@ -13,6 +13,8 @@ namespace NuSysApp
         Matrix3x2 T { get; set; }
         Matrix3x2 S { get; set; }
         Matrix3x2 C { get; set; }
+
+        void Update();
     }
 
 }

@@ -29,6 +29,8 @@ namespace NuSysApp
         public Size Size { get; set; }
 
         public Point Position { get; set; }
+
+        public void Update() { }
     }
 
     public class SelectMode : AbstractWorkspaceViewMode
@@ -206,13 +208,15 @@ namespace NuSysApp
 
             if (_pointerPoints.Count >= 2)
             {
+                if (args.Pointer.PointerId == _pointerPoints.Keys.First())
+                    return;
                 var prevCenterPoint = _centerPoint;
                 var prevDist = _twoFingerDist;
                 UpdateCenterPoint();
                 UpdateDist();
                 var dx = _centerPoint.X - prevCenterPoint.X;
                 var dy = _centerPoint.Y - prevCenterPoint.Y;
-                var ds = _twoFingerDist/ prevDist;
+                var ds = (float)(_twoFingerDist/ prevDist);
 
                 var vm = (FreeFormViewerViewModel)_view.DataContext;
                 if (vm.Selections.Count > 0)
@@ -220,8 +224,8 @@ namespace NuSysApp
 
                     foreach (var selection in vm.Selections)
                     {
-                        var elem = (ElementViewModel)selection;
-                        var imgCenter = new Vector2((float)(elem.X + elem.Width / 2), (float)(elem.Y + elem.Height / 2));
+                        var elem = (ElementViewModel) selection;
+                        var imgCenter = new Vector2((float) (elem.X + elem.Width/2), (float) (elem.Y + elem.Height/2));
                         var newCenter = NuSysRenderer.Instance.ObjectPointToScreenPoint(imgCenter);
 
                         Transformable t;
@@ -234,12 +238,13 @@ namespace NuSysApp
                             t.Position = new Point(elem.X, elem.Y);
                             t.Size = new Size(elem.Width, elem.Height);
                         }
-                        
+
+
                         PanZoom(t, newCenter, dx, dy, ds);
 
-                        elem.Controller.SetSize(t.Size.Width * t.S.M11, t.Size.Height * t.S.M22);
-                        var nx = t.Position.X - (t.Size.Width * t.S.M11 - t.Size.Width) / 2;
-                        var ny = t.Position.Y - (t.Size.Height * t.S.M22 - t.Size.Height) / 2;
+                        elem.Controller.SetSize(t.Size.Width*t.S.M11, t.Size.Height*t.S.M22);
+                        var nx = t.Position.X - (t.Size.Width*t.S.M11 - t.Size.Width)/2;
+                        var ny = t.Position.Y - (t.Size.Height*t.S.M22 - t.Size.Height)/2;
                         elem.Controller.SetPosition(nx, ny);
                     }
 
@@ -247,15 +252,17 @@ namespace NuSysApp
 
                 }
                 else
+                {
                     PanZoom(NuSysRenderer.Instance, _centerPoint, dx, dy, ds);
+                }
 
             } else if (_pointerPoints.Count == 1)
             {
                 if (_mode == Mode.PanZoom)
                 {
                     var currPos = args.GetCurrentPoint(null).Position;
-                    var deltaX = currPos.X - _startPoint.X;
-                    var deltaY = currPos.Y - _startPoint.Y;
+                    var deltaX = (float)(currPos.X - _startPoint.X);
+                    var deltaY = (float)(currPos.Y - _startPoint.Y);
                     _startPoint = new Vector2((float)currPos.X, (float)currPos.Y);
 
                     PanZoom(NuSysRenderer.Instance, _startPoint, deltaX, deltaY, 1);
@@ -295,10 +302,13 @@ namespace NuSysApp
             }
         }
 
-        protected void PanZoom(I2dTransformable target, Vector2 centerPoint, double dx, double dy, double ds)
+        protected void PanZoom(I2dTransformable target, Vector2 centerPoint, float dx, float dy, float ds)
         {
             if (target == null)
                 target = NuSysRenderer.Instance;
+
+            //Debug.WriteLine(centerPoint);
+            //Debug.WriteLine(ds);
 
             var tmpTranslate = Matrix3x2.CreateTranslation(target.C.M31, target.C.M32);
             Matrix3x2 tmpTranslateInv;
@@ -310,7 +320,7 @@ namespace NuSysApp
             Matrix3x2 inverse;
             Matrix3x2.Invert(cInv * target.S * target.C * target.T, out inverse);
 
-            var center = Vector2.Transform(new Vector2((float)centerPoint.X, (float)centerPoint.Y), inverse );
+            var center = Vector2.Transform(new Vector2(centerPoint.X, centerPoint.Y), inverse );
 
             //var center = compositeTransform.Inverse.TransformPoint(centerPoint);
 
@@ -340,6 +350,7 @@ namespace NuSysApp
             target.T = Matrix3x2.CreateTranslation((float)ntx, (float)nty);
             target.C = Matrix3x2.CreateTranslation(ncx, ncy);
             target.S = Matrix3x2.CreateScale((float)nsx,(float)nsy);
+            target.Update();
         }
 
         

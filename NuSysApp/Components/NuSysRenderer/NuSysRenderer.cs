@@ -27,27 +27,14 @@ namespace NuSysApp
 
         private CanvasAnimatedControl _canvas;
 
+        private MinimapRenderItem _minimap;
+
         public CanvasAnimatedControl Canvas
         {
             get { return _canvas; }
-
-            set
-            {
-                _canvas = value;
-                _canvas.Draw += CanvasOnDraw;
-                _canvas.Update += CanvasOnUpdate;
-                _canvas.CreateResources += CanvasOnCreateResources;
-
-                var vm = (FreeFormViewerViewModel)_canvas.DataContext;
-                vm.Elements.CollectionChanged += ElementsChanged;
-
-                _elementSelectionRenderItem = new ElementSelectionRenderItem(vm, _canvas);
-                _renderItems3.Add(_elementSelectionRenderItem);
-
-                _inkRenderItem = new InkRenderItem(value);
-                _renderItems0.Add(_inkRenderItem);
-            }
         }
+
+        public Size Size { get; set; }
 
         private ConcurrentBag<BaseRenderItem> _renderItems0 = new ConcurrentBag<BaseRenderItem>();
         private ConcurrentBag<BaseRenderItem> _renderItems1 = new ConcurrentBag<BaseRenderItem>();
@@ -69,6 +56,53 @@ namespace NuSysApp
         private void CanvasOnCreateResources(CanvasAnimatedControl sender, CanvasCreateResourcesEventArgs args)
         {
             //throw new NotImplementedException();
+            foreach (var item in _renderItems0)
+                item.CreateResources();
+
+            foreach (var item in _renderItems1)
+                item.CreateResources();
+
+            foreach (var item in _renderItems2)
+                item.CreateResources();
+
+            foreach (var item in _renderItems3)
+                item.CreateResources();
+
+        }
+
+        public async Task Init(CanvasAnimatedControl canvas)
+        {
+            Size = new Size(canvas.Width, canvas.Height);
+            _canvas = canvas;
+            _canvas.Draw += CanvasOnDraw;
+            _canvas.Update += CanvasOnUpdate;
+            _canvas.CreateResources += CanvasOnCreateResources;
+            _canvas.SizeChanged += CanvasOnSizeChanged;
+
+            var vm = (FreeFormViewerViewModel)_canvas.DataContext;
+            vm.Elements.CollectionChanged += ElementsChanged;
+
+            _elementSelectionRenderItem = new ElementSelectionRenderItem(vm, _canvas);
+            _renderItems3.Add(_elementSelectionRenderItem);
+
+            _inkRenderItem = new InkRenderItem(canvas);
+            _renderItems0.Add(_inkRenderItem);
+
+            _minimap = new MinimapRenderItem(canvas);
+            _minimap.Load();
+            _renderItems3.Add(_minimap);
+        }
+
+        public void Update()
+        {
+            _minimap.IsDirty = true;
+        }
+
+        private void CanvasOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
+        {
+            Size = sizeChangedEventArgs.NewSize;
+            _minimap.CreateResources();
+            _minimap.IsDirty = true;
         }
 
         public BaseRenderItem GetRenderItemAt(Point sp)
@@ -137,7 +171,7 @@ namespace NuSysApp
                     _renderItems2.Add(item);
                 }
 
-
+                _minimap.AddElement(vm);
             }
         }
 
