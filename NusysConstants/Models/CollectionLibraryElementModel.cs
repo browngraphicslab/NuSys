@@ -20,5 +20,14 @@ namespace NusysIntermediate
             Children.Clear();
             base.OnSessionControllerEnterNewCollection();
         }
+
+        public override void UnPackFromDatabaseKeys(Message message)
+        {
+            base.UnPackFromDatabaseKeys(message);
+            if (message.ContainsKey(NusysConstants.COLLECTION_CHILDREN_KEY))
+            {
+                Children = message.GetHashSet<string>(NusysConstants.COLLECTION_CHILDREN_KEY);
+            }
+        }
     }
 }

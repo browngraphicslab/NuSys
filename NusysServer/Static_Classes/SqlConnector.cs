@@ -40,8 +40,15 @@ namespace NusysServer
         {
             _db = new SqlConnection(SQLSTRING);
             _db.Open(); //open database
+            
             ResetTables();
             //SetUpTables();
+            TestFunc();
+        }
+
+        public void TestFunc()
+        {
+            
         }
 
         /// <summary>
@@ -67,6 +74,7 @@ namespace NusysServer
                 NusysConstants.LIBRARY_ELEMENT_TITLE_KEY + " varchar(4096), " +
                 NusysConstants.LIBRARY_ELEMENT_SMALL_ICON_URL_KEY + " varchar(1024), " +
                 NusysConstants.LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY + " varchar(1024), " +
+                NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY + " varchar(32), " +
                 NusysConstants.LIBRARY_ELEMENT_LARGE_ICON_URL_KEY + " varchar(1024));");
 
             var aliasTable = MakeCommand("CREATE TABLE "+GetTableName(Constants.SQLTableType.Alias)+" ("+
@@ -77,6 +85,7 @@ namespace NusysServer
                 NusysConstants.ALIAS_SIZE_WIDTH_KEY + " float, " +
                 NusysConstants.ALIAS_SIZE_HEIGHT_KEY + " float, " +
                 NusysConstants.ALIAS_CREATOR_ID_KEY + " varchar(128), " +
+                 NusysConstants.ALIAS_ACCESS_KEY + " varchar(128), " +
                 NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY + " varchar(128));");
 
             var metadataTable = MakeCommand("CREATE TABLE "+GetTableName(Constants.SQLTableType.Metadata)+" ("+
@@ -141,7 +150,7 @@ namespace NusysServer
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        private SqlCommand MakeCommand(string command)
+        public SqlCommand MakeCommand(string command)
         {
             var cmd = _db.CreateCommand();
             cmd.CommandText = command;

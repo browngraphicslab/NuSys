@@ -21,9 +21,9 @@ namespace NusysIntermediate
         public override async Task UnPackFromDatabaseMessage(Message props)
         {
             await base.UnPackFromDatabaseMessage(props);
-            if (props.ContainsKey("filepath"))
+            if (props.ContainsKey(NusysConstants.IMAGE_ELEMENT_FILE_PATH_KEY))
             {
-                FilePath = props.GetString("filepath", FilePath);
+                FilePath = props.GetString(NusysConstants.IMAGE_ELEMENT_FILE_PATH_KEY, FilePath);
             }
         }
 

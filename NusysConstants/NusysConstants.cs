@@ -157,7 +157,80 @@ namespace NusysIntermediate
             /// the key used to send the id of the creator
             /// </summary>
             public static readonly string NEW_ELEMENT_REQUEST_CREATOR_ID_KEY = "creator_id_key";
+
+        /// <summary>
+        /// the key used to send the access level of the element request key
+        /// </summary>
+        public static readonly string NEW_ELEMENT_REQUEST_ACCESS_KEY = "access";
         #endregion NewElementRequest
+
+        #region NewLibraryElementRequest
+        /// <summary>
+        /// key in message for sending type when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY = "type";
+
+        /// <summary>
+        /// key in message for sending library id when creating new library element request
+
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
+
+        /// <summary>
+        /// key in message for sending content id when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_CONTENT_ID_KEY = "content_id";
+
+        /// <summary>
+        /// key in message for sending keywords when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_KEYWORDS_KEY = "keywords";
+
+        /// <summary>
+        /// key in message for sending title when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY = "title";
+
+        /// <summary>
+        /// key in message for sending favorited bool when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_FAVORITED_KEY = "favorited";
+
+        /// <summary>
+        /// key in message for sending large icon url when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LARGE_ICON_URL_KEY = "large_icon_url";
+
+        /// <summary>
+        /// key in message for sending medium icon url when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_MEDIUM_ICON_URL_KEY = "medium_icon_url";
+
+        /// <summary>
+        /// key in message for sending small icon url when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_SMALL_ICON_URL_KEY = "small_icon_url";
+
+        /// <summary>
+        /// key in message for sending creator id when creating new library element request 
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_CREATOR_USER_ID_KEY = "creator_user_id";
+
+        /// <summary>
+        /// key in message for sending creation date when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_CREATION_TIMESTAMP_KEY = "creation_timestamp";
+
+        /// <summary>
+        /// key in message for sending last edited timestamp when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LAST_EDITED_TIMESTAMP_KEY = "last_edited_timestamp";
+
+        /// <summary>
+        /// key in message for access type when creating new library element request
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_ACCESS_KEY = "access";
+        #endregion NewLibraryElementRequest
 
         #endregion RequestKeys
 
@@ -209,6 +282,12 @@ namespace NusysIntermediate
         public static readonly string ALIAS_CREATOR_ID_KEY = "creator_user_id";
 
         /// <summary>
+        /// 32 character string  
+        /// Represents the level of access.
+        /// </summary>
+        public static readonly string ALIAS_ACCESS_KEY = "access";
+
+        /// <summary>
         /// the dictionary from keys that are accepted and put into the Alias table to their type. 
         /// the keys not included in this list are put into the properties table
         /// </summary>
@@ -221,7 +300,8 @@ namespace NusysIntermediate
                 {ALIAS_SIZE_WIDTH_KEY,typeof(float)},
                 { ALIAS_SIZE_HEIGHT_KEY,typeof(float)},
                 { ALIAS_PARENT_COLLECTION_ID_KEY,typeof(string)},
-                {  ALIAS_CREATOR_ID_KEY, typeof(string) }
+                {  ALIAS_CREATOR_ID_KEY, typeof(string) },
+            {ALIAS_ACCESS_KEY, typeof(string) }
             };
 
             #endregion alias
@@ -298,11 +378,17 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY = "last_edited_timestamp";
 
-            /// <summary>
-            /// the dictionary from keys that are accepted and put into the library elmeent table to their type. 
-            /// the keys not included in this list are put into the properties table
-            /// </summary>
-            public static readonly Dictionary<string, Type> LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS = new Dictionary<string, Type>()
+        /// <summary>
+        /// 32 character string  
+        /// Represents the level of access.
+        /// </summary>
+        public static readonly string LIBRARY_ELEMENT_ACCESS_KEY = "access";
+
+        /// <summary>
+        /// the dictionary from keys that are accepted and put into the library elmeent table to their type. 
+        /// the keys not included in this list are put into the properties table
+        /// </summary>
+        public static readonly Dictionary<string, Type> LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS = new Dictionary<string, Type>()
             {
                 {LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY, typeof(string)},
                 { LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY, typeof(string)},
@@ -316,6 +402,7 @@ namespace NusysIntermediate
                 { LIBRARY_ELEMENT_LIBRARY_ID_KEY,typeof(string)},
                 { LIBRARY_ELEMENT_CONTENT_ID_KEY,typeof(string)},
                 { LIBRARY_ELEMENT_TYPE_KEY,typeof(string)},
+                { LIBRARY_ELEMENT_ACCESS_KEY,typeof(string)},
             };
             #endregion libraryElementModel
 
@@ -480,12 +567,80 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string LIBRARY_ELEMENT_METADATA_KEY = "library_element_metadata";
 
-            #region LinkLibraryElementModel
+        #region RectangleRegion
+        /// <summary>
+        /// This key is used to hold the top left point of the rectangular region when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string RECTANGLE_REGION_TOP_LEFT_POINT_KEY = "top_left_point";
 
-            /// <summary>
-            /// The key that will hold the LibraryElementId for the IN libary element
-            /// </summary>
-            public static readonly string LINK_LIBRARY_ELEMENT_IN_ID_KEY = "link_in_id";
+        /// <summary>
+        /// This key is used to hold the width of the rectangular region when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string RECTANGLE_REGION_WIDTH_KEY = "width";
+
+        /// <summary>
+        /// This key is used to hold the height of the rectangular region when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string RECTANGLE_REGION_HEIGHT_KEY = "height";
+        #endregion RectangleRegion
+
+        #region VideoRegion
+        /// <summary>
+        /// This key is used to hold the start time of a video region when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string VIDEO_REGION_START_KEY = "start";
+
+        /// <summary>
+        /// This key is used to hold the end time of a video region when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string VIDEO_REGION_END_KEY = "end";
+
+
+        #endregion VideoRegion
+
+        #region AudioRegion
+        /// <summary>
+        /// This key is used to hold the start time of a audio region when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string AUDIO_REGION_START_KEY = "start";
+
+        /// <summary>
+        /// This key is used to hold the end time of a audio region when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string AUDIO_REGION_END_KEY = "end";
+
+
+        #endregion AudioRegion
+
+        #region PdfRegion
+        /// <summary>
+        /// This key is used to hold the page of a pdf region when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string PDF_REGION_PAGE_NUMBER_KEY = "page_number";
+        #endregion PdfRegion 
+
+        #region Collection
+        /// <summary>
+        /// This key is used to hold the list of children library element id strings.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string COLLECTION_CHILDREN_KEY = "children";
+        #endregion Collection 
+
+        #region LinkLibraryElementModel
+
+        /// <summary>
+        /// The key that will hold the LibraryElementId for the IN libary element
+        /// </summary>
+        public static readonly string LINK_LIBRARY_ELEMENT_IN_ID_KEY = "link_in_id";
 
             /// <summary>
             /// The key that will hold the LibraryElementId for the OUT libary element
@@ -505,6 +660,73 @@ namespace NusysIntermediate
 
         #endregion ContentDataModel
 
+        #region ElementModel
+        #region AreaModel
+        /// <summary>
+        /// This key is used to hold the points for the area models when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string AREA_MODEL_POINTS_KEY = "points";
+        #endregion AreaModel
+
+        #region CollectionElement
+        /// <summary>
+        /// This key is used to hold the the collection view type for collection element models when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string COLLECTION_ELEMENT_COLLECTION_VIEW_KEY = "collectionview";
+        #endregion CollectionElement
+
+        #region VideoElement
+        /// <summary>
+        /// This key is used to hold the X resolution for the video element models when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string VIDEO_ELEMENT_RESOLUTION_X_KEY = "resolutionX";
+
+        /// <summary>
+        /// This key is used to hold the X resolution for the video element models when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string VIDEO_ELEMENT_RESOLUTION_Y_KEY = "resolutionY";
+
+        /// <summary>
+        /// This key is used to hold the data bytes for the video element models when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string VIDEO_ELEMENT_VIDEO_DATA_BYTES = "video";
+
+
+        #endregion VideoElement
+
+        #region AudioElement
+        /// <summary>
+        /// This key is used to hold the the audio element file name when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string AUDIO_ELEMENT_FILE_NAME_KEY = "fileName";
+        #endregion AudioElement
+
+        #region PdfElement
+        /// <summary>
+        /// This key is used to hold the the PDF'S page location in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string PDF_ELEMENT_PAGE_LOCATION_KEY = "page_location";
+        #endregion PdfElement
+
+        #region ImageElement
+        /// <summary>
+        /// This key is used to hold the the image element's file path in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string IMAGE_ELEMENT_FILE_PATH_KEY = "filepath";
+        #endregion ImageElement
+
+        #endregion ElementModel
+
+
+
         #endregion UnPackingModelKeys
 
         #region Enums
@@ -519,6 +741,19 @@ namespace NusysIntermediate
             Image,
             Video,
             Audio
+        }
+
+        /// <summary>
+        /// The access type for library elements and elements.
+        /// Public - everyone can see it
+        /// Private - only creator can see it
+        /// ReadOnly - only creator can edit it. 
+        /// </summary>
+        public enum AccessType
+        {
+            Public, 
+            Private,
+            ReadOnly
         }
 
         /// <summary>
@@ -575,6 +810,47 @@ namespace NusysIntermediate
 
             // weird type that possibly shouldn't be here
             Tools
+        }
+        
+        /// <summary>
+        /// Collection of all the column names in all of the tables
+        /// </summary>
+        public enum SqlColumns
+        {
+
+            //Content
+            CONTENT_TABLE_CONTENT_ID_KEY,
+            CONTENT_TABLE_TYPE_KEY,
+            CONTENT_TABLE_CONTENT_URL_KEY,
+
+            //Properties table
+            PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY,
+            PROPERTIES_KEY_COLUMN_KEY,
+            PROPERTIES_STRING_VALUE_COLUMN_KEY,
+            PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY,
+            PROPERTIES_DATE_VALUE_COLUMN_KEY,
+
+            //Metadata
+            METADATA_LIBRARY_ELEMENT_ID_KEY,
+            METADATA_KEY_COLUMN_KEY,
+            METADATA_VALUE_COLUMN_KEY,
+
+            //Library elements
+            LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY, 
+            LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY, 
+            LIBRARY_ELEMENT_CREATOR_USER_ID_KEY,
+            LIBRARY_ELEMENT_SMALL_ICON_URL_KEY,
+            LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY,
+            LIBRARY_ELEMENT_LARGE_ICON_URL_KEY,
+            LIBRARY_ELEMENT_FAVORITED_KEY,
+            LIBRARY_ELEMENT_TITLE_KEY,
+            LIBRARY_ELEMENT_KEYWORDS_KEY,
+            LIBRARY_ELEMENT_LIBRARY_ID_KEY,
+            LIBRARY_ELEMENT_CONTENT_ID_KEY,
+            LIBRARY_ELEMENT_TYPE_KEY,
+            LIBRARY_ELEMENT_ACCESS_KEY
+
+
         }
 
         #endregion Enums

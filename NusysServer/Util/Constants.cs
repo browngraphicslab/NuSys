@@ -113,6 +113,16 @@ namespace NusysServer
             And,
             Or
         }
+        
+        /// <summary>
+        /// The possible join operators for tables
+        /// </summary>
+        public enum JoinedType
+        {
+            LeftJoin,
+            InnerJoin,
+            RightJoin
+        }
 
         #region StaticMethods
 

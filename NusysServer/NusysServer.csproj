@@ -177,6 +177,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Misc\SqlJoinOperationArgs.cs" />
     <Compile Include="Misc\SqlSelectQueryArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestHandlers\CreateNewContentRequestHandler.cs" />
@@ -197,6 +198,10 @@
     <Compile Include="Util\Constants.cs" />
     <Compile Include="Util\ErrorLog.cs" />
     <Compile Include="Util\FileHelper.cs" />
+    <Compile Include="Util\SelectQuery\ITableRepresentable.cs" />
+    <Compile Include="Util\SelectQuery\JoinedTable.cs" />
+    <Compile Include="Util\SelectQuery\SingleTable.cs" />
+    <Compile Include="Util\SelectQuery\SQLSelectQuery.cs" />
     <Compile Include="Util\SQLSelectQueryConditionals.cs" />
   </ItemGroup>
   <ItemGroup>

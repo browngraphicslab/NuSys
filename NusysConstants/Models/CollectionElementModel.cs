@@ -26,9 +26,9 @@ namespace NusysIntermediate
 
         public override async Task UnPackFromDatabaseMessage(Message props)
         {
-            if (props.ContainsKey("collectionview"))
+            if (props.ContainsKey(NusysConstants.COLLECTION_ELEMENT_COLLECTION_VIEW_KEY))
             {
-                string t = props.GetString("collectionview");
+                string t = props.GetString(NusysConstants.COLLECTION_ELEMENT_COLLECTION_VIEW_KEY);
                 ActiveCollectionViewType = (CollectionViewType)Enum.Parse(typeof(CollectionViewType), t);
             }
             await base.UnPackFromDatabaseMessage(props);
