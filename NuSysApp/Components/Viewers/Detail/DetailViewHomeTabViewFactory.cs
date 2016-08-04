@@ -13,41 +13,45 @@ namespace NuSysApp
 {
     public class DetailViewHomeTabViewFactory
     {
-        public async Task<UserControl> CreateFromSendable(LibraryElementController controller, HashSet<Region> regionsToLoad)
+        public async Task<UserControl> CreateFromSendable(LibraryElementController controller)
         {
             UserControl view = null;
 
             switch (controller.LibraryElementModel.Type)
             {
                 case ElementType.Text:
-                    view = new TextDetailHomeTabView(new TextDetailHomeTabViewModel(controller, regionsToLoad));
+                    view = new TextDetailHomeTabView(new TextDetailHomeTabViewModel(controller));
                     break;
+                case ElementType.ImageRegion:
                 case ElementType.Image:
-                    view = new ImageDetailHomeTabView(new ImageDetailHomeTabViewModel(controller, regionsToLoad));
+                    view = new ImageDetailHomeTabView(new ImageDetailHomeTabViewModel(controller));
                     break;
                 case ElementType.Word:
-                    view = new WordDetailHomeTabView(new WordDetailHomeTabViewModel(controller, regionsToLoad));
+                    view = new WordDetailHomeTabView(new WordDetailHomeTabViewModel(controller));
                     break;
                 case ElementType.Powerpoint:
                     //view = new PowerpointDetailView(new PowerpointNodeViewModel(controller));
                     break;
+                case ElementType.PdfRegion:
                 case ElementType.PDF:
-                    view = new PdfDetailHomeTabView(new PdfDetailHomeTabViewModel(controller, regionsToLoad));
+                    view = new PdfDetailHomeTabView(new PdfDetailHomeTabViewModel(controller));
                     break;
                 case ElementType.Web:
                     //view = new WebDetailView(new WebNodeViewModel(controller));
                     break;
+                case ElementType.VideoRegion:
                 case ElementType.Video:
-                    view = new VideoDetailHomeTabView(new VideoDetailHomeTabViewModel(controller, regionsToLoad));
+                    view = new VideoDetailHomeTabView(new VideoDetailHomeTabViewModel(controller));
                     break;
+                case ElementType.AudioRegion:
                 case ElementType.Audio:
-                    view = new AudioDetailHomeTabView(new AudioDetailHomeTabViewModel(controller, regionsToLoad));
+                    view = new AudioDetailHomeTabView(new AudioDetailHomeTabViewModel(controller));
                     break;
                 case ElementType.Collection:
-                    view = new GroupDetailHomeTabView(new GroupDetailHomeTabViewModel(controller, regionsToLoad));
+                    view = new GroupDetailHomeTabView(new GroupDetailHomeTabViewModel(controller));
                     break;
                 case ElementType.Link:
-                    view = new LinkDetailHomeTabView(new LinkHomeTabViewModel(controller as LinkLibraryElementController, regionsToLoad));
+                    view = new LinkDetailHomeTabView(new LinkHomeTabViewModel(controller as LinkLibraryElementController));
                     break;
             }
 
@@ -56,51 +60,5 @@ namespace NuSysApp
             await ((DetailHomeTabViewModel)view.DataContext).Init();
             return view;
         }
-        //public async Task<UserControl> CreateFromSendable(ElementController controller)
-        //{
-        //    UserControl view = null; 
-
-        //    switch (controller.Model.ElementType)
-        //    {
-        //        case ElementType.Text:
-        //            var tvm = new TextNodeViewModel(controller);
-        //            view = new TextDetailHomeTabView(tvm);
-        //            break;
-        //        case ElementType.Image:
-        //            var ivm = new ImageElementViewModel(controller);
-        //            view = new ImageDetailHomeTabView(ivm);
-        //            break;
-        //        case ElementType.Word:
-        //            view = new WordDetailView(new WordNodeViewModel(controller));
-        //            break;
-        //        case ElementType.Powerpoint:
-        //            view = new PowerpointDetailView(new PowerpointNodeViewModel(controller));
-        //            break;
-        //        case ElementType.PDF:
-        //            view = new PdfDetailHomeTabView(new PdfNodeViewModel(controller));
-        //            break;
-        //        case ElementType.Web:
-        //            view = new WebDetailView(new WebNodeViewModel(controller));
-        //            break;
-        //        case ElementType.Video:
-        //            view = new VideoDetailHomeTabView(new VideoNodeViewModel(controller));
-        //            break;
-        //        case ElementType.Audio:
-        //            AudioNodeViewModel audioVM = new AudioNodeViewModel(controller);
-        //            view = new AudioDetailHomeTabView(audioVM);
-        //            break;
-        //        case ElementType.Collection:
-        //            view = new GroupDetailHomeTabView(new ElementCollectionViewModel((ElementCollectionController)controller));
-        //            break;
-        //    }
-
-        //    if (view == null)
-        //        return null; 
-
-        //    await ((ElementViewModel)view.DataContext).Init();
-        //    return view;
-        //}
-
-
     }
 }

@@ -285,6 +285,11 @@
     <Compile Include="Components\LoadingScreen.xaml.cs">
       <DependentUpon>LoadingScreen.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Misc\ChatBoxView.xaml.cs">
+      <DependentUpon>ChatBoxView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Misc\ChatBoxViewModel.cs" />
+    <Compile Include="Components\Misc\ChatMessageTemplate.cs" />
     <Compile Include="Components\Misc\Library\LibraryFavorites.xaml.cs">
       <DependentUpon>LibraryFavorites.xaml</DependentUpon>
     </Compile>
@@ -323,11 +328,21 @@
     </Compile>
     <Compile Include="Components\Regions\PDFRegionViewModel.cs" />
     <Compile Include="Components\Regions\RegionViewModel.cs" />
+    <Compile Include="Components\Tools\BarChartItem.xaml.cs">
+      <DependentUpon>BarChartItem.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Tools\BarChartItemViewModel.cs" />
+    <Compile Include="Components\Tools\BarChartToolView.xaml.cs">
+      <DependentUpon>BarChartToolView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Tools\BaseToolView.xaml.cs">
       <DependentUpon>BaseToolView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Tools\BasicToolController.cs" />
     <Compile Include="Components\Tools\BasicToolModel.cs" />
+    <Compile Include="Components\Tools\ListToolView.xaml.cs">
+      <DependentUpon>ListToolView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Tools\MetadataToolController.cs" />
     <Compile Include="Components\Tools\MetadataToolModel.cs" />
     <Compile Include="Components\Tools\MetadataToolView.xaml.cs">
@@ -338,26 +353,25 @@
       <DependentUpon>PieChartToolView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Tools\ToolController.cs" />
-    <Compile Include="Components\Tools\ToolFilterLinkView.xaml.cs">
-      <DependentUpon>ToolFilterLinkView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Tools\ToolFilterLinkViewModel.cs" />
     <Compile Include="Components\Tools\ToolFilterView.xaml.cs">
       <DependentUpon>ToolFilterView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Tools\ToolLinkable.cs" />
     <Compile Include="Components\Tools\ToolLinkView.xaml.cs">
       <DependentUpon>ToolLinkView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Tools\ToolLinkViewModel.cs" />
     <Compile Include="Components\Tools\ToolModel.cs" />
     <Compile Include="Components\Tools\BasicToolViewModel.cs" />
+    <Compile Include="Components\Tools\ToolStartable.cs" />
+    <Compile Include="Components\Tools\ToolUtilities.cs" />
     <Compile Include="Components\Tools\ToolViewable.cs" />
     <Compile Include="Components\Tools\ToolViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\ILinkTabable.cs" />
     <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
-    <Compile Include="Components\Viewers\Detail\Sizeable.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\DetailViewTabTemplate.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\LinkHomeTabViewModel.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\IDetailViewable.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\DetailHomeTabView.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\WordDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml.cs">
       <DependentUpon>WordDetailHomeTabView.xaml</DependentUpon>
@@ -378,28 +392,34 @@
     <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoMediaPlayer.xaml.cs">
       <DependentUpon>VideoMediaPlayer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Wrapper\AudioWrapper.xaml.cs">
+      <DependentUpon>AudioWrapper.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Viewers\FreeForm\Wrapper\RectangleWrapper.xaml.cs">
+      <DependentUpon>RectangleWrapper.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Viewers\RecordingNodeViewModel.cs" />
-    <Compile Include="Controller\AudioRegionController.cs" />
+    <Compile Include="Controller\AudioRegionLibraryElementController.cs" />
     <Compile Include="Controller\LibraryElementController\LibraryElementControllerFactory.cs" />
     <Compile Include="Controller\LibraryElementController\LinkLibraryElementController.cs" />
     <Compile Include="Controller\LibraryElementController\WordNodeLibraryElementController.cs" />
     <Compile Include="Controller\LinksController.cs" />
     <Compile Include="Controller\RecordingNodeController.cs" />
-    <Compile Include="Controller\RectangleRegionController.cs" />
-    <Compile Include="Controller\PdfRegionController.cs" />
-    <Compile Include="Controller\RegionController.cs" />
+    <Compile Include="Controller\RectangleRegionLibraryElementController.cs" />
+    <Compile Include="Controller\PdfRegionLibraryElementController.cs" />
+    <Compile Include="Controller\RegionLibraryElementController.cs" />
     <Compile Include="Controller\RegionControllerFactory.cs" />
     <Compile Include="Controller\RegionsController.cs" />
-    <Compile Include="Controller\VideoRegionController.cs" />
+    <Compile Include="Controller\VideoRegionLibraryElementController.cs" />
     <Compile Include="Converters\BoolToManipulationModeConverter.cs" />
     <Compile Include="Converters\ListToStringConverter.cs" />
     <Compile Include="Converters\MutabilityToBrushConverter.cs" />
+    <Compile Include="Models\ContentDataModel.cs" />
     <Compile Include="Models\LibraryElementModelFactory.cs" />
     <Compile Include="Models\LinkLibraryElementModel.cs" />
     <Compile Include="Models\PresentationLinkModel.cs" />
-    <Compile Include="Models\Regions\PDFRegion.cs" />
-    <Compile Include="Models\Regions\TimeRegionModel.cs" />
-    <Compile Include="Components\Viewers\Detail\Regionable.cs" />
+    <Compile Include="Models\Regions\PdfRegionModel.cs" />
+    <Compile Include="Models\Regions\AudioRegionModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\AudioDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\DetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\GroupDetailHomeTabViewModel.cs" />
@@ -510,9 +530,6 @@
     <Compile Include="Components\Misc\SearchWindowViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\TimelineNodeViewFactory.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\DragOutMode.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlock.xaml.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlockModel.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlockViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\MediaFoundationReaderUniversal.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeView.xaml.cs">
       <DependentUpon>AreaNodeView.xaml</DependentUpon>
@@ -593,7 +610,6 @@
     <Compile Include="Models\CollectionLibraryElementModel.cs" />
     <Compile Include="Models\CollectionElementModel.cs" />
     <Compile Include="Models\PowerpointNodeModel.cs" />
-    <Compile Include="Models\Regions\CompoundRegion.cs" />
     <Compile Include="Models\Regions\RectangleRegion.cs" />
     <Compile Include="Models\Regions\Region.cs" />
     <Compile Include="Models\Regions\VideoRegionModel.cs" />
@@ -610,9 +626,9 @@
     <Compile Include="Network\NetworkSession.cs" />
     <Compile Include="Network\NetworkUser.cs" />
     <Compile Include="Network\NuSysNetworkSession.cs" />
+    <Compile Include="Network\Requests\ChatRequest.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
     <Compile Include="Network\Requests\ChangeContentRequest.cs" />
-    <Compile Include="Network\Requests\ChatDialogRequest.cs" />
     <Compile Include="Network\Requests\CreateNewLibraryElementRequest.cs" />
     <Compile Include="Network\Requests\DeleteLibraryElementRequest.cs" />
     <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
@@ -666,9 +682,6 @@
     <Compile Include="Util\RenderTask.cs" />
     <Compile Include="Util\Statistics.cs" />
     <Compile Include="Util\Telemetry.cs" />
-    <Compile Include="Util\TemporaryToolView.xaml.cs">
-      <DependentUpon>TemporaryToolView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Util\UITask.cs" />
     <Compile Include="Components\InqCanvas\InqCanvasViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\VideoNode\VideoNodeViewModel.cs" />
@@ -729,7 +742,7 @@
     <Compile Include="Util\AudioCapture.cs" />
     <Compile Include="Util\Clip.cs" />
     <Compile Include="Util\Command.cs" />
-    <Compile Include="Constants.cs" />
+    <Compile Include="Util\Constants.cs" />
     <Compile Include="Components\Cortana\Cortana.cs" />
     <Compile Include="Components\Cortana\CortanaContinuousRecognition.cs" />
     <Compile Include="Components\Cortana\CortanaPopup.xaml.cs">
@@ -832,6 +845,7 @@
     <Content Include="Assets\icon_node_x.png" />
     <Content Include="Assets\icon_node_x2.png" />
     <Content Include="Assets\pdf.png" />
+    <Content Include="Assets\placeholder_pdf_thumbnail.png" />
     <Content Include="Assets\plus_icon.png" />
     <Content Include="Assets\piegraph bluegreen.png" />
     <Content Include="Assets\powerpointIcon.png" />
@@ -888,6 +902,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\Misc\ChatBoxView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Misc\Library\LibraryFavorites.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -920,19 +938,27 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Components\Tools\BarChartItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Tools\BarChartToolView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Tools\BaseToolView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Tools\ListToolView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Tools\MetadataToolView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Tools\PieChartToolView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Tools\ToolFilterLinkView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1068,10 +1094,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlock.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -1144,6 +1166,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Components\Viewers\FreeForm\Wrapper\AudioWrapper.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Wrapper\RectangleWrapper.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Viewers\Search\SearchView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1200,10 +1230,6 @@
     <Page Include="Components\WaitingRoom\WaitingRoomView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Util\TemporaryToolView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Util\RelatedListBox.xaml">
       <SubType>Designer</SubType>

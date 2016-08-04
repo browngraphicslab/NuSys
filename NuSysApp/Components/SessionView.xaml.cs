@@ -61,11 +61,24 @@ namespace NuSysApp
 
         #endregion Private Members
 
-        private int initChatNotifs;
-
+        private int _unseenChatMessagesNum;
+        private bool _isChatVisible;
         public SessionView()
         {
             this.InitializeComponent();
+            var bounds = Window.Current.Bounds;
+            var height = bounds.Height;
+            var width = bounds.Width;
+            Canvas.SetLeft(xChatBox, width - 300 - 10);
+            Canvas.SetTop(xChatBox, height - 375 - 10 - 50 - 10 - 7);
+            Canvas.SetLeft(ChatBoxButton, width - 10 - 50);
+            Canvas.SetTop(ChatBoxButton, height - 10 - 50);
+            Canvas.SetLeft(ChatNotifs, width - 10 - 50 - 10);
+            Canvas.SetTop(ChatNotifs, height - 10 - 50 - 10);
+
+            
+            _isChatVisible = false;
+            _unseenChatMessagesNum = 0;
 
             CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
             CoreWindow.GetForCurrentThread().KeyUp += OnKeyUp;
@@ -84,9 +97,6 @@ namespace NuSysApp
 
                 };
 
-
-
-
             xWorkspaceTitle.IsActivated = true;
 
             Loaded += OnLoaded;
@@ -101,7 +111,6 @@ namespace NuSysApp
 
         private async void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
-            await SessionController.Instance.RegionsController.Load();
             SessionController.Instance.NuSysNetworkSession.OnNewNetworkUser += NewNetworkUser;
 
             var l = WaitingRoomView.GetFirstLoadList();
@@ -119,6 +128,7 @@ namespace NuSysApp
             xDetailViewer.DataContext = new DetailViewerViewModel();
             xSearchViewer.DataContext = new SearchViewModel();
             xSpeechToTextBox.DataContext = new SpeechToTextViewModel();
+            xChatBox.DataContext = new ChatBoxViewModel();
 
             var xRegionEditorView = (RegionEditorTabView)xDetailViewer.FindName("xRegionEditorView");
             xRegionEditorView.DataContext = xDetailViewer.DataContext;
@@ -247,7 +257,7 @@ namespace NuSysApp
 
             // change the proper visibilities
             xFloatingMenu.Visibility = Visibility.Collapsed;
-            this.xDetailViewer.Visibility = Visibility.Collapsed;
+            this.xDetailViewer.CloseDv();
 
 
             // center the buttons, make them visibile
@@ -280,7 +290,7 @@ namespace NuSysApp
 
             // change the proper visibilities
             xFloatingMenu.Visibility = Visibility.Collapsed;
-            this.xDetailViewer.Visibility = Visibility.Collapsed;
+            this.xDetailViewer.CloseDv();
 
             // center the buttons, make them visibile
             var buttonMargin = 10;
@@ -757,8 +767,8 @@ namespace NuSysApp
             Canvas.SetLeft(ChatPopup, 5);
             Canvas.SetLeft(ChatButton, 5);
             Canvas.SetTop(ChatButton, mainCanvas.ActualHeight - 70);
-            Canvas.SetLeft(ChatNotifs, 37);
-            Canvas.SetTop(ChatNotifs, mainCanvas.ActualHeight - 67);
+            //Canvas.SetLeft(ChatNotifs, 37);
+            //Canvas.SetTop(ChatNotifs, mainCanvas.ActualHeight - 67);
             //Canvas.SetLeft(SnapshotButton, MainCanvas.ActualWidth - 65);
             //Canvas.SetTop(SnapshotButton, MainCanvas.ActualHeight - 65);
         }
@@ -781,7 +791,7 @@ namespace NuSysApp
             }
         }
 
-        public async void ShowDetailView(IDetailViewable viewable, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
+        public async void ShowDetailView(LibraryElementController viewable, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
         {
             // don't edit if we are in exploration or presentation mode
             if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||
@@ -789,9 +799,9 @@ namespace NuSysApp
             {
                 return;
             }
-            if (viewable is RegionController)
+            if (viewable is RegionLibraryElementController)
             {
-                await xDetailViewer.ShowElement(viewable as RegionController, tabToOpenTo);
+                await xDetailViewer.ShowElement(viewable as RegionLibraryElementController, tabToOpenTo);
 
             }
             else if (viewable is LibraryElementController)
@@ -893,7 +903,7 @@ namespace NuSysApp
 
         private void ChatButton_OnClick(object sender, RoutedEventArgs e)
         {
-            initChatNotifs = ChatPopup.getTexts().Count;
+            //initChatNotifs = ChatPopup.getTexts().Count;
             ChatPopup.Visibility = ChatPopup.Visibility == Visibility.Collapsed
                 ? Visibility.Visible
                 : Visibility.Collapsed;
@@ -920,10 +930,8 @@ namespace NuSysApp
                 FloatingMenu.Visibility = Visibility.Collapsed;
             }
         }
-
         public Grid OuterMost { get { return xOuterMost; } }
         public FreeFormViewer FreeFormViewer { get { return _activeFreeFormViewer; } }
-
         private async void SnapshotButton_OnClick(object sender, RoutedEventArgs e)
         {
             await StaticServerCalls.CreateSnapshot();
@@ -948,6 +956,37 @@ namespace NuSysApp
                 exp.HideRelatedListBox();
             }
             
+        }
+
+        public void IncrementUnseenMessage()
+        {
+            if (ChatNotifs.Visibility.Equals(Visibility.Collapsed))
+            {
+                ChatNotifs.Visibility = Visibility.Visible;
+            }
+            _unseenChatMessagesNum++;
+            NotifNumber.Text = "" + _unseenChatMessagesNum;
+        }
+
+        public ChatBoxView GetChatBox()
+        {
+            return xChatBox;
+        }
+
+        private void ChatBoxButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            _isChatVisible = !_isChatVisible;
+            if (_isChatVisible)
+            {
+                xChatBox.Visibility = Visibility.Visible;
+                _unseenChatMessagesNum = 0;
+                NotifNumber.Text = "" + _unseenChatMessagesNum;
+                ChatNotifs.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                xChatBox.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }

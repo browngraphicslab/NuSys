@@ -1,5 +1,5 @@
-﻿<local:AnimatableUserControl
-    x:Class="NuSysApp.TemporaryToolView"
+<local:AnimatableUserControl
+    x:Class="NuSysApp.Tools.ListToolView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:NuSysApp"
@@ -10,12 +10,12 @@
 
    
     <Grid VerticalAlignment="Stretch" Margin="0">
-        <ListView x:Name="xPropertiesList" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" ManipulationMode="TranslateX, TranslateY" Width="Auto" Background="White" SelectionMode="Multiple"  ItemsSource="{x:Bind PropertiesToDisplayUnique}" >
+        <ListView x:Name="xPropertiesList" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" ManipulationMode="TranslateX, TranslateY" Width="Auto" Background="White" SelectionMode="Multiple"  ItemsSource="{x:Bind PropertiesToDisplayUnique}" Loaded="XPropertiesList_OnLoaded" >
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property= "VerticalContentAlignment" Value="Stretch"/>
                     <Setter Property= "HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="Padding" Value="10,0,10,0"/>
+                    <Setter Property="Padding" Value="0"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="ListViewItem">
@@ -50,7 +50,7 @@
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid x:Name="xGridListItem" Background="Transparent" DoubleTapped ="xListItem_OnDoubleTapped" Tapped="xListItem_OnTapped"  PointerPressed="xListItem_PointerPressed"  Width="Auto" ManipulationMode="All" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
+                    <Grid x:Name="xGridListItem" Background="Transparent" DoubleTapped ="xListItem_OnDoubleTapped" Tapped="xListItem_OnTapped"  PointerPressed="xListItem_PointerPressed"  Width="Auto" ManipulationMode="TranslateX, TranslateY, TranslateInertia" ManipulationStarted="xListItem_ManipulationStarted" ManipulationDelta="xListItem_ManipulationDelta" ManipulationCompleted="xListItem_ManipulationCompleted">
                         <TextBlock Text="{Binding}" Foreground="{StaticResource color3}" VerticalAlignment="Center" Width="Auto" />
                     </Grid>
                 </DataTemplate>

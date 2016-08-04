@@ -36,34 +36,17 @@ namespace NuSysApp
             var linkModel = controller.LinkLibraryElementModel;
             if (linkModel.InAtomId == detailViewOpenElementContentId)
             {
-                if (SessionController.Instance.RegionsController.IsRegionId(linkModel.OutAtomId))
-                {
-                    var regionController = SessionController.Instance.RegionsController.GetRegionController(linkModel.OutAtomId);
-                    Debug.Assert(regionController != null);
-                    LinkedTo = regionController.Title;
-                }
-                else if(SessionController.Instance.LinksController.IsContentId(linkModel.OutAtomId))
-                {
-                    var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.OutAtomId);
-                    Debug.Assert(libraryElementModel != null);
-                    LinkedTo = libraryElementModel.Title;
-                }
-                //LinkedTo = "";
+                var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.OutAtomId);
+                Debug.Assert(libraryElementModel != null);
+                LinkedTo = libraryElementModel.Title;
+                
             }
             else
             {
-                if (SessionController.Instance.RegionsController.IsRegionId(linkModel.InAtomId))
-                {
-                    var regionController = SessionController.Instance.RegionsController.GetRegionController(linkModel.InAtomId);
-                    Debug.Assert(regionController != null);
-                    LinkedTo = regionController.Title;
-                }
-                else if (SessionController.Instance.LinksController.IsContentId(linkModel.InAtomId))
-                {
-                    var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.InAtomId);
-                    Debug.Assert(libraryElementModel != null);
-                    LinkedTo = libraryElementModel.Title;
-                }
+                var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.InAtomId);
+                Debug.Assert(libraryElementModel != null);
+                LinkedTo = libraryElementModel.Title;
+                
                 
             }
             ID = controller.LinkLibraryElementModel.LibraryElementId;

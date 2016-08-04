@@ -4,13 +4,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="using:NuSysApp"
     xmlns:nuSysApp="using:NuSysApp"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
-    
 
-    <Grid x:Name ="Grid" Width="{Binding Width}">
+
+    <Border BorderThickness="4,4,4,4" BorderBrush="Transparent">
+        <Grid x:Name ="Grid" Width="{Binding Width}" SizeChanged="Grid_SizeChanged">
         <Grid.Resources>
             <nuSysApp:PositionToStringConverter x:Key="PositionToStringConverter"/>
         </Grid.Resources>
@@ -20,15 +22,20 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Image x:Name="VisualizationImage" Height ="100"  Stretch="Fill" Grid.Row ="0" Margin="10,10,10,10"></Image>
-        <ProgressBar x:Name ="ProgressBar" Height ="{Binding ElementName=VisualizationImage, Path=ActualHeight}"  Grid.Row="0" Margin="10,10,10,10" 
-                     Value = "0" Maximum="{Binding ElementName=MediaElement, Path=NaturalDuration.TimeSpan.TotalMilliseconds}" 
-                     Tapped="ProgressBar_OnTapped" PointerMoved="ProgressBar_OnPointerMoved" PointerReleased="ProgressBar_OnPointerReleased" Opacity="0.3" />
+        <ProgressBar x:Name ="ProgressBar" Height ="{Binding ElementName=VisualizationImage, Path=ActualHeight}"  Grid.Row="0" 
+                     
+                     Tapped="ProgressBar_OnTapped" PointerMoved="ProgressBar_OnPointerMoved" PointerReleased="ProgressBar_OnPointerReleased" Opacity="0.3"/>
         <Grid Grid.Row="1" HorizontalAlignment="Left">
             <TextBlock  Margin="10,0,0,0" Text ="{Binding ElementName=MediaElement, Path=Position, Converter={StaticResource PositionToStringConverter}}"></TextBlock>
         </Grid>
         <Grid Grid.Row="1" HorizontalAlignment="Right">
-            <TextBlock Margin="0,0,10,0" Text ="{Binding ElementName=MediaElement, Path=NaturalDuration.TimeSpan, Converter={StaticResource PositionToStringConverter}}"></TextBlock>
+            <TextBlock x:Name="xRightTimeStampTextBlock" Margin="0,0,10,0"></TextBlock>
         </Grid>
+        <local:AudioWrapper x:Name="xAudioWrapper" HorizontalAlignment="Stretch">
+            <local:AudioWrapper.Content>
+                <MediaElement x:Name="MediaElement" MediaOpened="MediaElement_OnMediaOpened" MediaEnded="MediaElement_OnMediaEnded" Stretch="Fill" AudioCategory="Speech" AutoPlay="False" Position ="0" MarkerReached="MediaElement_MarkerReached"  />
+            </local:AudioWrapper.Content>
+        </local:AudioWrapper>
         <StackPanel Grid.Row="2"  Orientation="Horizontal" HorizontalAlignment="Center"  Margin="0,28,0,0" VerticalAlignment="Top">
 
             <Button x:Name="Play" Tapped="Play_OnTapped" Margin="10,0,10,0"  Style="{StaticResource NodeSubMenuItem}">
@@ -40,9 +47,10 @@
             <Button  x:Name="Stop" Tapped="Stop_OnTapped" Margin="10,0,10,0"  Style="{StaticResource NodeSubMenuItem}">
                 <Image Source="ms-appx:///Assets/node icons/icon_stop.png" Height="20"></Image>
             </Button>
-            <MediaElement x:Name="MediaElement" MediaOpened="MediaElement_OnMediaOpened" MediaEnded="MediaElement_OnMediaEnded" Stretch="Fill" AudioCategory="Speech" AutoPlay="False" Position ="0"/>
+
         </StackPanel>
 
 
     </Grid>
+    </Border>
 </UserControl>

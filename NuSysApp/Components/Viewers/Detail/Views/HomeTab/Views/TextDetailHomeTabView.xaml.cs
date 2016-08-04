@@ -47,22 +47,19 @@ namespace NuSysApp
         public TextDetailHomeTabView(TextDetailHomeTabViewModel vm)
         {
             InitializeComponent();
-            _libraryElementId = vm.Controller.ContentId;
+            _libraryElementId = vm.LibraryElementController.ContentId;
 
             DataContext = vm;
-          // SetDimension(SessionController.Instance.SessionView.ActualWidth / 2 - 30);
-
+          
             List<Uri> AllowedUris = new List<Uri>();
             AllowedUris.Add(new Uri("ms-appx-web:///Components/TextEditor/texteditor.html"));
            
-
             Loaded += async delegate (object sender, RoutedEventArgs args)
             {
                 await SessionController.Instance.InitializeRecog();
                 SetHeight(SessionController.Instance.SessionView.ActualHeight/2);
             };
             
-
             SizeChanged += delegate(object sender, SizeChangedEventArgs args)
             {
                 SetHeight(SessionController.Instance.SessionView.ActualHeight/2);
@@ -74,8 +71,18 @@ namespace NuSysApp
             vm.TextChanged += VmOnTextBindingChanged;
             MyWebView.ScriptNotify += wvBrowser_ScriptNotify;
 
-            vm.Controller.Disposed += ControllerOnDisposed;
+            vm.LibraryElementController.Disposed += ControllerOnDisposed;
 
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            detailViewerView.Disposed += DetailViewerView_Disposed;
+
+        }
+
+        private void DetailViewerView_Disposed(object sender, EventArgs e)
+        {
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            detailViewerView.Disposed -= DetailViewerView_Disposed;
+            Dispose();
         }
 
         public void SetHeight(double parentHeight)
@@ -89,17 +96,17 @@ namespace NuSysApp
             MyWebView.NavigationCompleted -= MyWebViewOnNavigationCompleted;
             vm.TextChanged -= VmOnTextBindingChanged;
             MyWebView.ScriptNotify -= wvBrowser_ScriptNotify;
-            vm.Controller.Disposed -= ControllerOnDisposed;
+            vm.LibraryElementController.Disposed -= ControllerOnDisposed;
             DataContext = null;
         }
 
         private void MyWebViewOnNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
         {
-            if (((TextDetailHomeTabViewModel)DataContext).Controller.LibraryElementModel.Data != "")
+            if (((TextDetailHomeTabViewModel)DataContext).LibraryElementController.LibraryElementModel.Data != "")
             {
-                UpdateText(((TextDetailHomeTabViewModel)DataContext).Controller.LibraryElementModel.Data);
+                UpdateText(((TextDetailHomeTabViewModel)DataContext).LibraryElementController.LibraryElementModel.Data);
             }
-            OpenTextBox(((TextDetailHomeTabViewModel)DataContext).Controller.LibraryElementModel.Data);
+            OpenTextBox(((TextDetailHomeTabViewModel)DataContext).LibraryElementController.LibraryElementModel.Data);
         }
 
         private void VmOnTextBindingChanged(object source, string text)
@@ -226,7 +233,7 @@ namespace NuSysApp
                 return;
             }
             vm.TextChanged -= VmOnTextBindingChanged;
-            vm.Controller.SetContentData(s);
+            vm.LibraryElementController.SetContentData(s);
             vm.TextChanged += VmOnTextBindingChanged;
         }
 
@@ -253,7 +260,7 @@ namespace NuSysApp
                 await session.TranscribeVoice();
                 //     this.RecordVoice.Background = oldColor;
                 var vm = (TextDetailHomeTabViewModel)DataContext;
-                vm.Controller.SetContentData(session.SpeechString);
+                vm.LibraryElementController.SetContentData(session.SpeechString);
             }
             else
             {

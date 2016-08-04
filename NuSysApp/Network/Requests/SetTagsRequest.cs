@@ -19,7 +19,7 @@ namespace NuSysApp
             _message["tags"] = tags;
         }
 
-        public override async Task<bool> CheckOutgoingRequest()
+        public override async Task CheckOutgoingRequest()
         {
             if (!_message.ContainsKey("id"))
             {
@@ -28,7 +28,6 @@ namespace NuSysApp
             SetServerEchoType(ServerEchoType.Everyone);
             SetServerItemType(ServerItemType.Alias);
             SetServerRequestType(ServerRequestType.Update);
-            return true;
         }
 
         public override async Task ExecuteRequestFunction()

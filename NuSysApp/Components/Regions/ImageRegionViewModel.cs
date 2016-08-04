@@ -10,15 +10,14 @@ using Windows.Foundation;
 
 namespace NuSysApp
 {
-    public class ImageRegionViewModel : RegionViewModel
+    public class ImageRegionViewModel : RegionViewModel, INuSysDisposable
     {
 
         private double _height;
         private double _width;
         private string _name;
-        private bool _editable;
+        public event EventHandler Disposed;
 
-        
         public string Name {
             get { return _name; }
             set
@@ -48,25 +47,7 @@ namespace NuSysApp
             }
         }
 
-        public bool Editable
-        {
-            set
-            {
-
-                _editable = value;
-
-                RaisePropertyChanged("Editable");
-            }
-            get
-            {
-                return _editable;
-            }
-        }
-        public bool Selected { set; get; }
-        public double OriginalHeight { get; set; }
-        public double OriginalWidth { get; set; }
-        public double ContainerHeight { get; set; }
-        public double ContainerWidth { get; set; }
+        public RectangleWrapper RectangleWrapper { get; set; } 
 
         public delegate void SizeChangedEventHandler(object sender, double width, double height);
         public event SizeChangedEventHandler SizeChanged;
@@ -74,36 +55,39 @@ namespace NuSysApp
         public delegate void LocationChangedEventHandler(object sender, Point topLeft);
         public event LocationChangedEventHandler LocationChanged;
 
+        private RectangleRegionLibraryElementController _regionLibraryElementController;
 
-        public ImageRegionViewModel(RectangleRegion model, LibraryElementController libraryElementController, RectangleRegionController regionController, Sizeable sizeable) : base(model,libraryElementController, regionController,sizeable)
+
+        public ImageRegionViewModel(RectangleRegion model, RectangleRegionLibraryElementController regionLibraryElementController, RectangleWrapper rectangleWrapper) : base(model, regionLibraryElementController)
         {
             if (model == null)
             {
                 return;
             }
-            ContainerSizeChanged += BaseSizeChanged;
-            ContainerHeight = sizeable.GetHeight();
-            ContainerWidth = sizeable.GetWidth();
-            Height = model.Height * ContainerHeight;
-            Width = model.Width * ContainerWidth;
+            _regionLibraryElementController = regionLibraryElementController;
 
-            regionController.SizeChanged += RegionController_SizeChanged;
-            regionController.LocationChanged += RegionController_LocationChanged;
-            regionController.TitleChanged += RegionController_TitleChanged;
-            regionController.OnSelect += RegionController_OnSelect;
-            Name = Model.Name;
+            regionLibraryElementController.SizeChanged += RegionController_SizeChanged;
+            regionLibraryElementController.LocationChanged += RegionController_LocationChanged;
+            regionLibraryElementController.TitleChanged += RegionController_TitleChanged;
+            regionLibraryElementController.Disposed += Dispose;
+            Name = Model.Title;
             Editable = true;
-            Selected = false;
-
-
+            RectangleWrapper = rectangleWrapper;
+            rectangleWrapper.SizeChanged += RectangleWrapper_SizeChanged;
+            RectangleWrapper.Disposed += Dispose;
         }
 
-        //Not currently implemented
-        private void RegionController_OnSelect(RegionController regionController)
-        {
-            RaisePropertyChanged("Selected");
-            Selected = true;
 
+        private void RectangleWrapper_SizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)
+        {
+            var model = this.RegionLibraryElementController.LibraryElementModel as RectangleRegion;
+            var containerHeight = RectangleWrapper.GetHeight();
+            var containerWidth = RectangleWrapper.GetWidth();
+            Height = model.Height * containerHeight;
+            Width = model.Width * containerWidth;
+
+            // do not remove this location changed, it breaks everything if you do
+            LocationChanged?.Invoke(this,new Point(model.TopLeftPoint.X * containerWidth,model.TopLeftPoint.Y * containerHeight));
         }
 
         private void RegionController_TitleChanged(object source, string title)
@@ -119,9 +103,7 @@ namespace NuSysApp
                 return;
             }
 
-
-            var denormalizedTopLeft = new Point(model.TopLeftPoint.X * ContainerViewModel.GetWidth(), model.TopLeftPoint.Y * ContainerViewModel.GetHeight());
-
+            var denormalizedTopLeft = new Point(model.TopLeftPoint.X * RectangleWrapper.GetWidth(), model.TopLeftPoint.Y * RectangleWrapper.GetHeight());
             LocationChanged?.Invoke(this, denormalizedTopLeft);
 
         }
@@ -129,48 +111,15 @@ namespace NuSysApp
         
         private void RegionController_SizeChanged(object sender, double width, double height)
         {
-            
-
             var model = Model as RectangleRegion;
             if (model == null)
             {
                 return;
             }
             
-            Height = model.Height * ContainerViewModel.GetHeight();
-            Width = model.Width * ContainerViewModel.GetWidth();
+            Height = model.Height * RectangleWrapper.GetHeight();
+            Width = model.Width * RectangleWrapper.GetWidth();
             SizeChanged?.Invoke(this, Width, Height);
-
-        }
-
-        private void resetRegions()
-        {
-            var model = Model as RectangleRegion;
-            LocationChanged?.Invoke(this, new Point(model.TopLeftPoint.X, model.TopLeftPoint.Y));
-        }
-
-        private void BaseSizeChanged(object sender, double width, double height)
-        {
-            
-            var model = Model as RectangleRegion;
-            if (model == null)
-            {
-                return;
-            }
-
-            Point topLeft;
-
-            //Width and height passed in are the width and height of image itself.
-            Height = model.Height * height;
-            Width = model.Width * width;
-
-            topLeft = new Point(model.TopLeftPoint.X * width, model.TopLeftPoint.Y * height);
-
-            SizeChanged?.Invoke(this, Width, Height);
-            LocationChanged?.Invoke(this, topLeft);
-
-            RaisePropertyChanged("Height");
-            RaisePropertyChanged("Width");
 
         }
 
@@ -181,12 +130,12 @@ namespace NuSysApp
             {
                 return;
             }
-            var normalTopLeftX = topLeft.X / ContainerViewModel.GetWidth();
-            var normalTopLeftY = topLeft.Y / ContainerViewModel.GetHeight();
+            var normalTopLeftX = topLeft.X / RectangleWrapper.GetWidth();
+            var normalTopLeftY = topLeft.Y / RectangleWrapper.GetHeight();
 
             var tlp = new Point(normalTopLeftX, normalTopLeftY);
 
-            (RegionController as RectangleRegionController).SetLocation(tlp);
+            (RegionLibraryElementController as RectangleRegionLibraryElementController).SetLocation(tlp);
         }
 
         public void SetNewSize(double width, double height)
@@ -196,18 +145,29 @@ namespace NuSysApp
             {
                 return;
             }
-            var normalWidth = width / ContainerViewModel.GetWidth();
-            var normalHeight = height / ContainerViewModel.GetHeight();
+            var normalWidth = width / RectangleWrapper.GetWidth();
+            var normalHeight = height / RectangleWrapper.GetHeight();
 
-            
-
-            (RegionController as RectangleRegionController).SetSize(normalWidth, normalHeight);
+            (RegionLibraryElementController as RectangleRegionLibraryElementController).SetHeight(normalHeight);
+            (RegionLibraryElementController as RectangleRegionLibraryElementController).SetWidth(normalWidth);
         }
 
         public void SetNewName(string text)
         {
             Name = text;
-            RegionController.SetTitle(Name);
+            RegionLibraryElementController.SetTitle(Name);
         }
+
+        public override void Dispose(object sender, EventArgs e)
+        {
+            RectangleWrapper.Disposed -= Dispose;
+            _regionLibraryElementController.SizeChanged -= RegionController_SizeChanged;
+            _regionLibraryElementController.LocationChanged -= RegionController_LocationChanged;
+            _regionLibraryElementController.TitleChanged -= RegionController_TitleChanged;
+            _regionLibraryElementController.Disposed -= Dispose;
+            RectangleWrapper.SizeChanged -= RectangleWrapper_SizeChanged;
+            Disposed?.Invoke(this, EventArgs.Empty);
+        }
+
     }
 }

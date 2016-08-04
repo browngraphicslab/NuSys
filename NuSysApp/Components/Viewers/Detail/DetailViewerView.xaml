@@ -144,7 +144,7 @@
                 <PivotItem Header="Home">
 
                     <!--Pivot content goes here-->
-                    <ContentPresenter Grid.Row="2" x:Name ="nodeContent" Content="{Binding View}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></ContentPresenter>
+                    <ContentPresenter Grid.Row="2" x:Name ="nodeContent" Content="{Binding View}" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center"></ContentPresenter>
                 </PivotItem>
                 <PivotItem Header="Metadata">
                     <!--Pivot content goes here-->
@@ -214,7 +214,7 @@
                     <local:LinkEditorTab x:Name="xLinkEditorView" Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Top" />
                 </PivotItem>
                 <PivotItem Header="Regions">
-                    <local:RegionEditorTabView x:Name="xRegionEditorView"  Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></local:RegionEditorTabView>
+                    <local:RegionEditorTabView x:Name="xRegionEditorView"  Grid.Row="0" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center"></local:RegionEditorTabView>
                 </PivotItem>
 
             </Pivot>
@@ -236,9 +236,16 @@
                     <DataTemplate>
                         <Grid x:Name="TabStack" Background="{StaticResource color1}" BorderBrush="{StaticResource color2}" BorderThickness="0,1,1,0" Padding="3,3,3,3"  Height="40" 
                               Width="{Binding ElementName=TabList, Path=DataContext.TabHeight}">
-                            <Image Tapped="ExitTab_OnTapped" Source="/Assets/icon_node_x.png" HorizontalAlignment="Right" Height="8" Margin="0,0,5,0"  VerticalAlignment="Center"></Image>
-                            <TextBlock x:Name="TabTitle" Tapped="TabList_OnTapped" HorizontalAlignment="Left"  Text="{Binding Title}" Margin="10,0,20,0"  VerticalAlignment="Center">
-                            </TextBlock>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="20"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Image Grid.Column="1" Tapped="ExitTab_OnTapped" Source="/Assets/icon_node_x.png" HorizontalAlignment="Right" Height="8" Margin="0,0,5,0"  VerticalAlignment="Center"></Image>
+                            <Border Grid.Column="0" Background="Transparent"  Tapped="TabList_OnTapped" HorizontalAlignment="Stretch">
+                                <TextBlock x:Name="TabTitle"  HorizontalAlignment="Left"  Text="{Binding Title}" Margin="10,0,20,0"  VerticalAlignment="Center">
+                                </TextBlock>
+                            </Border>
+
                             <!--</Border>-->
                         </Grid>
                     </DataTemplate>

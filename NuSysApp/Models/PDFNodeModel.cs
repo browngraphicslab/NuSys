@@ -36,9 +36,9 @@ namespace NuSysApp
 
         public override async Task UnPack(Message props)
         {
-            if (props.ContainsKey("page"))
+            if (props.ContainsKey("page_location"))
             {
-                CurrentPageNumber = props.GetInt("page", 0);
+                CurrentPageNumber = props.GetInt("page_location", 0);
             }
 
             await base.UnPack(props);

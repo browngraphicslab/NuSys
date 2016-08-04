@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.VoiceCommands;
 
 namespace NuSysApp
 {
@@ -12,140 +13,95 @@ namespace NuSysApp
     {
 
 
-        public delegate void NewRegionEventHandler(RegionController regionController);
+        // Keeps track of all the region library elements associated with a library element
+        private ConcurrentDictionary<string, HashSet<string>> _clippingParentIdToRegionLibraryElementIds = new ConcurrentDictionary<string, HashSet<string>>();
+        
+        // Keeps track of all the region library elements associated with a content 
+        private ConcurrentDictionary<string, HashSet<string>> _contentDataModelIdToRegionLibraryElementIds = new ConcurrentDictionary<string, HashSet<string>>();
+
         /// <summary>
-        /// Fired every time a region is added
+        /// Takes in a library element model id
         /// </summary>
-        public event NewRegionEventHandler OnNewRegion;
-
-        private ConcurrentDictionary<string, RegionController> _regionControllers = new ConcurrentDictionary<string, RegionController>();
-
-    
-        //returns the library element model id for a region id
-        private ConcurrentDictionary<string, string> _regionLibraryElementModels = new ConcurrentDictionary<string, string>();
-
-        private RegionControllerFactory _regionControllerFactory = new RegionControllerFactory();
-        public ConcurrentDictionary<string, string> RegionIdsToLibraryElementIds
+        /// <param name="libraryElementId"></param>
+        /// <returns>a list of region library element ids which were clipped from the library element model passed in</returns>
+        public HashSet<string> GetClippingParentRegionLibraryElementIds(string libraryElementId)
         {
-            get { return _regionLibraryElementModels; }
-        }
-
-        public RegionController GetRegionController(string id)
-        {
-            if (id == null)
+            if (libraryElementId == null)
             {
                 return null;
             }
-            return _regionControllers.ContainsKey(id) ? _regionControllers[id] : null;
+            
+            return _clippingParentIdToRegionLibraryElementIds.ContainsKey(libraryElementId) ? _clippingParentIdToRegionLibraryElementIds[libraryElementId] : new HashSet<string>();
         }
 
-        public string GetLibraryElementModelId(string id)
-        {
-            Debug.Assert(id != null && _regionLibraryElementModels.ContainsKey(id));
-            return _regionLibraryElementModels[id];
-        }
         /// <summary>
-        /// Will return the given parameter if it is a content id
-        /// will return the region's content id if it is a region
-        /// null otherwise
+        /// Takes in a content data model id and returns a list of region library element ids for regions created from that content
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="contentDataModelId"></param>
         /// <returns></returns>
-        public string GetContentIdOfRegionOrContent(string id)
+        public HashSet<string> GetContentDataModelRegionLibraryElementIds(string contentDataModelId)
         {
-            Debug.Assert(id != null);
-            if (SessionController.Instance.ContentController.GetContent(id) != null)
+            if (contentDataModelId == null)
             {
-                return id;
+                return null;
             }
-            if (_regionLibraryElementModels.ContainsKey(id))
-            {
-                return _regionLibraryElementModels[id];
-            }
-            //Debug.Fail("Should always be in one of the two");
-            return null;
+
+            return _contentDataModelIdToRegionLibraryElementIds.ContainsKey(contentDataModelId) ? _contentDataModelIdToRegionLibraryElementIds[contentDataModelId] : new HashSet<string>();
         }
 
-        public bool IsRegionId(string id)
-        {
-            return id != null && _regionLibraryElementModels.ContainsKey(id);
-        }
 
-        public RegionController AddRegion(Region regionModel, string contentId)
+        /// <summary>
+        /// to be called when we make the regon library element model.  Adds it to dictionaries
+        /// </summary>
+        /// <param name="regionModel"></param>
+        public void AddRegion(Region regionModel)
         {
             Debug.Assert(regionModel != null);
-            var regionController = _regionControllerFactory.CreateFromSendable(regionModel, contentId);
-            _regionLibraryElementModels.TryAdd(regionModel.Id, contentId);
-            if (!_regionControllers.ContainsKey(regionModel.Id))
+            var clippingParentId = regionModel.ClippingParentId;
+            var contentId = regionModel.ContentDataModelId;
+            Debug.Assert(clippingParentId != null || contentId != null, "This should never be null");
+
+            // create hashsets in the concurrent dictionaries if they don't exist
+            if (!_clippingParentIdToRegionLibraryElementIds.ContainsKey(clippingParentId))
             {
-                _regionControllers.TryAdd(regionModel.Id, regionController);
-                OnNewRegion?.Invoke(regionController);
-
-                return regionController;
-
+                _clippingParentIdToRegionLibraryElementIds.TryAdd(clippingParentId, new HashSet<string>());
             }
-            else
+            if (!_contentDataModelIdToRegionLibraryElementIds.ContainsKey(contentId))
             {
-                throw new Exception("TRIED TO ADD A SECOND REGION CONTROLLER");
-                //return this.GetRegionController(regionModel.Id);
+                _contentDataModelIdToRegionLibraryElementIds.TryAdd(contentId, new HashSet<string>());
             }
-            return null;
 
+            // add the current region model library element id to the clipping parent dictionary and contentId dictionary
+            _clippingParentIdToRegionLibraryElementIds[clippingParentId].Add(regionModel.LibraryElementId);
+            _contentDataModelIdToRegionLibraryElementIds[contentId].Add(regionModel.LibraryElementId);
+
+            var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(contentId);
+            if (contentDataModel == null)
+            {
+                return;
+            }
+            contentDataModel.AddRegion(regionModel.LibraryElementId);
         }
 
-        public string Add(RegionController regionController, string contentId)
+        public void RemoveRegion(Region regionModel)
         {
-            if (regionController == null)
-            {
-                return null;
+            Debug.Assert(regionModel != null);
+            var clippingParentId = regionModel.ClippingParentId;
+            var contentId = regionModel.ContentDataModelId;
+            Debug.Assert(clippingParentId != null || contentId != null, "This should never be null");
+            /*
+            if (_clippingParentIdToRegionLibraryElementIds.ContainsKey(clippingParentId) && _contentDataModelIdToRegionLibraryElementIds.ContainsKey(contentId)){
+                return;
             }
-            var regionModel = regionController.Model;
-            _regionLibraryElementModels.TryAdd(regionModel.Id, contentId);
-            if (!_regionControllers.ContainsKey(regionModel.Id))
-            {
-                _regionControllers.TryAdd(regionModel.Id, regionController);
-                OnNewRegion?.Invoke(regionController);
+            */
+            string outParentIds;
 
-                return regionModel.Id;
-            }
-            else
-            {
-                //THIS IS THE CAUSE OF HALF OUR REGIONS PROBLEMS
-                //throw new Exception("TRIED TO ADD A SECOND REGION CONTROLLER");
-                Debug.Fail("^^ stop commenting this out");
-                return regionModel.Id;
-            }
-            return null;
-        }
+            //Removed the region Id from both of the dictionaries
+            _clippingParentIdToRegionLibraryElementIds[clippingParentId].Remove(regionModel.LibraryElementId);
+            _contentDataModelIdToRegionLibraryElementIds[contentId].Remove(regionModel.LibraryElementId);
 
-        public async Task Load()
-        {
-        
-            _regionLibraryElementModels =  new ConcurrentDictionary<string, string>(await SessionController.Instance.NuSysNetworkSession.GetRegionMapping(
-                    SessionController.Instance?.ActiveFreeFormViewer?.ContentId));
-            Debug.Assert(_regionLibraryElementModels != null);
-
-            var regionIds = _regionLibraryElementModels.Keys;
-            foreach (var regionId in regionIds)
-            {
-                var libraryElementModel =
-                    SessionController.Instance.ContentController.GetLibraryElementController(
-                        _regionLibraryElementModels[regionId])?.LibraryElementModel;
-                var regionHashSet = libraryElementModel?.Regions;
-                foreach (var regionModel in regionHashSet ?? new HashSet<Region>())
-                {
-                    if (SessionController.Instance.RegionsController.GetRegionController(regionModel.Id) == null)
-                    {
-                        this.AddRegion(regionModel, libraryElementModel.LibraryElementId);
-                    }
-
-                    /*
-                    var regionController = _regionControllerFactory.CreateFromSendable(regionModel, libraryElementModel.LibraryElementId);
-                    Add(regionController, libraryElementModel.LibraryElementId);
-                    */
-                }
-            }
-
+            var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(contentId);
+            contentDataModel.RemoveRegion(regionModel.LibraryElementId);
         }
 
     }

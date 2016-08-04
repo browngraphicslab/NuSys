@@ -201,6 +201,12 @@ namespace NuSysApp
 
             return 0;
         }
+
+        public static bool IsRegionType(ElementType type)
+        {
+            return type == ElementType.AudioRegion || type == ElementType.ImageRegion || type == ElementType.VideoRegion ||
+                   type == ElementType.PdfRegion;
+        }
         #endregion StaticMethods
     }
 }

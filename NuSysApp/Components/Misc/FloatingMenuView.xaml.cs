@@ -5,7 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Storage.Streams;
+using Windows.System;
 using Windows.UI;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -37,7 +39,6 @@ namespace NuSysApp
         private LibraryView _lib;
         private LibraryElementPropertiesWindow libProp;
         private bool IsPenMode;
-
         private bool checkPointerAdded;
         private CompositeTransform floatingTransform;
 
@@ -51,6 +52,7 @@ namespace NuSysApp
             btnAddNode.Tapped += BtnAddNode_Tapped;
             btnPen.Tapped += BtnPen_Tapped;
             btnSearch.Tapped += BtnSearch_Tapped;
+             
             libProp = new LibraryElementPropertiesWindow();
             _lib = new LibraryView(new LibraryBucketViewModel(), libProp, this);
             xWrapper.Children.Add(_lib);
@@ -314,20 +316,7 @@ namespace NuSysApp
             // Adds a toolview to the atom view list when an tool is droped
             else if (_elementType == ElementType.Tools)
             {
-
-                //var tool = new TemporaryToolView(new ElementViewModel(new ElementController(new ElementModel("")
-                //{
-                //    X = pos.X,
-                //    Y = pos.Y,
-                //    Width = 300,
-                //    Height = 300,
-                //})));
-                //BasicToolModel model = new BasicToolModel();
-                //BasicToolController controller = new BasicToolController(model);
-                //BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
-                //TemporaryToolView view = new TemporaryToolView(viewmodel, pos.X, pos.Y);
                 ToolFilterView filter = new ToolFilterView(pos.X, pos.Y);
-                //rect.Background = new SolidColorBrush(Colors.Blue);
                 vm.AtomViewList.Add(filter);
 
             }
@@ -335,7 +324,7 @@ namespace NuSysApp
           //  _lib.UpdateList();
             vm.ClearSelection();
         }
-
+        
         public FrameworkElement Panel
         {
             get { return FloatingMenuPanel; }

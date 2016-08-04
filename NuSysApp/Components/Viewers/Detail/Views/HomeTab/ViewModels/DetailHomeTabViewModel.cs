@@ -6,27 +6,13 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public abstract class DetailHomeTabViewModel : Regionable<Region>
+    public abstract class DetailHomeTabViewModel : BaseINPC
     {
         private LibraryElementController _libraryElementController;
         private bool _editable;
 
         public delegate void TitleChangedEventHandler(object source, string title);
         public event TitleChangedEventHandler TitleChanged;
-        protected HashSet<Region> _regionsToLoad; 
-        public HashSet<Region> RegionsToLoad
-        {
-            get
-            {
-                return _regionsToLoad;
-            }
-            set
-            {
-                _regionsToLoad = value;
-                SetExistingRegions();
-            }
-        }
-
 
         public bool Editable
         {
@@ -37,14 +23,11 @@ namespace NuSysApp
                 RaisePropertyChanged("Editable");
             }
         }
-        public DetailHomeTabViewModel(LibraryElementController controller, HashSet<Region> regionsToLoad)
+        public DetailHomeTabViewModel(LibraryElementController controller)
         {
 
             _libraryElementController = controller;
             controller.TitleChanged += OnTitleChanged;
-            controller.RegionAdded += AddRegion;
-            controller.RegionRemoved += RemoveRegion;
-            //Editable = true;
         }
 
         private void OnTitleChanged(object source, string title)
@@ -52,5 +35,10 @@ namespace NuSysApp
             TitleChanged?.Invoke(source,title);
         }
         public virtual async Task Init() { }
+
+        public abstract Message GetNewRegionMessage();
+
+
+
     }
 }

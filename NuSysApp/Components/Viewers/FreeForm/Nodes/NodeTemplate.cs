@@ -361,7 +361,7 @@ namespace NuSysApp
             titleContainer.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
             highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
             highlight.Height = vm.Height + title.ActualHeight - 5;
-            //vm.Controller.SetTitle(title.Text);
+            //vm.LibraryElementController.SetTitle(title.Text);
             vm.Controller.LibraryElementController.TitleChanged -= LibraryElementModelOnOnTitleChanged;
             vm.Controller.LibraryElementController.SetTitle(title.Text);
             vm.Controller.LibraryElementController.TitleChanged += LibraryElementModelOnOnTitleChanged;
@@ -468,12 +468,12 @@ namespace NuSysApp
                                     var region = element as FrameworkElement;
                                     var regiondc = region.DataContext as RegionViewModel;
                                     var m = new Message();
-                                    m["id2"] = regiondc.RegionController.Model.Id;
+                                    m["id2"] = regiondc.RegionLibraryElementController.LibraryElementModel.LibraryElementId;
                                     m["id1"] = vm.Controller.LibraryElementController.ContentId;
                                     await SessionController.Instance.LinksController.RequestLink(m);
                                     UITask.Run(delegate { vm.Controller.UpdateCircleLinks(); });
                                     break;
-                                    //     vm.Controller.RequestVisualLinkTo();
+                                    //     vm.LibraryElementController.RequestVisualLinkTo();
                                 }
                             }          
                         }
@@ -625,15 +625,7 @@ namespace NuSysApp
             var resizeY = vm.Model.Height + e.Delta.Translation.Y / zoom;
             if (resizeY > 0 && resizeX > 0)
             {
-                var ratio = vm.GetRatio();
-                if(ratio == 1.01010101)
-                {
-                    vm.Controller.SetSize(resizeX, resizeY);
-                }
-                else
-                {
-                    vm.Controller.SetSize(resizeX, resizeX * ratio);
-                }
+                vm.Controller.SetSize(resizeX, resizeY);
             }
             //   inkCanvas.Width = vm.Width;
             //   inkCanvas.Height = vm.Height;

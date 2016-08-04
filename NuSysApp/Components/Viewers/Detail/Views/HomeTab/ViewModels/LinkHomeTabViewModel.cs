@@ -14,14 +14,14 @@ namespace NuSysApp
         public string Annotation { get; private set; }
 
         private LinkLibraryElementController _controller;
-        public LinkHomeTabViewModel(LinkLibraryElementController controller, HashSet<Region> regionsToLoad) : base(controller, regionsToLoad)
+        public LinkHomeTabViewModel(LinkLibraryElementController controller) : base(controller)
         {
             _controller = controller;
             var linkModel = controller.LinkLibraryElementModel;
 
-            if (SessionController.Instance.RegionsController.IsRegionId(linkModel.OutAtomId))
+            if (Constants.IsRegionType(SessionController.Instance.ContentController.GetLibraryElementController(linkModel.OutAtomId).LibraryElementModel.Type))
             {
-                var fromController = SessionController.Instance.RegionsController.GetRegionController(linkModel.OutAtomId);
+                var fromController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel.OutAtomId);
                 if (fromController == null)
                 {
                     var fromLibraryElementController =
@@ -42,9 +42,9 @@ namespace NuSysApp
                 LinkFrom = fromController.Title;
             }
 
-            if (SessionController.Instance.RegionsController.IsRegionId(linkModel.InAtomId))
+            if (Constants.IsRegionType(SessionController.Instance.ContentController.GetLibraryElementController(linkModel.InAtomId).LibraryElementModel.Type))
             {
-                var toController = SessionController.Instance.RegionsController.GetRegionController(linkModel.InAtomId);
+                var toController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel.InAtomId);
                 if (toController == null)
                 {
                     var toLibraryElementController =
@@ -80,34 +80,13 @@ namespace NuSysApp
 
         public void UpdateAnnotation(string text)
         {
-
             _controller.SetContentData(text); 
         }
 
-        public override void AddRegion(object sender, RegionController regionController)
+        // we don't have regions on links so this should never happen
+        public override Message GetNewRegionMessage()
         {
-            //throw new NotImplementedException();
-        }
-
-        public override void RemoveRegion(object sender, Region displayedRegion)
-        {
-            //throw new NotImplementedException();
-        }
-
-        public override void SizeChanged(object sender, double width, double height)
-        {
-            //throw new NotImplementedException();
-        }
-
-        public override void SetExistingRegions()
-        {
-            //throw new NotImplementedException();
-        }
-
-        public override Region GetNewRegion()
-        {
-            return null;
-            //throw new NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

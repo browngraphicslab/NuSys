@@ -25,7 +25,7 @@ namespace NuSysApp
             SetServerItemType(ServerItemType.Content);
             SetServerRequestType(ServerRequestType.Remove);
         }
-        public override async Task<bool> CheckOutgoingRequest()
+        public override async Task CheckOutgoingRequest()
         {
             if (!_message.ContainsKey("id"))
             {
@@ -53,7 +53,6 @@ namespace NuSysApp
                     }
                 }
             });
-            return true;
         }
         public override async Task ExecuteRequestFunction()
         {
@@ -62,8 +61,14 @@ namespace NuSysApp
             {
                 return;
             }
+            if (libraryElementController is RegionLibraryElementController)
+            {
+                SessionController.Instance.RegionsController.RemoveRegion(libraryElementController.LibraryElementModel as Region);
+            }
             SessionController.Instance.LinksController.RemoveContent(libraryElementController);
             libraryElementController.Delete();
+            // This checks if this LibraryElementRequest is a region and if so then call the regionscontroller remove region method
+
         }
     }
 }

@@ -7,7 +7,7 @@ using Windows.Foundation;
 
 namespace NuSysApp
 {
-    public class VideoRegionController : RectangleRegionController
+    public class VideoRegionLibraryElementController : RectangleRegionLibraryElementController
     {
         public delegate void IntervalChangedEventHandler(object sender, double start, double end);
 
@@ -16,10 +16,10 @@ namespace NuSysApp
         {
             get
             {
-                return base.Model as VideoRegionModel;
+                return base.LibraryElementModel as VideoRegionModel;
             }
         }
-        public VideoRegionController(VideoRegionModel model) : base(model)
+        public VideoRegionLibraryElementController(VideoRegionModel model) : base(model)
         {
             
         }
@@ -28,25 +28,33 @@ namespace NuSysApp
         {
             VideoRegionModel.Start = startTime;
             IntervalChanged?.Invoke(this, VideoRegionModel.Start, VideoRegionModel.End);
-            UpdateServer();
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("start", VideoRegionModel.Start);
+            }
         }
         public void SetEndTime(double endTime)
         {
             VideoRegionModel.End = endTime;
             IntervalChanged?.Invoke(this, VideoRegionModel.Start, VideoRegionModel.End);
-            UpdateServer();
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add("end", VideoRegionModel.End);
+            }
         }
 
-        public override void UnPack(Region region)
+        public override void UnPack(Message message)
         {
             SetBlockServerBoolean(true);
-            var r = region as VideoRegionModel;
-            if (r != null)
+            if (message.ContainsKey("start"))
             {
-                SetStartTime(r.Start);
-                SetEndTime(r.End);
+                SetStartTime(message.GetDouble("start"));
             }
-            base.UnPack(region);
+            if (message.ContainsKey("end"))
+            {
+                SetEndTime(message.GetDouble("end"));
+            }
+            base.UnPack(message);
             SetBlockServerBoolean(false);
         }
     }

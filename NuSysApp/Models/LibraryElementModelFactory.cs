@@ -33,6 +33,18 @@ namespace NuSysApp
                 Debug.Assert(id != null);
                 switch (type)
                 {
+                    case ElementType.ImageRegion:
+                        model = new RectangleRegion(id, ElementType.ImageRegion);
+                        break;
+                    case ElementType.VideoRegion:
+                        model = new VideoRegionModel(id);
+                        break;
+                    case ElementType.PdfRegion:
+                        model = new PdfRegionModel(id);
+                        break;
+                    case ElementType.AudioRegion:
+                        model = new AudioRegionModel(id);
+                        break;
                     case ElementType.Collection:
                         model = new CollectionLibraryElementModel(id, metadata, title, favorited);
                         break;
@@ -47,8 +59,17 @@ namespace NuSysApp
                         model = new LibraryElementModel(id, type, metadata, title, favorited);
                         break;
                 }
-                model.UnPack(message);
+
+                
                 SessionController.Instance.ContentController.Add(model);
+                var controller = SessionController.Instance.ContentController.GetLibraryElementController(id);
+                Debug.Assert(controller != null);
+                controller.UnPack(message);
+                if (Constants.IsRegionType(type))
+                {
+                    Debug.Assert(model is Region);
+                    SessionController.Instance.RegionsController.AddRegion(model as Region);
+                }
                 if (type == ElementType.Link)
                 {
                     var linkController =

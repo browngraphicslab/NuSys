@@ -108,11 +108,7 @@ namespace NuSysApp
                 }
             }
         }
-
-        public bool IsContentId(string id)
-        {
-            return id != null && SessionController.Instance.ContentController.GetContent(id) != null;
-        }
+        
 
         /// <summary>
         /// Add the link library element controller's library ContentId to the hashset for both endpoint ids' keys
@@ -212,7 +208,7 @@ namespace NuSysApp
             m["contentId"] = contentId;
             var request = new NewLinkRequest(m);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-            //SessionController.Instance.ActiveFreeFormViewer.AllContent.First().Controller.RequestVisualLinkTo(contentId);
+            //SessionController.Instance.ActiveFreeFormViewer.AllContent.First().LibraryElementController.RequestVisualLinkTo(contentId);
         }
 
         /// <summary>

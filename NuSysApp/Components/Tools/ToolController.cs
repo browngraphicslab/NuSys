@@ -7,38 +7,44 @@ using System.Text;
 using System.Threading.Tasks;
 using MyToolkit.Utilities;
 using NetTopologySuite.Utilities;
+using NuSysApp.Tools;
 using SharpDX.DirectWrite;
 
 namespace NuSysApp
 {
-    public abstract class ToolController
+    public abstract class ToolController : ToolStartable
     {
-        public static Dictionary<string, ToolController> ToolControllers = new Dictionary<string, ToolController>();
+        public static Dictionary<string, ToolStartable> ToolControllers = new Dictionary<string, ToolStartable>();
 
-        public delegate void LibraryIdsChangedEventHandler(object sender, HashSet<string> libraryIds);
         public delegate void LocationChangedEventHandler(object sender, double x, double y);
         public delegate void SizeChangedEventHandler(object sender, double width, double height);
-        public delegate void DisposedEventHandler(string parentid);
-        public delegate void ParentsIdsChangedEventHandler();
+        public delegate void IdsToDisplayChangedEventHandler();
         public delegate void NumberOfParentsChangedEventHandler (int numberOfParents);
 
-        public event LibraryIdsChangedEventHandler LibraryIdsChanged;
+        /// <summary>
+        /// Fires when its library ids change. Its children tools listen to this event on when to refresh the 
+        /// properties displayed
+        /// </summary>
+        public event EventHandler<HashSet<string>> OutputLibraryIdsChanged;
         public event LocationChangedEventHandler LocationChanged;
         public event SizeChangedEventHandler SizeChanged;
-        public event DisposedEventHandler Disposed;
-        public event ParentsIdsChangedEventHandler ParentsLibraryIdsChanged;
+        public event EventHandler<string> Disposed;
+        public event EventHandler<ToolViewModel> FilterTypeAllMetadataChanged;
+
+        /// <summary>
+        /// Fires when the properties to display change (e.g. when a parent tool changes selection). View listens to this for when to show the AND/OR box.
+        /// </summary>
+        public event IdsToDisplayChangedEventHandler IdsToDisplayChanged;
         public event NumberOfParentsChangedEventHandler NumberOfParentsChanged;
 
-
-
-
         public ToolModel Model { get;}
+
         public ToolController(ToolModel model)
         {
             Debug.Assert(model != null);
             Model = model;
             ToolControllers.Add(model.Id, this);
-            Model.SetLibraryIds(Filter(GetUpdatedDataList()));
+            Model.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
 
             //CODE TO DELETE Non RMS STUFF
             
@@ -108,71 +114,112 @@ namespace NuSysApp
             });*/
         }
 
+        /// <summary>
+        /// So that subclasses can fire filter type all metadata changed
+        /// </summary>
+        /// <param name="vm"></param>
+        public void FireFilterTypeAllMetadataChanged(ToolViewModel vm)
+        {
+            FilterTypeAllMetadataChanged?.Invoke(this, vm);
+        }
+
         public void SetSize(double width, double height)
         {
             SizeChanged?.Invoke(this, width, height);
         }
-        
-        public void AddParent(ToolController parentController)
+
+        /// <summary>
+        /// Adds a parent to the tool. Listens to the parent's library ids changed event. Refreshes the library ids. Invokes, outputLibraryIdsChanged, parentsLibraryIdsChanged, and numberofParentsChanged.
+        /// </summary>
+        public void AddParent(ToolStartable parentController)
         {
             if (parentController != null)
             {
-                if (Model.ParentIds.Add(parentController.Model?.Id))
+                if (Model.ParentIds.Add(parentController.GetID()))
                 {
-                    parentController.LibraryIdsChanged += ParentLibraryIdsChanged;
-                    Model.SetLibraryIds(Filter(GetUpdatedDataList()));
-                    LibraryIdsChanged?.Invoke(this, Model.LibraryIds);
-                    ParentsLibraryIdsChanged?.Invoke();
+                    parentController.OutputLibraryIdsChanged += IdsToDiplayChanged;
+                    parentController.FilterTypeAllMetadataChanged += ParentController_FilterTypeAllMetadataChanged;
+                    Model.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
+                    OutputLibraryIdsChanged?.Invoke(this, Model.OutputLibraryIds);
+                    IdsToDisplayChanged?.Invoke();
                     parentController.Disposed += OnParentDisposed;
                     NumberOfParentsChanged?.Invoke(Model.ParentIds.Count);
-                    
                 }
             }
         }
 
+        /// <summary>
+        /// Whenever a parent controller changes from all metadata to basic or vice versa, set the new parent
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ParentController_FilterTypeAllMetadataChanged(object sender, ToolViewModel vm)
+        {
+            AddParent(vm.Controller);
+        }
+
+        /// <summary>
+        /// Sets the Parent Operator (AND/OR). Refreshes library ids and invokes outputLibraryids changed event. Also invokes the idsToDisplay event. 
+        /// </summary>
         public void SetParentOperator(ToolModel.ParentOperatorType parentOperator)
         {
             Model.SetParentOperator(parentOperator);
-            Model.SetLibraryIds(Filter(GetUpdatedDataList()));
-            LibraryIdsChanged?.Invoke(this, Model.LibraryIds);
-            ParentsLibraryIdsChanged?.Invoke();
+            Model.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
+            OutputLibraryIdsChanged?.Invoke(this, Model.OutputLibraryIds);
+            IdsToDisplayChanged?.Invoke();
         }
 
-        public void OnParentDisposed(string parentid)
+        /// <summary>
+        /// Stops listening to deleted parent events, removes from parent IDS, resets output library ids invokes output ids changed, invokes ids to display changed. Called when the the parent gets deleted.
+        /// </summary>
+        public void OnParentDisposed(object sender, string parentid)
         {
-            ToolControllers[parentid].LibraryIdsChanged -= ParentLibraryIdsChanged;
-            Model.ParentIds.Remove(parentid);
-            Model.SetLibraryIds(Filter(GetUpdatedDataList()));
-            LibraryIdsChanged?.Invoke(this, Model.LibraryIds);
-            ParentsLibraryIdsChanged?.Invoke();
+            RemoveParent(ToolControllers[parentid]);
+            Model.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
+            OutputLibraryIdsChanged?.Invoke(this, Model.OutputLibraryIds);
+            IdsToDisplayChanged?.Invoke();
             ToolControllers[parentid].Disposed -= OnParentDisposed;
         }
 
-        public virtual void RemoveParent(ToolController parentController)
+        /// <summary>
+        /// Removes parent controller from the model that is about to be deleted, and stops listening to all its parents event.
+        /// </summary>
+        public virtual void RemoveParent(ToolStartable parentController)
         {
-            if (Model.RemoveParentId(parentController?.Model?.Id))
+            if (Model.RemoveParentId(parentController?.GetID()))
             {
                 if (parentController != null)
                 {
-                    parentController.LibraryIdsChanged -= ParentLibraryIdsChanged;
-
+                    parentController.OutputLibraryIdsChanged -= IdsToDiplayChanged;
                 }
             }
             NumberOfParentsChanged?.Invoke(Model.ParentIds.Count);
+
+        }
+
+        public string GetID()
+        {
+            return Model?.Id;
         }
 
         public abstract void UnSelect();
 
+        /// <summary>
+        /// Deletes the current node and removes itself from parents's knowledge
+        /// </summary>
         public virtual void Dispose()
         {
-            foreach(var parentController in new List<ToolController>(Model.ParentIds.Select(id => ToolControllers.ContainsKey(id) ? ToolControllers[id] : null)))
+            foreach(var parentController in new List<ToolStartable>(Model.ParentIds.Select(id => ToolControllers.ContainsKey(id) ? ToolControllers[id] : null)))
             {
                 RemoveParent(parentController);
             }
-            Disposed?.Invoke(Model.Id);
-            ToolControllers.Remove(Model.Id);
+            Disposed?.Invoke(this, GetID());
+            ToolControllers.Remove(GetID());
         }
 
+        /// <summary>
+        /// Filters a hashset of ids to only include items based on the GetFunc() function defined in sub class controllers.
+        /// </summary>
         public HashSet<string> Filter(HashSet<string> ids)
         {
             if (!Model.Selected)
@@ -190,22 +237,44 @@ namespace NuSysApp
             return ret;
         }
 
-        public void FireLibraryIdsChanged()
+        /// <summary>
+        /// So that subclasses can fire the event
+        /// </summary>
+        public void FireOutputLibraryIdsChanged()
         {
-            LibraryIdsChanged?.Invoke(this, Model.LibraryIds);
-
+            OutputLibraryIdsChanged?.Invoke(this, Model.OutputLibraryIds);
         }
+
+        /// <summary>
+        /// So that subclasses can fire the event
+        /// </summary>
+        public void FireIdsToDisplayChanged()
+        {
+            IdsToDisplayChanged?.Invoke();
+        }
+
+        /// <summary>
+        /// Should return a function that filters whether or not a certain string should be included int output library ids
+        /// </summary>
         public abstract Func<string, bool> GetFunc();
 
+        /// <summary>
+        ///Gets the creation date of a library element model as a string
+        /// </summary>
         protected string GetDate(LibraryElementModel libraryElementModel)
         {
             if (libraryElementModel.Timestamp == null)
             {
                 return DateTime.UtcNow.ToStartOfDay().ToString();
             }
-            return DateTime.Parse(libraryElementModel.Timestamp).ToStartOfDay().ToString();
+            var time = DateTime.Parse(libraryElementModel.Timestamp);
+            var date = time.ToStartOfDay().Add(new TimeSpan(0,time.Hour,0,0));
+            return date.ToLocalTime().ToString();
         }
 
+        /// <summary>
+        ///Gets the last edited date of a library element model as a string
+        /// </summary>
         protected string GetLastEditedDate(LibraryElementModel libraryElementModel)
         {
             if (libraryElementModel.LastEditedTimestamp == null)
@@ -214,6 +283,10 @@ namespace NuSysApp
             }
             return DateTime.Parse(libraryElementModel.LastEditedTimestamp).ToStartOfDay().ToString();
         }
+
+        /// <summary>
+        ///Retuns a dictionary of the basic metadata for a libraryelementmodel
+        /// </summary>
         public Dictionary<string, List<string>> GetMetadata(string libraryId)
         {
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryId);
@@ -232,14 +305,20 @@ namespace NuSysApp
             }
             return new Dictionary<string, List<string>>();
         }
-        private void ParentLibraryIdsChanged(object sender, HashSet<string> libraryIds)
+
+        /// <summary>
+        ///When the parents output ids change (i.e when its ids to display changed), this function is called to refresh its own output library ids. Also fires ids to display changed to let the view know to refresh the list.
+        /// </summary>
+        private void IdsToDiplayChanged(object sender, HashSet<string> libraryIds)
         {
-            Model.SetLibraryIds(Filter(GetUpdatedDataList()));
-            LibraryIdsChanged?.Invoke(this, Model.LibraryIds);
-            ParentsLibraryIdsChanged?.Invoke();
+            Model.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
+            OutputLibraryIdsChanged?.Invoke(this, Model.OutputLibraryIds);
+            IdsToDisplayChanged?.Invoke();
         }
-        
-        //Returns all the library ids of everything in the previous filter
+
+        /// <summary>
+        ///Gets all the output library ids of each of the parents and creates a hashset of those ids based on the parent operator (AND/OR)
+        /// </summary>
         public HashSet<string> GetUpdatedDataList()
         {
             var controllers = Model.ParentIds.Select(item => ToolControllers.ContainsKey(item) ? ToolControllers[item] : null);
@@ -247,8 +326,8 @@ namespace NuSysApp
             {
                 return SessionController.Instance.ContentController.IdList;
             }
-            IEnumerable<string> list = controllers?.First().Model.LibraryIds;
-            foreach (var enumerable in controllers.Select(controller => controller?.Model.LibraryIds))
+            IEnumerable<string> list = controllers?.First().GetOutputLibraryIds();
+            foreach (var enumerable in controllers.Select(controller => controller.GetOutputLibraryIds()))
             {
                 switch (Model.ParentOperator)
                 {
@@ -263,6 +342,17 @@ namespace NuSysApp
            
             return new HashSet<string>(list);
         }
+
+        public HashSet<string> GetOutputLibraryIds()
+        {
+            return Model.OutputLibraryIds;
+        }
+
+        public HashSet<string> GetParentIds()
+        {
+            return Model.ParentIds;
+        }
+
         public void SetLocation(double x, double y)
         {
             LocationChanged?.Invoke(this, x, y);

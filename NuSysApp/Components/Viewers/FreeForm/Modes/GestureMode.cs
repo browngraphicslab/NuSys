@@ -139,7 +139,7 @@ namespace NuSysApp
 
             var lastLine = _lines.Last();
             var secondLastLine = _lines[_lines.Count - 2];
-            foreach (var otherLine in _lines.Where(l => l.ContentId != line.ContentId && l.ContentId != lastLine.ContentId && l.ContentId != secondLastLine.ContentId))
+            foreach (var otherLine in _lines.Where(l => l.ContentId != line.ContentDataModelId && l.ContentDataModelId != lastLine.ContentDataModelId && l.ContentDataModelId != secondLastLine.ContentDataModelId))
             {
                 var innerRect = Geometry.PointCollecionToBoundingRect(otherLine.Points.ToList());
                 innerRect.X *= Constants.MaxCanvasSize;

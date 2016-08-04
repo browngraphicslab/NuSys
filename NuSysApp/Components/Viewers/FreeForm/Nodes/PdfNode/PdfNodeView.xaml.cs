@@ -17,34 +17,54 @@ using Windows.UI.Xaml.Shapes;
 
 namespace NuSysApp
 {
-    public sealed partial class PdfNodeView : AnimatableUserControl, IThumbnailable, Sizeable
+    public sealed partial class PdfNodeView : AnimatableUserControl, IThumbnailable
     {
         private PdfNodeViewModel _vm;
 
         public PdfNodeView(PdfNodeViewModel vm)
         {
             _vm = vm;
-            vm.View = this;
             InitializeComponent();
-            //  IsDoubleTapEnabled = true;
             DataContext = vm;
-
             vm.Controller.Disposed += ControllerOnDisposed;
-            SizeChanged += PdfNodeView_SizeChanged;
-
             Loaded += PdfNodeView_Loaded;
         }
 
-        private void PdfNodeView_Loaded(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Loads all the region views for the passed in page number and removes any other region views
+        /// </summary>
+        /// <param name="currentPageNumber"></param>
+        private async void UpdateRegionViews(int currentPageNumber)
+
         {
-            var vm = DataContext as PdfNodeViewModel;
-            vm.CreatePdfRegionViews();
+            foreach (var item in xClippingWrapper.GetRegionItems())
+            {
+                var regionView = item as PDFRegionView;
+                var model = (regionView?.DataContext as PdfRegionViewModel)?.Model as PdfRegionModel;
+                Debug.Assert(regionView != null);
+                await UITask.Run(() =>
+                {
+                    regionView.Visibility = model?.PageLocation == currentPageNumber ? Visibility.Visible : Visibility.Collapsed;
+                });
+            }
         }
 
-        private void PdfNodeView_SizeChanged(object sender, SizeChangedEventArgs e)
+        private async void PdfNodeView_Loaded(object sender, RoutedEventArgs e)
         {
             var vm = DataContext as PdfNodeViewModel;
-            vm.SizeChanged(this, xRenderedPdf.ActualWidth, xRenderedPdf.ActualHeight);
+            xClippingWrapper.Controller = vm?.Controller.LibraryElementController;
+            await xClippingWrapper.ProcessLibraryElementController();
+            UpdateRegionViews(vm.CurrentPageNumber);
+
+            // disable page left and page right buttons for pdf regions
+            if (vm.Model.ElementType == ElementType.PdfRegion)
+            {
+                pageLeft.Height = 0;
+                pageLeft.Width = 0;
+                pageRight.Height = 0;
+                pageRight.Width = 0;
+
+            }
         }
 
         private void ControllerOnDisposed(object source, object args)
@@ -54,23 +74,13 @@ namespace NuSysApp
             vm.Controller.Disposed -= ControllerOnDisposed;
         }
 
-
-        private void OnEditInk(object sender, RoutedEventArgs e)
-        {
-            //  nodeTpl.ToggleInkMode();
-
-        }
-
         private async void OnPageLeftClick(object sender, TappedRoutedEventArgs e)
         {
             var vm = (PdfNodeViewModel) this.DataContext;
             await vm.FlipLeft();
-
-            //(nodeTpl.inkCanvas.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
+            UpdateRegionViews(vm.CurrentPageNumber);
             e.Handled = true;
 
-            // nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
-            //nodeTpl.inkCanvas.ReRenderLines();
 
         }
 
@@ -78,12 +88,8 @@ namespace NuSysApp
         {
             var vm = (PdfNodeViewModel) this.DataContext;
             await vm.FlipRight();
-
-            //(nodeTpl.inkCanvas.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
+            UpdateRegionViews(vm.CurrentPageNumber);
             e.Handled = true;
-
-            //   nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
-            //     nodeTpl.inkCanvas.ReRenderLines();
         }
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)
@@ -92,33 +98,11 @@ namespace NuSysApp
             vm.Controller.RequestDelete();
         }
 
-        private void OnDuplicateClick(object sender, RoutedEventArgs e)
-        {
-            var vm = (ElementViewModel) DataContext;
-            vm.Controller.RequestDuplicate(vm.Model.X, vm.Model.Y);
-        }
-
-        private void PageRight_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
-        {
-            e.Handled = true;
-        }
-
         public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
         {
             var r = new RenderTargetBitmap();
             await r.RenderAsync(xRenderedPdf, width, height);
             return r;
         }
-       
-        public double GetWidth()
-        {
-            return xRenderedPdf.ActualWidth;
-        }
-
-        public double GetHeight()
-        {
-            return xRenderedPdf.ActualHeight;
-        }
-        
     }
 }

@@ -45,6 +45,8 @@ namespace NuSysApp
             this.InitializeComponent();
             _dragItem = vm.InitializeDragFilterImage();
             vm.Controller.SetLocation(x, y);
+            xFilterComboBox.ItemsSource = Enum.GetValues(typeof(ToolModel.ToolFilterTypeTitle)).Cast<ToolModel.ToolFilterTypeTitle>();
+            xFilterComboBox.SelectedItem = vm.Filter;
             this.DataContext = vm;
             SetSize(400,500);
             xCollectionElement.AddHandler(PointerPressedEvent, new PointerEventHandler(CollectionBtnAddOnManipulationStarting), true);
@@ -61,14 +63,19 @@ namespace NuSysApp
             xMetadataKeysList.ItemsSource = (DataContext as MetadataToolViewModel)?.AllMetadataDictionary.Keys;
         }
 
+        /// <summary>
+        ///Set the key list visual selection and refresh the value list
+        /// </summary>
         private void On_SelectionChanged(object sender)
         {
             var vm = DataContext as MetadataToolViewModel;
             SetKeyListVisualSelection();
             RefreshValueList();
-
         }
 
+        /// <summary>
+        ///Set the key list visual selection and scrolls to include in view
+        /// </summary>
         private void SetKeyListVisualSelection()
         {
             var vm = DataContext as MetadataToolViewModel;
@@ -80,18 +87,17 @@ namespace NuSysApp
                 {
                     xMetadataKeysList.SelectedItem = vm.Selection.Item1;
                     xMetadataKeysList.ScrollIntoView(xMetadataKeysList.SelectedItem);
-                    
                 }
-                
             }
             else
             {
                 xMetadataKeysList.SelectedItem = null;
-                xMetadataValuesList.ItemsSource = new List<string>();
-            
             }
         }
 
+        /// <summary>
+        ///Set the values list visual selection
+        /// </summary>
         private void SetValueListVisualSelection()
         {
             var vm = DataContext as MetadataToolViewModel;
@@ -118,7 +124,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        ///  Based on the selected key, and the search bar, refreshes the value list
+        ///  Based on the selected key, and the search bar, refreshes the value list and sets visual value selection
         /// </summary>
         public void RefreshValueList()
         {
@@ -130,6 +136,8 @@ namespace NuSysApp
                 if (!ScrambledEquals(xMetadataValuesList.ItemsSource as IEnumerable<string>,
                         filteredList))
                     {
+                        //if new filtered list is different from old filtered list, set new list as item source, set the visual selection, and 
+                        //scroll into view if necessary.
                         xMetadataValuesList.ItemsSource = filteredList;
                         SetValueListVisualSelection();
                         if (xMetadataValuesList.SelectedItems.Count > 0)
@@ -139,15 +147,19 @@ namespace NuSysApp
                     }
                     else
                     {
-                        SetValueListVisualSelection();
+                    //if new filtered list is the same as old filtered list, just set the visual selection and do not refresh the value list item source
+                    SetValueListVisualSelection();
                     }
             }
             else
             {
                 xMetadataValuesList.ItemsSource = null;
             }
-            
         }
+
+        /// <summary>
+        ///  compares two lists
+        /// </summary>
         public bool ScrambledEquals<T>(IEnumerable<T> list1, IEnumerable<T> list2)
         {
             if (list1 == null || list2 == null)
@@ -177,6 +189,10 @@ namespace NuSysApp
             }
             return cnt.Values.All(c => c == 0);
         }
+
+        /// <summary>
+        ///  Based on a search string, returns the filtered values list
+        /// </summary>
         private List<string> FilterValuesList(string search)
         {
             var filteredValuesList = new List<string>();
@@ -185,32 +201,27 @@ namespace NuSysApp
                 vm.AllMetadataDictionary[vm.Selection.Item1].Where(
                     item => item?.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).ToList().OrderBy(key => !string.IsNullOrEmpty(key) && char.IsNumber(key[0]))
                     .ThenBy(key => key).ToList();
-            //foreach (var item in vm.AllMetadataDictionary[vm.Selection.Item1])
-            //{
-            //    if (item?.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
-            //    {
-            //        filteredValuesList.Add(item);
-            //    }
-            //}
-            //return filteredValuesList;
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            var wvm = SessionController.Instance.ActiveFreeFormViewer;
-            wvm.AtomViewList.Remove(this);
-            (DataContext as ToolViewModel)?.Dispose();
             this.Dispose();
         }
 
         public void Dispose()
         {
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            wvm.AtomViewList.Remove(this);
             (DataContext as MetadataToolViewModel).PropertiesToDisplayChanged -= Vm_PropertiesToDisplayChanged;
             ((DataContext as MetadataToolViewModel).Controller as MetadataToolController).SelectionChanged -= On_SelectionChanged;
             (DataContext as MetadataToolViewModel).Controller.NumberOfParentsChanged -= Controller_NumberOfParentsChanged;
+            (DataContext as ToolViewModel)?.Dispose();
 
         }
 
+        /// <summary>
+        ///If the number of parents is greater than 1, this sets the visibility of the parent operator (AND/OR) grid 
+        /// </summary>
         private void Controller_NumberOfParentsChanged(int numOfParents)
         {
             if (numOfParents > 1)
@@ -223,6 +234,9 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        ///Sets the parent operator
+        /// </summary>
         private void XParentOperatorText_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             var vm = DataContext as ToolViewModel;
@@ -238,6 +252,9 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        ///item source of metadata keys list
+        /// </summary>
         private void Vm_PropertiesToDisplayChanged()
         {
             var vm = DataContext as MetadataToolViewModel;
@@ -245,6 +262,9 @@ namespace NuSysApp
             xMetadataKeysList.ItemsSource = vm.AllMetadataDictionary.Keys;
         }
 
+        /// <summary>
+        ///Sets up drag image when collection or stack image is starting to be dragged.
+        /// </summary>
         private async void CollectionBtnAddOnManipulationStarting(object sender, PointerRoutedEventArgs args)
         {
 
@@ -273,6 +293,9 @@ namespace NuSysApp
             args.Handled = true;
         }
 
+        /// <summary>
+        ///Moves drag image accordingly
+        /// </summary>
         private void CollectionBtnAddOnManipulationDelta(object sender, PointerRoutedEventArgs args)
         {
             if (_dragItem == null)
@@ -284,6 +307,9 @@ namespace NuSysApp
             args.Handled = true;
         }
 
+        /// <summary>
+        ///Creates a stack or collection based on which element was being dragged.
+        /// </summary>
         private async void CollectionBtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)
         {
             xCanvas.Children.Remove(_dragItem);
@@ -308,11 +334,18 @@ namespace NuSysApp
             args.Handled = true;
         }
 
+        /// <summary>
+        ///Dragging to move tool.
+        /// </summary>
         private void Tool_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             e.Handled = true;
+            xFilterComboBox.IsEnabled = false;
         }
 
+        /// <summary>
+        ///Dragging to move tool.
+        /// </summary>
         private void Tool_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = DataContext as ToolViewModel;
@@ -325,6 +358,20 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// This is necessary so that when you drag the filter combo box, the drop down list does not appear at the end of the drag.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XFilterComboBox_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            xFilterComboBox.IsEnabled = true;
+
+        }
+
+        /// <summary>
+        ///Resizing tool
+        /// </summary>
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             if (SessionController.Instance.SessionView.IsPenMode)
@@ -349,6 +396,9 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        ///Set size taking into account the min height and min width;
+        /// </summary>
         private void SetSize(double width, double height)
         {
             if (width < _minWidth && height < _minHeight)
@@ -374,9 +424,9 @@ namespace NuSysApp
             }
         }
 
-
-        
-
+        /// <summary>
+        ///Sets that starting point for dragging. This is also to make sure that pie chart isn't visually selected once you click on it, because visual selection will always be based on the logcial selection in the model.
+        /// </summary>
         private void xList_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             _x = e.GetCurrentPoint(xCanvas).Position.X - 25;
@@ -384,6 +434,9 @@ namespace NuSysApp
             e.Handled = true;
         }
 
+        /// <summary>
+        ///Set up drag item for dragging filter
+        /// </summary>
         private async void xListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             if (xCanvas.Children.Contains(_dragItem))
@@ -399,6 +452,9 @@ namespace NuSysApp
             t.TranslateY = _y;
         }
 
+        /// <summary>
+        ///Either scroll or drag depending on the location of the point.
+        /// </summary>
         private void xListItem_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             ListView list = new ListView();
@@ -441,6 +497,9 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        ///If the point is located outside the tool, logically set the selection based on selection type (Multi/Single) and either create new tool or add to existing tool
+        /// </summary>
         private async void xListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             xCanvas.Children.Remove(_dragItem);
@@ -474,6 +533,9 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        ///Sets the drag mode as either key or value based on which list triggered event
+        /// </summary>
         private void XList_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             if (sender == xMetadataKeysList)
@@ -486,6 +548,9 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        ///When the list item is tapped, set the logical selection.
+        /// </summary>
         private void KeyListItem_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             var vm = (DataContext as MetadataToolViewModel);
@@ -502,6 +567,9 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        ///When the list item is tapped, set the logical selection based on the type of selection (multi/single).
+        /// </summary>
         private void ValueListItem_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             var vm = (DataContext as MetadataToolViewModel);
@@ -511,14 +579,15 @@ namespace NuSysApp
             {
                 if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
                 {
+                    //if tapped item is already selected and in multiselect mode, remove item from selection
                     vm.Selection.Item2.Remove(((sender as Grid).Children[0] as TextBlock).Text);
                     vm.Selection = vm.Selection;
                 }
                 else
                 {
+                    //if tapped item is already selected and in single select mode, remove all selections
                     vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1, new HashSet<string>());
                 }
-                
             }
             else
             {
@@ -527,6 +596,8 @@ namespace NuSysApp
                 {
                     if (e.PointerDeviceType == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
                     {
+                        //if tapped item is not selected and in multiselect mode, add item to selection
+
                         if (vm.Selection != null)
                         {
                             var selection = ((sender as Grid).Children[0] as TextBlock).Text;
@@ -541,6 +612,7 @@ namespace NuSysApp
                     }
                     else
                     {
+                        //if tapped item is not selected and in single mode, set the item as the only selection
                         vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
                              new HashSet<string>() { (((Grid)sender).Children[0] as TextBlock).Text });
                     }
@@ -548,6 +620,9 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        ///If the item that was double tapped is the only selected item, attempt to open the detail view.
+        /// </summary>
         private void ValueListItem_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var vm = (DataContext as MetadataToolViewModel);
@@ -563,6 +638,21 @@ namespace NuSysApp
             }
         }
 
-        
+        /// <summary>
+        /// When the selection of the filter combo box changes, either set a new filter on the basic tool view,
+        /// or switch to an AllMetadata tool.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var filter = xFilterComboBox.SelectedItem is ToolModel.ToolFilterTypeTitle ? (ToolModel.ToolFilterTypeTitle)xFilterComboBox.SelectedItem : ToolModel.ToolFilterTypeTitle.Title;
+            if (filter != ToolModel.ToolFilterTypeTitle.AllMetadata)
+            {
+
+                (DataContext as MetadataToolViewModel).SwitchToBasicTool(filter);
+                this.Dispose();
+            }
+        }
     }
 }

@@ -11,10 +11,10 @@ namespace NuSysApp
         public delegate void TextChangedHandler(object source, string text);
         public event TextChangedHandler TextChanged;
 
-        public LibraryElementController Controller { get; }
-        public TextDetailHomeTabViewModel(LibraryElementController controller, HashSet<Region> regionsToLoad) : base(controller, regionsToLoad)
+        public LibraryElementController LibraryElementController { get; }
+        public TextDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
-            Controller = controller;
+            LibraryElementController = controller;
             controller.ContentChanged += ContentChanged;
         }
 
@@ -23,29 +23,9 @@ namespace NuSysApp
             TextChanged?.Invoke(source,data);
         }
 
-        public override void AddRegion(object sender, RegionController controller)
+        public override Message GetNewRegionMessage()
         {
-            //throw new NotImplementedException();
-        }
-
-        public override void RemoveRegion(object sender, Region displayedRegion)
-        {
-            //throw new NotImplementedException();
-        }
-
-        public override void SizeChanged(object sender, double width, double height)
-        {
-            //throw new NotImplementedException();
-        }
-
-        public override void SetExistingRegions()
-        {
-
-        }
-
-        public override Region GetNewRegion()
-        {
-            return null;
+            throw new NotImplementedException();
         }
     }
 }
