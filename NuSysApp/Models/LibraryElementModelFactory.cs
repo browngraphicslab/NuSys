@@ -41,6 +41,10 @@ namespace NuSysApp
 
                 var finite = message.GetBool("finite");
                 var shapepoints = message.GetList<Windows.Foundation.Point>("points");
+                if (shapepoints == null)
+                {
+                    shapepoints = new List<Windows.Foundation.Point>();
+                }
 
                 Debug.Assert(id != null);
                 switch (type)

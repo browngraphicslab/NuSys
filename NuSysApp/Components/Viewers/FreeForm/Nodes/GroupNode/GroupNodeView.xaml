@@ -27,6 +27,25 @@
         </ResourceDictionary>
     </local:AnimatableUserControl.Resources>
     <local:NodeTemplate x:Name="nodeTpl" Background="#dee5e9" Opacity="1">
+        <local:NodeTemplate.TopMenu>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="OptionsButton" Height="35" Click="OnOptionsClick">
+                    <TextBlock Text="Options"></TextBlock>
+                </Button>
+                <StackPanel x:Name="OptionsPanel" Visibility="Collapsed" Orientation="Vertical"  Height="60" Width="90">
+                    <StackPanel.RenderTransform>
+                        <TranslateTransform X="-10"  Y="-80"></TranslateTransform>
+                    </StackPanel.RenderTransform>
+                    <Button Click="OnFiniteClick">
+                        <TextBlock x:Name="FiniteText"></TextBlock>
+                    </Button>
+                    <Button Click="OnShapeClick">
+                        <TextBlock x:Name="ShapeText"></TextBlock>
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+        </local:NodeTemplate.TopMenu>
+        
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Vertical">
                 <Button Margin="0,2,0,2" x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">

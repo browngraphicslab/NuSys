@@ -41,6 +41,10 @@ namespace NuSysApp
         private Storyboard _expandedListAnim; // for data grid view
         private Storyboard _timelineAnim;
 
+        private bool _finite;
+        private List<Windows.Foundation.Point> _shapepoints;
+        
+
         public GroupNodeView( GroupNodeViewModel vm)
         {
             RenderTransform = new CompositeTransform();
@@ -69,6 +73,27 @@ namespace NuSysApp
                 new TappedEventHandler(MenuDetailButton_Tapped), true);
             EnterButton.AddHandler(TappedEvent,
                 new TappedEventHandler(MenuDetailButton_Tapped), true);
+
+            var elementcollectionvm = DataContext as ElementCollectionViewModel;
+            var libmodel = (elementcollectionvm.Controller.Model as CollectionElementModel).CollectionLibraryElementModel;
+            _finite = libmodel.IsFinite;
+            if (_finite)
+            {
+                FiniteText.Text = "Make Infinite";
+            }
+            else
+            {
+                FiniteText.Text = "Make Finite";
+            }
+            _shapepoints = libmodel.ShapePoints;
+            if (_shapepoints.Count == 0)
+            {                
+                ShapeText.Text = "Make Shape";
+            }
+            else
+            {
+                ShapeText.Text = "Remove Shape";
+            }
 
             SetUpToolsBtn();
         }
@@ -337,6 +362,55 @@ namespace NuSysApp
             vm.Controller.RequestDelete();
         }
 
+        private void OnOptionsClick(object sender, RoutedEventArgs e)
+        {
+            OptionsPanel.Visibility = Visibility.Visible;
+            OptionsButton.Visibility = Visibility.Collapsed;
+        }
+
+        private void OnFiniteClick(object sender, RoutedEventArgs e)
+        {
+            ChangeFinite();
+            OptionsPanel.Visibility = Visibility.Collapsed;
+            OptionsButton.Visibility = Visibility.Visible;
+
+        }
+
+        private void OnShapeClick(object sender, RoutedEventArgs e)
+        {
+            OptionsPanel.Visibility = Visibility.Collapsed;
+            OptionsButton.Visibility = Visibility.Visible;
+        }
+
+        private void ChangeFinite()
+        {
+            var vm = DataContext as ElementCollectionViewModel;
+            _finite = !_finite;
+            ((ElementCollectionController)vm.Controller).SetFinite(_finite);
+            if (_finite)
+            {
+                FiniteText.Text = "Make Infinite";
+            }
+            else
+            {
+                FiniteText.Text = "Make Finite";
+            }
+        }
+
+        private void ChangeShape()
+        {
+            var vm = DataContext as ElementCollectionViewModel;
+            var libmodel = (vm.Controller.Model as CollectionElementModel).CollectionLibraryElementModel;
+            if (libmodel.ShapePoints.Count == 0)
+            {
+                ShapeText.Text = "Make Shape";
+            }
+            else
+            {
+                ShapeText.Text = "RemoveShape";
+            }
+
+        }
 
     }
 }

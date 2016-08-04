@@ -62,6 +62,7 @@ namespace NuSysApp
         {
             this.DefaultStyleKey = typeof(NodeTemplate);
             SubMenu = null;
+            TopMenu = null;
             Inner = null;
 
         }
@@ -84,6 +85,9 @@ namespace NuSysApp
         public static readonly DependencyProperty SubMenuProperty = DependencyProperty.Register("SubMenu",
             typeof(object), typeof(NodeTemplate), new PropertyMetadata(null));
 
+        public static readonly DependencyProperty TopMenuProperty = DependencyProperty.Register("TopMenu",
+            typeof(object), typeof(NodeTemplate), new PropertyMetadata(null));
+
         public static readonly DependencyProperty InnerProperty = DependencyProperty.Register("Inner", typeof(object),
             typeof(NodeTemplate), new PropertyMetadata(null));
 
@@ -91,6 +95,12 @@ namespace NuSysApp
         {
             get { return (object)GetValue(SubMenuProperty); }
             set { SetValue(SubMenuProperty, value); }
+        }
+
+        public object TopMenu
+        {
+            get { return (object)GetValue(TopMenuProperty); }
+            set { SetValue(TopMenuProperty, value); }
         }
 
         public object Inner

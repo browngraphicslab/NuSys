@@ -29,6 +29,18 @@ namespace NuSysApp
             Disposed += OnDisposed;
         }
 
+        public void SetFinite(bool finite)
+        {
+            var contentModel = SessionController.Instance.ContentController.GetContent(Model.LibraryId) as CollectionLibraryElementModel;
+            contentModel.IsFinite = finite;
+        }
+
+        public void ChangeShape(List<Windows.Foundation.Point> shapepoints)
+        {
+            var contentModel = SessionController.Instance.ContentController.GetContent(Model.LibraryId) as CollectionLibraryElementModel;
+            contentModel.ShapePoints = shapepoints;
+        }
+
         private void OnDisposed(object source, object args)
         {
             var contentModel = SessionController.Instance.ContentController.GetContent(Model.LibraryId);
