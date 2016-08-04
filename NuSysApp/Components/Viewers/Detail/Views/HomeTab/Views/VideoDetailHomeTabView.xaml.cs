@@ -18,7 +18,6 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Components.Nodes;
-using NuSysApp.Nodes.AudioNode;
 using System.Threading.Tasks;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -27,88 +26,38 @@ namespace NuSysApp
 {
     public sealed partial class VideoDetailHomeTabView : UserControl
     {
-        private MediaCapture _mediaCapture;
-        private bool _isRecording;
-        private bool _addTimeBlockMode;
-        private bool _loaded;
-        private Line _temporaryLinkVisual;
-        private List<LinkedTimeBlockViewModel> _timeBlocks;
-
-
         private double _x;
         private double _y;
         private string _libraryElementId;
-
-
-        public event ContentLoadedEventHandler ContentLoaded;
-        public delegate void ContentLoadedEventHandler(object sender);
-
 
         public VideoDetailHomeTabView(VideoDetailHomeTabViewModel vm)
         {
             this.InitializeComponent();
             DataContext = vm;
-            _libraryElementId = vm.Controller.ContentId;
+            _libraryElementId = vm.LibraryElementController.ContentId;
 
-            VideoMediaPlayer.Source = vm.Controller.GetSource();
-            VideoMediaPlayer.MediaPlayer.MediaOpened += vm.VideoMediaPlayer_Loaded;
-
-            _isRecording = false;
-            //vm.LinkedTimeModels.CollectionChanged += LinkedTimeBlocks_CollectionChanged;
-            _timeBlocks = new List<LinkedTimeBlockViewModel>();
-            
-            vm.Controller.Disposed += ControllerOnDisposed;
-            vm.View = this;
-            VideoMediaPlayer.MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
-            
-            VideoMediaPlayer.ScrubBar.ValueChanged += vm.ScrubBarOnValueChanged;
-            vm.OnRegionSeekPassing += VideoMediaPlayer.onSeekedTo;
-            //Loaded += delegate (object sender, RoutedEventArgs args)
-            //{
-            //    var sw = SessionController.Instance.SessionView.ActualWidth / 2;
-            //    var sh = SessionController.Instance.SessionView.ActualHeight / 2;
-
-            //    var ratio = playbackElement.ActualWidth > playbackElement.ActualHeight ? playbackElement.ActualWidth / sw : playbackElement.ActualHeight / sh;
-            //    playbackElement.Width = playbackElement.ActualWidth / ratio;
-            //    playbackElement.Height = playbackElement.ActualHeight / ratio;
-            //};
+            VideoMediaPlayer.Source = vm.LibraryElementController.GetSource();            
+            vm.LibraryElementController.Disposed += ControllerOnDisposed;
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            detailViewerView.Disposed += DetailViewerView_Disposed; 
         }
 
-        private async void MediaPlayer_MediaOpened(object sender, RoutedEventArgs e)
+        private void DetailViewerView_Disposed(object sender, EventArgs e)
         {
-            var vm = DataContext as VideoDetailHomeTabViewModel;
-            vm.VideoDuration = VideoMediaPlayer.MediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
-            //HACKY. DELETE AFTER DEMO
-            await Task.Delay(500);
-            vm.SetExistingRegions();
-            ContentLoaded?.Invoke(this);
-            
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            detailViewerView.Disposed -= DetailViewerView_Disposed;
+            Dispose();
         }
 
         public void Dispose()
         {
+            VideoMediaPlayer.StopVideo();
         }
 
         private void ControllerOnDisposed(object source, object args)
         {
             var vm = (VideoNodeViewModel)DataContext;
             vm.Controller.Disposed -= ControllerOnDisposed;
-        }
-        
-        private void MediaPlayer_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            var vm = DataContext as VideoDetailHomeTabViewModel;
-            //foreach (var regionView in vm.RegionViews)
-            //{
-              //regionView.Deselect();
-            //}
-        }
-        
-        public double VideoWidth => VideoMediaPlayer.MediaPlayer.ActualWidth;
-        public double VideoHeight => VideoMediaPlayer.MediaPlayer.ActualHeight;
-        public void StopVideo()
-        {
-            VideoMediaPlayer.StopVideo();
         }
 
         #region addToCollection

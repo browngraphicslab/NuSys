@@ -19,7 +19,7 @@
     <Grid>
         <Border x:Name="xBorder">
             <Grid x:Name="xWrapper">
-                <Image x:Name="xImg" PointerPressed="xImg_PointerPressed" Source="{Binding ImageSource}"  VerticalAlignment="Top" HorizontalAlignment="Center"  Margin="0,0,0,65">
+                <Image x:Name="xImg" Source="{Binding ImageSource}"  VerticalAlignment="Top" HorizontalAlignment="Center"  Margin="0,0,0,65">
                     <Image.RenderTransform>
                         <CompositeTransform></CompositeTransform>
                     </Image.RenderTransform>

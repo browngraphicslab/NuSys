@@ -48,7 +48,9 @@ namespace NuSysApp
         }
 
         public string LibraryElementId { get; set; }
-        public string ContentDataModelId { get; set; }
+        public string ContentDataModelId { get;
+
+            set; }
 
         public string Title { get; set; }
 

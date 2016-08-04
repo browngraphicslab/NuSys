@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -25,59 +26,59 @@ namespace NuSysApp
 {
     public sealed partial class PdfDetailHomeTabView : UserControl
     {
-        //private InqCanvasView _inqCanvasView;
 
         private double _x;
         private double _y;
         private string _libraryElementId;
 
-        public event ContentLoadedEventHandler ContentLoaded;
-        public delegate void ContentLoadedEventHandler(object sender);
-
-
         public PdfDetailHomeTabView(PdfDetailHomeTabViewModel vm)
         {
             InitializeComponent();
-            _libraryElementId = vm.Controller.ContentId;
+            _libraryElementId = vm.LibraryElementController.ContentId;
 
+            vm.LibraryElementController.Disposed += ControllerOnDisposed;
 
-            Canvas.SetZIndex(ItemsControl, 0);
-            vm.Controller.Disposed += ControllerOnDisposed;
-            vm.PropertyChanged += PropertyChanged;
-            vm.View = this;
-
-            //vm.CreateRegionViews();
-            DataContext = vm;
-            xImg.ImageOpened += delegate
+            // disable page left and page right buttons for pdf regions
+            if (vm.LibraryElementController.LibraryElementModel.Type == ElementType.PdfRegion)
             {
-                ContentLoaded?.Invoke(this);
-            };
-            Loaded += delegate
-            {
-                ContentLoaded?.Invoke(this);
-            };
-            //vm.MakeTagList();
-
-            vm.Controller.Disposed += ControllerOnDisposed;
-        }
-        private void PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case "RegionViews":
-                    break;
+                pageLeft.Visibility = Visibility.Collapsed;
+                pageRight.Visibility = Visibility.Collapsed;
             }
+
+            DataContext = vm;
+            vm.PageLocationChanged += Vm_PageLocationChanged;
+            Loaded += PdfDetailHomeTabView_Loaded;
+
+            xClippingWrapper.Controller = vm.LibraryElementController;
+            xClippingWrapper.ProcessLibraryElementController();
+
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            detailViewerView.Disposed += DetailViewerView_Disposed; 
         }
 
-        private void XBorderOnSizeChanged(object sender, SizeChangedEventArgs e)
+        private void DetailViewerView_Disposed(object sender, EventArgs e)
         {
-            //xBorder.Clip = new RectangleGeometry {Rect= new Rect(0,0,e.NewSize.Width, e.NewSize.Height)};
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            detailViewerView.Disposed -= DetailViewerView_Disposed;
+            Dispose(); 
+        }
+
+        private void Vm_PageLocationChanged(object sender, int pageLocation)
+        {
+            UpdateRegionViews(pageLocation);
+        }
+
+        private async void PdfDetailHomeTabView_Loaded(object sender, RoutedEventArgs e)
+        {
+            var vm = DataContext as PdfDetailHomeTabViewModel;
+            xClippingWrapper.Controller = vm.LibraryElementController;
+            await xClippingWrapper.ProcessLibraryElementController();
         }
 
         private void ControllerOnDisposed(object source, object args)
         {
             var vm = (PdfDetailHomeTabViewModel)DataContext;
-            vm.Controller.Disposed += ControllerOnDisposed;
+            vm.LibraryElementController.Disposed -= ControllerOnDisposed;
             DataContext = null;
         }
         
@@ -87,10 +88,6 @@ namespace NuSysApp
             if (vm == null)
                 return;
             await vm.FlipLeft();
-            //(_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
-            //  nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
-            //  nodeTpl.inkCanvas.ReRenderLines();
-
         }
 
         private async void OnPageRightClick(object sender, RoutedEventArgs e)
@@ -99,94 +96,7 @@ namespace NuSysApp
             if (vm == null)
                 return;
             await vm.FlipRight();
-            //(_inqCanvasView.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
-            // (_inqCanvasView.DataContext as InqCanvasViewModel).Lines.Clear();
-            //   nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
-            //   nodeTpl.inkCanvas.ReRenderLines();
         }
-
-        private async void OnGoToSource(object sender, RoutedEventArgs e)
-        {
-            var model = (PdfNodeModel)((PdfNodeViewModel)DataContext).Model;
-            var libraryElementController = (DataContext as PdfDetailHomeTabViewModel)?.Controller;
-            string token = libraryElementController.GetMetadata("Token")?.ToString();
-            await AccessList.OpenFile(token);
-        }
-
-        protected void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            if (e.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen)
-                return;
-            /*
-            var compositeTransform = (CompositeTransform)xImg.RenderTransform;
-
-            var tmpTranslate = new TranslateTransform
-            {
-                X = compositeTransform.CenterX,
-                Y = compositeTransform.CenterY
-            };
-
-            var center = compositeTransform.Inverse.TransformPoint(e.Position);
-
-            var localPoint = tmpTranslate.Inverse.TransformPoint(center);
-
-            //Now scale the point in local space
-            localPoint.X *= compositeTransform.ScaleX;
-            localPoint.Y *= compositeTransform.ScaleY;
-
-            //Transform local space into world space again
-            var worldPoint = tmpTranslate.TransformPoint(localPoint);
-
-            //Take the actual scaling...
-            var distance = new Point(
-                worldPoint.X - center.X,
-                worldPoint.Y - center.Y);
-
-            //...and balance the jump of the changed scaling origin by changing the translation            
-            
-            compositeTransform.TranslateX += distance.X;
-            compositeTransform.TranslateY += distance.Y;
-
-            //Also set the scaling values themselves, especially set the new scale center...
-            compositeTransform.ScaleX *= e.Delta.Scale;
-            compositeTransform.ScaleY *= e.Delta.Scale;
-
-            compositeTransform.CenterX = center.X;
-            compositeTransform.CenterY = center.Y;
-
-            //And consider a translational shift
-
-
-           compositeTransform.TranslateX += e.Delta.Translation.X;
-           compositeTransform.TranslateY += e.Delta.Translation.Y;
-
-            var minY = 0;
-            var maxY = Math.Max(xBorder.ActualHeight - xImg.ActualHeight*compositeTransform.ScaleY, 0);
-            compositeTransform.TranslateY = Math.Max(compositeTransform.TranslateY, minY);
-
-            e.Handled = true;
-            */
-        }
-
-        public double GetPdfHeight()
-        {
-            return xImg.ActualHeight;
-        }
-
-        public double GetPdfWidth()
-        {
-            return xImg.ActualWidth;
-        }
-
-        private void xImg_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            var vm = DataContext as PdfDetailHomeTabViewModel;
-            foreach (var regionView in vm.RegionViews)
-            {
-                regionView.Deselect();
-            }
-        }
-
 
         #region addToCollection
         private void AddToCollection_OnPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -325,6 +235,31 @@ namespace NuSysApp
                             size.Height);
                 }
             });
+        }
+
+        private async void UpdateRegionViews(int currentPageNumber)
+        {
+            foreach (var item in xClippingWrapper.GetRegionItems())
+            {
+                var regionView = item as PDFRegionView;
+                var model = (regionView?.DataContext as PdfRegionViewModel)?.Model as PdfRegionModel;
+                Debug.Assert(regionView != null);
+                await UITask.Run(() =>
+                {
+                    regionView.Visibility = model?.PageLocation == currentPageNumber ? Visibility.Visible : Visibility.Collapsed;
+                });
+            }
+        }
+
+        public void Dispose()
+        {
+            var vm = DataContext as PdfDetailHomeTabViewModel;
+            if (vm != null) // because delete library element request can remove the view model outside of this
+            {
+                vm.PageLocationChanged -= Vm_PageLocationChanged;
+            }
+
+            xClippingWrapper.Dispose();
         }
 
         #endregion addToCollection

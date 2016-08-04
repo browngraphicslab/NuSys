@@ -132,24 +132,6 @@ namespace NuSysApp
             _debouncingDictionary.Add("y", y);
         }
 
-        public void SaveTimeBlock()
-        {
-            switch (Model.ElementType)
-            {
-                case ElementType.Image:
-                    break;
-                case ElementType.Text:
-                    break;
-                case ElementType.Audio:
-                    _debouncingDictionary.Add("linkedTimeModels", ((AudioNodeModel)Model).LinkedTimeModels);
-
-                    break;
-                case ElementType.Video:
-                    _debouncingDictionary.Add("linkedTimeModels", ((VideoNodeModel)Model).LinkedTimeModels);
-                    break;
-            }
-        }
-
         public void SetAlpha(double alpha)
         {
             Model.Alpha = alpha;
@@ -177,7 +159,7 @@ namespace NuSysApp
                 m = new Message();
 
             m.Remove("id");
-            m["contentId"] = Model.LibraryId;
+            m["libraryId"] = Model.LibraryId;
             m["data"] = "";
             m["x"] = x;
             m["y"] = y;

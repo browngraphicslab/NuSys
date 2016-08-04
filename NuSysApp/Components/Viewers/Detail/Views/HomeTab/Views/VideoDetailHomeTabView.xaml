@@ -22,9 +22,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Border x:Name="xBorder" BorderThickness="2" BorderBrush="{StaticResource color6}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-
             <Grid x:Name="grid">
-                <!--<TextBlock x:Name="MessageBox" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>-->
                 <Grid.Resources>
                     <local:PositionToStringConverter x:Key="PositionToStringConverter"/>
                 </Grid.Resources>
@@ -37,14 +35,7 @@
                 </Grid.RowDefinitions>
                 <CaptureElement x:Name="preview"/>
                 <Grid>
-                    <local:VideoMediaPlayer x:Name="VideoMediaPlayer" PointerPressed="MediaPlayer_PointerPressed"></local:VideoMediaPlayer>
-                    <ItemsControl ItemsSource="{Binding RegionViews}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <Canvas/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
+                    <local:VideoMediaPlayer x:Name="VideoMediaPlayer"></local:VideoMediaPlayer>
                 </Grid>
                 <GridView Visibility="Collapsed" x:Name ="ThumbnailGrid" Grid.Row ="4" Background ="CadetBlue" Height = "{Binding ElementName=grid, Path=ActualHeight}"  Margin="10,10,10,10" VerticalAlignment="Stretch" />
 

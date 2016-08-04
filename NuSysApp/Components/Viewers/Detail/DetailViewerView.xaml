@@ -144,7 +144,7 @@
                 <PivotItem Header="Home">
 
                     <!--Pivot content goes here-->
-                    <ContentPresenter Grid.Row="2" x:Name ="nodeContent" Content="{Binding View}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></ContentPresenter>
+                    <ContentPresenter Grid.Row="2" x:Name ="nodeContent" Content="{Binding View}" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center"></ContentPresenter>
                 </PivotItem>
                 <PivotItem Header="Metadata">
                     <!--Pivot content goes here-->
@@ -214,7 +214,7 @@
                     <local:LinkEditorTab x:Name="xLinkEditorView" Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Top" />
                 </PivotItem>
                 <PivotItem Header="Regions">
-                    <local:RegionEditorTabView x:Name="xRegionEditorView"  Grid.Row="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"></local:RegionEditorTabView>
+                    <local:RegionEditorTabView x:Name="xRegionEditorView"  Grid.Row="0" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center"></local:RegionEditorTabView>
                 </PivotItem>
 
             </Pivot>

@@ -14,35 +14,23 @@ using System.Diagnostics;
 
 namespace NuSysApp
 {
-    public class ImageElementViewModel : ElementViewModel, Sizeable
+    public class ImageElementViewModel : ElementViewModel
     {
-   
-        public Sizeable View { get; set; }
-
-        public LibraryElementController LibraryElementController{get { return Controller.LibraryElementController; }}
         public ImageElementViewModel(ElementController controller) : base(controller)
         {
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));       
         }
 
-        public void SizeChanged(object sender, double width, double height)
-        {
-
-        }
         public override void Dispose()
         {
-            if (Controller != null)
-            {
-                Controller.LibraryElementController.Loaded -= LibraryElementModelOnOnLoaded;
-            }
             if (Image != null)
             {
                 Image.ImageOpened -= UpdateSizeFromModel;
             }
+            base.Dispose();
         }
 
         public BitmapImage Image { get; set; }
-
 
         public override async Task Init()
         {
@@ -55,13 +43,12 @@ namespace NuSysApp
                 Controller.LibraryElementController.Loaded += LibraryElementModelOnOnLoaded;
             }
             RaisePropertyChanged("Image");
-
-
         }
 
         private async void LibraryElementModelOnOnLoaded(object sender)
         {
             await DisplayImage();
+            Controller.LibraryElementController.Loaded -= LibraryElementModelOnOnLoaded;
         }
 
         private async Task DisplayImage()
@@ -73,32 +60,23 @@ namespace NuSysApp
             RaisePropertyChanged("Image");
 
         }
+
         private void UpdateSizeFromModel(object sender, object args)
         {
             var ratio = (double)Image.PixelHeight / (double)Image.PixelWidth;
             Controller.SetSize(Controller.Model.Width, Controller.Model.Width * ratio);
         }
-        
-        //public override void SetSize(double width, double height)
-        //{
-        //    if (Image == null)
-        //    {
-        //        return;
-        //    }
 
-        //    var ratio = (double)Image.PixelHeight / (double)Image.PixelWidth;
-        //    base.SetSize(width, width * ratio);
-        //}
         public override double GetRatio()
         {
             if (Image == null)
             {
                 return 1;
             }
-            if (LibraryElementController.LibraryElementModel is RectangleRegion)
+            if (Controller.LibraryElementModel is RectangleRegion)
             {
-                var rect = LibraryElementController.LibraryElementModel as RectangleRegion;
-                return rect.Height/rect.Width;
+                var rect = Controller.LibraryElementModel as RectangleRegion;
+                return ((double)Image.PixelHeight* rect.Height)/((double)Image.PixelWidth*rect.Width);
             }
             return (double)Image.PixelHeight / (double)Image.PixelWidth;
             
@@ -113,18 +91,6 @@ namespace NuSysApp
             }
 
             SetSize(width,width * GetRatio());
-        }
-
-        public double GetWidth()
-        {
-            return Width;
-
-        }
-
-        public double GetHeight()
-        {
-            return Height;
-
         }
     }
 }

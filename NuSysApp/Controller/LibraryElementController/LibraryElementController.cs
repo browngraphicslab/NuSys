@@ -13,7 +13,7 @@ namespace NuSysApp
     /// Takes care of all the modifying and events invoking for the library element model
     /// Should manage keeping the library element model up to date as well as updating the server
     /// </summary>
-    public class LibraryElementController : IMetadatable, ILinkTabable, IDetailViewable
+    public class LibraryElementController : IMetadatable, ILinkTabable
     {
         protected DebouncingDictionary _debouncingDictionary;
         private LibraryElementModel _libraryElementModel;
@@ -308,8 +308,11 @@ namespace NuSysApp
         {
             if (e.Data != null)
             {
-                _libraryElementModel.Data = e.Data;
-                ContentChanged?.Invoke(this,e.Data);
+                if (LibraryElementModel.Type != ElementType.PdfRegion)
+                {
+                    _libraryElementModel.Data = e.Data;
+                    ContentChanged?.Invoke(this, e.Data);
+                }
             }
             //_libraryElementModel.InkLinkes = e.InkStrings;
 
@@ -391,58 +394,6 @@ namespace NuSysApp
             }
         }
 
-        public virtual void UnPack(Message message)
-        {
-            SetBlockServerBoolean(true);
-            if (message.ContainsKey("metadata"))
-            {
-                var metadata = message.GetDict<string, MetadataEntry>("metadata");
-                if (metadata != null)
-                {
-                    ChangeMetadata(metadata);
-                }
-            }
-            if (message.ContainsKey("data"))
-            {
-                SetContentData(message.GetString("data"));
-            }
-            if (message.ContainsKey("title"))
-            {
-                SetTitle(message.GetString("title"));
-            }
-
-            if (message.ContainsKey("keywords"))
-            {
-                SetKeywords(message.GetHashSet<Keyword>("keywords"));
-            }
-            if (message.GetString("small_thumbnail_url") != null)
-            {
-                LibraryElementModel.SmallIconUrl = message.GetString("small_thumbnail_url");
-            }
-            if (message.GetString("medium_thumbnail_url") != null)
-            {
-                LibraryElementModel.MediumIconUrl = message.GetString("medium_thumbnail_url");
-            }
-            if (message.GetString("large_thumbnail_url") != null)
-            {
-                LibraryElementModel.LargeIconUrl = message.GetString("large_thumbnail_url");
-            }
-            if (message.GetString("creator_user_id") != null)
-            {
-                LibraryElementModel.Creator = message.GetString("creator_user_id");
-            }
-            if (message.GetString("library_element_creation_timestamp") != null)
-            {
-                LibraryElementModel.Timestamp = message.GetString("library_element_creation_timestamp");
-            }
-            if (message.GetString("server_url") != null)
-            {
-                LibraryElementModel.ServerUrl = message.GetString("server_url");
-            }
-            //TODO set regions maybe
-            SetBlockServerBoolean(false);
-        }
-
         public Uri SmallIconUri
         {
             get
@@ -481,6 +432,63 @@ namespace NuSysApp
                 }
             }
         }
+
+        public virtual void UnPack(Message message)
+        {
+            SetBlockServerBoolean(true);
+            if (message.ContainsKey("metadata"))
+            {
+                var metadata = message.GetDict<string, MetadataEntry>("metadata");
+                if (metadata != null)
+                {
+                    ChangeMetadata(metadata);
+                }
+            }
+            if (message.ContainsKey("data"))
+            {
+                SetContentData(message.GetString("data"));
+            }
+            if (message.ContainsKey("title"))
+            {
+                SetTitle(message.GetString("title"));
+            }
+            if (message.ContainsKey("keywords"))
+            {
+                SetKeywords(message.GetHashSet<Keyword>("keywords"));
+            }
+            if (message.GetString("small_thumbnail_url") != null)
+            {
+                LibraryElementModel.SmallIconUrl = message.GetString("small_thumbnail_url");
+            }
+            if (message.GetString("medium_thumbnail_url") != null)
+            {
+                LibraryElementModel.MediumIconUrl = message.GetString("medium_thumbnail_url");
+            }
+            if (message.GetString("large_thumbnail_url") != null)
+            {
+                LibraryElementModel.LargeIconUrl = message.GetString("large_thumbnail_url");
+            }
+            if (message.GetString("creator_user_id") != null)
+            {
+                LibraryElementModel.Creator = message.GetString("creator_user_id");
+            }
+            if (message.GetString("library_element_creation_timestamp") != null)
+            {
+                LibraryElementModel.Timestamp = message.GetString("library_element_creation_timestamp");
+            }
+            if (message.GetString("server_url") != null)
+            {
+                LibraryElementModel.ServerUrl = message.GetString("server_url");
+            }
+            if (message.ContainsKey("content__id"))
+            {
+                LibraryElementModel.ContentDataModelId = message.GetString("content__id");
+            }
+            //TODO set regions maybe
+            SetBlockServerBoolean(false);
+        }
+
+
         public Dictionary<string, MetadataEntry> GetMetadata()
         {
             return _libraryElementModel.FullMetadata;
@@ -558,11 +566,6 @@ namespace NuSysApp
         {
             LinkAdded?.Invoke(this, linkController);
         }
-        
-        //public void RemoveLink(LinkLibraryElementController linkController)
-        //{
-        //    LinkRemoved?.Invoke(this, linkController.ContentId);
-        //}
 
         #region Linking methods
         public async Task RequestAddNewLink(string idToLinkTo, string title)
@@ -587,11 +590,6 @@ namespace NuSysApp
             var linkedIds = SessionController.Instance.LinksController.GetLinkedIds(LibraryElementModel.LibraryElementId);
             var controllers = linkedIds.Select(id =>SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
             return new HashSet<LinkLibraryElementController>(controllers);
-        }
-
-        public string TabId()
-        {
-            return LibraryElementModel.LibraryElementId;
         }
         #endregion
 

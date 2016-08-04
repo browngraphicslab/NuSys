@@ -155,7 +155,7 @@ namespace NuSysApp
                     else if (vm.ElementType != ElementType.Link)
                     {
 
-                        if (vm.ElementType == ElementType.PDF)
+                        if (vm.ElementType == ElementType.PDF || vm.ElementType == ElementType.PdfRegion)
                         {
                             var pdfVm = (PdfNodeViewModel)vm;
                             PdfDetailHomeTabViewModel.InitialPageNumber = pdfVm.CurrentPageNumber;

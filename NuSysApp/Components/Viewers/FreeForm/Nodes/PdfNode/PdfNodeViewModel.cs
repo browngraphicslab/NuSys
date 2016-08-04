@@ -21,7 +21,7 @@ using Windows.UI.Xaml;
 
 namespace NuSysApp
 {
-    public class PdfNodeViewModel : ElementViewModel, Sizeable
+    public class PdfNodeViewModel : ElementViewModel
     {
         private CompositeTransform _inkScale;
         private bool _isSelected;
@@ -29,33 +29,6 @@ namespace NuSysApp
         public MuPDFWinRT.Document _document;
         public ObservableCollection<Button> SuggestedTags { get; set; }
         private List<string> _suggestedTags = new List<string>();
-        public ObservableCollection<PDFRegionView> RegionViews { private set; get; }
-
-        /// <summary>
-        /// Override the IsSelected setter to also remove the thumbnail and load the pdf
-        /// </summary>
-        public override bool IsSelected
-        {
-            get { return _isSelected; }
-            set
-            {
-                if (_isSelected == value)
-                {
-                    return;
-                }
-
-                _isSelected = value;
-                Controller.Selected(value);
-                RaisePropertyChanged("IsSelected");
-                if (value)
-                {
-                    this.DisplayPdf();
-                    this.CreatePdfRegionViews();
-                }
-            }
-        }
-
-        public Sizeable View { get; set; }
 
         public PdfNodeViewModel(ElementController controller) : base(controller)
         {
@@ -63,42 +36,13 @@ namespace NuSysApp
             var model = (PdfNodeModel) controller.Model;
             model.PageChange += OnPageChange;
             CurrentPageNumber = model.CurrentPageNumber;
-
-            RegionViews = new ObservableCollection<PDFRegionView>();
-            this.CreatePdfRegionViews();
-        }
-       
-        
-        public void CreatePdfRegionViews()
-        {
-
-            RegionViews.Clear();
-
-            var regionsLibraryElementIds =
-                SessionController.Instance.RegionsController.GetRegionLibraryElementIds(
-                    Controller.LibraryElementModel.LibraryElementId);
-            foreach (var regionLibraryElementId in regionsLibraryElementIds)
+            if (controller.LibraryElementModel.Type == ElementType.PdfRegion)
             {
-                var regionLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementId) as PdfRegionLibraryElementController;
-                Debug.Assert(regionLibraryElementController != null);
-                Debug.Assert(regionLibraryElementController.LibraryElementModel is PdfRegionModel);
-                var vm = new PdfRegionViewModel(regionLibraryElementController.LibraryElementModel as PdfRegionModel, regionLibraryElementController, this);
-
-                var view = new PDFRegionView(vm);
-
-                if ((regionLibraryElementController.LibraryElementModel as PdfRegionModel).PageLocation != CurrentPageNumber)
-                {
-                    view.Visibility = Visibility.Collapsed;
-                }
-                vm.Editable = false;
-                RegionViews.Add(view);
-
+                var pdfRegionModel = controller.LibraryElementModel as PdfRegionModel;
+                CurrentPageNumber = pdfRegionModel.PageLocation;
             }
 
-            RaisePropertyChanged("RegionViews");
-            
-        }
-        
+        }           
 
         public override void Dispose()
         {
@@ -137,7 +81,6 @@ namespace NuSysApp
             _document = await MediaUtil.DataToPDF(Controller.LibraryElementModel.Data);
             await Goto(CurrentPageNumber);
             SetSize(Width, Height);
-            //LaunchLDA((PdfNodeModel)this.Model);
         }
 
         /// <summary>
@@ -168,10 +111,7 @@ namespace NuSysApp
         private async void OnPageChange(int page)
         {
             CurrentPageNumber = page;
-            //await UITask.Run(async delegate { await RenderPage(page); });
             await RenderPage(page);
-
-
         }
 
         public async Task FlipRight()
@@ -194,22 +134,6 @@ namespace NuSysApp
             if (pageNumber >= (_document.PageCount)) return;
             CurrentPageNumber = pageNumber;
             ((PdfNodeModel)Model).CurrentPageNumber = CurrentPageNumber;
-
-
-            foreach (var regionView in RegionViews)
-            {
-                var model = (regionView.DataContext as PdfRegionViewModel)?.Model;
-                if ((model as PdfRegionModel).PageLocation != CurrentPageNumber)
-                {
-                    regionView.Visibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    regionView.Visibility = Visibility.Visible;
-                }
-            }
-
-
         }
 
         private async Task RenderPage(int pageNumber)
@@ -240,17 +164,35 @@ namespace NuSysApp
             if (ImageSource == null)
                 return;
 
-
-            if (ImageSource.PixelWidth > ImageSource.PixelHeight)
+            if (Controller.LibraryElementModel is PdfRegionModel)
             {
-                var r = ImageSource.PixelHeight / (double)ImageSource.PixelWidth;
-                base.SetSize(width, width * r);
+                var rect = Controller.LibraryElementModel as PdfRegionModel;
+
+                if (ImageSource.PixelWidth * rect.Width > ImageSource.PixelHeight * rect.Height)
+                {
+                    var r = ((double)ImageSource.PixelHeight * rect.Height) / ((double)ImageSource.PixelWidth * rect.Width);
+                    base.SetSize(width, width * r);
+                }
+                else
+                {
+                    var r = ((double)ImageSource.PixelWidth * rect.Width) / ((double)ImageSource.PixelHeight * rect.Height);
+                    base.SetSize(height * r, height);
+                }
             }
             else
             {
-                var r = ImageSource.PixelWidth / (double)ImageSource.PixelHeight;
-                base.SetSize(height * r, height);
+                if (ImageSource.PixelWidth > ImageSource.PixelHeight)
+                {
+                    var r = ImageSource.PixelHeight / (double)ImageSource.PixelWidth;
+                    base.SetSize(width, width * r);
+                }
+                else
+                {
+                    var r = ImageSource.PixelWidth / (double)ImageSource.PixelHeight;
+                    base.SetSize(height * r, height);
+                }
             }
+
         }
 
         protected override void OnSizeChanged(object source, double width, double height)
@@ -262,15 +204,9 @@ namespace NuSysApp
                 return;
             }
 
-            base.SetSize(width, width * GetRatio());
-
-            //SetSize(width, height);
+            SetSize(width, height);
         }
 
-        public override double GetRatio()
-        {
-            return ImageSource == null ? 1 : (double)ImageSource.PixelHeight / (double)ImageSource.PixelWidth;
-        }
 
         public string GetAllText()
         {
@@ -345,77 +281,6 @@ namespace NuSysApp
         public WriteableBitmap ImageSource
         {
             get; set;
-        }
-
-
-        public CompositeTransform InkScale
-        {
-            get { return _inkScale; }
-            set
-            {
-                if (_inkScale == value)
-                {
-                    return;
-                }
-                _inkScale = value;
-                RaisePropertyChanged("InkScale");
-            }
-        }
-
-        public void MakeTagList()
-        {
-            SuggestedTags = new ObservableCollection<Button>();
-            foreach (string tag in _suggestedTags)
-            {
-                Button tagBlock = this.MakeTagBlock(tag);
-                SuggestedTags.Add(tagBlock);
-            }
-        }
-
-        public Button MakeTagBlock(string text)
-        {
-            Button tagBlock = new Button();
-            tagBlock.Content = text;
-            tagBlock.Foreground = new SolidColorBrush(Constants.foreground6);
-            tagBlock.FontStyle = FontStyle.Italic;
-            tagBlock.Height = 40;
-            tagBlock.Margin = new Thickness(2, 2, 2, 2);
-            tagBlock.Padding = new Thickness(5);
-            tagBlock.Background = new SolidColorBrush(Colors.Transparent);
-
-            return tagBlock;
-        }
-
-        public double GetWidth()
-        {
-            return View?.GetWidth() ?? 0;
-        }
-
-        public double GetHeight()
-        {
-            return View?.GetHeight() ?? 0 ;
-        }
-
-       public void SizeChanged(object sender, double width, double height)
-       {
-           var newHeight = View.GetHeight();
-           var newWidth = View.GetWidth();
-
-            foreach (var rv in RegionViews)
-            {
-                var regionViewViewModel = rv.DataContext as RegionViewModel;
-                regionViewViewModel?.ChangeSize(sender, newWidth, newHeight);
-            }
-        }
-
-        public double GetViewWidth()
-        {
-            throw new NotImplementedException();
-        }
-
-        public double GetViewHeight()
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -51,18 +51,22 @@ namespace NuSysApp
                 case ElementType.Text:
                     text.Visibility = Visibility.Visible;
                     break;
+                case ElementType.ImageRegion:
                 case ElementType.Image:
                     image.Visibility = Visibility.Visible;
                     break;
                 case ElementType.Collection:
                     collection.Visibility = Visibility.Visible;
                     break;
+                case ElementType.PdfRegion:
                 case ElementType.PDF:
                     pdf.Visibility = Visibility.Visible;
                     break;
+                case ElementType.AudioRegion:
                 case ElementType.Audio:
                     audio.Visibility = Visibility.Visible;
                     break;
+                case ElementType.VideoRegion:
                 case ElementType.Video:
                     video.Visibility = Visibility.Visible;
                     break;

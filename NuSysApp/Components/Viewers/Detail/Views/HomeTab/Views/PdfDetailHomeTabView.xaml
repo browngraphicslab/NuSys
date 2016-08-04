@@ -17,9 +17,6 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <StackPanel  VerticalAlignment="Top" Orientation="Horizontal" Background="#565F6D" Visibility="Collapsed">
-            <Button Name="SourceBttn" Foreground="{StaticResource foreground6}" Click="OnGoToSource">GO TO SOURCE</Button>
-        </StackPanel>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
@@ -27,18 +24,16 @@
             </Grid.RowDefinitions>
             <Border x:Name="xBorder"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid x:Name="xWrapper" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    <Image x:Name="xImg" PointerPressed="xImg_PointerPressed" Source="{Binding ImageSource}" Stretch="Uniform">
-                        <Image.RenderTransform>
-                            <CompositeTransform></CompositeTransform>
-                        </Image.RenderTransform>
-                    </Image>
-                    <ItemsControl x:Name="ItemsControl"  ItemsSource="{Binding RegionViews}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <Canvas/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
+
+                    <local:RectangleWrapper x:Name="xClippingWrapper" >
+                        <local:RectangleWrapper.RenderTransform>
+                            <CompositeTransform x:Name="WrapperTransform"/>
+                        </local:RectangleWrapper.RenderTransform>
+                        <local:RectangleWrapper.Content>
+                            <Image x:Name="xImg" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Center" Source="{Binding ImageSource}"/>
+                        </local:RectangleWrapper.Content>
+                    </local:RectangleWrapper>
+
                     <Button x:Name="pageLeft" Height ="50" Width="50" VerticalAlignment="Center" Background=" Transparent" HorizontalAlignment="Left" Click="OnPageLeftClick">
                         <Button.Content>
                             <Image Opacity=".8" Stretch="Uniform" Source="ms-appx:///Assets/icon_pdf_left.png" />

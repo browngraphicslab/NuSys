@@ -8,36 +8,17 @@ namespace NuSysApp
 {
     public class GroupDetailHomeTabViewModel : DetailHomeTabViewModel
     {
-        public LibraryElementController Controller { get; }
+        public LibraryElementController LibraryElementController { get; }
 
         public LibraryElementModel Model { get; }
         public GroupDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
-            Controller = controller;
+            LibraryElementController = controller;
             Model = controller.LibraryElementModel;
             
         }
 
-        public override void AddRegion(object sender, RegionLibraryElementController libraryElementController)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void RemoveRegion(object sender, Region displayedRegion)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void SizeChanged(object sender, double width, double height)
-        {
-            //throw new NotImplementedException();
-        }
-
-        public override void SetExistingRegions()
-        {
-            //throw new NotImplementedException();
-        }
-
+        // not implemented cause we don't have regions in collections
         public override Message GetNewRegionMessage()
         {
             throw new NotImplementedException();
