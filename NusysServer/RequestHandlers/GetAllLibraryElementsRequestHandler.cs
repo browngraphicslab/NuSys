@@ -44,7 +44,7 @@ namespace NusysServer
             var propertiesArgs = new SqlSelectQueryArgs();
             propertiesArgs.ColumnsToGet = NusysConstants.ACCEPTED_PROPERTIES_TABLE_KEYS;
             propertiesArgs.TableType = Constants.SQLTableType.Properties;
-            propertiesArgs.Conditional = new SqlSelectQueryContains(NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY, new List<string>(elementMap.Keys));
+            propertiesArgs.Condition = new SingleTableWhereCondition(new SqlSelectQueryContains(Constants.SQLTableType.Properties, NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY, new List<string>(elementMap.Keys)));
             var propertiesCommand = sql.GetSelectCommand(propertiesArgs);
 
             //after execution, map messages back to original mapping

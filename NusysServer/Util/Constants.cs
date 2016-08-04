@@ -200,6 +200,29 @@ namespace NusysServer
             model.ContentType = type;
             return model;
         }
+
+        /// <summary>
+        /// Simply assigns the sql table name to the column titles for complex queries
+        /// </summary>
+        /// <param name="tableType"></param>
+        /// <param name="names"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> GetFullColumnTitles(SQLTableType tableType, IEnumerable<string> columnNames)
+        {
+            return columnNames.Select(name => SQLConnector.GetTableName(tableType) + "." + name);
+        }
+
+        /// <summary>
+        /// Simply assigns the sql table name to the column title for complex queries
+        /// </summary>
+        /// <param name="tableType"></param>
+        /// <param name="names"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> GetFullColumnTitle(SQLTableType tableType, string columnName)
+        {
+            return new List<string>() {SQLConnector.GetTableName(tableType) + "." + columnName};
+        }
+
         #endregion StaticMethods
     }
 }

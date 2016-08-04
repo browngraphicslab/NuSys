@@ -149,11 +149,11 @@ namespace NusysServer
         }
 
         /// <summary>
-        /// method to return the 
+        /// method to return the name of the sql table
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        private static string GetTableName(Constants.SQLTableType type)
+        public static string GetTableName(Constants.SQLTableType type)
         {
             switch (type)
             {
@@ -322,7 +322,7 @@ namespace NusysServer
         {
             //create new query args class
             var queryArgs = new SqlSelectQueryArgs();
-            queryArgs.Conditional = new SqlSelectQueryEquals(NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY, contentDataModelId);
+            queryArgs.Condition = new SingleTableWhereCondition(new SqlSelectQueryEquals(Constants.SQLTableType.Content, NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY, contentDataModelId));
             queryArgs.TableType = Constants.SQLTableType.Content;
             queryArgs.ColumnsToGet = Constants.GetAcceptedKeys(Constants.SQLTableType.Content);
 
@@ -331,8 +331,11 @@ namespace NusysServer
 
             //execute query command
             var executeMessages = ExecuteSelectQueryAsMessages(returnArgs);
-            var dataModel = Constants.ParseContentDataModelFromDatabaseMessage(executeMessages.FirstOrDefault());
-            return dataModel;
+            if (executeMessages.Any())
+            {
+                var dataModel = Constants.ParseContentDataModelFromDatabaseMessage(executeMessages.FirstOrDefault());
+                return dataModel;
+            }
             throw new Exception("the requested contentDataModel wasn't found on the database");
         }
 
@@ -378,22 +381,23 @@ namespace NusysServer
         /// <returns></returns>
         public SelectCommandReturnArgs GetSelectCommand(SqlSelectQueryArgs queryArgs)
         {
-            if (queryArgs.Conditional != null)
+            /*
+            if (queryArgs.Condition != null)
             {
-                var cleanedIEnumerable = Constants.GetCleanIEnumerableForDatabase(queryArgs.Conditional.GetPropertyKeys() ?? new List<string>(), queryArgs.TableType);
+                var cleanedIEnumerable = Constants.GetCleanIEnumerableForDatabase(queryArgs.Condition.GetPropertyKeys() ?? new List<string>(), queryArgs.TableType);
 
-                if (cleanedIEnumerable.Count() != queryArgs.Conditional.GetPropertyKeys().Count())
+                if (cleanedIEnumerable.Count() != queryArgs.Condition.GetPropertyKeys().Count())
                 {
                     throw new Exception("One or more of your conditionals referenced a column that doesn't exist in this table: "+queryArgs.TableType);
                 }
             }
-
+            */
             var cleanedColumnsToGet = new List<string>(queryArgs.ColumnsToGet.Intersect(Constants.GetAcceptedKeys(queryArgs.TableType)));
             var sqlStatement = "SELECT " + String.Join(",", cleanedColumnsToGet) + " FROM " + GetTableName(queryArgs.TableType);
 
-            if (queryArgs.Conditional != null)
+            if (queryArgs.Condition != null)
             {
-                sqlStatement += " WHERE " + queryArgs.Conditional.GetQueryString();
+                sqlStatement += queryArgs.Condition.GetQueryString();
             }
             sqlStatement += ";";
             return new SelectCommandReturnArgs(MakeCommand(sqlStatement), cleanedColumnsToGet);

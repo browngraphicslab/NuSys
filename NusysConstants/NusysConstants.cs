@@ -581,12 +581,16 @@ namespace NusysIntermediate
 
         #region staticMethods
 
+        /// <summary>
+        /// returns whether the element Type is a region
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public static bool IsRegionType(NusysConstants.ElementType type)
         {
             return type == NusysConstants.ElementType.AudioRegion || type == NusysConstants.ElementType.ImageRegion || type == NusysConstants.ElementType.VideoRegion ||
                    type == NusysConstants.ElementType.PdfRegion;
         }
-
         #endregion staticMethods
     }
 }

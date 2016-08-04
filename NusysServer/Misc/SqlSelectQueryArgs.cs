@@ -21,7 +21,7 @@ namespace NusysServer
         /// <summary>
         /// the conditional that must be satisfied for the row to be picked
         /// </summary>
-        public SqlSelectQueryConditional Conditional;
+        public SqlSelectCondition Condition;
 
         /// <summary>
         /// the ienumerable of desired columns to fetch from the table
