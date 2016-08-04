@@ -31,13 +31,13 @@ namespace NuSysApp
 
         public delegate void RegionSelectedDeselectedEventHandler(object sender, bool selected);
         public event RegionSelectedDeselectedEventHandler OnSelectedOrDeselected;
-        public PDFRegionView(PdfRegionViewModel regionVM)
+        public PDFRegionView(PdfRegionViewModel vm)
         {
             
             this.InitializeComponent();
-            DataContext = regionVM;
+            DataContext = vm;
             Deselect();
-            var model = regionVM.Model as PdfRegionModel;
+            var model = vm.Model as PdfRegionModel;
             if (model == null)
             {
                 return;
@@ -46,16 +46,16 @@ namespace NuSysApp
             CompositeTransform composite = new CompositeTransform();
             this.RenderTransform = composite;
 
-            regionVM.LocationChanged += ChangeLocation;
-            regionVM.Disposed += Dispose;
+            vm.LocationChanged += ChangeLocation;
+            vm.Disposed += Dispose;
 
-            var parentWidth = regionVM.RectangleWrapper.GetWidth();
-            var parentHeight = regionVM.RectangleWrapper.GetHeight();
+            var parentWidth = vm.RectangleWrapper.GetWidth();
+            var parentHeight = vm.RectangleWrapper.GetHeight();
 
             composite.TranslateX = model.TopLeftPoint.X * parentWidth;
             composite.TranslateY = model.TopLeftPoint.Y * parentHeight;
-            regionVM.Width = (model.Width) * parentWidth;
-            regionVM.Height = (model.Height) * parentHeight;
+            vm.Width = (model.Width) * parentWidth;
+            vm.Height = (model.Height) * parentHeight;
 
             _tx = composite.TranslateX;
             _ty = composite.TranslateY;
@@ -185,7 +185,7 @@ namespace NuSysApp
             }
             else if (_ty > downYBound)
             {
-                rt.TranslateY = vm.RectangleWrapper.GetHeight() - vm.OriginalHeight;
+                rt.TranslateY = vm.RectangleWrapper.GetHeight() - vm.Height;
             }
             else
             {
@@ -211,12 +211,10 @@ namespace NuSysApp
             _ty = ((CompositeTransform) this.RenderTransform).TranslateY;
 
 
-            vm.OriginalHeight = vm.Height;
-            vm.OriginalWidth = vm.Width;
             FireSelection();
             e.Handled = true;
         }
-        public void Deselect()
+        private void Deselect()
         {
             xMainRectangleBorder.BorderThickness = new Thickness(3 * ResizerTransform.ScaleY, 3 * ResizerTransform.ScaleX, 3 * ResizerTransform.ScaleY, 3 * ResizerTransform.ScaleX);
             xResizingTriangle.Visibility = Visibility.Collapsed;
@@ -226,7 +224,7 @@ namespace NuSysApp
             Selected = false;
         }
 
-        public void Select()
+        private void Select()
         {
             xMainRectangleBorder.BorderThickness = new Thickness(6 * ResizerTransform.ScaleY, 6 * ResizerTransform.ScaleX, 6 * ResizerTransform.ScaleY, 6 * ResizerTransform.ScaleX);
 
@@ -254,7 +252,9 @@ namespace NuSysApp
             }
         }
 
-
+        /// <summary>
+        /// If not already selected, shows selection and fires event listened to by RectangleWrapper
+        /// </summary>
         public void FireSelection()
         {
             if (!Selected)
@@ -264,6 +264,10 @@ namespace NuSysApp
             }
         }
 
+
+        /// <summary>
+        /// If selected, shows deselection and fires event listened to by RectangleWrapper.
+        /// </summary>
         public void FireDeselection()
         {
             if (Selected)

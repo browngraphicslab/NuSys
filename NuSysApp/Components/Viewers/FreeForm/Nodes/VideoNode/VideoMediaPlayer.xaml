@@ -28,7 +28,11 @@
 
               <local:AudioWrapper x:Name="xAudioWrapper">
                   <local:AudioWrapper.Content>
+<<<<<<< HEAD
                 <MediaElement x:Name="MediaElement" AreTransportControlsEnabled="False" AutoPlay="False" MediaOpened="MediaElement_MediaOpened" Stretch="Fill" MarkerReached="MediaElement_MarkerReached"/>
+=======
+                <MediaElement x:Name="MediaElement" AreTransportControlsEnabled="False"  AutoPlay="False" MediaOpened="MediaElement_MediaOpened" Stretch="Fill" MarkerReached="MediaElement_MarkerReached"/>
+>>>>>>> origin/regionsRefactorSAud
                   </local:AudioWrapper.Content>
               </local:AudioWrapper>
 
