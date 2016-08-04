@@ -25,75 +25,72 @@ using WinRTXamlToolkit.IO.Serialization;
 
 namespace NuSysApp
 {
-    public sealed partial class DetailViewerView : AnimatableUserControl
+    public sealed partial class DetailViewerView : AnimatableUserControl, INuSysDisposable
     {
 
         private ElementViewModel _activeVm;
         private object _regionEditorPivotItem;
-        private IDetailViewable _currentDetailViewable;
-        
+        private LibraryElementController _currentDetailViewable;
+
+        public event EventHandler Disposed;
+
         public DetailViewerView()
         {
             this.InitializeComponent();
-
-            xMetadataEditorView = (MetadataEditorView) FindName("xMetadataEditorView");
-            xRegionEditorView = (RegionEditorTabView)FindName("xRegionEditorView");
-            xRegionEditorView.DetailViewerView = this;
             
-            Visibility = Visibility.Collapsed;
-            
-            //NewTagBox.Activate();
+            // initialize the detail viewer closed
+            Visibility = Visibility.Collapsed;          
 
-
+            // because detail viewer is instantiated in xaml, we can't pass in a vm
+            // so we set datacontext in code behind, which triggers this method
             DataContextChanged += delegate(FrameworkElement sender, DataContextChangedEventArgs args)
             {
                 var dataContext = DataContext as DetailViewerViewModel;
 
-
+                // called initially so this returns before anything ba can happen
                 if (dataContext == null) { 
                     return;
                 }
 
-                dataContext.SizeChanged += Resize;
-
-
-                xRegionEditorView.DataContext = DataContext;
+                // if this fails uncomment the line below, if this doesn't fail remove it completely
+                Debug.Assert(xRegionEditorView.DataContext == DataContext);
+                //xRegionEditorView.DataContext = DataContext;
 
                 var vm = dataContext;
 
-                vm.PropertyChanged += OnPropertyChanged;
+                // Sets the title for the DV. DO NOT DISPOSE OF THIS. It will break the binding. 
+                vm.OnTitleChanged += Vm_OnTitleChanged;
+
+                // Populates the tags and suggested tags 
                 Tags.ItemsSource = vm.Tags;
                 SuggestedTags.ItemsSource = vm.SuggestedTags;
                 vm.MakeTagList();
                 vm.MakeSuggestedTagList();
 
+                // Sets the data for the metadata editor
                 xMetadataEditorView.Metadatable = vm.CurrentElementController;
                 
+                // Initially the DV's width is set to half the screen width and the height to the height of the screen
                 this.Width = SessionController.Instance.SessionView.ActualWidth / 2;
                 this.Height = SessionController.Instance.SessionView.ActualHeight;
-                vm.TabPaneHeight = this.Width; //I know that this is confusing, but we switched the tab from on the side to on the top. I should refactor this later
-                this.MaxHeight = SessionController.Instance.SessionView.ActualHeight;
-                this.MaxWidth = Math.Max(SessionController.Instance.SessionView.ActualWidth - resizer.ActualWidth,0);
-                Canvas.SetTop(this, 0);
-                Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);
-                // Metadata.ItemsSource = vm.Metadata;
-                
-              };
 
-            /*
-            SuggestButton.Click += delegate(object sender, RoutedEventArgs args)
-            {
-                var dvm = (DetailViewerViewModel)DataContext;
-                var cvm = (ElementViewModel)dvm.View.DataContext;
-                if (cvm is PdfNodeViewModel)
-                {
-                    var pvm = (PdfNodeViewModel) cvm;
-                    LaunchLDA(pvm.GetAllText());
-                }
-                
-            };
-            */
+                // Sets the width for the tab pane on top of the DV
+                vm.TabPaneWidth = this.Width; 
+
+                // Sets MaxHeight and MaxWidth such that the DV doesn't go off screen
+                this.MaxHeight = SessionController.Instance.SessionView.ActualHeight;
+                this.MaxWidth = Math.Max(SessionController.Instance.SessionView.ActualWidth - resizer.ActualWidth, 0);
+
+                // Sets the DV's position on screen
+                Canvas.SetTop(this, 0);
+                Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);                
+              };
             
+        }
+
+        private void Vm_OnTitleChanged(object source, string newTitle)
+        {
+            TitleBox.SetText(newTitle);
         }
 
         public async Task LaunchLDA(string text)
@@ -232,6 +229,8 @@ namespace NuSysApp
                 Visibility = Visibility.Visible;
             }
 
+            // Hide the list view from the region editor tab as Pdf regions are single page entities
+            xRegionEditorView.ShowListView(false, libraryElementController.LibraryElementModel.Type);
 
             // Update the list of links in the Link Editor
             var linkEditorViewModel = xLinkEditorView.DataContext as LinkEditorTabViewModel;
@@ -267,17 +266,7 @@ namespace NuSysApp
             }
 
         }
-
-        private void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
-        {
-
-            var vm = (DetailViewerViewModel) DataContext;
-            var prop = propertyChangedEventArgs.PropertyName;
-
-            // setting here because you Cannot! bind to a local user control (textInputBlock)
-            TitleBox.SetText(vm.Title);
-        }
-
+        
         private async void NewTagBox_OnKeyUp(object sender, KeyRoutedEventArgs e)
         {
             if (e.OriginalKey == VirtualKey.Enter)
@@ -339,28 +328,21 @@ namespace NuSysApp
 
         private async void closeDV_OnTapped(object sender, TappedRoutedEventArgs e)
         {
+            await CloseDv();
+        }
+
+        public async Task CloseDv()
+        {
             Visibility = Visibility.Collapsed;
-            var vm = (DetailViewerViewModel)DataContext;
+            Dispose();
+        }
+
+        private void Dispose()
+        {
+            Disposed?.Invoke(this, EventArgs.Empty);
+            var vm = DataContext as DetailViewerViewModel;
             vm.Tabs.Clear();
-            var textview = (vm.View as TextDetailHomeTabView);
-            textview?.Dispose();
-            var videoView = vm.View as VideoDetailHomeTabView;
-            videoView?.Dispose();
-            videoView?.StopVideo();
-            if (vm.RegionView is VideoDetailHomeTabView)
-            {
-                var videoRegionView = vm.RegionView as VideoDetailHomeTabView;
-                videoRegionView?.Dispose();
-                videoRegionView?.StopVideo();
-            }
-            var audioview = vm.View as AudioDetailHomeTabView;
-            audioview?.Dispose();
-            audioview?.StopAudio();
-            if (vm.RegionView is AudioDetailHomeTabView)
-            {
-                var audioRegionView = vm.RegionView as AudioDetailHomeTabView;
-                audioRegionView?.StopAudio();
-            }
+            vm.Dispose();
         }
 
         private void metaData_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -371,7 +353,13 @@ namespace NuSysApp
             nodeContent.Visibility = toggle ? Visibility.Visible : Visibility.Collapsed;
            // MetadataContainer.Visibility = toggle ? Visibility.Collapsed : Visibility.Visible;
         }
-        
+        /// <summary>
+        /// Resizes the detail view as per the parameters passed in. Ensures the detail view doesn't become too large.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="left"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         private void Resize(object sender, double left, double width, double height)
         {
             Canvas.SetLeft(this, left);
@@ -384,98 +372,53 @@ namespace NuSysApp
 
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-      //      if (!_allowResize)
-        //        return;
-
-            double rightCoord = Canvas.GetLeft(this) + this.Width;
-
             var newWidth = Width - Math.Min(e.Delta.Translation.X, this.Width);
             
+            // Checks if the DV should be allowed to be resized and calls Resize if needed.
             if ((this.Width >= 600 || e.Delta.Translation.X <= 0) && (Canvas.GetLeft(this) >= 0 || e.Delta.Translation.X >= 0) && (Canvas.GetLeft(this) >= 30 || e.Delta.Translation.X >= 0))
             {
-                (DataContext as DetailViewerViewModel)?.ChangeSize(this, rightCoord - newWidth, newWidth, Height);
+                var rightCoordinate = Canvas.GetLeft(this) + this.Width;
+                Resize(this, rightCoordinate - newWidth, newWidth, Height);
                 e.Handled = true;
             }
 
-
-            // just in case width goes past 600 - b/c manipulation delta doesn't catch everything if moving too fast -- temporary fix?
-            (DataContext as DetailViewerViewModel)?.ChangeRegionsSize(this, newWidth, Height);
-
-            if (Canvas.GetLeft(this) <= 30)
-            {
-                Canvas.SetLeft(this,30);
-            }
-
+            // Here the tab pane width is set again to make the tabs on the DV as wide as the DV itself.
             var vm = (DetailViewerViewModel)DataContext;
-            vm.TabPaneHeight = this.Width; //once again, will need to refactor this - supposed to be TabPaneWidth
-            //avoid passing in infinity:
+            vm.TabPaneWidth = this.Width;
             if(vm.Tabs.Count == 0) { return; }
-            vm.TabHeight = vm.TabPaneHeight/vm.Tabs.Count;
+            vm.TabHeight = vm.TabPaneWidth/vm.Tabs.Count;
         }
 
         private void TabList_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            var viewable = (sender as FrameworkElement)?.DataContext as IDetailViewable;
-            if (viewable == null)
-            {
-                return;
-            }
+            var controllerId = ((sender as FrameworkElement)?.DataContext as DetailViewTabTemplate)?.LibraryElementId;
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(controllerId);
             var vm = DataContext as DetailViewerViewModel;
-            if (vm == null)
+            if (vm == null || controller == null)
             {
                 return;
             }
             DetailViewTabType tabToOpenTo = DetailViewTabType.Home;
-            if (vm.TabDictionary.ContainsKey(viewable?.TabId()))
+            if (vm.TabDictionary.ContainsKey(controllerId))
             {
-                tabToOpenTo = vm.TabDictionary[viewable?.TabId()];
+                tabToOpenTo = vm.TabDictionary[controllerId];
             }
-            if (viewable is RegionLibraryElementController)
-            {
-                ShowElement(viewable as RegionLibraryElementController, tabToOpenTo);
+            ShowElement(controller, tabToOpenTo);
 
-            } else if (viewable is LibraryElementController)
-            {
-                ShowElement(viewable as LibraryElementController, tabToOpenTo);
-            }
-            
+
             e.Handled = true;
         }
 
         private void ExitTab_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            var viewableToClose = (sender as FrameworkElement)?.DataContext as IDetailViewable;
+            var controllerId = ((sender as FrameworkElement)?.DataContext as DetailViewTabTemplate)?.LibraryElementId;
             var vm = DataContext as DetailViewerViewModel;
             if (vm == null)
             {
                 return;
             }
-            var tabs = vm?.Tabs;
-            tabs?.Remove(viewableToClose);
-            if (tabs?.Count < 2)
-            {
-                vm.TabVisibility = Visibility.Collapsed;
-            }
-            vm.Tabs = tabs;
-            if (tabs?.Count > 0)
-            {
-                var viewable = vm.Tabs?[tabs.Count - 1];
-                DetailViewTabType tabToOpenTo = DetailViewTabType.Home;
-                if (vm.TabDictionary.ContainsKey(viewable?.TabId()))
-                {
-                    tabToOpenTo = vm.TabDictionary[viewable?.TabId()];
-                }
-                if (viewable is RegionLibraryElementController)
-                {
-                    ShowElement(viewable as RegionLibraryElementController, tabToOpenTo);
 
-                }
-                else if (viewable is LibraryElementController)
-                {
-                    ShowElement(viewable as LibraryElementController);
-                }
-            }
-            vm.TabHeight = vm.TabPaneHeight/vm.Tabs.Count;
+            vm.RemoveTab(controllerId);
             e.Handled = true;
         }
 
@@ -501,23 +444,23 @@ namespace NuSysApp
             var index = listView?.SelectedIndex;
 
                         
-            if (vm.TabDictionary.ContainsKey(_currentDetailViewable.TabId()))
+            if (vm.TabDictionary.ContainsKey(_currentDetailViewable.LibraryElementModel.LibraryElementId))
             {
                 switch (index.Value)
                 {
                     case 0:
-                        vm.TabDictionary[_currentDetailViewable.TabId()] = DetailViewTabType.Home;
+                        vm.TabDictionary[_currentDetailViewable.LibraryElementModel.LibraryElementId] = DetailViewTabType.Home;
                         var home = vm.View.DataContext as DetailHomeTabViewModel;
                      //   home.SetExistingRegions();
                         break;
                     case 1:
-                        vm.TabDictionary[_currentDetailViewable.TabId()] = DetailViewTabType.Metadata;
+                        vm.TabDictionary[_currentDetailViewable.LibraryElementModel.LibraryElementId] = DetailViewTabType.Metadata;
                         break;
                     case 2:
-                        vm.TabDictionary[_currentDetailViewable.TabId()] = DetailViewTabType.Links;
+                        vm.TabDictionary[_currentDetailViewable.LibraryElementModel.LibraryElementId] = DetailViewTabType.Links;
                         break;
                     case 3:
-                        vm.TabDictionary[_currentDetailViewable.TabId()] = DetailViewTabType.Regions;
+                        vm.TabDictionary[_currentDetailViewable.LibraryElementModel.LibraryElementId] = DetailViewTabType.Regions;
                         var region = vm.RegionView.DataContext as DetailHomeTabViewModel;
                       //  region.SetExistingRegions();
                         break;
@@ -530,18 +473,18 @@ namespace NuSysApp
                 switch (index.Value)
                 {
                     case 0:
-                        vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Home);
+                        vm.TabDictionary.Add(_currentDetailViewable.LibraryElementModel.LibraryElementId, DetailViewTabType.Home);
                         var home = vm.View.DataContext as DetailHomeTabViewModel;
                      //   home.SetExistingRegions();
                         break;
                     case 1:
-                        vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Metadata);
+                        vm.TabDictionary.Add(_currentDetailViewable.LibraryElementModel.LibraryElementId, DetailViewTabType.Metadata);
                         break;
                     case 2:
-                        vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Links);
+                        vm.TabDictionary.Add(_currentDetailViewable.LibraryElementModel.LibraryElementId, DetailViewTabType.Links);
                         break;
                     case 3:
-                        vm.TabDictionary.Add(_currentDetailViewable.TabId(), DetailViewTabType.Regions);
+                        vm.TabDictionary.Add(_currentDetailViewable.LibraryElementModel.LibraryElementId, DetailViewTabType.Regions);
                         var region = vm.RegionView.DataContext as DetailHomeTabViewModel;
                     //    region.SetExistingRegions();
                         break;
@@ -550,5 +493,6 @@ namespace NuSysApp
 
 
         }
+
     }
 }

@@ -18,26 +18,7 @@ namespace NuSysApp
             
         }
 
-        public override void AddRegion(object sender, RegionLibraryElementController libraryElementController)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void RemoveRegion(object sender, Region displayedRegion)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void SizeChanged(object sender, double width, double height)
-        {
-            //throw new NotImplementedException();
-        }
-
-        public override void SetExistingRegions()
-        {
-            //throw new NotImplementedException();
-        }
-
+        // not implemented cause we don't have regions in collections
         public override Message GetNewRegionMessage()
         {
             throw new NotImplementedException();

@@ -257,7 +257,7 @@ namespace NuSysApp
 
             // change the proper visibilities
             xFloatingMenu.Visibility = Visibility.Collapsed;
-            this.xDetailViewer.Visibility = Visibility.Collapsed;
+            this.xDetailViewer.CloseDv();
 
 
             // center the buttons, make them visibile
@@ -290,7 +290,7 @@ namespace NuSysApp
 
             // change the proper visibilities
             xFloatingMenu.Visibility = Visibility.Collapsed;
-            this.xDetailViewer.Visibility = Visibility.Collapsed;
+            this.xDetailViewer.CloseDv();
 
             // center the buttons, make them visibile
             var buttonMargin = 10;
@@ -791,7 +791,7 @@ namespace NuSysApp
             }
         }
 
-        public async void ShowDetailView(IDetailViewable viewable, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
+        public async void ShowDetailView(LibraryElementController viewable, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
         {
             // don't edit if we are in exploration or presentation mode
             if (SessionController.Instance.SessionView.ModeInstance?.Mode == ModeType.EXPLORATION ||

@@ -22,8 +22,8 @@
 
         <Border x:Name="xMainRectangleBorder"  BorderBrush="CadetBlue" BorderThickness="3,3,3,3">
             <Rectangle x:Name="xMainRectangle"  PointerPressed="xMainRectangle_PointerPressed" Fill="Transparent" ManipulationStarted="RectangleRegionView_ManipulationStarted" 
-                   Width="{Binding Width}" Height="{Binding Height}" ManipulationDelta="RectangleRegionView_ManipulationDelta" GotFocus="XMainRectangle_OnGotFocus"
-                    LostFocus="XMainRectangle_OnLostFocus" ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}">
+                   Width="{Binding Width}" Height="{Binding Height}" ManipulationDelta="RectangleRegionView_ManipulationDelta"
+                     ManipulationMode="{Binding Editable, Converter = {StaticResource mConverter}}">
                 <Rectangle.RenderTransform>
                     <CompositeTransform x:Name="RectangleTranform"></CompositeTransform>
                 </Rectangle.RenderTransform>

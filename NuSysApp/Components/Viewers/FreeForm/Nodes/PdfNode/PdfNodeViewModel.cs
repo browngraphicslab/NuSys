@@ -21,15 +21,13 @@ using Windows.UI.Xaml;
 
 namespace NuSysApp
 {
-    public class PdfNodeViewModel : ElementViewModel, Sizeable
+    public class PdfNodeViewModel : ElementViewModel
     {
         private CompositeTransform _inkScale;
         public int CurrentPageNumber { get;  private set; }
         public MuPDFWinRT.Document _document;
         public ObservableCollection<Button> SuggestedTags { get; set; }
         private List<string> _suggestedTags = new List<string>();
-
-        public Sizeable View { get; set; }
 
         public PdfNodeViewModel(ElementController controller) : base(controller)
         {
@@ -43,39 +41,7 @@ namespace NuSysApp
                 CurrentPageNumber = pdfRegionModel.PageLocation;
             }
 
-        }
-       
-        
-        public void CreatePdfRegionViews()
-        {
-
-            //RegionViews.Clear();
-
-            //var regionsLibraryElementIds =
-            //    SessionController.Instance.RegionsController.GetClippingParentRegionLibraryElementIds(
-            //        LibraryElementController.LibraryElementModel.LibraryElementId);
-            //foreach (var regionLibraryElementId in regionsLibraryElementIds)
-            //{
-            //    var regionLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementId) as PdfRegionLibraryElementController;
-            //    Debug.Assert(regionLibraryElementController != null);
-            //    Debug.Assert(regionLibraryElementController.LibraryElementModel is PdfRegionModel);
-            //    var vm = new PdfRegionViewModel(regionLibraryElementController.LibraryElementModel as PdfRegionModel, regionLibraryElementController, this);
-
-            //    var view = new PDFRegionView(vm);
-
-            //    if ((regionLibraryElementController.LibraryElementModel as PdfRegionModel).PageLocation != CurrentPageNumber)
-            //    {
-            //        view.Visibility = Visibility.Collapsed;
-            //    }
-            //    vm.Editable = false;
-            //    RegionViews.Add(view);
-
-            //}
-
-            //RaisePropertyChanged("RegionViews");
-            
-        }
-        
+        }           
 
         public override void Dispose()
         {
@@ -101,7 +67,6 @@ namespace NuSysApp
         private async void LibraryElementModelOnOnLoaded(object sender)
         {
             await DisplayPdf();
-            this.CreatePdfRegionViews();
 
         }
 
@@ -114,16 +79,12 @@ namespace NuSysApp
             _document = await MediaUtil.DataToPDF(Controller.LibraryElementModel.Data);
             await Goto(CurrentPageNumber);
             SetSize(Width, Height);
-            //LaunchLDA((PdfNodeModel)this.Model);
         }
 
         private async void OnPageChange(int page)
         {
             CurrentPageNumber = page;
-            //await UITask.Run(async delegate { await RenderPage(page); });
             await RenderPage(page);
-
-
         }
 
         public async Task FlipRight()
@@ -146,22 +107,6 @@ namespace NuSysApp
             if (pageNumber >= (_document.PageCount)) return;
             CurrentPageNumber = pageNumber;
             ((PdfNodeModel)Model).CurrentPageNumber = CurrentPageNumber;
-
-
-            //foreach (var regionView in RegionViews)
-            //{
-            //    var model = (regionView.DataContext as PdfRegionViewModel)?.Model;
-            //    if ((model as PdfRegionModel).PageLocation != CurrentPageNumber)
-            //    {
-            //        regionView.Visibility = Visibility.Collapsed;
-            //    }
-            //    else
-            //    {
-            //        regionView.Visibility = Visibility.Visible;
-            //    }
-            //}
-
-
         }
 
         private async Task RenderPage(int pageNumber)
@@ -309,55 +254,6 @@ namespace NuSysApp
         public WriteableBitmap ImageSource
         {
             get; set;
-        }
-
-
-        public CompositeTransform InkScale
-        {
-            get { return _inkScale; }
-            set
-            {
-                if (_inkScale == value)
-                {
-                    return;
-                }
-                _inkScale = value;
-                RaisePropertyChanged("InkScale");
-            }
-        }
-
-        public void MakeTagList()
-        {
-            SuggestedTags = new ObservableCollection<Button>();
-            foreach (string tag in _suggestedTags)
-            {
-                Button tagBlock = this.MakeTagBlock(tag);
-                SuggestedTags.Add(tagBlock);
-            }
-        }
-
-        public Button MakeTagBlock(string text)
-        {
-            Button tagBlock = new Button();
-            tagBlock.Content = text;
-            tagBlock.Foreground = new SolidColorBrush(Constants.foreground6);
-            tagBlock.FontStyle = FontStyle.Italic;
-            tagBlock.Height = 40;
-            tagBlock.Margin = new Thickness(2, 2, 2, 2);
-            tagBlock.Padding = new Thickness(5);
-            tagBlock.Background = new SolidColorBrush(Colors.Transparent);
-
-            return tagBlock;
-        }
-
-        public double GetWidth()
-        {
-            return View?.GetWidth() ?? 0;
-        }
-
-        public double GetHeight()
-        {
-            return View?.GetHeight() ?? 0 ;
         }
     }
 }
