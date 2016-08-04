@@ -49,15 +49,5 @@ namespace NuSysApp
                 _vm.Color = _vm.NotSelectedColor;
             }
         }
-
-        private void XRectangle_OnPointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            //throw new NotImplementedException();
-        }
-
-        private void XRectangle_OnTapped(object sender, TappedRoutedEventArgs e)
-        {
-            //throw new NotImplementedException();
-        }
     }
 }
