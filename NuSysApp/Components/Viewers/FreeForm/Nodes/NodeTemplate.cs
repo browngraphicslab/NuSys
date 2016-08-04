@@ -42,6 +42,7 @@ namespace NuSysApp
         public TextBox title = null;
         public Border highlight = null;
         public ItemsControl tags = null;
+        public ItemsControl backTags = null;
         public TextBlock userName = null;
         public Canvas xCanvas = null;
         public Button DuplicateElement = null;
@@ -49,11 +50,16 @@ namespace NuSysApp
         public Button PresentationLink = null;
         public Button PresentationMode = null;
         public Button ExplorationMode = null;
+        public Slider FlipSlider = null;
 
         public Button isSearched = null;
 
-
         private Image _dragItem;
+
+        //storyboard variables
+        private Storyboard _flipOpen;
+        private Storyboard _flipClose;
+        private bool _isFlipped;
 
         private enum DragMode { Duplicate, Tag, Link, PresentationLink };
         private DragMode _currenDragMode = DragMode.Duplicate;
@@ -123,9 +129,7 @@ namespace NuSysApp
             PresentationMode.Click += OnPresentationClick;
 
             ExplorationMode = (Button) GetTemplateChild("ExplorationMode");
-            ExplorationMode.Click += OnExplorationClick;
-
-            
+            ExplorationMode.Click += OnExplorationClick;         
 
             btnDelete = (Button)GetTemplateChild("btnDelete");
             btnDelete.Click += OnBtnDeleteClick;
@@ -143,13 +147,118 @@ namespace NuSysApp
             tags = (ItemsControl)GetTemplateChild("Tags");
             tags.Tapped += Tags_Tapped;
 
-
+            backTags = (ItemsControl)GetTemplateChild("backTags");
+            backTags.Tapped += Tags_Tapped;
 
             title = (TextBox)GetTemplateChild("xTitle");
             title.KeyUp += TitleOnTextChanged;
 
             title.GotFocus += Title_GotFocus;
             title.LostFocus += Title_LostFocus;
+
+            #region please ignore
+
+            var frontGrid = (GetTemplateChild("xContainer") as Grid);
+            var backgrid = (GetTemplateChild("xFakeBack") as Grid);
+
+            var backButton = (GetTemplateChild("xShowFrontButton") as Button);
+            backButton.Click += delegate
+            {
+                FlipToBack();
+            };
+            var frontButton = (GetTemplateChild("xShowBackButton") as Button);
+            frontButton.Click += delegate
+            {
+                FlipToBack();
+            };
+
+            _flipOpen = new Storyboard();
+
+            DoubleAnimationUsingKeyFrames frontFlipOpenAnimation = new DoubleAnimationUsingKeyFrames();
+            SplineDoubleKeyFrame frontStart = new SplineDoubleKeyFrame() { Value = 0, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0)) };
+            SplineDoubleKeyFrame frontEnd = new SplineDoubleKeyFrame() { Value = 90, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200)) };
+            frontFlipOpenAnimation.KeyFrames.Add(frontStart);
+            frontFlipOpenAnimation.KeyFrames.Add(frontEnd);
+            Storyboard.SetTargetProperty(frontFlipOpenAnimation, "(Grid.Projection).(PlaneProjection.RotationY)");
+            Storyboard.SetTarget(frontFlipOpenAnimation, frontGrid);
+            _flipOpen.Children.Add(frontFlipOpenAnimation);
+
+            DoubleAnimationUsingKeyFrames backFlipOpenAnimation = new DoubleAnimationUsingKeyFrames();
+            SplineDoubleKeyFrame backStart = new SplineDoubleKeyFrame() { Value = -90, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200)) };
+            SplineDoubleKeyFrame backEnd = new SplineDoubleKeyFrame() { Value = 0, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 400)) };
+            backFlipOpenAnimation.KeyFrames.Add(backStart);
+            backFlipOpenAnimation.KeyFrames.Add(backEnd);
+            Storyboard.SetTargetProperty(backFlipOpenAnimation, "(Grid.Projection).(PlaneProjection.RotationY)");
+            Storyboard.SetTarget(backFlipOpenAnimation, backgrid);
+            _flipOpen.Children.Add(backFlipOpenAnimation);
+
+            ObjectAnimationUsingKeyFrames frontDissapearsAnimation = new ObjectAnimationUsingKeyFrames();
+            DiscreteObjectKeyFrame frontDisappears = new DiscreteObjectKeyFrame()
+            {
+                Value = Visibility.Collapsed,
+                KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 199))
+            };
+            frontDissapearsAnimation.KeyFrames.Add(frontDisappears);
+            Storyboard.SetTargetProperty(frontDissapearsAnimation, "(Grid.Visibility)");
+            Storyboard.SetTarget(frontDissapearsAnimation, frontGrid);
+            _flipOpen.Children.Add(frontDissapearsAnimation);
+
+            ObjectAnimationUsingKeyFrames backAppearsAnimation = new ObjectAnimationUsingKeyFrames();
+            DiscreteObjectKeyFrame backAppears = new DiscreteObjectKeyFrame()
+            {
+                Value = Visibility.Visible,
+                KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 201))
+            };
+            backAppearsAnimation.KeyFrames.Add(backAppears);
+            Storyboard.SetTargetProperty(backAppearsAnimation, "(Grid.Visibility)");
+            Storyboard.SetTarget(backAppearsAnimation, backgrid);
+            _flipOpen.Children.Add(backAppearsAnimation);
+
+
+            _flipClose = new Storyboard();
+
+            DoubleAnimationUsingKeyFrames frontFlipCloseAnimation = new DoubleAnimationUsingKeyFrames();
+            SplineDoubleKeyFrame frontCloseStart = new SplineDoubleKeyFrame() { Value = 90, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200)) };
+            SplineDoubleKeyFrame frontCloseEnd = new SplineDoubleKeyFrame() { Value = 0, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 400)) };
+            frontFlipCloseAnimation.KeyFrames.Add(frontCloseStart);
+            frontFlipCloseAnimation.KeyFrames.Add(frontCloseEnd);
+            Storyboard.SetTargetProperty(frontFlipCloseAnimation, "(Grid.Projection).(PlaneProjection.RotationY)");
+            Storyboard.SetTarget(frontFlipCloseAnimation, frontGrid);
+            _flipClose.Children.Add(frontFlipCloseAnimation);
+
+
+            DoubleAnimationUsingKeyFrames backFlipCloseAnimation = new DoubleAnimationUsingKeyFrames();
+            SplineDoubleKeyFrame backCloseStart = new SplineDoubleKeyFrame() { Value = 0, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 0)) };
+            SplineDoubleKeyFrame backCloseEnd = new SplineDoubleKeyFrame() { Value = -90, KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 200)) };
+            backFlipCloseAnimation.KeyFrames.Add(backCloseStart);
+            backFlipCloseAnimation.KeyFrames.Add(backCloseEnd);
+            Storyboard.SetTargetProperty(backFlipCloseAnimation, "(Grid.Projection).(PlaneProjection.RotationY)");
+            Storyboard.SetTarget(backFlipCloseAnimation, backgrid);
+            _flipClose.Children.Add(backFlipCloseAnimation);
+
+            ObjectAnimationUsingKeyFrames frontAppearsAnimation = new ObjectAnimationUsingKeyFrames();
+            DiscreteObjectKeyFrame frontAppears = new DiscreteObjectKeyFrame()
+            {
+                Value = Visibility.Visible,
+                KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 201))
+            };
+            frontAppearsAnimation.KeyFrames.Add(frontAppears);
+            Storyboard.SetTargetProperty(frontAppearsAnimation, "(Grid.Visibility)");
+            Storyboard.SetTarget(frontAppearsAnimation, frontGrid);
+            _flipClose.Children.Add(frontAppearsAnimation);
+
+            ObjectAnimationUsingKeyFrames backDisappearsAnimation = new ObjectAnimationUsingKeyFrames();
+            DiscreteObjectKeyFrame backDisappears = new DiscreteObjectKeyFrame()
+            {
+                Value = Visibility.Collapsed,
+                KeyTime = KeyTime.FromTimeSpan(new TimeSpan(0, 0, 0, 0, 199))
+            };
+            backDisappearsAnimation.KeyFrames.Add(backDisappears);
+            
+            Storyboard.SetTargetProperty(backDisappearsAnimation, "(Grid.Visibility)");
+            Storyboard.SetTarget(backDisappearsAnimation, backgrid);
+            _flipClose.Children.Add(backDisappearsAnimation);
+            #endregion please ignore
 
             if ((DataContext as ElementViewModel)?.Controller.LibraryElementModel != null)
             {
@@ -175,6 +284,41 @@ namespace NuSysApp
             OnTemplateReady?.Invoke();
         }
 
+        private void FlipToBack()
+        {
+            if (_isFlipped)
+            {
+                _isFlipped = false;
+                _flipClose.Begin();
+            }
+            else
+            {
+                _isFlipped = true;
+                _flipOpen.Begin();
+                UITask.Run(async delegate { PopulateLinks(); });
+                //PopulateMetadata();
+            }
+        }
+
+        //todo move this to the element view model
+        private void PopulateLinks()
+        {
+            var vm = this.DataContext as ElementViewModel;
+            Debug.Assert(vm != null);
+
+            vm.BackLinks.Clear();
+
+            var controller = vm?.Controller;
+            var currentContentId = controller.ContentId;
+            var attachedLinkIds = SessionController.Instance.LinksController.GetLinkedIds(controller?.ContentId);
+            foreach (var attachedLinkId in attachedLinkIds)
+            {
+                var linkLibraryElementController = SessionController.Instance.LinksController.GetLinkLibraryElementControllerFromLibraryElementId(attachedLinkId);
+                vm.BackLinks.Add(new LinkTemplate(linkLibraryElementController, currentContentId));
+            }
+
+
+        }
 
 
         private void Tags_Tapped(object sender, TappedRoutedEventArgs e)
