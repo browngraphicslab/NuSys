@@ -200,6 +200,8 @@
     <Compile Include="Util\FileHelper.cs" />
     <Compile Include="Util\SelectQuery\ITableRepresentable.cs" />
     <Compile Include="Util\SelectQuery\JoinedTable.cs" />
+    <Compile Include="Util\SelectQuery\SingleTable.cs" />
+    <Compile Include="Util\SelectQuery\SQLSelectQuery.cs" />
     <Compile Include="Util\SQLSelectQueryConditionals.cs" />
   </ItemGroup>
   <ItemGroup>

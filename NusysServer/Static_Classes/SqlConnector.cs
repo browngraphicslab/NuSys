@@ -143,7 +143,7 @@ namespace NusysServer
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        private SqlCommand MakeCommand(string command)
+        public SqlCommand MakeCommand(string command)
         {
             var cmd = _db.CreateCommand();
             cmd.CommandText = command;
