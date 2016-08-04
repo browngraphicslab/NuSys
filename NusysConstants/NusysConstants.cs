@@ -778,7 +778,7 @@ namespace NusysIntermediate
             ChatRequest,
             //below this line should be the new-server-approved requests
             GetContentDataModelRequest,
-            CreateNewLibrayElementRequest,
+            CreateNewLibraryElementRequest,
             GetEntireWorkspaceRequest,
             NewElementRequest,
             DeleteLibraryElementRequest,
@@ -811,48 +811,7 @@ namespace NusysIntermediate
             // weird type that possibly shouldn't be here
             Tools
         }
-        
-        /// <summary>
-        /// Collection of all the column names in all of the tables
-        /// </summary>
-        public enum SqlColumns
-        {
-
-            //Content
-            CONTENT_TABLE_CONTENT_ID_KEY,
-            CONTENT_TABLE_TYPE_KEY,
-            CONTENT_TABLE_CONTENT_URL_KEY,
-
-            //Properties table
-            PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY,
-            PROPERTIES_KEY_COLUMN_KEY,
-            PROPERTIES_STRING_VALUE_COLUMN_KEY,
-            PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY,
-            PROPERTIES_DATE_VALUE_COLUMN_KEY,
-
-            //Metadata
-            METADATA_LIBRARY_ELEMENT_ID_KEY,
-            METADATA_KEY_COLUMN_KEY,
-            METADATA_VALUE_COLUMN_KEY,
-
-            //Library elements
-            LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY, 
-            LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY, 
-            LIBRARY_ELEMENT_CREATOR_USER_ID_KEY,
-            LIBRARY_ELEMENT_SMALL_ICON_URL_KEY,
-            LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY,
-            LIBRARY_ELEMENT_LARGE_ICON_URL_KEY,
-            LIBRARY_ELEMENT_FAVORITED_KEY,
-            LIBRARY_ELEMENT_TITLE_KEY,
-            LIBRARY_ELEMENT_KEYWORDS_KEY,
-            LIBRARY_ELEMENT_LIBRARY_ID_KEY,
-            LIBRARY_ELEMENT_CONTENT_ID_KEY,
-            LIBRARY_ELEMENT_TYPE_KEY,
-            LIBRARY_ELEMENT_ACCESS_KEY
-
-
-        }
-
+       
         #endregion Enums
 
         #region staticMethods

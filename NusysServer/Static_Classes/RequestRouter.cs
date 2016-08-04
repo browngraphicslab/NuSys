@@ -62,7 +62,7 @@ namespace NusysServer
                     case NusysConstants.RequestType.GetContentDataModelRequest:
                         requestHandler = new GetContentDataModelRequestHandler();
                         break;
-                    case NusysConstants.RequestType.CreateNewLibrayElementRequest:
+                    case NusysConstants.RequestType.CreateNewLibraryElementRequest:
                         requestHandler = new CreateNewLibraryElementRequestHandler();
                         break;
                     case NusysConstants.RequestType.GetEntireWorkspaceRequest:

@@ -10,12 +10,12 @@ namespace NuSysApp
 {
     public class CreateNewLibraryElementRequest : Request
     {
-        public CreateNewLibraryElementRequest(Message m) : base(NusysConstants.RequestType.CreateNewLibrayElementRequest, m)
+        public CreateNewLibraryElementRequest(Message m) : base(NusysConstants.RequestType.CreateNewLibraryElementRequest, m)
         {
         }
 
         public CreateNewLibraryElementRequest(string id, string data, NusysConstants.ElementType type, string title = "")
-            : base(NusysConstants.RequestType.CreateNewLibrayElementRequest)
+            : base(NusysConstants.RequestType.CreateNewLibraryElementRequest)
         {
             _message["id"] = id;
             _message["data"] = data;

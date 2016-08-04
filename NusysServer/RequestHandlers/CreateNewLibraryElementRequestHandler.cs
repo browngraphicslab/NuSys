@@ -11,7 +11,7 @@ namespace NusysServer
     {
         public override Message HandleRequest(Request request, NuWebSocketHandler senderHandler)
         {
-            Debug.Assert(request.GetRequestType() == NusysConstants.RequestType.CreateNewLibrayElementRequest);
+            Debug.Assert(request.GetRequestType() == NusysConstants.RequestType.CreateNewLibraryElementRequest);
 
             var message = GetRequestMessage(request);
 

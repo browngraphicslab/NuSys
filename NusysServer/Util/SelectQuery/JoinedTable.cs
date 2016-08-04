@@ -32,8 +32,7 @@ namespace NusysServer
                     break;
             }
             _queryString = args.LeftTable.GetSqlQueryRepresentation() + joinString +
-                           args.RightTable.GetSqlQueryRepresentation() + " ON " + args.Column1TableSource.ToString() +
-                           "." + args.Column1 + " = " + args.Column2TableSource.ToString() + "." + args.Column2;
+                           args.RightTable.GetSqlQueryRepresentation() + " ON " + args.Column1 + " = " + args.Column2;
         }
         /// <summary>
         /// Returns the string representation for the query string. Goes after SELECT ____ FROM...

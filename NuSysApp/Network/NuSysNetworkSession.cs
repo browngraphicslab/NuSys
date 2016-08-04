@@ -285,7 +285,7 @@ namespace NuSysApp
                 case NusysConstants.RequestType.SetTagsRequest:
                     request = new SetTagsRequest(message);
                     break;
-                case NusysConstants.RequestType.CreateNewLibrayElementRequest:
+                case NusysConstants.RequestType.CreateNewLibraryElementRequest:
                     request = new CreateNewLibraryElementRequest(message);
                     break;
                 case NusysConstants.RequestType.DeleteLibraryElementRequest:

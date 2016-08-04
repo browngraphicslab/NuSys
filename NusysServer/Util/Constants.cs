@@ -99,7 +99,7 @@ namespace NusysServer
         public enum SQLTableType
         {
             Alias,
-            LibrayElement,
+            LibraryElement,
             Metadata,
             Properties,
             Content
@@ -138,7 +138,7 @@ namespace NusysServer
             {
                 case SQLTableType.Alias:
                     return NusysConstants.ALIAS_ACCEPTED_KEYS.Keys;
-                case SQLTableType.LibrayElement:
+                case SQLTableType.LibraryElement:
                     return NusysConstants.LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS.Keys;
                 case SQLTableType.Content:
                     return NusysConstants.ACCEPTED_CONTENT_TABLE_KEYS;
@@ -232,6 +232,16 @@ namespace NusysServer
         {
             return new List<string>() {SQLConnector.GetTableName(tableType) + "." + columnName};
         }
+
+        /// <summary>
+        /// Collection of all the column names in all of the tables
+        /// </summary>
+        public static readonly IEnumerable<string> SqlColumns = 
+            GetFullColumnTitles(SQLTableType.Alias, GetAcceptedKeys(SQLTableType.Alias)).Concat(
+            GetFullColumnTitles(SQLTableType.LibraryElement, GetAcceptedKeys(SQLTableType.LibraryElement)).Concat(
+            GetFullColumnTitles(SQLTableType.Content, GetAcceptedKeys(SQLTableType.Content)).Concat(
+            GetFullColumnTitles(SQLTableType.Metadata, GetAcceptedKeys(SQLTableType.Metadata)).Concat(
+            GetFullColumnTitles(SQLTableType.Properties, GetAcceptedKeys(SQLTableType.Properties))))));
 
         #endregion StaticMethods
     }

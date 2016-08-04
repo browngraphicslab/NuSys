@@ -62,7 +62,7 @@ namespace NusysServer
                 NusysConstants.CONTENT_TABLE_TYPE_KEY + " varchar(128), " +
                 NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY + " varchar(1024));");
 
-            var libraryElementTable = MakeCommand("CREATE TABLE " + GetTableName(Constants.SQLTableType.LibrayElement) + " (" +
+            var libraryElementTable = MakeCommand("CREATE TABLE " + GetTableName(Constants.SQLTableType.LibraryElement) + " (" +
                 NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
                 NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY + " varchar(128), " +
                 NusysConstants.LIBRARY_ELEMENT_TYPE_KEY + " varchar(128), " +
@@ -118,7 +118,7 @@ namespace NusysServer
             {
 
                 var dropAliases = MakeCommand("DROP TABLE " + GetTableName(Constants.SQLTableType.Alias));
-                var dropLibraryElements = MakeCommand("DROP TABLE " + GetTableName(Constants.SQLTableType.LibrayElement));
+                var dropLibraryElements = MakeCommand("DROP TABLE " + GetTableName(Constants.SQLTableType.LibraryElement));
                 var dropProperties = MakeCommand("DROP TABLE " + GetTableName(Constants.SQLTableType.Properties));
                 var dropMetadata = MakeCommand("DROP TABLE " + GetTableName(Constants.SQLTableType.Metadata));
                 var dropContent = MakeCommand("DROP TABLE " + GetTableName(Constants.SQLTableType.Content));
@@ -132,7 +132,7 @@ namespace NusysServer
             else
             {
                 var clearAliases = MakeCommand("TRUNCATE TABLE " + GetTableName(Constants.SQLTableType.Alias));
-                var clearLibraryElements = MakeCommand("TRUNCATE TABLE " + GetTableName(Constants.SQLTableType.LibrayElement));
+                var clearLibraryElements = MakeCommand("TRUNCATE TABLE " + GetTableName(Constants.SQLTableType.LibraryElement));
                 var clearProperties = MakeCommand("TRUNCATE TABLE " + GetTableName(Constants.SQLTableType.Properties));
                 var clearMetadata = MakeCommand("TRUNCATE TABLE " + GetTableName(Constants.SQLTableType.Metadata));
                 var clearContent = MakeCommand("TRUNCATE TABLE " + GetTableName(Constants.SQLTableType.Content));
@@ -168,7 +168,7 @@ namespace NusysServer
             {
                 case Constants.SQLTableType.Alias:
                     return NusysIntermediate.NusysConstants.ALIASES_SQL_TABLE_NAME;
-                case Constants.SQLTableType.LibrayElement:
+                case Constants.SQLTableType.LibraryElement:
                     return NusysIntermediate.NusysConstants.LIBRARY_ELEMENTS_SQL_TABLE_NAME;
                 case Constants.SQLTableType.Metadata:
                     return NusysIntermediate.NusysConstants.METADATA_SQL_TABLE_NAME;
@@ -220,7 +220,7 @@ namespace NusysServer
                     acceptedKeysDictionary.Add(kvp.Key, kvp.Value);
                 }
             }
-            var cmd = GetInsertCommand(Constants.SQLTableType.LibrayElement, acceptedKeysDictionary);
+            var cmd = GetInsertCommand(Constants.SQLTableType.LibraryElement, acceptedKeysDictionary);
             var successInt = cmd.ExecuteNonQuery();
             return successInt > 0;
         }
@@ -270,7 +270,7 @@ namespace NusysServer
             {
                 return false;
             }
-            var cmd = GetDeleteCommand(Constants.SQLTableType.LibrayElement, message, Constants.Operator.And);
+            var cmd = GetDeleteCommand(Constants.SQLTableType.LibraryElement, message, Constants.Operator.And);
             var successInt = cmd.ExecuteNonQuery();
             return successInt > 0;
         }
@@ -329,17 +329,12 @@ namespace NusysServer
         /// <returns></returns>
         public ContentDataModel GetContentDataModel(string contentDataModelId)
         {
-            //create new query args class
-            var queryArgs = new SqlSelectQueryArgs();
-            queryArgs.Condition = new SingleTableWhereCondition(new SqlSelectQueryEquals(Constants.SQLTableType.Content, NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY, contentDataModelId));
-            queryArgs.TableType = Constants.SQLTableType.Content;
-            queryArgs.ColumnsToGet = Constants.GetAcceptedKeys(Constants.SQLTableType.Content);
-
             //get SQl Command from query args
-            var returnArgs = GetSelectCommand(queryArgs);
+            var sqlQuery = new SQLSelectQuery(new List<string>(Constants.GetFullColumnTitles(Constants.SQLTableType.Content, NusysConstants.ACCEPTED_CONTENT_TABLE_KEYS)), 
+                new SingleTable(Constants.SQLTableType.Content), new SqlSelectQueryEquals(Constants.SQLTableType.Content, NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY,contentDataModelId));
 
             //execute query command
-            var executeMessages = ExecuteSelectQueryAsMessages(returnArgs);
+            var executeMessages = sqlQuery.ExecuteCommand();
             if (executeMessages.Any())
             {
                 var dataModel = Constants.ParseContentDataModelFromDatabaseMessage(executeMessages.FirstOrDefault());
@@ -377,39 +372,6 @@ namespace NusysServer
                 }
             }
             return messages;
-        }
-
-        /// <summary>
-        /// Creates a SIMPLE select command for a specified table.  
-        /// Returns a private class with the select command and a list of queried columns.  
-        /// Will AND or OR the message key-value pairs together.  
-        /// 
-        /// </summary>
-        /// <param name="tableType"></param>
-        /// <param name="selectionParameterMessage"></param>
-        /// <returns></returns>
-        public SelectCommandReturnArgs GetSelectCommand(SqlSelectQueryArgs queryArgs)
-        {
-            /*
-            if (queryArgs.Condition != null)
-            {
-                var cleanedIEnumerable = Constants.GetCleanIEnumerableForDatabase(queryArgs.Condition.GetPropertyKeys() ?? new List<string>(), queryArgs.TableType);
-
-                if (cleanedIEnumerable.Count() != queryArgs.Condition.GetPropertyKeys().Count())
-                {
-                    throw new Exception("One or more of your conditionals referenced a column that doesn't exist in this table: "+queryArgs.TableType);
-                }
-            }
-            */
-            var cleanedColumnsToGet = new List<string>(queryArgs.ColumnsToGet.Intersect(Constants.GetAcceptedKeys(queryArgs.TableType)));
-            var sqlStatement = "SELECT " + String.Join(",", cleanedColumnsToGet) + " FROM " + GetTableName(queryArgs.TableType);
-
-            if (queryArgs.Condition != null)
-            {
-                sqlStatement += queryArgs.Condition.GetQueryString();
-            }
-            sqlStatement += ";";
-            return new SelectCommandReturnArgs(MakeCommand(sqlStatement), cleanedColumnsToGet);
         }
 
         /// <summary>

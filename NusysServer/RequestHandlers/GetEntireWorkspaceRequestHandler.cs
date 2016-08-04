@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Web;
+using Newtonsoft.Json;
 using NusysIntermediate;
+using NusysServer.Misc;
 
 namespace NusysServer
 {
@@ -12,97 +14,85 @@ namespace NusysServer
         public override Message HandleRequest(Request request, NuWebSocketHandler senderHandler)
         {
             Debug.Assert(request.GetRequestType() == NusysConstants.RequestType.GetEntireWorkspaceRequest);
-
             var message = GetRequestMessage(request);
 
             Debug.Assert(message.ContainsKey(NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_COLLECTION_ID_KEY));
-
             var workspaceId = message.GetString(NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_COLLECTION_ID_KEY);
 
-            //todo actually get the info
+            var selectQuery = CreateGetEntireWorkspaceSqlQuery(workspaceId);
 
-            //store instance of sql connector
-            var sql = ContentController.Instance.SqlConnector;
+            var returnedMessages = selectQuery.ExecuteCommand();
 
-
-            var args = new SqlSelectQueryArgs();
-            args.ColumnsToGet = Constants.GetFullColumnTitles(Constants.SQLTableType.Alias,NusysConstants.ALIAS_ACCEPTED_KEYS.Keys).
-                Concat(Constants.GetFullColumnTitles(Constants.SQLTableType.Content,NusysConstants.ACCEPTED_CONTENT_TABLE_KEYS));
-
-            args.Condition = new LeftJoinWhereCondition(
-                new SqlTableRepresentation(
-                    new InnerJoinWhereCondition(
-                        new SqlTableRepresentation(Constants.SQLTableType.Alias), 
-                        new SqlTableRepresentation(Constants.SQLTableType.LibrayElement), 
-                        new SqlSelectQueryEquals(Constants.SQLTableType.Alias, NusysConstants.ALIAS_LIBRARY_ID_KEY,Constants.GetFullColumnTitle(Constants.SQLTableType.LibrayElement, NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY).FirstOrDefault()))),
-                new SqlTableRepresentation(Constants.SQLTableType.Content),new SqlSelectQueryEquals(Constants.SQLTableType.Content,NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY, Constants.GetFullColumnTitle(Constants.SQLTableType.LibrayElement, NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY).FirstOrDefault()));
-
-
-
-
-
-
-            //create arguments for selecting all libreary elements
-            var aliasArgs = new SqlSelectQueryArgs();
-            aliasArgs.ColumnsToGet = NusysConstants.ALIAS_ACCEPTED_KEYS.Keys;
-            aliasArgs.TableType = Constants.SQLTableType.Alias;
-            //aliasArgs.Condition = new SqlSelectQueryEquals(Constants.SQLTableType.Alias, NusysConstants.ALIAS_LIBRARY_ID_KEY,workspaceId);
-            var aliasCmdArgs = sql.GetSelectCommand(aliasArgs);
-            var elementMessages = sql.ExecuteSelectQueryAsMessages(aliasCmdArgs);
-
-            //after query execution, map all the messages to the libraryId for that message
-            var elementMap = new Dictionary<string, Message>();
-
-            //also create a hashset for all the needed contentIds
-
-            foreach (var elementMessage in elementMessages)
-            {
-                if (elementMessage.ContainsKey(NusysConstants.ALIAS_LIBRARY_ID_KEY))
-                {
-                    elementMap[elementMessage[NusysConstants.ALIAS_LIBRARY_ID_KEY].ToString()] = elementMessage;
-                }
-            }
-
-            //create select query for getting the properties of the gotten aliases
-            var propertiesArgs = new SqlSelectQueryArgs();
-            propertiesArgs.ColumnsToGet = NusysConstants.ACCEPTED_PROPERTIES_TABLE_KEYS;
-            propertiesArgs.TableType = Constants.SQLTableType.Properties;
-            //propertiesArgs.Condition = new SqlSelectQueryContains(Constants.SQLTableType.Properties, NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY, new List<string>(elementMap.Keys));
-            var propertiesCommand = sql.GetSelectCommand(propertiesArgs);
-
-            //after execution, map messages back to original mapping
-            var propertiesMessages = sql.ExecuteSelectQueryAsMessages(propertiesCommand, false);
-            foreach (var property in propertiesMessages)
-            {
-                var key = property[NusysConstants.PROPERTIES_KEY_COLUMN_KEY].ToString();
-                property.Remove(NusysConstants.PROPERTIES_KEY_COLUMN_KEY);
-
-                var libraryId = property[NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY].ToString();
-                property.Remove(NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY);
-
-                if (property.Keys.Any(k => property[k] != null && property[k].ToString() != ""))
-                {
-                    elementMap[libraryId].Add(key, property[property.Keys.First(k => property[k] != null && property[k].ToString() != "")]);
-                }
-                else if (property.Keys.Any())//if there is a non-null value left
-                {
-                    elementMap[libraryId].Add(key, property[property.Keys.First()]);
-                }
-            }
-
-
-            //time to get all the needed contents
-
+            var contentDataModels = returnedMessages.Select(m => ContentDataModelFactory.CreateFromMessage(m));
+            var aliases = returnedMessages.Select(m => ElementModelFactory.CreateFromMessage(m));
 
             //create new args to return
             var returnArgs = new GetEntireWorkspaceRequestArgs();
 
-            returnArgs.AliasStrings = elementMap.Values.Select(value => value.GetSerialized());
-            returnArgs.ContentMessages = null; //TODO fill this in
+            returnArgs.ContentMessages = contentDataModels.Select(m => JsonConvert.SerializeObject(m));
+            returnArgs.AliasStrings = aliases.Select(m => JsonConvert.SerializeObject(m));
 
             var returnMessage = new Message();
             returnMessage[NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY] = returnArgs;
             return returnMessage;
+        }
+
+        /// <summary>
+        /// Creates a select query for getting all information for the get entire workspace query for the specified workspace id.
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <returns></returns>
+        private SQLSelectQuery CreateGetEntireWorkspaceSqlQuery(string workspaceId)
+        {
+            //Joins alias and library element tables where alias.libraryelementid = libraryelement.libraryelementid
+            SqlJoinOperationArgs aliasJoinLibraryElementArgs = new SqlJoinOperationArgs();
+            aliasJoinLibraryElementArgs.LeftTable = new SingleTable(Constants.SQLTableType.Alias);
+            aliasJoinLibraryElementArgs.RightTable = new SingleTable(Constants.SQLTableType.LibraryElement);
+            aliasJoinLibraryElementArgs.JoinOperator = Constants.JoinedType.InnerJoin;
+            aliasJoinLibraryElementArgs.Column1 = Constants.GetFullColumnTitle(Constants.SQLTableType.Alias,
+                NusysConstants.ALIAS_LIBRARY_ID_KEY).First();
+            aliasJoinLibraryElementArgs.Column2 = Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement,
+                NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY).First();
+            JoinedTable aliasJoinLibraryElement = new JoinedTable(aliasJoinLibraryElementArgs);
+
+
+
+            //creates joined table from previous joined table and the content table where the libraryelement.contentid = content.contentid
+            SqlJoinOperationArgs aliasJoinLibraryJoinContentArgs = new SqlJoinOperationArgs();
+            aliasJoinLibraryJoinContentArgs.LeftTable = aliasJoinLibraryElement;
+            aliasJoinLibraryJoinContentArgs.RightTable = new SingleTable(Constants.SQLTableType.Content);
+            aliasJoinLibraryJoinContentArgs.JoinOperator = Constants.JoinedType.InnerJoin;
+            aliasJoinLibraryJoinContentArgs.Column1 = Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement,
+                NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY).First();
+            aliasJoinLibraryJoinContentArgs.Column2 = Constants.GetFullColumnTitle(Constants.SQLTableType.Content,
+                NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY).First();
+            JoinedTable aliasJoinLibraryJoinContent = new JoinedTable(aliasJoinLibraryJoinContentArgs);
+
+            //creates joined table from previous joined table and properties table where alias.aliasid = properties.aliasorlibraryid
+            SqlJoinOperationArgs aliasJoinLibraryJoinContentJoinPropertiesArgs = new SqlJoinOperationArgs();
+            aliasJoinLibraryJoinContentJoinPropertiesArgs.LeftTable = aliasJoinLibraryJoinContent;
+            aliasJoinLibraryJoinContentJoinPropertiesArgs.RightTable = new SingleTable(Constants.SQLTableType.Properties);
+            aliasJoinLibraryJoinContentJoinPropertiesArgs.JoinOperator = Constants.JoinedType.LeftJoin;
+            aliasJoinLibraryJoinContentJoinPropertiesArgs.Column1 = Constants.GetFullColumnTitle(Constants.SQLTableType.Alias,
+                NusysConstants.ALIAS_LIBRARY_ID_KEY).First();
+            aliasJoinLibraryJoinContentJoinPropertiesArgs.Column2 = Constants.GetFullColumnTitle(Constants.SQLTableType.Properties,
+                NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY).First();
+            JoinedTable aliasJoinLibraryJoinContentJoinProperties = new JoinedTable(aliasJoinLibraryJoinContentJoinPropertiesArgs);
+
+            //creates a where query where the alias parent collection is equal the one requested
+            var whereQuery = new SqlSelectQueryEquals(Constants.SQLTableType.Alias,
+                Constants.GetFullColumnTitle(Constants.SQLTableType.Alias,
+                    NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY).First(), workspaceId);
+
+            //creates a list of all columns from alias, content, and properties tables
+            var columnsToGet =
+                new List<string>(
+                    Constants.GetFullColumnTitles(Constants.SQLTableType.Alias, Constants.GetAcceptedKeys(Constants.SQLTableType.Alias))
+                        .Concat(Constants.GetFullColumnTitles(Constants.SQLTableType.Content,Constants.GetAcceptedKeys(Constants.SQLTableType.Content)))
+                        .Concat(Constants.GetFullColumnTitles(Constants.SQLTableType.Properties, Constants.GetAcceptedKeys(Constants.SQLTableType.Properties))));
+
+
+            return new SQLSelectQuery(columnsToGet, aliasJoinLibraryJoinContentJoinProperties, whereQuery);
         }
     }
 }

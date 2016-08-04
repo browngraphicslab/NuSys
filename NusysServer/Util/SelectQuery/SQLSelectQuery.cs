@@ -8,7 +8,7 @@ namespace NusysServer
 {
     public class SQLSelectQuery
     {
-        private List<NusysConstants.SqlColumns> _cleanedSelectedColumns;
+        private IEnumerable<string> _cleanedSelectedColumns;
         private ITableRepresentable _fromTable;
         private SqlSelectQueryConditional _conditionals;
 
@@ -18,7 +18,7 @@ namespace NusysServer
         /// <param name="selectedColumns"> The columns you wish to recieve</param>
         /// <param name="fromTable">The tables from which you want to select </param>
         /// <param name="conditionals">Optional. Checks for conditional</param>
-        public SQLSelectQuery(List<NusysConstants.SqlColumns> selectedColumns, ITableRepresentable fromTable, SqlSelectQueryConditional conditionals = null)
+        public SQLSelectQuery(List<string> selectedColumns, ITableRepresentable fromTable, SqlSelectQueryConditional conditionals = null)
         {
             _fromTable = fromTable;
             _conditionals = CleanConditional(conditionals);
@@ -59,29 +59,21 @@ namespace NusysServer
         /// </summary>
         /// <param name="columnsToClean"></param>
         /// <returns></returns>
-        private List<NusysConstants.SqlColumns> CleanColumns(List<NusysConstants.SqlColumns> columnsToClean)
+        private IEnumerable<string> CleanColumns(List<string> columnsToClean)
         {
-            var columns = new List<NusysConstants.SqlColumns>();
-            var acceptedColumns = new HashSet<string>();
+            IEnumerable<string> acceptedColumns = new HashSet<string>();
             foreach (var table in _fromTable.GetSqlTableNames())
             {
-                acceptedColumns.UnionWith(Constants.GetAcceptedKeys(table));
+                acceptedColumns = acceptedColumns.Concat(Constants.GetFullColumnTitles(table, Constants.GetAcceptedKeys(table)));
             }
-            foreach (var column in columnsToClean)
-            {
-                if (acceptedColumns.Contains(column.ToString()))
-                {
-                    columns.Add(column);
-                }
-            }
-            return columns;
+            return columnsToClean.Intersect(acceptedColumns);
         }
 
         /// <summary>
-        /// Creates sql command and executes. Returns bool on success.
+        /// Creates sql command and executes. Returns IEnumerable<Message>
         /// </summary>
         /// <returns></returns>
-        public bool ExecuteCommand()
+        public IEnumerable<Message> ExecuteCommand()
         {
             string commandString = "";
             if (_conditionals != null)
@@ -95,8 +87,7 @@ namespace NusysServer
                                 _fromTable.GetSqlQueryRepresentation();
             }
             var cmd = ContentController.Instance.SqlConnector.MakeCommand(commandString);
-            var success = cmd.ExecuteNonQuery();
-            return success > 0;
+            return ContentController.Instance.SqlConnector.ExecuteSelectQueryAsMessages(new SelectCommandReturnArgs(cmd,_cleanedSelectedColumns));
         }
 
     }
