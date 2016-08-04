@@ -47,8 +47,6 @@ namespace NuSysApp
             }
         }
 
-        public double OriginalHeight { get; set; }
-        public double OriginalWidth { get; set; }
         public RectangleWrapper RectangleWrapper { get; set; } 
 
         public delegate void SizeChangedEventHandler(object sender, double width, double height);

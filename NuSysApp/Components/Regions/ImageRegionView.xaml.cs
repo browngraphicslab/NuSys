@@ -196,7 +196,7 @@ namespace NuSysApp
             }
             else if (_ty > downYBound)
             {
-                rt.TranslateY = vm.RectangleWrapper.GetHeight() - vm.OriginalHeight;
+                rt.TranslateY = vm.RectangleWrapper.GetHeight() - vm.Height;
             }
             else
             {
@@ -223,8 +223,6 @@ namespace NuSysApp
             _tx = ((CompositeTransform)this.RenderTransform).TranslateX;
             _ty = ((CompositeTransform)this.RenderTransform).TranslateY;
 
-            vm.OriginalHeight = vm.Height;
-            vm.OriginalWidth = vm.Width;
             FireSelection();
             e.Handled = true;
 
@@ -250,7 +248,9 @@ namespace NuSysApp
             Selected = true;
             
         }
-
+        /// <summary>
+        ///         If not already selected, shows selection and fires event listened to by RectangleWrapper
+        /// </summary>
         public void FireSelection()
         {
             if (!Selected)
@@ -260,6 +260,9 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// If selected, shows deselection and fires event listened to by RectangleWrapper.
+        /// </summary>
         public void FireDeselection()
         {
             if (Selected)
@@ -269,6 +272,11 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Calls FireDeselection or FireSelection
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             var vm = DataContext as ImageRegionViewModel;
@@ -287,6 +295,11 @@ namespace NuSysApp
 
         }
 
+        /// <summary>
+        /// Calls dispose and requests removal
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void xDelete_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             var vm = this.DataContext as ImageRegionViewModel;
@@ -301,6 +314,11 @@ namespace NuSysApp
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(removeRequest);
         }
 
+        /// <summary>
+        /// Opens detail view of region
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var vm = DataContext as RegionViewModel;

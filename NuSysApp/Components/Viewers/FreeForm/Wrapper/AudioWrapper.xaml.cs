@@ -75,6 +75,7 @@ namespace NuSysApp
         //denormalized end of audio
         public double AudioEnd { set; get; }
 
+        //Currently selected region.
         private FrameworkElement _selectedRegion;
 
 
@@ -100,6 +101,7 @@ namespace NuSysApp
                 RegionLibraryElementController regionController = null;
                 switch (Controller.LibraryElementModel.Type)
                 {
+                    //AudioStart and AudioEnd must be stored so that the media element knows the bounds of the region
                     case ElementType.AudioRegion:
                         regionController = Controller as AudioRegionLibraryElementController;
                         AudioStart = (regionController as AudioRegionLibraryElementController).AudioRegionModel.Start;
@@ -224,7 +226,11 @@ namespace NuSysApp
             return null;
         }
 
-
+        /// <summary>
+        /// Called when progress bar is tapped. Checks time tapped to see if any regions
+        /// were hit. If so, the region is selected. If not, the region is deselected.
+        /// </summary>
+        /// <param name="normalizedMediaElementPosition"></param>
         public void CheckTimeForRegions(double normalizedMediaElementPosition)
         {
             foreach (var item in xClippingCanvas.Items)
@@ -261,6 +267,10 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Called when audio region view is tapped. Invokes event listened to by AudioMediaPlayer/VideoMediaPlayer
+        /// </summary>
+        /// <param name="time"></param>
         public void AudioWrapper_OnRegionSeek(double time)
         {
             OnRegionSeeked?.Invoke(time);

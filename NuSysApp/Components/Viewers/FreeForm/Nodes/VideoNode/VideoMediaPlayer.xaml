@@ -28,7 +28,7 @@
 
               <local:AudioWrapper x:Name="xAudioWrapper">
                   <local:AudioWrapper.Content>
-                <MediaElement x:Name="MediaElement" AreTransportControlsEnabled="False"  Loaded="MediaElement_Onloaded" AutoPlay="False" MediaOpened="MediaElement_MediaOpened" Stretch="Fill" MarkerReached="MediaElement_MarkerReached"/>
+                <MediaElement x:Name="MediaElement" AreTransportControlsEnabled="False"  AutoPlay="False" MediaOpened="MediaElement_MediaOpened" Stretch="Fill" MarkerReached="MediaElement_MarkerReached"/>
                   </local:AudioWrapper.Content>
               </local:AudioWrapper>
 

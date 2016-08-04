@@ -164,15 +164,6 @@ namespace NuSysApp
 
             xAudioWrapper.CheckTimeForRegions(normalizedMediaElementPosition);
 
-            if (MediaElement.CurrentState != MediaElementState.Playing)
-            {
-
-                //Binding b = new Binding();
-                //b.ElementName = "MediaElement";
-                //b.Path = new PropertyPath("Position.TotalMilliseconds");
-                //ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
-                //    MediaElement.Pause();
-            }
         }
 
         private void ProgressBar_OnPointerReleased(object sender, PointerRoutedEventArgs e)
@@ -238,14 +229,7 @@ namespace NuSysApp
         public void Audio_OnJump(TimeSpan time)
         {
             MediaElement.Position = time;
-            if (MediaElement.CurrentState != MediaElementState.Playing)
-            {
-                //Binding b = new Binding();
-                //b.ElementName = "MediaElement";
-                //b.Path = new PropertyPath("Position.TotalMilliseconds");
-                //ProgressBar.SetBinding(ProgressBar.ValueProperty, b);
 
-            }
         }
 
 
