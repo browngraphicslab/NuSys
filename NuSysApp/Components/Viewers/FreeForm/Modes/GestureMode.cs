@@ -75,6 +75,7 @@ namespace NuSysApp
 
 
             _cview.MultiMenu.Stroke = _inqLine;
+            _cview.NewShapeStroke = _inqLine;
 
             var refPoint = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(args.GetCurrentPoint(null).Position);
             if (_cview.MultiMenu.Visibility == Visibility.Collapsed && IsPointCloseToInk(refPoint)) { 

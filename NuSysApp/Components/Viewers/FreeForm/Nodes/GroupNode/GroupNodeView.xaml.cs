@@ -85,15 +85,6 @@ namespace NuSysApp
             {
                 FiniteText.Text = "Make Finite";
             }
-            _shapepoints = libmodel.ShapePoints;
-            if (_shapepoints.Count == 0)
-            {                
-                ShapeText.Text = "Make Shape";
-            }
-            else
-            {
-                ShapeText.Text = "Remove Shape";
-            }
 
             SetUpToolsBtn();
         }
@@ -193,6 +184,17 @@ namespace NuSysApp
                     if (((GroupNodeViewModel)DataContext).Finite)
                     {
                         nodeTpl.HideResizer();
+                    }
+                    var elementcollectionvm = DataContext as ElementCollectionViewModel;
+                    var libmodel = (elementcollectionvm.Controller.Model as CollectionElementModel).CollectionLibraryElementModel;
+                    _finite = libmodel.IsFinite;
+                    if (_finite)
+                    {
+                        FiniteText.Text = "Make Infinite";
+                    }
+                    else
+                    {
+                        FiniteText.Text = "Make Finite";
                     }
                     break;
                 case CollectionElementModel.CollectionViewType.List:
@@ -395,21 +397,6 @@ namespace NuSysApp
             {
                 FiniteText.Text = "Make Finite";
             }
-        }
-
-        private void ChangeShape()
-        {
-            var vm = DataContext as ElementCollectionViewModel;
-            var libmodel = (vm.Controller.Model as CollectionElementModel).CollectionLibraryElementModel;
-            if (libmodel.ShapePoints.Count == 0)
-            {
-                ShapeText.Text = "Make Shape";
-            }
-            else
-            {
-                ShapeText.Text = "RemoveShape";
-            }
-
         }
 
     }

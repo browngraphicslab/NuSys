@@ -273,6 +273,8 @@ namespace NuSysApp
             get { return multiMenu; }
         }
 
+        public InkStroke NewShapeStroke { set; get; }
+
         public Canvas Wrapper
         {
             get { return xWrapper; }

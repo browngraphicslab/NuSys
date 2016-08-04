@@ -25,7 +25,9 @@ namespace NuSysApp
 {
     public sealed partial class MultiSelectMenuView : UserControl
     {
-        public InkStroke Stroke { get; set; }
+        public InkStroke Stroke {
+            get;
+            set; }
 
         public static Color SelectedColor { get; set; }
 
