@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
+using Microsoft.Graphics.Canvas.Geometry;
 
 namespace NuSysApp
 {
@@ -22,13 +26,27 @@ namespace NuSysApp
         public delegate void ChildRemovedEventHandler(string id);
         public event ChildRemovedEventHandler OnChildRemoved;
 
-        public CollectionLibraryElementModel(string id, Dictionary<String, MetadataEntry> metadata = null, string contentName = null, bool favorited = false) : base(id, ElementType.Collection, metadata, contentName)
+        public bool IsFinite
+        {
+            get;
+            set;
+        }
+        public List<Windows.Foundation.Point> ShapePoints {
+            get;
+            set;
+        }
+
+        public CollectionLibraryElementModel(string id, Dictionary<String, MetadataEntry> metadata = null, string contentName = null, bool favorited = false, bool finite = false, List<Windows.Foundation.Point> points = null) : base(id, ElementType.Collection, metadata, contentName)
         {
             _children = new HashSet<string>();
 
             this.Favorited = favorited;
 
             InkLines = new HashSet<string>();
+
+            IsFinite = finite;
+            ShapePoints = points;
+
         }
 
         public void AddInk(string id)
@@ -82,5 +100,6 @@ namespace NuSysApp
             return false;
         }
         public HashSet<string> Children { get { return _children; } }
+
     }
 }

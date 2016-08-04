@@ -67,6 +67,7 @@ namespace NuSysApp
         public string LastEditedTimestamp { get; set; }
 
         public string ServerUrl { get; set; } 
+
         public Dictionary<string, MetadataEntry> FullMetadata
         {
             get
@@ -110,6 +111,7 @@ namespace NuSysApp
         }
         //FOR PDF DOWNLOADING  --HACKY AF
         //public static List<string> PDFStrings = new List<string>();
+
 
         protected virtual void OnSessionControllerEnterNewCollection()
         {

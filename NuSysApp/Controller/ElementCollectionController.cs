@@ -29,6 +29,18 @@ namespace NuSysApp
             Disposed += OnDisposed;
         }
 
+        public void SetFinite(bool finite)
+        {
+            var contentModel = SessionController.Instance.ContentController.GetContent(Model.LibraryId) as CollectionLibraryElementModel;
+            contentModel.IsFinite = finite;
+        }
+
+        public void ChangeShape(List<Windows.Foundation.Point> shapepoints)
+        {
+            var contentModel = SessionController.Instance.ContentController.GetContent(Model.LibraryId) as CollectionLibraryElementModel;
+            contentModel.ShapePoints = shapepoints;
+        }
+
         private void OnDisposed(object source, object args)
         {
             var contentModel = SessionController.Instance.ContentController.GetContent(Model.LibraryId);
@@ -74,6 +86,19 @@ namespace NuSysApp
 
             _debouncingDictionary.Add("collectionview", colModel.ActiveCollectionViewType.ToString());
         }
-        
+        public override async Task UnPack(Message message)
+        {
+            var libModel = (Model as CollectionElementModel).CollectionLibraryElementModel;
+            if (message.ContainsKey("finite"))
+            {
+                libModel.IsFinite = message.GetBool("finite");
+            }
+            if (message.ContainsKey("shape_points"))
+            {
+                libModel.ShapePoints = message.GetList<Windows.Foundation.Point>("shape_points");
+            }
+            base.UnPack(message);
+        }
+
     }
 }

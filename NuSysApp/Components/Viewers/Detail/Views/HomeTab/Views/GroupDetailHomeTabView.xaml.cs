@@ -89,6 +89,15 @@ namespace NuSysApp
 
 
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
+
+            if (vm.Finite)
+            {
+                SetFiniteButton.Text = "Make Infinite";
+            }
+            else
+            {
+                SetFiniteButton.Text = "Make Finite";
+            }
         }
 
 
@@ -442,15 +451,30 @@ namespace NuSysApp
                 }
                 else
                 {
+                    var collection = SessionController.Instance.ContentController.GetContent(libraryId) as CollectionLibraryElementModel;
                     await
-                        StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, libraryId, size.Width,
-                            size.Height);
+                        StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, libraryId, collection.IsFinite,
+                            collection.ShapePoints, size.Width, size.Height);
                 }
             });
         }
 
         #endregion addToCollection
 
+        private void SetFiniteOnClick(object sender, RoutedEventArgs e)
+        {
+            var vm = (GroupDetailHomeTabViewModel) DataContext;
+            if (vm.Finite)
+            {
+                ((CollectionLibraryElementModel) vm.LibraryElementController.LibraryElementModel).IsFinite = false;
+                SetFiniteButton.Text = "Make Finite";
+            }
+            else
+            {
+                ((CollectionLibraryElementModel)vm.LibraryElementController.LibraryElementModel).IsFinite = true;
+                SetFiniteButton.Text = "Make Infinite";
+            }
+        }
     }
 }
 

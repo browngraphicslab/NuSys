@@ -289,6 +289,9 @@
     </Compile>
     <Compile Include="Components\Misc\ChatBoxViewModel.cs" />
     <Compile Include="Components\Misc\ChatMessageTemplate.cs" />
+    <Compile Include="Components\Misc\AdornmentView.xaml.cs">
+      <DependentUpon>AdornmentView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Misc\Library\LibraryFavorites.xaml.cs">
       <DependentUpon>LibraryFavorites.xaml</DependentUpon>
     </Compile>
@@ -427,9 +430,6 @@
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\TextDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\VideoDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\MetadataEntry.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\ElementCollectionDetailHomeTabView.xaml.cs">
-      <DependentUpon>ElementCollectionDetailHomeTabView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\Viewers\Detail\Views\MetadataEditorTabView.xaml.cs">
       <DependentUpon>MetadataEditorTabView.xaml</DependentUpon>
     </Compile>
@@ -901,7 +901,8 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Misc\ChatBoxView.xaml">
+    <Page Include="Components\Misc\ChatBoxView.xaml"></Page>
+    <Page Include="Components\Misc\AdornmentView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -974,10 +975,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\AudioDetailHomeTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\ElementCollectionDetailHomeTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

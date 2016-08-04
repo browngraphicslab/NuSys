@@ -14,7 +14,16 @@ namespace NuSysApp
         public static LibraryElementModel CreateFromMessage(Message message)
         {
             Debug.Assert(message.ContainsKey("type"));
-            var type = (ElementType)Enum.Parse(typeof(ElementType),message.GetString("type"), true);
+            ElementType type = ElementType.Area;
+            try
+            {
+                type = (ElementType) Enum.Parse(typeof (ElementType), message.GetString("type"), true);
+            }
+            catch (Exception e)
+            {
+                var req = new DeleteLibraryElementRequest(message.GetString("id"));
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(req);
+            }
             LibraryElementModel model;
 
             var id = message.GetString("id");
@@ -29,6 +38,13 @@ namespace NuSysApp
                     metadata.Add(kvp.Key, new MetadataEntry(kvp.Value.Key, new List<string>(new HashSet<string>(kvp.Value.Values)), kvp.Value.Mutability));
                 }
                 var favorited = message.GetBool("favorited");
+
+                var finite = message.GetBool("finite");
+                var shapepoints = message.GetList<Windows.Foundation.Point>("points");
+                if (shapepoints == null)
+                {
+                    shapepoints = new List<Windows.Foundation.Point>();
+                }
 
                 Debug.Assert(id != null);
                 switch (type)
@@ -46,7 +62,7 @@ namespace NuSysApp
                         model = new AudioRegionModel(id);
                         break;
                     case ElementType.Collection:
-                        model = new CollectionLibraryElementModel(id, metadata, title, favorited);
+                        model = new CollectionLibraryElementModel(id, metadata, title, favorited, finite, shapepoints);
                         break;
                     case ElementType.Link:
                         Debug.Assert(message.ContainsKey("id1") && message.ContainsKey("id2"));

@@ -140,24 +140,11 @@ namespace NuSysApp
                 draggedView.Visibility = Visibility.Collapsed;
                 _hoveredView.Visibility  = Visibility.Collapsed;
 
-                var elementMsg = new Message();
-                elementMsg["metadata"] = metadata;
-                elementMsg["width"] = 300;
-                elementMsg["height"] = 300;
-                elementMsg["x"] = p.X;
-                elementMsg["y"] = p.Y;
-                elementMsg["contentId"] = contentId;
-                elementMsg["type"] = ElementType.Collection;
-                elementMsg["creator"] = controller2.LibraryElementModel.LibraryElementId;
-                elementMsg["id"] = newCollectionId;
-
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "", ElementType.Collection, "New Collection"));
 
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
 
-                //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
-
-                var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(p.X, p.Y, contentId, 380, 300, newCollectionId);
+                var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(p.X, p.Y, contentId, false, new List<Windows.Foundation.Point>(), 380, 300, newCollectionId);
 
                 await controller2.RequestMoveToCollection(contentId);
                 await controller1.RequestMoveToCollection(contentId);

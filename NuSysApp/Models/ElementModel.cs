@@ -25,14 +25,24 @@ namespace NuSysApp
             ElementType = ElementType.None;
             InqCanvas = new InqCanvasModel(id);
         }
-
+        public LibraryElementModel LibraryElementModel
+        {
+            get
+            {
+                if(LibraryId == null)
+                {
+                    return null;
+                }
+                return SessionController.Instance.ContentController.GetContent(LibraryId);
+            }
+        }
         public ElementType ElementType { get; set; }
 
         public InqCanvasModel InqCanvas { get; set; }
 
         public string LibraryId { set; get; }
 
-        public string ParentCollectionId { get; set; }
+        public string ParentCollectionId { get; set; }   
 
         // TODO: Move color to higher level type
 
@@ -142,6 +152,8 @@ namespace NuSysApp
             }
 
             dict.Add("inqLines", lines);
+            
+            
             return dict;
         }
 

@@ -19,7 +19,7 @@ using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
-
+using NuSysApp.Components.Misc;
 using NuSysApp.Util;
 
 namespace NuSysApp
@@ -124,6 +124,16 @@ namespace NuSysApp
                 await LoadWorkspaceFromServer(l, WaitingRoomView.InitialWorkspaceId);
             }
 
+            var lem = (SessionController.Instance.ActiveFreeFormViewer.Model as CollectionElementModel).CollectionLibraryElementModel;
+
+            if (lem.ShapePoints != null)
+            {
+                var adornment = new AdornmentView(lem.ShapePoints);
+                SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(adornment);
+                Canvas.SetZIndex(adornment,-1);
+                adornment.SetFill(new SolidColorBrush(Colors.Green) {Opacity=.3});
+            }
+
 
             xDetailViewer.DataContext = new DetailViewerViewModel();
             xSearchViewer.DataContext = new SearchViewModel();
@@ -165,6 +175,10 @@ namespace NuSysApp
                 }
 
             }
+
+            
+            
+        
         }
 
 
@@ -717,6 +731,7 @@ namespace NuSysApp
             messagesLeft.Remove(id);
             made.Add(id);
         }
+
         public async Task OpenCollection(ElementCollectionController collectionController)
         {
             await DisposeCollectionView(_activeFreeFormViewer);
@@ -729,8 +744,18 @@ namespace NuSysApp
 
 
             var freeFormViewerViewModel = new FreeFormViewerViewModel(collectionController);
+            // Add the adornment if this collection has a shape
+            /*
+            if (freeFormViewerViewModel.Model.ShapePoints != null)
+            {
+                freeFormViewerViewModel.AtomViewList.Add(
+                   new AdornmentView(freeFormViewerViewModel.Model.ShapePoints));
+            }
+            */
+            
+        
 
-            _activeFreeFormViewer = new FreeFormViewer(freeFormViewerViewModel);
+             _activeFreeFormViewer = new FreeFormViewer(freeFormViewerViewModel);
             SessionController.Instance.OnModeChanged += _activeFreeFormViewer.ChangeMode;
 
             _activeFreeFormViewer.Width = ActualWidth;

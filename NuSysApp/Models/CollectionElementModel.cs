@@ -8,7 +8,13 @@ namespace NuSysApp
 {
     public class CollectionElementModel : ElementModel
     {
-        public CollectionLibraryElementModel CollectionLibraryElementModel { get; set; }
+        public CollectionLibraryElementModel CollectionLibraryElementModel
+        {
+            get
+            {
+                return base.LibraryElementModel as CollectionLibraryElementModel;
+            }
+        }
 
         public enum CollectionViewType { List, FreeForm, Timeline }
 

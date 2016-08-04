@@ -593,5 +593,35 @@ namespace NuSysApp
         }
         #endregion
 
+        /// <summary>
+        /// Adds a shape property to the library element if the element is a collection
+        /// </summary>
+        /// <param name="shapePoints"></param>
+        public void SetShape(List<Windows.Foundation.Point> shapePoints)
+        {
+            if (LibraryElementModel is CollectionLibraryElementModel)
+            {
+                var collectionModel = LibraryElementModel as CollectionLibraryElementModel;
+                collectionModel.ShapePoints = shapePoints;
+
+            }    
+        }
+
+        /// <summary>
+        /// Sets if the collection is finite
+        /// </summary>
+        /// <param name="isFinite"></param>
+        public void SetFinite(bool isFinite)
+        {
+            if (LibraryElementModel is CollectionLibraryElementModel)
+            {
+                var collectionModel = LibraryElementModel as CollectionLibraryElementModel;
+                collectionModel.IsFinite=isFinite;
+
+            }
+
+        }
+        
+
     }
 }
