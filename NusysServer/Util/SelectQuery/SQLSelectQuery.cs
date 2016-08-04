@@ -21,8 +21,36 @@ namespace NusysServer
         public SQLSelectQuery(List<NusysConstants.SqlColumns> selectedColumns, ITableRepresentable fromTable, SqlSelectQueryConditional conditionals = null)
         {
             _fromTable = fromTable;
-            _conditionals = conditionals;
+            _conditionals = CleanConditional(conditionals);
             _cleanedSelectedColumns = CleanColumns(selectedColumns);
+        }
+
+        /// <summary>
+        /// If any of the properties in the conditional to be cleaned does not exist in 
+        /// the tables where this query is selecting from, return a null conditional. This means that 
+        /// when the select query is executed, the conditional will be ignored. 
+        /// </summary>
+        /// <param name="conditionalToBeCleaned"></param>
+        /// <returns></returns>
+        private SqlSelectQueryConditional CleanConditional(SqlSelectQueryConditional conditionalToBeCleaned)
+        {
+            if (conditionalToBeCleaned == null)
+            {
+                return null;
+            }
+            var acceptedColumns = new HashSet<string>();
+            foreach (var table in _fromTable.GetSqlTableNames())
+            {
+                acceptedColumns.UnionWith(Constants.GetAcceptedKeys(table));
+            }
+            foreach (var column in conditionalToBeCleaned.GetPropertyKeys())
+            {
+                if (!acceptedColumns.Contains(column))
+                {
+                    return null;
+                }
+            }
+            return conditionalToBeCleaned;
         }
 
         /// <summary>
@@ -31,7 +59,7 @@ namespace NusysServer
         /// </summary>
         /// <param name="columnsToClean"></param>
         /// <returns></returns>
-        public List<NusysConstants.SqlColumns> CleanColumns(List<NusysConstants.SqlColumns> columnsToClean)
+        private List<NusysConstants.SqlColumns> CleanColumns(List<NusysConstants.SqlColumns> columnsToClean)
         {
             var columns = new List<NusysConstants.SqlColumns>();
             var acceptedColumns = new HashSet<string>();
