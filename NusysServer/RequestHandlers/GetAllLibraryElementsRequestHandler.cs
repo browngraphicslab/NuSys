@@ -40,7 +40,7 @@ namespace NusysServer
                     Constants.GetAcceptedKeys(Constants.SQLTableType.Properties))));
             var query = new SQLSelectQuery(columnsToGet, aliasJoinLibraryElement);
 
-            query = new SQLSelectQuery(Constants.GetFullColumnTitles(Constants.SQLTableType.LibraryElement,NusysConstants.LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS.Keys),new SingleTable(Constants.SQLTableType.LibraryElement));
+            // query = new SQLSelectQuery(Constants.GetFullColumnTitles(Constants.SQLTableType.LibraryElement,NusysConstants.LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS.Keys),new SingleTable(Constants.SQLTableType.LibraryElement));
             var libraryElementModels = new List<string>();
             foreach (var m in query.ExecuteCommand())
             {
