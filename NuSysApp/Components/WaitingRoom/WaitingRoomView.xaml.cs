@@ -359,7 +359,6 @@ namespace NuSysApp
 
                         await Task.Run(async delegate
                         {
-                            
 
                             var models = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
                             foreach (var model in models)

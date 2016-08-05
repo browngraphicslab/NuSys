@@ -63,7 +63,28 @@ namespace NuSysApp
             : base(NusysConstants.RequestType.CreateNewContentRequest)
         {
             //debug.asserts for required types
+            Debug.Assert(requestArgs.LibraryElementType != null);
+
+            if (requestArgs.LibraryElementType != NusysConstants.ElementType.Collection ||
+                requestArgs.LibraryElementType != NusysConstants.ElementType.Text)
+            {
+                Debug.Assert(requestArgs.DataBytes != null);
+                _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES] = requestArgs.DataBytes;
+
+            }
+
+            if (requestArgs.LibraryElementType == NusysConstants.ElementType.Audio ||
+                requestArgs.LibraryElementType == NusysConstants.ElementType.Video ||
+                requestArgs.LibraryElementType == NusysConstants.ElementType.PDF ||
+                requestArgs.LibraryElementType == NusysConstants.ElementType.Image)
+            {
+                Debug.Assert(requestArgs.FileExtensions != null);
+                _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_FILE_EXTENTION] = requestArgs.FileExtensions;
+            }
+
             _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY] = NusysConstants.ElementTypeToContentType(requestArgs.LibraryElementType);
+            _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY] = NusysConstants.GenerateId();
+
         }
 
         /// <summary>
