@@ -18,6 +18,7 @@ using System.Collections.ObjectModel;
 using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
+using Windows.Web.Http;
 
 namespace NuSysApp
 {
@@ -29,6 +30,29 @@ namespace NuSysApp
         public MuPDFWinRT.Document _document;
         public ObservableCollection<Button> SuggestedTags { get; set; }
         private List<string> _suggestedTags = new List<string>();
+        private bool _loaded = false;
+        public override bool IsSelected
+        {
+            get { return _isSelected; }
+            set
+            {
+                if (_isSelected == value)
+                {
+                    return;
+                }
+
+                _isSelected = value;
+                Controller.Selected(value);
+                RaisePropertyChanged("IsSelected");
+                if (value && _document == null)
+                {
+                    UITask.Run(() =>
+                    {
+                        this.DisplayPdf();
+                    });
+                }
+            }
+        }
 
         public PdfNodeViewModel(ElementController controller) : base(controller)
         {
@@ -55,20 +79,14 @@ namespace NuSysApp
 
         public async override Task Init()
         {
-            if (Controller.LibraryElementController.IsLoaded)
-            {
-                //await DisplayPdf();
-                await DisplayPlaceholderThumbnail();
-            }
-            else
-            {
-                Controller.LibraryElementController.Loaded += LibraryElementModelOnOnLoaded;
-            }
+
+           Controller.LibraryElementController.Loaded += LibraryElementModelOnOnLoaded;
         }
 
         private async void LibraryElementModelOnOnLoaded(object sender)
         {
-            this.DisplayPlaceholderThumbnail();
+            Debug.WriteLine("loaded");
+            await this.DisplayPlaceholderThumbnail();
         }
 
 
@@ -90,11 +108,32 @@ namespace NuSysApp
         private async Task DisplayPlaceholderThumbnail()
         {
             // Get the storage file of the placeholder thumbnail
-            string root =
-               Windows.ApplicationModel.Package.Current.InstalledLocation.Path;
-            string path = root + @"\Assets";
-            StorageFile file =
-                await StorageFile.GetFileFromPathAsync(path + @"\placeholder_pdf_thumbnail.png");
+            //string root =
+            //Windows.ApplicationModel.Package.Current.InstalledLocation.Path;
+            //string path = "ms - appx:///Assets/icon.png";
+            if (!_loaded)
+            {
+                //Debug.Assert(false);
+
+                _loaded = true;
+                var uri = new Uri("http://cdn.makeuseof.com/wp-content/uploads/2008/07/pdflogo.png", UriKind.Absolute);
+                var httpClient = new HttpClient();
+                var buffer = await httpClient.GetBufferAsync(uri);
+                var writeableBitmap = new WriteableBitmap(256, 256);
+
+                using (var stream = buffer.AsStream())
+                {
+                    await writeableBitmap.SetSourceAsync(stream.AsRandomAccessStream());
+
+                }
+                ImageSource = writeableBitmap;
+                RaisePropertyChanged("ImageSource");
+                RaisePropertyChanged("Height");
+                RaisePropertyChanged("Width");
+
+                /*
+            var file =
+                await StorageFile.GetFileFromApplicationUriAsync(uri);
 
             // Save the storage file as a writeable bitmap and set the ImageSource to this bitmap
             using (var stream = await file.OpenReadAsync())
@@ -105,7 +144,9 @@ namespace NuSysApp
                 ImageSource = bitmap;
                 RaisePropertyChanged("ImageSource");
             }
-            
+            */
+                var img = ImageSource;
+            }
         }
 
         private async void OnPageChange(int page)

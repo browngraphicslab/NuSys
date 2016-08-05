@@ -26,18 +26,14 @@
             <TextBlock x:Name="xRightTimeStampTextBlock" Margin="0,0,10,0" Text ="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan, Converter={StaticResource PositionToStringConverter}}"></TextBlock>
         </Grid>
 
-              <local:AudioWrapper x:Name="xAudioWrapper">
-                  <local:AudioWrapper.Content>
-<<<<<<< HEAD
-                <MediaElement x:Name="MediaElement" AreTransportControlsEnabled="False" AutoPlay="False" MediaOpened="MediaElement_MediaOpened" Stretch="Fill" MarkerReached="MediaElement_MarkerReached"/>
-=======
+        <local:AudioWrapper x:Name="xAudioWrapper">
+            <local:AudioWrapper.Content>
                 <MediaElement x:Name="MediaElement" AreTransportControlsEnabled="False"  AutoPlay="False" MediaOpened="MediaElement_MediaOpened" Stretch="Fill" MarkerReached="MediaElement_MarkerReached"/>
->>>>>>> origin/regionsRefactorSAud
-                  </local:AudioWrapper.Content>
-              </local:AudioWrapper>
+            </local:AudioWrapper.Content>
+        </local:AudioWrapper>
 
 
-                <StackPanel Grid.Row ="3" Orientation="Horizontal" HorizontalAlignment="Center"  Margin="0,28,0,0" VerticalAlignment="Top">
+        <StackPanel Grid.Row ="3" Orientation="Horizontal" HorizontalAlignment="Center"  Margin="0,28,0,0" VerticalAlignment="Top">
 
             <Button x:Name="play" Tapped="OnPlay_Click" Style="{StaticResource NodeSubMenuItem}">
                 <Image Source="ms-appx:///Assets/node icons/icon_play_dark.png" Height="20"></Image>

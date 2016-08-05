@@ -31,7 +31,7 @@ namespace NuSysApp
             if(obj is Keyword)
             {
                 var kw = obj as Keyword;
-                Debug.WriteLine("here in keyword equals");
+                //Debug.WriteLine("here in keyword equals");
                 return Text == kw.Text && kw.Source.Equals(Source);
             }
             return base.Equals(obj);
