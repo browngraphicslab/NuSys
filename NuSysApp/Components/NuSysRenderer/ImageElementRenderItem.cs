@@ -19,7 +19,7 @@ namespace NuSysApp
         private ImageElementViewModel _vm;
         private CanvasBitmap _bmp;
 
-        public ImageElementRenderItem(ImageElementViewModel vm, CanvasAnimatedControl resourceCreator) :base(vm, resourceCreator)
+        public ImageElementRenderItem(ImageElementViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) :base(vm, parent, resourceCreator)
         {
             _vm = vm;
             T = Matrix3x2.CreateTranslation((float)_vm.X, (float)_vm.Y);
@@ -46,9 +46,7 @@ namespace NuSysApp
             base.Draw(ds);
 
             var orgTransform = ds.Transform;
-            var CObjectInv = Matrix3x2.Identity;
-            Matrix3x2.Invert(C, out CObjectInv);
-            ds.Transform = CObjectInv * S * C * T * ds.Transform ;
+            ds.Transform = Win2dUtil.Invert(C) * S * C * T * ds.Transform;
 
             if (_bmp != null)
                 ds.DrawImage(_bmp, new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height});

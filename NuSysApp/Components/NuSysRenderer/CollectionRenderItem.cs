@@ -15,9 +15,10 @@ using Windows.UI.Core;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 
-namespace NuSysApp.Components.NuSysRenderer
+namespace NuSysApp
 {
     public class CollectionRenderItem : ElementRenderItem, I2dTransformable
     {
@@ -33,62 +34,38 @@ namespace NuSysApp.Components.NuSysRenderer
 
         public Transformable Camera = new Transformable();
 
-        private bool _interactionEnabled;
-
-
-        public CollectionRenderItem(ElementCollectionViewModel vm, CanvasAnimatedControl canvas, bool interactionEnabled = false) : base(vm, canvas)
+        public CollectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl canvas, bool interactionEnabled = false) : base(vm, parent, canvas)
         {
-            _interactionEnabled = interactionEnabled;
-
+            
             ViewModel = vm;
+            (vm.Controller as ElementCollectionController).CameraPositionChanged += OnCameraPositionChanged;
+            (vm.Controller as ElementCollectionController).CameraCenterChanged += OnCameraCenterChanged;
 
             T = Matrix3x2.CreateTranslation((float)vm.X, (float)vm.Y);
 
-            Camera.T = Matrix3x2.CreateTranslation(-Constants.MaxCanvasSize / 2f, -Constants.MaxCanvasSize / 2f);
-            Camera.C = Matrix3x2.CreateTranslation(Constants.MaxCanvasSize / 2f, Constants.MaxCanvasSize / 2f);
-            Camera.S = Matrix3x2.CreateScale(1f, 1f);
+            Camera.T = Matrix3x2.CreateTranslation(vm.CameraTranslation);
+            Camera.C = Matrix3x2.CreateTranslation(vm.CamertaCenter);
+            Camera.S = Matrix3x2.CreateScale(vm.CameraScale);
             
 
             vm.Elements.CollectionChanged += ElementsChanged;
 
-            _inkRenderItem = new InkRenderItem(canvas);
+            _inkRenderItem = new InkRenderItem(this, canvas);
             _renderItems0.Add(_inkRenderItem);
 
-            if (interactionEnabled)
-            {
-                _interactionManager = new CollectionInteractionManager(this);
-                _interactionManager.ItemSelected += OnItemSelected;
-            }
-
-
         }
 
-        private void OnItemSelected(BaseRenderItem element, PointerDeviceType device)
+        private void OnCameraCenterChanged(float f, float f1)
         {
-            var elementRenderItem = element as ElementRenderItem;
-            var vm = (ElementCollectionViewModel)ViewModel;
-            if (elementRenderItem == null)
-            {
-                vm.ClearSelection();
-            }
-            else
-            {
-                if (device == PointerDeviceType.Mouse)
-                {
-                    var keyState = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift);
-                    if (keyState != CoreVirtualKeyStates.Down)
-                        vm.ClearSelection();
-                    vm.AddSelection(elementRenderItem.ViewModel);
-                }
-
-                if (device == PointerDeviceType.Touch)
-                {
-                  //  if (_activePointers.Count == 0)
-                      vm.ClearSelection();
-                    vm.AddSelection(elementRenderItem.ViewModel);
-                }
-            }
+            Camera.C = Matrix3x2.CreateTranslation(new Vector2(f, f1));
         }
+
+        private void OnCameraPositionChanged(float f, float f1)
+        {
+            Camera.T = Matrix3x2.CreateTranslation(new Vector2(f,f1));
+        }
+
+        
 
         public override void Update()
         {
@@ -112,23 +89,28 @@ namespace NuSysApp.Components.NuSysRenderer
         {
             var orgTransform = ds.Transform;
             ds.Transform = Win2dUtil.Invert(C) * S * C * T * ds.Transform;
-            ds.DrawRectangle(new Rect(0, 0, ViewModel.Width, ViewModel.Height), Colors.Blue, 3f);
+            var boundaries = new Rect(0, 0, ViewModel.Width, ViewModel.Height);
+            ds.DrawRectangle(boundaries, Colors.Blue, 3f);
 
-            ds.Transform = Win2dUtil.Invert(Camera.C) * Camera.S * Camera.C * Camera.T * ds.Transform;
+            var boundariesGeom = CanvasGeometry.CreateRectangle(ds, boundaries);
+            using (ds.CreateLayer(1, boundariesGeom))
+            {
+                ds.Transform = Win2dUtil.Invert(Camera.C) * Camera.S * Camera.C * Camera.T * ds.Transform;
            
-            foreach (var item in _renderItems0)
-                item.Draw(ds);
+                foreach (var item in _renderItems0)
+                    item.Draw(ds);
 
-            foreach (var item in _renderItems1)
-                item.Draw(ds);
+                foreach (var item in _renderItems1)
+                    item.Draw(ds);
 
-            foreach (var item in _renderItems2)
-                item.Draw(ds);
+                foreach (var item in _renderItems2)
+                    item.Draw(ds);
 
-            foreach (var item in _renderItems3)
-                item.Draw(ds);
+                foreach (var item in _renderItems3)
+                    item.Draw(ds);
 
-            ds.Transform = orgTransform;
+                ds.Transform = orgTransform;
+            }
         }
 
         private async void ElementsChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -139,31 +121,31 @@ namespace NuSysApp.Components.NuSysRenderer
                 var vm = (ElementViewModel) newItem;
                 if (vm is TextNodeViewModel)
                 {
-                    item = new TextElementRenderItem((TextNodeViewModel) vm, ResourceCreator);
+                    item = new TextElementRenderItem((TextNodeViewModel) vm, this, ResourceCreator);
                     await item.Load();
                     _renderItems0.Add(item);
                 }
                 else if (vm is ImageElementViewModel)
                 {
-                    item = new ImageElementRenderItem((ImageElementViewModel) vm, ResourceCreator);
+                    item = new ImageElementRenderItem((ImageElementViewModel) vm, this, ResourceCreator);
                     await item.Load();
                     _renderItems1.Add(item);
                 }
                 else if (vm is PdfNodeViewModel)
                 {
-                    item = new PdfElementRenderItem((PdfNodeViewModel) vm, ResourceCreator);
+                    item = new PdfElementRenderItem((PdfNodeViewModel) vm, this, ResourceCreator);
                     await item.Load();
                     _renderItems1.Add(item);
                 }
                 else if (vm is ElementCollectionViewModel)
                 {
-                    item = new CollectionRenderItem((ElementCollectionViewModel)vm, ResourceCreator);
+                    item = new CollectionRenderItem((ElementCollectionViewModel)vm, this, ResourceCreator);
                     await item.Load();
                     _renderItems1.Add(item);
                 }
                 else
                 {
-                    item = new ElementRenderItem(vm, ResourceCreator);
+                    item = new ElementRenderItem(vm, this, ResourceCreator);
                     await item.Load();
                     _renderItems2.Add(item);
                 }
@@ -202,7 +184,7 @@ namespace NuSysApp.Components.NuSysRenderer
 
         public void AddAdornment(InkStroke stroke)
         {
-            _renderItems0.Add(new AdornmentRenderItem(stroke, ResourceCreator));
+            _renderItems0.Add(new AdornmentRenderItem(stroke, this, ResourceCreator));
         }
 
         public void AddStroke(InkStroke stroke)
@@ -212,17 +194,27 @@ namespace NuSysApp.Components.NuSysRenderer
 
         public void AddLink(LinkViewModel vm)
         {
-            _renderItems1.Add(new LinkRenderItem(vm, ResourceCreator));
+            _renderItems1.Add(new LinkRenderItem(vm, this, ResourceCreator));
         }
 
         public void AddTrail(PresentationLinkViewModel vm)
         {
-            _renderItems1.Add(new TrailRenderItem(vm, ResourceCreator));
+            _renderItems1.Add(new TrailRenderItem(vm, this, ResourceCreator));
         }
 
         public List<BaseRenderItem> GetRenderItems()
         {
             return _renderItems0.Concat(_renderItems1).Concat(_renderItems2).Concat(_renderItems3).ToList();
-        } 
+        }
+
+        public override bool HitTest(Vector2 point)
+        {
+            if (ViewModel is FreeFormViewerViewModel)
+            {
+                return true;
+            }
+
+            return base.HitTest(point);
+        }
     }
 }

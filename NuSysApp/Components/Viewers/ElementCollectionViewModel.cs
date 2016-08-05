@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
@@ -40,20 +41,38 @@ namespace NuSysApp
 
         protected INodeViewFactory _nodeViewFactory = new FreeFormNodeViewFactory();
         protected FreeFormElementViewModelFactory _elementVmFactory = new FreeFormElementViewModelFactory();
-       
+
+
+        public Vector2 CameraTranslation { get; set; } = new Vector2(-Constants.MaxCanvasSize/2f, -Constants.MaxCanvasSize / 2f);
+        public Vector2 CamertaCenter { get; set; } = new Vector2(Constants.MaxCanvasSize / 2f, Constants.MaxCanvasSize / 2f);
+        public float CameraScale { get; set; } = 1f;
+
+
         public ElementCollectionViewModel(ElementCollectionController controller): base(controller)
         {
             controller.ChildAdded += OnChildAdded;
             controller.ChildRemoved += OnChildRemoved;
+            controller.CameraPositionChanged += ControllerOnCameraPositionChanged;
+            controller.CameraCenterChanged += ControllerOnCameraCenterChanged;
+            //controller.CameraPositionChanged += ControllerOnCameraPositionChanged;
             //(controller.LibraryElementModel as CollectionLibraryElementModel).OnLinkAdded += OnOnLinkAdded;
             //(controller.LibraryElementModel as CollectionLibraryElementModel).OnLinkRemoved += ElementCollectionViewModel_OnLinkRemoved;
             Text = controller.LibraryElementModel?.Data;
 
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
             _toolStartableId = SessionController.Instance.GenerateId();
-            ToolController.ToolControllers.Add(_toolStartableId, this);
-            
-            
+            ToolController.ToolControllers.Add(_toolStartableId, this);   
+        }
+
+        private void ControllerOnCameraCenterChanged(float f, float f1)
+        {
+            CamertaCenter = new Vector2(f, f1);
+        }
+
+        private void ControllerOnCameraPositionChanged(float f, float f1)
+        {
+            CameraTranslation = new Vector2(f,f1);
+
         }
 
         public async Task CreateChildren()

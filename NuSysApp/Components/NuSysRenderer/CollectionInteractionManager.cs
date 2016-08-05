@@ -9,19 +9,37 @@ using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Xaml.Input;
 using Microsoft.Graphics.Canvas.UI.Xaml;
-using NuSysApp.Components.NuSysRenderer;
 
 namespace NuSysApp
 {
-    public class CollectionInteractionManager
+
+    public class Transformable : I2dTransformable
+    {
+        public Matrix3x2 T { get; set; } = Matrix3x2.Identity;
+        public Matrix3x2 S { get; set; } = Matrix3x2.Identity;
+        public Matrix3x2 C { get; set; } = Matrix3x2.Identity;
+
+        public Size Size { get; set; }
+
+        public Point Position { get; set; }
+        public Vector2 CameraTranslation { get; set; } 
+        public Vector2 CameraCenter { get; set; }
+        public float CameraScale { get; set; }
+
+        public void Update() { }
+    }
+
+    public class CollectionInteractionManager : IDisposable
     {
         public delegate void RenderItemSelectedHandler(BaseRenderItem element, PointerDeviceType device);
-        public event RenderItemSelectedHandler ItemSelected;
+        public event RenderItemSelectedHandler ItemTapped;
+        public event RenderItemSelectedHandler ItemLongPressed;
 
         private enum Mode
         {
             PanZoom,
-            MoveNode
+            MoveNode,
+            OutOfBounds
         }
 
         private Mode _mode = Mode.PanZoom;
@@ -46,6 +64,13 @@ namespace NuSysApp
             _collection.ResourceCreator.PointerReleased += OnPointerReleased;
         }
 
+        public void Dispose()
+        {
+            _collection.ResourceCreator.PointerPressed -= OnPointerPressed;
+            _collection.ResourceCreator.PointerReleased -= OnPointerReleased;
+            _collection.ResourceCreator.PointerMoved -= OnPointerMoved;
+        }
+
         private void UpdateCenterPoint()
         {
             var points = PointerPoints.Values.ToArray();
@@ -62,8 +87,15 @@ namespace NuSysApp
             _twoFingerDist = MathUtil.Dist(p0, p1);
         }
 
+        private bool IsInBounds(Point sp)
+        {
+            var item = NuSysRenderer.Instance.GetRenderItemAt(sp, _collection, 0);
+            return false;
+        }
+
         private async void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
+
             if (PointerPoints.Count == 0)
                 _firstPointerStopWatch.Restart();
 
@@ -73,7 +105,7 @@ namespace NuSysApp
             if (e.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
                 PointerPoints.Clear();
 
-            var cp = e.GetCurrentPoint(null).Position;
+
             var p = e.GetCurrentPoint(null).Position;
             PointerPoints.Add(e.Pointer.PointerId, new Vector2((float) p.X, (float) p.Y));
             if (PointerPoints.Count >= 2)
@@ -87,10 +119,16 @@ namespace NuSysApp
             {
                 var pp = e.GetCurrentPoint(null).Position;
                 _centerPoint = new Vector2((float) pp.X, (float) pp.Y);
-                _selectedRenderItem = NuSysRenderer.Instance.GetRenderItemAt(cp);
-                if (_selectedRenderItem == null)
+                _selectedRenderItem = NuSysRenderer.Instance.GetRenderItemAt(p, _collection, 1);
+
+                if (_selectedRenderItem == _collection)
                 {
                     _mode = Mode.PanZoom;
+                }
+                else if (_selectedRenderItem == null)
+                {
+                    _mode = Mode.OutOfBounds;
+                    return;
                 }
                 else
                 {
@@ -106,28 +144,31 @@ namespace NuSysApp
             _stopwatch.Stop();
 
             if (PointerPoints.ContainsKey(e.Pointer.PointerId))
-                PointerPoints.Remove(e.Pointer.PointerId);
-
-            if (PointerPoints.Count == 0)
-                _firstPointerStopWatch.Stop();
+                PointerPoints.Remove(e.Pointer.PointerId);           
 
             if (PointerPoints.Count == 1)
             {
+
+                if (_mode == Mode.OutOfBounds)
+                    return;
+
+
                 _centerPoint = PointerPoints.Values.First();
 
                 var dt = _stopwatch.ElapsedMilliseconds;
                 if (dt < 200)
                 {
                     var pp = e.GetCurrentPoint(null).Position;
-                    var item = NuSysRenderer.Instance.GetRenderItemAt(pp);
-                    ItemSelected?.Invoke(item, e.Pointer.PointerDeviceType);
+                    var item = NuSysRenderer.Instance.GetRenderItemAt(pp, _collection, 1);
+                    ItemTapped?.Invoke(item, e.Pointer.PointerDeviceType);
                 }
             }
             else if (PointerPoints.Count == 0)
             {
-               
+                 _firstPointerStopWatch.Stop();
+
                 if (_collection.ViewModel.Selections.Count == 0)
-                    _transformables.Clear();
+                _transformables.Clear();
 
                 var dt = (DateTime.Now - _lastReleased).TotalMilliseconds;
                 if (dt < 200)
@@ -138,10 +179,19 @@ namespace NuSysApp
                 }
 
                 _collection.ResourceCreator.PointerMoved -= OnPointerMoved;
-                if (_distanceTraveled < 5 && _stopwatch.ElapsedMilliseconds < 150 &&
-                    _firstPointerStopWatch.ElapsedMilliseconds < 150)
+                if (_distanceTraveled <20 && _stopwatch.ElapsedMilliseconds < 150)
                 {
-                    ItemSelected?.Invoke(_selectedRenderItem, e.Pointer.PointerDeviceType);
+                    if (_firstPointerStopWatch.ElapsedMilliseconds < 150) {
+
+                        Debug.WriteLine("Tap");
+
+                        ItemTapped?.Invoke(_selectedRenderItem, e.Pointer.PointerDeviceType);
+                    }
+                    else if (_firstPointerStopWatch.ElapsedMilliseconds > 250)
+                    {
+                        Debug.WriteLine("PressHoldRelease");
+                        ItemLongPressed?.Invoke(_selectedRenderItem, e.Pointer.PointerDeviceType);
+                    }
                 }
 
                 _distanceTraveled = 0;
@@ -185,22 +235,41 @@ namespace NuSysApp
                         else
                         {
                             t = new Transformable();
-                            _transformables.Add(elem, t);
                             t.Position = new Point(elem.X, elem.Y);
                             t.Size = new Size(elem.Width, elem.Height);
+                            if (elem is ElementCollectionViewModel)
+                            {
+                                var elemc = elem as ElementCollectionViewModel;
+                                t.CameraTranslation = elemc.CameraTranslation;
+                                t.CameraCenter = elemc.CamertaCenter;
+                                t.CameraScale = elemc.CameraScale;
+                                _transformables.Add(elem, t);
+                            }
                         }
 
 
                         PanZoom(t, newCenter, dx, dy, ds);
 
                         elem.Controller.SetSize(t.Size.Width*t.S.M11, t.Size.Height*t.S.M22);
-                        var nx = t.Position.X - (t.Size.Width*t.S.M11 - t.Size.Width)/2;
-                        var ny = t.Position.Y - (t.Size.Height*t.S.M22 - t.Size.Height)/2;
+                        var dtx = (float)(t.Size.Width*t.S.M11 - t.Size.Width)/2f;
+                        var dty = (float)(t.Size.Height*t.S.M22 - t.Size.Height)/2f;
+                        var nx = t.Position.X - dtx;
+                        var ny = t.Position.Y - dty;
                         elem.Controller.SetPosition(nx, ny);
+                        if (elem is ElementCollectionViewModel)
+                        {
+                            var elemc = elem as ElementCollectionViewModel;
+                            var ct = t.CameraTranslation;
+                            var cc = t.CameraCenter;
+                            var controller = elemc.Controller as ElementCollectionController;
+                            controller.SetCameraPosition(ct.X + dtx, ct.Y + dty);
+                            controller.SetCameraCenter(cc.X - dtx, cc.Y - dty);
+                        }
                     }
                 }
                 else
                 {
+                  //  Debug.WriteLine(_collection.ViewModel.Title);
                     PanZoom(_collection.Camera, _centerPoint, dx, dy, ds);
                 }
             }
@@ -211,6 +280,7 @@ namespace NuSysApp
                     var currPos = args.GetCurrentPoint(null).Position;
                     var deltaX = (float) (currPos.X - _centerPoint.X);
                     var deltaY = (float) (currPos.Y - _centerPoint.Y);
+                    _distanceTraveled += Math.Abs(deltaX) + Math.Abs(deltaY);
                     _centerPoint = new Vector2((float) currPos.X, (float) currPos.Y);
                     PanZoom(_collection.Camera, _centerPoint, deltaX, deltaY, 1);
                 }
@@ -223,7 +293,7 @@ namespace NuSysApp
                     _centerPoint = new Vector2((float) currPos.X, (float) currPos.Y);
 
                     var elem = _selectedRenderItem as ElementRenderItem;
-                    if (elem == null)
+                    if (elem == _collection || elem == null)
                         return;
 
                     var newX = elem.ViewModel.X + deltaX/NuSysRenderer.Instance.ActiveCollection.Camera.S.M11;
@@ -249,10 +319,8 @@ namespace NuSysApp
 
         protected void PanZoom(I2dTransformable target, Vector2 centerPoint, float dx, float dy, float ds)
         {
-            var tmpTranslate = Matrix3x2.CreateTranslation(target.C.M31, target.C.M32);
-            Matrix3x2 tmpTranslateInv;
-            Matrix3x2.Invert(tmpTranslate, out tmpTranslateInv);
-
+           // Debug.WriteLine(_collection.ViewModel.Title);
+  
             Matrix3x2 cInv;
             Matrix3x2.Invert(target.C, out cInv);
 
@@ -262,6 +330,10 @@ namespace NuSysApp
             var center = Vector2.Transform(new Vector2(centerPoint.X, centerPoint.Y), inverse);
 
             //var center = compositeTransform.Inverse.TransformPoint(centerPoint);
+
+            var tmpTranslate = Matrix3x2.CreateTranslation(target.C.M31, target.C.M32);
+            Matrix3x2 tmpTranslateInv;
+            Matrix3x2.Invert(tmpTranslate, out tmpTranslateInv);
 
             var localPoint = Vector2.Transform(center, tmpTranslateInv);
 

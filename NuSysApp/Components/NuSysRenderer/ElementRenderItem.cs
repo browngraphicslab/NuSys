@@ -23,9 +23,10 @@ namespace NuSysApp
 
         public ElementViewModel ViewModel => _vm;
 
-        public ElementRenderItem(ElementViewModel vm, CanvasAnimatedControl resourceCreator) :base(resourceCreator)
+        public ElementRenderItem(ElementViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) :base(parent, resourceCreator)
         {
             _vm = vm;
+            T = Matrix3x2.CreateTranslation((float)_vm.X, (float)_vm.Y);
             _vm.Controller.PositionChanged += ControllerOnPositionChanged;
         }
 

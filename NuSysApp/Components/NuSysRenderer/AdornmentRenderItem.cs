@@ -20,7 +20,7 @@ namespace NuSysApp
         private InkStroke _stroke;
         private CanvasGeometry _geometry;
 
-        public AdornmentRenderItem(InkStroke stroke, CanvasAnimatedControl resourceCreator):base(resourceCreator)
+        public AdornmentRenderItem(InkStroke stroke, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator):base(parent, resourceCreator)
         {
             _stroke = stroke;
         }

@@ -23,7 +23,7 @@ namespace NuSysApp
         private PdfNodeViewModel _vm;
         private CanvasBitmap _bmp;
 
-        public PdfElementRenderItem(PdfNodeViewModel vm, CanvasAnimatedControl resourceCreator):base(vm, resourceCreator)
+        public PdfElementRenderItem(PdfNodeViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator):base(vm, parent, resourceCreator)
         {
             _vm = vm;
             _vm.PropertyChanged += OnPropertyChanged;
@@ -52,11 +52,13 @@ namespace NuSysApp
         public override void Draw(CanvasDrawingSession ds)
         {
             base.Draw(ds);
-
+            var orgTransform = ds.Transform;
+            ds.Transform = Win2dUtil.Invert(C) * S * C * T * ds.Transform;
             if (_bmp != null)
             {
-                ds.DrawImage(_bmp, new Rect {X = _vm.X, Y = _vm.Y, Width = _vm.Width, Height = _vm.Height});
+                ds.DrawImage(_bmp, new Rect {X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height});
             }
+            ds.Transform = orgTransform;
         }
     }
 }

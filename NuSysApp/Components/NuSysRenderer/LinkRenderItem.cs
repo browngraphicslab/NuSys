@@ -18,7 +18,7 @@ namespace NuSysApp
         private LinkViewModel _vm;
         private CanvasGeometry _path;
 
-        public LinkRenderItem(LinkViewModel vm, CanvasAnimatedControl resourceCreator):base(resourceCreator)
+        public LinkRenderItem(LinkViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator):base(parent, resourceCreator)
         {
             _vm = vm;
         }

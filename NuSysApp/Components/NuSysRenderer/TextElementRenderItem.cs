@@ -25,7 +25,7 @@ namespace NuSysApp
     {
         private TextNodeViewModel _vm;
 
-        public TextElementRenderItem(TextNodeViewModel vm, CanvasAnimatedControl resourceCreator):base(vm, resourceCreator)
+        public TextElementRenderItem(TextNodeViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator):base(vm, parent, resourceCreator)
         {
             _vm = vm;
         }
@@ -40,7 +40,10 @@ namespace NuSysApp
         {
             base.Draw(ds);
 
-            ds.FillRectangle( new Rect {X=_vm.X, Y= _vm.Y, Width = _vm.Width, Height=_vm.Height}, Colors.White);
+            var orgTransform = ds.Transform;
+            ds.Transform = Win2dUtil.Invert(C) * S * C * T * ds.Transform;
+
+            ds.FillRectangle( new Rect {X = 0, Y = 0, Width = _vm.Width, Height=_vm.Height}, Colors.White);
             
             var f = new CanvasTextFormat();
             f.WordWrapping = CanvasWordWrapping.Wrap;
@@ -50,6 +53,8 @@ namespace NuSysApp
                 l.HorizontalAlignment = CanvasHorizontalAlignment.Center;
                 ds.DrawTextLayout(l, (float)_vm.X, (float)_vm.Y, Colors.Black);
             }
+
+            ds.Transform = orgTransform;
 
         }
     }

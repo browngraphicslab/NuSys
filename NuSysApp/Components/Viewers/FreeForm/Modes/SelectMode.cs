@@ -20,18 +20,7 @@ using MyToolkit.Controls;
 namespace NuSysApp
 {
 
-    public class Transformable : I2dTransformable
-    {
-        public Matrix3x2 T { get; set; } = Matrix3x2.Identity;
-        public Matrix3x2 S { get; set; } = Matrix3x2.Identity;
-        public Matrix3x2 C { get; set; } = Matrix3x2.Identity;
 
-        public Size Size { get; set; }
-
-        public Point Position { get; set; }
-
-        public void Update() { }
-    }
 
     public class SelectMode : AbstractWorkspaceViewMode
     {

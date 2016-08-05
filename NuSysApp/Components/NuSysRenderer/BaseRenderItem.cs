@@ -20,8 +20,11 @@ namespace NuSysApp
         public CanvasAnimatedControl ResourceCreator;
         public bool IsDirty { get; set; } = true;
 
-        public BaseRenderItem(CanvasAnimatedControl resourceCreator)
+        public CollectionRenderItem Parent { get; set; }
+
+        public BaseRenderItem(CollectionRenderItem parent, CanvasAnimatedControl resourceCreator)
         {
+            Parent = parent;
             ResourceCreator = resourceCreator;
         }
 

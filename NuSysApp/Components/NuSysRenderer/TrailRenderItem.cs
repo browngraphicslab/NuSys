@@ -17,7 +17,7 @@ namespace NuSysApp
     {
         private PresentationLinkViewModel _vm;
 
-        public TrailRenderItem(PresentationLinkViewModel vm, CanvasAnimatedControl resourceCreator):base(resourceCreator)
+        public TrailRenderItem(PresentationLinkViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator):base(parent, resourceCreator)
         {
             _vm = vm;
         }

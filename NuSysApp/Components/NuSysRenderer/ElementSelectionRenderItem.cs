@@ -20,7 +20,7 @@ namespace NuSysApp
         private bool _isVisible;
         private List<ISelectable> _selectedItems = new List<ISelectable>(); 
 
-        public ElementSelectionRenderItem(FreeFormViewerViewModel vm, CanvasAnimatedControl resourceCreator) : base(resourceCreator)
+        public ElementSelectionRenderItem(FreeFormViewerViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
             _vm = vm;
             _vm.SelectionChanged += OnSelectionChanged;

@@ -23,7 +23,7 @@ namespace NuSysApp
         private CanvasRenderTarget _renderTarget;
         private ElementCollectionViewModel _collection;
 
-        public MinimapRenderItem(ElementCollectionViewModel collection, CanvasAnimatedControl resourceCreator) : base(resourceCreator)
+        public MinimapRenderItem(ElementCollectionViewModel collection, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
             _collection = collection;
             collection.Elements.CollectionChanged += ElementsOnCollectionChanged;
@@ -137,7 +137,7 @@ namespace NuSysApp
                 var trp = Vector2.Transform(tr, dss.Transform);
                 dss.Transform = Matrix3x2.Identity;
                 var strokeWidth = 3f;
-                dss.DrawRectangle(new Rect(tlp.X + strokeWidth, tlp.Y + strokeWidth, trp.X - tlp.X - strokeWidth*2,  trp.Y - tlp.Y - strokeWidth * 2), Colors.DarkRed, 3f );
+                dss.DrawRectangle(new Rect(tlp.X + strokeWidth, tlp.Y + strokeWidth, Math.Max(0, trp.X - tlp.X - strokeWidth*2),  Math.Max(0, trp.Y - tlp.Y - strokeWidth * 2)), Colors.DarkRed, 3f );
             }
 
             IsDirty = false;
