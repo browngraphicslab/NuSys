@@ -35,7 +35,11 @@ namespace NuSysApp
         private bool _editable;
         private double _intervalRegionTranslateY;
         private string _name;
+        private VideoRegionLibraryElementController _regionLibraryElementController;
         #endregion PrivateVariables
+
+        public event EventHandler Disposed;
+
 
         public string Name
         {
@@ -137,12 +141,13 @@ namespace NuSysApp
 
         public VideoRegionViewModel(VideoRegionModel model, VideoRegionLibraryElementController regionLibraryElementController, AudioWrapper audioWrapper) : base(model, regionLibraryElementController)
         {
-            audioWrapper.SizeChanged += RectangleWrapper_SizeChanged;
-            regionLibraryElementController.SizeChanged += SizeChanged;
-            regionLibraryElementController.LocationChanged += LocationChanged;
-            regionLibraryElementController.IntervalChanged += IntervalChanged;
-            regionLibraryElementController.TitleChanged += TitleChanged;
-            regionLibraryElementController.IntervalChanged += audioWrapper.AudioWrapper_TimeChanged;
+            _regionLibraryElementController = regionLibraryElementController;
+            audioWrapper.SizeChanged += AudioWrapper_SizeChanged;
+            _regionLibraryElementController.SizeChanged += SizeChanged;
+            _regionLibraryElementController.LocationChanged += LocationChanged;
+            _regionLibraryElementController.IntervalChanged += IntervalChanged;
+            _regionLibraryElementController.TitleChanged += TitleChanged;
+            _regionLibraryElementController.IntervalChanged += audioWrapper.AudioWrapper_TimeChanged;
             _height = (model.Height);
             _width = (model.Width);
             _topLeftPoint = new Point(model.TopLeftPoint.X , model.TopLeftPoint.Y );
@@ -157,7 +162,7 @@ namespace NuSysApp
             Editable = true;
         }
 
-        private void RectangleWrapper_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void AudioWrapper_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             RaisePropertyChanged("RectangleWidth");
             RaisePropertyChanged("RectangleHeight");
@@ -234,7 +239,13 @@ namespace NuSysApp
 
         public override void Dispose(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            AudioWrapper.Disposed -= Dispose;
+            AudioWrapper.SizeChanged -= AudioWrapper_SizeChanged;
+            _regionLibraryElementController.IntervalChanged -= IntervalChanged;
+            _regionLibraryElementController.TitleChanged -= TitleChanged;
+            _regionLibraryElementController.IntervalChanged -= AudioWrapper.AudioWrapper_TimeChanged;
+            _regionLibraryElementController.Disposed -= Dispose;
+            Disposed?.Invoke(sender, e);
         }
     }
 

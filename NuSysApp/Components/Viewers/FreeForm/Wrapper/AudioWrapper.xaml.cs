@@ -315,13 +315,13 @@ namespace NuSysApp
             {
                 var regionVM = (item as FrameworkElement).DataContext as RegionViewModel;
                 Debug.Assert(regionVM != null);
-                regionVM.Dispose(null, EventArgs.Empty);
                 if (regionVM.Model.LibraryElementId == regionLibraryElementId)
                 {
                     xClippingCanvas.Items.Remove(item);
                     //Fires ONRegionsUpdated event so that the parent AudioMediaPlayer's MediaElement will have a correct list
                     //of TimelineMarkers.
                     FireRegionsUpdated();
+                    regionVM.Dispose(null, EventArgs.Empty);
                     return;
                 }
             }

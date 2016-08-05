@@ -137,11 +137,12 @@ namespace NuSysApp
             {
                 return;
             }
-            // If the region is deleted, it needs to dispose of its handlers.
-            vm.Dispose(this, EventArgs.Empty);
             // delete all the references to this region from the library
             var removeRequest = new DeleteLibraryElementRequest(vm.RegionLibraryElementController.LibraryElementModel.LibraryElementId);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(removeRequest);
+            // If the region is deleted, it needs to dispose of its handlers.
+            vm.Dispose(this, EventArgs.Empty);
+
 
         }
         private async void Rect_OnTapped(object sender, TappedRoutedEventArgs e)
