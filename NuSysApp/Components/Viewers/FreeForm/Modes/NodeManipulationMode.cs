@@ -17,9 +17,14 @@ namespace NuSysApp
     public class NodeManipulationMode : AbstractWorkspaceViewMode
     {
         public static int _zIndexCounter = 10000;
+
         private bool _isPinAnimating;
         private bool _isFreeForm;
         private FrameworkElement _bounds;
+        private Point _originalPosition;
+        private Point _newPosition;
+
+
         public List<UserControl> ActiveNodes { get; private set; }
         public bool Limited { get; set; }
         private FreeFormViewer _viewer;
@@ -30,6 +35,8 @@ namespace NuSysApp
         {
             _isFreeForm = isFreeFormCollection;
 
+            _originalPosition = new Point(0,0);
+            _newPosition = new Point(0,0);
         }
 
         public void SetViewer(FreeFormViewer viewer)
@@ -53,6 +60,35 @@ namespace NuSysApp
 
         private void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs manipulationCompletedRoutedEventArgs)
         {
+            //Updates new position coordinates
+            _newPosition.X = manipulationCompletedRoutedEventArgs.Position.X;
+            _newPosition.Y = manipulationCompletedRoutedEventArgs.Position.Y;
+
+            // Transforms original and new positions from screen to global space
+            _newPosition = (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform).Inverse.TransformPoint(
+                _newPosition);
+            _originalPosition = (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform).Inverse.TransformPoint(
+                _originalPosition);
+
+            //Get elements controller
+            var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
+            var elementController = vm.Controller;
+            
+            //Instantiates MoveElementAction
+            var moveElementAction = new MoveElementAction(elementController, _originalPosition, _newPosition);
+
+            //Creates UndoButton and makes it appear in the old position.
+            var undoButton = new UndoButton(moveElementAction);
+            var atomViewList = ((FreeFormViewerViewModel)_view.DataContext).AtomViewList;
+            atomViewList.Add(undoButton);
+
+            // Moves the button to the appropriate location
+            var transform = new TranslateTransform();
+            transform.X = _originalPosition.X;
+            transform.Y = _originalPosition.Y;
+            undoButton.RenderTransform = transform;
+
+
             ActiveNodes.Remove((UserControl) sender);
         }
 
@@ -63,6 +99,9 @@ namespace NuSysApp
             {
                 Canvas.SetZIndex(userControl, _zIndexCounter++);
             }
+
+            _originalPosition.X = manipulationStartingRoutedEventArgs.Position.X;
+            _originalPosition.Y = manipulationStartingRoutedEventArgs.Position.Y;
 
             ActiveNodes.Add((UserControl)sender);
         }

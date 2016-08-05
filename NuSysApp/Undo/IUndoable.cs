@@ -21,6 +21,14 @@ namespace NuSysApp
         /// To extract the undoable action as a Request that you can use to regenerate the state of the action
         /// </summary>
         /// <returns></returns>
+       
+        /*
        Request ToRequest();
+        /// <summary>
+        /// executes the request that is created by this IUndoable
+        /// </summary>
+        */
+
+        void ExecuteRequest();
    }
 }
