@@ -836,6 +836,28 @@ namespace NusysIntermediate
             return Guid.NewGuid().ToString("N");
         }
 
+        /// <summary>
+        /// returns the correct ContentType for a given elementType;
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static ContentType ElementTypeToContentType(ElementType type)
+        {
+            switch (type)
+            {
+                case ElementType.Image:
+                    return ContentType.Image;
+                case ElementType.Video:
+                    return ContentType.Video;
+                case ElementType.Audio:
+                    return ContentType.Audio;
+                case ElementType.PDF:
+                    return ContentType.PDF;
+                default:
+                    return ContentType.Text;
+            }
+        }
+
         #endregion staticMethods
     }
 }

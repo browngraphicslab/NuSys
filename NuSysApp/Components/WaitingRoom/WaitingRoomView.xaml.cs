@@ -359,17 +359,7 @@ namespace NuSysApp
 
                         await Task.Run(async delegate
                         {
-
-                            var m = new Message();
-                            m[NusysConstants.REQUEST_TYPE_STRING_KEY] =
-                                NusysConstants.RequestType.CreateNewLibraryElementRequest.ToString();
-                            m[NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY] = "Trent test id";
-                            m[NusysConstants.LIBRARY_ELEMENT_TYPE_KEY] = NusysConstants.ElementType.Image;
-                            m[NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY] = "contetnt idddddd";
-                            m[NusysConstants.LIBRARY_ELEMENT_TITLE_KEY] = "my title";
-                            m["custom_proprety_key"] = "test";
-                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(m));
-
+                            
 
                             var models = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
                             foreach (var model in models)
@@ -464,7 +454,7 @@ namespace NuSysApp
 
             public CollectionTextBox(string text, string Id) : base()
             {
-                Id = ID;
+                ID = Id;
                 IsEnabled = false;
                 Background = new SolidColorBrush(Colors.Transparent);
                 base.Text = text;

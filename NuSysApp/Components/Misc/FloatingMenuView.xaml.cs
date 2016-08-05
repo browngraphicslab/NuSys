@@ -308,9 +308,11 @@ namespace NuSysApp
             dict["contentId"] = contentId;
             dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
             dict["autoCreate"] = true;
-           
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, data == null ? "" : data.ToString(), elementType, dict.ContainsKey("title") ? dict["title"].ToString() : null));
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(dict));
+
+            var contentType = NusysConstants.ElementTypeToContentType(elementType);
+
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewContentRequest(contentType,data?.ToString(),dict));
+            //await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(dict));
 
             }
 

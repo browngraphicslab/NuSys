@@ -5,7 +5,6 @@ using System.Linq;
 using System.Web;
 using Newtonsoft.Json;
 using NusysIntermediate;
-using NusysServer.Misc;
 
 namespace NusysServer
 {
@@ -21,10 +20,18 @@ namespace NusysServer
 
             var selectQuery = CreateGetEntireWorkspaceSqlQuery(workspaceId);
 
-            var returnedMessages = selectQuery.ExecuteCommand();
+            var keys =
+                Constants.GetFullColumnTitles(Constants.SQLTableType.Content, NusysConstants.ACCEPTED_CONTENT_TABLE_KEYS)
+                    .Concat(Constants.GetFullColumnTitles(Constants.SQLTableType.Alias,
+                        NusysConstants.ALIAS_ACCEPTED_KEYS.Keys));
 
-            var contentDataModels = returnedMessages.Select(m => ContentDataModelFactory.CreateFromMessage(m));
-            var aliases = returnedMessages.Select(m => ElementModelFactory.CreateFromMessage(m));
+            var command = "SELECT * FROM alias LEFT JOIN library_elements ON alias.library_id = library_elements.library_id LEFT JOIN contents ON library_elements.content_id = contents.content_id WHERE alias.parent_collection_id = '" + workspaceId+"'";
+
+            var args = new SelectCommandReturnArgs(ContentController.Instance.SqlConnector.MakeCommand(command), keys);
+            var returnedMessages = ContentController.Instance.SqlConnector.ExecuteSelectQueryAsMessages(args);
+            
+            var contentDataModels = returnedMessages.Select(m => ContentDataModelFactory.CreateFromMessage(Constants.StripTableNames(m)));
+            var aliases = returnedMessages.Select(m => ElementModelFactory.CreateFromMessage(Constants.StripTableNames(m)));
 
             //create new args to return
             var returnArgs = new GetEntireWorkspaceRequestArgs();

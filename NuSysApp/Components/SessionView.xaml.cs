@@ -115,15 +115,7 @@ namespace NuSysApp
 
             var l = WaitingRoomView.GetFirstLoadList();
             var firstId = WaitingRoomView.InitialWorkspaceId;
-            if (firstId == null)
-            {
-                //await LoadEmptyWorkspace();
-            }
-            else
-            {
-                await LoadWorkspaceFromServer(l, WaitingRoomView.InitialWorkspaceId);
-            }
-
+            await LoadWorkspaceFromServer(l, WaitingRoomView.InitialWorkspaceId);
 
             xDetailViewer.DataContext = new DetailViewerViewModel();
             xSearchViewer.DataContext = new SearchViewModel();
@@ -513,9 +505,9 @@ namespace NuSysApp
 
             xLoadingGrid.Visibility = Visibility.Visible;
 
-            await
-                SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
-                    new SubscribeToCollectionRequest(collectionId));
+            //await
+               // SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
+                    //new SubscribeToCollectionRequest(collectionId));
 
             foreach (var controller in SessionController.Instance.IdToControllers.Values)
             {

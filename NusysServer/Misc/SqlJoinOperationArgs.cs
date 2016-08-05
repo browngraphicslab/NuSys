@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using NusysIntermediate;
 
-namespace NusysServer.Misc
+namespace NusysServer
 {
     public class SqlJoinOperationArgs
     {
