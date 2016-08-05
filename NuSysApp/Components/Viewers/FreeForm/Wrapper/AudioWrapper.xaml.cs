@@ -85,6 +85,8 @@ namespace NuSysApp
         public delegate void RegionSeekedEventHandler(double normalizedTime);
         public event RegionSeekedEventHandler OnRegionSeeked;
 
+        public delegate void IntervalChangedEventHandler(object sender, double start, double end);
+        public event IntervalChangedEventHandler OnIntervalChanged;
 
         public AudioWrapper()
         {
@@ -106,11 +108,13 @@ namespace NuSysApp
                         regionController = Controller as AudioRegionLibraryElementController;
                         AudioStart = (regionController as AudioRegionLibraryElementController).AudioRegionModel.Start;
                         AudioEnd = (regionController as AudioRegionLibraryElementController).AudioRegionModel.End;
+                        (regionController as AudioRegionLibraryElementController).TimeChanged += AudioWrapper_IntervalUpdated;
                         break;
                     case ElementType.VideoRegion:
                         regionController = Controller as VideoRegionLibraryElementController;
                         AudioStart = (regionController as VideoRegionLibraryElementController).VideoRegionModel.Start;
                         AudioEnd = (regionController as VideoRegionLibraryElementController).VideoRegionModel.End;
+                        (regionController as VideoRegionLibraryElementController).IntervalChanged += AudioWrapper_IntervalUpdated;
                         break;
                 }
 
@@ -151,6 +155,13 @@ namespace NuSysApp
             //    compositeTransform.CenterX = this.ActualWidth * (AudioStart + (AudioEnd - AudioStart) / 2.0);
             compositeTransform.TranslateX = -AudioStart * this.ActualWidth / (AudioEnd - AudioStart);
             xClippingCanvas.RenderTransform = compositeTransform;
+        }
+
+        private void AudioWrapper_IntervalUpdated(object sender, double start, double end)
+        {
+            AudioStart = start;
+            AudioEnd = end;
+            OnIntervalChanged?.Invoke(sender, start, end);
         }
 
         public double GetWidth()

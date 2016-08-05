@@ -35,7 +35,6 @@ namespace NuSysApp
         private bool _editable;
         private double _intervalRegionTranslateY;
         private string _name;
-        private double _progressbarMargin = 10;
         #endregion PrivateVariables
 
         public string Name
@@ -80,7 +79,7 @@ namespace NuSysApp
         {
             get
             {
-                return Math.Max(0, (_intervalEnd - _intervalStart) * (AudioWrapper.GetWidth() - 2 * _progressbarMargin));
+                return Math.Max(0, (_intervalEnd - _intervalStart) * (AudioWrapper.GetWidth()));
             }
             set
             {
@@ -92,7 +91,7 @@ namespace NuSysApp
         {
             get
             {
-                return Math.Max(0, _intervalRegionTranslateY * AudioWrapper.GetHeight() + _progressbarMargin);
+                return Math.Max(0, _intervalRegionTranslateY * AudioWrapper.GetHeight());
             }
             set
             {
@@ -102,7 +101,7 @@ namespace NuSysApp
         }
         public double IntervalStart
         {
-            get { return Math.Max(0, _intervalStart * (AudioWrapper.GetWidth() - 2 * _progressbarMargin) + _progressbarMargin); }
+            get { return Math.Max(0, _intervalStart * AudioWrapper.GetWidth()); }
             set
             {
                 Debug.Assert(!Double.IsNaN(value));
@@ -113,7 +112,7 @@ namespace NuSysApp
         }
         public double IntervalEnd
         {
-            get { return Math.Max(0, _intervalEnd * (AudioWrapper.GetWidth() - 2 * _progressbarMargin) + _progressbarMargin); }
+            get { return Math.Max(0, _intervalEnd * AudioWrapper.GetWidth()); }
             set
             {
                 _intervalEnd = value;
@@ -207,15 +206,15 @@ namespace NuSysApp
 
         public void SetIntervalStart(double start)
         {
-            var newstart = Math.Max(0, start-_progressbarMargin);
+            var newstart = Math.Max(0, start);
             var controller = RegionLibraryElementController as VideoRegionLibraryElementController;
-            controller?.SetStartTime(newstart / (AudioWrapper.GetWidth()-2*_progressbarMargin));
+            controller?.SetStartTime(newstart / (AudioWrapper.GetWidth()));
         }
         public void SetIntervalEnd(double end)
         {
-            var newEnd = Math.Max(0, end-_progressbarMargin);
+            var newEnd = Math.Max(0, end);
             var controller = RegionLibraryElementController as VideoRegionLibraryElementController;
-            controller?.SetEndTime(newEnd / (AudioWrapper.GetWidth()-2*_progressbarMargin));
+            controller?.SetEndTime(newEnd / (AudioWrapper.GetWidth()));
         }
         
         public void SetRegionSize(double width, double height)

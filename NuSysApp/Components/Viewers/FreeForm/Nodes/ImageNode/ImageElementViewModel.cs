@@ -18,7 +18,8 @@ namespace NuSysApp
     {
         public ImageElementViewModel(ElementController controller) : base(controller)
         {
-            Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));       
+            Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
+
         }
 
         public override void Dispose()

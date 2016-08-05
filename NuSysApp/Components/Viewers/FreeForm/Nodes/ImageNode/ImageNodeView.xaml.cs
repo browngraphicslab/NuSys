@@ -43,6 +43,7 @@ namespace NuSysApp
         {
             xClippingWrapper.Controller = _vm.Controller.LibraryElementController;
             xClippingWrapper.ProcessLibraryElementController();
+
         }
 
         private void ControllerOnDisposed(object source, object args)
@@ -63,5 +64,7 @@ namespace NuSysApp
             await r.RenderAsync(xImage, width, height);
             return r;
         }
+
+
     }
 }
