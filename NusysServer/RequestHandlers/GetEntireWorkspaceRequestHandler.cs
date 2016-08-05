@@ -23,9 +23,9 @@ namespace NusysServer
             var keys =
                 Constants.GetFullColumnTitles(Constants.SQLTableType.Content, NusysConstants.ACCEPTED_CONTENT_TABLE_KEYS)
                     .Concat(Constants.GetFullColumnTitles(Constants.SQLTableType.Alias,
-                        NusysConstants.ALIAS_ACCEPTED_KEYS.Keys));
+                        NusysConstants.ALIAS_ACCEPTED_KEYS.Keys)).Concat(new List<string>() {NusysConstants.LIBRARY_ELEMENT_TYPE_KEY});
 
-            var command = "SELECT * FROM alias LEFT JOIN library_elements ON alias.library_id = library_elements.library_id LEFT JOIN contents ON library_elements.content_id = contents.content_id WHERE alias.parent_collection_id = '" + workspaceId+"'";
+            var command = "SELECT "+string.Join(",",keys)+" FROM alias LEFT JOIN library_elements ON alias.library_id = library_elements.library_id LEFT JOIN contents ON library_elements.content_id = contents.content_id WHERE alias.parent_collection_id = '" + workspaceId+"'";
 
             var args = new SelectCommandReturnArgs(ContentController.Instance.SqlConnector.MakeCommand(command), keys);
             var returnedMessages = ContentController.Instance.SqlConnector.ExecuteSelectQueryAsMessages(args);

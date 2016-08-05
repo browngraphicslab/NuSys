@@ -156,8 +156,15 @@ namespace NusysIntermediate
         public T GetEnum<T>(string key)
         {
             Debug.Assert(ContainsKey(key));
-            var e = (T)(Enum.Parse(typeof(T), Get(key),true));
-            return e;
+            try
+            {
+                var e = (T) (Enum.Parse(typeof(T), Get(key), true));
+                return e;
+            }
+            catch (Exception e)
+            {
+                return (T)Activator.CreateInstance(typeof(T));
+            }
         }
         public byte[] GetByteArray(string key)
         {

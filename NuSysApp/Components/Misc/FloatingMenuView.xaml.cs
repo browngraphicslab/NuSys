@@ -312,7 +312,7 @@ namespace NuSysApp
             var contentType = NusysConstants.ElementTypeToContentType(elementType);
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewContentRequest(contentType,data?.ToString(),dict));
-            //await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(dict));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(dict));
 
             }
 

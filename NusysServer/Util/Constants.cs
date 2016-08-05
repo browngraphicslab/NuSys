@@ -243,9 +243,15 @@ namespace NusysServer
             return new List<string>() {SQLConnector.GetTableName(tableType) + "." + columnName};
         }
 
+        /// <summary>
+        /// will take in a list of table properties and strip the table name off of it. 
+        /// Works whether or not the table name is present
+        /// </summary>
+        /// <param name="properties"></param>
+        /// <returns></returns>
         public static Message StripTableNames(Message properties)
         {
-            return new Message(properties.ToDictionary(kvp => kvp.Key.Substring(kvp.Key.IndexOf(".") + 1), kvp => kvp.Value));
+            return new Message(properties.ToDictionary(kvp => kvp.Key.Contains(".") ? kvp.Key.Substring(kvp.Key.IndexOf(".") + 1) : kvp.Key, kvp => kvp.Value));
         }
 
         #endregion StaticMethods

@@ -41,8 +41,8 @@ namespace NusysServer
             _db = new SqlConnection(SQLSTRING);
             _db.Open(); //open database
             
-            //ResetTables();
-            //SetUpTables();
+            ResetTables(true);
+            SetUpTables();
             TestFunc();
         }
 
@@ -108,7 +108,8 @@ namespace NusysServer
         }
 
         /// <summary>
-        /// be very carefull
+        /// Delete boolean for reseting via deleting the tables
+        /// be very careful.  
         /// THIS RESETS THE ENTIRE SERVER
         /// DONT BE STUPID
         /// </summary>

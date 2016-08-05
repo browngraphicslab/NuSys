@@ -44,8 +44,7 @@ namespace NusysServer
             foreach (var m in query.ExecuteCommand())
             {
                 //add to library element models a json-serialzed version of a library element model from the factory
-                var strippedM = Constants.StripTableNames(m);
-                libraryElementModels.Add(JsonConvert.SerializeObject(LibraryElementModelFactory.CreateFromMessage(strippedM)));
+                libraryElementModels.Add(JsonConvert.SerializeObject(LibraryElementModelFactory.CreateFromMessage(Constants.StripTableNames(m))));
             }
             var returnMessage = new Message();
             returnMessage[NusysConstants.GET_ALL_LIBRARY_ELEMENTS_REQUEST_RETURNED_LIBRARY_ELEMENT_MODELS_KEY] = libraryElementModels;

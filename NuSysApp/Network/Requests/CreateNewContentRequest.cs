@@ -55,6 +55,18 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// this is the preferred constructor to use.  Create and populate the request args before adding.
+        /// Check the arguments comments before popluating so you know which properties are required
+        /// </summary>
+        /// <param name="requestArgs"></param>
+        public CreateNewContentRequest(CreateNewContentRequestArgs requestArgs)
+            : base(NusysConstants.RequestType.CreateNewContentRequest)
+        {
+            //debug.asserts for required types
+            _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY] = NusysConstants.ElementTypeToContentType(requestArgs.LibraryElementType);
+        }
+
+        /// <summary>
         /// This check will make sure that the minimum requirements are met before sending out the request.
         /// In other words, the associated handler server-side should have similar logic such that any reuqest that passes through this method
         /// will also pass through the server request handler and be successful.

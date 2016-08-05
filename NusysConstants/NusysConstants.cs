@@ -238,10 +238,10 @@ namespace NusysIntermediate
 
         #region alias
 
-        /// <summary>
-        /// 32 character string, aka an ID.  
-        /// </summary>
-        public static readonly string ALIAS_ID_KEY = "id";
+            /// <summary>
+            /// 32 character string, aka an ID.  
+            /// </summary>
+            public static readonly string ALIAS_ID_KEY = "alias_id";
 
             /// <summary>
             /// 32 character string, aka an ID. 
