@@ -40,7 +40,7 @@ namespace NuSysApp
                 var favorited = message.GetBool("favorited");
 
                 var finite = message.GetBool("finite");
-                var shapepoints = message.GetList<Windows.Foundation.Point>("points");
+                var shapepoints = message.GetList<Windows.Foundation.Point>("shape_points");
                 if (shapepoints == null)
                 {
                     shapepoints = new List<Windows.Foundation.Point>();
