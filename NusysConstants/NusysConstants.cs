@@ -83,7 +83,7 @@ namespace NusysIntermediate
             /// <summary>
             /// The key used to hold the base 64 string of the contents data bytes
             /// </summary>
-            public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES = "content_id_key";
+            public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES = "content_data_bytes_key";
 
             /// <summary>
             /// The key used to hold the string file extention required when creating audio, video, or image content (e.g .jpeg, .mp3, .mp4)
@@ -826,6 +826,16 @@ namespace NusysIntermediate
             return type == NusysConstants.ElementType.AudioRegion || type == NusysConstants.ElementType.ImageRegion || type == NusysConstants.ElementType.VideoRegion ||
                    type == NusysConstants.ElementType.PdfRegion;
         }
+
+        /// <summary>
+        /// returns a GUID string.  Should be used when creating ID's on the client or the server side.  
+        /// </summary>
+        /// <returns></returns>
+        public static string GenerateId()
+        {
+            return Guid.NewGuid().ToString("N");
+        }
+
         #endregion staticMethods
     }
 }

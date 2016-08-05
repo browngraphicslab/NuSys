@@ -18,7 +18,7 @@ namespace NusysServer
         /// <param name="selectedColumns"> The columns you wish to recieve</param>
         /// <param name="fromTable">The tables from which you want to select </param>
         /// <param name="conditionals">Optional. Checks for conditional</param>
-        public SQLSelectQuery(List<string> selectedColumns, ITableRepresentable fromTable, SqlSelectQueryConditional conditionals = null)
+        public SQLSelectQuery(IEnumerable<string> selectedColumns, ITableRepresentable fromTable, SqlSelectQueryConditional conditionals = null)
         {
             _fromTable = fromTable;
             _conditionals = CleanConditional(conditionals);
@@ -59,7 +59,7 @@ namespace NusysServer
         /// </summary>
         /// <param name="columnsToClean"></param>
         /// <returns></returns>
-        private IEnumerable<string> CleanColumns(List<string> columnsToClean)
+        private IEnumerable<string> CleanColumns(IEnumerable<string> columnsToClean)
         {
             IEnumerable<string> acceptedColumns = new HashSet<string>();
             foreach (var table in _fromTable.GetSqlTableNames())

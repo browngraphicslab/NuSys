@@ -76,6 +76,16 @@ namespace NusysServer
         }
 
         /// <summary>
+        /// Collection of all the column names in all of the tables
+        /// </summary>
+        public static readonly IEnumerable<string> SqlColumns =
+            GetFullColumnTitles(SQLTableType.Alias, GetAcceptedKeys(SQLTableType.Alias)).Concat(
+            GetFullColumnTitles(SQLTableType.LibraryElement, GetAcceptedKeys(SQLTableType.LibraryElement)).Concat(
+            GetFullColumnTitles(SQLTableType.Content, GetAcceptedKeys(SQLTableType.Content)).Concat(
+            GetFullColumnTitles(SQLTableType.Metadata, GetAcceptedKeys(SQLTableType.Metadata)).Concat(
+            GetFullColumnTitles(SQLTableType.Properties, GetAcceptedKeys(SQLTableType.Properties))))));
+
+        /// <summary>
         /// the address of the server so files can be stored in the database
         /// </summary>
         //public static readonly string SERVER_ADDRESS = Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/")
@@ -233,15 +243,10 @@ namespace NusysServer
             return new List<string>() {SQLConnector.GetTableName(tableType) + "." + columnName};
         }
 
-        /// <summary>
-        /// Collection of all the column names in all of the tables
-        /// </summary>
-        public static readonly IEnumerable<string> SqlColumns = 
-            GetFullColumnTitles(SQLTableType.Alias, GetAcceptedKeys(SQLTableType.Alias)).Concat(
-            GetFullColumnTitles(SQLTableType.LibraryElement, GetAcceptedKeys(SQLTableType.LibraryElement)).Concat(
-            GetFullColumnTitles(SQLTableType.Content, GetAcceptedKeys(SQLTableType.Content)).Concat(
-            GetFullColumnTitles(SQLTableType.Metadata, GetAcceptedKeys(SQLTableType.Metadata)).Concat(
-            GetFullColumnTitles(SQLTableType.Properties, GetAcceptedKeys(SQLTableType.Properties))))));
+        public static Message StripTableNames(Message properties)
+        {
+            return new Message(properties.ToDictionary(kvp => kvp.Key.Substring(kvp.Key.IndexOf(".") + 1), kvp => kvp.Value));
+        }
 
         #endregion StaticMethods
     }

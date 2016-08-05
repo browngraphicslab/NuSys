@@ -40,12 +40,13 @@ namespace NusysServer
                     Constants.GetAcceptedKeys(Constants.SQLTableType.Properties))));
             var query = new SQLSelectQuery(columnsToGet, aliasJoinLibraryElement);
 
-
+            query = new SQLSelectQuery(Constants.GetFullColumnTitles(Constants.SQLTableType.LibraryElement,NusysConstants.LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS.Keys),new SingleTable(Constants.SQLTableType.LibraryElement));
             var libraryElementModels = new List<string>();
             foreach (var m in query.ExecuteCommand())
             {
                 //add to library element models a json-serialzed version of a library element model from the factory
-                libraryElementModels.Add(JsonConvert.SerializeObject(LibraryElementModelFactory.CreateFromMessage(m)));
+                var strippedM = Constants.StripTableNames(m);
+                libraryElementModels.Add(JsonConvert.SerializeObject(LibraryElementModelFactory.CreateFromMessage(strippedM)));
             }
             var returnMessage = new Message();
             returnMessage[NusysConstants.GET_ALL_LIBRARY_ELEMENTS_REQUEST_RETURNED_LIBRARY_ELEMENT_MODELS_KEY] = libraryElementModels;

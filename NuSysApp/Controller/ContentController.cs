@@ -98,6 +98,10 @@ namespace NuSysApp
             {
                 _contents.TryAdd(model.LibraryElementId, model);
 
+                var controller = LibraryElementControllerFactory.CreateFromModel(model);
+                Debug.Assert(controller != null);
+                _contentControllers.TryAdd(model.LibraryElementId, controller);
+
                 AddModelToControllers(model);
 
                 OnNewContent?.Invoke(model);

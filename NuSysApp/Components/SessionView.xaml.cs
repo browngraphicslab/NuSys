@@ -142,7 +142,7 @@ namespace NuSysApp
             }
             
             var presentationLinks = await SessionController.Instance.NuSysNetworkSession.GetPresentationLinks(firstId);
-            foreach (var presentationlink in presentationLinks)
+            foreach (var presentationlink in presentationLinks ?? new HashSet<PresentationLinkModel>())
             {
                 Debug.Assert(presentationlink != null && presentationlink?.InElementId != null && presentationlink?.OutElementId != null);
 

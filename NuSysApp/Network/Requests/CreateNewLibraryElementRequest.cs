@@ -14,15 +14,23 @@ namespace NuSysApp
         {
         }
 
+        /// <summary>
+        /// pack the message here for creating a new library element. 
+        /// In readlity, this request should probably only be used for creating regions
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="data"></param>
+        /// <param name="type"></param>
+        /// <param name="title"></param>
         public CreateNewLibraryElementRequest(string id, string data, NusysConstants.ElementType type, string title = "")
             : base(NusysConstants.RequestType.CreateNewLibraryElementRequest)
         {
-            _message["id"] = id;
-            _message["data"] = data;
-            _message["type"] = type.ToString();
+            _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY] = id;
+            _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES] = data;
+            _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY] = type.ToString();
             if (title != null)
             {
-                _message["title"] = title;
+                _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = title;
             }
         }
         public override async Task CheckOutgoingRequest()

@@ -13,6 +13,7 @@ using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -149,7 +150,7 @@ namespace NuSysApp
         public string GenerateId()
         {
             //return _id++.ToString();
-            return Guid.NewGuid().ToString("N");
+            return NusysConstants.GenerateId();
         }
 
         public void SwitchMode(Options mode)

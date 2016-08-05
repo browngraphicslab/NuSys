@@ -52,8 +52,7 @@ namespace NusysServer
         private Message CreateAddContentToDatabaseMessage(Message originalMessage)
         {
             //try to get the type of content being added
-            var contentType = (NusysConstants.ContentType)Enum.Parse(typeof(NusysConstants.ContentType),
-                originalMessage.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY), true);
+            var contentType = (NusysConstants.ContentType)Enum.Parse(typeof(NusysConstants.ContentType),originalMessage.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY), true);
             Message addContentToDatabaseMessage = new Message();
 
             //depending on type of content, create new URL, or create new file in the server

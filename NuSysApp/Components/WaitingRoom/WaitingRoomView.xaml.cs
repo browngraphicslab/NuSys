@@ -75,7 +75,7 @@ namespace NuSysApp
             ServerNameText.TextChanged += delegate
             {
                 ServerName = ServerNameText.Text;
-                Init();
+                //Init();
             };
 
             //Init();
@@ -92,20 +92,25 @@ namespace NuSysApp
 
         private async void Init()
         {
-            Keyword k = new Keyword("test");
             List?.Items?.Clear();
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             try
             {
-                var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/getworkspace";
-                HttpClient client = new HttpClient();
-                var response = await client.GetAsync(new Uri(url));
-                string data;
-                using (var content = response.Content)
+                var libraryElements = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
+                foreach (var libraryElement in libraryElements)
                 {
-                    data = await content.ReadAsStringAsync();
+                    if (SessionController.Instance.ContentController.GetLibraryElementModel(libraryElement.LibraryElementId) == null)
+                    {
+                        SessionController.Instance.ContentController.Add(libraryElement);
+                    }
+                    if (libraryElement.Type == NusysConstants.ElementType.Collection)
+                    {
+                        var box = new CollectionTextBox(libraryElement.Title, libraryElement.LibraryElementId);
+                        List.Items.Add(box);
+                    }
                 }
-                var list = JsonConvert.DeserializeObject<List<string>>(data);
+
+                /*
                 list.Sort();
                 List?.Items?.Clear();
                 var ii = new List<CollectionTextBox>();
@@ -130,7 +135,10 @@ namespace NuSysApp
                     ii.Add(box);
                     _preloadedIDs.Add(box.ID);
                 }
+                */
 
+                var ii = new List<CollectionTextBox>(List.Items.Select(item => item as CollectionTextBox));
+                List?.Items?.Clear();
                 ii.Sort((a, b) => a.Text.CompareTo(b.Text));
                 foreach (var i in ii)
                 {
@@ -155,7 +163,10 @@ namespace NuSysApp
         private async void NewWorkspaceOnClick(object sender, RoutedEventArgs e)
         {
             var name = NewWorkspaceName.Text;
-            var request = new CreateNewLibraryElementRequest(SessionController.Instance.GenerateId(), null, NusysConstants.ElementType.Collection, name);
+            var props = new Message();
+            props[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY] = NusysConstants.ElementType.Collection;
+            props[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = name;
+            var request = new CreateNewContentRequest(NusysConstants.ContentType.Text, null, props);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
             await Task.Delay(1000);
             Init();
@@ -178,12 +189,6 @@ namespace NuSysApp
                 InitialWorkspaceId = id;
                 this.Frame.Navigate(typeof(SessionView));
                 
-            }
-            if (true)
-            {
-                var request = new GetContentDataModelRequest("test_id");
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                var model = request.GetReturnedContentDataModel();
             }
         }
 
@@ -372,6 +377,11 @@ namespace NuSysApp
                                 try
                                 {
                                     SessionController.Instance.ContentController.Add(model);
+                                    await UITask.Run(delegate
+                                    {
+                                        List.Items.Add(new CollectionTextBox(model.Title,
+                                            model.LibraryElementId));
+                                    });
                                 }
                                 catch (NullReferenceException e)
                                 {
@@ -422,9 +432,7 @@ namespace NuSysApp
             {
                 UITask.Run(delegate
                 {
-                    var box = new CollectionTextBox();
-                    box.ID = element.LibraryElementId;
-                    box.Text = element.Title ?? "";
+                    var box = new CollectionTextBox(element.Title ?? "", element.LibraryElementId);
                     List.Items.Add(box);
                 });
                 _preloadedIDs.Add(element.LibraryElementId);
@@ -454,10 +462,12 @@ namespace NuSysApp
             public string ID { set; get; }
             public bool MadeByRosemary = false;
 
-            public CollectionTextBox() : base()
+            public CollectionTextBox(string text, string Id) : base()
             {
+                Id = ID;
                 IsEnabled = false;
                 Background = new SolidColorBrush(Colors.Transparent);
+                base.Text = text;
             }
         }
     }

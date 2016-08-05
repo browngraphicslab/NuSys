@@ -68,7 +68,8 @@ namespace NusysServer
                 case NusysConstants.ContentType.Text:
                     var extension = contentType == NusysConstants.ContentType.PDF ? Constants.PDF_DATA_FILE_FILE_EXTENSION : Constants.TEXT_DATA_FILE_FILE_EXTENSION;
                     filePath = contentDataModelId + extension;
-                    File.Create(Constants.FILE_FOLDER + filePath);
+                    var stream = File.Create(Constants.FILE_FOLDER + filePath);
+                    stream.Dispose();
                     File.WriteAllText(Constants.FILE_FOLDER + filePath, contentData);
                     break;
             }
