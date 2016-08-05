@@ -2,6 +2,11 @@
 {
     public enum LinkDirectionEnum
     {
-        Mono1, Mono2, Bi
+        //switching to a monodirectional link
+        Mono1,
+        //swapping the direction of the monodirectional link
+        Mono2,
+        //going back to a bidirectional link
+        Bi
     }
 }

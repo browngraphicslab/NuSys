@@ -11,6 +11,7 @@ namespace NuSysApp
 {
     public class LinkLibraryElementController : LibraryElementController
     {
+        //raised when a link's direction is changed
         public event EventHandler<LinkDirectionEnum> LinkDirectionChanged;
         public LinkLibraryElementModel LinkLibraryElementModel { get; private set; }
         public LinkLibraryElementController(LinkLibraryElementModel model) : base(model)
@@ -54,12 +55,12 @@ namespace NuSysApp
             {
                 //enum somehow gets turned into index of the enum
                 long enumIndex = message.GetLong("LinkDirectionEnum");
-                //first mono
+                //switch to mono directional link
                 if (enumIndex == 0)
                 {
                     LinkLibraryElementModel.LinkedDirection = LinkDirectionEnum.Mono1;
                 }
-                //second mono
+                //swap direction
                 else if (enumIndex == 1)
                 {
                     LinkLibraryElementModel.LinkedDirection = LinkDirectionEnum.Mono2;

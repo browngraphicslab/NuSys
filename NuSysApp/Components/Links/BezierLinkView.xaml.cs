@@ -54,6 +54,11 @@ namespace NuSysApp
 
         }
 
+        /// <summary>
+        /// Handler for LinkLibraryElementController's LinkDirectionChanged event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void OnLinkDirectionChanged(object sender, LinkDirectionEnum e)
         {
             if (e.Equals(LinkDirectionEnum.Mono1))
@@ -64,6 +69,7 @@ namespace NuSysApp
             else if (e.Equals(LinkDirectionEnum.Mono2))
             {
                 image.Source = new BitmapImage(new Uri("ms-appx:///Assets/bi1.png"));
+                arrow.Visibility = Visibility.Visible;
             }
             else
             {
