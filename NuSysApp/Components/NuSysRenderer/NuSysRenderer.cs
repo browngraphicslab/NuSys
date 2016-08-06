@@ -115,7 +115,7 @@ namespace NuSysApp
             var elementRenderItem = element as ElementRenderItem;
             
             var vm = ActiveCollection.ViewModel;
-            if (elementRenderItem == ActiveCollection)
+            if (elementRenderItem == ActiveCollection || elementRenderItem == null)
             {
                 vm.ClearSelection();
             }

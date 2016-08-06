@@ -57,6 +57,8 @@ namespace NuSysApp
         private Stopwatch _firstPointerStopWatch = new Stopwatch();
         private CollectionRenderItem _collection;
 
+        private Matrix3x2 _transform = Matrix3x2.Identity;
+
         public CollectionInteractionManager(CollectionRenderItem collection)
         {
             _collection = collection;
@@ -108,6 +110,8 @@ namespace NuSysApp
 
             var p = e.GetCurrentPoint(null).Position;
             PointerPoints.Add(e.Pointer.PointerId, new Vector2((float) p.X, (float) p.Y));
+            var until = NuSysRenderer.Instance.GetTransformUntil(_collection);
+            _transform = Win2dUtil.Invert(_collection.C)*_collection.S*_collection.C*_collection.T *  until;
             if (PointerPoints.Count >= 2)
             {
                 UpdateCenterPoint();
@@ -218,6 +222,7 @@ namespace NuSysApp
                 UpdateDist();
                 var dx = _centerPoint.X - prevCenterPoint.X;
                 var dy = _centerPoint.Y - prevCenterPoint.Y;
+
                 var ds = (float) (_twoFingerDist/prevDist);
 
 
@@ -248,7 +253,7 @@ namespace NuSysApp
                         }
 
 
-                        PanZoom(t, newCenter, dx, dy, ds);
+                        PanZoom(t, _transform, newCenter, dx, dy, ds);
 
                         elem.Controller.SetSize(t.Size.Width*t.S.M11, t.Size.Height*t.S.M22);
                         var dtx = (float)(t.Size.Width*t.S.M11 - t.Size.Width)/2f;
@@ -270,7 +275,7 @@ namespace NuSysApp
                 else
                 {
                   //  Debug.WriteLine(_collection.ViewModel.Title);
-                    PanZoom(_collection.Camera, _centerPoint, dx, dy, ds);
+                    PanZoom(_collection.Camera, _transform, _centerPoint, dx, dy, ds);
                 }
             }
             else if (PointerPoints.Count == 1)
@@ -280,9 +285,11 @@ namespace NuSysApp
                     var currPos = args.GetCurrentPoint(null).Position;
                     var deltaX = (float) (currPos.X - _centerPoint.X);
                     var deltaY = (float) (currPos.Y - _centerPoint.Y);
+                    deltaX /= _transform.M11;
+                    deltaY /= _transform.M22;
                     _distanceTraveled += Math.Abs(deltaX) + Math.Abs(deltaY);
                     _centerPoint = new Vector2((float) currPos.X, (float) currPos.Y);
-                    PanZoom(_collection.Camera, _centerPoint, deltaX, deltaY, 1);
+                    PanZoom(_collection.Camera, _transform, _centerPoint, deltaX, deltaY, 1);
                 }
                 else
                 {
@@ -317,15 +324,16 @@ namespace NuSysApp
             }
         }
 
-        protected void PanZoom(I2dTransformable target, Vector2 centerPoint, float dx, float dy, float ds)
+        protected void PanZoom(I2dTransformable target, Matrix3x2 transform, Vector2 centerPoint, float dx, float dy, float ds)
         {
            // Debug.WriteLine(_collection.ViewModel.Title);
   
-            Matrix3x2 cInv;
-            Matrix3x2.Invert(target.C, out cInv);
+            var cInv = Win2dUtil.Invert(target.C);
 
-            Matrix3x2 inverse;
-            Matrix3x2.Invert(cInv*target.S*target.C*target.T, out inverse);
+          //  Matrix3x2 inverse;
+          //  Matrix3x2.Invert(, out inverse);
+
+            var inverse = Win2dUtil.Invert(cInv * target.S * target.C * target.T * transform);
 
             var center = Vector2.Transform(new Vector2(centerPoint.X, centerPoint.Y), inverse);
 
@@ -342,7 +350,9 @@ namespace NuSysApp
             localPoint.Y *= target.S.M22;
 
             //Transform local space into world space again
+            var worldPoint0 = Vector2.Transform(localPoint, tmpTranslate);
             var worldPoint = Vector2.Transform(localPoint, tmpTranslate);
+
 
             //Take the actual scaling...
             var distance = new Vector2(worldPoint.X - center.X, worldPoint.Y - center.Y);

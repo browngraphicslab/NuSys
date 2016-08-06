@@ -41,7 +41,8 @@ namespace NuSysApp
             (vm.Controller as ElementCollectionController).CameraPositionChanged += OnCameraPositionChanged;
             (vm.Controller as ElementCollectionController).CameraCenterChanged += OnCameraCenterChanged;
 
-            T = Matrix3x2.CreateTranslation((float)vm.X, (float)vm.Y);
+            if (!interactionEnabled)
+                T = Matrix3x2.CreateTranslation((float)vm.X, (float)vm.Y);
 
             Camera.T = Matrix3x2.CreateTranslation(vm.CameraTranslation);
             Camera.C = Matrix3x2.CreateTranslation(vm.CamertaCenter);
