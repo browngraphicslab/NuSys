@@ -247,7 +247,7 @@ namespace NusysIntermediate
             /// 32 character string, aka an ID. 
             /// the library element ID that this alias points to
             /// </summary>
-            public static readonly string ALIAS_LIBRARY_ID_KEY = "library_id";
+            public static readonly string ALIAS_LIBRARY_ID_KEY = "alias_library_id";
 
             /// <summary>
             /// double, the x coordinate of this alias
@@ -285,7 +285,7 @@ namespace NusysIntermediate
         /// 32 character string  
         /// Represents the level of access.
         /// </summary>
-        public static readonly string ALIAS_ACCESS_KEY = "access";
+        public static readonly string ALIAS_ACCESS_KEY = "alias_access";
 
         /// <summary>
         /// the dictionary from keys that are accepted and put into the Alias table to their type. 
@@ -323,7 +323,7 @@ namespace NusysIntermediate
             /// 32 character string, aka an ID.  
             /// the content that this library element points to
             /// </summary>
-            public static readonly string LIBRARY_ELEMENT_CONTENT_ID_KEY = "content_id";
+            public static readonly string LIBRARY_ELEMENT_CONTENT_ID_KEY = "library_element_content_id";
 
             /// <summary>
             /// string that represents the json-stringified dictionary of keywords
