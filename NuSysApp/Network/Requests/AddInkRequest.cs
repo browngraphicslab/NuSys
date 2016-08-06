@@ -60,7 +60,7 @@ namespace NuSysApp
                     if (!InkStorage._inkStrokes.ContainsKey("id") && SessionController.Instance.SessionView != null)
                     {
                         var stroke = SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddAdorment(inkpoints, color, false);
-                        NuSysRenderer.Instance.ActiveCollection.AddAdornment(stroke);
+                        NuSysRenderer.Instance.InitialCollection.AddAdornment(stroke);
                         InkStorage._inkStrokes.Add(id, new InkWrapper(stroke, "adornment", color));
                     }
                 }
@@ -70,7 +70,7 @@ namespace NuSysApp
                     if (!InkStorage._inkStrokes.ContainsKey("id") && SessionController.Instance.SessionView != null)
                     {
                         var stroke = SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddStroke(inkpoints);
-                        NuSysRenderer.Instance.ActiveCollection.AddStroke(stroke);
+                        NuSysRenderer.Instance.InitialCollection.AddStroke(stroke);
                         InkStorage._inkStrokes.Add(id, new InkWrapper(stroke, "ink", color));
                     }
                 }

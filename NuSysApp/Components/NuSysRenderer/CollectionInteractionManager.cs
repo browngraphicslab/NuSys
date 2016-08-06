@@ -9,6 +9,7 @@ using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Xaml.Input;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using SharpDX.Direct2D1;
 
 namespace NuSysApp
 {
@@ -33,7 +34,7 @@ namespace NuSysApp
     {
         public delegate void RenderItemSelectedHandler(BaseRenderItem element, PointerDeviceType device);
         public event RenderItemSelectedHandler ItemTapped;
-        public event RenderItemSelectedHandler ItemLongPressed;
+        public event RenderItemSelectedHandler ItemLongTapped;
 
         private enum Mode
         {
@@ -147,6 +148,14 @@ namespace NuSysApp
         {
             _stopwatch.Stop();
 
+            if (_selectedRenderItem is CollectionRenderItem)
+            {
+                var coll = (CollectionRenderItem) _selectedRenderItem;
+                coll.ViewModel.CameraTranslation = new Vector2(coll.Camera.T.M31, coll.Camera.T.M32);
+                coll.ViewModel.CamertaCenter = new Vector2(coll.Camera.C.M31, coll.Camera.C.M32);
+                coll.ViewModel.CameraScale = coll.Camera.S.M11;
+            }
+
             if (PointerPoints.ContainsKey(e.Pointer.PointerId))
                 PointerPoints.Remove(e.Pointer.PointerId);           
 
@@ -172,7 +181,7 @@ namespace NuSysApp
                  _firstPointerStopWatch.Stop();
 
                 if (_collection.ViewModel.Selections.Count == 0)
-                _transformables.Clear();
+                    _transformables.Clear();
 
                 var dt = (DateTime.Now - _lastReleased).TotalMilliseconds;
                 if (dt < 200)
@@ -194,7 +203,7 @@ namespace NuSysApp
                     else if (_firstPointerStopWatch.ElapsedMilliseconds > 250)
                     {
                         Debug.WriteLine("PressHoldRelease");
-                        ItemLongPressed?.Invoke(_selectedRenderItem, e.Pointer.PointerDeviceType);
+                        ItemLongTapped?.Invoke(_selectedRenderItem, e.Pointer.PointerDeviceType);
                     }
                 }
 
@@ -232,7 +241,7 @@ namespace NuSysApp
                     {
                         var elem = (ElementViewModel) selection;
                         var imgCenter = new Vector2((float) (elem.X + elem.Width/2), (float) (elem.Y + elem.Height/2));
-                        var newCenter = NuSysRenderer.Instance.ActiveCollection.ObjectPointToScreenPoint(imgCenter);
+                        var newCenter = NuSysRenderer.Instance.InitialCollection.ObjectPointToScreenPoint(imgCenter);
 
                         Transformable t;
                         if (_transformables.ContainsKey(elem))
@@ -261,14 +270,22 @@ namespace NuSysApp
                         var nx = t.Position.X - dtx;
                         var ny = t.Position.Y - dty;
                         elem.Controller.SetPosition(nx, ny);
+
                         if (elem is ElementCollectionViewModel)
                         {
                             var elemc = elem as ElementCollectionViewModel;
-                            var ct = t.CameraTranslation;
-                            var cc = t.CameraCenter;
+                            var ct = Matrix3x2.CreateTranslation(t.CameraTranslation);
+                            var cc = Matrix3x2.CreateTranslation(t.CameraCenter);
+                            var cs = Matrix3x2.CreateScale(t.CameraScale);
+
+                            var et = Matrix3x2.CreateTranslation(new Vector2((float)elem.X, (float)elem.Y));
+
+                            var tran = Win2dUtil.Invert(cc)*cs*cc*ct*et ;
+                            var tranInv = Win2dUtil.Invert(tran);
+                            
                             var controller = elemc.Controller as ElementCollectionController;
-                            controller.SetCameraPosition(ct.X + dtx, ct.Y + dty);
-                            controller.SetCameraCenter(cc.X - dtx, cc.Y - dty);
+                            controller.SetCameraPosition(ct.M31 + dtx * tranInv.M11, ct.M32 + dty * tranInv.M22);
+                            controller.SetCameraCenter(cc.M31 - dtx * tranInv.M11, cc.M32 - dty * tranInv.M22);
                         }
                     }
                 }
@@ -303,8 +320,8 @@ namespace NuSysApp
                     if (elem == _collection || elem == null)
                         return;
 
-                    var newX = elem.ViewModel.X + deltaX/NuSysRenderer.Instance.ActiveCollection.Camera.S.M11;
-                    var newY = elem.ViewModel.Y + deltaY/NuSysRenderer.Instance.ActiveCollection.Camera.S.M22;
+                    var newX = elem.ViewModel.X + deltaX / (_transform.M11 * _collection.S.M11 * _collection.Camera.S.M11);
+                    var newY = elem.ViewModel.Y + deltaY / (_transform.M22 * _collection.S.M11 * _collection.Camera.S.M11);
 
                     if (!_collection.ViewModel.Selections.Contains(elem.ViewModel))
                     {
@@ -315,8 +332,8 @@ namespace NuSysApp
                         foreach (var selectable in _collection.ViewModel.Selections)
                         {
                             var e = (ElementViewModel) selectable;
-                            var newXe = e.X + deltaX/NuSysRenderer.Instance.ActiveCollection.Camera.S.M11;
-                            var newYe = e.Y + deltaY/NuSysRenderer.Instance.ActiveCollection.Camera.S.M11;
+                            var newXe = e.X + deltaX/ _transform.M11;
+                            var newYe = e.Y + deltaY/ _transform.M22;
                             e.Controller.SetPosition(newXe, newYe);
                         }
                     }
@@ -350,7 +367,6 @@ namespace NuSysApp
             localPoint.Y *= target.S.M22;
 
             //Transform local space into world space again
-            var worldPoint0 = Vector2.Transform(localPoint, tmpTranslate);
             var worldPoint = Vector2.Transform(localPoint, tmpTranslate);
 
 

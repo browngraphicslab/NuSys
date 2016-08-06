@@ -209,7 +209,7 @@ namespace NuSysApp
                     {
                         var elem = (ElementViewModel) selection;
                         var imgCenter = new Vector2((float) (elem.X + elem.Width/2), (float) (elem.Y + elem.Height/2));
-                        var newCenter = NuSysRenderer.Instance.ActiveCollection.ObjectPointToScreenPoint(imgCenter);
+                        var newCenter = NuSysRenderer.Instance.InitialCollection.ObjectPointToScreenPoint(imgCenter);
 
                         Transformable t;
                         if (_transformables.ContainsKey(elem))
@@ -236,7 +236,7 @@ namespace NuSysApp
                 }
                 else
                 {
-                   PanZoom(NuSysRenderer.Instance.ActiveCollection, CenterPoint, dx, dy, ds);
+                   PanZoom(NuSysRenderer.Instance.InitialCollection, CenterPoint, dx, dy, ds);
                 }
 
             } else if (PointerPoints.Count == 1)
@@ -247,7 +247,7 @@ namespace NuSysApp
                     var deltaX = (float)(currPos.X - CenterPoint.X);
                     var deltaY = (float)(currPos.Y - CenterPoint.Y);
                     CenterPoint = new Vector2((float)currPos.X, (float)currPos.Y);
-                    PanZoom(NuSysRenderer.Instance.ActiveCollection, CenterPoint, deltaX, deltaY, 1);
+                    PanZoom(NuSysRenderer.Instance.InitialCollection, CenterPoint, deltaX, deltaY, 1);
                 }
                 else
                 {
@@ -263,8 +263,8 @@ namespace NuSysApp
 
                     var vm = (FreeFormViewerViewModel)_view.DataContext;
 
-                    var newX = elem.ViewModel.X + deltaX / NuSysRenderer.Instance.ActiveCollection.S.M11;
-                    var newY = elem.ViewModel.Y + deltaY / NuSysRenderer.Instance.ActiveCollection.S.M22;
+                    var newX = elem.ViewModel.X + deltaX / NuSysRenderer.Instance.InitialCollection.S.M11;
+                    var newY = elem.ViewModel.Y + deltaY / NuSysRenderer.Instance.InitialCollection.S.M22;
 
                     if (!vm.Selections.Contains(elem.ViewModel))
                     {
@@ -275,8 +275,8 @@ namespace NuSysApp
                         foreach (var selectable in vm.Selections)
                         {
                             var e = (ElementViewModel) selectable;
-                            var newXe = e.X + deltaX/NuSysRenderer.Instance.ActiveCollection.S.M11;
-                            var newYe = e.Y + deltaY / NuSysRenderer.Instance.ActiveCollection.S.M11;
+                            var newXe = e.X + deltaX/NuSysRenderer.Instance.InitialCollection.S.M11;
+                            var newYe = e.Y + deltaY / NuSysRenderer.Instance.InitialCollection.S.M11;
                             e.Controller.SetPosition(newXe, newYe);
                         }
                     }
@@ -287,7 +287,7 @@ namespace NuSysApp
         protected void PanZoom(I2dTransformable target, Vector2 centerPoint, float dx, float dy, float ds)
         {
             if (target == null)
-                target = NuSysRenderer.Instance.ActiveCollection;
+                target = NuSysRenderer.Instance.InitialCollection;
 
             //Debug.WriteLine(centerPoint);
             //Debug.WriteLine(ds);

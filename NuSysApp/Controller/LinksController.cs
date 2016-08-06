@@ -310,14 +310,14 @@ namespace NuSysApp
                 {
                     UITask.Run(async delegate
                     {
-                        NuSysRenderer.Instance.ActiveCollection.AddLink(vm);
+                        NuSysRenderer.Instance.InitialCollection.AddLink(vm);
                         collectionViewModel.Links.Add(vm);
                         //collectionViewModel.AtomViewList.Add(view);
                     });
                 }
                 else if (SessionController.Instance.ActiveFreeFormViewer.ContentId == oneParentCollectionId)
                 {
-                    NuSysRenderer.Instance.ActiveCollection.AddLink(vm);
+                    NuSysRenderer.Instance.InitialCollection.AddLink(vm);
                     SessionController.Instance.ActiveFreeFormViewer.Links.Add(vm);
                 }
                 //TODO Change ElementCollectionViewModel child added and removed code to take link controllers or element controllers

@@ -114,8 +114,8 @@ namespace NuSysApp
             {
                 var nr = NuSysRenderer.Instance;
                 var screenRect = new Rect(0, 0, nr.Size.Width, nr.Size.Height);
-                var tl = nr.ActiveCollection.ScreenPointToObjectPoint(new Vector2((float)screenRect.X, (float)screenRect.Y));
-                var tr = nr.ActiveCollection.ScreenPointToObjectPoint(new Vector2((float)screenRect.X + (float)screenRect.Width, (float)screenRect.Y + (float)screenRect.Height));
+                var tl = nr.InitialCollection.ScreenPointToObjectPoint(new Vector2((float)screenRect.X, (float)screenRect.Y));
+                var tr = nr.InitialCollection.ScreenPointToObjectPoint(new Vector2((float)screenRect.X + (float)screenRect.Width, (float)screenRect.Y + (float)screenRect.Height));
 
                 var rects = _collection.Elements.Select(vm => new Rect(vm.X, vm.Y, vm.Width, vm.Height)).ToList();
                 rects.Add(new Rect(tl.X, tl.Y, tr.X - tl.X, tr.Y - tl.Y));

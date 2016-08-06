@@ -78,7 +78,7 @@ namespace NuSysApp
                     var x = InkStorage._inkStrokes[id];
                     if (x.Type == "ink")
                     {
-                        NuSysRenderer.Instance.ActiveCollection.AddStroke(x.Stroke);
+                        NuSysRenderer.Instance.InitialCollection.AddStroke(x.Stroke);
                         //  _inqCanvas.AddStroke(x.Stroke);
                         //   _inqCanvas.Redraw();
                     }
