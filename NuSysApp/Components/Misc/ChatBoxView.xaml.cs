@@ -60,12 +60,14 @@ namespace NuSysApp
                                 SessionController.Instance.LocalUserID], text);
                     SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
                 }
+                if (!SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(SessionController.Instance.LocalUserID))
+                {
+                    throw new Exception("user is not in NetworkMembers");
+                }
             }
             //if it gets handled, for whatever reason, you can't type in the chatbox
             //e.Handled = true;
         }
-
-
 
         private ScrollViewer GetScrollViewer(DependencyObject element)
         {
@@ -205,10 +207,11 @@ namespace NuSysApp
             }
         }
 
-
-
-
-
+        /// <summary>
+        /// Adds a new message to the bottom of the chatbox
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="message"></param>
         public void AppendText(NetworkUser user, string message)
         {
             var vm = DataContext as ChatBoxViewModel;

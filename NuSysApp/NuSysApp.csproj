@@ -277,6 +277,7 @@
     <Compile Include="Components\Links\LinkCircle.xaml.cs">
       <DependentUpon>LinkCircle.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Links\LinkDirectionEnum.cs" />
     <Compile Include="Components\Links\PresentationLinkView.xaml.cs">
       <DependentUpon>PresentationLinkView.xaml</DependentUpon>
     </Compile>

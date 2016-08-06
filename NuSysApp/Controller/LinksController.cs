@@ -102,9 +102,20 @@ namespace NuSysApp
                     continue;
                 }
                 var linkables = GetInstancesOfContent(libraryElementController.ContentId);
-                foreach (var link in linkables)
+                foreach (var toLinkTo in linkables)
                 {
-                    CreateBezierLinkBetween(linkable, link);
+                    var linkLibElemController = GetLinkLibraryElementControllerBetweenLinkables(linkable, toLinkTo);
+                    Debug.Assert(linkLibElemController != null);
+                    Debug.Assert(linkable.Id != toLinkTo.Id);
+
+                    if (linkLibElemController.LinkLibraryElementModel.InAtomId.Equals(linkable.ContentId))
+                    {
+                        CreateBezierLinkBetween(linkable, toLinkTo);
+                    }
+                    else
+                    {
+                        CreateBezierLinkBetween(toLinkTo, linkable);
+                    }
                 }
             }
         }
@@ -299,7 +310,19 @@ namespace NuSysApp
             {
                 var vm = new LinkViewModel(controller);
                 var allContent = SessionController.Instance.ActiveFreeFormViewer.AllContent;
-                var view = new BezierLinkView(vm);
+
+                var linkEnum = linkLibElemController.LinkLibraryElementModel.LinkedDirection;
+                BezierLinkView view = null;
+                //if the link should be drawn monodirectionally
+                if (linkEnum.Equals(LinkDirectionEnum.Mono1) || linkEnum.Equals(LinkDirectionEnum.Mono2))
+                {
+                    view = new BezierLinkView(vm, false);
+                }
+                //if the link should be drawn bidirectionally
+                else
+                {
+                    view = new BezierLinkView(vm, true);
+                }
                 var collectionViewModel =
                     allContent.FirstOrDefault(item => ((item as GroupNodeViewModel)?.ContentId == oneParentCollectionId)) as GroupNodeViewModel;
                 if (collectionViewModel != null)
