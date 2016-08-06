@@ -321,7 +321,7 @@ namespace NuSysApp
                         return;
 
                     var newX = elem.ViewModel.X + deltaX / (_transform.M11 * _collection.S.M11 * _collection.Camera.S.M11);
-                    var newY = elem.ViewModel.Y + deltaY / (_transform.M22 * _collection.S.M11 * _collection.Camera.S.M11);
+                    var newY = elem.ViewModel.Y + deltaY / (_transform.M22 * _collection.S.M22 * _collection.Camera.S.M22);
 
                     if (!_collection.ViewModel.Selections.Contains(elem.ViewModel))
                     {
@@ -332,8 +332,8 @@ namespace NuSysApp
                         foreach (var selectable in _collection.ViewModel.Selections)
                         {
                             var e = (ElementViewModel) selectable;
-                            var newXe = e.X + deltaX/ _transform.M11;
-                            var newYe = e.Y + deltaY/ _transform.M22;
+                            var newXe = e.X + deltaX/ (_transform.M11 * _collection.S.M11 * _collection.Camera.S.M11);
+                            var newYe = e.Y + deltaY/ (_transform.M11 * _collection.S.M11 * _collection.Camera.S.M11);
                             e.Controller.SetPosition(newXe, newYe);
                         }
                     }

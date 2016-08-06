@@ -44,7 +44,7 @@ namespace NuSysApp
         public Size Size { get; set; }
 
 
-        private ElementSelectionRenderItem _elementSelectionRenderItem;
+      //  private ElementSelectionRenderItem _elementSelectionRenderItem;
 
         public CollectionRenderItem InitialCollection { get; private set; }
 
@@ -87,7 +87,7 @@ namespace NuSysApp
             vm.Y = 0;
             vm.Width = Size.Width;
             vm.Height = Size.Height;
-            _elementSelectionRenderItem = new ElementSelectionRenderItem(vm, InitialCollection, _canvas);
+           // _elementSelectionRenderItem = new ElementSelectionRenderItem(vm, InitialCollection, _canvas);
      
             _minimap = new MinimapRenderItem(vm, InitialCollection, canvas);
         }
@@ -242,7 +242,7 @@ namespace NuSysApp
             InitialCollection.Update();
             _minimap.IsDirty = true;
             _minimap.Update();
-            _elementSelectionRenderItem.Update();
+           // _elementSelectionRenderItem.Update();
         }
 
         private void CanvasOnDraw(ICanvasAnimatedControl sender, CanvasAnimatedDrawEventArgs args)
@@ -253,7 +253,7 @@ namespace NuSysApp
                 InitialCollection.Draw(ds);
                 ds.Transform = Matrix3x2.Identity;
                 _minimap.Draw(ds);
-                _elementSelectionRenderItem.Draw(ds);
+          //      _elementSelectionRenderItem.Draw(ds);
             }
         }
 
