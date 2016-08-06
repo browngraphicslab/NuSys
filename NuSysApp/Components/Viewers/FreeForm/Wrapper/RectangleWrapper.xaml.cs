@@ -98,6 +98,14 @@ namespace NuSysApp
             {
                 return;
             }
+            ApplyTransforms();
+
+        }
+        /// <summary>
+        /// This method transforms the wrapper so that it fits the outer lying container(node/detail view)
+        /// </summary>
+        public void ApplyTransforms()
+        {
             var type = Controller.LibraryElementModel.Type;
             var contentView = xClippingContent;
             Debug.Assert(contentView != null);
@@ -113,9 +121,9 @@ namespace NuSysApp
                 var topLeftY = regionModel.TopLeftPoint.Y * contentView.ActualHeight;
                 var rectWidth = regionModel.Width * contentView.ActualWidth;
                 var rectHeight = regionModel.Height * contentView.ActualHeight;
-                
-                var rect = new Rect(topLeftX, topLeftY, rectWidth, rectHeight); 
-                
+
+                var rect = new Rect(topLeftX, topLeftY, rectWidth, rectHeight);
+
                 xClippingRectangle.Rect = rect;
                 //This section onwards is for resizing 
 
@@ -125,7 +133,8 @@ namespace NuSysApp
                 var lesserScale = scaleX < scaleY ? scaleX : scaleY;
                 // shifts the clipped rectangle so its upper left corner is in the upper left corner of the node
                 var compositeTransform = WrapperTransform;
-                if (DataContext is DetailHomeTabViewModel) {
+                if (DataContext is DetailHomeTabViewModel)
+                {
                     var regionHalfWidth = regionModel.Width * xClippingContent.ActualWidth / 2.0;
                     var regionHalfHeight = regionModel.Height * xClippingContent.ActualHeight / 2.0;
 
@@ -156,8 +165,8 @@ namespace NuSysApp
                     compositeTransform.TranslateY = -regionModel.TopLeftPoint.Y * xClippingContent.ActualHeight * scaleY;
                     compositeTransform.ScaleX = scaleX;
                     compositeTransform.ScaleY = scaleY;
-//                    compositeTransform.CenterX = regionModel.TopLeftPoint.X * xClippingContent.ActualWidth * scaleX;
-//                    compositeTransform.CenterY = regionModel.TopLeftPoint.Y * xClippingContent.ActualHeight * scaleY;
+                    //                    compositeTransform.CenterX = regionModel.TopLeftPoint.X * xClippingContent.ActualWidth * scaleX;
+                    //                    compositeTransform.CenterY = regionModel.TopLeftPoint.Y * xClippingContent.ActualHeight * scaleY;
                 }
                 WrapperTransform = compositeTransform;
 
@@ -174,7 +183,7 @@ namespace NuSysApp
                             break;
                         case ElementType.PdfRegion:
                             region = item as PDFRegionView;
-                            (region as PDFRegionView).RescaleComponents(WrapperTransform.ScaleX,WrapperTransform.ScaleY);
+                            (region as PDFRegionView).RescaleComponents(WrapperTransform.ScaleX, WrapperTransform.ScaleY);
                             break;
                         default:
                             break;
@@ -200,7 +209,10 @@ namespace NuSysApp
 
             if (Constants.IsRegionType(type))
             {
-                // rectangle region width and height are normalized so this is something like scaleX = 1 / .5
+                // This adds the handlers to update the size and the position of the region when it changes
+                var regionController = Controller as RectangleRegionLibraryElementController;
+                regionController.LocationChanged += RegionController_LocationChanged;
+                regionController.SizeChanged += RegionController_SizeChanged;
             }
 
             // clear the items control
@@ -226,6 +238,37 @@ namespace NuSysApp
             var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(Controller.LibraryElementModel.ContentDataModelId);
             contentDataModel.OnRegionAdded += AddRegionView;
             contentDataModel.OnRegionRemoved += RemoveRegionView;
+
+        }
+
+        private void RegionController_SizeChanged(object sender, double width, double height)
+        {
+            var tempRect = xClippingRectangle.Rect;
+            tempRect.Width = Content.ActualWidth * width;
+            tempRect.Height = Content.ActualHeight * height;
+            xClippingRectangle.Rect = tempRect;
+            if (DataContext is ElementViewModel)
+            {
+                var vm = DataContext as ElementViewModel;
+                if(vm.Width > vm.Height)
+                {
+                    vm.Controller.SetSize(vm.Height/vm.GetRatio(), vm.Height);
+                }
+                else
+                {
+                    vm.Controller.SetSize(vm.Width, vm.Width*vm.GetRatio());
+                }
+            }
+            ApplyTransforms();
+        }
+
+        private void RegionController_LocationChanged(object sender, Point topLeft)
+        {
+            var tempRect = xClippingRectangle.Rect;
+            tempRect.X = topLeft.X * this.ActualWidth;
+            tempRect.Y = topLeft.Y * this.ActualHeight;
+            xClippingRectangle.Rect = tempRect;
+            ApplyTransforms();
 
         }
 
@@ -357,11 +400,11 @@ namespace NuSysApp
                     var regionVM = (item as FrameworkElement).DataContext as RegionViewModel;
                     Debug.Assert(regionVM != null);
 
-                    regionVM.Dispose(null, EventArgs.Empty);
 
                     if (regionVM.Model.LibraryElementId == regionLibraryElementId)
-                    {
-                        xClippingCanvas.Items.Remove(item);
+                   {
+                    regionVM.Dispose(null, EventArgs.Empty);
+                    xClippingCanvas.Items.Remove(item);
                         return;
                     }
                 }

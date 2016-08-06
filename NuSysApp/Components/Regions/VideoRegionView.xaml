@@ -14,6 +14,10 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+        <Grid.RenderTransform>
+            <CompositeTransform TranslateY="10"/>
+
+        </Grid.RenderTransform>
         <Grid x:Name ="xGrid" Height="{Binding RectangleHeight}" Width="{Binding RectangleWidth}" HorizontalAlignment="Left" VerticalAlignment="Top">
             <Grid.RenderTransform>
                 <CompositeTransform x:Name="GridTransform" TranslateX="{Binding TopLeft.X}" TranslateY="{Binding TopLeft.Y}"></CompositeTransform>
@@ -27,15 +31,18 @@
                     </CompositeTransform>
                 </Path.RenderTransform>
             </Path>-->
-            <Image x:Name="xDelete" Width="25" Height="25" Margin="0,5,5,0" PointerPressed="xDelete_PointerPressed"  HorizontalAlignment="Right"  VerticalAlignment="Top" Stretch="Uniform" Source="ms-appx:///Assets/icon_delete_color.png"></Image>
 
         </Grid>
 
         <Grid x:Name="xToolBar"  HorizontalAlignment="Left" VerticalAlignment="Top"  Width="{Binding IntervalRegionWidth}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="15"></ColumnDefinition>
+
             </Grid.ColumnDefinitions>
             <TextBox Grid.Column="0" x:Name="xNameTextBox" Width="{Binding IntervalRegionWidth}"  Height="15" Text="{Binding Name}" TextChanged="xNameTextBox_TextChanged" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,25,0,0"></TextBox>
+            <Image Grid.Column="1" x:Name="xDelete" Width="15" Height="15" Margin="0,20,0,0" PointerPressed="xDelete_PointerPressed"  Stretch="Uniform" Source="ms-appx:///Assets/icon_delete_color.png"></Image>
+
             <Grid.RenderTransform>
                 <CompositeTransform x:Name="xToolBarTransform" TranslateX="{Binding IntervalStart}" TranslateY="{Binding IntervalRegionTranslateY}"/>
             </Grid.RenderTransform>
