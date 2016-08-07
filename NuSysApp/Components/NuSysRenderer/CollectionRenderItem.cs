@@ -28,7 +28,7 @@ namespace NuSysApp
         private ConcurrentBag<BaseRenderItem> _renderItems2 = new ConcurrentBag<BaseRenderItem>();
         private ConcurrentBag<BaseRenderItem> _renderItems3 = new ConcurrentBag<BaseRenderItem>();
 
-        private InkRenderItem _inkRenderItem;
+        public InkRenderItem InkRenderItem { get; set; }
         private CollectionInteractionManager _interactionManager;
         public ElementCollectionViewModel ViewModel;
 
@@ -51,8 +51,8 @@ namespace NuSysApp
 
             vm.Elements.CollectionChanged += ElementsChanged;
 
-            _inkRenderItem = new InkRenderItem(this, canvas);
-            _renderItems0.Add(_inkRenderItem);
+            InkRenderItem = new InkRenderItem(this, canvas);
+            _renderItems0.Add(InkRenderItem);
 
         }
 
@@ -155,8 +155,8 @@ namespace NuSysApp
 
         public Vector2 ScreenPointToObjectPoint(Vector2 sp)
         {
-            var inverse = Win2dUtil.Invert(Win2dUtil.Invert(Camera.C) * Camera.S * Camera.C * Camera.T * Win2dUtil.Invert(C) * S * C * T);
-            return Vector2.Transform(sp, inverse);
+            var other = Win2dUtil.Invert(NuSysRenderer.Instance.GetCollectionTransform(this));
+            return Vector2.Transform(sp, other);
         }
 
         public Vector2 ObjectPointToScreenPoint(Vector2 op)
@@ -190,7 +190,7 @@ namespace NuSysApp
 
         public void AddStroke(InkStroke stroke)
         {
-            _inkRenderItem.AddStroke(stroke);
+            InkRenderItem.AddStroke(stroke);
         }
 
         public void AddLink(LinkViewModel vm)

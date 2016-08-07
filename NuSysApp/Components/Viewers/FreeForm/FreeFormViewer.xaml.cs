@@ -49,12 +49,6 @@ namespace NuSysApp
 
         public CanvasAnimatedControl RenderCanvas => xRenderCanvas;
 
-        public Brush CanvasColor
-        {
-            get { return xInqCanvasContainer.Background; }
-            set { xInqCanvasContainer.Background = value; }
-        }
-
         public FreeFormViewer(FreeFormViewerViewModel vm)
         {
             this.InitializeComponent();

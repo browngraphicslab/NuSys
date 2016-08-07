@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
@@ -20,14 +21,16 @@ using System.Numerics;
 using Windows.Devices.Input;
 using Windows.System;
 using Windows.UI.Core;
+using Windows.UI.Input;
+using Windows.UI.Xaml.Input;
 using Point = Windows.Foundation.Point;
+
 
 
 namespace NuSysApp
 {
     public class NuSysRenderer
-    {
-
+    { 
         private static volatile NuSysRenderer instance;
         private static object syncRoot = new Object();
 
@@ -35,24 +38,18 @@ namespace NuSysApp
 
         private MinimapRenderItem _minimap;
         private SelectMode _selectMode;
-
+        private List<uint> _activePointers = new List<uint>();
+        private ElementSelectionRenderItem _elementSelectionRenderItem;
+        private CollectionRenderItem _currentCollection;
+        private Dictionary<CollectionRenderItem, CollectionInteractionManager> _interactionManagers = new Dictionary<CollectionRenderItem, CollectionInteractionManager>();
         public CanvasAnimatedControl Canvas
         {
             get { return _canvas; }
         }
 
         public Size Size { get; set; }
-
-
-      //  private ElementSelectionRenderItem _elementSelectionRenderItem;
-
         public CollectionRenderItem InitialCollection { get; private set; }
-
-        private CollectionRenderItem _currentCollection;
-
-        private Dictionary<CollectionRenderItem, CollectionInteractionManager> _interactionManagers = new Dictionary<CollectionRenderItem, CollectionInteractionManager>();
-
-
+        public ObservableCollection<ElementRenderItem> Selections { get; set; } = new ObservableCollection<ElementRenderItem>();
 
         private NuSysRenderer()
         {
@@ -60,9 +57,6 @@ namespace NuSysApp
 
         private void CanvasOnCreateResources(CanvasAnimatedControl sender, CanvasCreateResourcesEventArgs args)
         {
-            //throw new NotImplementedException();
-
-
         }
 
         public async Task Init(CanvasAnimatedControl canvas)
@@ -73,7 +67,10 @@ namespace NuSysApp
             _canvas.Update += CanvasOnUpdate;
             _canvas.CreateResources += CanvasOnCreateResources;
             _canvas.SizeChanged += CanvasOnSizeChanged;
-            
+
+            _canvas.PointerPressed += XRenderCanvasOnPointerPressed;
+            _canvas.PointerReleased += XRenderCanvasOnPointerReleased;
+
             var vm = (FreeFormViewerViewModel) canvas.DataContext;
             InitialCollection = new CollectionRenderItem(vm, null, canvas, true);
             _currentCollection = InitialCollection;
@@ -81,15 +78,48 @@ namespace NuSysApp
             _interactionManagers[_currentCollection] = new CollectionInteractionManager(InitialCollection);
             _interactionManagers[_currentCollection].ItemTapped += OnItemTapped;
             _interactionManagers[_currentCollection].ItemLongTapped += OnItemLongTapped;
+            _interactionManagers[_currentCollection].InkStarted += OnInkStarted;
+            _interactionManagers[_currentCollection].InkDrawing += OnInkDrawing;
+            _interactionManagers[_currentCollection].InkStopped += OnInkStopped;
             
 
             vm.X = 0;
             vm.Y = 0;
             vm.Width = Size.Width;
             vm.Height = Size.Height;
-           // _elementSelectionRenderItem = new ElementSelectionRenderItem(vm, InitialCollection, _canvas);
+            _elementSelectionRenderItem = new ElementSelectionRenderItem(vm, InitialCollection, _canvas);
      
             _minimap = new MinimapRenderItem(vm, InitialCollection, canvas);
+        }
+
+        private void OnInkStopped(PointerRoutedEventArgs e)
+        {
+            //Debug.WriteLine("ink stopped");
+            _currentCollection.InkRenderItem.StopInkByEvent(e);
+        }
+
+        private void OnInkDrawing(PointerRoutedEventArgs e)
+        {
+            //Debug.WriteLine("ink drawing");
+            _currentCollection.InkRenderItem.UpdateInkByEvent(e);
+        }
+
+        private void OnInkStarted(PointerRoutedEventArgs e)
+        {
+            //Debug.WriteLine("ink started");
+            _currentCollection.InkRenderItem.StartInkByEvent(e);
+        }
+
+        private void XRenderCanvasOnPointerReleased(object sender, PointerRoutedEventArgs args)
+        {
+            if (args.Pointer.PointerDeviceType == PointerDeviceType.Touch)
+                _activePointers.Remove(args.Pointer.PointerId);
+        }
+
+        private void XRenderCanvasOnPointerPressed(object sender, PointerRoutedEventArgs args)
+        {
+            if (args.Pointer.PointerDeviceType == PointerDeviceType.Touch)
+                _activePointers.Add(args.Pointer.PointerId);
         }
 
         private void OnItemLongTapped(BaseRenderItem element, PointerDeviceType device)
@@ -100,10 +130,13 @@ namespace NuSysApp
 
         private void SwitchCollection(CollectionRenderItem collection)
         {
-            if (collection != _currentCollection)
+            if (collection != _currentCollection && collection != null)
             {
                 _interactionManagers[_currentCollection].ItemTapped -= OnItemTapped;
                 _interactionManagers[_currentCollection].ItemLongTapped -= OnItemLongTapped;
+                _interactionManagers[_currentCollection].InkStarted -= OnInkStarted;
+                _interactionManagers[_currentCollection].InkDrawing -= OnInkDrawing;
+                _interactionManagers[_currentCollection].InkStopped -= OnInkStopped;
                 _interactionManagers[_currentCollection].Dispose();
                 _interactionManagers.Remove(_currentCollection);
 
@@ -112,6 +145,9 @@ namespace NuSysApp
                 _interactionManagers[collection] = new CollectionInteractionManager(collection);
                 _interactionManagers[collection].ItemTapped += OnItemTapped;
                 _interactionManagers[collection].ItemLongTapped += OnItemLongTapped;
+                _interactionManagers[_currentCollection].InkStarted += OnInkStarted;
+                _interactionManagers[_currentCollection].InkDrawing += OnInkDrawing;
+                _interactionManagers[_currentCollection].InkStopped += OnInkStopped;
 
 
             }
@@ -122,9 +158,9 @@ namespace NuSysApp
             var elementRenderItem = element as ElementRenderItem;
             
             var vm = InitialCollection.ViewModel;
-            if (elementRenderItem == InitialCollection || elementRenderItem == null)
+            if (elementRenderItem == InitialCollection || elementRenderItem == _currentCollection || elementRenderItem == null)
             {
-                vm.ClearSelection();
+                Selections.Clear();
                 if (element == null)
                     SwitchCollection(InitialCollection);
             }
@@ -132,17 +168,18 @@ namespace NuSysApp
             {
                 if (device == PointerDeviceType.Mouse)
                 {
-                    var keyState = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift);
-                    if (keyState != CoreVirtualKeyStates.Down)
-                        vm.ClearSelection();
-                    vm.AddSelection(elementRenderItem.ViewModel);
+                    var keyState = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Control);
+                  
+                    if (!keyState.HasFlag(CoreVirtualKeyStates.Down))
+                        Selections.Clear();
+                    Selections.Add(elementRenderItem);
                 }
 
                 if (device == PointerDeviceType.Touch)
                 {
-                    //  if (_activePointers.Count == 0)
-                    vm.ClearSelection();
-                    vm.AddSelection(elementRenderItem.ViewModel);
+                    if (_activePointers.Count == 0)
+                        Selections.Clear();
+                    Selections.Add(elementRenderItem);
                 }
             }
         }
@@ -168,9 +205,10 @@ namespace NuSysApp
             return result;
         }
 
-        public Matrix3x2 GetTransformUntil(CollectionRenderItem collection)
+        public Matrix3x2 GetCollectionTransform(CollectionRenderItem collection)
         {
-            var transforms = new List<CollectionRenderItem>();
+            var transforms = new List<CollectionRenderItem> {collection};
+
             var parent = collection.Parent;
             while (parent != null)
             {
@@ -179,14 +217,22 @@ namespace NuSysApp
             }
 
             transforms.Reverse();
-            var result = Matrix3x2.Identity;
-            for (int index = 0; index < transforms.Count; index++)
+            return transforms.Aggregate(Matrix3x2.Identity, (current, t) => Win2dUtil.Invert(t.Camera.C)*t.Camera.S*t.Camera.C*t.Camera.T*Win2dUtil.Invert(t.C)*t.S*t.C*t.T*current);
+        }
+
+        public Matrix3x2 GetTransformUntil(BaseRenderItem collection)
+        {
+            var transforms = new List<BaseRenderItem>();
+            var parent = collection.Parent;
+            while (parent != null)
             {
-                var t = transforms[index];
-                result = Win2dUtil.Invert(t.Camera.C) * t.Camera.S * t.Camera.C * t.Camera.T * Win2dUtil.Invert(t.C) * t.S * t.C * t.T * result;
+                transforms.Add(parent);
+                parent = parent.Parent;
             }
 
-            return result;
+            transforms.Reverse();
+
+            return transforms.Select(t1 => t1 as CollectionRenderItem).Aggregate(Matrix3x2.Identity, (current, t) => Win2dUtil.Invert(t.Camera.C)*t.Camera.S*t.Camera.C*t.Camera.T*Win2dUtil.Invert(t.C)*t.S*t.C*t.T*current);
         }
 
         private BaseRenderItem _GetRenderItemAt(CollectionRenderItem collection, Vector2 sp, Matrix3x2 transform, int currentLevel, int maxLevel)
@@ -242,7 +288,7 @@ namespace NuSysApp
             InitialCollection.Update();
             _minimap.IsDirty = true;
             _minimap.Update();
-           // _elementSelectionRenderItem.Update();
+            _elementSelectionRenderItem.Update();
         }
 
         private void CanvasOnDraw(ICanvasAnimatedControl sender, CanvasAnimatedDrawEventArgs args)
@@ -253,7 +299,7 @@ namespace NuSysApp
                 InitialCollection.Draw(ds);
                 ds.Transform = Matrix3x2.Identity;
                 _minimap.Draw(ds);
-          //      _elementSelectionRenderItem.Draw(ds);
+                _elementSelectionRenderItem.Draw(ds);
             }
         }
 

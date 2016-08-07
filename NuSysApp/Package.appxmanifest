@@ -25,23 +25,21 @@
         </uap:DefaultTile>
       </uap:VisualElements>
       <Extensions>
-        <Extension Category="windows.backgroundTasks" Executable="$targetnametoken$.exe" EntryPoint="BackgroundTaskHelper.NetworkChangeTask">
-          <BackgroundTasks>
-            <Task Type="systemEvent" />
-          </BackgroundTasks>
-        </Extension>
-        <Extension Category="windows.backgroundTasks" Executable="$targetnametoken$.exe" EntryPoint="BackgroundTaskHelper.PushNotifyTask">
-          <BackgroundTasks>
-            <Task Type="controlChannel" />
-          </BackgroundTasks>
-        </Extension>
-        <Extension Category="windows.backgroundTasks" Executable="$targetnametoken$.exe" EntryPoint="Windows.Networking.Sockets.WebSocketKeepAlive">
-          <BackgroundTasks>
-            <Task Type="controlChannel" />
-            <Task Type="systemEvent" />
-          </BackgroundTasks>
-        </Extension>
-        <uap:Extension Category="windows.lockScreenCall" />
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap:FileTypeAssociation Name="pdf">
+            <uap:SupportedFileTypes>
+              <uap:FileType>.pdf</uap:FileType>
+              <uap:FileType>.json</uap:FileType>
+            </uap:SupportedFileTypes>
+          </uap:FileTypeAssociation>
+        </uap:Extension>
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap:FileTypeAssociation Name="mp3">
+            <uap:SupportedFileTypes>
+              <uap:FileType>.mp3</uap:FileType>
+            </uap:SupportedFileTypes>
+          </uap:FileTypeAssociation>
+        </uap:Extension>
         <uap:Extension Category="windows.fileTypeAssociation">
           <uap:FileTypeAssociation Name="nusys">
             <uap:SupportedFileTypes>
@@ -55,21 +53,28 @@
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
-        <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="mp3">
-            <uap:SupportedFileTypes>
-              <uap:FileType>.mp3</uap:FileType>
-            </uap:SupportedFileTypes>
-          </uap:FileTypeAssociation>
-        </uap:Extension>
-        <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="pdf">
-            <uap:SupportedFileTypes>
-              <uap:FileType>.pdf</uap:FileType>
-              <uap:FileType>.json</uap:FileType>
-            </uap:SupportedFileTypes>
-          </uap:FileTypeAssociation>
-        </uap:Extension>
+        <uap:Extension Category="windows.lockScreenCall" />
+        <Extension Category="windows.backgroundTasks" Executable="$targetnametoken$.exe" EntryPoint="Windows.Networking.Sockets.WebSocketKeepAlive">
+          <BackgroundTasks>
+            <Task Type="controlChannel" />
+            <Task Type="systemEvent" />
+            <Task Type="timer" />
+            <Task Type="pushNotification" />
+          </BackgroundTasks>
+        </Extension>
+        <Extension Category="windows.backgroundTasks" Executable="$targetnametoken$.exe" EntryPoint="BackgroundTaskHelper.PushNotifyTask">
+          <BackgroundTasks>
+            <Task Type="controlChannel" />
+          </BackgroundTasks>
+        </Extension>
+        <Extension Category="windows.backgroundTasks" Executable="$targetnametoken$.exe" EntryPoint="BackgroundTaskHelper.NetworkChangeTask">
+          <BackgroundTasks>
+            <Task Type="controlChannel" />
+            <Task Type="systemEvent" />
+            <Task Type="timer" />
+            <Task Type="pushNotification" />
+          </BackgroundTasks>
+        </Extension>
       </Extensions>
     </Application>
   </Applications>

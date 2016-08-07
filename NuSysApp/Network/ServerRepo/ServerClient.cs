@@ -115,85 +115,86 @@ namespace NuSysApp
             {
                 channel = new ControlChannelTrigger(channelId, serverKeepAliveInterval,
                                            ControlChannelTriggerResourceType.RequestHardwareSlot);
+
+                // Register the apps background task with the trigger for keepalive.
+                var keepAliveBuilder = new BackgroundTaskBuilder();
+                keepAliveBuilder.Name = "KeepaliveTaskForChannelOne";
+                keepAliveBuilder.TaskEntryPoint = WebSocketKeepAliveTask;
+                keepAliveBuilder.SetTrigger(channel.KeepAliveTrigger);
+                keepAliveBuilder.Register();
+
+                // Tie the transport method to the ControlChannelTrigger object to push enable it.
+                // Note that if the transport' s TCP connection is broken at a later point of time,
+                // the ControlChannelTrigger object can be reused to plug in a new transport by
+                // calling UsingTransport API again.
+                try
+                {
+                    channel.UsingTransport(_socket);
+
+                    // Connect the socket
+                    //
+                    // If connect fails or times out it will throw exception.
+                    // ConnectAsync can also fail if hardware slot was requested
+                    // but none are available
+                    await _socket.ConnectAsync(uri);
+                    _dataMessageWriter = new DataWriter(_socket.OutputStream);
+                    Debug.WriteLine("CONNECTED.");
+
+                    // Call WaitForPushEnabled API to make sure the TCP connection has 
+                    // been established, which will mean that the OS will have allocated 
+                    // any hardware slot for this TCP connection.
+                    //
+                    // In this sample, the ControlChannelTrigger object was created by 
+                    // explicitly requesting a hardware slot.
+                    //
+                    // On systems that without connected standby, if app requests hardware slot as above, 
+                    // the system will fallback to a software slot automatically.
+                    //
+                    // On systems that support connected standby,, if no hardware slot is available, then app 
+                    // can request a software slot by re-creating the ControlChannelTrigger object.
+                    status = channel.WaitForPushEnabled();
+                    if (status != ControlChannelTriggerStatus.HardwareSlotAllocated
+                        && status != ControlChannelTriggerStatus.SoftwareSlotAllocated)
+                    {
+                        throw new Exception(string.Format("Neither hardware nor software slot could be allocated. ChannelStatus is {0}", status.ToString()));
+                    }
+
+                    // Store the objects created in the property bag for later use.
+                    CoreApplication.Properties.Remove(channel.ControlChannelTriggerId);
+
+                    //     var appContext = new AppContext(this, socket, channel, channel.ControlChannelTriggerId);
+                    //     ((IDictionary<string, object>)CoreApplication.Properties).Add(channel.ControlChannelTriggerId, appContext);
+                    result = true;
+
+                    // Almost done. Post a read since we are using streamwebsocket
+                    // to allow push notifications to be received.
+                    // PostSocketRead(MAX_BUFFER_LENGTH);
+                }
+                catch (Exception exp)
+                {
+                    Debug.WriteLine("RegisterWithCCTHelper Task failed with: " + exp.Message);
+
+                    // Exceptions may be thrown for example if the application has not 
+                    // registered the background task class id for using real time communications 
+                    // broker in the package manifest.
+                }
             }
             catch (UnauthorizedAccessException exp)
             {
                 Debug.WriteLine("Is the app on lockscreen? " + exp.Message);
-                return;
-            }
 
-
-            // Register the apps background task with the trigger for keepalive.
-            var keepAliveBuilder = new BackgroundTaskBuilder();
-            keepAliveBuilder.Name = "KeepaliveTaskForChannelOne";
-            keepAliveBuilder.TaskEntryPoint = WebSocketKeepAliveTask;
-            keepAliveBuilder.SetTrigger(channel.KeepAliveTrigger);
-            keepAliveBuilder.Register();
-
-            /*
-            // Register the apps background task with the trigger for push notification task.
-            var pushNotifyBuilder = new BackgroundTaskBuilder();
-            pushNotifyBuilder.Name = "PushNotificationTaskForChannelOne";
-            pushNotifyBuilder.TaskEntryPoint = "Background.PushNotifyTask";
-            pushNotifyBuilder.SetTrigger(channel.PushNotificationTrigger);
-            pushNotifyBuilder.Register();
-            */
-
-            // Tie the transport method to the ControlChannelTrigger object to push enable it.
-            // Note that if the transport' s TCP connection is broken at a later point of time,
-            // the ControlChannelTrigger object can be reused to plug in a new transport by
-            // calling UsingTransport API again.
-            try
-            {
-                channel.UsingTransport(_socket);
-
-                // Connect the socket
-                //
-                // If connect fails or times out it will throw exception.
-                // ConnectAsync can also fail if hardware slot was requested
-                // but none are available
                 await _socket.ConnectAsync(uri);
                 _dataMessageWriter = new DataWriter(_socket.OutputStream);
                 Debug.WriteLine("CONNECTED.");
-
-                // Call WaitForPushEnabled API to make sure the TCP connection has 
-                // been established, which will mean that the OS will have allocated 
-                // any hardware slot for this TCP connection.
-                //
-                // In this sample, the ControlChannelTrigger object was created by 
-                // explicitly requesting a hardware slot.
-                //
-                // On systems that without connected standby, if app requests hardware slot as above, 
-                // the system will fallback to a software slot automatically.
-                //
-                // On systems that support connected standby,, if no hardware slot is available, then app 
-                // can request a software slot by re-creating the ControlChannelTrigger object.
-                status = channel.WaitForPushEnabled();
-                if (status != ControlChannelTriggerStatus.HardwareSlotAllocated
-                    && status != ControlChannelTriggerStatus.SoftwareSlotAllocated)
-                {
-                    throw new Exception(string.Format("Neither hardware nor software slot could be allocated. ChannelStatus is {0}", status.ToString()));
-                }
-
-                // Store the objects created in the property bag for later use.
-                CoreApplication.Properties.Remove(channel.ControlChannelTriggerId);
-
-                //     var appContext = new AppContext(this, socket, channel, channel.ControlChannelTriggerId);
-                //     ((IDictionary<string, object>)CoreApplication.Properties).Add(channel.ControlChannelTriggerId, appContext);
-                result = true;
-
-                // Almost done. Post a read since we are using streamwebsocket
-                // to allow push notifications to be received.
-                // PostSocketRead(MAX_BUFFER_LENGTH);
+                //     return;
             }
-            catch (Exception exp)
-            {
-                Debug.WriteLine("RegisterWithCCTHelper Task failed with: " + exp.Message);
 
-                // Exceptions may be thrown for example if the application has not 
-                // registered the background task class id for using real time communications 
-                // broker in the package manifest.
-            }
+
+           
+
+   
+
+            
         }
 
         private string GetUserCredentials()

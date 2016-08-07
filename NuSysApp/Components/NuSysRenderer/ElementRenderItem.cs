@@ -20,6 +20,7 @@ namespace NuSysApp
     {
         private ElementViewModel _vm;
         private CanvasTextLayout _textLayout;
+        private Matrix3x2 _transform;
 
         public ElementViewModel ViewModel => _vm;
 
@@ -47,6 +48,7 @@ namespace NuSysApp
                 return;
             var format = new CanvasTextFormat { FontSize = 12f, WordWrapping = CanvasWordWrapping.NoWrap };
             _textLayout = new CanvasTextLayout(ResourceCreator, _vm.Title, format, 0.0f, 0.0f);
+            _transform = NuSysRenderer.Instance.GetTransformUntil(this);
 
             IsDirty = false;
         }
@@ -62,12 +64,14 @@ namespace NuSysApp
 
             var oldTransform = ds.Transform;
             var sp = Matrix3x2.Identity;
-            Matrix3x2.Invert(NuSysRenderer.Instance.InitialCollection.S, out sp);
+            Matrix3x2.Invert(NuSysRenderer.Instance.InitialCollection.Camera.S, out sp);
             var tt = Matrix3x2.CreateTranslation(0, -30);
             var newTransform = tt * top * sp * to * ds.Transform;
 
-            ds.Transform = newTransform;
-          //  ds.DrawTextLayout(_textLayout, new Vector2((float)_vm.X, (float)(_vm.Y - 20)), Colors.Black);
+            if (Parent == NuSysRenderer.Instance.InitialCollection)
+                ds.Transform = newTransform;
+
+            ds.DrawTextLayout(_textLayout, new Vector2((float)_vm.X, (float)(_vm.Y - 20)), Colors.Black);
             ds.Transform = oldTransform;
         }
 

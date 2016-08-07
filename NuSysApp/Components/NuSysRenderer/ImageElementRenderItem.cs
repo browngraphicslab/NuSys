@@ -22,8 +22,6 @@ namespace NuSysApp
         public ImageElementRenderItem(ImageElementViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) :base(vm, parent, resourceCreator)
         {
             _vm = vm;
-            T = Matrix3x2.CreateTranslation((float)_vm.X, (float)_vm.Y);
-            //T = Matrix3x2.CreateTranslation((float)50000, (float)50000);
         }
 
         public override void Dispose()
@@ -47,6 +45,7 @@ namespace NuSysApp
 
             var orgTransform = ds.Transform;
             ds.Transform = Win2dUtil.Invert(C) * S * C * T * ds.Transform;
+            ds.FillRectangle(new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height }, Colors.Red);
 
             if (_bmp != null)
                 ds.DrawImage(_bmp, new Rect { X = 0, Y = 0, Width = _vm.Width, Height = _vm.Height});

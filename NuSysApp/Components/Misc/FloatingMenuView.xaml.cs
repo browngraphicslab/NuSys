@@ -15,6 +15,8 @@ using Windows.UI.Xaml.Media.Imaging;
 using SharpDX.Direct2D1;
 using Image = Windows.UI.Xaml.Controls.Image;
 using SolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
+using System.Numerics;
+using Windows.ApplicationModel.Core;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -67,6 +69,20 @@ namespace NuSysApp
             AddNodeSubmenuButton(btnRecording);
             AddNodeSubmenuButton(btnNew);
             AddNodeSubmenuButton(btnTools);
+
+            Panel.ManipulationMode = ManipulationModes.TranslateX | ManipulationModes.TranslateY;
+            Panel.ManipulationDelta += OnManipulationDelta;
+
+
+        }
+
+        private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            var compositeTransform = (CompositeTransform)SessionController.Instance.SessionView.FloatingMenu.RenderTransform;
+            compositeTransform.TranslateX += e.Delta.Translation.X;
+            compositeTransform.TranslateY += e.Delta.Translation.Y;
+
+            e.Handled = true;
         }
 
         private void CheckPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -206,8 +222,12 @@ namespace NuSysApp
             if (_dragItem == null)
                 return;
             xWrapper.Children.Remove(_dragItem);
-           var r = xWrapper.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.AtomCanvas).TransformPoint(new Point(args.Position.X, args.Position.Y));
-           await AddNode(new Point(r.X, r.Y), new Size(300, 300), _elementType);
+         
+            var p = args.Container.TransformToVisual(SessionController.Instance.SessionView.FreeFormViewer.RenderCanvas).TransformPoint(args.Position);
+            var r = NuSysRenderer.Instance.InitialCollection.ScreenPointToObjectPoint(new Vector2((float)p.X, (float)p.Y));
+
+
+            await AddNode(new Point(r.X, r.Y), new Size(300, 300), _elementType);
 
         }
          

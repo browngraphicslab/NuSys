@@ -14,11 +14,6 @@
 
     <Canvas x:Name="xOuterWrapper" Background="Transparent" >
 
-        <Grid x:Name="xInqCanvasContainer" Width="{Binding ElementName=xFreeFormViewer, Path=Width}" Height="{Binding ElementName=xFreeFormViewer, Path=Height}" VerticalAlignment="Stretch" Background="White">
-            <xaml:CanvasControl  x:Name="dryCanvas"  />
-            <xaml:CanvasControl x:Name="wetCanvas" />
-        </Grid>
-
         <Canvas x:Name="xWrapper">
 
             <Canvas x:Name="xAtomCanvas" Visibility="Collapsed"  HorizontalAlignment="Left" Width="100000" Height="100000" RenderTransform="{Binding CompositeTransform}">

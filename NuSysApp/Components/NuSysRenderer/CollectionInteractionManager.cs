@@ -5,8 +5,12 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.Devices.Input;
 using Windows.Foundation;
+using Windows.System;
+using Windows.UI.Core;
+using Windows.UI.Input;
 using Windows.UI.Xaml.Input;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using SharpDX.Direct2D1;
@@ -33,14 +37,20 @@ namespace NuSysApp
     public class CollectionInteractionManager : IDisposable
     {
         public delegate void RenderItemSelectedHandler(BaseRenderItem element, PointerDeviceType device);
+        public delegate void InkDrawHandler(PointerRoutedEventArgs e);
         public event RenderItemSelectedHandler ItemTapped;
         public event RenderItemSelectedHandler ItemLongTapped;
+        public event InkDrawHandler InkStarted;
+        public event InkDrawHandler InkDrawing;
+        public event InkDrawHandler InkStopped;
 
         private enum Mode
         {
             PanZoom,
+            Ink,
             MoveNode,
-            OutOfBounds
+            OutOfBounds,
+            None
         }
 
         private Mode _mode = Mode.PanZoom;
@@ -90,23 +100,23 @@ namespace NuSysApp
             _twoFingerDist = MathUtil.Dist(p0, p1);
         }
 
-        private bool IsInBounds(Point sp)
-        {
-            var item = NuSysRenderer.Instance.GetRenderItemAt(sp, _collection, 0);
-            return false;
-        }
-
         private async void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
-
-            if (PointerPoints.Count == 0)
+            if (PointerPoints.Count == 0) { 
+                _mode = Mode.None;
                 _firstPointerStopWatch.Restart();
+            }
 
             if (PointerPoints.Count >= 1)
                 _stopwatch.Start();
 
             if (e.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
                 PointerPoints.Clear();
+
+            if (CoreApplication.GetCurrentView().CoreWindow.GetAsyncKeyState(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down) || e.Pointer.PointerDeviceType == PointerDeviceType.Pen)
+            {
+                _mode = Mode.Ink;
+            }
 
 
             var p = e.GetCurrentPoint(null).Position;
@@ -120,10 +130,9 @@ namespace NuSysApp
                 _mode = Mode.PanZoom;
                 _transformables.Clear();
             }
-            else
+            else if (_mode != Mode.Ink)
             {
-                var pp = e.GetCurrentPoint(null).Position;
-                _centerPoint = new Vector2((float) pp.X, (float) pp.Y);
+                _centerPoint = new Vector2((float) p.X, (float) p.Y);
                 _selectedRenderItem = NuSysRenderer.Instance.GetRenderItemAt(p, _collection, 1);
 
                 if (_selectedRenderItem == _collection)
@@ -140,6 +149,10 @@ namespace NuSysApp
                     _mode = Mode.MoveNode;
                 }
             }
+            else if (_mode == Mode.Ink)
+            {
+                InkStarted?.Invoke(e);   
+            }
 
             _collection.ResourceCreator.PointerMoved += OnPointerMoved;
         }
@@ -148,6 +161,18 @@ namespace NuSysApp
         {
             _stopwatch.Stop();
 
+            if (PointerPoints.ContainsKey(e.Pointer.PointerId))
+                PointerPoints.Remove(e.Pointer.PointerId);
+
+            if (_mode == Mode.Ink)
+            {
+                InkStopped?.Invoke(e);
+                _stopwatch.Reset();
+                _lastReleased = DateTime.Now;
+                _distanceTraveled = 0;
+                return;
+            }
+
             if (_selectedRenderItem is CollectionRenderItem)
             {
                 var coll = (CollectionRenderItem) _selectedRenderItem;
@@ -155,9 +180,6 @@ namespace NuSysApp
                 coll.ViewModel.CamertaCenter = new Vector2(coll.Camera.C.M31, coll.Camera.C.M32);
                 coll.ViewModel.CameraScale = coll.Camera.S.M11;
             }
-
-            if (PointerPoints.ContainsKey(e.Pointer.PointerId))
-                PointerPoints.Remove(e.Pointer.PointerId);           
 
             if (PointerPoints.Count == 1)
             {
@@ -180,7 +202,7 @@ namespace NuSysApp
             {
                  _firstPointerStopWatch.Stop();
 
-                if (_collection.ViewModel.Selections.Count == 0)
+                if (NuSysRenderer.Instance.Selections.Count == 0)
                     _transformables.Clear();
 
                 var dt = (DateTime.Now - _lastReleased).TotalMilliseconds;
@@ -221,6 +243,11 @@ namespace NuSysApp
             var p = args.GetCurrentPoint(null).Position;
             PointerPoints[args.Pointer.PointerId] = new Vector2((float) p.X, (float) p.Y);
 
+            if (_mode == Mode.Ink)
+            {
+                InkDrawing?.Invoke(args);
+            }
+
             if (PointerPoints.Count >= 2)
             {
                 if (args.Pointer.PointerId == PointerPoints.Keys.First())
@@ -235,11 +262,11 @@ namespace NuSysApp
                 var ds = (float) (_twoFingerDist/prevDist);
 
 
-                if (_collection.ViewModel.Selections.Count > 0)
+                if (NuSysRenderer.Instance.Selections.Count > 0)
                 {
-                    foreach (var selection in _collection.ViewModel.Selections)
+                    foreach (var selection in NuSysRenderer.Instance.Selections)
                     {
-                        var elem = (ElementViewModel) selection;
+                        var elem = (ElementViewModel) selection.ViewModel;
                         var imgCenter = new Vector2((float) (elem.X + elem.Width/2), (float) (elem.Y + elem.Height/2));
                         var newCenter = NuSysRenderer.Instance.InitialCollection.ObjectPointToScreenPoint(imgCenter);
 
@@ -323,15 +350,15 @@ namespace NuSysApp
                     var newX = elem.ViewModel.X + deltaX / (_transform.M11 * _collection.S.M11 * _collection.Camera.S.M11);
                     var newY = elem.ViewModel.Y + deltaY / (_transform.M22 * _collection.S.M22 * _collection.Camera.S.M22);
 
-                    if (!_collection.ViewModel.Selections.Contains(elem.ViewModel))
+                    if (!NuSysRenderer.Instance.Selections.Contains(elem))
                     {
                         elem.ViewModel.Controller.SetPosition(newX, newY);
                     }
                     else
                     {
-                        foreach (var selectable in _collection.ViewModel.Selections)
+                        foreach (var selectable in NuSysRenderer.Instance.Selections)
                         {
-                            var e = (ElementViewModel) selectable;
+                            var e = (ElementViewModel) selectable.ViewModel;
                             var newXe = e.X + deltaX/ (_transform.M11 * _collection.S.M11 * _collection.Camera.S.M11);
                             var newYe = e.Y + deltaY/ (_transform.M11 * _collection.S.M11 * _collection.Camera.S.M11);
                             e.Controller.SetPosition(newXe, newYe);

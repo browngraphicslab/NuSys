@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -18,33 +19,48 @@ namespace NuSysApp
         private Rect _rect;
         private FreeFormViewerViewModel _vm;
         private bool _isVisible;
-        private List<ISelectable> _selectedItems = new List<ISelectable>(); 
+        private List<ElementRenderItem> _selectedItems = new List<ElementRenderItem>();
+        private Matrix3x2 _transform;
+
 
         public ElementSelectionRenderItem(FreeFormViewerViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
-            _vm = vm;
-            _vm.SelectionChanged += OnSelectionChanged;
+            NuSysRenderer.Instance.Selections.CollectionChanged += SelectionsOnCollectionChanged;
         }
 
-        private void OnSelectionChanged(object source)
+        private void SelectionsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
-            foreach (var selectedItem in _selectedItems)
+            if (args.Action == NotifyCollectionChangedAction.Reset)
+                _selectedItems.Clear();
+
+            if (args.OldItems != null)
             {
-                var elem = (ElementViewModel)selectedItem;
-                elem.Controller.PositionChanged -= OnSelectedItemPositionChanged;
-                elem.Controller.SizeChanged -= OnSelectedItemSizeChanged;
+
+                foreach (var newItem in args.OldItems)
+                {
+                    var item = (ElementRenderItem)newItem;
+                    _selectedItems.Remove(item);
+                    item.ViewModel.Controller.PositionChanged -= OnSelectedItemPositionChanged;
+                    item.ViewModel.Controller.SizeChanged -= OnSelectedItemSizeChanged;
+                }
             }
 
-            _selectedItems = _vm.Selections.ToList();
-            foreach (var selectedItem in _selectedItems)
-            {
-                var elem = (ElementViewModel) selectedItem;
-                elem.Controller.PositionChanged += OnSelectedItemPositionChanged;
-                elem.Controller.SizeChanged += OnSelectedItemSizeChanged;
+            if (args.NewItems != null) { 
+                foreach (var newItem in args.NewItems)
+                {
+                    var item = (ElementRenderItem) newItem;
+                    _selectedItems.Add(item);
+                    item.ViewModel.Controller.PositionChanged += OnSelectedItemPositionChanged;
+                    item.ViewModel.Controller.SizeChanged += OnSelectedItemSizeChanged;
+                }
             }
+
+            if (_selectedItems.Count > 0)
+                _transform = NuSysRenderer.Instance.GetTransformUntil(_selectedItems.First());
 
             IsDirty = true;
         }
+
 
         private void OnSelectedItemSizeChanged(object source, double width, double height)
         {
@@ -63,14 +79,16 @@ namespace NuSysApp
 
             base.Update();
 
-            if (_vm.Selections.Count == 0)
+            if (_selectedItems.Count == 0)
             {
                 _isVisible = false;
                 return;
             }
 
-            var bbs = _vm.Selections.OfType<ElementViewModel>().Select(elem => new Rect(elem.X, elem.Y, elem.Width, elem.Height)).ToList();
+            var bbs = _selectedItems.Select(elem => new Rect(elem.ViewModel.X, elem.ViewModel.Y, elem.ViewModel.Width, elem.ViewModel.Height)).ToList();
             _rect = GetBoundingRect(bbs);
+
+
 
             IsDirty = false;
             _isVisible = true;
@@ -86,8 +104,11 @@ namespace NuSysApp
  
             var old = ds.Transform;
 
-            var tl = Vector2.Transform(new Vector2((float)_rect.X, (float)_rect.Y), old);
-            var tr = Vector2.Transform(new Vector2((float)(_rect.X+_rect.Width), (float)(_rect.Y + _rect.Height)), old);
+            if (_selectedItems.Count > 0)
+                _transform = NuSysRenderer.Instance.GetTransformUntil(_selectedItems.First());
+
+            var tl = Vector2.Transform(new Vector2((float)_rect.X, (float)_rect.Y), _transform);
+            var tr = Vector2.Transform(new Vector2((float)(_rect.X+_rect.Width), (float)(_rect.Y + _rect.Height)), _transform);
            
             var rect = new Rect(tl.X, tl.Y, tr.X - tl.X, tr.Y - tl.Y);
             ds.Transform = Matrix3x2.Identity;
