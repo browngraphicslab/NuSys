@@ -95,7 +95,21 @@ namespace NuSysApp
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
             var vm = (ElementViewModel) this.DataContext;
+
+            //Creates a RemoveElementAction
+            var removeElementAction = new RemoveElementAction(vm.Controller);
+
+            //Creates an undo button and places it in the correct position.
+
+            var position = new Point(vm.Controller.Model.X, vm.Controller.Model.Y);
+            var undoButton = new UndoButton(removeElementAction, position);
+            var atomViewList = SessionController.Instance.ActiveFreeFormViewer.AtomViewList;
+            atomViewList.Add(undoButton);
+
             vm.Controller.RequestDelete();
+
+
+
         }
 
         public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)

@@ -658,8 +658,10 @@
     <Compile Include="Network\ServerRepo\ServerClient.cs" />
     <Compile Include="Network\StaticServerCalls.cs" />
     <Compile Include="TransformHelper.cs" />
+    <Compile Include="Undo\CreateElementAction.cs" />
     <Compile Include="Undo\IUndoable.cs" />
     <Compile Include="Undo\MoveElementAction.cs" />
+    <Compile Include="Undo\RemoveElementAction.cs" />
     <Compile Include="Util\AccessList.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />

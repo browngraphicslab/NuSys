@@ -1,5 +1,4 @@
-﻿using Microsoft.Office.Interop.Word;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,6 +13,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.Foundation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -24,10 +24,26 @@ namespace NuSysApp
         public IUndoable OriginalAction { get; set; }
 
         private Timer _timer;
-        public UndoButton(IUndoable originalAction)
+        public UndoButton(IUndoable originalAction, Point position)
         {
             this.InitializeComponent();
             OriginalAction = originalAction;
+
+
+            // Moves the button to the appropriate location
+            var transform = new TranslateTransform();
+            transform.X = position.X;
+            transform.Y = position.Y;
+            this.RenderTransform = transform;
+
+            Loaded += UndoButton_Loaded;
+
+
+        }
+
+        private void UndoButton_Loaded(object sender, RoutedEventArgs e)
+        {
+            //Timer is called only once and lasts 6000 miliseconds.
             _timer = new Timer(new TimerCallback(SelfDestruct), null, 6000, Timeout.Infinite);
         }
 
@@ -56,6 +72,8 @@ namespace NuSysApp
                 {
                     var wvm = SessionController.Instance.ActiveFreeFormViewer;
                     wvm.AtomViewList.Remove(this);
+
+                    Loaded -= UndoButton_Loaded;
                 });
         }
     }

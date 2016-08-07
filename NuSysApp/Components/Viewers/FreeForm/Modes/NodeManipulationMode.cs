@@ -73,22 +73,19 @@ namespace NuSysApp
             //Get elements controller
             var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
             var elementController = vm.Controller;
-            
-            //Instantiates MoveElementAction
-            var moveElementAction = new MoveElementAction(elementController, _originalPosition, _newPosition);
+            if (!vm.IsEditing)
+            {
+                //Instantiates MoveElementAction
+                var moveElementAction = new MoveElementAction(elementController, _originalPosition, _newPosition);
 
-            //Creates UndoButton and makes it appear in the old position.
-            var undoButton = new UndoButton(moveElementAction);
-            var atomViewList = ((FreeFormViewerViewModel)_view.DataContext).AtomViewList;
-            atomViewList.Add(undoButton);
+                //Creates UndoButton and makes it appear in the old position.
 
-            // Moves the button to the appropriate location
-            var transform = new TranslateTransform();
-            transform.X = _originalPosition.X;
-            transform.Y = _originalPosition.Y;
-            undoButton.RenderTransform = transform;
+                var undoButton = new UndoButton(moveElementAction, _originalPosition);
+                var atomViewList = ((FreeFormViewerViewModel)_view.DataContext).AtomViewList;
+                atomViewList.Add(undoButton);
 
 
+            }
             ActiveNodes.Remove((UserControl) sender);
         }
 

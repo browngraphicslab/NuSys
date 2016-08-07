@@ -54,6 +54,18 @@ namespace NuSysApp
         
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
+
+            //Creates a RemoveElementAction
+            var removeElementAction = new RemoveElementAction(_vm.Controller);
+
+            //Creates an undo button and places it in the correct position.
+
+            var position = new Point(_vm.Controller.Model.X, _vm.Controller.Model.Y);
+            var undoButton = new UndoButton(removeElementAction, position);
+            var atomViewList = SessionController.Instance.ActiveFreeFormViewer.AtomViewList;
+            atomViewList.Add(undoButton);
+
+
             _vm.Controller.RequestDelete();
         }
 
