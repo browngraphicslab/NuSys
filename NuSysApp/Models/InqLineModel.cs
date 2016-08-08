@@ -48,13 +48,13 @@ namespace NuSysApp
             SessionController.Instance.IdToControllers.TryRemove(Id, out removed);
         }
 
-        public override Task UnPackFromDatabaseMessage(Message props)
+        public override void UnPackFromDatabaseMessage(Message props)
         {
             InqCanvasId = props.GetString("canvasNodeID", null);
             Points = new ObservableCollection<Point2d>(props.GetList<Point2d>("points"));
             Page = props.GetInt("page", 0);
             IsGesture = props.GetBool("isGesture", false);
-            return base.UnPackFromDatabaseMessage(props);
+            base.UnPackFromDatabaseMessage(props);
         }
 
         public override async Task<Dictionary<string, object>> Pack()

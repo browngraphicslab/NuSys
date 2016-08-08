@@ -37,13 +37,13 @@ namespace NusysIntermediate
             return props;
         }
 
-        public override async Task UnPackFromDatabaseMessage(Message props)
+        public override void UnPackFromDatabaseMessage(Message props)
         {
             if (props.ContainsKey(NusysConstants.AUDIO_ELEMENT_FILE_NAME_KEY))
             {
                 FileName = props.GetString(NusysConstants.AUDIO_ELEMENT_FILE_NAME_KEY);
             }
-            await base.UnPackFromDatabaseMessage(props);
+            base.UnPackFromDatabaseMessage(props);
         }
     }
 }

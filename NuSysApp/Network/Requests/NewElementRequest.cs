@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using NusysIntermediate;
 using NuSysApp.Controller;
 
@@ -13,18 +14,93 @@ namespace NuSysApp
         {
         }
 
-        public override async Task CheckOutgoingRequest()
+        /// <summary>
+        /// Preferred constructor.  
+        /// Create and populate an args class.  
+        /// Check the args properties to see what is and isn't required
+        /// </summary>
+        /// <param name="args"></param>
+        public NewElementRequest(NewElementRequestArgs args) : base(NusysConstants.RequestType.NewElementRequest)
         {
-            if (!_message.ContainsKey("id"))
-            {
-                _message["id"] = SessionController.Instance.GenerateId();
-            }
-            if (!_message.ContainsKey("contentId"))
-            {
-                throw new NewNodeRequestException("New Node requests require messages with at least 'contentId'");
-            }
+            //asserts for required properties
+            //TODO not make width and height required, just have defaults in nusysApp constants in they're not set;
+            Debug.Assert(args.ParentCollectionId != null);
+            Debug.Assert(args.LibraryElementId != null);
+            Debug.Assert(args.Height != null);
+            Debug.Assert(args.Width != null);
+            Debug.Assert(args.Y != null);
+            Debug.Assert(args.X != null);
+            
+            //set properties after assertions
+            _message[NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_ID_KEY] = args.Id ?? SessionController.Instance.GenerateId();
+            _message[NusysConstants.NEW_ELEMENT_REQUEST_LOCATION_Y_KEY] = args.Y;
+            _message[NusysConstants.NEW_ELEMENT_REQUEST_LOCATION_X_KEY] = args.X;
+            _message[NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_PARENT_COLLECTION_ID_KEY] = args.ParentCollectionId;
+            _message[NusysConstants.NEW_ELEMENT_REQUEST_SIZE_HEIGHT_KEY] = args.Height;
+            _message[NusysConstants.NEW_ELEMENT_REQUEST_SIZE_WIDTH_KEY] = args.Width;
+            _message[NusysConstants.NEW_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID_KEY] = args.LibraryElementId;
         }
 
+        /// <summary>
+        /// this checker just debug.asserts() the required keys.
+        /// </summary>
+        /// <returns></returns>
+        public override async Task CheckOutgoingRequest()
+        {
+            Debug.Assert(_message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_ID_KEY));
+            Debug.Assert(_message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_LOCATION_Y_KEY));
+            Debug.Assert(_message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_LOCATION_X_KEY));
+            Debug.Assert(_message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_PARENT_COLLECTION_ID_KEY));
+            Debug.Assert(_message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_SIZE_HEIGHT_KEY));
+            Debug.Assert(_message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_SIZE_WIDTH_KEY));
+            Debug.Assert(_message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID_KEY));
+        }
+
+
+        /// <summary>
+        /// If the request was successful this will get the returned model and add it to the Session.
+        /// This will throw an exception if the request hasn't returned or wasn't successful.
+        /// </summary>
+        public void AddReturnedElementToSession()
+        {
+            if (WasSuccessful() != true)
+            {
+                //If this fails here, check with .WasSuccessful() before calling this method.
+                throw new Exception("The request hasn't returned yet or was unsuccessful");
+            }
+            var model = GetReturnedElementModel();
+            Debug.Assert(SessionController.Instance.AddElement(model));//make sure the adding was succesful
+        }
+
+        /// <summary>
+        /// This will return the Request-returned elementModel if the request was sucessful.  
+        /// </summary>
+        /// <returns></returns>
+        public ElementModel GetReturnedElementModel()
+        {
+            if (WasSuccessful() != true)
+            {
+                //If this fails here, check with .WasSuccessful() before calling this method.
+                throw new Exception("The request hasn't returned yet or was unsuccessful");
+            }
+            Debug.Assert(_returnMessage.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_RETURNED_ELEMENT_MODEL_KEY));
+            try
+            {
+                var model = ElementModelFactory.DeserializeFromString(_returnMessage.GetString(NusysConstants.NEW_ELEMENT_REQUEST_RETURNED_ELEMENT_MODEL_KEY));
+                return model;
+            }
+            catch (JsonException e)
+            {
+                throw new Exception("The deserialization of an element model failed;");
+            }
+            
+        }
+       
+        /// <summary>
+        /// TODO: this fucking method all over again.  
+        /// Holy shit does this need refactoring badly.  8/7/16
+        /// </summary>
+        /// <returns></returns>
         public override async Task ExecuteRequestFunction()
         {
             var id = _message.GetString("id");
@@ -54,62 +130,62 @@ namespace NuSysApp
                 {
                     case NusysConstants.ElementType.Text:
                         elementModel = new TextElementModel(id);
-                        await elementModel.UnPackFromDatabaseMessage(_message);
+                        elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new TextNodeController((TextElementModel)elementModel);
                         break;
                     case NusysConstants.ElementType.ImageRegion:
                     case NusysConstants.ElementType.Image:
                         elementModel = new ImageElementModel(id);
-                        await elementModel.UnPackFromDatabaseMessage(_message);
+                        elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new ImageElementIntanceController(elementModel);
                         break;
                     case NusysConstants.ElementType.Word:
                         elementModel = new WordNodeModel(id);
-                        await elementModel.UnPackFromDatabaseMessage(_message);
+                        elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new ElementController(elementModel);
                         break;
                     case NusysConstants.ElementType.Powerpoint:
                         elementModel = new PowerpointNodeModel(id);
-                        await elementModel.UnPackFromDatabaseMessage(_message);
+                        elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new ElementController(elementModel);
                         break;
                     case NusysConstants.ElementType.PdfRegion:
                     case NusysConstants.ElementType.PDF:
                         elementModel = new PdfNodeModel(id);
-                        await elementModel.UnPackFromDatabaseMessage(_message);
+                        elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new ElementController(elementModel);
                         break;
                     case NusysConstants.ElementType.AudioRegion:
                     case NusysConstants.ElementType.Audio:
                         elementModel = new AudioNodeModel(id);
-                        await elementModel.UnPackFromDatabaseMessage(_message);
+                        elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new ElementController(elementModel);
                         break;
                     case NusysConstants.ElementType.VideoRegion:
                     case NusysConstants.ElementType.Video:
 
                         elementModel = new VideoNodeModel(id);
-                        await elementModel.UnPackFromDatabaseMessage(_message);
+                        elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new ElementController(elementModel);
                         break;
                     case NusysConstants.ElementType.Tag:
                         elementModel = new TagNodeModel(id);
-                        await elementModel.UnPackFromDatabaseMessage(_message);
+                        elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new ElementController(elementModel);
                         break;
                     case NusysConstants.ElementType.Web:
                         elementModel = new WebNodeModel(id);
-                        await elementModel.UnPackFromDatabaseMessage(_message);
+                        elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new ElementController(elementModel);
                         break;
                     case NusysConstants.ElementType.Collection:
                         elementModel = new CollectionElementModel(id);
-                        await elementModel.UnPackFromDatabaseMessage(_message);
+                        elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new ElementCollectionController(elementModel);
                         break;
                     case NusysConstants.ElementType.Area:
                         elementModel = new AreaModel(id);
-                        await elementModel.UnPackFromDatabaseMessage(_message);
+                        elementModel.UnPackFromDatabaseMessage(_message);
                         controller = new ElementController(elementModel);
                         break;/*
                     case ElementType.Link:

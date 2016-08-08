@@ -342,9 +342,9 @@ namespace NuSysApp
                             if (!(dc is RegionViewModel))
                             {
                                 var m = new Message();
-                                m["id1"] = dc.ContentId;
-                                m["id2"] = vm.ContentId;
-                                if (dc.ContentId != vm.ContentId)
+                                m["id1"] = dc.LibraryElementId;
+                                m["id2"] = vm.LibraryElementId;
+                                if (dc.LibraryElementId != vm.LibraryElementId)
                                 {
                                     SessionController.Instance.LinksController.RequestLink(m);
                                 }
@@ -369,7 +369,7 @@ namespace NuSysApp
         /// <param name="elementId2"></param>
         private void AddPresentationLink(string elementId1, string elementId2)
         {
-            var currentCollection = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            var currentCollection = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
 
             Debug.Assert(elementId1 != null);
             Debug.Assert(elementId2 != null);

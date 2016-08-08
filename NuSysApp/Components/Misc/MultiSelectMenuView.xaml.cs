@@ -83,7 +83,7 @@ namespace NuSysApp
             elementMsg["y"] = bb.Y;
             elementMsg["contentId"] = contentId;
             elementMsg["type"] = NusysConstants.ElementType.Collection;
-            elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
             elementMsg["id"] = newCollectionId;
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Search Results"));
@@ -164,7 +164,7 @@ namespace NuSysApp
             m["type"] = NusysConstants.ElementType.Area.ToString();
             m["points"] = Stroke.GetInkPoints();
             m["autoCreate"] = true;
-            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
 
             SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddAdorment(Stroke, SelectedColor);
 

@@ -302,14 +302,14 @@ namespace NuSysApp
                 var allContent = SessionController.Instance.ActiveFreeFormViewer.AllContent;
                 var view = new BezierLinkView(vm);
                 var collectionViewModel =
-                    allContent.FirstOrDefault(item => ((item as GroupNodeViewModel)?.ContentId == oneParentCollectionId)) as GroupNodeViewModel;
+                    allContent.FirstOrDefault(item => ((item as GroupNodeViewModel)?.LibraryElementId == oneParentCollectionId)) as GroupNodeViewModel;
                 if (collectionViewModel != null)
                 {
                     UITask.Run(async delegate {
                         collectionViewModel.AtomViewList.Add(view);
                     });
                 }
-                else if (SessionController.Instance.ActiveFreeFormViewer.ContentId == oneParentCollectionId)
+                else if (SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == oneParentCollectionId)
                 {
                     SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(view);
                 }

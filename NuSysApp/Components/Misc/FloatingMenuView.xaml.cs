@@ -291,28 +291,27 @@ namespace NuSysApp
                     title = "Unnamed Text";
                 if (elementType == NusysConstants.ElementType.Collection)
                     title = "Unnamed Collection";
-                var p = pos;
 
-            var dict = new Message();
-            Dictionary<string, object> metadata;
-           
-            var contentId = SessionController.Instance.GenerateId();
+                var newContentArgs = new CreateNewContentRequestArgs();
+                newContentArgs.DataBytes = data?.ToString();
+                newContentArgs.LibraryElementArgs.LibraryElementType = elementType;
+                newContentArgs.LibraryElementArgs.LibraryElementId = SessionController.Instance.GenerateId();
+                newContentArgs.LibraryElementArgs.Title = title; //TODO factor this out to a constant in nusysApp
 
-            dict = new Message();
-            dict["width"] = size.Width.ToString();
-            dict["height"] = size.Height.ToString();
-            dict["type"] = elementType.ToString();
-            dict["title"] = title;
-            dict["x"] = (p.X).ToString();
-            dict["y"] = (p.Y).ToString();
-            dict["contentId"] = contentId;
-            dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
-            dict["autoCreate"] = true;
+                var newElementArgs = new NewElementRequestArgs();
+                newElementArgs.LibraryElementId = newContentArgs.LibraryElementArgs.LibraryElementId;
+                newElementArgs.ParentCollectionId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
+                newElementArgs.Width = size.Width;
+                newElementArgs.Height = size.Height;
+                newElementArgs.X = pos.X;
+                newElementArgs.Y = pos.Y;
 
-            var contentType = NusysConstants.ElementTypeToContentType(elementType);
+                var newElementRequest = new NewElementRequest(newElementArgs);
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewContentRequest(contentType,data?.ToString(),dict));
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(dict));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewContentRequest(newContentArgs));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newElementRequest);
+
+                newElementRequest.AddReturnedElementToSession();
 
             }
 

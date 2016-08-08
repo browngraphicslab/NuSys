@@ -101,7 +101,7 @@ namespace NuSysApp
         private void LibraryListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             LibraryElementModel element = (LibraryElementModel)((Grid)sender).DataContext;
-            if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
+            if ((SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;

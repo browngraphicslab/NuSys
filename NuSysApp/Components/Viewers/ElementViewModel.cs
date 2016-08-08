@@ -170,11 +170,11 @@ namespace NuSysApp
                 if (linkLibraryElementModel != null)
                 {
                     string contentId = "";
-                    if (this.ContentId == linkLibraryElementModel.InAtomId)
+                    if (this.LibraryElementId == linkLibraryElementModel.InAtomId)
                     {
                         contentId = linkLibraryElementModel.OutAtomId;
                     }
-                    else if (this.ContentId == linkLibraryElementModel.OutAtomId)
+                    else if (this.LibraryElementId == linkLibraryElementModel.OutAtomId)
                     {
                         contentId = linkLibraryElementModel.InAtomId;
                     }
@@ -479,7 +479,7 @@ namespace NuSysApp
             get { return ((ElementModel) Model).ElementType; }
         }
 
-        public string ContentId
+        public string LibraryElementId
         {
             get { return ((ElementModel) Model).LibraryId; }
         }

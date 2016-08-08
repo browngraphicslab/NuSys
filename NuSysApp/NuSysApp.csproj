@@ -632,6 +632,8 @@
     <Compile Include="Network\Requests\FinalizeInkRequest.cs" />
     <Compile Include="Network\Requests\NewElementRequest.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewContentRequestArgs.cs" />
+    <Compile Include="Network\Requests\RequestArgs\NewElementRequestArgs.cs" />
+    <Compile Include="Network\Requests\RequestArgs\CreateNewLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\SendableUpdateRequest.cs" />
     <Compile Include="Network\Requests\SubscribeToCollectionRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\RequestClientInfoSystemRequest.cs" />

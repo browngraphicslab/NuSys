@@ -94,10 +94,10 @@ namespace NusysIntermediate
         }
 
         /// <summary>
-        /// This function will be called if/when the request is to be executed locally.
+        /// This function will be called when somebody else makes this request and it is forwarded to you.
         /// 
-        /// For instance, A CreateNewLibraryElementRequest should acutally make a library element in this method.
-        /// Other methods in that subclass would be used to prepare and set up the request to have all the tools needed to execute this request
+        /// For instance, A CreateNewLibraryElementRequest would return to the person who sent it.
+        /// At the same time, the other clients would get the message and this would be called. 
         /// </summary>
         /// <returns></returns>
         public virtual async Task ExecuteRequestFunction() { }

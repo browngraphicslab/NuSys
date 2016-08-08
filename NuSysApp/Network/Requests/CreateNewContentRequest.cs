@@ -22,7 +22,7 @@ namespace NuSysApp
         public CreateNewContentRequest(Message message) : base(NusysConstants.RequestType.CreateNewContentRequest,message){}
 
         /// <summary>
-        /// This constructor should be used when sending this request to the server.  
+        /// DEPRICATED but will still work.  
         /// This constructor's message should be well populated.  
         /// Since this message also creates a new Library Element, all the keys of the CreateNewLibraryElementRequest should be used when adding properties to the future library element;
         /// For example, use NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY when adding a title to this new content.  
@@ -63,28 +63,63 @@ namespace NuSysApp
             : base(NusysConstants.RequestType.CreateNewContentRequest)
         {
             //debug.asserts for required types
-            Debug.Assert(requestArgs.LibraryElementType != null);
+            Debug.Assert(requestArgs.LibraryElementArgs.LibraryElementType != null);
 
-            if (requestArgs.LibraryElementType != NusysConstants.ElementType.Collection ||
-                requestArgs.LibraryElementType != NusysConstants.ElementType.Text)
+            if (requestArgs.LibraryElementArgs.LibraryElementType != NusysConstants.ElementType.Collection &&
+                requestArgs.LibraryElementArgs.LibraryElementType != NusysConstants.ElementType.Text)
             {
                 Debug.Assert(requestArgs.DataBytes != null);
                 _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES] = requestArgs.DataBytes;
-
             }
-
-            if (requestArgs.LibraryElementType == NusysConstants.ElementType.Audio ||
-                requestArgs.LibraryElementType == NusysConstants.ElementType.Video ||
-                requestArgs.LibraryElementType == NusysConstants.ElementType.PDF ||
-                requestArgs.LibraryElementType == NusysConstants.ElementType.Image)
+            else
             {
-                Debug.Assert(requestArgs.FileExtensions != null);
-                _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_FILE_EXTENTION] = requestArgs.FileExtensions;
+                _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES] = null;
             }
 
-            _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY] = NusysConstants.ElementTypeToContentType(requestArgs.LibraryElementType);
-            _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY] = NusysConstants.GenerateId();
+            //if the requsted content will need a specific filetype server-side, require the file extension
+            if (requestArgs.LibraryElementArgs.LibraryElementType == NusysConstants.ElementType.Audio ||
+                requestArgs.LibraryElementArgs.LibraryElementType == NusysConstants.ElementType.Video ||
+                requestArgs.LibraryElementArgs.LibraryElementType == NusysConstants.ElementType.PDF ||
+                requestArgs.LibraryElementArgs.LibraryElementType == NusysConstants.ElementType.Image)
+            {
+                Debug.Assert(requestArgs.FileExtension != null);
+                _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_FILE_EXTENTION] = requestArgs.FileExtension;
+            }
 
+            //Set the contentType based on the ElementType of the default library element
+            _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY] = NusysConstants.ElementTypeToContentType(requestArgs.LibraryElementArgs.LibraryElementType.Value).ToString();
+
+            //set the libraryElementType
+            _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY] = requestArgs.LibraryElementArgs.LibraryElementType.ToString();
+
+            //Set the contentId based on the given id, or create one 
+            _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY] = requestArgs.ContentId ?? SessionController.Instance.GenerateId();
+
+            //set the default library element's content ID
+            _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CONTENT_ID_KEY] = _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY];
+
+            //set the library element's library Id
+            _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY] = requestArgs.LibraryElementArgs.LibraryElementId ?? SessionController.Instance.GenerateId();
+
+            //set the keywords
+            if (requestArgs.LibraryElementArgs.Keywords != null)
+            {
+                _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_KEYWORDS_KEY] = requestArgs.LibraryElementArgs.Keywords;
+            }
+
+            //set the title
+            if (requestArgs.LibraryElementArgs.Title != null)
+            {
+                _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = requestArgs.LibraryElementArgs.Title;
+            }
+
+            //set the favorited boolean
+            if (requestArgs.LibraryElementArgs.Favorited != null)
+            {
+                _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_FAVORITED_KEY] = requestArgs.LibraryElementArgs.Favorited.Value;
+            }
+
+            //TODO add in metadata
         }
 
         /// <summary>

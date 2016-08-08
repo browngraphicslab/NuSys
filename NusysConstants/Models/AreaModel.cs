@@ -24,13 +24,12 @@ namespace NuSysApp
             return packed;
         }
 
-        public override async Task UnPackFromDatabaseMessage(Message props)
+        public override void UnPackFromDatabaseMessage(Message props)
         {
-            await base.UnPackFromDatabaseMessage(props);
+            base.UnPackFromDatabaseMessage(props);
             if (props.ContainsKey(NusysConstants.AREA_MODEL_POINTS_KEY))
             {
                 Points = props.GetList(NusysConstants.AREA_MODEL_POINTS_KEY, new List<PointModel>());
-
             }
         }
     }

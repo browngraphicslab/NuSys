@@ -93,10 +93,10 @@ namespace NusysServer
 
             //creates a list of all columns from alias, content, and properties tables
             var columnsToGet =
-                new List<string>(
-                    Constants.GetFullColumnTitles(Constants.SQLTableType.Alias, Constants.GetAcceptedKeys(Constants.SQLTableType.Alias))
-                        .Concat(Constants.GetFullColumnTitles(Constants.SQLTableType.Content,Constants.GetAcceptedKeys(Constants.SQLTableType.Content)))
-                        .Concat(Constants.GetFullColumnTitles(Constants.SQLTableType.Properties, Constants.GetAcceptedKeys(Constants.SQLTableType.Properties))));
+                new List<string>((
+                    Constants.GetAcceptedKeys(Constants.SQLTableType.Alias))
+                        .Concat(Constants.GetAcceptedKeys(Constants.SQLTableType.Content))
+                        .Concat(Constants.GetAcceptedKeys(Constants.SQLTableType.Properties)));
 
 
             return new SQLSelectQuery(columnsToGet, aliasJoinLibraryJoinContentJoinProperties, whereQuery);

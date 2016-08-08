@@ -196,7 +196,7 @@ namespace NuSysApp
         private void AddToCollection_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(_libraryElementId);
-            if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element?.LibraryElementId) ||
+            if ((SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == element?.LibraryElementId) ||
                 (element?.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
@@ -311,7 +311,7 @@ namespace NuSysApp
                     dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
                     dict["metadata"] = metadata;
                     dict["autoCreate"] = true;
-                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
                     var request = new NewElementRequest(dict);
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                 }

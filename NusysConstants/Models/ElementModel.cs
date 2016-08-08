@@ -11,7 +11,6 @@ namespace NusysIntermediate
     public class ElementModel : Sendable
     {       
         private double _alpha = 1;
-        private SolidColorBrush _color;
         private double _height;
         private double _scaleX = 1;
         private double _scaleY = 1;
@@ -26,19 +25,13 @@ namespace NusysIntermediate
             
         }
 
-        public NusysConstants.ElementType ElementType { get; set; }
+        public NusysConstants.ElementType ElementType { get; set; } //TODO probably get rid of this if possible
         
         public string LibraryId { set; get; }
 
         public string ParentCollectionId { get; set; }
 
         // TODO: Move color to higher level type
-
-        public SolidColorBrush Color
-        {
-            get { return _color; }
-            set { _color = value; }
-        }
 
         public double X
         {
@@ -135,7 +128,7 @@ namespace NusysIntermediate
             return dict;
         }
 
-        public override async Task UnPackFromDatabaseMessage(Message props)
+        public override void UnPackFromDatabaseMessage(Message props)
         {
             if (props.ContainsKey(NusysConstants.ALIAS_LOCATION_X_KEY))
             {
@@ -170,6 +163,8 @@ namespace NusysIntermediate
                 LibraryId = props.GetString(NusysConstants.ALIAS_LIBRARY_ID_KEY, "");
             }
 
+            //TODO wtf our server refactor should have no hardcoded strings like these
+            /*
             //may not need some of this stuff below
             Alpha = props.GetDouble("alpha", Alpha);
             ScaleX = props.GetDouble("scaleX", ScaleX);
@@ -186,10 +181,10 @@ namespace NusysIntermediate
                 string t = props.GetString("nodeType");
                 ElementType = (NusysConstants.ElementType)Enum.Parse(typeof(NusysConstants.ElementType), t);
             }
-            
+            */
             
 
-            await base.UnPackFromDatabaseMessage(props);
+            base.UnPackFromDatabaseMessage(props);
         }
     }
 }

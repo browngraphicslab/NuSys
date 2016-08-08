@@ -60,7 +60,7 @@ namespace NuSysApp
                 var messages =
                     await
                         SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(
-                            viewModel.ContentId);
+                            viewModel.LibraryElementId);
                 _count = messages.Count;
             };
             _vm.Controller.SizeChanged += GroupNode_SizeChanged;

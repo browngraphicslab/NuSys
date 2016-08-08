@@ -16,10 +16,10 @@ namespace NuSysApp
             TitleSuggestions = new List<string>();
         }
 
-        public override async Task UnPackFromDatabaseMessage(Message props)
+        public override void UnPackFromDatabaseMessage(Message props)
         {
             TitleSuggestions = props.GetList("titleSuggestions", new List<string>());
-            await base.UnPackFromDatabaseMessage(props);
+            base.UnPackFromDatabaseMessage(props);
         }
 
         public override async Task<Dictionary<string, object>> Pack()

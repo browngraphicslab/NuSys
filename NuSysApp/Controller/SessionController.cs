@@ -158,6 +158,55 @@ namespace NuSysApp
             OnModeChanged?.Invoke(this, mode);
         }
 
+        /// <summary>
+        /// adds an element to the its parentCollection and adds its controller to the ID to controller's list.
+        /// This also will create the controller class for that model.
+        /// 
+        /// Returns true if the adding was successful;
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public bool AddElement(ElementModel model)
+        {
+
+            if (IdToControllers.ContainsKey(model.Id))
+            {
+                return false;
+            }
+            var controller = ElementControllerFactory.CreateFromModel(model);
+
+            //Copy pasted code
+            SessionController.Instance.IdToControllers[model.Id] = controller;
+
+            UITask.Run(async delegate
+            {
+
+                var parentCollectionLibraryElementController =
+                    (CollectionLibraryElementController)
+                        SessionController.Instance.ContentController.GetLibraryElementController(
+                            model.ParentCollectionId);
+                parentCollectionLibraryElementController.AddChild(model.Id);
+
+                if (model.ElementType == NusysConstants.ElementType.Collection)
+                {
+                    //TODO have this code somewhere but not stack overflow.  aka: add in a level checker so we don't recursively load 
+                    var existingChildren = ((CollectionLibraryElementModel) (controller.LibraryElementModel))?.Children;
+                    foreach (var childId in existingChildren ?? new HashSet<string>())
+                    {
+                        if (SessionController.Instance.IdToControllers.ContainsKey(childId))
+                        {
+                            ((ElementCollectionController) controller).AddChild(
+                                SessionController.Instance.IdToControllers[childId]);
+                        }
+                    }
+                }
+            });
+            //end pasted code
+
+            return true;
+
+        }
+
         #region Speech Recognition
 
         public async Task InitializeRecog()

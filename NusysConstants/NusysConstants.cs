@@ -158,10 +158,17 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string NEW_ELEMENT_REQUEST_CREATOR_ID_KEY = "creator_id_key";
 
-        /// <summary>
-        /// the key used to send the access level of the element request key
-        /// </summary>
-        public static readonly string NEW_ELEMENT_REQUEST_ACCESS_KEY = "access";
+            /// <summary>
+            /// the key used to send the access level of the element request key
+            /// </summary>
+            public static readonly string NEW_ELEMENT_REQUEST_ACCESS_KEY = "access";
+
+            /// <summary>
+            /// This is returned when the NewElementReqeust request is succesfull. 
+            /// The value will be a josn-serialized ElementModel that can be run through the factory
+            /// </summary>
+            public static readonly string NEW_ELEMENT_REQUEST_RETURNED_ELEMENT_MODEL_KEY = "returned_element_model";
+
         #endregion NewElementRequest
 
         #region NewLibraryElementRequest
@@ -443,12 +450,13 @@ namespace NusysIntermediate
             /// <summary>
             /// 32 character ID of the library element or alias that this property belongs to
             /// </summary>
-            public static readonly string PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY = "library_id";
+            public static readonly string PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY = "library_or_alias_id";
 
             /// <summary>
             /// the string used as the name of the 'key' column for unique properties.  
             /// PROBABLY ONLY FOR SERVER-SIDE USE
             /// approximately 512 characters max
+            /// IF YOU CHANGE THIS STRING TO JUST 'key' IT WILL BREAK THE SQL STATEMENTS
             /// </summary>
             public static readonly string PROPERTIES_KEY_COLUMN_KEY = "key_string";
 

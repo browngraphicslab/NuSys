@@ -157,7 +157,7 @@ namespace NuSysApp
 
         public override async Task Init()
         {
-            if (SessionController.Instance.ContentController.ContainsAndLoaded(ContentId))
+            if (SessionController.Instance.ContentController.ContainsAndLoaded(LibraryElementId))
             {
                 InitWhenReady(this);
             }

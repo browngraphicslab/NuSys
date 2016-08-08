@@ -29,9 +29,7 @@ namespace NusysIntermediate
         public string LargeIconUrl { get; set; }
         public string MediumIconUrl { get; set; }
         public string SmallIconUrl { get; set; }
-        public ConcurrentDictionary<string, MetadataEntry> Metadata {
-            get;
-            set; }
+        public ConcurrentDictionary<string, MetadataEntry> Metadata { get; set; }
         public string Creator { set; get; }
         public string Timestamp { get; set; }//TODO maybe put in a timestamp, maybe remove the field from the library
 

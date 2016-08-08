@@ -247,7 +247,7 @@ namespace NuSysApp
                 dict["x"] = p.X;
                 dict["y"] = p.Y;
                 dict["contentId"] = contentId;
-                dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
                 dict["metadata"] = metadata;
                 dict["autoCreate"] = true;
 

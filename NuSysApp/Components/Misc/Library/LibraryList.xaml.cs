@@ -145,7 +145,7 @@ namespace NuSysApp
             LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(itemTemplate.ContentID);
 
 
-            if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
+            if ((SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;

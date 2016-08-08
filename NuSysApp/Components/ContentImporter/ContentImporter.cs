@@ -84,7 +84,7 @@ namespace NuSysApp
                         m["title"] = "Imported from Chrome";
                         m["type"] = NusysConstants.ElementType.Text.ToString();
                         m["autoCreate"] = true;
-                        m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                        m["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
 
                         await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, htmltext == null ? "" : htmltext.ToString(), NusysConstants.ElementType.Text, m.ContainsKey("title") ? m["title"].ToString() : null));
                         await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m));
@@ -109,7 +109,7 @@ namespace NuSysApp
             m["width"] = 400;
             m["height"] = 400;
             m["autoCreate"] = true;
-            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
 
             var metadata = new Dictionary<string, object>();
             metadata["BookmarkId"] = selectionItem.BookmarkId;

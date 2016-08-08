@@ -179,7 +179,7 @@ namespace NuSysApp
             m["title"] = "";
             m["type"] = type.ToString();
             m["autoCreate"] = true;
-            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
 
             if (type == NusysConstants.ElementType.Video)
             {

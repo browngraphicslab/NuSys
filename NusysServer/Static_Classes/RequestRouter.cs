@@ -85,6 +85,10 @@ namespace NusysServer
                     var errorMessage = new Message();
                     errorMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = false;
                     errorMessage[NusysConstants.REQUEST_ERROR_MESSAGE_KEY] = e.Message;
+                    if (originalMessage.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING))
+                    {
+                        errorMessage[NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING] = originalMessage[NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING];
+                    }
                     webSocketHandler.Send(errorMessage.GetSerialized());
                     ErrorLog.AddError(e);
                     return false;

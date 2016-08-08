@@ -57,7 +57,7 @@ namespace NuSysApp
                 message["height"] = height;
                 message["type"] = NusysConstants.ElementType.Collection;
                 message["collectionview"] = collectionView;
-                message["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                message["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
                 message["id"] = newId;
 
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(message));

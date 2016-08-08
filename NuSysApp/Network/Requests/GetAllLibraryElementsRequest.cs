@@ -21,7 +21,8 @@ namespace NuSysApp
         public GetAllLibraryElementsRequest() : base(NusysConstants.RequestType.GetAllLibraryElementsRequest) {}
 
         /// <summary>
-        /// 
+        /// Returns the entire list of all the library element models on the server after thr request was successful.
+        /// Check to make sure the request was successful before calling this method.
         /// </summary>
         /// <returns></returns>
         public IEnumerable<LibraryElementModel> GetReturnedLibraryElementModels()

@@ -13,7 +13,7 @@ namespace NusysServer
     {
         public static readonly string SERVER_SESSION_ID_STRING = "server_session_id";
         public static readonly string VALID_CREDENTIALS_BOOLEAN_STRING = "valid";
-        private static readonly string user = "harsh";
+        private static readonly string user = "trent";
 
         public static string WWW_ROOT {
             get
@@ -148,22 +148,35 @@ namespace NusysServer
         /// </summary>
         /// <param name="tableType"></param>
         /// <returns></returns>
-        public static IEnumerable<string> GetAcceptedKeys(SQLTableType tableType)
+        public static IEnumerable<string> GetAcceptedKeys(SQLTableType tableType, bool fullColumnNames = true)
         {
+            IEnumerable<string> keys;
             switch (tableType)
             {
                 case SQLTableType.Alias:
-                    return NusysConstants.ALIAS_ACCEPTED_KEYS.Keys;
+                    keys =  NusysConstants.ALIAS_ACCEPTED_KEYS.Keys;
+                    break;
                 case SQLTableType.LibraryElement:
-                    return NusysConstants.LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS.Keys;
+                    keys = NusysConstants.LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS.Keys;
+                    break;
                 case SQLTableType.Content:
-                    return NusysConstants.ACCEPTED_CONTENT_TABLE_KEYS;
+                    keys = NusysConstants.ACCEPTED_CONTENT_TABLE_KEYS;
+                    break;
                 case SQLTableType.Metadata:
-                    return NusysConstants.ACCEPTED_METADATA_TABLE_KEYS;
+                    keys = NusysConstants.ACCEPTED_METADATA_TABLE_KEYS;
+                    break;
                 case SQLTableType.Properties:
-                    return NusysConstants.ACCEPTED_PROPERTIES_TABLE_KEYS;
+                    keys = NusysConstants.ACCEPTED_PROPERTIES_TABLE_KEYS;
+                    break;
+                default:
+                    return new List<string>();
             }
-            return new List<string>();
+            if (!fullColumnNames)
+            {
+                return keys;
+            }
+            keys = keys.Select(key => SQLConnector.GetTableName(tableType) + "." + key);
+            return keys;
         }
 
         /// <summary>
@@ -175,7 +188,7 @@ namespace NusysServer
         /// <returns></returns>
         public static Message GetCleanedMessageForDatabase(Message message, SQLTableType tableType)
         {
-            IEnumerable<string> acceptedKeys = GetAcceptedKeys(tableType);
+            IEnumerable<string> acceptedKeys = GetAcceptedKeys(tableType,false);
             var cleanedMessage = new Message();
             foreach (var key in acceptedKeys)
             {

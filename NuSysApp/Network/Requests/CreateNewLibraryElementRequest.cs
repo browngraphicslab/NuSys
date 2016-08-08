@@ -15,8 +15,9 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// DEPRECATED, SHOULD REMOVE
         /// pack the message here for creating a new library element. 
-        /// In readlity, this request should probably only be used for creating regions
+        /// In reality, this request should probably only be used for creating regions
         /// </summary>
         /// <param name="id"></param>
         /// <param name="data"></param>
@@ -33,38 +34,54 @@ namespace NuSysApp
                 _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = title;
             }
         }
+
+        /// <summary>
+        /// preffered constructor for the CreateNewLibraryElementRequest.
+        /// Takes in an arguments class.  Check the class properties to see which are required.  
+        /// </summary>
+        /// <returns></returns>
+        public CreateNewLibraryElementRequest(CreateNewLibraryElementRequestArgs args) :  base(NusysConstants.RequestType.CreateNewLibraryElementRequest)
+        {
+            //debug.asserts for required types
+            Debug.Assert(args.LibraryElementType != null);
+
+            _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY] = args.LibraryElementType.ToString();
+
+            //set the default library element's content ID
+            _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CONTENT_ID_KEY] = args.ContentId ?? SessionController.Instance.GenerateId();
+
+            //set the library element's library Id
+            _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY] = args.LibraryElementId ?? SessionController.Instance.GenerateId();
+
+            //set the keywords
+            if (args.Keywords != null)
+            {
+                _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_KEYWORDS_KEY] = args.Keywords;
+            }
+
+            //set the title
+            if (args.Title != null)
+            {
+                _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = args.Title;
+            }
+
+            //set the favorited boolean
+            if (args.Favorited != null)
+            {
+                _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_FAVORITED_KEY] = args.Favorited.Value;
+            }
+
+            //TODO add in metadata
+        }
+
+
         public override async Task CheckOutgoingRequest()
         {
             var time = DateTime.UtcNow.ToString();
-            _message["library_element_creation_timestamp"] = time;
-            _message["library_element_last_edited_timestamp"] = time;
-            string url = null;
-            if (_message.ContainsKey("server_url"))
-            {
-                url = _message["server_url"].ToString();
-            }
-
-            NusysConstants.ElementType type = (NusysConstants.ElementType) Enum.Parse(typeof(NusysConstants.ElementType), (string) _message["type"], true);
-            /*
-            //LibraryElementModel libraryElement = SessionController.Instance.ContentController.CreateAndAddModelFromMessage(new Message(_message.GetSerialized()));
-            if (libraryElement != null && false)
-            {
-                Debug.Fail("just wanted to make sure this code isn't being used.  If it is, tell trent");
-                SessionController.Instance.ContentController.Add(libraryElement);
-                var controller =
-                    SessionController.Instance.ContentController.GetLibraryElementController(
-                        libraryElement.LibraryElementId);
-                libraryElement.Timestamp = time;
-                var loadEventArgs = new LoadContentEventArgs(_message["data"]?.ToString());
-                if (_message.ContainsKey("data") && _message["data"] != null)
-                {
-                    if (libraryElement.Type != NusysConstants.ElementType.Word)
-                    {
-                        controller.Load(loadEventArgs);
-                    }
-                }
-                libraryElement.ServerUrl = url;
-            }*/
+            Debug.Assert(_message.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CONTENT_ID_KEY));
+            Debug.Assert(_message.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY));
+            _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CREATION_TIMESTAMP_KEY] = time;
+            _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LAST_EDITED_TIMESTAMP_KEY] = time;
         }
     }
 }

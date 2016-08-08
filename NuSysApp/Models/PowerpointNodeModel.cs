@@ -19,9 +19,9 @@ namespace NuSysApp
 
         public string FilePath { get; set; }
        
-        public override async Task UnPackFromDatabaseMessage(Message props)
+        public override void UnPackFromDatabaseMessage(Message props)
         {
-            await base.UnPackFromDatabaseMessage(props);
+            base.UnPackFromDatabaseMessage(props);
         }
 
         public override async Task<Dictionary<string, object>> Pack()

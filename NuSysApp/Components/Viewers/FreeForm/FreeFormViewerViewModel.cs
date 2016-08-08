@@ -197,7 +197,7 @@ namespace NuSysApp
                 _selections.Add(selected);
    
             var selectedElements = AtomViewList.Where(a => a.DataContext == selected);
-            if (!selectedElements.Any())
+            if (!selectedElements.Any() || (selectedElements.First().DataContext as ElementViewModel)?.Controller.LibraryElementController == null)
                 return;
 
 

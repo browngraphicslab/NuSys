@@ -249,7 +249,7 @@ namespace NuSysApp
         {
             SearchResultTemplate result = (sender as Grid)?.DataContext as SearchResultTemplate;
             LibraryElementModel element = result?.Model;
-            if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
+            if ((SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -374,7 +374,7 @@ namespace NuSysApp
                     dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
                     dict["metadata"] = metadata;
                     dict["autoCreate"] = true;
-                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
                     var request = new NewElementRequest(dict);
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                 }
@@ -499,7 +499,7 @@ namespace NuSysApp
             elementMsg["y"] = r.Y;
             elementMsg["contentId"] = contentId;
             elementMsg["type"] = NusysConstants.ElementType.Collection;
-            elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
             elementMsg["id"] = newCollectionId;
 
 

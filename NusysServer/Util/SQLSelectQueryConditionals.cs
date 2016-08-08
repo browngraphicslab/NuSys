@@ -78,7 +78,7 @@ namespace NusysServer
             {
                 throw new Exception("cannot create a Sql Query Equals conditional with null conditionals");
             }
-            Property = SQLConnector.GetTableName(tableType) +"."+ property;
+            Property = property;
             RequiredValue = requiredValue;
         }
 

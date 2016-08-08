@@ -64,7 +64,7 @@ namespace NusysServer
             IEnumerable<string> acceptedColumns = new HashSet<string>();
             foreach (var table in _fromTable.GetSqlTableNames())
             {
-                acceptedColumns = acceptedColumns.Concat(Constants.GetFullColumnTitles(table, Constants.GetAcceptedKeys(table)));
+                acceptedColumns = acceptedColumns.Concat(Constants.GetAcceptedKeys(table));
             }
             return columnsToClean.Intersect(acceptedColumns);
         }

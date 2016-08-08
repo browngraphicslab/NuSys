@@ -461,7 +461,7 @@ namespace NuSysApp
                     dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
                     dict["metadata"] = metadata;
                     dict["autoCreate"] = true;
-                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
                     var request = new NewElementRequest(dict);
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                 }
@@ -599,7 +599,7 @@ namespace NuSysApp
             elementMsg["y"] = r.Y;
             elementMsg["contentId"] = contentId;
             elementMsg["type"] = NusysConstants.ElementType.Collection;
-            elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
             elementMsg["id"] = newCollectionId;
             if (ListContainer.Children[0] == _libraryList)
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Search Results for '"+Searchfield.Text+"'"));

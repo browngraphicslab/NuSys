@@ -22,7 +22,8 @@ namespace NusysIntermediate
             Debug.Assert(message.ContainsKey(NusysConstants.CONTENT_DATA_MODEL_DATA_STRING_KEY));
 
             var contentId = message.GetString(NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY);
-            var data = message.GetString(NusysConstants.CONTENT_DATA_MODEL_DATA_STRING_KEY);
+            //var data = message.GetString(NusysConstants.CONTENT_DATA_MODEL_DATA_STRING_KEY);
+            string data = null;
 
             var model = new ContentDataModel(contentId,data);
             model.ContentType = message.GetEnum<NusysConstants.ContentType>(NusysConstants.CONTENT_TABLE_TYPE_KEY);

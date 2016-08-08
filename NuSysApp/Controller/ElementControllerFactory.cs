@@ -9,7 +9,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="elementModel"></param>
         /// <returns></returns>
-        public static ElementController CreateFromModel(ElementModel elementModel)
+        public static ElementController CreateFromModel(ElementModel elementModel) //TODO is this done?????? WTF? - Trent
         {
             ElementController controller;
 

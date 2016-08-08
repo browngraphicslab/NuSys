@@ -8,7 +8,8 @@ namespace NusysIntermediate
     public class ElementModelFactory
     {
         /// <summary>
-        /// Returns the element model for the passed in message
+        /// Returns the element model for the passed in message.  
+        /// Must have an elementType stored in the key NusysConstants.LIBRARY_ELEMENT_TYPE_KEY
         /// </summary>
         public static ElementModel CreateFromMessage(Message message)
         {
@@ -70,32 +71,32 @@ namespace NusysIntermediate
                 {
                 case NusysConstants.ElementType.Text:
                      elementModel = JsonConvert.DeserializeObject<TextElementModel>(elementJSON);
-                break;
+                    break;
                 case NusysConstants.ElementType.ImageRegion:
                 case NusysConstants.ElementType.Image:
                      elementModel = JsonConvert.DeserializeObject<ImageElementModel>(elementJSON);
-                break;
+                    break;
                 case NusysConstants.ElementType.Word:
                      elementModel = JsonConvert.DeserializeObject<WordNodeModel>(elementJSON);
-                break;
+                    break;
                 case NusysConstants.ElementType.PdfRegion:
                 case NusysConstants.ElementType.PDF:
                      elementModel = JsonConvert.DeserializeObject<PdfNodeModel>(elementJSON);
-                break;
+                    break;
                 case NusysConstants.ElementType.AudioRegion:
                 case NusysConstants.ElementType.Audio:
                         elementModel = JsonConvert.DeserializeObject<AudioNodeModel>(elementJSON);
-                break;
+                    break;
                 case NusysConstants.ElementType.VideoRegion:
                 case NusysConstants.ElementType.Video:
                         elementModel = JsonConvert.DeserializeObject<VideoNodeModel>(elementJSON);
-                break;
+                    break;
                 case NusysConstants.ElementType.Collection:
                         elementModel = JsonConvert.DeserializeObject<CollectionElementModel>(elementJSON);
-                break;
+                    break;
                 case NusysConstants.ElementType.Area:
                         elementModel = JsonConvert.DeserializeObject<AreaModel>(elementJSON);
-                break;
+                    break;
                 }
                 //VERY IMPORTANT
                 //TODO put debug.Asserts below all these to check states

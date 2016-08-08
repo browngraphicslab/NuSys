@@ -49,14 +49,14 @@ namespace NuSysApp
             return pack;
         }
 
-        public async override Task UnPackFromDatabaseMessage(Message props)
+        public async override void UnPackFromDatabaseMessage(Message props)
         {
             Zoom =  props.GetDouble("zoom", 1);
             LocationX = props.GetDouble("locationX", -Constants.MaxCanvasSize/2);
             LocationY = props.GetDouble("locationY", -Constants.MaxCanvasSize/2);
             CenterX = props.GetDouble("centerX", -Constants.MaxCanvasSize/2);
             CenterY = props.GetDouble("centerY", -Constants.MaxCanvasSize/2);
-            await base.UnPackFromDatabaseMessage(props);
+            base.UnPackFromDatabaseMessage(props);
         }
 
     }

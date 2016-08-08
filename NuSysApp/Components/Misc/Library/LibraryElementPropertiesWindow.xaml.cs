@@ -184,7 +184,7 @@ namespace NuSysApp
         private async void EnterCollection_OnClick(object sender, RoutedEventArgs e)
         {
             var id = _currentElementModel.LibraryElementId;
-            if (id != SessionController.Instance.ActiveFreeFormViewer.ContentId)
+            if (id != SessionController.Instance.ActiveFreeFormViewer.LibraryElementId)
             {
                 UITask.Run(async delegate
                 {
@@ -200,7 +200,7 @@ namespace NuSysApp
                         await
                             SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
                                 new UnsubscribeFromCollectionRequest(
-                                    SessionController.Instance.ActiveFreeFormViewer.ContentId));
+                                    SessionController.Instance.ActiveFreeFormViewer.LibraryElementId));
                         //TODO put back in for collction entering
                         //await SessionController.Instance.SessionView.LoadWorkspaceFromServer(messages, id);
                     }

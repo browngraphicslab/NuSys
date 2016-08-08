@@ -49,7 +49,7 @@ namespace NusysServer
             var success = ContentController.Instance.SqlConnector.AddLibraryElement(addLibraryElementMessage);
 
             var forwardMessage = new Message(message);
-            forwardMessage.Remove(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING);
+            forwardMessage.Remove(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING);// This step is a must since the client must recieve this message an not try to resume an awaiting thread
             NuWebSocketHandler.BroadcastToSubset(forwardMessage,new HashSet<NuWebSocketHandler>() {senderHandler});
 
             var returnMessage = new Message();

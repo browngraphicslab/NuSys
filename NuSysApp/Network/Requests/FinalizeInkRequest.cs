@@ -50,7 +50,7 @@ namespace NuSysApp
             else if (props.GetString("inkType") == "full" )
             {
                 var lineModel = new InqLineModel(id);
-                await lineModel.UnPackFromDatabaseMessage(props);
+                lineModel.UnPackFromDatabaseMessage(props);
             }
         }
     }

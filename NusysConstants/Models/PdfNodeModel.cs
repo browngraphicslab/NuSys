@@ -35,14 +35,14 @@ namespace NusysIntermediate
             return props;
         }
 
-        public override async Task UnPackFromDatabaseMessage(Message props)
+        public override void UnPackFromDatabaseMessage(Message props)
         {
             if (props.ContainsKey(NusysConstants.PDF_ELEMENT_PAGE_LOCATION_KEY))
             {
                 CurrentPageNumber = props.GetInt(NusysConstants.PDF_ELEMENT_PAGE_LOCATION_KEY, 0);
             }
 
-            await base.UnPackFromDatabaseMessage(props);
+            base.UnPackFromDatabaseMessage(props);
         }
     }
 }

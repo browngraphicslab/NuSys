@@ -23,7 +23,7 @@ namespace NusysIntermediate
             return dict;
         }
 
-        public virtual async Task UnPackFromDatabaseMessage(Message props)
+        public virtual void UnPackFromDatabaseMessage(Message props)
         {
         }
     }
