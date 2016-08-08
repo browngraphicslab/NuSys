@@ -53,6 +53,10 @@ namespace NuSysApp
                 userControl.ManipulationStarted += ManipulationStarting;
                 userControl.ManipulationDelta += OnManipulationDelta;
                 userControl.ManipulationCompleted += OnManipulationCompleted;
+                if (!(userControl is UndoButton))
+                {
+                    userControl.ManipulationInertiaStarting += OnManipulationIntertiaStarting;
+                }
             }
 
             vm.AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
@@ -80,16 +84,7 @@ namespace NuSysApp
             var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
             var elementController = vm.Controller;
             if (!vm.IsEditing)
-            {
-                //Instantiates MoveElementAction
-                var moveElementAction = new MoveElementAction(elementController, _originalPosition, _newPosition);
-
-                //Creates UndoButton and makes it appear in the old position.
-                var ffvm = (FreeFormViewerViewModel) _view.DataContext;
-                var undoButton = new UndoButton(moveElementAction, ffvm, _originalPosition, UndoButtonState.Active);
-          
-
-
+            { 
             }
             ActiveNodes.Remove((UserControl) sender);
             manipulationCompletedRoutedEventArgs.Handled = true;
@@ -125,9 +120,14 @@ namespace NuSysApp
                     userControl.ManipulationDelta += OnManipulationDelta;
                     userControl.ManipulationStarted += ManipulationStarting;
                     userControl.ManipulationCompleted += OnManipulationCompleted;
+                    if (!(userControl is UndoButton))
+                    {
+                        userControl.ManipulationInertiaStarting += OnManipulationIntertiaStarting;
+                    }
                 }
             }
         }
+
 
         public override async Task Deactivate()
         {
@@ -138,6 +138,7 @@ namespace NuSysApp
                 userControl.ManipulationDelta -= OnManipulationDelta;
                 userControl.ManipulationStarted -= ManipulationStarting;
                 userControl.ManipulationCompleted -= OnManipulationCompleted;
+                userControl.ManipulationInertiaStarting -= OnManipulationIntertiaStarting;
             }
 
             vm.AtomViewList.CollectionChanged -= AtomViewListOnCollectionChanged;
@@ -201,6 +202,31 @@ namespace NuSysApp
             }
 
             e.Handled = true;
+        }
+        private void OnManipulationIntertiaStarting(object sender, ManipulationInertiaStartingRoutedEventArgs e)
+        {
+            //Updates new position coordinates
+            _newPosition.X = e.Cumulative.Translation.X;
+            _newPosition.Y = e.Cumulative.Translation.Y;
+
+            // Transforms original and new positions from screen to global space
+            _newPosition = (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform).Inverse.TransformPoint(
+                _newPosition);
+            _originalPosition = (SessionController.Instance.ActiveFreeFormViewer.CompositeTransform).Inverse.TransformPoint(
+                _originalPosition);
+
+            //Get elements controller
+            var vm = (sender as FrameworkElement).DataContext as ElementViewModel;
+            var elementController = vm.Controller;
+            if (!vm.IsEditing)
+            {
+                //Instantiates MoveElementAction
+               var moveElementAction = new MoveElementAction(elementController, _originalPosition, _newPosition);
+
+                //Creates UndoButton and makes it appear in the old position.
+                var ffvm = (FreeFormViewerViewModel)_view.DataContext;
+                var undoButton = new UndoButton(moveElementAction, ffvm, _originalPosition, UndoButtonState.Active);
+            }
         }
 
         public bool CheckInBounds(Point p)
