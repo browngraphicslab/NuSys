@@ -12,6 +12,7 @@ using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using Windows.System.Threading;
 using Newtonsoft.Json;
+using NusysIntermediate;
 
 namespace NuSysApp
 {

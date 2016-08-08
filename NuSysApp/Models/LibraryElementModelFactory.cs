@@ -68,7 +68,6 @@ namespace NuSysApp
                         Debug.Assert(message.ContainsKey("id1") && message.ContainsKey("id2"));
                         var id1 = message.Get("id1");
                         var id2 = message.Get("id2");
-
                         model = new LinkLibraryElementModel(id1, id2, id);
                         break;
                     default:

@@ -18,6 +18,7 @@ using Windows.System.Threading;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Newtonsoft.Json;
+using NusysIntermediate;
 using NuSysApp.Network.Requests;
 using NuSysApp.Network.Requests.SystemRequests;
 using Buffer = System.Buffer;
@@ -123,48 +124,50 @@ namespace NuSysApp
             var m = new Message(request.GetFinalMessage().GetSerialized());
             await ProcessIncomingRequest(m);
         }
-        public async Task ExecuteRequest(Request request)
+        /// <summary>
+        /// Will execute a request and not return from this method until the server has processed the request and returned a confirmation message
+        /// the message that is returned is the confirmation message
+        /// when parsing the confirmation messsage, please use Constants in NusysIntermediate.NusysConstants instead of strings as the keys you're parsing
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>
+        /// The message this returns will vary greatly based on the request type sent.  make sure you parse it using constants instead of arbitrary strings
+        /// </returns>
+        public async Task<Message> ExecuteRequestAsync(Request request)
         {
-            await Task.Run(async delegate
+            return await Task.Run(async delegate
             {
                 //if CheckOutgoingRequest created a valid thing
-                    await request.CheckOutgoingRequest();
+                await request.CheckOutgoingRequest();
                 Message message = request.GetFinalMessage();
-
-                if (request.WaitForRequestReturn())
-                {
-                    ManualResetEvent mre = new ManualResetEvent(false);
-                    string requestID = SessionController.Instance.GenerateId();
-                    _requestEventDictionary[requestID] = mre;
-
-                    message["system_local_request_id"] = requestID;
-
-                    await _serverClient.SendMessageToServer(message);
-                    if (_requestEventDictionary.ContainsKey(requestID))
-                    {
-                        mre.WaitOne();
-                    }
-                }
-                else
-                {
-                    await _serverClient.SendMessageToServer(message);
-                }
-
+                var returnMessage = await _serverClient.WaitForRequestRequestAsync(message);
+                request.SetReturnMessage(returnMessage);
+                return returnMessage;
             });
         }
 
-        public async Task ExecuteSystemRequestLocally(SystemRequest request)
+        /// <summary>
+        /// this will simply spin off a new thread and execute the request you sent without waiting for server processing
+        /// ONLY USE THIS IN SPECIAL OCCASIONS
+        /// </summary>
+        /// <param name="request"></param>
+        public void ExecuteRequest(Request request)
         {
-            await request.CheckOutgoingRequest();
-            await ProcessIncomingSystemRequest(request.GetFinalMessage());
+            Task.Run(async delegate {
+                //if CheckOutgoingRequest created a valid thing
+                await request.CheckOutgoingRequest();
+                Message message = request.GetFinalMessage();
+                await _serverClient.SendMessageToServer(message);
+            });
         }
+
         private async void ContentAvailable(Dictionary<string, object> dict)
         {
             if (dict.ContainsKey("id"))
             {
                 var id = (string)dict["id"];
                 string title = null;
-                ElementType type = ElementType.Text;
+                NusysConstants.ElementType type = NusysConstants.ElementType.Text;
                 var metadata = new Dictionary<string, MetadataEntry>();
                 if (dict.ContainsKey("title"))
                 {
@@ -172,7 +175,7 @@ namespace NuSysApp
                 }
                 if (dict.ContainsKey("type"))
                 {
-                    type = (ElementType)Enum.Parse(typeof(ElementType), (string)dict["type"], true);
+                    type = (NusysConstants.ElementType)Enum.Parse(typeof(NusysConstants.ElementType), (string)dict["type"], true);
                 }
                 if (dict.ContainsKey("metadata"))
                 {
@@ -180,7 +183,7 @@ namespace NuSysApp
                 }
 
                 UITask.Run(async delegate {
-                    if (SessionController.Instance.ContentController.GetContent(id) != null)
+                    if (SessionController.Instance.ContentController.GetLibraryElementModel(id) != null)
                     {
                         var controller = SessionController.Instance.ContentController.GetLibraryElementController(id);
                         //Debug.Assert(title != null);
@@ -205,7 +208,7 @@ namespace NuSysApp
                     {
                         Task.Run(async () =>
                         {
-                            await FetchLibraryElementData(id);
+                            await FetchContentDataModelAsync(id);
                             ServerClient.NeededLibraryDataIDs.Remove(id);
                         });
 
@@ -213,7 +216,7 @@ namespace NuSysApp
                     if (dict.ContainsKey("favorited"))
                     {
                         bool favorited = bool.Parse(dict["favorited"].ToString());
-                        var model = SessionController.Instance.ContentController.GetContent(id);
+                        var model = SessionController.Instance.ContentController.GetLibraryElementModel(id);
                         if (model != null)
                         {
                             model.Favorited = favorited;
@@ -238,63 +241,63 @@ namespace NuSysApp
         private async Task ProcessIncomingRequest(Message message)
         {
             Request request;
-            Request.RequestType requestType;
+            NusysConstants.RequestType requestType;
             if (!message.ContainsKey("request_type"))
             {
                 throw new NoRequestTypeException();
             }
             try
             {
-                requestType = (Request.RequestType)Enum.Parse(typeof(Request.RequestType), message.GetString("request_type"));
+                requestType = (NusysConstants.RequestType)Enum.Parse(typeof(NusysConstants.RequestType), message.GetString("request_type"));
             }
             catch (Exception e)
             {
                 throw new InvalidRequestTypeException();
             }
-            if (requestType == Request.RequestType.SystemRequest)
+            if (requestType == NusysConstants.RequestType.SystemRequest)
             {
                 await ProcessIncomingSystemRequest(message);
                 return;
             }
             switch (requestType)
             {
-                case Request.RequestType.DeleteSendableRequest:
+                case NusysConstants.RequestType.DeleteElementRequest:
                     request = new DeleteSendableRequest(message);
                     break;
-                case Request.RequestType.NewNodeRequest:
+                case NusysConstants.RequestType.NewElementRequest:
                     request = new NewElementRequest(message);
                     break;
-                case Request.RequestType.NewLinkRequest:
+                case NusysConstants.RequestType.NewLinkRequest:
                     request = new NewLinkRequest(message);
                     break;
-                case Request.RequestType.SendableUpdateRequest:
-                    request = new SendableUpdateRequest(message);
+                case NusysConstants.RequestType.ElementUpdateRequest:
+                    request = new ElementUpdateRequest(message);
                     break;
-                case Request.RequestType.FinalizeInkRequest:
+                case NusysConstants.RequestType.FinalizeInkRequest:
                     request = new FinalizeInkRequest(message);
                     break;
-                case Request.RequestType.DuplicateNodeRequest:
+                case NusysConstants.RequestType.DuplicateNodeRequest:
                     request = new DuplicateNodeRequest(message);
                     break;
-                case Request.RequestType.ChangeContentRequest:
-                    request = new ChangeContentRequest(message);
+                case NusysConstants.RequestType.UpdateLibraryElementModelRequest:
+                    request = new UpdateLibraryElementModelRequest(message);
                     break;
-                case Request.RequestType.SetTagsRequest:
+                case NusysConstants.RequestType.SetTagsRequest:
                     request = new SetTagsRequest(message);
                     break;
-                case Request.RequestType.CreateNewLibrayElementRequest:
+                case NusysConstants.RequestType.CreateNewLibraryElementRequest:
                     request = new CreateNewLibraryElementRequest(message);
                     break;
-                case Request.RequestType.DeleteLibraryElementRequest:
+                case NusysConstants.RequestType.DeleteLibraryElementRequest:
                     request = new DeleteLibraryElementRequest(message);
                     break;
-                case Request.RequestType.AddInkRequest:
+                case NusysConstants.RequestType.AddInkRequest:
                     request = new AddInkRequest(message);
                     break;
-                case Request.RequestType.RemoveInkRequest:
+                case NusysConstants.RequestType.RemoveInkRequest:
                     request = new RemoveInkRequest(message);
                     break;
-                case Request.RequestType.ChatRequest:
+                case NusysConstants.RequestType.ChatRequest:
                     request = new ChatRequest(message);
                     break;
                 default:
@@ -391,37 +394,25 @@ namespace NuSysApp
         {
             await DropNetworkUser(id);
         }
-        public async Task FetchLibraryElementData(string id)
+
+        /// <summary>
+        /// This method will send off a GetContentDataModelRequest for the passed in ContentDataModel Id;
+        /// It will also add the returned contentDataModel to the contentController for you.
+        /// returns whether it was successfully added
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<bool> FetchContentDataModelAsync(string contentDataModelId)
         {
-            if (SessionController.Instance.ContentController.GetContent(id)?.Type == ElementType.PDF && SessionController.Instance.ContentController.GetLibraryElementController(id) != null && !SessionController.Instance.ContentController.GetLibraryElementController(id).IsLoaded)
+            //if the content data model is present, then it's loaded
+            if (SessionController.Instance.ContentController.ContainsContentDataModel(contentDataModelId))
             {
-                bool fileExists = await CachePDF.isFilePresent(id);
-
-                if (fileExists) // exists in cache
-                {
-                    var cacheData = await CachePDF.readFile(id);
-                    await UITask.Run(
-                        async delegate
-                        {
-                            var args = await _serverClient.GetContentWithoutData(id);
-                            args.Data = cacheData;
-                            SessionController.Instance.ContentController.GetLibraryElementController(id).Load(args);
-                        }
-                     );
-                }
-                else
-                {
-                    await _serverClient.FetchLibraryElementData(id);
-                    var data = SessionController.Instance.ContentController.GetContent(id).Data;
-
-                    CachePDF.createWriteFile(id, data); //save the data
-                }
+                return true;
             }
-            else
-            {
-                await _serverClient.FetchLibraryElementData(id);
-            }
-
+            var request = new GetContentDataModelRequest(contentDataModelId);
+            await ExecuteRequestAsync(request);
+            var model = request.GetReturnedContentDataModel();
+            return SessionController.Instance.ContentController.AddContentDataModel(model);
         }
         public async Task<IEnumerable<string>> SearchOverLibraryElements(string searchText)
         {
@@ -469,9 +460,12 @@ namespace NuSysApp
             }
             return path;
         }
-        public async Task<Dictionary<string, Dictionary<string, object>>> GetAllLibraryElements()
+        public async Task<IEnumerable<LibraryElementModel>> GetAllLibraryElements()
         {
-            return await _serverClient.GetRepo();
+            var request = new GetAllLibraryElementsRequest();
+            await ExecuteRequestAsync(request);
+            var libraryElementModels = request.GetReturnedLibraryElementModels();
+            return libraryElementModels;
         }
 
         /// <summary>

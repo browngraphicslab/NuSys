@@ -265,7 +265,8 @@
                                         <TextBlock Text="{Binding UserName}" FontWeight="Bold" Foreground="{Binding UserColor}"></TextBlock>
                                         <TextBlock Text="{Binding TimeStamp}" FontSize="8" FontWeight="ExtraLight" Foreground="Gray" VerticalAlignment="Center" Margin="5, 0,0,0"></TextBlock>
                                     </StackPanel>
-                                    <TextBlock Text="{Binding MessageText}" TextWrapping="Wrap"></TextBlock>
+                                    <TextBlock Text="{Binding MessageText}" TextWrapping="Wrap">
+                                        </TextBlock>
                                 </StackPanel>
                             </DataTemplate>
                         </ListView.ItemTemplate>

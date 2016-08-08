@@ -273,7 +273,6 @@
     <Compile Include="Components\InqCanvas\NuSysInqCanvas.cs" />
     <Compile Include="Components\InqCanvas\WetDryInkCanvas.cs" />
     <Compile Include="Components\ISelectable.cs" />
-    <Compile Include="Components\Keywords\Keyword.cs" />
     <Compile Include="Components\Links\LinkCircle.xaml.cs">
       <DependentUpon>LinkCircle.xaml</DependentUpon>
     </Compile>
@@ -402,6 +401,8 @@
     </Compile>
     <Compile Include="Components\Viewers\RecordingNodeViewModel.cs" />
     <Compile Include="Controller\AudioRegionLibraryElementController.cs" />
+    <Compile Include="Controller\CollectionLibraryElementController.cs" />
+    <Compile Include="Controller\ElementControllerFactory.cs" />
     <Compile Include="Controller\LibraryElementController\LibraryElementControllerFactory.cs" />
     <Compile Include="Controller\LibraryElementController\LinkLibraryElementController.cs" />
     <Compile Include="Controller\LibraryElementController\WordNodeLibraryElementController.cs" />
@@ -416,12 +417,10 @@
     <Compile Include="Converters\BoolToManipulationModeConverter.cs" />
     <Compile Include="Converters\ListToStringConverter.cs" />
     <Compile Include="Converters\MutabilityToBrushConverter.cs" />
-    <Compile Include="Models\ContentDataModel.cs" />
-    <Compile Include="Models\LibraryElementModelFactory.cs" />
-    <Compile Include="Models\LinkLibraryElementModel.cs" />
+    <Compile Include="Models\InqCanvasModel.cs" />
+    <Compile Include="Models\InqLineModel.cs" />
     <Compile Include="Models\PresentationLinkModel.cs" />
-    <Compile Include="Models\Regions\PdfRegionModel.cs" />
-    <Compile Include="Models\Regions\AudioRegionModel.cs" />
+    <Compile Include="Components\Viewers\Detail\Regionable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\AudioDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\DetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\GroupDetailHomeTabViewModel.cs" />
@@ -429,7 +428,6 @@
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\PdfDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\TextDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\VideoDetailHomeTabViewModel.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\MetadataEntry.cs" />
     <Compile Include="Components\Viewers\Detail\Views\MetadataEditorTabView.xaml.cs">
       <DependentUpon>MetadataEditorTabView.xaml</DependentUpon>
     </Compile>
@@ -605,29 +603,24 @@
     <Compile Include="Effects\Anim.cs" />
     <Compile Include="Effects\AnimatableUserControl.cs" />
     <Compile Include="Effects\AnimatableNodeView.cs" />
-    <Compile Include="Models\AreaModel.cs" />
-    <Compile Include="Models\CollectionLibraryElementModel.cs" />
-    <Compile Include="Models\CollectionElementModel.cs" />
     <Compile Include="Models\PowerpointNodeModel.cs" />
-    <Compile Include="Models\Regions\RectangleRegion.cs" />
-    <Compile Include="Models\Regions\Region.cs" />
-    <Compile Include="Models\Regions\VideoRegionModel.cs" />
     <Compile Include="Models\TagNodeModel.cs" />
     <Compile Include="Models\WebNodeModel.cs" />
-    <Compile Include="Models\InqLineModel.cs" />
-    <Compile Include="Models\VideoNodeModel.cs" />
-    <Compile Include="Models\WordNodeModel.cs" />
     <Compile Include="Models\WorkSpaceModel.cs" />
     <Compile Include="Network\CachePDF.cs" />
     <Compile Include="Network\ClientHandler.cs" />
-    <Compile Include="Network\Message.cs" />
     <Compile Include="Network\NetworkClient.cs" />
     <Compile Include="Network\NetworkSession.cs" />
     <Compile Include="Network\NetworkUser.cs" />
     <Compile Include="Network\NuSysNetworkSession.cs" />
     <Compile Include="Network\Requests\ChatRequest.cs" />
+    <Compile Include="Network\Requests\CreateNewContentRequest.cs" />
+    <Compile Include="Network\Requests\GetAllLibraryElementsRequest.cs" />
+    <Compile Include="Network\Requests\GetContentDataModelRequest.cs" />
+    <Compile Include="Network\Requests\GetEntireWorkspaceRequest.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
-    <Compile Include="Network\Requests\ChangeContentRequest.cs" />
+    <Compile Include="Network\Requests\RequestArgs\CreateNewRegionLibraryElementRequestArgs.cs" />
+    <Compile Include="Network\Requests\UpdateLibraryElementModelRequest.cs" />
     <Compile Include="Network\Requests\CreateNewLibraryElementRequest.cs" />
     <Compile Include="Network\Requests\DeleteLibraryElementRequest.cs" />
     <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
@@ -636,8 +629,12 @@
     <Compile Include="Network\Requests\NewLinkRequest.cs" />
     <Compile Include="Network\Requests\FinalizeInkRequest.cs" />
     <Compile Include="Network\Requests\NewElementRequest.cs" />
-    <Compile Include="Network\Requests\Request.cs" />
-    <Compile Include="Network\Requests\SendableUpdateRequest.cs" />
+    <Compile Include="Network\Requests\RequestArgs\CreateNewContentRequestArgs.cs" />
+    <Compile Include="Network\Requests\RequestArgs\CreateNewPdfContentRequestArgs.cs" />
+    <Compile Include="Network\Requests\RequestArgs\IRequestArgumentable.cs" />
+    <Compile Include="Network\Requests\RequestArgs\NewElementRequestArgs.cs" />
+    <Compile Include="Network\Requests\RequestArgs\CreateNewLibraryElementRequestArgs.cs" />
+    <Compile Include="Network\Requests\ElementUpdateRequest.cs" />
     <Compile Include="Network\Requests\SubscribeToCollectionRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\RequestClientInfoSystemRequest.cs" />
     <Compile Include="Network\Requests\SetTagsRequest.cs" />
@@ -657,7 +654,6 @@
     <Compile Include="TransformHelper.cs" />
     <Compile Include="Util\AccessList.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
-    <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Util\DetailViewTabType.cs" />
     <Compile Include="Util\EventUtil.cs" />
     <Compile Include="Util\ExplorationMode.cs" />
@@ -751,25 +747,17 @@
     <Compile Include="Util\FileManager.cs" />
     <Compile Include="Util\FolderWatcher.cs" />
     <Compile Include="Util\Geometry.cs" />
-    <Compile Include="Util\ElementType.cs" />
     <Compile Include="Util\NuSysStorages.cs" />
     <Compile Include="Util\ObservableDictionary.cs" />
     <Compile Include="Util\OfficeIntermediate.cs" />
     <Compile Include="Util\PdfRenderer.cs" />
     <Compile Include="Util\StorageUtil.cs" />
-    <Compile Include="Models\ElementModel.cs" />
-    <Compile Include="Models\AudioNodeModel.cs" />
-    <Compile Include="Models\LibraryElementModel.cs" />
-    <Compile Include="Models\ImageElementModel.cs" />
     <Compile Include="Models\LinkModel.cs" />
-    <Compile Include="Models\PdfNodeModel.cs" />
     <Compile Include="Models\PinModel.cs" />
-    <Compile Include="Models\TextElementModel.cs" />
     <Compile Include="Util\BaseINPC.cs" />
     <Compile Include="Network\DebouncingDictionary.cs" />
     <Compile Include="Network\ModelIntermediate.cs" />
     <Compile Include="Network\NetworkConnector.cs" />
-    <Compile Include="Network\Sendable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Components\Viewers\ElementViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioNodeViewModel.cs" />
@@ -1249,6 +1237,10 @@
       <Project>{56c66c4f-3c21-4929-baf1-2eda2ec56823}</Project>
       <Name>MuPDFWinRT</Name>
     </ProjectReference>
+    <ProjectReference Include="..\NusysConstants\NusysIntermediate.csproj">
+      <Project>{7296c25f-88e9-478d-a489-8a1c13e8b846}</Project>
+      <Name>NusysIntermediate</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Office.Interop.Word, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
@@ -1296,7 +1288,9 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Components\Keywords\" />
     <Folder Include="Icons\" />
+    <Folder Include="Models\Regions\" />
     <Folder Include="Util\Regions\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

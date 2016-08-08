@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NusysIntermediate;
 using Windows.Foundation;
 using Windows.UI.Xaml.Media;
 
@@ -14,8 +15,8 @@ namespace NuSysApp
         {
             string libraryId = SessionController.Instance.ActiveFreeFormViewer.Controller.Model.LibraryId;
             return await SessionController.Instance.NuSysNetworkSession.DuplicateLibraryElement(libraryId) != null;
-            var collectionLibraryModel = SessionController.Instance.ContentController.GetContent(libraryId) as CollectionLibraryElementModel;
-            if (collectionLibraryModel == null)
+            var collectionLibraryController = SessionController.Instance.ContentController.GetLibraryElementController(libraryId) as CollectionLibraryElementController;
+            if (collectionLibraryController == null)
             {
                 return false;
             }
@@ -24,13 +25,13 @@ namespace NuSysApp
 
             var m = new Message();
             m["id"] = snapshotId;
-            m["type"] = ElementType.Collection.ToString();
-            m["inklines"] = collectionLibraryModel.InkLines;
+            m["type"] = NusysConstants.ElementType.Collection.ToString();
+            m["inklines"] = collectionLibraryController.InkLines;
             m["favorited"] = true;
-            m["title"] = collectionLibraryModel.Title + " SNAPSHOT "+DateTime.Now;
+            m["title"] = collectionLibraryController.LibraryElementModel.Title + " SNAPSHOT "+DateTime.Now;
 
             var libraryElementRequest = new CreateNewLibraryElementRequest(m);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(libraryElementRequest);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(libraryElementRequest);
 
             var children = SessionController.Instance.IdToControllers.Where(item => item.Value.Model.ParentCollectionId == libraryId).ToArray();
 
@@ -39,7 +40,7 @@ namespace NuSysApp
                 var dict = await child.Value.Model.Pack();
                 dict["creator"] = snapshotId;
                 dict["id"] = SessionController.Instance.GenerateId();
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(new Message(dict)));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(new Message(dict)));
             }
 
             return true; 
@@ -57,9 +58,9 @@ namespace NuSysApp
                 message["y"] = y;
                 message["width"] = width;
                 message["height"] = height;
-                message["type"] = ElementType.Collection;
+                message["type"] = NusysConstants.ElementType.Collection;
                 message["collectionview"] = collectionView;
-                message["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                message["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
                 message["id"] = newId;
                 message["finite"] = finite;
                 if (shapepoints != null)
@@ -67,7 +68,7 @@ namespace NuSysApp
                     message["points"] = shapepoints;
                 }
 
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(message));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(message));
 
                 List<Message> messages = new List<Message>();
 
@@ -82,11 +83,11 @@ namespace NuSysApp
                     {
                         await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(m));
                         var newNodeContentId = m.GetString("contentId");
-                        if (SessionController.Instance.ContentController.GetContent(newNodeContentId) == null)
+                        if (SessionController.Instance.ContentController.GetLibraryElementModel(newNodeContentId) == null)
                         {
                             Task.Run(async delegate
                             {
-                                SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(newNodeContentId);
+                                SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(newNodeContentId);
                             });
                         }
                     }

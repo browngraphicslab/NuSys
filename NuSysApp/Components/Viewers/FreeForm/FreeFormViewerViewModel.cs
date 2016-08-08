@@ -5,6 +5,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using NusysIntermediate;
 
 
 namespace NuSysApp
@@ -196,7 +197,7 @@ namespace NuSysApp
                 _selections.Add(selected);
    
             var selectedElements = AtomViewList.Where(a => a.DataContext == selected);
-            if (!selectedElements.Any())
+            if (!selectedElements.Any() || (selectedElements.First().DataContext as ElementViewModel)?.Controller.LibraryElementController == null)
                 return;
 
 

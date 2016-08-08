@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NusysIntermediate;
 using SharpDX.DirectWrite;
 
 namespace NuSysApp
@@ -19,7 +20,7 @@ namespace NuSysApp
             _controller = controller;
             var linkModel = controller.LinkLibraryElementModel;
 
-            if (Constants.IsRegionType(SessionController.Instance.ContentController.GetLibraryElementController(linkModel.OutAtomId).LibraryElementModel.Type))
+            if (NusysConstants.IsRegionType(SessionController.Instance.ContentController.GetLibraryElementController(linkModel.OutAtomId).LibraryElementModel.Type))
             {
                 var fromController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel.OutAtomId);
                 if (fromController == null)
@@ -42,7 +43,7 @@ namespace NuSysApp
                 LinkFrom = fromController.Title;
             }
 
-            if (Constants.IsRegionType(SessionController.Instance.ContentController.GetLibraryElementController(linkModel.InAtomId).LibraryElementModel.Type))
+            if (NusysConstants.IsRegionType(SessionController.Instance.ContentController.GetLibraryElementController(linkModel.InAtomId).LibraryElementModel.Type))
             {
                 var toController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel.InAtomId);
                 if (toController == null)
@@ -65,7 +66,7 @@ namespace NuSysApp
                 LinkTo = toController.Title;
             }
 
-            Annotation = controller.LinkLibraryElementModel.Data;
+            Annotation = controller.Data;
             controller.ContentChanged += Controller_ContentChanged; 
 
         }

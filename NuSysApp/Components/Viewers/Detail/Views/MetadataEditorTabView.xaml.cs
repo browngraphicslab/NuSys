@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI;
 using Windows.UI.Core;
+using NusysIntermediate;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 

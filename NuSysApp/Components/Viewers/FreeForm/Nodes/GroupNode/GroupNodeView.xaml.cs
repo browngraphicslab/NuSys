@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using MyToolkit.Messaging;
 using MyToolkit.UI;
+using NusysIntermediate;
 using NuSysApp.Util;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -75,7 +76,7 @@ namespace NuSysApp
                 new TappedEventHandler(MenuDetailButton_Tapped), true);
 
             var elementcollectionvm = DataContext as ElementCollectionViewModel;
-            var libmodel = (elementcollectionvm.Controller.Model as CollectionElementModel).CollectionLibraryElementModel;
+            var libmodel = SessionController.Instance.ContentController.GetLibraryElementModel(elementcollectionvm.LibraryElementId) as CollectionLibraryElementModel;
             _finite = libmodel.IsFinite;
             if (_finite)
             {
@@ -186,7 +187,7 @@ namespace NuSysApp
                         nodeTpl.HideResizer();
                     }
                     var elementcollectionvm = DataContext as ElementCollectionViewModel;
-                    var libmodel = (elementcollectionvm.Controller.Model as CollectionElementModel).CollectionLibraryElementModel;
+                    var libmodel = SessionController.Instance.ContentController.GetLibraryElementModel(elementcollectionvm.LibraryElementId) as CollectionLibraryElementModel;
                     _finite = libmodel.IsFinite;
                     if (_finite)
                     {
@@ -339,8 +340,8 @@ namespace NuSysApp
             else if (tb.Name == "EnterButton")
             {
                 var id = vm.Controller.LibraryElementModel.LibraryElementId;
-                var content = SessionController.Instance.ContentController.GetContent(id);
-                if (content != null && content.Type == ElementType.Collection)
+                var content = SessionController.Instance.ContentController.GetLibraryElementModel(id);
+                if (content != null && content.Type == NusysConstants.ElementType.Collection)
                 {
                     List<Message> messages = new List<Message>();
                     await Task.Run(async delegate
@@ -350,10 +351,12 @@ namespace NuSysApp
                     });
                     Visibility = Visibility.Collapsed;
                     await
-                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                        SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
                             new UnsubscribeFromCollectionRequest(
-                                SessionController.Instance.ActiveFreeFormViewer.ContentId));
-                    await SessionController.Instance.SessionView.LoadWorkspaceFromServer(messages, id);
+                                SessionController.Instance.ActiveFreeFormViewer.LibraryElementId));
+
+                    //TODO put back in for collction entering
+                    //await SessionController.Instance.SessionView.LoadWorkspaceFromServer(messages, id);
                 }
             }
         }

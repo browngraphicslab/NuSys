@@ -36,14 +36,14 @@ namespace NuSysApp
             var linkModel = controller.LinkLibraryElementModel;
             if (linkModel.InAtomId == detailViewOpenElementContentId)
             {
-                var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.OutAtomId);
+                var libraryElementModel = SessionController.Instance.ContentController.GetLibraryElementModel(linkModel.OutAtomId);
                 Debug.Assert(libraryElementModel != null);
                 LinkedTo = libraryElementModel.Title;
                 
             }
             else
             {
-                var libraryElementModel = SessionController.Instance.ContentController.GetContent(linkModel.InAtomId);
+                var libraryElementModel = SessionController.Instance.ContentController.GetLibraryElementModel(linkModel.InAtomId);
                 Debug.Assert(libraryElementModel != null);
                 LinkedTo = libraryElementModel.Title;
                 

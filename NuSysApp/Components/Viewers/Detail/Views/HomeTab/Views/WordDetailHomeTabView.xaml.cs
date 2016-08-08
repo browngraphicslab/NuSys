@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using NusysIntermediate;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -88,7 +89,7 @@ namespace NuSysApp
                 var m = new Message();
 
                 // Get text from the pdf
-                var myDoc = await MediaUtil.DataToPDF(vm.LibraryElementController.LibraryElementModel.Data);
+                var myDoc = await MediaUtil.DataToPDF(vm.LibraryElementController.Data);
                 string pdf_text = "";
                 int numPages = myDoc.PageCount;
                 int currPage = 0;
@@ -99,14 +100,14 @@ namespace NuSysApp
                 }
 
                 m["id"] = SessionController.Instance.GenerateId();
-                m["data"] = vm.LibraryElementController.LibraryElementModel.Data;
+                m["data"] = vm.LibraryElementController.Data;
                 if (!string.IsNullOrEmpty(pdf_text))
                 {
                     m["pdf_text"] = pdf_text;
                 }
-                m["type"] = ElementType.PDF.ToString();
+                m["type"] = NusysConstants.ElementType.PDF.ToString();
                 m["title"] = vm.LibraryElementController.LibraryElementModel.Title + " CAPTURED "+DateTime.Now.ToString();
-                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(m));
+                SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(m));
             });
         }
 

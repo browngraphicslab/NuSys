@@ -8,6 +8,7 @@ using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
+using NusysIntermediate;
 
 
 namespace NuSysApp
@@ -47,13 +48,13 @@ namespace NuSysApp
             SessionController.Instance.IdToControllers.TryRemove(Id, out removed);
         }
 
-        public override Task UnPack(Message props)
+        public override void UnPackFromDatabaseMessage(Message props)
         {
             InqCanvasId = props.GetString("canvasNodeID", null);
             Points = new ObservableCollection<Point2d>(props.GetList<Point2d>("points"));
             Page = props.GetInt("page", 0);
             IsGesture = props.GetBool("isGesture", false);
-            return base.UnPack(props);
+            base.UnPackFromDatabaseMessage(props);
         }
 
         public override async Task<Dictionary<string, object>> Pack()
@@ -101,3 +102,4 @@ namespace NuSysApp
         }
     }
 }
+

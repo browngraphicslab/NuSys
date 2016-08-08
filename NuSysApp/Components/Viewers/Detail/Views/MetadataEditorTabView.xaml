@@ -8,7 +8,8 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400"
-    xmlns:converters="using:NuSysApp.Converters">
+    xmlns:converters="using:NuSysApp.Converters"
+    xmlns:nusysIntermediate="using:NusysIntermediate">
 
     <local:AnimatableUserControl.Resources>
         <ResourceDictionary>
@@ -87,7 +88,7 @@
                     </Grid>
                 </ListView.Header>
                 <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="local:MetadataEntry">
+                    <DataTemplate x:DataType="nusysIntermediate:MetadataEntry">
                         <Grid  HorizontalAlignment="Stretch" Background="{x:Bind Mutability, Converter={StaticResource brushConverter}}" Height="30" VerticalAlignment="Center" PointerPressed ="XListViewItemGrid_OnPointerPressed">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"></ColumnDefinition>

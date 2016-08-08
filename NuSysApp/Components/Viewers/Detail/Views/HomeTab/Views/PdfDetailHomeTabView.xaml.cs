@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using NusysIntermediate;
 
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -39,7 +40,7 @@ namespace NuSysApp
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
 
             // disable page left and page right buttons for pdf regions
-            if (vm.LibraryElementController.LibraryElementModel.Type == ElementType.PdfRegion)
+            if (vm.LibraryElementController.LibraryElementModel.Type == NusysConstants.ElementType.PdfRegion)
             {
                 pageLeft.Visibility = Visibility.Collapsed;
                 pageRight.Visibility = Visibility.Collapsed;
@@ -108,9 +109,9 @@ namespace NuSysApp
 
         private void AddToCollection_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(_libraryElementId);
-            if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element?.LibraryElementId) ||
-                (element?.Type == ElementType.Link))
+            LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(_libraryElementId);
+            if ((SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == element?.LibraryElementId) ||
+                (element?.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -128,11 +129,11 @@ namespace NuSysApp
             t.TranslateX += _x;
             t.TranslateY += _y;
 
-            if (!SessionController.Instance.ContentController.ContainsAndLoaded(element.LibraryElementId))
+            if (!SessionController.Instance.ContentController.ContainsContentDataModel(element.ContentDataModelId))
             {
                 Task.Run(async delegate
                 {
-                    SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(element.LibraryElementId);
+                    SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(element.ContentDataModelId);
                 });
             }
 
@@ -142,8 +143,8 @@ namespace NuSysApp
 
         private void AddToCollection_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(_libraryElementId);
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
+            LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(_libraryElementId);
+            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -176,8 +177,8 @@ namespace NuSysApp
 
         private async void AddToCollection_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(_libraryElementId);
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
+            LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(_libraryElementId);
+            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -199,13 +200,13 @@ namespace NuSysApp
             await AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type, element.LibraryElementId);
         }
 
-        public async Task AddNode(Point pos, Size size, ElementType elementType, string libraryId)
+        public async Task AddNode(Point pos, Size size, NusysConstants.ElementType elementType, string libraryId)
         {
             Task.Run(async delegate
             {
-                if (elementType != ElementType.Collection)
+                if (elementType != NusysConstants.ElementType.Collection)
                 {
-                    var element = SessionController.Instance.ContentController.GetContent(libraryId);
+                    var element = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId);
                     var dict = new Message();
                     Dictionary<string, object> metadata;
 
@@ -224,16 +225,14 @@ namespace NuSysApp
                     dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
                     dict["metadata"] = metadata;
                     dict["autoCreate"] = true;
-                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
                     var request = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                 }
                 else
                 {
-                    var collection = SessionController.Instance.ContentController.GetContent(libraryId) as CollectionLibraryElementModel;
-                    await
-                        StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, libraryId, collection.IsFinite,
-                            collection.ShapePoints, size.Width, size.Height);
+                    var collection = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId) as CollectionLibraryElementModel;
+                    await StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, libraryId, collection.IsFinite, new List<Point>(collection.ShapePoints.Select(p => new Point(p.X, p.Y))), size.Width, size.Height);
                 }
             });
         }

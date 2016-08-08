@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
+using NusysIntermediate;
 
 namespace NuSysApp
 { 
@@ -102,9 +103,20 @@ namespace NuSysApp
                     continue;
                 }
                 var linkables = GetInstancesOfContent(libraryElementController.ContentId);
-                foreach (var link in linkables)
+                foreach (var toLinkTo in linkables)
                 {
-                    CreateBezierLinkBetween(linkable, link);
+                    var linkLibElemController = GetLinkLibraryElementControllerBetweenLinkables(linkable, toLinkTo);
+                    Debug.Assert(linkLibElemController != null);
+                    Debug.Assert(linkable.Id != toLinkTo.Id);
+
+                    if (linkLibElemController.LinkLibraryElementModel.InAtomId.Equals(linkable.ContentId))
+                    {
+                        CreateBezierLinkBetween(linkable, toLinkTo);
+                    }
+                    else
+                    {
+                        CreateBezierLinkBetween(toLinkTo, linkable);
+                    }
                 }
             }
         }
@@ -197,8 +209,8 @@ namespace NuSysApp
             // don't create a link between two library element models, if there is already a link
             // element controller between them
             if(
-                SessionController.Instance.ContentController.GetContent(m.GetString("id1")) != null &&
-                SessionController.Instance.ContentController.GetContent(m.GetString("id2")) != null &&
+                SessionController.Instance.ContentController.GetLibraryElementModel(m.GetString("id1")) != null &&
+                SessionController.Instance.ContentController.GetLibraryElementModel(m.GetString("id2")) != null &&
                 GetLinkLibraryElementControllerBetweenContent(m.GetString("id1"), m.GetString("id2")) != null)
             {
                 return;
@@ -207,8 +219,8 @@ namespace NuSysApp
             var contentId = SessionController.Instance.GenerateId();
             m["contentId"] = contentId;
             var request = new NewLinkRequest(m);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-            //SessionController.Instance.ActiveFreeFormViewer.AllContent.First().LibraryElementController.RequestVisualLinkTo(contentId);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            //SessionController.Instance.ActiveFreeFormViewer.AllContent.First().Controller.RequestVisualLinkTo(contentId);
         }
 
         /// <summary>
@@ -220,7 +232,7 @@ namespace NuSysApp
             var libraryElementId = content?.LibraryElementModel?.LibraryElementId;
             Debug.Assert(libraryElementId != null);
             Debug.Assert(content?.LibraryElementModel != null);
-            if (content.LibraryElementModel.Type == ElementType.Link)
+            if (content.LibraryElementModel.Type == NusysConstants.ElementType.Link)
             {
                 Debug.Assert(content.LibraryElementModel is LinkLibraryElementModel);
                 var linkLibraryElementModel = content.LibraryElementModel as LinkLibraryElementModel;
@@ -299,16 +311,19 @@ namespace NuSysApp
             {
                 var vm = new LinkViewModel(controller);
                 var allContent = SessionController.Instance.ActiveFreeFormViewer.AllContent;
-                var view = new BezierLinkView(vm);
+
+
+                BezierLinkView view = new BezierLinkView(vm, false);
+
                 var collectionViewModel =
-                    allContent.FirstOrDefault(item => ((item as GroupNodeViewModel)?.ContentId == oneParentCollectionId)) as GroupNodeViewModel;
+                    allContent.FirstOrDefault(item => ((item as GroupNodeViewModel)?.LibraryElementId == oneParentCollectionId)) as GroupNodeViewModel;
                 if (collectionViewModel != null)
                 {
                     UITask.Run(async delegate {
                         collectionViewModel.AtomViewList.Add(view);
                     });
                 }
-                else if (SessionController.Instance.ActiveFreeFormViewer.ContentId == oneParentCollectionId)
+                else if (SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == oneParentCollectionId)
                 {
                     SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(view);
                 }
@@ -428,7 +443,7 @@ namespace NuSysApp
             LinkLibraryElementController linkController)
         {
             Debug.Assert(libraryElementId != null);
-            Debug.Assert(SessionController.Instance.ContentController.GetContent(libraryElementId) != null);
+            Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementModel(libraryElementId) != null);
 
             var inId = linkController?.LinkLibraryElementModel?.InAtomId;
             var outId = linkController?.LinkLibraryElementModel?.OutAtomId;

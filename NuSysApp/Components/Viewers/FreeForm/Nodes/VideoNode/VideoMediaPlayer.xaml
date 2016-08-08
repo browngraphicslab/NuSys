@@ -26,12 +26,11 @@
             <TextBlock x:Name="xRightTimeStampTextBlock" Margin="0,0,10,0" Text ="{Binding ElementName=playbackElement, Path=NaturalDuration.TimeSpan, Converter={StaticResource PositionToStringConverter}}"></TextBlock>
         </Grid>
 
-              <local:AudioWrapper x:Name="xAudioWrapper">
-                  <local:AudioWrapper.Content>
+        <local:AudioWrapper x:Name="xAudioWrapper">
+            <local:AudioWrapper.Content>
+                <MediaElement x:Name="MediaElement" AreTransportControlsEnabled="False" AutoPlay="False" MediaOpened="MediaElement_MediaOpened" Stretch="Fill" MarkerReached="MediaElement_MarkerReached"/>
+            </local:AudioWrapper.Content>
 
-                <MediaElement x:Name="MediaElement" AreTransportControlsEnabled="False"  AutoPlay="False" MediaOpened="MediaElement_MediaOpened" Stretch="Fill" MarkerReached="MediaElement_MarkerReached"/>
-
-                  </local:AudioWrapper.Content>
               </local:AudioWrapper>
 
 

@@ -26,16 +26,8 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             this.DataContext = vm;
-
-            //nodeTpl.Background = new SolidColorBrush(Color.FromArgb(50, 173, 216, 230));
-
-            vm.Controller.LibraryElementController.Loaded += ControllerOnInitialized;
         }
 
-        private void ControllerOnInitialized(object sender)
-        {
-           // SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Remove(this);
-        }
 
         public Task<RenderTargetBitmap> ToThumbnail(int width, int height)
         {

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -17,7 +18,6 @@ namespace NuSysApp
     {
         protected DebouncingDictionary _debouncingDictionary;
         private LibraryElementModel _libraryElementModel;
-        private bool _loading = false;
         private RegionControllerFactory _regionControllerFactory = new RegionControllerFactory();
         protected bool _blockServerInteraction = false;
         public string Title {
@@ -30,12 +30,30 @@ namespace NuSysApp
                 LibraryElementModel.Title = value;
             } 
         }
-        
+
+        /// <summary>
+        /// To replace the old data stored in the libraryElementModel.  
+        /// Will use the contentDataModel Id of the library element model to fetch the string data.  
+        /// </summary>
+        public string Data
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(LibraryElementModel.ContentDataModelId))
+                {
+                    return null;
+                }
+                var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(LibraryElementModel.ContentDataModelId);
+                Debug.Assert(contentDataModel != null);
+
+                return contentDataModel?.Data;
+            }
+        }
+
         #region Events
         public delegate void ContentChangedEventHandler(object source, string contentData);
         public delegate void MetadataChangedEventHandler(object source);
         public delegate void FavoritedEventHandler(object sender, bool favorited);
-        public delegate void LoadedEventHandler(object sender);
         public delegate void DeletedEventHandler(object sender);
         public delegate void NetworkUserChangedEventHandler(object source, NetworkUser user);
         public delegate void KeywordsChangedEventHandler(object sender, HashSet<Keyword> keywords);
@@ -49,23 +67,48 @@ namespace NuSysApp
         public event NetworkUserChangedEventHandler UserChanged;
         public event EventHandler<LinkLibraryElementController> LinkAdded;
         public event EventHandler<string> LinkRemoved;
-        public event LoadedEventHandler Loaded
-        {
-            add
-            {
-                _onLoaded += value;
-                if (!IsLoaded && !_loading)
-                {
-                    _loading = true;
-                    Task.Run(async delegate{ SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(_libraryElementModel.LibraryElementId);});
-                }
-            }
-            remove { _onLoaded -= value; }
-        }
-        private event LoadedEventHandler _onLoaded;
         #endregion Events
-        
-        public bool IsLoaded { get; private set; }
+
+        /// <summary>
+        /// returns whether the current library element's content Data Model is loaded (aka just locally present);
+        /// </summary>
+        public bool ContentLoaded
+        {
+            get
+            {
+                return SessionController.Instance.ContentController.ContainsContentDataModel( LibraryElementModel.ContentDataModelId);
+            }
+        }
+
+        public Dictionary<string, MetadataEntry> FullMetadata
+        {
+            get
+            {
+                var metadata = new Dictionary<string, MetadataEntry>(LibraryElementModel.Metadata ?? new ConcurrentDictionary<string, MetadataEntry>());
+                if (!metadata.ContainsKey("Timestamp"))
+                {
+                    metadata.Add("Timestamp", new MetadataEntry("Timestamp", new List<string> { LibraryElementModel.Timestamp }, MetadataMutability.IMMUTABLE));
+                }
+                if (!metadata.ContainsKey("Creator"))
+                {
+                    metadata.Add("Creator", new MetadataEntry("Creator", new List<string> { LibraryElementModel.Creator }, MetadataMutability.IMMUTABLE));
+                }
+                if (!metadata.ContainsKey("Title"))
+                {
+                    metadata.Add("Title", new MetadataEntry("Title", new List<string> { Title }, MetadataMutability.IMMUTABLE));
+                }
+                if (!metadata.ContainsKey("Type"))
+                {
+                    metadata.Add("Type", new MetadataEntry("Type", new List<string> { LibraryElementModel.Type.ToString() }, MetadataMutability.IMMUTABLE));
+                }
+                if (!metadata.ContainsKey("Keywords"))
+                {
+                    var keywords = (LibraryElementModel.Keywords ?? new HashSet<Keyword>()).Select(key => key.Text);
+                    metadata.Add("Keywords", new MetadataEntry("Keywords", new List<string>(keywords), MetadataMutability.IMMUTABLE));
+                }
+                return metadata;
+            }
+        }
 
         /// <summary>
         /// Constuctor just takes in the library element model it will be libraryElementController
@@ -85,7 +128,8 @@ namespace NuSysApp
         /// </summary>
         public void SetContentData (string contentData)
         {
-            _libraryElementModel.Data = contentData;
+            //TODO add in checks and error handling for the line below
+            SessionController.Instance.ContentController.GetContentDataModel(LibraryElementModel.ContentDataModelId).SetData(contentData);
             ContentChanged?.Invoke(this, contentData);
             if (!_blockServerInteraction)
             {
@@ -220,7 +264,7 @@ namespace NuSysApp
             // Updates the metadata entry
             var newEntry = new MetadataEntry(key, values, original.Mutability);
             _libraryElementModel.Metadata.TryUpdate(original.Key, newEntry,newEntry);
-            ChangeMetadata(LibraryElementModel.FullMetadata);
+            ChangeMetadata(FullMetadata);
             return true;
         }
 
@@ -230,7 +274,7 @@ namespace NuSysApp
         /// </summary>
         public List<string> GetMetadata(string key)
         {
-            var full = LibraryElementModel.FullMetadata;
+            var full = FullMetadata;
             if (string.IsNullOrEmpty(key) || !full.ContainsKey(key) || string.IsNullOrWhiteSpace(key))
             {
                 return null;
@@ -301,24 +345,15 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// This will cause the library element model to load with the associated arguments in the loadingArgs
-        /// This will then fire the OnLoaded event
+        /// will await the full loading of the content for this library element model.  
+        /// Simply calls the nusysNetworkSession's FetchContentDataModelAsync method
         /// </summary>
-        public void Load(LoadContentEventArgs e)
+        /// <returns></returns>
+        public async Task LoadContentDataModelAsync()
         {
-            if (e.Data != null)
-            {
-                if (LibraryElementModel.Type != ElementType.PdfRegion)
-                {
-                    _libraryElementModel.Data = e.Data;
-                    ContentChanged?.Invoke(this, e.Data);
-                }
-            }
-            //_libraryElementModel.InkLinkes = e.InkStrings;
-
-            IsLoaded = true;
-            _onLoaded?.Invoke(this);
+            await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(LibraryElementModel.ContentDataModelId);
         }
+
         public Uri LargeIconUri
         {
             get
@@ -329,26 +364,26 @@ namespace NuSysApp
                 }
                 switch (LibraryElementModel.Type)
                 {
-                    case ElementType.Image:
-                    case ElementType.Video:
+                    case NusysConstants.ElementType.Image:
+                    case NusysConstants.ElementType.Video:
                         return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_large.jpg");
                         break;
-                    case ElementType.PDF:
+                    case NusysConstants.ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
                         break;
-                    case ElementType.Audio:
+                    case NusysConstants.ElementType.Audio:
                         return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
                         break;
-                    case ElementType.Text:
+                    case NusysConstants.ElementType.Text:
                         return new Uri("ms-appx:///Assets/library_thumbnails/text.png");
                         break;
-                    case ElementType.Collection:
+                    case NusysConstants.ElementType.Collection:
                         return new Uri("ms-appx:///Assets/library_thumbnails/collection_1.png");
                         break;
-                    case ElementType.Word:
+                    case NusysConstants.ElementType.Word:
                         return new Uri("ms-appx:///Assets/library_thumbnails/word.png");
                         break;
-                    case ElementType.Link:
+                    case NusysConstants.ElementType.Link:
                         return new Uri("ms-appx:///Assets/library_thumbnails/link.png");
                         break;
                     default:
@@ -366,26 +401,26 @@ namespace NuSysApp
                 }
                 switch (LibraryElementModel.Type)
                 {
-                    case ElementType.Image:
-                    case ElementType.Video:
+                    case NusysConstants.ElementType.Image:
+                    case NusysConstants.ElementType.Video:
                         return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_medium.jpg");
                         break;
-                    case ElementType.PDF:
+                    case NusysConstants.ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
                         break;
-                    case ElementType.Audio:
+                    case NusysConstants.ElementType.Audio:
                         return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
                         break;
-                    case ElementType.Text:
+                    case NusysConstants.ElementType.Text:
                         return new Uri("ms-appx:///Assets/library_thumbnails/text.png");
                         break;
-                    case ElementType.Collection:
+                    case NusysConstants.ElementType.Collection:
                         return new Uri("ms-appx:///Assets/library_thumbnails/collection_1.png");
                         break;
-                    case ElementType.Word:
+                    case NusysConstants.ElementType.Word:
                         return new Uri("ms-appx:///Assets/library_thumbnails/word.png");
                         break;
-                    case ElementType.Link:
+                    case NusysConstants.ElementType.Link:
                         return new Uri("ms-appx:///Assets/library_thumbnails/link.png");
                         break;
                     default:
@@ -404,26 +439,26 @@ namespace NuSysApp
                 }
                 switch (LibraryElementModel.Type)
                 {
-                    case ElementType.Image:
-                    case ElementType.Video:
+                    case NusysConstants.ElementType.Image:
+                    case NusysConstants.ElementType.Video:
                         return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_small.jpg");
                         break;
-                    case ElementType.PDF:
+                    case NusysConstants.ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
                         break;
-                    case ElementType.Audio:
+                    case NusysConstants.ElementType.Audio:
                         return new Uri("ms-appx:///Assets/library_thumbnails/audio.png");
                         break;
-                    case ElementType.Text:
+                    case NusysConstants.ElementType.Text:
                         return new Uri("ms-appx:///Assets/library_thumbnails/text.png");
                         break;
-                    case ElementType.Collection:
+                    case NusysConstants.ElementType.Collection:
                         return new Uri("ms-appx:///Assets/library_thumbnails/collection_1.png");
                         break;
-                    case ElementType.Word:
+                    case NusysConstants.ElementType.Word:
                         return new Uri("ms-appx:///Assets/library_thumbnails/word.png");
                         break;
-                    case ElementType.Link:
+                    case NusysConstants.ElementType.Link:
                         return new Uri("ms-appx:///Assets/library_thumbnails/link.png");
                         break;
                     default:
@@ -488,40 +523,9 @@ namespace NuSysApp
             SetBlockServerBoolean(false);
         }
 
-
         public Dictionary<string, MetadataEntry> GetMetadata()
         {
-            return _libraryElementModel.FullMetadata;
-        }
-        public Uri GetSource()
-        {
-            string extension = "";
-            switch (_libraryElementModel.Type)
-            {
-                case ElementType.PdfRegion:
-                case ElementType.PDF:
-                    extension = ".pdf";
-                    break;
-                case ElementType.Video:
-                case ElementType.VideoRegion:
-                    extension = ".mp4";
-                    break;
-                case ElementType.AudioRegion:
-                case ElementType.Audio:
-                    extension = ".mp3";
-                    break;
-                case ElementType.ImageRegion:
-                case ElementType.Image:
-                    extension = ".jpg";
-                    break;
-            }
-            var url = _libraryElementModel.LibraryElementId + extension;
-            if (_libraryElementModel.ServerUrl != null)
-            {
-                url = _libraryElementModel.ServerUrl;
-            }
-            var uri = new Uri("http://" + WaitingRoomView.ServerName + "/" + url);
-            return uri;
+            return FullMetadata;
         }
         public LibraryElementModel LibraryElementModel
         {
@@ -533,14 +537,6 @@ namespace NuSysApp
         public virtual void Dispose()
         {
             Disposed?.Invoke(this, EventArgs.Empty);
-        }
-        public void SetLoading(bool loading)
-        {
-            _loading = true;
-        }
-        public bool LoadingOrLoaded
-        {
-            get { return _loading || IsLoaded; }
         }
 
         public string ContentId
@@ -571,8 +567,9 @@ namespace NuSysApp
         public async Task RequestAddNewLink(string idToLinkTo, string title)
         {
             var m = new Message();
-            m["id1"] = LibraryElementModel.LibraryElementId;
-            m["id2"] = idToLinkTo;
+            //these seem to be backwards, but it works, probably
+            m["id1"] = idToLinkTo; 
+            m["id2"] = LibraryElementModel.LibraryElementId;
             m["title"] = title;
             await SessionController.Instance.LinksController.RequestLink(m);
         }
@@ -581,7 +578,7 @@ namespace NuSysApp
         {
             Debug.Assert(SessionController.Instance.LinksController.GetLinkableIdsOfContentIdInstances(linkLibraryElementID).Count() != 0);
             LinkRemoved?.Invoke(this, linkLibraryElementID);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
                 new DeleteLibraryElementRequest(linkLibraryElementID));
             
         }
@@ -602,7 +599,7 @@ namespace NuSysApp
             if (LibraryElementModel is CollectionLibraryElementModel)
             {
                 var collectionModel = LibraryElementModel as CollectionLibraryElementModel;
-                collectionModel.ShapePoints = shapePoints;
+                collectionModel.ShapePoints = new List<PointModel>(shapePoints.Select(p => new PointModel(p.X,p.Y)));
 
             }    
         }

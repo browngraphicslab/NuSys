@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml;
 using Windows.UI.Xaml.Media;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -120,30 +121,5 @@ namespace NuSysApp
 
         }
 
-        public XmlElement WriteXML(XmlDocument doc)
-        {
-            //XmlElement 
-            XmlElement pin = doc.CreateElement(string.Empty, "Pin", string.Empty); //TODO: Change how we determine node type for name
-
-            //ID of this pin
-            XmlAttribute id = doc.CreateAttribute("id");
-            id.Value = this.ID;
-            pin.SetAttributeNode(id);
-
-            //Atoms that this link is bound to
-            XmlAttribute x = doc.CreateAttribute("x");
-            x.Value = this.X.ToString();
-            pin.SetAttributeNode(x);
-
-            XmlAttribute y = doc.CreateAttribute("y");
-            y.Value = this.Y.ToString();
-            pin.SetAttributeNode(y);
-
-            XmlAttribute text = doc.CreateAttribute("text");
-            text.Value = this.Text;
-            pin.SetAttributeNode(text);
-
-            return pin;
-        }
     }
 }

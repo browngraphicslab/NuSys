@@ -10,6 +10,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media;
+using NusysIntermediate;
 using NuSysApp.Util;
 
 namespace NuSysApp
@@ -23,20 +24,11 @@ namespace NuSysApp
 
         public override async Task Init()
         {
-            if (Controller.LibraryElementController.IsLoaded)
+            if (!Controller.LibraryElementController.ContentLoaded)
             {
-                Controller.SetSize(Model.Width, Model.Height);
+                await Controller.LibraryElementController.LoadContentDataModelAsync();
             }
-            else
-            {
-                Controller.LibraryElementController.Loaded += LibraryElementModelOnOnLoaded;
-            }
-        }
-
-        private void LibraryElementModelOnOnLoaded(object sender)
-        {
             Controller.SetSize(Model.Width, Model.Height);
-            Controller.LibraryElementController.Loaded -= LibraryElementModelOnOnLoaded;
         }
 
         public override void SetSize(double width, double height)

@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 using SharpDX.Direct3D11;
 using System.Threading.Tasks;
+using NusysIntermediate;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 

@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using NusysIntermediate;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -36,7 +37,7 @@ namespace NuSysApp
             Visibility = Visibility.Collapsed;
         }
 
-        public void SwitchType(ElementType type)
+        public void SwitchType(NusysConstants.ElementType type)
         {
             audio.Visibility = Visibility.Collapsed;
             image.Visibility = Visibility.Collapsed;
@@ -48,26 +49,26 @@ namespace NuSysApp
 
             switch (type)
             {
-                case ElementType.Text:
+                case NusysConstants.ElementType.Text:
                     text.Visibility = Visibility.Visible;
                     break;
-                case ElementType.ImageRegion:
-                case ElementType.Image:
+                case NusysConstants.ElementType.ImageRegion:
+                case NusysConstants.ElementType.Image:
                     image.Visibility = Visibility.Visible;
                     break;
-                case ElementType.Collection:
+                case NusysConstants.ElementType.Collection:
                     collection.Visibility = Visibility.Visible;
                     break;
-                case ElementType.PdfRegion:
-                case ElementType.PDF:
+                case NusysConstants.ElementType.PdfRegion:
+                case NusysConstants.ElementType.PDF:
                     pdf.Visibility = Visibility.Visible;
                     break;
-                case ElementType.AudioRegion:
-                case ElementType.Audio:
+                case NusysConstants.ElementType.AudioRegion:
+                case NusysConstants.ElementType.Audio:
                     audio.Visibility = Visibility.Visible;
                     break;
-                case ElementType.VideoRegion:
-                case ElementType.Video:
+                case NusysConstants.ElementType.VideoRegion:
+                case NusysConstants.ElementType.Video:
                     video.Visibility = Visibility.Visible;
                     break;
             }
@@ -94,13 +95,13 @@ namespace NuSysApp
             switch (element.Type)
             {
                 // icons supported
-                case ElementType.Image:
-                case ElementType.Video:
-                case ElementType.PDF:
-                case ElementType.Audio:
-                case ElementType.Text:
-                case ElementType.Link:
-                case ElementType.Collection:
+                case NusysConstants.ElementType.Image:
+                case NusysConstants.ElementType.Video:
+                case NusysConstants.ElementType.PDF:
+                case NusysConstants.ElementType.Audio:
+                case NusysConstants.ElementType.Text:
+                case NusysConstants.ElementType.Link:
+                case NusysConstants.ElementType.Collection:
                     var iconUri = SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId).SmallIconUri;
                     IconImage.Source = new BitmapImage(iconUri);
                     IconImage.Visibility = Visibility.Visible;
@@ -110,9 +111,6 @@ namespace NuSysApp
                     SwitchType(element.Type);
                     break;
             }
-
-
-
 
         }
     }

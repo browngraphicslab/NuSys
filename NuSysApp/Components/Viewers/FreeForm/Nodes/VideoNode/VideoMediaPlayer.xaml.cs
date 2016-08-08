@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using NusysIntermediate;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -26,25 +27,11 @@ namespace NuSysApp
             this.InitializeComponent();
             xAudioWrapper.OnRegionsUpdated += XAudioWrapper_OnRegionsUpdated;
             xAudioWrapper.OnRegionSeeked += onSeekedTo;
-
+            xAudioWrapper.OnIntervalChanged += XAudioWrapper_OnIntervalChanged;
         }
 
-        private void XAudioWrapper_OnRegionsUpdated(object sender, List<double> regionMarkers)
-        {
-            MediaElement.Markers.Clear();
-            //Start and end must be preserved
-            //     MediaElement.Markers.Add(StartMarker);
-            MediaElement.Markers.Add(EndMarker);
 
-            foreach (var normalizedTimelineMarkerTime in regionMarkers)
-            {
-                var marker = new TimelineMarker();
-                double totalDuration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
-                marker.Time = new TimeSpan(0, 0, 0, 0, (int)(normalizedTimelineMarkerTime * totalDuration));
-                //adds each marker to the mediaelement's markers
-                MediaElement.Markers.Add(marker);
-            }
-        }
+
 
         public Uri Source
         {
@@ -61,7 +48,22 @@ namespace NuSysApp
 
         public MediaElement MediaPlayer => this.MediaElement;
         public ProgressBar ScrubBar => this.scrubBar;
+        private void XAudioWrapper_OnRegionsUpdated(object sender, List<double> regionMarkers)
+        {
+            MediaElement.Markers.Clear();
+            //Start and end must be preserved
+            //     MediaElement.Markers.Add(StartMarker);
+            MediaElement.Markers.Add(EndMarker);
 
+            foreach (var normalizedTimelineMarkerTime in regionMarkers)
+            {
+                var marker = new TimelineMarker();
+                double totalDuration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+                marker.Time = new TimeSpan(0, 0, 0, 0, (int)(normalizedTimelineMarkerTime * totalDuration));
+                //adds each marker to the mediaelement's markers
+                MediaElement.Markers.Add(marker);
+            }
+        }
 
         private void MediaElement_MediaOpened(object sender, RoutedEventArgs e)
         {
@@ -140,7 +142,38 @@ namespace NuSysApp
 
         }
 
+        private void XAudioWrapper_OnIntervalChanged(object sender, double start, double end)
+        {
 
+            //After updating audiowrapper, set position dyanmically:
+            double normalizedMediaElementPosition = xAudioWrapper.AudioStart;
+            double totalDuration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+            double denormalizedMediaElementPosition = normalizedMediaElementPosition * totalDuration;
+
+            TimeSpan startTime = new TimeSpan(0, 0, 0, 0, (int)denormalizedMediaElementPosition);
+            TimeSpan endTime = new TimeSpan(0, 0, 0, 0, (int)(totalDuration * xAudioWrapper.AudioEnd));
+
+            MediaElement.Position = startTime;
+
+            MediaElement.Markers.Remove(EndMarker);
+
+
+            StartMarker = new TimelineMarker();
+            StartMarker.Time = startTime;
+            EndMarker = new TimelineMarker();
+            EndMarker.Time = endTime;
+
+            MediaElement.Markers.Add(EndMarker);
+
+            ScrubBar.Minimum = totalDuration * xAudioWrapper.AudioStart;
+            ScrubBar.Maximum = totalDuration * xAudioWrapper.AudioEnd;
+
+            // set the right time stamp
+            var converter = new PositionToStringConverter();
+            var timeSpan = new TimeSpan(0, 0, 0, 0, (int)(totalDuration * xAudioWrapper.AudioEnd));
+            xRightTimeStampTextBlock.Text = (string)converter.Convert(timeSpan, null, null, null); // this looks weird cause its a xaml converter 
+
+        }
         private async void OnPlay_Click(object sender, RoutedEventArgs e)
         {
 
@@ -184,7 +217,6 @@ namespace NuSysApp
         {
             MediaElement.Stop();
             var vm = (VideoNodeViewModel) DataContext;
-            vm.Controller.LibraryElementController.Loaded -= LoadVideo;
             vm.Controller.Disposed -= ControllerOnDisposed;
             DataContext = null;
         }
@@ -192,7 +224,7 @@ namespace NuSysApp
         private void LoadVideo(object sender)
         {
             var vm = DataContext as VideoNodeViewModel;
-            MediaElement.Source = vm.Controller.LibraryElementController.GetSource();
+            MediaElement.Source = new Uri(vm.Controller.LibraryElementController.Data);
         }
 
         private void SrubBar_OnTapped(object sender, TappedRoutedEventArgs e)

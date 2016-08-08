@@ -11,18 +11,19 @@ namespace NuSysApp
 {
     public class LinkViewModel : BaseINPC, IEditable
     {
-        public ObservableCollection<LinkController> LinkList{ get; set; }
+        public ObservableCollection<LinkController> LinkList { get; set; }
 
 
-        
+
         private string _title;
         private string _annotation;
+        private int _numDirectionButtonClicks;
         private readonly LinkController _controller;
         private bool _selected;
         private SolidColorBrush _color;
 
-        private SolidColorBrush _selectedColor = new SolidColorBrush( ColorHelper.FromArgb(0xFF, 0x98, 0x1A, 0x4D));
-        private SolidColorBrush _notSelectedColor = new SolidColorBrush(ColorHelper.FromArgb(0xFF,0x11,0x3D,0x40));
+        private SolidColorBrush _selectedColor = new SolidColorBrush(ColorHelper.FromArgb(0xFF, 0x98, 0x1A, 0x4D));
+        private SolidColorBrush _notSelectedColor = new SolidColorBrush(ColorHelper.FromArgb(0xFF, 0x11, 0x3D, 0x40));
 
         public LinkModel LinkModel
         {
@@ -34,12 +35,13 @@ namespace NuSysApp
         }
 
 
-        public LinkController Controller {
+        public LinkController Controller
+        {
             get
             {
                 Debug.Assert(_controller != null);
                 return _controller;
-            } 
+            }
         }
         public Point2d Anchor
         {
@@ -59,7 +61,7 @@ namespace NuSysApp
         public LinkViewModel(LinkController controller)
         {
             _controller = controller;
-
+            _numDirectionButtonClicks = 0;
             Debug.Assert(controller.LibraryElementController != null);
 
             controller.TitleChanged += TitleChanged;
@@ -84,7 +86,7 @@ namespace NuSysApp
         {
             Controller.TitleChanged -= TitleChanged;
         }
-      
+
 
         public void UpdateAnchor()
         {
@@ -96,6 +98,28 @@ namespace NuSysApp
             Controller.TitleChanged -= TitleChanged;
             Controller.LibraryElementController.SetTitle(title);
             Controller.TitleChanged += TitleChanged;
+        }
+
+        public void DirectionButtonClicked()
+        {
+            /*
+            var linkLibElemCont = _controller.LibraryElementController as LinkLibraryElementController;
+            Debug.Assert(linkLibElemCont != null);
+            //switching to monodirectional
+            if (linkLibElemCont.LinkLibraryElementModel.LinkedDirection.Equals(LinkDirectionEnum.Mono1))
+            {
+                linkLibElemCont.RaiseLinkDirectionChanged(linkLibElemCont, LinkDirectionEnum.Mono2);
+            }
+            //swapping direction
+            else if (linkLibElemCont.LinkLibraryElementModel.LinkedDirection.Equals(LinkDirectionEnum.Mono2))
+            {
+                linkLibElemCont.RaiseLinkDirectionChanged(linkLibElemCont, LinkDirectionEnum.Bi);
+            }
+            //going back to bidirectional
+            else
+            {
+                linkLibElemCont.RaiseLinkDirectionChanged(linkLibElemCont, LinkDirectionEnum.Mono1);
+            }*/
         }
 
 

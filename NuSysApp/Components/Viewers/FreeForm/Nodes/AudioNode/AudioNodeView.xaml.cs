@@ -20,6 +20,7 @@ using Windows.UI.Xaml.Navigation;
 using System.Diagnostics;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
+using NusysIntermediate;
 using NuSysApp.Components.Nodes;
 using NuSysApp.Controller;
 
@@ -36,6 +37,7 @@ namespace NuSysApp
             this.DataContext = vm; // has to be set before initComponent so child xaml elements inherit it
             InitializeComponent();
             _loaded = false;
+
             vm.Controller.Disposed += ControllerOnDisposed;
             MediaPlayer.AudioSource = vm.AudioSource;
         }
@@ -61,7 +63,7 @@ namespace NuSysApp
             await r.RenderAsync(MediaPlayer, width, height);
             return r;
         }
-
+        /*
         private async void LoadPlaybackElement()
         {
             await MediaPlayer.RenderImageSource((DataContext as AudioNodeViewModel).VisualGrid);
@@ -71,6 +73,6 @@ namespace NuSysApp
                 _loaded = true;
             }
                         
-        }
+        }*/
     }
 }

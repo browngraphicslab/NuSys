@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.UI;
 using Microsoft.Graphics.Canvas.Geometry;
+using NusysIntermediate;
 
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -54,7 +55,6 @@ namespace NuSysApp
             this.InitializeComponent();
             
             vm.SelectionChanged += VmOnSelectionChanged;
-            vm.Controller.Model.InqCanvas.LineFinalized += InqCanvasOnLineFinalized;
             vm.Controller.Disposed += ControllerOnDisposed;
             _vm = vm;
 
@@ -67,9 +67,10 @@ namespace NuSysApp
                 _inqCanvas.AdornmentAdded += AdormnentAdded;
                 _inqCanvas.AdornmentRemoved += AdornmentRemoved;
 
-                var collectionModel = (CollectionLibraryElementModel)SessionController.Instance.ContentController.GetContent(vm.Controller.LibraryElementModel.LibraryElementId);
+                var collectionController = (CollectionLibraryElementController)SessionController.Instance.ContentController.GetLibraryElementController(vm.Controller.LibraryElementModel.LibraryElementId);
 
-                collectionModel.OnInkAdded += delegate(string id)
+                collectionController.OnInkAdded += delegate(string id)
+
                 {
                     if (InkStorage._inkStrokes.ContainsKey(id))
                     {
@@ -109,7 +110,7 @@ namespace NuSysApp
                 SwitchMode(Options.SelectNode, false);
 
                 var colElementModel = vm.Controller.Model as CollectionElementModel;
-                if (colElementModel.CollectionLibraryElementModel.IsFinite)
+                if ((SessionController.Instance.ContentController.GetLibraryElementModel(colElementModel.LibraryId)as CollectionLibraryElementModel).IsFinite)
                 {
                     LimitManipulation();
                 }
@@ -128,14 +129,14 @@ namespace NuSysApp
             var request = InkStorage.CreateRemoveInkRequest(new InkWrapper(stroke, "adornment"));
             if (request == null)
                 return;
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request.Item1);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request.Item1);
 
             var m = new Message();
             m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
-            var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
-            model.InkLines.Remove(request.Item2);
-            m["inklines"] = new HashSet<string>(model.InkLines);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(m));
+            var collectionController = ((ElementViewModel)DataContext).Controller.LibraryElementController as CollectionLibraryElementController;
+            collectionController.InkLines.Remove(request.Item2);
+            m["inklines"] = new HashSet<string>(collectionController.InkLines);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new UpdateLibraryElementModelRequest(m));
 
         }
 
@@ -145,14 +146,14 @@ namespace NuSysApp
             InkStorage._inkStrokes.Add(id, new InkWrapper(inkStroke, "adornment"));//"adornment", inkStroke));
 
             var request = InkStorage.CreateAddInkRequest(id, inkStroke, "adornment", MultiSelectMenuView.SelectedColor);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
 
             var m = new Message();
             m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
-            var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
-            model.InkLines.Add(id);
-            m["inklines"] = new HashSet<string>(model.InkLines);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(m));
+            var collectionController = ((ElementViewModel)DataContext).Controller.LibraryElementController as CollectionLibraryElementController;
+            collectionController.InkLines.Add(id);
+            m["inklines"] = new HashSet<string>(collectionController.InkLines);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new UpdateLibraryElementModelRequest(m));
         }
 
         private async void InkStrokedAdded(WetDryInkCanvas canvas, InkStroke stroke)
@@ -161,14 +162,14 @@ namespace NuSysApp
             InkStorage._inkStrokes.Add(id, new InkWrapper(stroke, "ink"));
 
             var request = InkStorage.CreateAddInkRequest(id, stroke, "ink", Colors.Black );
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
 
             var m = new Message();
             m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
-            var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
-            model.InkLines.Add(id);
-            m["inklines"] = new HashSet<string>(model.InkLines);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(m));
+            var collectionController = ((ElementViewModel)DataContext).Controller.LibraryElementController as CollectionLibraryElementController;
+            collectionController.InkLines.Add(id);
+            m["inklines"] = new HashSet<string>(collectionController.InkLines);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new UpdateLibraryElementModelRequest(m));
         }
 
         private void InkStrokedRemoved(WetDryInkCanvas canvas, InkStroke stroke)
@@ -176,14 +177,14 @@ namespace NuSysApp
             var request = InkStorage.CreateRemoveInkRequest(new InkWrapper(stroke, "ink"));
             if (request == null)
                 return;
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request.Item1);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request.Item1);
 
             var m = new Message();
             m["contentId"] = ((ElementViewModel)DataContext).Controller.LibraryElementModel.LibraryElementId;
-            var model = ((ElementViewModel)DataContext).Controller.LibraryElementModel as CollectionLibraryElementModel;
-            model.InkLines.Remove(request.Item2);
-            m["inklines"] = new HashSet<string>(model.InkLines);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(m));
+            var collectionController = ((ElementViewModel)DataContext).Controller.LibraryElementController as CollectionLibraryElementController;
+            collectionController.InkLines.Remove(request.Item2);
+            m["inklines"] = new HashSet<string>(collectionController.InkLines);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new UpdateLibraryElementModelRequest(m));
         }
 
         private void ControllerOnDisposed(object source, object args)
@@ -200,42 +201,15 @@ namespace NuSysApp
             _linkMode?.Deactivate();
             _mainMode?.Deactivate();
             _simpleEditMode?.Deactivate();
- 
-        
 
-            var vm = (FreeFormViewerViewModel)DataContext;
+
+
+            var vm = (FreeFormViewerViewModel) DataContext;
             vm.SelectionChanged -= VmOnSelectionChanged;
-            vm.Controller.Model.InqCanvas.LineFinalized -= InqCanvasOnLineFinalized;
             vm.Controller.Disposed -= ControllerOnDisposed;
             _mode = null;
 
             _inqCanvas = null;
-        }
-
-        private void InqCanvasOnLineFinalized(InqLineModel model)
-        {
-            var vm = (FreeFormViewerViewModel)DataContext;
-            if (!model.IsGesture)
-            {
-                //var createdTag = await CheckForTagCreation(model);
-                //if (createdTag)
-                //{
-                //    model.Delete();
-                //}
-                return;
-            }
-
-            var gestureType = GestureRecognizer.Classify(model);
-            switch (gestureType)
-            {
-                case GestureRecognizer.GestureType.None:
-                    break;
-                case GestureRecognizer.GestureType.Scribble:
-                    var deletedSome = vm.CheckForInkNodeIntersection(model);
-                    if (deletedSome)
-                        model.Delete();
-                    break;
-            }
         }
 
         private void VmOnSelectionChanged(object source)
@@ -247,7 +221,7 @@ namespace NuSysApp
             }
             else if (vm.Selections.Count == 1)
             {
-                if ((vm.Selections[0] as ElementViewModel)?.ElementType == ElementType.Collection)
+                if ((vm.Selections[0] as ElementViewModel)?.ElementType == NusysConstants.ElementType.Collection)
                     SetViewMode(_simpleEditGroupMode);
                 else
                     SetViewMode(_simpleEditMode);

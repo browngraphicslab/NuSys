@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -13,7 +14,7 @@ namespace NuSysApp
         
         public TextNodeController(TextElementModel model) : base(model)
         {
-            if (SessionController.Instance.ContentController.GetContent(Model.LibraryId) != null)
+            if (SessionController.Instance.ContentController.GetLibraryElementModel(Model.LibraryId) != null)
             {
                 LibraryElementController.ContentChanged += ContentChanged;
             }
@@ -21,14 +22,14 @@ namespace NuSysApp
 
         private void ContentChanged(object originalSenderViewModel, string newData)
         {
-            var content = SessionController.Instance.ContentController.GetContent(Model.LibraryId);
-            TextChanged?.Invoke(this, content.Data);
+            var libraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(Model.LibraryId);
+            TextChanged?.Invoke(this, libraryElementController.Data);
         }
 
         public override void Dispose()
         {
            
-            if (SessionController.Instance.ContentController.GetContent(Model.LibraryId) != null)
+            if (SessionController.Instance.ContentController.GetLibraryElementModel(Model.LibraryId) != null)
             {
                 LibraryElementController.ContentChanged -= ContentChanged;
             }

@@ -5,6 +5,7 @@
     xmlns:local="using:NuSysApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:nusysIntermediate="using:NusysIntermediate"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
@@ -42,9 +43,9 @@
                 </Border>
             </ListView.Header>
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="local:Region">
-                    <Grid x:Name="RegionListViewItem" PointerPressed="RegionListViewItem_PointerPressed" HorizontalAlignment="Stretch" Height="30" VerticalAlignment="Center" Background="Transparent">
-                        <Grid.ColumnDefinitions>
+                <DataTemplate x:DataType="nusysIntermediate:Region">
+                            <Grid x:Name="RegionListViewItem" PointerPressed="RegionListViewItem_PointerPressed" HorizontalAlignment="Stretch" Height="30" VerticalAlignment="Center" Background="Transparent">
+                                <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" ></ColumnDefinition>
                             <ColumnDefinition Width="*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>

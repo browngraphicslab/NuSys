@@ -11,6 +11,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
+using NusysIntermediate;
 using NuSysApp.Controller;
 using NuSysApp.Util;
 
@@ -164,16 +165,16 @@ namespace NuSysApp
             foreach (var linkLibraryElementId in linkLibraryElementIds)
             {
                 //sorry about this - should also be in frontend and not in viewmodel
-                var linkLibraryElementModel = SessionController.Instance.ContentController.GetContent(linkLibraryElementId) as LinkLibraryElementModel;
+                var linkLibraryElementModel = SessionController.Instance.ContentController.GetLibraryElementModel(linkLibraryElementId) as LinkLibraryElementModel;
                 Debug.Assert(linkLibraryElementModel != null);
                 if (linkLibraryElementModel != null)
                 {
                     string contentId = "";
-                    if (this.ContentId == linkLibraryElementModel.InAtomId)
+                    if (this.LibraryElementId == linkLibraryElementModel.InAtomId)
                     {
                         contentId = linkLibraryElementModel.OutAtomId;
                     }
-                    else if (this.ContentId == linkLibraryElementModel.OutAtomId)
+                    else if (this.LibraryElementId == linkLibraryElementModel.OutAtomId)
                     {
                         contentId = linkLibraryElementModel.InAtomId;
                     }
@@ -181,7 +182,8 @@ namespace NuSysApp
 
                     circlelink.Disposed += Circlelink_Disposed;
 
-                    Color color = linkLibraryElementModel.Color;
+                    //Color color = linkLibraryElementModel.Color; //TODO add back in link color
+                    var color = Colors.MediumVioletRed;
                     circlelink.Circle.Fill = new SolidColorBrush(color);
 
                     CircleLinks.Add(circlelink);
@@ -472,12 +474,12 @@ namespace NuSysApp
             }
         }
 
-        public ElementType ElementType
+        public NusysConstants.ElementType ElementType
         {
             get { return ((ElementModel) Model).ElementType; }
         }
 
-        public string ContentId
+        public string LibraryElementId
         {
             get { return ((ElementModel) Model).LibraryId; }
         }

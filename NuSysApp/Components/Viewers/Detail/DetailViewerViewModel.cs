@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -13,6 +14,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using MyToolkit.UI;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -122,10 +124,10 @@ namespace NuSysApp
         }
         public async Task<bool> ShowElement(LibraryElementController controller)
         {                     
-            if (!controller.IsLoaded)
+            if (!controller.ContentLoaded)
             {
                 await
-                    SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(
+                    SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(
                         controller.LibraryElementModel.LibraryElementId);
             }
             if (CurrentElementController != null)
@@ -148,8 +150,8 @@ namespace NuSysApp
             {
                 foreach (var regionLibraryId in regions)
                 {
-                    Debug.Assert(SessionController.Instance.ContentController.GetContent(regionLibraryId) is Region);
-                    RegionCollection.Add(SessionController.Instance.ContentController.GetContent(regionLibraryId) as Region);
+                    Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementModel(regionLibraryId) is Region);
+                    RegionCollection.Add(SessionController.Instance.ContentController.GetLibraryElementModel(regionLibraryId) as Region);
                 }
             }
             RaisePropertyChanged("OrderedRegionCollection");
@@ -235,7 +237,7 @@ namespace NuSysApp
             if (CurrentElementController != null)
             {
                 var tags = CurrentElementController?.LibraryElementModel.Keywords;
-                foreach (var tag in tags)
+                foreach (var tag in tags ?? new HashSet<Keyword>())
                 {
                     var tagBlock = this.MakeTagBlock(tag.Text);
                     Tags.Add(tagBlock);
@@ -253,7 +255,7 @@ namespace NuSysApp
                 //TODO remove debug asserts, if statements are ugly but needed because otherwise produced async crash on key not found
 
                 // get the metaDataDictionary for the currentelementController
-                var metaDataDict = CurrentElementController?.LibraryElementModel.Metadata;
+                var metaDataDict = CurrentElementController?.LibraryElementModel.Metadata ?? new ConcurrentDictionary<string, MetadataEntry>();
                 var suggestedTags = new List<string>();
                 // get a list of the suggested tags from the metadataentry for system suggested names
                 if (metaDataDict.ContainsKey("system_suggested_names"))
@@ -273,7 +275,7 @@ namespace NuSysApp
                     suggestedTags.AddRange(metaDataDict["system_suggested_dates"].Values);
                 }
 
-                foreach (var kvp in CurrentElementController.LibraryElementModel.FullMetadata ?? new Dictionary<string, MetadataEntry>())
+                foreach (var kvp in CurrentElementController.FullMetadata ?? new Dictionary<string, MetadataEntry>())
                 {
                     suggestedTags.AddRange(new HashSet<string>(kvp.Value.Values));
                 }
@@ -291,7 +293,7 @@ namespace NuSysApp
                         continue;
                     }
                     suggestedTags.AddRange(opposite.LibraryElementModel.Keywords.Select(key => key.Text));
-                    foreach (var kvp in opposite.LibraryElementModel.FullMetadata ?? new Dictionary<string, MetadataEntry>())
+                    foreach (var kvp in opposite.FullMetadata ?? new Dictionary<string, MetadataEntry>())
                     {
                         if (kvp.Key != "system_suggested_dates")
                         {
@@ -322,7 +324,7 @@ namespace NuSysApp
                 }
 
                 // remove the tags from the <tag, count> dictionary which are already set as keywords
-                var currentTags = CurrentElementController?.LibraryElementModel.Keywords;
+                var currentTags = CurrentElementController?.LibraryElementModel.Keywords ?? new HashSet<Keyword>();
                 foreach (var currentTag in currentTags)
                 {
                     var lowerTag = currentTag.Text.ToLower();

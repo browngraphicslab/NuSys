@@ -8,6 +8,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using NusysIntermediate;
 using NuSysApp.Tools;
 
 namespace NuSysApp
@@ -157,24 +158,24 @@ namespace NuSysApp
             Task.Run(async delegate
             {
                 var collectionID = SessionController.Instance.GenerateId();
-                var request = new CreateNewLibraryElementRequest(collectionID, "", ElementType.Collection,
+                var request = new CreateNewLibraryElementRequest(collectionID, "", NusysConstants.ElementType.Collection,
                     "Tool-Generated Collection");
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                 var m = new Message();
                 m["width"] = "300";
                 m["height"] = "300";
-                m["type"] = ElementType.Collection.ToString();
+                m["type"] = NusysConstants.ElementType.Collection.ToString();
                 m["x"] = x;
                 m["y"] = y;
                 m["contentId"] = collectionID;
                 m["autoCreate"] = true;
                 m["creator"] = SessionController.Instance.ActiveFreeFormViewer.Model.LibraryId;
                 var collRequest = new NewElementRequest(m);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(collRequest);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collRequest);
                 foreach (var id in Controller.Model.OutputLibraryIds)
                 {
-                    var lem = SessionController.Instance.ContentController.GetContent(id);
-                    if (lem == null || lem.Type == ElementType.Link)
+                    var lem = SessionController.Instance.ContentController.GetLibraryElementModel(id);
+                    if (lem == null || lem.Type == NusysConstants.ElementType.Link)
                     {
                         continue;
                     }
@@ -189,7 +190,7 @@ namespace NuSysApp
                     dict["autoCreate"] = true;
                     dict["creator"] = collectionID;
                     var elementRequest = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(elementRequest);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
                 }
 
             });
@@ -206,8 +207,8 @@ namespace NuSysApp
                 int offset = 40;
                 foreach (var id in Controller.Model.OutputLibraryIds)
                 {
-                    var lem = SessionController.Instance.ContentController.GetContent(id);
-                    if (lem == null || lem.Type == ElementType.Link || i > 20)//TODO indicate to user than no more than 20 non-link items will be made
+                    var lem = SessionController.Instance.ContentController.GetLibraryElementModel(id);
+                    if (lem == null || lem.Type == NusysConstants.ElementType.Link || i > 20)//TODO indicate to user than no more than 20 non-link items will be made
                     {
                         continue;
                     }
@@ -222,7 +223,7 @@ namespace NuSysApp
                     dict["autoCreate"] = true;
                     dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Model.LibraryId;
                     var elementRequest = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(elementRequest);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
                     i++;
                 }
 

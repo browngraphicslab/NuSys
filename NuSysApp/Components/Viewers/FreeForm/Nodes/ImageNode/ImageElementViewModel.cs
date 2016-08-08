@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Windows.UI.Xaml.Media;
 using NuSysApp.Util;
 using System.Diagnostics;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -18,7 +19,8 @@ namespace NuSysApp
     {
         public ImageElementViewModel(ElementController controller) : base(controller)
         {
-            Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));       
+            Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
+
         }
 
         public override void Dispose()
@@ -34,26 +36,20 @@ namespace NuSysApp
 
         public override async Task Init()
         {
-            if (Controller.LibraryElementController.IsLoaded)
+            if (!Controller.LibraryElementController.ContentLoaded)
             {
-                await DisplayImage();
+                await Controller.LibraryElementController.LoadContentDataModelAsync();
             }
-            else
-            {
-                Controller.LibraryElementController.Loaded += LibraryElementModelOnOnLoaded;
-            }
-            RaisePropertyChanged("Image");
-        }
-
-        private async void LibraryElementModelOnOnLoaded(object sender)
-        {
             await DisplayImage();
-            Controller.LibraryElementController.Loaded -= LibraryElementModelOnOnLoaded;
+
+            RaisePropertyChanged("Image");
+
+
         }
 
         private async Task DisplayImage()
         {
-            var url = Controller.LibraryElementController.GetSource();
+            var url = new Uri(Controller.LibraryElementController.Data);
             Image = new BitmapImage();
             Image.UriSource = url;
             Image.ImageOpened += UpdateSizeFromModel;

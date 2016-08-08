@@ -11,6 +11,7 @@ namespace NuSysApp
 {
     public class LinkController : ILinkable, INuSysDisposable
     {
+
         public event EventHandler<Point2d> AnchorChanged;
 
         public delegate void TitleChangedEventHandler(object source, string title);

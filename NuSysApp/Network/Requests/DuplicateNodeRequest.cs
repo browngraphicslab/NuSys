@@ -6,21 +6,22 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
     public class DuplicateNodeRequest : Request
     {
-        public DuplicateNodeRequest(Message message) : base(Request.RequestType.DuplicateNodeRequest, message){}
+        public DuplicateNodeRequest(Message message) : base(NusysConstants.RequestType.DuplicateNodeRequest, message){}
 
         public override async Task ExecuteRequestFunction()
         {
             var id = _message.GetString("id");
             var model = SessionController.Instance.IdToControllers[id].Model;
             
-            ElementType type = model.ElementType;
+            NusysConstants.ElementType type = model.ElementType;
 
-            if (type == ElementType.Collection)
+            if (type == NusysConstants.ElementType.Collection)
             {
                 var childList = _message.GetList<string>("groupChildren");
                 foreach (var childId in childList)
@@ -44,7 +45,7 @@ namespace NuSysApp
 
             var msg = new Message( modelToDuplicate );
             var request = new NewElementRequest(msg);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
 
             var duplicateModel = SessionController.Instance.IdToControllers[msg.GetString("id")].Model;
 

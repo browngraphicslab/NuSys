@@ -8,6 +8,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using NusysIntermediate;
 using NuSysApp.Tools;
 
 namespace NuSysApp
@@ -46,7 +47,7 @@ namespace NuSysApp
         {
             get
             {
-                return (_controller.Model as CollectionElementModel).CollectionLibraryElementModel.IsFinite;
+                return (SessionController.Instance.ContentController.GetLibraryElementModel(Controller.Model.LibraryId) as CollectionLibraryElementModel).IsFinite;
             }
         }
 

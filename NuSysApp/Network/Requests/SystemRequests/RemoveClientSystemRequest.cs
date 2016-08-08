@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using NusysIntermediate;
 using SQLiteNetExtensions.Extensions;
 
 namespace NuSysApp

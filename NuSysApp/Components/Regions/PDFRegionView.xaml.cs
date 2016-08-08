@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Navigation;
 using Windows.Foundation;
 using System.ComponentModel;
 using System.Diagnostics;
+using NusysIntermediate;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 

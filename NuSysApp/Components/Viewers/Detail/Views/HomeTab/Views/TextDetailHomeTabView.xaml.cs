@@ -25,6 +25,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
+using NusysIntermediate;
 
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -102,11 +103,11 @@ namespace NuSysApp
 
         private void MyWebViewOnNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
         {
-            if (((TextDetailHomeTabViewModel)DataContext).LibraryElementController.LibraryElementModel.Data != "")
+            if (((TextDetailHomeTabViewModel)DataContext).LibraryElementController.Data != "")
             {
-                UpdateText(((TextDetailHomeTabViewModel)DataContext).LibraryElementController.LibraryElementModel.Data);
+                UpdateText(((TextDetailHomeTabViewModel)DataContext).LibraryElementController.Data);
             }
-            OpenTextBox(((TextDetailHomeTabViewModel)DataContext).LibraryElementController.LibraryElementModel.Data);
+            OpenTextBox(((TextDetailHomeTabViewModel)DataContext).LibraryElementController.Data);
         }
 
         private void VmOnTextBindingChanged(object source, string text)
@@ -211,13 +212,13 @@ namespace NuSysApp
             m["width"] = 400;
             m["height"] = 400;
             m["url"] = url;
-            m["nodetype"] = ElementType.Web;
+            m["nodetype"] = NusysConstants.ElementType.Web;
             m["autoCreate"] = true;
-            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId ;
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId ;
             m["id"] = nodeid;
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, "",ElementType.Web));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, "",NusysConstants.ElementType.Web));
 
 
         }
@@ -374,9 +375,9 @@ namespace NuSysApp
 
         private void AddToCollection_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(_libraryElementId);
-            if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element?.LibraryElementId) ||
-                (element?.Type == ElementType.Link))
+            LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(_libraryElementId);
+            if ((SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == element?.LibraryElementId) ||
+                (element?.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -394,11 +395,11 @@ namespace NuSysApp
             t.TranslateX += _x;
             t.TranslateY += _y;
 
-            if (!SessionController.Instance.ContentController.ContainsAndLoaded(element.LibraryElementId))
+            if (!SessionController.Instance.ContentController.ContainsContentDataModel(element.ContentDataModelId))
             {
                 Task.Run(async delegate
                 {
-                    SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(element.LibraryElementId);
+                    SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(element.ContentDataModelId);
                 });
             }
 
@@ -408,8 +409,8 @@ namespace NuSysApp
 
         private void AddToCollection_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(_libraryElementId);
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
+            LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(_libraryElementId);
+            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -442,8 +443,8 @@ namespace NuSysApp
 
         private async void AddToCollection_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(_libraryElementId);
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
+            LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(_libraryElementId);
+            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -465,13 +466,13 @@ namespace NuSysApp
             await AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type, element.LibraryElementId);
         }
 
-        public async Task AddNode(Point pos, Size size, ElementType elementType, string libraryId)
+        public async Task AddNode(Point pos, Size size, NusysConstants.ElementType elementType, string libraryId)
         {
             Task.Run(async delegate
             {
-                if (elementType != ElementType.Collection)
+                if (elementType != NusysConstants.ElementType.Collection)
                 {
-                    var element = SessionController.Instance.ContentController.GetContent(libraryId);
+                    var element = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId);
                     var dict = new Message();
                     Dictionary<string, object> metadata;
 
@@ -490,16 +491,16 @@ namespace NuSysApp
                     dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
                     dict["metadata"] = metadata;
                     dict["autoCreate"] = true;
-                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
                     var request = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                 }
                 else
                 {
-                    var collection = SessionController.Instance.ContentController.GetContent(libraryId) as CollectionLibraryElementModel;
+                    var collection = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId) as CollectionLibraryElementModel;
                     await
                         StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, libraryId, collection.IsFinite,
-                            collection.ShapePoints, size.Width, size.Height);
+                             new List<Point>(collection.ShapePoints.Select(p => new Point(p.X, p.Y))), size.Width, size.Height);
                 }
             });
         }

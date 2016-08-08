@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Media;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
     public class AddInkRequest : Request
     {
 
-        public AddInkRequest(Message message) : base(Request.RequestType.AddInkRequest, message){}
+        public AddInkRequest(Message message) : base(NusysConstants.RequestType.AddInkRequest, message){}
 
         public async override Task CheckOutgoingRequest()
         {
@@ -28,11 +29,6 @@ namespace NuSysApp
             }
 
             _message["contentId"] = _message.GetString("id", null);
-
-            SetServerEchoType(ServerEchoType.ForcedEveryone);
-            SetServerItemType(ServerItemType.Ink);
-            SetServerRequestType(ServerRequestType.Add);
-            SetServerIgnore(false);
         }
         public override async Task ExecuteRequestFunction()
         {
@@ -48,9 +44,9 @@ namespace NuSysApp
             {
                 return;
             }
-            var model = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel as CollectionLibraryElementModel;
+            var collectionController = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController as CollectionLibraryElementController;
 
-            if (model != null && model.InkLines.Contains(id))
+            if (collectionController != null && collectionController.InkLines.Contains(id))
             {
 
                 if (type == "adornment")

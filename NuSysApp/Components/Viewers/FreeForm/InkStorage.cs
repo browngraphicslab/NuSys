@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Input.Inking;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
