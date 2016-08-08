@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NusysIntermediate;
+using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 {
@@ -22,7 +23,7 @@ namespace NuSysApp
         public CreateNewContentRequest(Message message) : base(NusysConstants.RequestType.CreateNewContentRequest,message){}
 
         /// <summary>
-        /// DEPRICATED but will still work.  
+        /// DEPRECATED but will still work.  
         /// This constructor's message should be well populated.  
         /// Since this message also creates a new Library Element, all the keys of the CreateNewLibraryElementRequest should be used when adding properties to the future library element;
         /// For example, use NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY when adding a title to this new content.  
@@ -62,64 +63,32 @@ namespace NuSysApp
         public CreateNewContentRequest(CreateNewContentRequestArgs requestArgs)
             : base(NusysConstants.RequestType.CreateNewContentRequest)
         {
-            //debug.asserts for required types
-            Debug.Assert(requestArgs.LibraryElementArgs.LibraryElementType != null);
+            var message = requestArgs.PackToRequestKeys();
+            _message.ForEach(kvp => message[kvp.Key] = kvp.Value);
+            _message = message;
+            
+        }
 
-            if (requestArgs.LibraryElementArgs.LibraryElementType != NusysConstants.ElementType.Collection &&
-                requestArgs.LibraryElementArgs.LibraryElementType != NusysConstants.ElementType.Text)
+        /// <summary>
+        /// this method will parse and add the returned library Element after the request has successfully returned. 
+        /// Will throw an exception if the request has not returned yet or has failed. 
+        /// Returned whether the new libraryElementSuccessfully was added
+        /// </summary>
+        /// <returns></returns>
+        public bool AddReturnedLibraryElementToLibrary()
+        {
+            if (WasSuccessful() != true)
             {
-                Debug.Assert(requestArgs.DataBytes != null);
-                _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES] = requestArgs.DataBytes;
-            }
-            else
-            {
-                _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES] = null;
-            }
-
-            //if the requsted content will need a specific filetype server-side, require the file extension
-            if (requestArgs.LibraryElementArgs.LibraryElementType == NusysConstants.ElementType.Audio ||
-                requestArgs.LibraryElementArgs.LibraryElementType == NusysConstants.ElementType.Video ||
-                requestArgs.LibraryElementArgs.LibraryElementType == NusysConstants.ElementType.PDF ||
-                requestArgs.LibraryElementArgs.LibraryElementType == NusysConstants.ElementType.Image)
-            {
-                Debug.Assert(requestArgs.FileExtension != null);
-                _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_FILE_EXTENTION] = requestArgs.FileExtension;
+                //If this fails here, check with .WasSuccessful() before calling this method.
+                throw new Exception("The request hasn't returned yet or was unsuccessful");
             }
 
-            //Set the contentType based on the ElementType of the default library element
-            _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY] = NusysConstants.ElementTypeToContentType(requestArgs.LibraryElementArgs.LibraryElementType.Value).ToString();
+            //make sure the returned model is present
+            Debug.Assert(_returnMessage.ContainsKey(NusysConstants.NEW_CONTENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY));
+            var modelString = _returnMessage.GetString(NusysConstants.NEW_CONTENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY);
 
-            //set the libraryElementType
-            _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY] = requestArgs.LibraryElementArgs.LibraryElementType.ToString();
-
-            //Set the contentId based on the given id, or create one 
-            _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY] = requestArgs.ContentId ?? SessionController.Instance.GenerateId();
-
-            //set the default library element's content ID
-            _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CONTENT_ID_KEY] = _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY];
-
-            //set the library element's library Id
-            _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY] = requestArgs.LibraryElementArgs.LibraryElementId ?? SessionController.Instance.GenerateId();
-
-            //set the keywords
-            if (requestArgs.LibraryElementArgs.Keywords != null)
-            {
-                _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_KEYWORDS_KEY] = requestArgs.LibraryElementArgs.Keywords;
-            }
-
-            //set the title
-            if (requestArgs.LibraryElementArgs.Title != null)
-            {
-                _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = requestArgs.LibraryElementArgs.Title;
-            }
-
-            //set the favorited boolean
-            if (requestArgs.LibraryElementArgs.Favorited != null)
-            {
-                _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_FAVORITED_KEY] = requestArgs.LibraryElementArgs.Favorited.Value;
-            }
-
-            //TODO add in metadata
+            var libraryElement = LibraryElementModelFactory.DeserializeFromString(modelString);
+            return SessionController.Instance.ContentController.Add(libraryElement) != null;
         }
 
         /// <summary>
@@ -150,6 +119,10 @@ namespace NuSysApp
 
             //make sure the new library element will have an element type
             Debug.Assert(_message.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY));
+
+            var time = DateTime.UtcNow.ToString();
+            _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CREATION_TIMESTAMP_KEY] = time;
+            _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LAST_EDITED_TIMESTAMP_KEY] = time;
         }
     }
 }

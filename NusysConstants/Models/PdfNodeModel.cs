@@ -9,7 +9,6 @@ namespace NusysIntermediate
     public class PdfNodeModel : ElementModel
     {
         private int _currentPageNumber;
-        public MuPDFWinRT.Document Document { get; set; }
 
         public int CurrentPageNumber {
             get { return _currentPageNumber; }

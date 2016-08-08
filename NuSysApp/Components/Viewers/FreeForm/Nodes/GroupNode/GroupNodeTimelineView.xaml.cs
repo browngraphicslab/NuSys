@@ -236,54 +236,33 @@ namespace NuSysApp
                 ElementController controller = atomvm.Controller;
 
                 // TODO refactor
-                if (controller.LibraryElementController.IsLoaded)
+                if (!controller.LibraryElementController.ContentLoaded)
                 {
-                    String title = controller.Model.Title;
-                    Image image = await _factory.CreateFromSendable(controller);
-                    Object secondItem = metadata;
-                    _view = new TimelineItemView(image, secondItem, atom, controller.Model.ElementType);
-                    _elementControllerDict[image] = controller;
-                    _view.ManipulationMode = ManipulationModes.All;
-                    _view.ManipulationDelta += TimelineNode_ManipulationDelta;
-                    _view.DoubleTapped += ViewOnDoubleTapped;
-                    _view.ManipulationCompleted += TimelineNode_ManipulationCompleted;
-                    _view.ManipulationStarting += TimelineNode_ManipulationStarting;
-                    _view.VerticalAlignment = VerticalAlignment.Center;
+                    await controller.LibraryElementController.LoadContentDataModelAsync();
 
-                    TimelinePanel.Children.Add(_view);
-                    _panelNodes.Add(_view);
-                    IncrementCounter();
                 }
-                else
-                {
-                    controller.LibraryElementController.Loaded += async delegate (object sender)
-                    {
-                        if (_loadedList.Contains(controller.LibraryElementModel.LibraryElementId))
-                            return;
-
-                        _loadedList.Add(controller.LibraryElementModel.LibraryElementId);
-
-                        String title = controller.Model.Title;
-                        Image image = await _factory.CreateFromSendable(controller);
-                        Object secondItem = metadata;
-                        _view = new TimelineItemView(image, secondItem, atom, controller.Model.ElementType);
-                        _elementControllerDict[image] = controller;
-                        _view.ManipulationMode = ManipulationModes.All;
-                        _view.ManipulationDelta += TimelineNode_ManipulationDelta;
-                        _view.ManipulationCompleted += TimelineNode_ManipulationCompleted;
-                        _view.ManipulationStarting += TimelineNode_ManipulationStarting;
-                        _view.DoubleTapped += ViewOnDoubleTapped;
-                        _view.VerticalAlignment = VerticalAlignment.Center;
-
-                        TimelinePanel.Children.Add(_view);
-                        _panelNodes.Add(_view);
-                        IncrementCounter();
-                    };
-                }
-
-
+                OnLoad(controller, atom, metadata);
             }
             _vm.DataList = _atomList;
+        }
+
+        private async Task OnLoad(ElementController controller, FrameworkElement atom, object metadata)
+        {
+            String title = controller.Model.Title;
+            Image image = await _factory.CreateFromSendable(controller);
+            Object secondItem = metadata;
+            _view = new TimelineItemView(image, secondItem, atom, controller.Model.ElementType);
+            _elementControllerDict[image] = controller;
+            _view.ManipulationMode = ManipulationModes.All;
+            _view.ManipulationDelta += TimelineNode_ManipulationDelta;
+            _view.DoubleTapped += ViewOnDoubleTapped;
+            _view.ManipulationCompleted += TimelineNode_ManipulationCompleted;
+            _view.ManipulationStarting += TimelineNode_ManipulationStarting;
+            _view.VerticalAlignment = VerticalAlignment.Center;
+
+            TimelinePanel.Children.Add(_view);
+            _panelNodes.Add(_view);
+            IncrementCounter();
         }
 
         private Dictionary<Image, ElementController> _elementControllerDict;

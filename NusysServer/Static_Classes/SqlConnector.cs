@@ -339,7 +339,11 @@ namespace NusysServer
             var executeMessages = sqlQuery.ExecuteCommand();
             if (executeMessages.Any())
             {
-                var dataModel = Constants.ParseContentDataModelFromDatabaseMessage(executeMessages.FirstOrDefault());
+                var strippedMessage = Constants.StripTableNames(executeMessages.FirstOrDefault());
+                strippedMessage[NusysConstants.CONTENT_DATA_MODEL_DATA_STRING_KEY] = FileHelper.GetDataFromContentURL(
+                        strippedMessage.GetString(NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY),
+                        strippedMessage.GetEnum<NusysConstants.ContentType>(NusysConstants.CONTENT_TABLE_TYPE_KEY));
+                var dataModel = ContentDataModelFactory.CreateFromMessage(strippedMessage);//TODO factor out to contentDataModel facotry
                 return dataModel;
             }
             throw new Exception("the requested contentDataModel wasn't found on the database");

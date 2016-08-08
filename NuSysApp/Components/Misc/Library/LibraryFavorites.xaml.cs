@@ -114,11 +114,11 @@ namespace NuSysApp
             t.TranslateX += _x - (rect.Width / 2);
             t.TranslateY += _y - (rect.Height / 2);
 
-            if (!SessionController.Instance.ContentController.ContainsAndLoaded(element.LibraryElementId))
+            if (!SessionController.Instance.ContentController.ContainsContentDataModel(element.ContentDataModelId))
             {
                 Task.Run(async delegate
                 {
-                    SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(element.LibraryElementId);
+                    SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(element.ContentDataModelId);
                 });
             }
         }

@@ -76,7 +76,7 @@ namespace NuSysApp
                     {
                         await Task.Run(async delegate
                         {
-                            await SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(id);
+                            await SessionController.Instance.NuSysNetworkSession.FetchLibraryElementDataAsync(id);
                             try
                             {
                                 var lem = SessionController.Instance.ContentController.GetContent(id);

@@ -260,14 +260,6 @@ namespace NuSysApp
 
         public virtual async Task UnPack(Message props)
         {
-            if (props.ContainsKey("data"))
-            {
-                var content = SessionController.Instance.ContentController.GetLibraryElementController(props.GetString("contentId", ""));
-                if (content != null)
-                {
-                    content.Data = props.GetString("data", "");
-                }
-            }
             if (props.ContainsKey("x") || props.ContainsKey("y"))
             {
                 //if either "x" or "y" are not found in props, x/y stays the current value stored in Model.X/Y

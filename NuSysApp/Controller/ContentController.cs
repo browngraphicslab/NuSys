@@ -63,9 +63,17 @@ namespace NuSysApp
             get { return new List<LibraryElementModel>(_contents.Values); }
         }
 
-        public bool ContainsAndLoaded(string id)
+        /// <summary>
+        /// returns whether the queried content data model exists lcoally.   
+        /// If not, that content is not yet loaded.  
+        /// This should replace the "containsAndLoaded" method. 
+        /// </summary>
+        /// <param name="contentDataModelId"></param>
+        /// <returns></returns>
+        public bool ContainsContentDataModel(string contentDataModelId)
         {
-            return _contentControllers.ContainsKey(id) && _contentControllers[id].IsLoaded;
+            Debug.Assert(contentDataModelId != null);
+            return _contentDataModels.ContainsKey(contentDataModelId);
         }
 
         /// <summary>
@@ -177,6 +185,12 @@ namespace NuSysApp
             return true;
         }
 
+        /// <summary>
+        /// should be used to add (and therefore 'load') all content data models.  
+        /// They should be recieved fully populated from the server. 
+        /// </summary>
+        /// <param name="contentDataModel"></param>
+        /// <returns></returns>
         public bool AddContentDataModel(ContentDataModel contentDataModel)
         {
             if (_contentDataModels.ContainsKey(contentDataModel.ContentId))

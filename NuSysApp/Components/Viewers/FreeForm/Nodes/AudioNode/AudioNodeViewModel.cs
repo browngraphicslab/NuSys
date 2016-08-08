@@ -48,7 +48,19 @@ namespace NuSysApp
 
             controller.Disposed += ControllerOnDisposed;
             Controller.SizeChanged += Controller_SizeChanged;
-            Controller.LibraryElementController.Loaded += LibraryElementController_Loaded;
+
+            if (!Controller.LibraryElementController.ContentLoaded)
+            {
+                Task.Run(async delegate
+                {
+                    await Controller.LibraryElementController.LoadContentDataModelAsync();
+                    LibraryElementController_Loaded(this);
+                });
+            }
+            else
+            {
+                LibraryElementController_Loaded(this);
+            }
         }
 
         private void Controller_SizeChanged(object source, double width, double height)
@@ -99,7 +111,6 @@ namespace NuSysApp
         }
         private void ControllerOnDisposed(object source, object args)
         {
-            Controller.LibraryElementController.Loaded -= InitWhenReady;
             Controller.Disposed -= ControllerOnDisposed;
         }
 
@@ -122,7 +133,7 @@ namespace NuSysApp
         {
             get
             {
-                return Controller.LibraryElementController.GetSource();
+                return new Uri(Controller.LibraryElementController.Data);
             }
         }
         /*
@@ -157,14 +168,11 @@ namespace NuSysApp
 
         public override async Task Init()
         {
-            if (SessionController.Instance.ContentController.ContainsAndLoaded(LibraryElementId))
+            if (!Controller.LibraryElementController.ContentLoaded)
             {
-                InitWhenReady(this);
+                await Controller.LibraryElementController.LoadContentDataModelAsync();
             }
-            else
-            {
-                Controller.LibraryElementController.Loaded += InitWhenReady;
-            }
+            InitWhenReady(this);
         }
 
         private async void InitWhenReady(object sender)

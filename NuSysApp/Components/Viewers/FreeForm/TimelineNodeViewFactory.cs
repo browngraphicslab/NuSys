@@ -47,7 +47,7 @@ namespace NuSysApp
                     break;
                 case NusysConstants.ElementType.Image:
                     view = new Image();
-                    BitmapImage imageImage = new BitmapImage(controller.LibraryElementController.GetSource());
+                    BitmapImage imageImage = new BitmapImage(new Uri(controller.LibraryElementController.Data));
                     view.Source = imageImage;
                     break;
                 case NusysConstants.ElementType.Word:

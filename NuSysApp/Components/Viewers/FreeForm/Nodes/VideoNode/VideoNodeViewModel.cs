@@ -63,8 +63,6 @@ namespace NuSysApp
             this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
             //LibraryElementController.LibraryElementController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
             Controller.SizeChanged += Controller_SizeChanged;
-            Controller.LibraryElementController.Loaded += LibraryElementController_Loaded;
-
         }
         //Eventually, we will refactor video regions to be more like audio/image/pdf so we don' thave to do this.
         public void UpdateRegions()
@@ -85,7 +83,6 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            Controller.LibraryElementController.Loaded -= LibraryElementModelOnOnLoaded;
             base.Dispose();
         }
         public void ScrubBarOnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -109,18 +106,10 @@ namespace NuSysApp
         }
         public override async Task Init()
         {
-            if (Controller.LibraryElementController.IsLoaded)
+            if (!Controller.LibraryElementController.ContentLoaded)
             {
-                Controller.SetSize(Model.Width, Model.Height);
+                await Controller.LibraryElementController.LoadContentDataModelAsync();
             }
-            else
-            {
-                Controller.LibraryElementController.Loaded += LibraryElementModelOnOnLoaded;
-            }
-        }
-
-        private void LibraryElementModelOnOnLoaded(object sender)
-        {
             Controller.SetSize(Model.Width, Model.Height);
         }
 

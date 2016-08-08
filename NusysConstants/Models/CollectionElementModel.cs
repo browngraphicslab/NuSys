@@ -21,7 +21,7 @@ namespace NusysIntermediate
 
         public CollectionElementModel(string id):base(id)
         {
-
+            ElementType = NusysConstants.ElementType.Collection;
         }
 
         public override void UnPackFromDatabaseMessage(Message props)

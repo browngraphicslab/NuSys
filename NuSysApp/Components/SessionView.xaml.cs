@@ -505,9 +505,15 @@ namespace NuSysApp
 
             xLoadingGrid.Visibility = Visibility.Visible;
 
+            Task.Run(async delegate
+            {
+                SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(collectionId);
+            });
+
+
             //await
-               // SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
-                    //new SubscribeToCollectionRequest(collectionId));
+            // SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
+            //new SubscribeToCollectionRequest(collectionId));
 
             foreach (var controller in SessionController.Instance.IdToControllers.Values)
             {
@@ -541,7 +547,6 @@ namespace NuSysApp
                 dict[element.Id] = element;
             }
 
-
             await Task.Run(async delegate {
                 await MakeCollection(new Dictionary<string, ElementModel>(dict));
             });
@@ -551,10 +556,7 @@ namespace NuSysApp
 
             xLoadingGrid.Visibility = Visibility.Collapsed;
 
-            Task.Run(async delegate
-            {
-                SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(collectionId);
-            });
+
 
             /*
             foreach (var msg in nodeMessages)

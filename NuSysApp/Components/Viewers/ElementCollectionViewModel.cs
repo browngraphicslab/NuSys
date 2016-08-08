@@ -18,7 +18,6 @@ namespace NuSysApp
 {
     public class ElementCollectionViewModel: ElementViewModel, ToolStartable
     {
-        public string Text { get; set; }
         public event EventHandler<HashSet<string>> OutputLibraryIdsChanged;
         public event EventHandler<string> Disposed;
         /// <summary>
@@ -35,7 +34,6 @@ namespace NuSysApp
             controller.ChildRemoved += OnChildRemoved;
             //(libraryElementController.LibraryElementModel as CollectionLibraryElementModel).OnLinkAdded += OnOnLinkAdded;
             //(libraryElementController.LibraryElementModel as CollectionLibraryElementModel).OnLinkRemoved += ElementCollectionViewModel_OnLinkRemoved;
-            Text = controller.LibraryElementController?.Data;
 
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 156, 227, 143));
             AtomViewList = new ObservableCollection<FrameworkElement>();

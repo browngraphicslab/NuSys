@@ -54,7 +54,8 @@ namespace NuSysApp
                 throw new Exception("The request hasn't returned yet or was unsuccessful");
             }
             Debug.Assert(_returnMessage.ContainsKey(NusysConstants.GET_CONTENT_DATA_MODEL_REQUEST_RETURNED_CONTENT_DATA_MODEL_KEY));
-            return _returnMessage.Get<ContentDataModel>(NusysConstants.GET_CONTENT_DATA_MODEL_REQUEST_RETURNED_CONTENT_DATA_MODEL_KEY);
+            var modelString = _returnMessage.GetString(NusysConstants.GET_CONTENT_DATA_MODEL_REQUEST_RETURNED_CONTENT_DATA_MODEL_KEY);
+            return ContentDataModelFactory.DeserializeFromString(modelString);
         }
     }
 }

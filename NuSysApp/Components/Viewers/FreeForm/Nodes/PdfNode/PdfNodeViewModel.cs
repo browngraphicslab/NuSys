@@ -89,14 +89,11 @@ namespace NuSysApp
 
         public async override Task Init()
         {
-            if (Controller.LibraryElementController.IsLoaded)
+            if (!Controller.LibraryElementController.ContentLoaded)
             {
-                await DisplayPdf();
+                await Controller.LibraryElementController.LoadContentDataModelAsync();
             }
-            else
-            {
-                Controller.LibraryElementController.Loaded += LibraryElementModelOnOnLoaded;
-            }
+            await DisplayPdf();
         }
 
         private async void LibraryElementModelOnOnLoaded(object sender)

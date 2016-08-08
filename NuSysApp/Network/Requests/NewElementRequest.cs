@@ -30,7 +30,7 @@ namespace NuSysApp
             Debug.Assert(args.Width != null);
             Debug.Assert(args.Y != null);
             Debug.Assert(args.X != null);
-            
+
             //set properties after assertions
             _message[NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_ID_KEY] = args.Id ?? SessionController.Instance.GenerateId();
             _message[NusysConstants.NEW_ELEMENT_REQUEST_LOCATION_Y_KEY] = args.Y;
@@ -68,6 +68,8 @@ namespace NuSysApp
                 //If this fails here, check with .WasSuccessful() before calling this method.
                 throw new Exception("The request hasn't returned yet or was unsuccessful");
             }
+
+            //get and add the requested element model.
             var model = GetReturnedElementModel();
             Debug.Assert(SessionController.Instance.AddElement(model));//make sure the adding was succesful
         }
@@ -119,9 +121,9 @@ namespace NuSysApp
             {
                 if (
                     !SessionController.Instance.ContentController.GetLibraryElementController(
-                        libraryElement.LibraryElementId).LoadingOrLoaded)
+                        libraryElement.LibraryElementId).ContentLoaded)
                 {
-                    SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(libraryId);
+                    SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(libraryId);
                 }
 
                 var elementType = libraryElement.Type;

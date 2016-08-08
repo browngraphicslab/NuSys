@@ -38,7 +38,7 @@ namespace NuSysApp
             LibraryElementController = controller;
             Model = controller.LibraryElementModel;
 
-            Image = controller.GetSource();
+            Image = new Uri(controller.Data);
             Editable = true;
            
         }

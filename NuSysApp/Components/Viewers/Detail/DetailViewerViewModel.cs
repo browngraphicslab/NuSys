@@ -164,11 +164,9 @@ namespace NuSysApp
             {
                 var controller = viewable as LibraryElementController;
                 
-                if (!controller.IsLoaded)
+                if (!controller.ContentLoaded)
                 {
-                    await
-                        SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(
-                            controller.LibraryElementModel.LibraryElementId);
+                    await controller.LoadContentDataModelAsync();
                 }
                 if (CurrentElementController != null)
                 {

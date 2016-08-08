@@ -90,14 +90,25 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_FILE_EXTENTION = "content_file_extention";
 
-            #endregion CreateNewContentRequest
+            /// <summary>
+            /// key for holding the pdf text of a newly uploaded pdf content.  This is not a sql table field.
+            /// </summary>
+            public static readonly string CREATE_NEW_PDF_CONTENT_REQUEST_PDF_TEXT_KEY = "pdf_text";
+
+            /// <summary>
+            /// This is returned when the NewContentRequest is succesfull. 
+            /// The value will be a josn-serialized library element model that can be run through the factory to get the model.
+            /// </summary>
+            public static readonly string NEW_CONTENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY = "returned_library_element_model";
+
+        #endregion CreateNewContentRequest
 
             #region DeleteLibraryElementRequest
 
-            /// <summary>
-            /// the key used to send the library element id key of the library element to be deleted
-            /// </summary>
-            public static readonly string DELETE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
+        /// <summary>
+        /// the key used to send the library element id key of the library element to be deleted
+        /// </summary>
+        public static readonly string DELETE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
 
             #endregion DeleteLibraryElementRequest
 
@@ -169,6 +180,7 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string NEW_ELEMENT_REQUEST_RETURNED_ELEMENT_MODEL_KEY = "returned_element_model";
 
+
         #endregion NewElementRequest
 
         #region NewLibraryElementRequest
@@ -204,19 +216,19 @@ namespace NusysIntermediate
         public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_FAVORITED_KEY = "favorited";
 
         /// <summary>
-        /// key in message for sending large icon url when creating new library element request
+        /// key in message for sending large icon base-64 byte string when creating new library element request
         /// </summary>
-        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LARGE_ICON_URL_KEY = "large_icon_url";
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LARGE_ICON_BYTE_STRING_KEY = "large_icon_bytes";
 
         /// <summary>
-        /// key in message for sending medium icon url when creating new library element request
+        /// key in message for sending medium icon base-64 byte string when creating new library element request
         /// </summary>
-        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_MEDIUM_ICON_URL_KEY = "medium_icon_url";
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_MEDIUM_ICON_BYTE_STRING_KEY = "medium_icon_bytes";
 
         /// <summary>
-        /// key in message for sending small icon url when creating new library element request
+        /// key in message for sending small icon base-64 byte string when creating new library element request
         /// </summary>
-        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_SMALL_ICON_URL_KEY = "small_icon_url";
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_SMALL_ICON_BYTE_STRING_KEY = "small_icon_bytes";
 
         /// <summary>
         /// key in message for sending creator id when creating new library element request 
@@ -237,6 +249,13 @@ namespace NusysIntermediate
         /// key in message for access type when creating new library element request
         /// </summary>
         public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_ACCESS_KEY = "access";
+
+        /// <summary>
+        /// key in message for when the request returns with the fully populated libraryelementModel.
+        /// When the library element model request returns, it will pass a library element model as a json using this key
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY = "returned_library_element_model";
+
         #endregion NewLibraryElementRequest
 
         #endregion RequestKeys
@@ -245,10 +264,10 @@ namespace NusysIntermediate
 
         #region alias
 
-            /// <summary>
-            /// 32 character string, aka an ID.  
-            /// </summary>
-            public static readonly string ALIAS_ID_KEY = "alias_id";
+        /// <summary>
+        /// 32 character string, aka an ID.  
+        /// </summary>
+        public static readonly string ALIAS_ID_KEY = "alias_id";
 
             /// <summary>
             /// 32 character string, aka an ID. 
@@ -819,8 +838,26 @@ namespace NusysIntermediate
             // weird type that possibly shouldn't be here
             Tools
         }
-       
+
+        /// <summary>
+        /// the enum to represent the size of a thumbnail
+        /// </summary>
+        public enum ThumbnailSize
+        {
+            Small, Medium, Large
+        }
+
         #endregion Enums
+
+        #region Misc
+
+        /// <summary>
+        /// the default file extension as a string for all thumbnails.  
+        /// As of 8/8/16, this should work for all thumbnails.
+        /// </summary>
+        public static readonly string DEFAULT_THUMBNAIL_FILE_EXTENSION = ".jpg";
+
+        #endregion Misc
 
         #region staticMethods
 
@@ -864,6 +901,19 @@ namespace NusysIntermediate
                 default:
                     return ContentType.Text;
             }
+        }
+
+        /// <summary>
+        /// returns the default thumbnail for a given libraryElementModel as a string.  
+        /// Pass in the libraryElementModel's library ID and the size of the thumbnail you want.  
+        /// Cannot directly be made into a Uri.
+        /// </summary>
+        /// <param name="contentDataModelId"></param>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        public static string GetDefaultThumbnailFileName(string libraryElementModelId, ThumbnailSize size)
+        {
+            return libraryElementModelId + "_" + size.ToString() + "_thumbnail";
         }
 
         #endregion staticMethods

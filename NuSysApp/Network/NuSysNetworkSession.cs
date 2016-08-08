@@ -208,7 +208,7 @@ namespace NuSysApp
                     {
                         Task.Run(async () =>
                         {
-                            await FetchLibraryElementData(id);
+                            await FetchContentDataModelAsync(id);
                             ServerClient.NeededLibraryDataIDs.Remove(id);
                         });
 
@@ -394,37 +394,24 @@ namespace NuSysApp
         {
             await DropNetworkUser(id);
         }
-        public async Task FetchLibraryElementData(string id)
+
+        /// <summary>
+        /// This method will send off a GetContentDataModelRequest for the passed in ContentDataModel Id;
+        /// It will also add the returned contentDataModel to the contentController for you.
+        /// returns whether it was successfully added
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<bool> FetchContentDataModelAsync(string contentDataModelId)
         {
-            if (SessionController.Instance.ContentController.GetLibraryElementModel(id)?.Type == NusysConstants.ElementType.PDF && SessionController.Instance.ContentController.GetLibraryElementController(id) != null && !SessionController.Instance.ContentController.GetLibraryElementController(id).IsLoaded)
+            if (SessionController.Instance.ContentController.ContainsContentDataModel(contentDataModelId))
             {
-                bool fileExists = await CachePDF.isFilePresent(id);
-
-                if (fileExists) // exists in cache
-                {
-                    var cacheData = await CachePDF.readFile(id);
-                    await UITask.Run(
-                        async delegate
-                        {
-                            var args = await _serverClient.GetContentWithoutData(id);
-                            args.Data = cacheData;
-                            SessionController.Instance.ContentController.GetLibraryElementController(id).Load(args);
-                        }
-                     );
-                }
-                else
-                {
-                    await _serverClient.FetchLibraryElementData(id);
-                    var data = SessionController.Instance.ContentController.GetLibraryElementController(id).Data;
-
-                    CachePDF.createWriteFile(id, data); //save the data
-                }
+                return true;
             }
-            else
-            {
-                await _serverClient.FetchLibraryElementData(id);
-            }
-
+            var request = new GetContentDataModelRequest(contentDataModelId);
+            await ExecuteRequestAsync(request);
+            var model = request.GetReturnedContentDataModel();
+            return SessionController.Instance.ContentController.AddContentDataModel(model);
         }
         public async Task<IEnumerable<string>> SearchOverLibraryElements(string searchText)
         {

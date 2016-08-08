@@ -307,8 +307,12 @@ namespace NuSysApp
                 newElementArgs.Y = pos.Y;
 
                 var newElementRequest = new NewElementRequest(newElementArgs);
+                var contentRequest = new CreateNewContentRequest(newContentArgs);
+                
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(contentRequest);
 
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewContentRequest(newContentArgs));
+                contentRequest.AddReturnedLibraryElementToLibrary(); //before making element, add library element to the library
+
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newElementRequest);
 
                 newElementRequest.AddReturnedElementToSession();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace NuSysApp
     /// Args that should be populated and passes into the CreateNewLibraryElementRequest.
     /// Check each argument's comments for which fields are required.
     /// </summary>
-    public class CreateNewLibraryElementRequestArgs
+    public class CreateNewLibraryElementRequestArgs : IRequestArgumentable
     {
         /// <summary>
         /// Empty constructor just sets nullable enums and booleans
@@ -48,6 +49,21 @@ namespace NuSysApp
         /// </summary>
         //public Dictionary<string, MetadataEntry> Metadata { get; set; } // TODO put back in
 
+        /// <summary>
+        /// The base-64 string bytes of the small thumbnail for this new libraryElement
+        /// </summary>
+        public string Small_Thumbnail_Bytes { get; set; }
+
+        /// <summary>
+        /// The base-64 string bytes of the medium thumbnail for this new libraryElement
+        /// </summary>
+        public string Medium_Thumbnail_Bytes { get; set; }
+
+        /// <summary>
+        /// The base-64 string bytes of the large thumbnail for this new libraryElement
+        /// </summary>
+        public string Large_Thumbnail_Bytes { get; set; }
+
         #region Required
 
         /// <summary>
@@ -63,5 +79,61 @@ namespace NuSysApp
         public NusysConstants.ElementType? LibraryElementType { get; set; }
 
         #endregion Required
+
+        public Message PackToRequestKeys()
+        {
+            var message = new Message();
+            
+
+            //debug.asserts for required types
+            Debug.Assert(LibraryElementType != null);
+
+            message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY] = LibraryElementType.ToString();
+
+            //set the keywords
+            if (Keywords != null)
+            {
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_KEYWORDS_KEY] = Keywords;
+            }
+
+            //set the title
+            if (Title != null)
+            {
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = Title;
+            }
+
+            //set the favorited boolean
+            if (Favorited != null)
+            {
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_FAVORITED_KEY] = Favorited.Value;
+            }
+
+            //add in thumbnail byte strings
+            //small
+            if (Small_Thumbnail_Bytes != null)
+            {
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_SMALL_ICON_BYTE_STRING_KEY] = Small_Thumbnail_Bytes;
+            }
+
+            //medium
+            if (Medium_Thumbnail_Bytes != null)
+            {
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_MEDIUM_ICON_BYTE_STRING_KEY] = Medium_Thumbnail_Bytes;
+            }
+
+            //large
+            if (Large_Thumbnail_Bytes != null)
+            {
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LARGE_ICON_BYTE_STRING_KEY] = Large_Thumbnail_Bytes;
+            }
+            
+            //set the default library element's content ID
+            message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CONTENT_ID_KEY] = ContentId ?? SessionController.Instance.GenerateId();
+
+            //set the library element's library Id
+            message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY] = LibraryElementId ?? SessionController.Instance.GenerateId();
+            
+            return message;
+        }
     }
 }

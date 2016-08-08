@@ -14,6 +14,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -104,12 +105,12 @@ namespace NuSysApp
         /// </summary>
         /// <param name="storageFile"></param>
         /// <returns></returns>
-        public static async Task<Dictionary<ThumbnailSize,string>>  GetThumbnailDictionary(StorageFile storageFile)
+        public static async Task<Dictionary<NusysConstants.ThumbnailSize,string>>  GetThumbnailDictionary(StorageFile storageFile)
         {
             // Create some variables to help create the dictionary
-            var thumbnails = new Dictionary<ThumbnailSize, string>();
+            var thumbnails = new Dictionary<NusysConstants.ThumbnailSize, string>();
             var intSizes = new uint[] { 50, 150, 300 };
-            var thumbSizes = new ThumbnailSize[] { ThumbnailSize.SMALL, ThumbnailSize.MEDIUM, ThumbnailSize.LARGE };
+            var thumbSizes = new NusysConstants.ThumbnailSize[] { NusysConstants.ThumbnailSize.Small, NusysConstants.ThumbnailSize.Medium, NusysConstants.ThumbnailSize.Large };
 
             // Fill out the dictionary for every thumbnail size
             for (int i = 0; i < 3; i++)

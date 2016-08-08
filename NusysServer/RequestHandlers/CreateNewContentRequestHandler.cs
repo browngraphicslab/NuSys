@@ -6,6 +6,12 @@ namespace NusysServer
 {
     public class CreateNewContentRequestHandler : RequestHandler
     {
+        /// <summary>
+        /// should broadcast the new library element to all clients, shoudl return to the sender with the library element model as well
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="senderHandler"></param>
+        /// <returns></returns>
         public override Message HandleRequest(Request request, NuWebSocketHandler senderHandler)
         {
             Debug.Assert(request.GetRequestType() == NusysConstants.RequestType.CreateNewContentRequest);
@@ -36,9 +42,16 @@ namespace NusysServer
             var createNewLibraryElementRequestHandler = new CreateNewLibraryElementRequestHandler();
             
             //return a message saying whether content and library element model were successfully created
-            returnMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = createNewLibraryElementRequestHandler.HandleRequest(
-                createNewLibraryRequest, senderHandler)
-                .GetBool(NusysConstants.REQUEST_SUCCESS_BOOL_KEY);
+            var libraryElementRequestMessage = createNewLibraryElementRequestHandler.HandleRequest(createNewLibraryRequest, senderHandler);
+            returnMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = libraryElementRequestMessage.GetBool(NusysConstants.REQUEST_SUCCESS_BOOL_KEY);
+
+            //if the library element request was successful.
+            if (libraryElementRequestMessage.GetBool(NusysConstants.REQUEST_SUCCESS_BOOL_KEY))
+            {
+                //add the json-libraryElementModel from the libraryElementModel request to our returned message
+                returnMessage[NusysConstants.NEW_CONTENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY] =
+                    libraryElementRequestMessage[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY];
+            }
 
             return returnMessage;
         }

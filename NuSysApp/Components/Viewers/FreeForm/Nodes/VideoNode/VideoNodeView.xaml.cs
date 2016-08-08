@@ -36,13 +36,18 @@ namespace NuSysApp
         {
             this.DataContext = vm; // DataContext has to be set before init component so xaml elements have access to it
             this.InitializeComponent();
-            if (SessionController.Instance.ContentController.ContainsAndLoaded(vm.Model.LibraryId))
+            if (!vm.Controller.LibraryElementController.ContentLoaded)
             {
-                LoadVideo(this);
+
+                Task.Run(async delegate
+                {
+                    await vm.Controller.LibraryElementController.LoadContentDataModelAsync();
+                    LoadVideo(this);
+                });
             }
             else
             {
-                vm.Controller.LibraryElementController.Loaded += LoadVideo;
+                LoadVideo(this);
             }
 
             vm.Controller.Disposed += ControllerOnDisposed;
@@ -63,7 +68,6 @@ namespace NuSysApp
         private void ControllerOnDisposed(object source, object args)
         {
             var vm = (VideoNodeViewModel) DataContext;
-            vm.Controller.LibraryElementController.Loaded -= LoadVideo;
             vm.Controller.Disposed -= ControllerOnDisposed;
             nodeTpl.Dispose();
             DataContext = null;
@@ -72,7 +76,7 @@ namespace NuSysApp
         private void LoadVideo(object sender)
         {
             var vm = DataContext as VideoNodeViewModel;
-            VideoMediaPlayer.Source = vm.Controller.LibraryElementController.GetSource();
+            VideoMediaPlayer.Source = new Uri(vm.Controller.LibraryElementController.Data);
         }
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)

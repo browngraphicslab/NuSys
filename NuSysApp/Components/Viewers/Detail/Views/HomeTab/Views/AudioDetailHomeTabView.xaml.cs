@@ -54,7 +54,7 @@ namespace NuSysApp
             _timeRegions = new List<AudioRegionViewModel>();
             //scrubBar.SetValue(Canvas.ZIndexProperty, 1);
 
-            AudioMediaPlayer.AudioSource = vm.LibraryElementController.GetSource();
+            AudioMediaPlayer.AudioSource = new Uri(vm.LibraryElementController.Data);
             AudioMediaPlayer.MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
             AudioMediaPlayer.ScrubBar.ValueChanged += vm.ScrubBarOnValueChanged;
 
@@ -188,11 +188,11 @@ namespace NuSysApp
             t.TranslateX += _x;
             t.TranslateY += _y;
 
-            if (!SessionController.Instance.ContentController.ContainsAndLoaded(element.LibraryElementId))
+            if (!SessionController.Instance.ContentController.ContainsContentDataModel(element.ContentDataModelId))
             {
                 Task.Run(async delegate
                 {
-                    SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(element.LibraryElementId);
+                    SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(element.ContentDataModelId);
                 });
             }
 

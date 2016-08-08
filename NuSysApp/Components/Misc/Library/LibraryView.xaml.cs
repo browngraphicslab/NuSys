@@ -167,7 +167,7 @@ namespace NuSysApp
         //        {
         //            Task.Run(async delegate
         //            {
-        //                SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(id);
+        //                SessionController.Instance.NuSysNetworkSession.FetchLibraryElementDataAsync(id);
         //            });
         //        }
         //    }
@@ -251,10 +251,10 @@ namespace NuSysApp
                 bool validFileType = true;
                 // Create a thumbnail dictionary mapping thumbnail sizes to the byte arrays.
                 // Note that only video and images are to get thumbnails this way, currently.
-                var thumbnails = new Dictionary<ThumbnailSize, string>();
-                thumbnails[ThumbnailSize.SMALL] = "";
-                thumbnails[ThumbnailSize.MEDIUM] = "";
-                thumbnails[ThumbnailSize.LARGE] = "";
+                var thumbnails = new Dictionary<NusysConstants.ThumbnailSize, string>();
+                thumbnails[NusysConstants.ThumbnailSize.Small] = "";
+                thumbnails[NusysConstants.ThumbnailSize.Medium] = "";
+                thumbnails[NusysConstants.ThumbnailSize.Large] = "";
 
                 if (Constants.ImageFileTypes.Contains(fileType))
                 {
@@ -345,7 +345,7 @@ namespace NuSysApp
 
                     // Obtain a ByteArray from the RenderBitmap, store it as a string in the thumbnail dictionary
                     var tdata = await MediaUtil.RenderTargetBitmapToByteArray(r);
-                    thumbnails[ThumbnailSize.SMALL] =
+                    thumbnails[ThumbnailSize.Small] =
                         Convert.ToBase64String(tdata);
                     */
 
@@ -393,29 +393,42 @@ namespace NuSysApp
                 }
                 if (validFileType)
                 {
-                    var m = new Message();
-                    m["id"] = contentId;
-                    m["data"] = data;
-                    m["small_thumbnail"] = thumbnails[ThumbnailSize.SMALL];
-                    //await StorageUtil.SaveAsStorageFile(thumbnails[ThumbnailSize.SMALL], @"C:\Users\Zach\Documents\test.jpg");
-                    m["medium_thumbnail"] = thumbnails[ThumbnailSize.MEDIUM];
-                    m["large_thumbnail"] = thumbnails[ThumbnailSize.LARGE];
+                    CreateNewContentRequestArgs args;
+                    //if there is pdf text, add it to the request
                     if (!string.IsNullOrEmpty(pdf_text))
                     {
-                        m["pdf_text"] = pdf_text;
+                        args = new CreateNewPdfContentRequestArgs()
+                        {
+                            PdfText = pdf_text
+                        };
                     }
-                    m["type"] = elementType.ToString();
-                    if (title != null)
+                    else
                     {
-                        m["title"] = title;
+                        args = new CreateNewContentRequestArgs();
                     }
-                    if (serverURL != null)
+                    args.ContentId = contentId;
+                    args.DataBytes = data;
+
+                    //add the extension if there is one
+                    if (fileType != null)
                     {
-                        m["server_url"] = serverURL;
+                        args.FileExtension = fileType;
                     }
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(m));
+                    //add the three thumbnails
+                    args.LibraryElementArgs.Large_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Large];
+                    args.LibraryElementArgs.Small_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Small];
+                    args.LibraryElementArgs.Medium_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Medium];
+
+                    args.LibraryElementArgs.Title = title;
+                    args.LibraryElementArgs.LibraryElementType = elementType;
+
+                    var request = new CreateNewContentRequest(args);
+
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+
+                    request.AddReturnedLibraryElementToLibrary();
+
                     vm.ClearSelection();
-                    //   vm.ClearMultiSelection();
                 }
                 else
                 {
@@ -442,28 +455,34 @@ namespace NuSysApp
             {
                 if (elementType != NusysConstants.ElementType.Collection)
                 {
-                    var element = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId);
                     var dict = new Message();
                     Dictionary<string, object> metadata;
 
                     metadata = new Dictionary<string, object>();
                     metadata["node_creation_date"] = DateTime.Now;
                     metadata["node_type"] = elementType + "Node";
-
-                    dict = new Message();
-                    dict["title"] = element?.Title + " element";
-                    dict["width"] = size.Width.ToString();
-                    dict["height"] = size.Height.ToString();
-                    dict["type"] = elementType.ToString();
-                    dict["x"] = pos.X;
-                    dict["y"] = pos.Y;
-                    dict["contentId"] = libraryId;
-                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.Id;
                     dict["metadata"] = metadata;
-                    dict["autoCreate"] = true;
-                    dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
-                    var request = new NewElementRequest(dict);
+
+                    var elementRequestArgs = new NewElementRequestArgs();
+                    elementRequestArgs.ParentCollectionId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
+                    elementRequestArgs.LibraryElementId = libraryId;
+                    elementRequestArgs.Width = size.Width;
+                    elementRequestArgs.Height = size.Height;
+                    elementRequestArgs.X = pos.X;
+                    elementRequestArgs.Y = pos.Y;
+
+                    var request = new NewElementRequest(elementRequestArgs);
+
+                    var contentDataModelId = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId)?.ContentDataModelId;
+                    Debug.Assert(contentDataModelId != null);
+
+                    if(!SessionController.Instance.ContentController.ContainsContentDataModel(contentDataModelId))
+                    {
+                        await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(contentDataModelId);
+                    }
+
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                    request.AddReturnedElementToSession();
                 }
                 else
                 {
@@ -730,10 +749,4 @@ namespace NuSysApp
             e.Handled = true;
         }
     }
-
-    public enum ThumbnailSize
-    {
-        SMALL,MEDIUM,LARGE
-    }
-
 }

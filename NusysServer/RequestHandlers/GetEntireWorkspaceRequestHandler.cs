@@ -29,9 +29,18 @@ namespace NusysServer
 
             var args = new SelectCommandReturnArgs(ContentController.Instance.SqlConnector.MakeCommand(command), keys);
             var returnedMessages = ContentController.Instance.SqlConnector.ExecuteSelectQueryAsMessages(args);
+
+            var stripped = returnedMessages.Select(m => Constants.StripTableNames(m));
+
+            //really, just dont ask.  all you need to know is that it converts the url to the correct data string for the content data model
+            var cleaned = stripped.Select(strippedMessage => new Message(strippedMessage.Concat(new List<KeyValuePair<string, object>>() {new KeyValuePair<string, object>(
+                NusysConstants.CONTENT_DATA_MODEL_DATA_STRING_KEY, FileHelper.GetDataFromContentURL(
+                         strippedMessage.GetString(NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY),
+                         strippedMessage.GetEnum<NusysConstants.ContentType>(NusysConstants.CONTENT_TABLE_TYPE_KEY)))}).ToDictionary(x => x.Key, y => y.Value)));
             
-            var contentDataModels = returnedMessages.Select(m => ContentDataModelFactory.CreateFromMessage(Constants.StripTableNames(m)));
-            var aliases = returnedMessages.Select(m => ElementModelFactory.CreateFromMessage(Constants.StripTableNames(m)));
+
+            var contentDataModels = cleaned.Select(m => ContentDataModelFactory.CreateFromMessage(m));
+            var aliases = cleaned.Select(m => ElementModelFactory.CreateFromMessage(m));
 
             //create new args to return
             var returnArgs = new GetEntireWorkspaceRequestArgs();

@@ -23,8 +23,18 @@ namespace NuSysApp
         {
             LibraryElementController = controller;
             RegionViews = new ObservableCollection<VideoRegionView>();
-            LibraryElementController.Loaded += Controller_Loaded;
-            
+            if (!controller.ContentLoaded)
+            {
+                Task.Run(async delegate
+                {
+                    await controller.LoadContentDataModelAsync();
+                    Controller_Loaded(this);
+                });
+            }
+            else
+            {
+                Controller_Loaded(this);
+            }
         }
 
         private void Controller_Loaded(object sender)

@@ -18,7 +18,6 @@ namespace NuSysApp
     {
         protected DebouncingDictionary _debouncingDictionary;
         private LibraryElementModel _libraryElementModel;
-        private bool _loading = false;
         private RegionControllerFactory _regionControllerFactory = new RegionControllerFactory();
         protected bool _blockServerInteraction = false;
         public string Title {
@@ -47,19 +46,7 @@ namespace NuSysApp
                 var contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(LibraryElementModel.ContentDataModelId);
                 Debug.Assert(contentDataModel != null);
 
-                return contentDataModel.Data;
-            }
-            set // TODO delete this set, we should be setting it here at all.  We should only be setting it in the unpack and setContentData methods in this class
-            {
-                if (string.IsNullOrEmpty(LibraryElementModel.ContentDataModelId))
-                {
-                    return;
-                }
-                if (!SessionController.Instance.ContentController.ContentExists(LibraryElementModel.ContentDataModelId))
-                {
-                    SessionController.Instance.ContentController.AddContentDataModel(LibraryElementModel.ContentDataModelId, value);
-                }
-                SessionController.Instance.ContentController.GetContentDataModel(LibraryElementModel.ContentDataModelId)?.SetData(value);
+                return contentDataModel?.Data;
             }
         }
 
@@ -67,7 +54,6 @@ namespace NuSysApp
         public delegate void ContentChangedEventHandler(object source, string contentData);
         public delegate void MetadataChangedEventHandler(object source);
         public delegate void FavoritedEventHandler(object sender, bool favorited);
-        public delegate void LoadedEventHandler(object sender);
         public delegate void DeletedEventHandler(object sender);
         public delegate void NetworkUserChangedEventHandler(object source, NetworkUser user);
         public delegate void KeywordsChangedEventHandler(object sender, HashSet<Keyword> keywords);
@@ -81,23 +67,18 @@ namespace NuSysApp
         public event NetworkUserChangedEventHandler UserChanged;
         public event EventHandler<LinkLibraryElementController> LinkAdded;
         public event EventHandler<string> LinkRemoved;
-        public event LoadedEventHandler Loaded
-        {
-            add
-            {
-                _onLoaded += value;
-                if (!IsLoaded && !_loading)
-                {
-                    _loading = true;
-                    Task.Run(async delegate{ SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(_libraryElementModel.LibraryElementId);});
-                }
-            }
-            remove { _onLoaded -= value; }
-        }
-        private event LoadedEventHandler _onLoaded;
         #endregion Events
-        
-        public bool IsLoaded { get; private set; }
+
+        /// <summary>
+        /// returns whether the current library element's content Data Model is loaded (aka just locally present);
+        /// </summary>
+        public bool ContentLoaded
+        {
+            get
+            {
+                return SessionController.Instance.ContentController.ContainsContentDataModel( LibraryElementModel.ContentDataModelId);
+            }
+        }
 
         public Dictionary<string, MetadataEntry> FullMetadata
         {
@@ -139,7 +120,6 @@ namespace NuSysApp
             _libraryElementModel = libraryElementModel;
             _debouncingDictionary = new DebouncingDictionary(libraryElementModel.LibraryElementId, true);
             Title = libraryElementModel.Title;
-            Data = null;
         }
 
         /// <summary>
@@ -365,25 +345,15 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// This will cause the library element model to load with the associated arguments in the loadingArgs
-        /// This will then fire the OnLoaded event
+        /// will await the full loading of the content for this library element model.  
+        /// Simply calls the nusysNetworkSession's FetchContentDataModelAsync method
         /// </summary>
-        public void Load(LoadContentEventArgs e)
+        /// <returns></returns>
+        public async Task LoadContentDataModelAsync()
         {
-            if (e.Data != null)
-            {
-                if (LibraryElementModel.Type != NusysConstants.ElementType.PdfRegion)
-                {
-                    //TODO add in checks and error handling for the line below
-                    SessionController.Instance.ContentController.GetContentDataModel(LibraryElementModel.ContentDataModelId).SetData(e.Data);
-                    ContentChanged?.Invoke(this, e.Data);
-                }
-            }
-            //_libraryElementModel.InkLinkes = e.InkStrings;
-
-            IsLoaded = true;
-            _onLoaded?.Invoke(this);
+            await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(LibraryElementModel.ContentDataModelId);
         }
+
         public Uri LargeIconUri
         {
             get
@@ -557,36 +527,6 @@ namespace NuSysApp
         {
             return FullMetadata;
         }
-        public Uri GetSource()
-        {
-            string extension = "";
-            switch (_libraryElementModel.Type)
-            {
-                case NusysConstants.ElementType.PdfRegion:
-                case NusysConstants.ElementType.PDF:
-                    extension = ".pdf";
-                    break;
-                case NusysConstants.ElementType.Video:
-                case NusysConstants.ElementType.VideoRegion:
-                    extension = ".mp4";
-                    break;
-                case NusysConstants.ElementType.AudioRegion:
-                case NusysConstants.ElementType.Audio:
-                    extension = ".mp3";
-                    break;
-                case NusysConstants.ElementType.ImageRegion:
-                case NusysConstants.ElementType.Image:
-                    extension = ".jpg";
-                    break;
-            }
-            var url = _libraryElementModel.LibraryElementId + extension;
-            if (_libraryElementModel.ServerUrl != null)
-            {
-                url = _libraryElementModel.ServerUrl;
-            }
-            var uri = new Uri("http://" + WaitingRoomView.ServerName + "/" + url);
-            return uri;
-        }
         public LibraryElementModel LibraryElementModel
         {
             get
@@ -597,14 +537,6 @@ namespace NuSysApp
         public virtual void Dispose()
         {
             Disposed?.Invoke(this, EventArgs.Empty);
-        }
-        public void SetLoading(bool loading)
-        {
-            _loading = true;
-        }
-        public bool LoadingOrLoaded
-        {
-            get { return _loading || IsLoaded; }
         }
 
         public string ContentId

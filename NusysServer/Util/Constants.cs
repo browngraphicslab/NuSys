@@ -23,7 +23,7 @@ namespace NusysServer
                     case "leandro":
                         return Directory.Exists("C:/Users/Leandro Bengzon/Documents/NuSys Server/") ? "C:/Users/Leandro Bengzon/Documents/NuSys Server/" : "D:/home/site/wwwroot/";
                     case "trent":
-                        return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "C:/Users/graphics_lab/Documents/NuRepo_Test/" : "D:/home/site/wwwroot/";
+                        return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "C:/Users/graphics_lab/Documents/Trent_Nusys/nusys/NusysServer/" : "D:/home/site/wwwroot/";
                     case "harsh":
                         return Directory.Exists("C:/Users/Brown GFX/Documents/NuSys_Server") ? "C:/Users/Brown GFX/Documents/NuSys_Server" : "D:/home/site/wwwroot/";
                     default:
@@ -31,12 +31,15 @@ namespace NusysServer
                 }
             }
         }
-        
+
         //public static readonly string WWW_ROOT = Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/")
         //    ? "C:/Users/graphics_lab/Documents/NuRepo_Test/"
         //    : "D:/home/site/wwwroot/";
 
-
+        /// <summary>
+        /// the folder on the server where all the content files will be saved.  
+        /// Should only be storing .txt and .pdf files as of 7/31/16
+        /// </summary>
         public static string FILE_FOLDER
         {
             get
@@ -55,10 +58,7 @@ namespace NusysServer
             }
         }
 
-        /// <summary>
-        /// the folder on the server where all the content files will be saved.  
-        /// Should only be storing .txt and .pdf files as of 7/31/16
-        /// </summary>
+
         //public static readonly string FILE_FOLDER = Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/")
         //    ? "C:/Users/graphics_lab/Documents/NuRepo_Test/"
         //    : "D:/home/site/wwwroot/files/";
@@ -70,11 +70,11 @@ namespace NusysServer
                 switch (user)
                 {
                     case "leandro":
-                        return Directory.Exists("C:/Users/Leandro Bengzon/Documents/NuSys Server/") ? "localhost:2685" : "http://nusysrepo.azurewebsites.net/";
+                        return Directory.Exists("C:/Users/Leandro Bengzon/Documents/NuSys Server/") ? "http://localhost:2685/" : "http://nusysrepo.azurewebsites.net/";
                     case "trent":
-                        return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "localhost:2685" : "http://nusysrepo.azurewebsites.net/";
+                        return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "http://localhost:2685/" : "http://nusysrepo.azurewebsites.net/";
                     case "harsh":
-                        return Directory.Exists("C:/Users/Brown GFX/Documents/NuSys_Server") ? "localhost:2685" : "http://nusysrepo.azurewebsites.net/";
+                        return Directory.Exists("C:/Users/Brown GFX/Documents/NuSys_Server") ? "http://localhost:2685/" : "http://nusysrepo.azurewebsites.net/";
                     default:
                         return "";
                 }
@@ -210,34 +210,6 @@ namespace NusysServer
         public static IEnumerable<string> GetCleanIEnumerableForDatabase(IEnumerable<string> keys, SQLTableType tableType)
         {
             return GetAcceptedKeys(tableType).Intersect(keys);
-        }
-
-        /// <summary>
-        /// to get a contentDataModel from a message taken directly from the ContentDataModel table
-        /// </summary>
-        /// <param name="m"></param>
-        public static ContentDataModel ParseContentDataModelFromDatabaseMessage(Message m)
-        {
-            if (!m.ContainsKey(NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY))
-            {
-                throw new Exception("no content id was given to create a contetnDataModel from");
-            }
-            if (!m.ContainsKey(NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY))
-            {
-                throw new Exception("no content data was given to create a contetnDataModel from");
-            }
-            if (!m.ContainsKey(NusysConstants.CONTENT_TABLE_TYPE_KEY))
-            {
-                throw new Exception("no content type was given to create a contetnDataModel from");
-            }
-            var id = m.GetString(NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY);
-            var contentUrl = m.GetString(NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY);
-            var type = m.GetEnum<NusysConstants.ContentType>(NusysConstants.CONTENT_TABLE_TYPE_KEY);
-            var contentData = FileHelper.GetDataFromContentURL(contentUrl,type);
-
-            var model = new ContentDataModel(id,contentData);
-            model.ContentType = type;
-            return model;
         }
 
         /// <summary>

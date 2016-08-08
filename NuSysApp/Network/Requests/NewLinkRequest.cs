@@ -60,11 +60,7 @@ namespace NuSysApp
                 SessionController.Instance.ContentController.GetLibraryElementController(
                     libraryElement.LibraryElementId);
             libraryElement.Timestamp = time;
-            var loadEventArgs = new LoadContentEventArgs(_message["data"]?.ToString());
-            if (_message.ContainsKey("data") && _message["data"] != null)
-            {
-                controller.Load(loadEventArgs);
-            }
+
             libraryElement.ServerUrl = url;
             //SessionController.Instance.LinksController.AddLink(_message.GetString("id"));
             var id1 = (string)_message["id1"];

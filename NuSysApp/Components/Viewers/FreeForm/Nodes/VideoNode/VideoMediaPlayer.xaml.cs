@@ -161,7 +161,6 @@ namespace NuSysApp
         {
             playbackElement.Stop();
             var vm = (VideoNodeViewModel) DataContext;
-            vm.Controller.LibraryElementController.Loaded -= LoadVideo;
             vm.Controller.Disposed -= ControllerOnDisposed;
             DataContext = null;
         }
@@ -169,7 +168,7 @@ namespace NuSysApp
         private void LoadVideo(object sender)
         {
             var vm = DataContext as VideoNodeViewModel;
-            playbackElement.Source = vm.Controller.LibraryElementController.GetSource();
+            playbackElement.Source = new Uri(vm.Controller.LibraryElementController.Data);
         }
 
         private void SrubBar_OnTapped(object sender, TappedRoutedEventArgs e)

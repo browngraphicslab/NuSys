@@ -32,10 +32,6 @@ namespace NuSysApp
         }
         public override void Dispose()
         {
-            if (Controller != null)
-            {
-                Controller.LibraryElementController.Loaded -= LibraryElementModelOnOnLoaded;
-            }
             if (Image != null)
             {
                 Image.ImageOpened -= UpdateSizeFromModel;
@@ -47,27 +43,20 @@ namespace NuSysApp
 
         public override async Task Init()
         {
-            if (Controller.LibraryElementController.IsLoaded)
+            if (!Controller.LibraryElementController.ContentLoaded)
             {
-                await DisplayImage();
+                await Controller.LibraryElementController.LoadContentDataModelAsync();
             }
-            else
-            {
-                Controller.LibraryElementController.Loaded += LibraryElementModelOnOnLoaded;
-            }
+            await DisplayImage();
+
             RaisePropertyChanged("Image");
 
 
         }
 
-        private async void LibraryElementModelOnOnLoaded(object sender)
-        {
-            await DisplayImage();
-        }
-
         private async Task DisplayImage()
         {
-            var url = Controller.LibraryElementController.GetSource();
+            var url = new Uri(Controller.LibraryElementController.Data);
             Image = new BitmapImage();
             Image.UriSource = url;
             Image.ImageOpened += UpdateSizeFromModel;

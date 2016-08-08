@@ -150,7 +150,7 @@ namespace NuSysApp
                                             SessionController.Instance.ContentController.GetLibraryElementController(id);
                                         var loadArgs = new LoadContentEventArgs();
                                         loadArgs.Data = dict["data"] as string;
-                                        controller.Load(loadArgs);
+                                        //controller.Load(loadArgs); TODO redo this?
                                     }
                                     break;
                                 case "remove_presentation_link":
@@ -440,7 +440,6 @@ namespace NuSysApp
                 libraryIdsUsed.Add(libraryId);
                 await Task.Run(async delegate
                 {
-                    SessionController.Instance.ContentController.GetLibraryElementController(libraryId)?.SetLoading(true);
                     HttpClient client = new HttpClient();
                     var response = await client.GetAsync(GetUri("getcontent/" + libraryId));
 
@@ -536,8 +535,7 @@ namespace NuSysApp
                 await UITask.Run(async delegate
                 {
                     var args = new LoadContentEventArgs(contentData, inks);
-                    SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId)
-                        .Load(args);
+                    //SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId).Load(args); //TODO redo this?
                 });
             }
         }

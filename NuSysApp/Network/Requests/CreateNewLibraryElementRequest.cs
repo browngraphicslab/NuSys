@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NusysIntermediate;
+using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 {
@@ -42,39 +43,39 @@ namespace NuSysApp
         /// <returns></returns>
         public CreateNewLibraryElementRequest(CreateNewLibraryElementRequestArgs args) :  base(NusysConstants.RequestType.CreateNewLibraryElementRequest)
         {
-            //debug.asserts for required types
-            Debug.Assert(args.LibraryElementType != null);
+            var message = args.PackToRequestKeys();
+            _message.ForEach(kvp => message[kvp.Key] = kvp.Value);
+            _message = message;
+        }
 
-            _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY] = args.LibraryElementType.ToString();
-
-            //set the default library element's content ID
-            _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CONTENT_ID_KEY] = args.ContentId ?? SessionController.Instance.GenerateId();
-
-            //set the library element's library Id
-            _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY] = args.LibraryElementId ?? SessionController.Instance.GenerateId();
-
-            //set the keywords
-            if (args.Keywords != null)
+        /// <summary>
+        /// this method will parse and add the returned library Element after the request has successfully returned. 
+        /// Will throw an exception if the request has not returned yet or has failed. 
+        /// Returned whether the new libraryElementSuccessfully was added
+        /// </summary>
+        /// <returns></returns>
+        public bool AddReturnedLibraryElementToLibrary()
+        {
+            if (WasSuccessful() != true)
             {
-                _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_KEYWORDS_KEY] = args.Keywords;
+                //If this fails here, check with .WasSuccessful() before calling this method.
+                throw new Exception("The request hasn't returned yet or was unsuccessful");
             }
 
-            //set the title
-            if (args.Title != null)
-            {
-                _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = args.Title;
-            }
+            //make sure the returned model is present
+            Debug.Assert(_returnMessage.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY));
+            var modelString = _returnMessage.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY);
 
-            //set the favorited boolean
-            if (args.Favorited != null)
-            {
-                _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_FAVORITED_KEY] = args.Favorited.Value;
-            }
-
-            //TODO add in metadata
+            var libraryElement = LibraryElementModelFactory.DeserializeFromString(modelString);
+            return SessionController.Instance.ContentController.Add(libraryElement) != null;
         }
 
 
+        /// <summary>
+        /// simlply debug.asserts the important ID's.  
+        /// Then adds a couple timestamps to the outgoing request message;
+        /// </summary>
+        /// <returns></returns>
         public override async Task CheckOutgoingRequest()
         {
             var time = DateTime.UtcNow.ToString();
