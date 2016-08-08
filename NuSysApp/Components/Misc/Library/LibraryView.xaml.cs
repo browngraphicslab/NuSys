@@ -65,6 +65,7 @@ namespace NuSysApp
             this.MakeViews(_pageViewModel, properties);
             _propertiesWindow = properties;
             properties.AddedToFavorite += AddToFavorites;
+            this._libraryList.DeleteClicked += DeleteClicked;
             ListContainer.Children.Add(_libraryList);
             Searchfield.SetHeight = 34;
             _menu = menu;
@@ -78,6 +79,17 @@ namespace NuSysApp
                 });
             };
             _searchExportPos = new Point2d(0,0);
+        }
+
+
+        /// <summary>
+        /// Will add the action reference to the undo button when delete is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="action"></param>
+        private void DeleteClicked(object sender, IUndoable action)
+        {
+            xUndoButton.Activate(action);
         }
 
         public async void ToggleVisiblity()

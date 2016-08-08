@@ -38,10 +38,10 @@ namespace NuSysApp
     public sealed partial class UndoButton : AnimatableUserControl, IDisposable
     {
         public IUndoable OriginalAction { get; set; }
-        public UndoButtonState State { get; set; }
+        
 
         private Timer _timer;
-
+        private UndoButtonState _state;
 
         /// <summary>
         /// Creates a general undo button. No input parameters so UndoButtons can be added in XAML.
@@ -51,7 +51,7 @@ namespace NuSysApp
         public UndoButton()
         {
             this.InitializeComponent();
-            State=UndoButtonState.Inactive;
+            _state=UndoButtonState.Inactive;
 
         }
 
@@ -67,7 +67,7 @@ namespace NuSysApp
             // Sets up UI and instance varialbes, then adds handler
             this.InitializeComponent();
             OriginalAction = originalAction;
-            State = state;
+            _state = state;
             Loaded += UndoButton_Loaded;
 
 
@@ -106,6 +106,33 @@ namespace NuSysApp
             }), null, 6000, Timeout.Infinite);
         }
 
+        /// <summary>
+        /// Activates the button by switching the state, adding the action reference, and starting the timer
+        /// </summary>
+        public void Activate(IUndoable action)
+        {
+            _state = UndoButtonState.Active;
+            this.Opacity = 1;
+            OriginalAction = action;
+
+            // Weird syntax since TimerCallback can't directly take in Dispose().
+            _timer = new Timer(new TimerCallback(delegate (object state)
+            {
+                Dispose();
+            }), null, 6000, Timeout.Infinite);
+
+           
+        }
+
+        /// <summary>
+        /// Deactivates button by removing timer and setting appropriate references
+        /// </summary>
+        public void Deactivate()
+        {
+            _state=UndoButtonState.Inactive;
+            this.Opacity = .1;
+            _timer.Dispose();
+        }
        
         /// <summary>
         /// When the button is tapped, find and then do the logical inverse of the original
@@ -116,7 +143,7 @@ namespace NuSysApp
         private void UndoButton_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             // Only conitinue if the button is active
-            if (State == UndoButtonState.Inactive)
+            if (_state == UndoButtonState.Inactive)
             {
                 return;
             }
@@ -130,15 +157,28 @@ namespace NuSysApp
         /// </summary>
         public async void Dispose()
         {
+            
             await UITask.Run(
                 delegate
                 {
                     var wvm = SessionController.Instance.ActiveFreeFormViewer;
-                    wvm.AtomViewList.Remove(this);
-
-                    Loaded -= UndoButton_Loaded;
+                    if (wvm.AtomViewList.Contains(this))
+                    {
+                        wvm.AtomViewList.Remove(this);
+                        Loaded -= UndoButton_Loaded;
+                    }
+                    else
+                    {
+                       this.Deactivate();
+                    }
+                   
                 });
-            _timer.Dispose();
+
+            if (_timer!=null)
+            {
+                _timer.Dispose();
+            }
+           
         }
 
       

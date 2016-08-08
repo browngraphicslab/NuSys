@@ -9,19 +9,27 @@ namespace NuSysApp
     public class RemoveLibraryElementAction : IUndoable
     {
 
+        private Message _message;
+
+        /// <summary>
+        /// Message must contain fields for id, data, small_thumbnail, medium_thumbnail, large_thumbnail,
+        /// type, title, server_url, creation_timestamp, last_edited_timestamp
+        /// </summary>
+        /// <param name="m"></param>
         public RemoveLibraryElementAction(Message m)
         {
-            ;
+            _message = m;
         }
 
         public IUndoable GetInverse()
         {
-            throw new NotImplementedException();
+            return new CreateLibraryElementAction(_message);
         }
 
         public void ExecuteAction()
         {
-            throw new NotImplementedException();
+            var request = new DeleteLibraryElementRequest(_message);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }
     }
 }

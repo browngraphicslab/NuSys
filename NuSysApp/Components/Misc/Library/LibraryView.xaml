@@ -250,7 +250,7 @@
                 <Grid>
                     <TextBlock Text="Library" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Foreground="{StaticResource color3}" FontSize="24" Margin="5,5,5,5"></TextBlock>
                     <StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" Orientation="Horizontal">
-                        <local:UndoButton Opacity=".1">
+                        <local:UndoButton x:Name="xUndoButton" Opacity=".1">
                         </local:UndoButton>
                         <Button HorizontalAlignment="Right" Margin="0,0,0,3"  Height="40" Width="50"  Tapped="Folder_Tapped" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Bottom">
                             <Image Source="ms-appx:/Assets/add from file dark.png"></Image>
