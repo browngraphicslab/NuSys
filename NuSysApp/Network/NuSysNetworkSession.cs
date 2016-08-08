@@ -270,8 +270,8 @@ namespace NuSysApp
                 case NusysConstants.RequestType.NewLinkRequest:
                     request = new NewLinkRequest(message);
                     break;
-                case NusysConstants.RequestType.SendableUpdateRequest:
-                    request = new SendableUpdateRequest(message);
+                case NusysConstants.RequestType.ElementUpdateRequest:
+                    request = new ElementUpdateRequest(message);
                     break;
                 case NusysConstants.RequestType.FinalizeInkRequest:
                     request = new FinalizeInkRequest(message);
@@ -279,8 +279,8 @@ namespace NuSysApp
                 case NusysConstants.RequestType.DuplicateNodeRequest:
                     request = new DuplicateNodeRequest(message);
                     break;
-                case NusysConstants.RequestType.ChangeContentRequest:
-                    request = new ChangeContentRequest(message);
+                case NusysConstants.RequestType.UpdateLibraryElementModelRequest:
+                    request = new UpdateLibraryElementModelRequest(message);
                     break;
                 case NusysConstants.RequestType.SetTagsRequest:
                     request = new SetTagsRequest(message);
@@ -404,6 +404,7 @@ namespace NuSysApp
         /// <returns></returns>
         public async Task<bool> FetchContentDataModelAsync(string contentDataModelId)
         {
+            //if the content data model is present, then it's loaded
             if (SessionController.Instance.ContentController.ContainsContentDataModel(contentDataModelId))
             {
                 return true;

@@ -31,7 +31,7 @@ namespace NusysServer
             var typeQuery = new SQLSelectQuery(Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement,NusysConstants.LIBRARY_ELEMENT_TYPE_KEY ),
                 new SingleTable(Constants.SQLTableType.LibraryElement),
                 new SqlSelectQueryEquals(Constants.SQLTableType.LibraryElement,
-                    Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement,NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY).First(),
+                    NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY,
                     message.GetString(NusysConstants.NEW_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID_KEY)));
 
             var results = typeQuery.ExecuteCommand();

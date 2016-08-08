@@ -699,6 +699,7 @@ namespace NuSysApp
             message[NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING] = mreId;
             var mre = new ManualResetEvent(false);
             _requestEventDictionary.TryAdd(mreId, mre);
+
             Task.Run(async delegate
             {
                 SendMessageToServer(message);

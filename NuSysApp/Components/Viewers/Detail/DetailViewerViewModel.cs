@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -387,7 +388,7 @@ namespace NuSysApp
             if (CurrentElementController != null)
             {
                 var tags = CurrentElementController?.LibraryElementModel.Keywords;
-                foreach (var tag in tags)
+                foreach (var tag in tags ?? new HashSet<Keyword>())
                 {
                     var tagBlock = this.MakeTagBlock(tag.Text);
                     Tags.Add(tagBlock);
@@ -405,7 +406,7 @@ namespace NuSysApp
                 //TODO remove debug asserts, if statements are ugly but needed because otherwise produced async crash on key not found
 
                 // get the metaDataDictionary for the currentelementController
-                var metaDataDict = CurrentElementController?.LibraryElementModel.Metadata;
+                var metaDataDict = CurrentElementController?.LibraryElementModel.Metadata ?? new ConcurrentDictionary<string, MetadataEntry>();
                 var suggestedTags = new List<string>();
                 // get a list of the suggested tags from the metadataentry for system suggested names
                 if (metaDataDict.ContainsKey("system_suggested_names"))
@@ -474,7 +475,7 @@ namespace NuSysApp
                 }
 
                 // remove the tags from the <tag, count> dictionary which are already set as keywords
-                var currentTags = CurrentElementController?.LibraryElementModel.Keywords;
+                var currentTags = CurrentElementController?.LibraryElementModel.Keywords ?? new HashSet<Keyword>();
                 foreach (var currentTag in currentTags)
                 {
                     var lowerTag = currentTag.Text.ToLower();

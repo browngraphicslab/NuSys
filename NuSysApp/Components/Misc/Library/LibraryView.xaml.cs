@@ -238,7 +238,7 @@ namespace NuSysApp
             string pdf_text = "";
 
             var storageFiles = await FileManager.PromptUserForFiles(Constants.AllFileTypes);
-            foreach (var storageFile in storageFiles)
+            foreach (var storageFile in storageFiles ?? new List<StorageFile>())
             {
                 if (storageFile == null) return;
 

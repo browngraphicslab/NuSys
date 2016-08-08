@@ -67,8 +67,16 @@ namespace NusysServer
     /// </summary>
     public class SqlSelectQueryEquals : SqlSelectQueryConditional
     {
+        /// <summary>
+        /// the FULL-COLUMN TITLE property that has to have the specified value
+        /// </summary>
         public string Property { get; private set; }
+
+        /// <summary>
+        /// the specified value that the proeprty must have to satisfy the equals condition
+        /// </summary>
         public string RequiredValue { get;private set; }
+
         /// <summary>
         /// Creates a select query conditional that checks if the property = the required value
         /// </summary>
@@ -78,7 +86,7 @@ namespace NusysServer
             {
                 throw new Exception("cannot create a Sql Query Equals conditional with null conditionals");
             }
-            Property = property;
+            Property = Constants.GetFullColumnTitle(tableType,property).First();
             RequiredValue = requiredValue;
         }
 

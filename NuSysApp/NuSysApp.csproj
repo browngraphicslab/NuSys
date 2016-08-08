@@ -622,7 +622,7 @@
     <Compile Include="Network\Requests\GetContentDataModelRequest.cs" />
     <Compile Include="Network\Requests\GetEntireWorkspaceRequest.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
-    <Compile Include="Network\Requests\ChangeContentRequest.cs" />
+    <Compile Include="Network\Requests\UpdateLibraryElementModelRequest.cs" />
     <Compile Include="Network\Requests\CreateNewLibraryElementRequest.cs" />
     <Compile Include="Network\Requests\DeleteLibraryElementRequest.cs" />
     <Compile Include="Network\Requests\DeleteNodeRequest.cs" />
@@ -636,7 +636,7 @@
     <Compile Include="Network\Requests\RequestArgs\IRequestArgumentable.cs" />
     <Compile Include="Network\Requests\RequestArgs\NewElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewLibraryElementRequestArgs.cs" />
-    <Compile Include="Network\Requests\SendableUpdateRequest.cs" />
+    <Compile Include="Network\Requests\ElementUpdateRequest.cs" />
     <Compile Include="Network\Requests\SubscribeToCollectionRequest.cs" />
     <Compile Include="Network\Requests\SystemRequests\RequestClientInfoSystemRequest.cs" />
     <Compile Include="Network\Requests\SetTagsRequest.cs" />

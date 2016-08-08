@@ -183,6 +183,20 @@ namespace NusysIntermediate
 
         #endregion NewElementRequest
 
+            #region ElementUpdateRequest
+
+            /// <summary>
+            /// the id of the element to update with the ElementUpdateRequest
+            /// </summary>
+            public static readonly string ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY = "element_id";
+
+            /// <summary>
+            /// This key will hold the boolean indicating whether the request should save to the server or simply be forwarded to everyone else
+            /// </summary>
+            public static readonly string ELEMENT_UPDATE_REQUEST_SAVE_TO_SERVER_BOOLEAN = "save_changes_to_server";
+
+            #endregion ElementUpdateRequest
+
         #region NewLibraryElementRequest
         /// <summary>
         /// key in message for sending type when creating new library element request
@@ -594,89 +608,89 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string LIBRARY_ELEMENT_METADATA_KEY = "library_element_metadata";
 
-        #region RectangleRegion
-        /// <summary>
-        /// This key is used to hold the top left point of the rectangular region when represented in message form.
-        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-        /// </summary>
-        public static readonly string RECTANGLE_REGION_TOP_LEFT_POINT_KEY = "top_left_point";
-
-        /// <summary>
-        /// This key is used to hold the width of the rectangular region when represented in message form.
-        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-        /// </summary>
-        public static readonly string RECTANGLE_REGION_WIDTH_KEY = "width";
-
-        /// <summary>
-        /// This key is used to hold the height of the rectangular region when represented in message form.
-        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-        /// </summary>
-        public static readonly string RECTANGLE_REGION_HEIGHT_KEY = "height";
-        #endregion RectangleRegion
-
-        #region VideoRegion
-        /// <summary>
-        /// This key is used to hold the start time of a video region when represented in message form.
-        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-        /// </summary>
-        public static readonly string VIDEO_REGION_START_KEY = "start";
-
-        /// <summary>
-        /// This key is used to hold the end time of a video region when represented in message form.
-        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-        /// </summary>
-        public static readonly string VIDEO_REGION_END_KEY = "end";
-
-
-        #endregion VideoRegion
-
-        #region AudioRegion
-        /// <summary>
-        /// This key is used to hold the start time of a audio region when represented in message form.
-        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-        /// </summary>
-        public static readonly string AUDIO_REGION_START_KEY = "start";
-
-        /// <summary>
-        /// This key is used to hold the end time of a audio region when represented in message form.
-        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-        /// </summary>
-        public static readonly string AUDIO_REGION_END_KEY = "end";
-
-
-        #endregion AudioRegion
-
-        #region PdfRegion
-        /// <summary>
-        /// This key is used to hold the page of a pdf region when represented in message form.
-        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-        /// </summary>
-        public static readonly string PDF_REGION_PAGE_NUMBER_KEY = "page_number";
-        #endregion PdfRegion 
-
-        #region Collection
-        /// <summary>
-        /// This key is used to hold the list of children library element id strings.
-        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-        /// </summary>
-        public static readonly string COLLECTION_CHILDREN_KEY = "children";
-        #endregion Collection 
-
-        #region LinkLibraryElementModel
-
-        /// <summary>
-        /// The key that will hold the LibraryElementId for the IN libary element
-        /// </summary>
-        public static readonly string LINK_LIBRARY_ELEMENT_IN_ID_KEY = "link_in_id";
+            #region RectangleRegion
+            /// <summary>
+            /// This key is used to hold the top left point of the rectangular region when represented in message form.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// </summary>
+            public static readonly string RECTANGLE_REGION_TOP_LEFT_POINT_KEY = "top_left_point";
 
             /// <summary>
-            /// The key that will hold the LibraryElementId for the OUT libary element
+            /// This key is used to hold the width of the rectangular region when represented in message form.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
             /// </summary>
-            public static readonly string LINK_LIBRARY_ELEMENT_OUT_ID_KEY = "link_out_id";
+            public static readonly string RECTANGLE_REGION_WIDTH_KEY = "width";
 
-        #endregion LinkLibraryElementModel
+            /// <summary>
+            /// This key is used to hold the height of the rectangular region when represented in message form.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// </summary>
+            public static readonly string RECTANGLE_REGION_HEIGHT_KEY = "height";
+            #endregion RectangleRegion
 
-        #endregion LibraryElementModel
+            #region VideoRegion
+            /// <summary>
+            /// This key is used to hold the start time of a video region when represented in message form.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// </summary>
+            public static readonly string VIDEO_REGION_START_KEY = "start";
+
+            /// <summary>
+            /// This key is used to hold the end time of a video region when represented in message form.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// </summary>
+            public static readonly string VIDEO_REGION_END_KEY = "end";
+
+
+            #endregion VideoRegion
+
+            #region AudioRegion
+            /// <summary>
+            /// This key is used to hold the start time of a audio region when represented in message form.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// </summary>
+            public static readonly string AUDIO_REGION_START_KEY = "start";
+
+            /// <summary>
+            /// This key is used to hold the end time of a audio region when represented in message form.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// </summary>
+            public static readonly string AUDIO_REGION_END_KEY = "end";
+
+
+            #endregion AudioRegion
+
+            #region PdfRegion
+            /// <summary>
+            /// This key is used to hold the page of a pdf region when represented in message form.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// </summary>
+            public static readonly string PDF_REGION_PAGE_NUMBER_KEY = "page_number";
+            #endregion PdfRegion 
+
+            #region Collection
+            /// <summary>
+            /// This key is used to hold the list of children library element id strings.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// </summary>
+            public static readonly string COLLECTION_CHILDREN_KEY = "children";
+            #endregion Collection 
+
+            #region LinkLibraryElementModel
+
+            /// <summary>
+            /// The key that will hold the LibraryElementId for the IN libary element
+            /// </summary>
+            public static readonly string LINK_LIBRARY_ELEMENT_IN_ID_KEY = "link_in_id";
+
+                /// <summary>
+                /// The key that will hold the LibraryElementId for the OUT libary element
+                /// </summary>
+                public static readonly string LINK_LIBRARY_ELEMENT_OUT_ID_KEY = "link_out_id";
+
+            #endregion LinkLibraryElementModel
+
+            #endregion LibraryElementModel
 
         #region ContentDataModel
 
@@ -793,9 +807,9 @@ namespace NusysIntermediate
             DuplicateNodeRequest,
             SystemRequest,
             NewLinkRequest,
-            SendableUpdateRequest,
+            ElementUpdateRequest,
             NewThumbnailRequest,
-            ChangeContentRequest,
+            UpdateLibraryElementModelRequest,
             SetTagsRequest,
             ChatDialogRequest,
             SubscribeToCollectionRequest,

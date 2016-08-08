@@ -96,6 +96,7 @@ namespace NuSysApp
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             try
             {
+                var all = new List<CollectionTextBox>();
                 var libraryElements = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
                 foreach (var libraryElement in libraryElements)
                 {
@@ -106,49 +107,18 @@ namespace NuSysApp
                     if (libraryElement.Type == NusysConstants.ElementType.Collection)
                     {
                         var box = new CollectionTextBox(libraryElement.Title, libraryElement.LibraryElementId);
-                        List.Items.Add(box);
+                        all.Add(box);
                     }
                 }
 
-                /*
-                list.Sort();
+                
                 List?.Items?.Clear();
-                var ii = new List<CollectionTextBox>();
-                foreach (var s in list)
-                {
-                    Dictionary<string, object> dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(s, settings);
-                    var box = new CollectionTextBox();
-                    box.ID = dict.ContainsKey("id") ? (string)dict["id"] : null;//todo do error handinling since this shouldnt be null
-                    if (dict.ContainsKey("creator_user_id"))
-                    {
-                        var creator = dict["creator_user_id"].ToString().ToLower();
-                        if(creator == "rms" || creator == "rosemary" || creator == "gfxadmin")
-                        {
-                            box.MadeByRosemary = true;
-                        }
-                    }
-                    if (dict.ContainsKey("title") && dict["title"] != null && dict["title"] != "")
-                        box.Text = (string)dict["title"];
-                    else
-                        box.Text = "Unnamed Collection";
-                    //List.Items.Add(box);
-                    ii.Add(box);
-                    _preloadedIDs.Add(box.ID);
-                }
-                */
-
-                var ii = new List<CollectionTextBox>(List.Items.Select(item => item as CollectionTextBox));
-                List?.Items?.Clear();
-                ii.Sort((a, b) => a.Text.CompareTo(b.Text));
-                foreach (var i in ii)
+                all.Sort((a, b) => a.Text.CompareTo(b.Text));
+                foreach (var i in all)
                 {
                     List.Items.Add(i);
                 }
-
-
             }
-
-
             catch (Exception e)
             {
                 Debug.WriteLine("not a valid server");
@@ -168,7 +138,7 @@ namespace NuSysApp
             props[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = name;
             var request = new CreateNewContentRequest(NusysConstants.ContentType.Text, null, props);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-            await Task.Delay(1000);
+            //await Task.Delay(1000);
             Init();
         }
         private async void Join_Workspace_Click(object sender, RoutedEventArgs e)
@@ -366,11 +336,6 @@ namespace NuSysApp
                                 try
                                 {
                                     SessionController.Instance.ContentController.Add(model);
-                                    await UITask.Run(delegate
-                                    {
-                                        List.Items.Add(new CollectionTextBox(model.Title,
-                                            model.LibraryElementId));
-                                    });
                                 }
                                 catch (NullReferenceException e)
                                 {

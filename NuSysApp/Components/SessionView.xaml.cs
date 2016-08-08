@@ -504,11 +504,7 @@ namespace NuSysApp
             WaitingRoomView.InitialWorkspaceId = collectionId;
 
             xLoadingGrid.Visibility = Visibility.Visible;
-
-            Task.Run(async delegate
-            {
-                SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(collectionId);
-            });
+            
 
 
             //await

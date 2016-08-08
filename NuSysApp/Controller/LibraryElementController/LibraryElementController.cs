@@ -84,7 +84,7 @@ namespace NuSysApp
         {
             get
             {
-                var metadata = new Dictionary<string, MetadataEntry>(LibraryElementModel.Metadata);
+                var metadata = new Dictionary<string, MetadataEntry>(LibraryElementModel.Metadata ?? new ConcurrentDictionary<string, MetadataEntry>());
                 if (!metadata.ContainsKey("Timestamp"))
                 {
                     metadata.Add("Timestamp", new MetadataEntry("Timestamp", new List<string> { LibraryElementModel.Timestamp }, MetadataMutability.IMMUTABLE));
@@ -103,7 +103,7 @@ namespace NuSysApp
                 }
                 if (!metadata.ContainsKey("Keywords"))
                 {
-                    var keywords = LibraryElementModel.Keywords.Select(key => key.Text);
+                    var keywords = (LibraryElementModel.Keywords ?? new HashSet<Keyword>()).Select(key => key.Text);
                     metadata.Add("Keywords", new MetadataEntry("Keywords", new List<string>(keywords), MetadataMutability.IMMUTABLE));
                 }
                 return metadata;

@@ -297,6 +297,7 @@ namespace NuSysApp
                 newContentArgs.LibraryElementArgs.LibraryElementType = elementType;
                 newContentArgs.LibraryElementArgs.LibraryElementId = SessionController.Instance.GenerateId();
                 newContentArgs.LibraryElementArgs.Title = title; //TODO factor this out to a constant in nusysApp
+                newContentArgs.ContentId = SessionController.Instance.GenerateId();
 
                 var newElementArgs = new NewElementRequestArgs();
                 newElementArgs.LibraryElementId = newContentArgs.LibraryElementArgs.LibraryElementId;
@@ -312,6 +313,8 @@ namespace NuSysApp
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(contentRequest);
 
                 contentRequest.AddReturnedLibraryElementToLibrary(); //before making element, add library element to the library
+
+                await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(newContentArgs.ContentId);
 
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newElementRequest);
 

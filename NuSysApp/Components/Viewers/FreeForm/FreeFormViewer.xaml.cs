@@ -129,7 +129,7 @@ namespace NuSysApp
             var collectionController = ((ElementViewModel)DataContext).Controller.LibraryElementController as CollectionLibraryElementController;
             collectionController.InkLines.Remove(request.Item2);
             m["inklines"] = new HashSet<string>(collectionController.InkLines);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new ChangeContentRequest(m));
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new UpdateLibraryElementModelRequest(m));
 
         }
 
@@ -146,7 +146,7 @@ namespace NuSysApp
             var collectionController = ((ElementViewModel)DataContext).Controller.LibraryElementController as CollectionLibraryElementController;
             collectionController.InkLines.Add(id);
             m["inklines"] = new HashSet<string>(collectionController.InkLines);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new ChangeContentRequest(m));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new UpdateLibraryElementModelRequest(m));
         }
 
         private async void InkStrokedAdded(WetDryInkCanvas canvas, InkStroke stroke)
@@ -162,7 +162,7 @@ namespace NuSysApp
             var collectionController = ((ElementViewModel)DataContext).Controller.LibraryElementController as CollectionLibraryElementController;
             collectionController.InkLines.Add(id);
             m["inklines"] = new HashSet<string>(collectionController.InkLines);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new ChangeContentRequest(m));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new UpdateLibraryElementModelRequest(m));
         }
 
         private void InkStrokedRemoved(WetDryInkCanvas canvas, InkStroke stroke)
@@ -177,7 +177,7 @@ namespace NuSysApp
             var collectionController = ((ElementViewModel)DataContext).Controller.LibraryElementController as CollectionLibraryElementController;
             collectionController.InkLines.Remove(request.Item2);
             m["inklines"] = new HashSet<string>(collectionController.InkLines);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new ChangeContentRequest(m));
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new UpdateLibraryElementModelRequest(m));
         }
 
         private void ControllerOnDisposed(object source, object args)

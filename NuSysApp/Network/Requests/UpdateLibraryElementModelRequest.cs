@@ -9,13 +9,13 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    public class ChangeContentRequest : Request
+    public class UpdateLibraryElementModelRequest : Request
     {
-        public ChangeContentRequest(Message m) : base(NusysConstants.RequestType.ChangeContentRequest, m)
+        public UpdateLibraryElementModelRequest(Message m) : base(NusysConstants.RequestType.UpdateLibraryElementModelRequest, m)
         {
         }
 
-        public ChangeContentRequest(string contentID, string contentData) : base(NusysConstants.RequestType.ChangeContentRequest)
+        public UpdateLibraryElementModelRequest(string contentID, string contentData) : base(NusysConstants.RequestType.UpdateLibraryElementModelRequest)
         {
             _message["contentId"] = contentID;
             _message["data"] = contentData;
