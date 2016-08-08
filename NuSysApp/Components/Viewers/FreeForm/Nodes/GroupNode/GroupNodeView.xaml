@@ -45,9 +45,6 @@
         
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Vertical">
-                <Button Margin="0,2,0,2" x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
-                    <Image Source="ms-appx:///Assets/node icons/delete.png" Height="23" Stretch="Uniform"></Image>
-                </Button>
                 <Button Margin="0,0,0,0" x:Name="ListButton" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
                 <Image Source="ms-appx:///Assets/node icons/icon_list.png" Width="20" Stretch="Uniform"></Image>
             </Button>

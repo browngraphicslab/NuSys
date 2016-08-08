@@ -32,7 +32,7 @@ namespace NuSysApp
 
             // Moves the button to the appropriate location
             var transform = new TranslateTransform();
-            transform.X = position.X;
+            transform.X = position.X -60;
             transform.Y = position.Y;
             this.RenderTransform = transform;
 

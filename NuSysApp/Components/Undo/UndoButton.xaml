@@ -15,7 +15,7 @@
                 <Setter Property="Template" >
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Grid Width="70" Height="80">
+                            <Grid Width="54" Height="54">
                                 <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup x:Name="CommonStates">
                                         <VisualState x:Name="Normal" />
@@ -49,7 +49,13 @@
 
 
 
-    <Grid Width="50" Height="50" Tapped="UndoButton_OnTapped" >
-        <Button  Style="{StaticResource FloatingButton}" Background="{StaticResource color2}" HorizontalAlignment="Left" VerticalAlignment="Stretch"></Button>
+    <Grid Width="54" Height="54" Tapped="UndoButton_OnTapped" >
+        <Button x:Name="xAddRegion" Style="{StaticResource FloatingButton}" BorderBrush="{StaticResource color2}" >
+            <Button.Content>
+                <StackPanel Orientation="Vertical">
+                    <!--<Image x:Name="icon" Width="30" Height="30" Margin="0,10,0,0" VerticalAlignment="Stretch" Stretch="Uniform" HorizontalAlignment="Stretch" Source="ms-appx:///Assets/icon_redo.png"></Image>-->
+                </StackPanel>
+            </Button.Content>
+        </Button>
     </Grid> 
 </local:AnimatableUserControl>

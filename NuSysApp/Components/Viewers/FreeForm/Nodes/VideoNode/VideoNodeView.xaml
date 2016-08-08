@@ -22,15 +22,6 @@
     </local:AnimatableUserControl.Resources>
 
     <local:NodeTemplate x:Name="nodeTpl" Background="{Binding Color}" BorderBrush="{StaticResource color6}">
-
-        <local:NodeTemplate.SubMenu>
-
-            <StackPanel Orientation="Vertical">
-                <Button Margin="0,2,0,2" x:Name="Delete" Click="OnDeleteClick" Style="{StaticResource NodeSubMenuItem}" Background="#9cc5c2">
-                    <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
-                </Button>
-            </StackPanel>
-        </local:NodeTemplate.SubMenu>
         <local:NodeTemplate.Inner>
             <Grid x:Name ="grid" Width="{Binding Width}">
                 <Grid.Resources>

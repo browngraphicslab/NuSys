@@ -87,6 +87,7 @@ namespace NuSysApp
 
             }
             ActiveNodes.Remove((UserControl) sender);
+            manipulationCompletedRoutedEventArgs.Handled = true;
         }
 
         private void ManipulationStarting(object sender, ManipulationStartedRoutedEventArgs manipulationStartingRoutedEventArgs)
@@ -101,6 +102,7 @@ namespace NuSysApp
             _originalPosition.Y = manipulationStartingRoutedEventArgs.Position.Y;
 
             ActiveNodes.Add((UserControl)sender);
+            manipulationStartingRoutedEventArgs.Handled = true;
         }
 
         private void AtomViewListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -192,6 +194,8 @@ namespace NuSysApp
                     Debug.WriteLine(p);
                 }
             }
+
+            e.Handled = true;
         }
 
         public bool CheckInBounds(Point p)
