@@ -11,7 +11,7 @@ namespace NuSysApp
 
         public RemoveLibraryElementAction(Message m)
         {
-            
+            ;
         }
 
         public IUndoable GetInverse()
