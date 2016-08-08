@@ -14,11 +14,12 @@ namespace NuSysApp
         private ElementController _elementController;
         private Point _oldPosition;
         private Point _newPosition;
-
         public MoveElementAction(ElementController controller, Point oldPosition, Point newPosition)
         {
             _elementController = controller;
+            //Old position is where the element used to be before the action occured.
             _oldPosition = oldPosition;
+            //New position is where the element is after the action occurs.
             _newPosition = newPosition;
         }
         
@@ -32,6 +33,9 @@ namespace NuSysApp
             return inverseMoveElementAction;
         }
 
+        /// <summary>
+        /// Calls element controller's set position method, which adds location to debouncing dictionary
+        /// </summary>
         public void ExecuteAction()
         {
             _elementController.SetPosition(_newPosition.X, _newPosition.Y);

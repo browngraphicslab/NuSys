@@ -15,11 +15,15 @@ namespace NuSysApp
 
         public CreateElementAction(ElementController controller, Point point)
         {
+            //Position of removed element must be passed in so created element takes its place
             _elementController = controller;
             _position = point;    
 
         }
-
+        /// <summary>
+        /// Using position and element controller, creates a message and makes a NewElementRequest with that message.
+        /// Adds a copy of the removed element to the workspace in its old position.
+        /// </summary>
         public async void ExecuteAction()
         {
             var element = _elementController.LibraryElementModel;
@@ -43,7 +47,10 @@ namespace NuSysApp
 
         }
 
-
+        /// <summary>
+        /// Creates an inverse RemoveElementAction.
+        /// </summary>
+        /// <returns></returns>
         public IUndoable GetInverse()
         {
             var removeElementAction = new RemoveElementAction(_elementController);
