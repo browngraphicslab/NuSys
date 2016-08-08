@@ -7,6 +7,8 @@
     "Microsoft.ApplicationInsights.WindowsApps": "1.0.0",
     "Microsoft.AspNet.SignalR.JS": "2.2.0",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
+    "Microsoft.ProjectOxford.Common": "1.0.308",
+    "Microsoft.ProjectOxford.Vision": "1.0.354",
     "MyToolkit.Extended": "2.5.9",
     "NAudio": "1.7.3",
     "NetTopologySuite": "1.14.0",

@@ -27,7 +27,6 @@ using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using NusysIntermediate;
 
-
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace NuSysApp
@@ -244,7 +243,7 @@ namespace NuSysApp
             if (!session.IsRecording)
             {
                 //var oldColor = this.RecordVoice.Background;
-                Color c = new Color();
+                Windows.UI.Color c = new Windows.UI.Color();
                 c.A = 255;
                 c.R = 199;
                 c.G = 84;

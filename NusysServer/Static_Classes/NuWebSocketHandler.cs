@@ -43,6 +43,18 @@ namespace NusysServer
                     this.Send(dict);
                 }
             }
+
+            var list = new List<string>();
+
+            for(int i = 1; i <= 105; i++)
+            {
+                list.Add("A random string for testing topic modeling");
+            }
+
+            Task.Run(async delegate {
+                await TextProcessor.GetTextAnalytics(list);
+            });
+
         }
 
         /// <summary>
