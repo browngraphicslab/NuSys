@@ -9,12 +9,14 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.System;
 using Windows.UI;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using GeoAPI.Geometries;
+using Windows.UI.Core;
 
 namespace NuSysApp
 {
@@ -36,6 +38,8 @@ namespace NuSysApp
         protected Color _drawingColor = Colors.Black;
         protected GeneralTransform _inverseTransform;
         protected CompositeTransform _transform;
+        private bool _shiftIsDown;
+        private bool _mouseDown;
 
         public CompositeTransform Transform { get
             {
@@ -63,7 +67,32 @@ namespace NuSysApp
            
             _wetCanvas.Draw += OnWetCanvasDraw;
             _dryCanvas.Draw += OnDryCanvasDraw;
-           
+            CoreWindow.GetForCurrentThread().KeyDown += OnKeyDown;
+            CoreWindow.GetForCurrentThread().KeyUp += OnKeyUp;
+            _mouseDown = false;
+        }
+
+        /// <summary>
+        /// Resets the virtual key once any key is released
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnKeyUp(CoreWindow sender, KeyEventArgs args)
+        {
+            _shiftIsDown = false;
+        }
+
+        /// <summary>
+        /// Keeps track of the currently pressed key
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnKeyDown(CoreWindow sender, KeyEventArgs args)
+        {
+            if (args.VirtualKey == VirtualKey.Shift)
+            {
+                _shiftIsDown = true;
+            }
         }
 
         public void Dispose()
@@ -169,9 +198,11 @@ namespace NuSysApp
 
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            if (e.Pointer.PointerDeviceType != Windows.Devices.Input.PointerDeviceType.Pen)
+            // We only register ink if shift is down or the pen is being used. Otherwise, return.
+            if (!(_shiftIsDown || e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen))
                 return;
 
+            _mouseDown = true;
             _currentStroke.Clear();
 
             _capturedPointer = e.Pointer;
@@ -196,10 +227,15 @@ namespace NuSysApp
 
         protected virtual void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            if (e.Pointer.PointerDeviceType != Windows.Devices.Input.PointerDeviceType.Pen)
+            
+            // We only register ink if shift is down or the pen is being used. Otherwise, return.
+            if (!(_shiftIsDown || e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen))
                 return;
 
-           _wetCanvas.PointerMoved -= OnPointerMoved;
+            _mouseDown = false;
+
+
+            _wetCanvas.PointerMoved -= OnPointerMoved;
 
             _drawingColor = Colors.Black;
 
@@ -265,7 +301,11 @@ namespace NuSysApp
 
         private void OnPointerMoved(object sender, PointerRoutedEventArgs e)
         {
-            if (e.Pointer.PointerDeviceType != Windows.Devices.Input.PointerDeviceType.Pen)
+            // We only register ink if shift is down or the pen is being used. Otherwise, return.
+            if (!(_shiftIsDown || e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen))
+                return;
+
+            if (!_mouseDown)
                 return;
 
             foreach (var p in e.GetIntermediatePoints(_wetCanvas).Reverse())

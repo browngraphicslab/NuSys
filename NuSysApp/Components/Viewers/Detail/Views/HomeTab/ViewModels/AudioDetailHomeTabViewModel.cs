@@ -10,76 +10,14 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    public class AudioDetailHomeTabViewModel : DetailHomeTabViewModel, Sizeable
+    public class AudioDetailHomeTabViewModel : DetailHomeTabViewModel
     {
         public double Duration { set; get; }
         public LibraryElementController LibraryElementController { get; }
 
-        public delegate void OnRegionSeekPassingHandler(double time);
-        public event OnRegionSeekPassingHandler OnRegionSeekPassing;
         public AudioDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
-            LibraryElementController = controller;
-            
-        }
-
-        public void ScrubBarOnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-        {
-            double position = e.NewValue / Duration;
-          /*  foreach (var regionview in RegionViews)
-            {
-                if (((regionview.DataContext as AudioRegionViewModel).Model as AudioRegionModel).Start <= position &&
-                    ((regionview.DataContext as AudioRegionViewModel).Model as AudioRegionModel).End >= position)
-                {
-                    //regionview.Visibility = Visibility.Visible;
-                    regionview.Select();
-                }
-                else
-                {
-                    //regionview.RegionRectangle.Visibility = Visibility.Collapsed;
-                    regionview.Deselect();
-                }
-            }*/
-        }
-        
-
-
-        public override void AddRegion(object sender, RegionLibraryElementController libraryElementController)
-        {
-        }
-
-        public override void RemoveRegion(object sender, Region displayedRegion)
-        {
-
-
-
-        }
-
-        public override void SizeChanged(object sender, double width, double height)
-        {
-            width = View.ActualWidth;
-            height = View.ActualHeight;
-
-        }
-
-        public double GetWidth()
-        {
-            return View.ActualWidth;
-        }
-
-        public double GetHeight()
-        {
-            return View.ActualWidth;
-        }
-
-        public override void SetExistingRegions()
-        {
-
-        }
-
-        public void OnRegionSeek(double time)
-        {
-            OnRegionSeekPassing?.Invoke(time);
+            LibraryElementController = controller;           
         }
 
         public override Message GetNewRegionMessage()
@@ -87,17 +25,13 @@ namespace NuSysApp
             var m = new Message();
             m["start"] = .25;
             m["end"] = .75;
+            if (LibraryElementController is AudioRegionLibraryElementController)
+            {
+                var region = LibraryElementController.LibraryElementModel as AudioRegionModel;
+                m["start"] = region.Start + (region.End - region.Start) * 0.25;
+                m["end"] = region.Start + (region.End - region.Start) * 0.75;
+            }
             return m;
-        }
-
-        public double GetViewWidth()
-        {
-            throw new NotImplementedException();
-        }
-
-        public double GetViewHeight()
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -31,6 +31,9 @@ namespace NuSysApp
 
         public bool Selected {private set; get; }
 
+        public delegate void RegionSelectedDeselectedEventHandler(object sender, bool selected);
+        public event RegionSelectedDeselectedEventHandler OnSelectedOrDeselected;
+
         public ImageRegionView(ImageRegionViewModel vm)
         {
             this.InitializeComponent();
@@ -45,9 +48,7 @@ namespace NuSysApp
             CompositeTransform composite = new CompositeTransform();
             this.RenderTransform = composite;
 
-            //vm.SizeChanged += ChangeSize;
             vm.LocationChanged += ChangeLocation;
-
 
             var parentWidth = vm.RectangleWrapper.GetWidth();
             var parentHeight = vm.RectangleWrapper.GetHeight();
@@ -56,6 +57,7 @@ namespace NuSysApp
             composite.TranslateY = model.TopLeftPoint.Y * parentHeight;
             vm.Width = (model.Width) * parentWidth;
             vm.Height = (model.Height) * parentHeight;
+            vm.Disposed += Dispose;
 
             _tx = composite.TranslateX;
             _ty = composite.TranslateY;
@@ -81,39 +83,8 @@ namespace NuSysApp
 
             composite.TranslateX = topLeft.X;
             composite.TranslateY = topLeft.Y;
-
-            //If in detail view, adjust to the right to account for difference between view and actual image.
-       /*     if (vm.ContainerViewModel is ImageDetailHomeTabViewModel)
-            {
-                var ivm = vm.ContainerViewModel as ImageDetailHomeTabViewModel;
-                var horizontalMargin = (ivm.GetViewWidth() - ivm.GetWidth())/ 2;
-                var verticalMargin = (ivm.GetViewHeight() - ivm.GetHeight()) / 2;
-                composite.TranslateX += horizontalMargin;
-                composite.TranslateY += verticalMargin;
-            }*/
         }
-        /// <summary>
-        /// Changes size of view according to element that contains it.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        private void ChangeSize(object sender, double width, double height)
-        {
-            var vm = DataContext as ImageRegionViewModel;
-
-            var composite = RenderTransform as CompositeTransform;
-            if (composite == null)
-            {
-                return;
-            }
-
-
-            vm.Width = width;
-            vm.Height = height;
-        }
-
-
+       
         /// <summary>
         /// Updates the width and height of the region relative to the position of the resizing triangle.
         /// </summary>
@@ -171,8 +142,7 @@ namespace NuSysApp
 
         private void xResizingTriangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-
-            this.Select();
+            FireSelection();
             e.Handled = true;
         }
 
@@ -227,7 +197,7 @@ namespace NuSysApp
             }
             else if (_ty > downYBound)
             {
-                rt.TranslateY = vm.RectangleWrapper.GetHeight() - vm.OriginalHeight;
+                rt.TranslateY = vm.RectangleWrapper.GetHeight() - vm.Height;
             }
             else
             {
@@ -254,9 +224,7 @@ namespace NuSysApp
             _tx = ((CompositeTransform)this.RenderTransform).TranslateX;
             _ty = ((CompositeTransform)this.RenderTransform).TranslateY;
 
-            vm.OriginalHeight = vm.Height;
-            vm.OriginalWidth = vm.Width;
-            this.Select();
+            FireSelection();
             e.Handled = true;
 
         }
@@ -279,11 +247,37 @@ namespace NuSysApp
             xDelete.Visibility = Visibility.Visible;
             xNameTextBox.Visibility = Visibility.Visible;
             Selected = true;
-
+            
+        }
+        /// <summary>
+        ///         If not already selected, shows selection and fires event listened to by RectangleWrapper
+        /// </summary>
+        public void FireSelection()
+        {
+            if (!Selected)
+            {
+                Select();
+                OnSelectedOrDeselected?.Invoke(this, true);
+            }
         }
 
+        /// <summary>
+        /// If selected, shows deselection and fires event listened to by RectangleWrapper.
+        /// </summary>
+        public void FireDeselection()
+        {
+            if (Selected)
+            {
+                Deselect();
+                OnSelectedOrDeselected?.Invoke(this, false);
+            }
+        }
 
-        //Selection is currently very primitive.
+        /// <summary>
+        /// Calls FireDeselection or FireSelection
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             var vm = DataContext as ImageRegionViewModel;
@@ -292,27 +286,40 @@ namespace NuSysApp
                 return;
 
             if (Selected)
-                this.Deselect();
+            {
+                FireDeselection();
+            }
             else
-                this.Select();
-                
+            {
+                FireSelection();
+            }
+
         }
 
+        /// <summary>
+        /// Calls dispose and requests removal
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void xDelete_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-
-
             var vm = this.DataContext as ImageRegionViewModel;
             if (vm == null)
             {
                 return;
             }
-
+            // If the region is deleted, it needs to dispose of its handlers.
+            vm.Dispose(this, EventArgs.Empty);
             // delete all the references to this region from the library
             var removeRequest = new DeleteLibraryElementRequest(vm.RegionLibraryElementController.LibraryElementModel.LibraryElementId);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(removeRequest);
         }
 
+        /// <summary>
+        /// Opens detail view of region
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var vm = DataContext as RegionViewModel;
@@ -357,6 +364,13 @@ namespace NuSysApp
                
             //xMainRectangle.StrokeThickness = 3 / scaleX;
             xMainRectangleBorder.BorderThickness = new Thickness(3/scaleX, 3/scaleY, 3/scaleX, 3/scaleY);
+        }
+
+        public void Dispose(object sender, EventArgs e)
+        {
+            var vm = DataContext as ImageRegionViewModel;
+            vm.Disposed -= Dispose;
+            vm.LocationChanged -= ChangeLocation;
         }
     }
 }

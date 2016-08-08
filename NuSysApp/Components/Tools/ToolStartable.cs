@@ -13,6 +13,8 @@ namespace NuSysApp.Tools
 
         event EventHandler<HashSet<string>> OutputLibraryIdsChanged;
         event EventHandler<string> Disposed;
+        event EventHandler<ToolViewModel> FilterTypeAllMetadataChanged;
+
 
         /// <summary>
         /// Returns the toolStartable id

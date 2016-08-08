@@ -14,7 +14,7 @@ namespace NuSysApp
     /// Takes care of all the modifying and events invoking for the library element model
     /// Should manage keeping the library element model up to date as well as updating the server
     /// </summary>
-    public class LibraryElementController : IMetadatable, ILinkTabable, IDetailViewable
+    public class LibraryElementController : IMetadatable, ILinkTabable
     {
         protected DebouncingDictionary _debouncingDictionary;
         private LibraryElementModel _libraryElementModel;
@@ -562,18 +562,14 @@ namespace NuSysApp
         {
             LinkAdded?.Invoke(this, linkController);
         }
-        
-        //public void RemoveLink(LinkLibraryElementController linkController)
-        //{
-        //    LinkRemoved?.Invoke(this, linkController.ContentId);
-        //}
 
         #region Linking methods
         public async Task RequestAddNewLink(string idToLinkTo, string title)
         {
             var m = new Message();
-            m["id1"] = LibraryElementModel.LibraryElementId;
-            m["id2"] = idToLinkTo;
+            //these seem to be backwards, but it works, probably
+            m["id1"] = idToLinkTo; 
+            m["id2"] = LibraryElementModel.LibraryElementId;
             m["title"] = title;
             await SessionController.Instance.LinksController.RequestLink(m);
         }
@@ -592,12 +588,37 @@ namespace NuSysApp
             var controllers = linkedIds.Select(id =>SessionController.Instance.ContentController.GetLibraryElementController(id) as LinkLibraryElementController);
             return new HashSet<LinkLibraryElementController>(controllers);
         }
-
-        public string TabId()
-        {
-            return LibraryElementModel.LibraryElementId;
-        }
         #endregion
+
+        /// <summary>
+        /// Adds a shape property to the library element if the element is a collection
+        /// </summary>
+        /// <param name="shapePoints"></param>
+        public void SetShape(List<Windows.Foundation.Point> shapePoints)
+        {
+            if (LibraryElementModel is CollectionLibraryElementModel)
+            {
+                var collectionModel = LibraryElementModel as CollectionLibraryElementModel;
+                collectionModel.ShapePoints = new List<PointModel>(shapePoints.Select(p => new PointModel(p.X,p.Y)));
+
+            }    
+        }
+
+        /// <summary>
+        /// Sets if the collection is finite
+        /// </summary>
+        /// <param name="isFinite"></param>
+        public void SetFinite(bool isFinite)
+        {
+            if (LibraryElementModel is CollectionLibraryElementModel)
+            {
+                var collectionModel = LibraryElementModel as CollectionLibraryElementModel;
+                collectionModel.IsFinite=isFinite;
+
+            }
+
+        }
+        
 
     }
 }

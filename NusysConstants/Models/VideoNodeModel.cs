@@ -26,16 +26,6 @@ namespace NusysIntermediate
             ElementType = NusysConstants.ElementType.Video;
         }
 
-        public void Jump(TimeSpan time)
-        {
-            OnJump?.Invoke(time);
-        }
-        private void Test_CurrentStateChanged(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            _resX = Test.AspectRatioWidth;
-            _resY = Test.AspectRatioHeight;
-        }
-
         public InMemoryRandomAccessStream Recording
         {
             get { return _recording; }

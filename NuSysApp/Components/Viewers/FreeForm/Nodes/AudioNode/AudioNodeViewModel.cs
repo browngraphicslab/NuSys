@@ -8,8 +8,6 @@ using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Shapes;
-using NuSysApp.Nodes.AudioNode;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using NAudio;
@@ -19,99 +17,25 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Linq;
 using Windows.UI.Xaml.Controls.Primitives;
 using System.Diagnostics;
+using NetTopologySuite.Utilities;
 using NusysIntermediate;
+using Line = Windows.UI.Xaml.Shapes.Line;
 
 namespace NuSysApp
 {
-    public class AudioNodeViewModel: ElementViewModel, Sizeable
+    public class AudioNodeViewModel : ElementViewModel
     {
         private Grid _visualGrid;
 
-        public delegate void BlockHitEventHandler(LinkedTimeBlockViewModel timeBlock);
-        public event BlockHitEventHandler OnBlockHitEventHandler;
-
-        public delegate void BlockLeaveEventHandler(LinkedTimeBlockViewModel timeBlock);
-        public event BlockHitEventHandler OnBlockLeaveEventHandler;
-
         public delegate void VisualizationLoadedEventHandler();
+
         public event VisualizationLoadedEventHandler OnVisualizationLoaded;
-        public delegate void OnRegionSeekPassingHandler(double time);
-        public event OnRegionSeekPassingHandler OnRegionSeekPassing;
-        public double AudioDuration { set; get; }
+
         public AudioNodeViewModel(ElementController controller) : base(controller)
         {
             Width = controller.Model.Width;
             Height = controller.Model.Height;
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
-
-            this.CreateAudioRegionViews();
-
-            controller.Disposed += ControllerOnDisposed;
-            Controller.SizeChanged += Controller_SizeChanged;
-
-            if (!Controller.LibraryElementController.ContentLoaded)
-            {
-                Task.Run(async delegate
-                {
-                    await Controller.LibraryElementController.LoadContentDataModelAsync();
-                    LibraryElementController_Loaded(this);
-                });
-            }
-            else
-            {
-                LibraryElementController_Loaded(this);
-            }
-        }
-
-        private void Controller_SizeChanged(object source, double width, double height)
-        {
-
-        }
-
-        private void LibraryElementControllerOnRegionRemoved(object source, Region region)
-        {
-            var audioRegion = region as AudioRegionModel;
-            if (audioRegion == null)
-            {
-                return;
-            }
-
-
-
-
-        }
-
-        private void LibraryElementController_Loaded(object sender)
-        {
-            this.CreateAudioRegionViews();
-        }
-
-
-        public void CreateAudioRegionViews()
-        {
-
-            
-        }
-        public void ScrubBarOnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-        {
-            double position = e.NewValue / AudioDuration;
-         /*   foreach (var regionview in Regions)
-            {
-                if (((regionview.DataContext as AudioRegionViewModel).Model as AudioRegionModel).Start <= position &&
-                    ((regionview.DataContext as AudioRegionViewModel).Model as AudioRegionModel).End >= position)
-                {
-                    regionview.Select();
-                }
-                else
-                {
-                    regionview.Deselect();
-
-                }
-            }*/
-        }
-        private void ControllerOnDisposed(object source, object args)
-        {
-            Controller.Disposed -= ControllerOnDisposed;
         }
 
         public override void SetSize(double width, double height)
@@ -126,44 +50,11 @@ namespace NuSysApp
                 width = 150;
             }
             base.SetSize(width, height);
-            RaisePropertyChanged("Regions");
         }
 
         public Uri AudioSource
         {
-            get
-            {
-                return new Uri(Controller.LibraryElementController.Data);
-            }
-        }
-        /*
-        public ObservableCollection<AudioRegionView> Regions { get
-            {
-                var collection = new ObservableCollection<AudioRegionView>();
-                var elementController = LibraryElementController.LibraryElementController;
-                var regionHashSet = elementController.LibraryElementModel.Regions;
-
-                if (regionHashSet == null)
-                    return collection;
-                
-                foreach (var model in regionHashSet)
-                {
-                    var RegionLibraryElementController = new RegionLibraryElementController(model);
-                    RegionLibraryElementController.RegionUpdated += LibraryElementControllerOnRegionUpdated;
-                    var viewmodel = new AudioRegionViewModel(model as AudioRegionModel, elementController, RegionLibraryElementController,this);
-                    viewmodel.Editable = false;
-                    var view = new AudioRegionView(viewmodel);
-                    view.OnRegionSeek += View_OnRegionSeek;
-                    collection.Add(view);
-                }   
-                return collection;
-            }
-        }
-        */
-
-        private void View_OnRegionSeek(double time)
-        {
-            OnRegionSeekPassing?.Invoke(time);
+            get { return new Uri(Controller.LibraryElementController.Data); }
         }
 
         public override async Task Init()
@@ -177,39 +68,20 @@ namespace NuSysApp
 
         private async void InitWhenReady(object sender)
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(AudioSource);
-            HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
+            HttpWebRequest request = (HttpWebRequest) WebRequest.Create(AudioSource);
+            HttpWebResponse response = (HttpWebResponse) await request.GetResponseAsync();
             Stream resStream = response.GetResponseStream();
 
-            byte[] dataBytes = new byte[(int)response.ContentLength];
-            resStream.Read(dataBytes, 0, (int)response.ContentLength);
+            byte[] dataBytes = new byte[(int) response.ContentLength];
+            resStream.Read(dataBytes, 0, (int) response.ContentLength);
             resStream.Dispose();
             //Visualize(dataBytes);
         }
-        private void LibraryElementControllerOnRegionAdded(object source, RegionLibraryElementController regionLibraryElementController)
-        {
 
-        }
+        /*
+        #region cool wavestream stuff
 
-        private void LibraryElementControllerOnRegionUpdated(object source, Region region)
-        {
-            /*
-            var imageRegion = region as RectangleRegion;
-            if (imageRegion == null)
-            {
-                return;
-            }
-
-            foreach (var regionView in Regions.ToList<AudioRegionView>())
-            {
-                if ((regionView.DataContext as ImageRegionViewModel).Model == imageRegion)
-                    Regions.Remove(regionView);
-            }
-            */
-            
-
-            RaisePropertyChanged("Regions");        }
-
+        
         private async void Visualize(byte[] bytes)
         {
             MemoryStream s = new MemoryStream(bytes);
@@ -217,7 +89,7 @@ namespace NuSysApp
 
 
             WaveStream waveStream = new MediaFoundationReaderUniversal(stream);
-            int bytesPerSample = (waveStream.WaveFormat.BitsPerSample / 8) * waveStream.WaveFormat.Channels;
+            int bytesPerSample = (waveStream.WaveFormat.BitsPerSample/8)*waveStream.WaveFormat.Channels;
             waveStream.Position = 0;
             int bytesRead = 1;
             int samplesPerPixel = 1024;
@@ -243,14 +115,14 @@ namespace NuSysApp
                 samplesPerPixel = 2048;
             }
 
-            byte[] waveData = new byte[samplesPerPixel * bytesPerSample];
+            byte[] waveData = new byte[samplesPerPixel*bytesPerSample];
             _visualGrid = new Grid();
             float x = 0;
             while (bytesRead != 0)
             {
                 short low = 0;
                 short high = 0;
-                bytesRead = waveStream.Read(waveData, 0, samplesPerPixel * bytesPerSample);
+                bytesRead = waveStream.Read(waveData, 0, samplesPerPixel*bytesPerSample);
 
                 for (int n = 0; n < bytesRead; n += 2)
                 {
@@ -258,14 +130,14 @@ namespace NuSysApp
                     if (sample < low) low = sample;
                     if (sample > high) high = sample;
                 }
-                float lowPercent = ((((float)low) - short.MinValue) / ushort.MaxValue);
-                float highPercent = ((((float)high) - short.MinValue) / ushort.MaxValue);
+                float lowPercent = ((((float) low) - short.MinValue)/ushort.MaxValue);
+                float highPercent = ((((float) high) - short.MinValue)/ushort.MaxValue);
 
                 Line line = new Line();
                 line.X1 = x;
                 line.X2 = x;
-                line.Y1 = 100 * (highPercent);
-                line.Y2 = 100 * (lowPercent);
+                line.Y1 = 100*(highPercent);
+                line.Y2 = 100*(lowPercent);
                 line.Stroke = new SolidColorBrush(Colors.Crimson);
                 line.StrokeThickness = 1;
                 x++;
@@ -277,8 +149,8 @@ namespace NuSysApp
             Line middleLine = new Line();
             middleLine.X1 = 0;
             middleLine.X2 = x;
-            middleLine.Y1 = _visualGrid.Height / 2;
-            middleLine.Y2 = _visualGrid.Height / 2;
+            middleLine.Y1 = _visualGrid.Height/2;
+            middleLine.Y2 = _visualGrid.Height/2;
 
             middleLine.Stroke = new SolidColorBrush(Colors.Crimson);
             middleLine.StrokeThickness = 1;
@@ -286,35 +158,15 @@ namespace NuSysApp
 
             OnVisualizationLoaded?.Invoke();
         }
-        public string FileName
-        {
-            get { return ((AudioNodeModel)Model).FileName; }
-            set { ((AudioNodeModel)Model).FileName = value; }
-        }
 
         public Grid VisualGrid
         {
             get { return _visualGrid; }
         }
 
-        public double GetWidth()
-        {
-            return Width;
-        }
+#endregion cool wavestream stuff
+        */
 
-        public double GetHeight()
-        {
-            return Height;
-        }
 
-        public double GetViewWidth()
-        {
-            throw new NotImplementedException();
-        }
-
-        public double GetViewHeight()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -20,6 +20,8 @@ namespace NuSysApp
     {
         public event EventHandler<HashSet<string>> OutputLibraryIdsChanged;
         public event EventHandler<string> Disposed;
+        public event EventHandler<ToolViewModel> FilterTypeAllMetadataChanged;
+
         /// <summary>
         /// The unique ID used in the tool startable dictionary
         /// </summary>

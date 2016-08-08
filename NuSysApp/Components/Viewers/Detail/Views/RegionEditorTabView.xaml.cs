@@ -24,22 +24,18 @@ using NusysIntermediate;
 namespace NuSysApp
 {
     public sealed partial class RegionEditorTabView : UserControl
-    {
-        public DetailViewerView DetailViewerView { set; get; }
-        
-        private bool _edgeCaseButtonExited;
+    {        
         public  RegionEditorTabView()
-
         {
             this.InitializeComponent();
-
-            _edgeCaseButtonExited = true;
             Canvas.SetZIndex(xButtonStack, 20);
         }
 
-        private void AddRegion_Clicked(object sender, RoutedEventArgs e)
+        private async void AddRegion_Clicked(object sender, RoutedEventArgs e)
         {
-            var vm = DetailViewerView.DataContext as DetailViewerViewModel;
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            Debug.Assert(detailViewerView != null);
+            var vm = detailViewerView.DataContext as DetailViewerViewModel;
             if (vm == null)
             {
                 return;
@@ -50,6 +46,10 @@ namespace NuSysApp
             var detailHomeTabViewModel = vm.RegionView.DataContext as DetailHomeTabViewModel;
             Message message = null;
             NusysConstants.ElementType type;
+
+            CreateNewRegionLibraryElementRequestArgs regionRequestArgs = new CreateNewRegionLibraryElementRequestArgs();
+
+            //in each case, create a new CreateNewRegionLibraryElementRequestArgs or subclass
             switch (vm.CurrentElementController.LibraryElementModel.Type)
             {
                 case NusysConstants.ElementType.ImageRegion:
@@ -80,18 +80,14 @@ namespace NuSysApp
             }
             Debug.Assert(message != null);
 
-            // Add universal data to the message, should be self explanatory, unpacked in the rectangleRegionController
-            message["id"] = SessionController.Instance.GenerateId();
-            message["title"] = "Region " + vm.CurrentElementController.Title;
-            message["content__id"] = vm.CurrentElementController.LibraryElementModel.ContentDataModelId;
-            message["type"] = type.ToString();
-            message["clipping_parent_library_id"] = vm.CurrentElementController.LibraryElementModel.LibraryElementId;
-            if (vm.CurrentElementController.LibraryElementModel.ServerUrl != null)
-            {
-                message["server_url"] = vm.CurrentElementController.LibraryElementModel.ServerUrl;
-            }
-            var request = new CreateNewLibraryElementRequest(message);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            //create the args and set the parameters that all regions will need
+            regionRequestArgs.ContentId = vm.CurrentElementController.LibraryElementModel.ContentDataModelId;
+            regionRequestArgs.LibraryElementType = type;
+            regionRequestArgs.Title = "Region " + vm.CurrentElementController.Title; // TODO factor out this hard-coded string to a constant
+            regionRequestArgs.ClippingParentLibraryId = vm.CurrentElementController.LibraryElementModel.LibraryElementId;
+
+            var request = new CreateNewLibraryElementRequest(regionRequestArgs);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
         }
 
         public void ShowListView(bool visible, NusysConstants.ElementType type)
@@ -109,7 +105,9 @@ namespace NuSysApp
             {
                 if (type == NusysConstants.ElementType.PDF)
                 {
-                    xListViewPresenter.Content = new PDFRegionListView(DetailViewerView);
+                    var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+                    Debug.Assert(detailViewerView != null);
+                    xListViewPresenter.Content = new PDFRegionListView(detailViewerView);
                     if (!xMainGrid.ColumnDefinitions.Contains(xSecondColumn))
                     {
                         xMainGrid.ColumnDefinitions.Add(xSecondColumn);

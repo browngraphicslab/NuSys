@@ -42,6 +42,10 @@ namespace NuSysApp
         private Storyboard _expandedListAnim; // for data grid view
         private Storyboard _timelineAnim;
 
+        private bool _finite;
+        private List<Windows.Foundation.Point> _shapepoints;
+        
+
         public GroupNodeView( GroupNodeViewModel vm)
         {
             RenderTransform = new CompositeTransform();
@@ -71,8 +75,19 @@ namespace NuSysApp
             EnterButton.AddHandler(TappedEvent,
                 new TappedEventHandler(MenuDetailButton_Tapped), true);
 
-            SetUpToolsBtn();
+            var elementcollectionvm = DataContext as ElementCollectionViewModel;
+            var libmodel = SessionController.Instance.ContentController.GetLibraryElementModel(elementcollectionvm.LibraryElementId) as CollectionLibraryElementModel;
+            _finite = libmodel.IsFinite;
+            if (_finite)
+            {
+                FiniteText.Text = "Make Infinite";
+            }
+            else
+            {
+                FiniteText.Text = "Make Finite";
+            }
 
+            SetUpToolsBtn();
         }
 
         /// <summary>
@@ -167,6 +182,21 @@ namespace NuSysApp
             {
                 case CollectionElementModel.CollectionViewType.FreeForm:
                     CreateFreeFormView();
+                    if (((GroupNodeViewModel)DataContext).Finite)
+                    {
+                        nodeTpl.HideResizer();
+                    }
+                    var elementcollectionvm = DataContext as ElementCollectionViewModel;
+                    var libmodel = SessionController.Instance.ContentController.GetLibraryElementModel(elementcollectionvm.LibraryElementId) as CollectionLibraryElementModel;
+                    _finite = libmodel.IsFinite;
+                    if (_finite)
+                    {
+                        FiniteText.Text = "Make Infinite";
+                    }
+                    else
+                    {
+                        FiniteText.Text = "Make Finite";
+                    }
                     break;
                 case CollectionElementModel.CollectionViewType.List:
                     CreateDataGridView();
@@ -206,7 +236,21 @@ namespace NuSysApp
             await fvm.CreateChildren();
             freeFormView = new AreaNodeView(fvm);
             ExpandedGrid.Children.Add(freeFormView);
+            
             freeFormView.Visibility = Visibility.Visible;
+            /*
+            var model = vm.Model as CollectionElementModel;
+            if (model == null)
+            {
+                return;
+            }
+           
+            var foo = model.CollectionLibraryElementModel;
+            if (foo!=null&&foo.IsFinite)
+            {
+                Resizer.Visibility=Visibility.Collapsed;
+            }
+            */
         }
 
         private async void CreateTimelineView()
@@ -323,6 +367,40 @@ namespace NuSysApp
             vm.Controller.RequestDelete();
         }
 
+        private void OnOptionsClick(object sender, RoutedEventArgs e)
+        {
+            OptionsPanel.Visibility = Visibility.Visible;
+            OptionsButton.Visibility = Visibility.Collapsed;
+        }
+
+        private void OnFiniteClick(object sender, RoutedEventArgs e)
+        {
+            ChangeFinite();
+            OptionsPanel.Visibility = Visibility.Collapsed;
+            OptionsButton.Visibility = Visibility.Visible;
+
+        }
+
+        private void OnShapeClick(object sender, RoutedEventArgs e)
+        {
+            OptionsPanel.Visibility = Visibility.Collapsed;
+            OptionsButton.Visibility = Visibility.Visible;
+        }
+
+        private void ChangeFinite()
+        {
+            var vm = DataContext as ElementCollectionViewModel;
+            _finite = !_finite;
+            ((ElementCollectionController)vm.Controller).SetFinite(_finite);
+            if (_finite)
+            {
+                FiniteText.Text = "Make Infinite";
+            }
+            else
+            {
+                FiniteText.Text = "Make Finite";
+            }
+        }
 
     }
 }

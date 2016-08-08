@@ -30,16 +30,16 @@ namespace NuSysApp
         public event LocationChangedEventHandler LocationChanged;
         public event SizeChangedEventHandler SizeChanged;
         public event EventHandler<string> Disposed;
+        public event EventHandler<ToolViewModel> FilterTypeAllMetadataChanged;
+
         /// <summary>
         /// Fires when the properties to display change (e.g. when a parent tool changes selection). View listens to this for when to show the AND/OR box.
         /// </summary>
         public event IdsToDisplayChangedEventHandler IdsToDisplayChanged;
         public event NumberOfParentsChangedEventHandler NumberOfParentsChanged;
 
-
-
-
         public ToolModel Model { get;}
+
         public ToolController(ToolModel model)
         {
             Debug.Assert(model != null);
@@ -115,6 +115,14 @@ namespace NuSysApp
             });*/
         }
 
+        /// <summary>
+        /// So that subclasses can fire filter type all metadata changed
+        /// </summary>
+        /// <param name="vm"></param>
+        public void FireFilterTypeAllMetadataChanged(ToolViewModel vm)
+        {
+            FilterTypeAllMetadataChanged?.Invoke(this, vm);
+        }
 
         public void SetSize(double width, double height)
         {
@@ -131,14 +139,24 @@ namespace NuSysApp
                 if (Model.ParentIds.Add(parentController.GetID()))
                 {
                     parentController.OutputLibraryIdsChanged += IdsToDiplayChanged;
+                    parentController.FilterTypeAllMetadataChanged += ParentController_FilterTypeAllMetadataChanged;
                     Model.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
                     OutputLibraryIdsChanged?.Invoke(this, Model.OutputLibraryIds);
                     IdsToDisplayChanged?.Invoke();
                     parentController.Disposed += OnParentDisposed;
                     NumberOfParentsChanged?.Invoke(Model.ParentIds.Count);
-                    
                 }
             }
+        }
+
+        /// <summary>
+        /// Whenever a parent controller changes from all metadata to basic or vice versa, set the new parent
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ParentController_FilterTypeAllMetadataChanged(object sender, ToolViewModel vm)
+        {
+            AddParent(vm.Controller);
         }
 
         /// <summary>
@@ -157,13 +175,11 @@ namespace NuSysApp
         /// </summary>
         public void OnParentDisposed(object sender, string parentid)
         {
-            ToolControllers[parentid].OutputLibraryIdsChanged -= IdsToDiplayChanged;
-            Model.ParentIds.Remove(parentid);
+            RemoveParent(ToolControllers[parentid]);
             Model.SetOutputLibraryIds(Filter(GetUpdatedDataList()));
             OutputLibraryIdsChanged?.Invoke(this, Model.OutputLibraryIds);
             IdsToDisplayChanged?.Invoke();
             ToolControllers[parentid].Disposed -= OnParentDisposed;
-
         }
 
         /// <summary>
@@ -190,7 +206,7 @@ namespace NuSysApp
         public abstract void UnSelect();
 
         /// <summary>
-        /// Deletes the current node and removes itself from children's knowledge
+        /// Deletes the current node and removes itself from parents's knowledge
         /// </summary>
         public virtual void Dispose()
         {
@@ -222,12 +238,25 @@ namespace NuSysApp
             return ret;
         }
 
-
+        /// <summary>
+        /// So that subclasses can fire the event
+        /// </summary>
         public void FireOutputLibraryIdsChanged()
         {
             OutputLibraryIdsChanged?.Invoke(this, Model.OutputLibraryIds);
         }
 
+        /// <summary>
+        /// So that subclasses can fire the event
+        /// </summary>
+        public void FireIdsToDisplayChanged()
+        {
+            IdsToDisplayChanged?.Invoke();
+        }
+
+        /// <summary>
+        /// Should return a function that filters whether or not a certain string should be included int output library ids
+        /// </summary>
         public abstract Func<string, bool> GetFunc();
 
         /// <summary>

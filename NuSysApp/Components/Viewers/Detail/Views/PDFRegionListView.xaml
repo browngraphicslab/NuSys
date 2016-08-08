@@ -21,7 +21,7 @@
 
 
 
-        <ListView ItemsSource="{Binding OrderedRegionCollection}"  VerticalContentAlignment="Top" >
+        <ListView ItemsSource="{Binding RegionModelList}"  VerticalContentAlignment="Top" >
 
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
@@ -44,12 +44,12 @@
             </ListView.Header>
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="nusysIntermediate:Region">
-                    <Grid x:Name="RegionListViewItem" PointerPressed="RegionListViewItem_PointerPressed" HorizontalAlignment="Stretch" Height="30" VerticalAlignment="Center" PointerEntered="XListViewItemGrid_OnPointerEnterExit" PointerExited="XListViewItemGrid_OnPointerEnterExit" Background="Transparent">
-                        <Grid.ColumnDefinitions>
+                            <Grid x:Name="RegionListViewItem" PointerPressed="RegionListViewItem_PointerPressed" HorizontalAlignment="Stretch" Height="30" VerticalAlignment="Center" Background="Transparent">
+                                <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" ></ColumnDefinition>
                             <ColumnDefinition Width="*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="{Binding Name}" Foreground="White" HorizontalAlignment="Left" ></TextBlock>
+                        <TextBlock Grid.Column="0" Text="{Binding Title}" Foreground="White" HorizontalAlignment="Left" ></TextBlock>
                         <TextBlock Grid.Column="1" Text="{Binding PageLocation}" Foreground="White" HorizontalAlignment="Right"></TextBlock>
 
                     </Grid>

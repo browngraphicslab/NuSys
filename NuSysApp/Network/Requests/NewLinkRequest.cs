@@ -53,12 +53,14 @@ namespace NuSysApp
             _message["color"] = c.ToString();
             NusysConstants.ElementType type = (NusysConstants.ElementType)Enum.Parse(typeof(NusysConstants.ElementType), (string)_message["type"], true);
 
-
             var libraryElement = SessionController.Instance.ContentController.CreateAndAddModelFromMessage(_message);
 
             var controller =
                 SessionController.Instance.ContentController.GetLibraryElementController(
                     libraryElement.LibraryElementId);
+            //var linkLibElemCont = controller as LinkLibraryElementController;
+            //Debug.WriteLine(linkLibElemCont != null);
+
             libraryElement.Timestamp = time;
 
             libraryElement.ServerUrl = url;
@@ -102,7 +104,8 @@ namespace NuSysApp
                 linkController as LinkLibraryElementController);
             }
 
-         }
+        }
 
     }
 }
+

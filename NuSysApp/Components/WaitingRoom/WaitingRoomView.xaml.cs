@@ -9,6 +9,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using Windows.Data.Xml.Dom;
 using Windows.Storage;
 using Windows.UI;
 using Windows.UI.ViewManagement;
@@ -328,8 +329,7 @@ namespace NuSysApp
                         }
 
                         await Task.Run(async delegate
-                        {
-
+                        { 
                             var models = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
                             foreach (var model in models)
                             {

@@ -26,10 +26,10 @@ namespace NusysIntermediate
         }
 
         public NusysConstants.ElementType ElementType { get; set; } //TODO probably get rid of this if possible
-        
+ 
         public string LibraryId { set; get; }
 
-        public string ParentCollectionId { get; set; }
+        public string ParentCollectionId { get; set; }   
 
         // TODO: Move color to higher level type
 
@@ -139,12 +139,11 @@ namespace NusysIntermediate
             {
                 Y = props.GetDouble(NusysConstants.ALIAS_LOCATION_Y_KEY, Y);
             }
-
+            
             if (props.ContainsKey(NusysConstants.ALIAS_SIZE_WIDTH_KEY))
             {
                 Width = props.GetDouble(NusysConstants.ALIAS_SIZE_WIDTH_KEY, Width);
             }
-
             if (props.ContainsKey(NusysConstants.ALIAS_SIZE_HEIGHT_KEY))
             {
                 Height = props.GetDouble(NusysConstants.ALIAS_SIZE_HEIGHT_KEY, Height);

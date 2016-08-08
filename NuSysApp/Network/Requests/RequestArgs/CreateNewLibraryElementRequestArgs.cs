@@ -80,13 +80,14 @@ namespace NuSysApp
 
         #endregion Required
 
-        public Message PackToRequestKeys()
+        public virtual Message PackToRequestKeys()
         {
             var message = new Message();
             
 
             //debug.asserts for required types
             Debug.Assert(LibraryElementType != null);
+            Debug.Assert(ContentId != null);
 
             message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY] = LibraryElementType.ToString();
 

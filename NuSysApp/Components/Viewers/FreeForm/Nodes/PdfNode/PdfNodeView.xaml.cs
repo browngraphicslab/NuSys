@@ -19,26 +19,25 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    public sealed partial class PdfNodeView : AnimatableUserControl, IThumbnailable, Sizeable
+    public sealed partial class PdfNodeView : AnimatableUserControl, IThumbnailable
     {
         private PdfNodeViewModel _vm;
 
         public PdfNodeView(PdfNodeViewModel vm)
         {
             _vm = vm;
-
-            vm.View = this;
             InitializeComponent();
-            //  IsDoubleTapEnabled = true;
             DataContext = vm;
-
             vm.Controller.Disposed += ControllerOnDisposed;
-
             Loaded += PdfNodeView_Loaded;
-
         }
 
+        /// <summary>
+        /// Loads all the region views for the passed in page number and removes any other region views
+        /// </summary>
+        /// <param name="currentPageNumber"></param>
         private async void UpdateRegionViews(int currentPageNumber)
+
         {
             foreach (var item in xClippingWrapper.GetRegionItems())
             {
@@ -68,8 +67,6 @@ namespace NuSysApp
                 pageRight.Width = 0;
 
             }
-
-            //vm?.CreatePdfRegionViews();
         }
 
         private void ControllerOnDisposed(object source, object args)
@@ -79,25 +76,13 @@ namespace NuSysApp
             vm.Controller.Disposed -= ControllerOnDisposed;
         }
 
-
-        private void OnEditInk(object sender, RoutedEventArgs e)
-        {
-            //  nodeTpl.ToggleInkMode();
-
-        }
-
         private async void OnPageLeftClick(object sender, TappedRoutedEventArgs e)
         {
             var vm = (PdfNodeViewModel) this.DataContext;
             await vm.FlipLeft();
             UpdateRegionViews(vm.CurrentPageNumber);
-
-
-            //(nodeTpl.inkCanvas.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
             e.Handled = true;
 
-            // nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
-            //nodeTpl.inkCanvas.ReRenderLines();
 
         }
 
@@ -106,11 +91,7 @@ namespace NuSysApp
             var vm = (PdfNodeViewModel) this.DataContext;
             await vm.FlipRight();
             UpdateRegionViews(vm.CurrentPageNumber);
-            //(nodeTpl.inkCanvas.DataContext as InqCanvasViewModel).Model.Page = vm.CurrentPageNumber;
             e.Handled = true;
-
-            //   nodeTpl.inkCanvas.ViewModel.Model.Lines = vm.RenderedLines;
-            //     nodeTpl.inkCanvas.ReRenderLines();
         }
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)
@@ -119,33 +100,11 @@ namespace NuSysApp
             vm.Controller.RequestDelete();
         }
 
-        private void OnDuplicateClick(object sender, RoutedEventArgs e)
-        {
-            var vm = (ElementViewModel) DataContext;
-            vm.Controller.RequestDuplicate(vm.Model.X, vm.Model.Y);
-        }
-
-        private void PageRight_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
-        {
-            e.Handled = true;
-        }
-
         public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
         {
             var r = new RenderTargetBitmap();
             await r.RenderAsync(xRenderedPdf, width, height);
             return r;
         }
-       
-        public double GetWidth()
-        {
-            return xRenderedPdf.ActualWidth;
-        }
-
-        public double GetHeight()
-        {
-            return xRenderedPdf.ActualHeight;
-        }
-
     }
 }

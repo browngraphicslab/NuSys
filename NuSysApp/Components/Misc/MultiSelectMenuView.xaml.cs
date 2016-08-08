@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -16,6 +17,8 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 using NusysIntermediate;
+using Microsoft.Graphics.Canvas.Geometry;
+using NetTopologySuite.Geometries;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -23,9 +26,14 @@ namespace NuSysApp
 {
     public sealed partial class MultiSelectMenuView : UserControl
     {
-        public InkStroke Stroke { get; set; }
+        public InkStroke Stroke {
+            get;
+            set; }
 
         public static Color SelectedColor { get; set; }
+
+        public bool Finite { get; set; }
+        public List<Windows.Foundation.Point> Points { get; set; }
 
         public MultiSelectMenuView()
         {
@@ -36,6 +44,8 @@ namespace NuSysApp
             AdornmentButton.Tapped += AdormentButtonClick;
 
             SelectedColor = Colors.Black;
+            Finite = false;
+            Points = new List<Windows.Foundation.Point>();
         }
 
         public void Show()
@@ -52,14 +62,32 @@ namespace NuSysApp
             e.Handled = true;
         }
 
-        private async void GroupButtonOnClick(object sender, RoutedEventArgs routedEventArgs)
+        private void GroupButtonOnClick(object sender, RoutedEventArgs e)
+        {
+            GroupSettings.Visibility = Visibility.Visible;
+            Buttons.Visibility = Visibility.Collapsed;
+        }
+
+        private void GroupSettingsXOnClick(object sender, RoutedEventArgs e)
+        {
+            GroupSettings.Visibility = Visibility.Collapsed;
+        }
+
+        private async void CreateGroupButtonOnClick(object sender, RoutedEventArgs routedEventArgs)
+
+        /// <summary>
+        /// Creates a collection based on the nodes enclosed in the ink stroke. TODO: refactor
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="routedEventArgs"></param>
         {
             var selections = SessionController.Instance.ActiveFreeFormViewer.Selections;
             if (selections.Count == 0) {
                 Visibility = Visibility.Collapsed;
                 return;
             }
-            var bb = Geometry.NodesToBoudingRect(selections.Where(v =>  (v is ElementViewModel)).Select(item=> item as ElementViewModel).ToList());       
+            //var bb = Geometry.NodesToBoudingRect(selections.Where(v =>  (v is ElementViewModel)).Select(item=> item as ElementViewModel).ToList());       
+            var bb = Stroke.BoundingRect;
 
             var metadata = new Dictionary<string, object>();
             metadata["node_creation_date"] = DateTime.Now;
@@ -69,32 +97,51 @@ namespace NuSysApp
             var newCollectionId = SessionController.Instance.GenerateId();
 
             var t = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
+            // Removes the ink from the canvas
+            var req = InkStorage.CreateRemoveInkRequest(new InkWrapper(Stroke, "ink"));
+            SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.RemoveStroke(Stroke);
 
-            var elementMsg = new Message();
-            elementMsg["metadata"] = metadata;
-            elementMsg["width"] = bb.Width;
-            elementMsg["height"] = bb.Height;
-            elementMsg["locationX"] = t.TranslateX;
-            elementMsg["locationY"] = t.TranslateY;
-            elementMsg["centerX"] = t.CenterX;
-            elementMsg["centerY"] = t.CenterY;
-            elementMsg["zoom"] = t.ScaleX;
-            elementMsg["x"] = bb.X;
-            elementMsg["y"] = bb.Y;
-            elementMsg["contentId"] = contentId;
-            elementMsg["type"] = NusysConstants.ElementType.Collection;
-            elementMsg["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
-            elementMsg["id"] = newCollectionId;
+            var deleteMsg = new Message();
+            deleteMsg["contentId"] = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.LibraryElementId;
+            var model = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel as CollectionLibraryElementModel;
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Search Results"));
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new UpdateLibraryElementModelRequest(deleteMsg));
+
+            // make a pointcollection that will be the "shape" property of the collection (use pointcollection or list?)
+            var inkpoints = Stroke.GetInkPoints().ToArray();
+            Points = new List<Windows.Foundation.Point>();
+            foreach (var i in inkpoints)
+            {
+                Points.Add(i.Position);
+            }
+
+            if (FiniteCheck.IsOn)
+            {
+                Finite = true;
+            } else
+            {
+                Finite = false;
+            }
+
+            if (!ShapeCheck.IsOn)
+            {
+                Points.Clear();
+            }
+
+            var m = new Message();
+            m["id"] = contentId;
+            m["data"] = "";
+            m["type"] = NusysConstants.ElementType.Collection.ToString();
+            m["title"] = "new collection, " + Finite.ToString() + ", " + Points.Count;
+            m["finite"] = Finite;
+            m["shape_points"] = Points;
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(m));
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new SubscribeToCollectionRequest(contentId));
 
-            //await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(elementMsg)); 
-
-            var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(bb.X, bb.Y, contentId, bb.Width, bb.Height, newCollectionId, CollectionElementModel.CollectionViewType.FreeForm);
-
-           
+            //here, settings should also be passed in as parameters
+            var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(bb.X, bb.Y, contentId, Finite, Points, bb.Width, bb.Height, newCollectionId, CollectionElementModel.CollectionViewType.FreeForm);
+            
             foreach (var vm in selections.ToArray())
             {
                 if (vm is ElementViewModel)
@@ -167,7 +214,6 @@ namespace NuSysApp
             m["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
 
             SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddAdorment(Stroke, SelectedColor);
-
           
             var request = InkStorage.CreateRemoveInkRequest(new InkWrapper(Stroke, "ink"));
             SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.RemoveStroke(Stroke);

@@ -197,80 +197,86 @@ namespace NusysIntermediate
 
             #endregion ElementUpdateRequest
 
-        #region NewLibraryElementRequest
-        /// <summary>
-        /// key in message for sending type when creating new library element request
-        /// </summary>
-        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY = "type";
+            #region NewLibraryElementRequest
+            /// <summary>
+            /// key in message for sending type when creating new library element request
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY = "type";
 
-        /// <summary>
-        /// key in message for sending library id when creating new library element request
+            /// <summary>
+            /// key in message for sending library id when creating new library element request
 
-        /// </summary>
-        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
 
-        /// <summary>
-        /// key in message for sending content id when creating new library element request
-        /// </summary>
-        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_CONTENT_ID_KEY = "content_id";
+            /// <summary>
+            /// key in message for sending content id when creating new library element request
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_CONTENT_ID_KEY = "content_id";
 
-        /// <summary>
-        /// key in message for sending keywords when creating new library element request
-        /// </summary>
-        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_KEYWORDS_KEY = "keywords";
+            /// <summary>
+            /// key in message for sending keywords when creating new library element request
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_KEYWORDS_KEY = "keywords";
 
-        /// <summary>
-        /// key in message for sending title when creating new library element request
-        /// </summary>
-        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY = "title";
+            /// <summary>
+            /// key in message for sending title when creating new library element request
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY = "title";
 
-        /// <summary>
-        /// key in message for sending favorited bool when creating new library element request
-        /// </summary>
-        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_FAVORITED_KEY = "favorited";
+            /// <summary>
+            /// key in message for sending favorited bool when creating new library element request
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_FAVORITED_KEY = "favorited";
 
-        /// <summary>
-        /// key in message for sending large icon base-64 byte string when creating new library element request
-        /// </summary>
-        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LARGE_ICON_BYTE_STRING_KEY = "large_icon_bytes";
+            /// <summary>
+            /// key in message for sending large icon base-64 byte string when creating new library element request
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LARGE_ICON_BYTE_STRING_KEY = "large_icon_bytes";
 
-        /// <summary>
-        /// key in message for sending medium icon base-64 byte string when creating new library element request
-        /// </summary>
-        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_MEDIUM_ICON_BYTE_STRING_KEY = "medium_icon_bytes";
+            /// <summary>
+            /// key in message for sending medium icon base-64 byte string when creating new library element request
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_MEDIUM_ICON_BYTE_STRING_KEY = "medium_icon_bytes";
 
-        /// <summary>
-        /// key in message for sending small icon base-64 byte string when creating new library element request
-        /// </summary>
-        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_SMALL_ICON_BYTE_STRING_KEY = "small_icon_bytes";
+            /// <summary>
+            /// key in message for sending small icon base-64 byte string when creating new library element request
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_SMALL_ICON_BYTE_STRING_KEY = "small_icon_bytes";
 
-        /// <summary>
-        /// key in message for sending creator id when creating new library element request 
-        /// </summary>
-        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_CREATOR_USER_ID_KEY = "creator_user_id";
+            /// <summary>
+            /// key in message for sending creator id when creating new library element request 
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_CREATOR_USER_ID_KEY = "creator_user_id";
 
-        /// <summary>
-        /// key in message for sending creation date when creating new library element request
-        /// </summary>
-        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_CREATION_TIMESTAMP_KEY = "creation_timestamp";
+            /// <summary>
+            /// key in message for sending creation date when creating new library element request
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_CREATION_TIMESTAMP_KEY = "creation_timestamp";
 
-        /// <summary>
-        /// key in message for sending last edited timestamp when creating new library element request
-        /// </summary>
-        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LAST_EDITED_TIMESTAMP_KEY = "last_edited_timestamp";
+            /// <summary>
+            /// key in message for sending last edited timestamp when creating new library element request
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LAST_EDITED_TIMESTAMP_KEY = "last_edited_timestamp";
 
-        /// <summary>
-        /// key in message for access type when creating new library element request
-        /// </summary>
-        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_ACCESS_KEY = "access";
+            /// <summary>
+            /// key in message for access type when creating new library element request
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_ACCESS_KEY = "access";
 
-        /// <summary>
-        /// key in message for when the request returns with the fully populated libraryelementModel.
-        /// When the library element model request returns, it will pass a library element model as a json using this key
-        /// </summary>
-        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY = "returned_library_element_model";
+            /// <summary>
+            /// the key that will hold the library ElementId of the clipping parent of a requested region.  
+            /// Used during a region libraryElementRequest.  
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_CLIPPING_PARENT_ID = "clipping_parent_id";
 
-        #endregion NewLibraryElementRequest
+            /// <summary>
+            /// key in message for when the request returns with the fully populated libraryelementModel.
+            /// When the library element model request returns, it will pass a library element model as a json using this key
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY = "returned_library_element_model";
+
+            #endregion NewLibraryElementRequest
 
         #endregion RequestKeys
 

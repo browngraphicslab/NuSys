@@ -90,6 +90,15 @@ namespace NuSysApp
 
 
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
+
+            if (vm.Finite)
+            {
+                SetFiniteButton.Text = "Make Infinite";
+            }
+            else
+            {
+                SetFiniteButton.Text = "Make Finite";
+            }
         }
 
 
@@ -225,12 +234,10 @@ namespace NuSysApp
                         //TODO put back in for collction entering
                         //await SessionController.Instance.SessionView.LoadWorkspaceFromServer(messages, id);
                     }
-                });
-
-
+                }); 
             }
 
-            SessionController.Instance.SessionView.DetailViewerView.Visibility = Visibility.Collapsed;
+            SessionController.Instance.SessionView.DetailViewerView.CloseDv();
 
         }
 
@@ -446,15 +453,30 @@ namespace NuSysApp
                 }
                 else
                 {
+                    var collection = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId) as CollectionLibraryElementModel;
                     await
-                        StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, libraryId, size.Width,
-                            size.Height);
+                        StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, libraryId, collection.IsFinite,
+                            new List<Point>(collection.ShapePoints.Select(p => new Point(p.X, p.Y))), size.Width, size.Height);
                 }
             });
         }
 
         #endregion addToCollection
 
+        private void SetFiniteOnClick(object sender, RoutedEventArgs e)
+        {
+            var vm = (GroupDetailHomeTabViewModel) DataContext;
+            if (vm.Finite)
+            {
+                ((CollectionLibraryElementModel) vm.LibraryElementController.LibraryElementModel).IsFinite = false;
+                SetFiniteButton.Text = "Make Finite";
+            }
+            else
+            {
+                ((CollectionLibraryElementModel)vm.LibraryElementController.LibraryElementModel).IsFinite = true;
+                SetFiniteButton.Text = "Make Infinite";
+            }
+        }
     }
 }
 

@@ -11,13 +11,13 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    public class ImageRegionViewModel : RegionViewModel
+    public class ImageRegionViewModel : RegionViewModel, INuSysDisposable
     {
 
         private double _height;
         private double _width;
         private string _name;
-        
+        public event EventHandler Disposed;
 
         public string Name {
             get { return _name; }
@@ -48,8 +48,6 @@ namespace NuSysApp
             }
         }
 
-        public double OriginalHeight { get; set; }
-        public double OriginalWidth { get; set; }
         public RectangleWrapper RectangleWrapper { get; set; } 
 
         public delegate void SizeChangedEventHandler(object sender, double width, double height);
@@ -58,21 +56,26 @@ namespace NuSysApp
         public delegate void LocationChangedEventHandler(object sender, Point topLeft);
         public event LocationChangedEventHandler LocationChanged;
 
+        private RectangleRegionLibraryElementController _regionLibraryElementController;
 
-        public ImageRegionViewModel(RectangleRegion model, RectangleRegionLibraryElementController regionLibraryElementController, RectangleWrapper rectangleWrapper) : base(model, regionLibraryElementController, null)
+
+        public ImageRegionViewModel(RectangleRegion model, RectangleRegionLibraryElementController regionLibraryElementController, RectangleWrapper rectangleWrapper) : base(model, regionLibraryElementController)
         {
             if (model == null)
             {
                 return;
             }
+            _regionLibraryElementController = regionLibraryElementController;
 
             regionLibraryElementController.SizeChanged += RegionController_SizeChanged;
             regionLibraryElementController.LocationChanged += RegionController_LocationChanged;
             regionLibraryElementController.TitleChanged += RegionController_TitleChanged;
+            regionLibraryElementController.Disposed += Dispose;
             Name = Model.Title;
             Editable = true;
             RectangleWrapper = rectangleWrapper;
             rectangleWrapper.SizeChanged += RectangleWrapper_SizeChanged;
+            RectangleWrapper.Disposed += Dispose;
         }
 
 
@@ -155,5 +158,17 @@ namespace NuSysApp
             Name = text;
             RegionLibraryElementController.SetTitle(Name);
         }
+
+        public override void Dispose(object sender, EventArgs e)
+        {
+            RectangleWrapper.Disposed -= Dispose;
+            _regionLibraryElementController.SizeChanged -= RegionController_SizeChanged;
+            _regionLibraryElementController.LocationChanged -= RegionController_LocationChanged;
+            _regionLibraryElementController.TitleChanged -= RegionController_TitleChanged;
+            _regionLibraryElementController.Disposed -= Dispose;
+            RectangleWrapper.SizeChanged -= RectangleWrapper_SizeChanged;
+            Disposed?.Invoke(this, EventArgs.Empty);
+        }
+
     }
 }

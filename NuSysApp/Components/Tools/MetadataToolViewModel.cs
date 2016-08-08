@@ -52,5 +52,23 @@ namespace NuSysApp
             }
         }
 
+        public void SwitchToBasicTool(ToolModel.ToolFilterTypeTitle filter)
+        {
+            BasicToolModel model = new BasicToolModel();
+            BasicToolController controller = new BasicToolController(model);
+            BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
+            viewmodel.Filter = filter;
+            BaseToolView view = new BaseToolView(viewmodel, this.X, this.Y);
+            foreach (var id in Controller.GetParentIds())
+            {
+                controller.AddParent(ToolController.ToolControllers[id]);
+            }
+            var wvm = SessionController.Instance.ActiveFreeFormViewer;
+            wvm.AtomViewList.Add(view);
+
+            Controller.FireFilterTypeAllMetadataChanged(viewmodel);
+            this.FireReplacedToolLinkAnchorPoint(viewmodel);
+        }
+
     }
 }

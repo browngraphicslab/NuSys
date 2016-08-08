@@ -17,13 +17,15 @@ namespace NuSysApp
         public delegate void TextUnselectedHandler(object source);
         public event TextUnselectedHandler TextUnselected;
 
+        private TextNodeController _textNodeController;
+
         public TextNodeViewModel(ElementController controller) : base(controller)
         {           
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 164, 220, 255));
             Text = controller.LibraryElementController?.Data;
             ((TextNodeController) controller).TextChanged += TextChanged;
             ((TextNodeController) controller).SelectionChanged += SelectionChanged;
-           controller.Disposed += ControllerOnDisposed;
+            controller.Disposed += ControllerOnDisposed;
             if(Controller.Model.Height < 45)
             {
                 Controller.SetSize(Controller.Model.Width, 45);
@@ -50,23 +52,5 @@ namespace NuSysApp
             TextBindingChanged?.Invoke(this, text);
             Text = text;
         }
-        #region Public Properties     
-
-        public string RtfText
-        {
-            get
-            {
-                return _rtf;
-            }
-
-            set
-            {
-                _rtf = value;
-                RaisePropertyChanged("RtfText");
-            }
-
-        }
-
-        #endregion Public Properties
     }
 }

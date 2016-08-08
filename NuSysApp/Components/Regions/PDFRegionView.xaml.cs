@@ -30,14 +30,15 @@ namespace NuSysApp
 
         public bool Selected {private set; get; }
 
-
-        public PDFRegionView(PdfRegionViewModel regionVM)
+        public delegate void RegionSelectedDeselectedEventHandler(object sender, bool selected);
+        public event RegionSelectedDeselectedEventHandler OnSelectedOrDeselected;
+        public PDFRegionView(PdfRegionViewModel vm)
         {
             
             this.InitializeComponent();
-            this.DataContext = regionVM;
-            this.Deselect();
-            var model = regionVM.Model as PdfRegionModel;
+            DataContext = vm;
+            Deselect();
+            var model = vm.Model as PdfRegionModel;
             if (model == null)
             {
                 return;
@@ -46,17 +47,16 @@ namespace NuSysApp
             CompositeTransform composite = new CompositeTransform();
             this.RenderTransform = composite;
 
-            //vm.SizeChanged += ChangeSize;
-            regionVM.LocationChanged += ChangeLocation;
+            vm.LocationChanged += ChangeLocation;
+            vm.Disposed += Dispose;
 
-
-            var parentWidth = regionVM.RectangleWrapper.GetWidth();
-            var parentHeight = regionVM.RectangleWrapper.GetHeight();
+            var parentWidth = vm.RectangleWrapper.GetWidth();
+            var parentHeight = vm.RectangleWrapper.GetHeight();
 
             composite.TranslateX = model.TopLeftPoint.X * parentWidth;
             composite.TranslateY = model.TopLeftPoint.Y * parentHeight;
-            regionVM.Width = (model.Width) * parentWidth;
-            regionVM.Height = (model.Height) * parentHeight;
+            vm.Width = (model.Width) * parentWidth;
+            vm.Height = (model.Height) * parentHeight;
 
             _tx = composite.TranslateX;
             _ty = composite.TranslateY;
@@ -78,25 +78,6 @@ namespace NuSysApp
             composite.TranslateY = topLeft.Y;
 
         }
-        /// <summary>
-        /// Changes size of view according to element that contains it.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        private void ChangeSize(object sender, double width, double height)
-        {
-            var vm = DataContext as PdfRegionViewModel;
-
-            var composite = RenderTransform as CompositeTransform;
-            if (composite == null)
-            {
-                return;
-            }
-            vm.Width = width;
-            vm.Height = height;
-        }
-
         
         private void XResizingTriangle_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
@@ -151,7 +132,7 @@ namespace NuSysApp
 
         private void XResizingTriangle_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            this.Select();
+            FireSelection();
             e.Handled = true;
         }
 
@@ -205,7 +186,7 @@ namespace NuSysApp
             }
             else if (_ty > downYBound)
             {
-                rt.TranslateY = vm.RectangleWrapper.GetHeight() - vm.OriginalHeight;
+                rt.TranslateY = vm.RectangleWrapper.GetHeight() - vm.Height;
             }
             else
             {
@@ -231,12 +212,10 @@ namespace NuSysApp
             _ty = ((CompositeTransform) this.RenderTransform).TranslateY;
 
 
-            vm.OriginalHeight = vm.Height;
-            vm.OriginalWidth = vm.Width;
-            this.Select();
+            FireSelection();
             e.Handled = true;
         }
-        public void Deselect()
+        private void Deselect()
         {
             xMainRectangleBorder.BorderThickness = new Thickness(3 * ResizerTransform.ScaleY, 3 * ResizerTransform.ScaleX, 3 * ResizerTransform.ScaleY, 3 * ResizerTransform.ScaleX);
             xResizingTriangle.Visibility = Visibility.Collapsed;
@@ -246,7 +225,7 @@ namespace NuSysApp
             Selected = false;
         }
 
-        public void Select()
+        private void Select()
         {
             xMainRectangleBorder.BorderThickness = new Thickness(6 * ResizerTransform.ScaleY, 6 * ResizerTransform.ScaleX, 6 * ResizerTransform.ScaleY, 6 * ResizerTransform.ScaleX);
 
@@ -259,26 +238,44 @@ namespace NuSysApp
         private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             
-                var vm = DataContext as PdfRegionViewModel;
+            var vm = DataContext as PdfRegionViewModel;
 
-                if (!vm.Editable)
-                    return;
+            if (!vm.Editable)
+                return;
 
-                if (Selected)
-                    this.Deselect();
-                else
-                    this.Select();
+            if (Selected)
+            {
+                FireDeselection();
+            }
+            else
+            {
+                FireSelection();
+            }
+        }
+
+        /// <summary>
+        /// If not already selected, shows selection and fires event listened to by RectangleWrapper
+        /// </summary>
+        public void FireSelection()
+        {
+            if (!Selected)
+            {
+                Select();
+                OnSelectedOrDeselected?.Invoke(this, true);
+            }
         }
 
 
-        private void XMainRectangle_OnGotFocus(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// If selected, shows deselection and fires event listened to by RectangleWrapper.
+        /// </summary>
+        public void FireDeselection()
         {
-            Select();
-        }
-
-        private void XMainRectangle_OnLostFocus(object sender, RoutedEventArgs e)
-        {
-            Deselect();
+            if (Selected)
+            {
+                Deselect();
+                OnSelectedOrDeselected?.Invoke(this, false);
+            }
         }
 
         private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
@@ -301,7 +298,8 @@ namespace NuSysApp
             {
                 return;
             }
-
+            // If the region is deleted, it needs to dispose of its handlers.
+            vm.Dispose(this, EventArgs.Empty);
             // delete the region library elment from the library
             var removeRequest = new DeleteLibraryElementRequest(vm.RegionLibraryElementController.LibraryElementModel.LibraryElementId);
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(removeRequest);
@@ -316,29 +314,42 @@ namespace NuSysApp
 
         public void RescaleComponents(double scaleX, double scaleY)
         {
+            /// How this works
+            /// We scale the entire region based on the image being scaled. But we then want to invert the scaling on the visual components, 
+            /// but not on the size of the region as a whole. To revert the scale, we divide the transforms by their current scale. using scaleX = 1/scaleX etc.
+            /// we then shift the transforms over by certain margins. The math is simple even though the numbers look like "magic numbers."
+            /// 
+            /// The width of the rectangle borders is 3. The size of the delete button and resizing triangle is 25. So these magic numbers are simply
+            /// the result of shifting things over by values relative to 25 and 3.
+
             //Updates scale of delete button
             DeleteTransform.ScaleX = 1 / scaleX;
             DeleteTransform.ScaleY = 1 / scaleY;
-
+            xDelete.Margin = new Thickness(5 / scaleX, -28 / scaleY, 0, 0); // move button so its left side is 2 px to the right of the rectangle border, and bottom is in line with rectangle broder
 
             //Updates scale of text box
-            
+
             NameTextTransform.ScaleX = 1 / scaleX;
             NameTextTransform.ScaleY = 1 / scaleY;
             //Updates margin so that it is directly on top of the rectangle.
             xNameTextBox.Margin = new Thickness(0, -30 / scaleY, 0, 0);
-            xNameTextBox.MinWidth = (DataContext as PdfRegionViewModel).Width / scaleX;
 
             //UPdates scale of Resizing Triangle
             ResizerTransform.ScaleX = 1 / scaleX;
             ResizerTransform.ScaleY = 1 / scaleY;
-            xResizingTriangle.Margin = new Thickness(-28 / scaleX, -28 / scaleY, 0, 0);
+            xResizingTriangle.Margin = new Thickness(-25 / scaleX, -25 / scaleY, 0, 0); // move resizing triangle so bottom and left are in line with the bottom and right side of the rectangle border
+
 
             //xMainRectangle.StrokeThickness = 3 / scaleX;
             xMainRectangleBorder.BorderThickness = new Thickness(3 / scaleX, 3 / scaleY, 3 / scaleX, 3 / scaleY);
 
+        }
 
-
+        public void Dispose(object sender, EventArgs e)
+        {
+            var vm = DataContext as PdfRegionViewModel;
+            vm.Disposed -= Dispose;
+            vm.LocationChanged -= ChangeLocation;
         }
     }
 }

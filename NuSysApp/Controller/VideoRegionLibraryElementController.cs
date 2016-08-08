@@ -40,7 +40,7 @@ namespace NuSysApp
             IntervalChanged?.Invoke(this, VideoRegionModel.Start, VideoRegionModel.End);
             if (!_blockServerInteraction)
             {
-                _debouncingDictionary.Add("end", VideoRegionModel.Start);
+                _debouncingDictionary.Add("end", VideoRegionModel.End);
             }
         }
 

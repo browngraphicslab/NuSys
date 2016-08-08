@@ -23,7 +23,6 @@ using Windows.UI.Xaml.Shapes;
 using NusysIntermediate;
 using NuSysApp.Components.Nodes;
 using NuSysApp.Controller;
-using NuSysApp.Nodes.AudioNode;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -33,39 +32,29 @@ namespace NuSysApp
     {
         private bool _loaded;
         
-
-
         public AudioNodeView(AudioNodeViewModel vm)
         {
             this.DataContext = vm; // has to be set before initComponent so child xaml elements inherit it
             InitializeComponent();
             _loaded = false;
-            
-            ((AudioNodeModel)vm.Model).OnJump += AudioNodeView_OnJump;
 
-            //I'm sorry for the stupid name. I don't think it was me, but I'm too lazy to fix it.
-            MediaPlayer.MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
-            MediaPlayer.ScrubBar.ValueChanged += vm.ScrubBarOnValueChanged;
-
+            vm.Controller.Disposed += ControllerOnDisposed;
             MediaPlayer.AudioSource = vm.AudioSource;
-            vm.OnRegionSeekPassing += MediaPlayer.onSeekedTo;
-            //playbackElement.MediaEnded += MediaEnded;
         }
 
-        private void MediaPlayer_MediaOpened(object sender, RoutedEventArgs e)
+        private void ControllerOnDisposed(object source, object args)
         {
-            var vm = DataContext as AudioNodeViewModel;
-            vm.AudioDuration = MediaPlayer.MediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
+            var vm = (AudioNodeViewModel)DataContext;
+            // relic from wave forms still might be added back though
+            //(DataContext as AudioNodeViewModel).OnVisualizationLoaded -= LoadPlaybackElement; 
+            nodeTpl.Dispose();
+            vm.Controller.Disposed -= ControllerOnDisposed;
         }
 
-        private void MediaEnded(object sender, RoutedEventArgs e)
+        private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
-            AudioNodeView_OnJump(new TimeSpan(0));
-        }
-
-        public void AudioNodeView_OnJump(TimeSpan time)
-        {
-            //(((DataContext as AudioNodeViewModel).Controller).ScrubJump(time);
+            var vm = (ElementViewModel) DataContext;
+            vm.Controller.RequestDelete();
         }
 
         public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
@@ -74,7 +63,7 @@ namespace NuSysApp
             await r.RenderAsync(MediaPlayer, width, height);
             return r;
         }
-
+        /*
         private async void LoadPlaybackElement()
         {
             await MediaPlayer.RenderImageSource((DataContext as AudioNodeViewModel).VisualGrid);
@@ -84,6 +73,6 @@ namespace NuSysApp
                 _loaded = true;
             }
                         
-        }
+        }*/
     }
 }

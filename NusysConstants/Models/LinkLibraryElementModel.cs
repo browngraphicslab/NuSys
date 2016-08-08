@@ -15,6 +15,7 @@ namespace NusysIntermediate
     {
         public string InAtomId { get; set; }
         public string OutAtomId { get; set; }
+
         //public Color Color { get; set; }
         public LinkLibraryElementModel(string id): base(id, NusysConstants.ElementType.Link)
         {

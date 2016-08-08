@@ -41,9 +41,15 @@
                                   IsHitTestVisible="True"  Width="{Binding Width}"  Height="{Binding Height}">
 
                                     <Rectangle Height="{Binding Height}" Width="{Binding Width}" Margin="-2,-2"  />
+                                    <Canvas x:Name="TopMenu" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" Margin="0,0,85,0" HorizontalAlignment="Right"  Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}">
+                                        <Canvas.RenderTransform>
+                                            <TranslateTransform Y ="-85"></TranslateTransform>
+                                        </Canvas.RenderTransform>
+                                        <ContentControl Content="{TemplateBinding TopMenu}"></ContentControl>
+                                    </Canvas>
                                     <Canvas x:Name="SubMenu" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" Margin="0,0,0,0" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}">
                                         <Canvas.RenderTransform>
-                                            <TranslateTransform X="-65"></TranslateTransform>
+                                            <TranslateTransform X="-60"></TranslateTransform>
                                         </Canvas.RenderTransform>
                                         <ContentControl Content="{TemplateBinding SubMenu}" />
                                     </Canvas>

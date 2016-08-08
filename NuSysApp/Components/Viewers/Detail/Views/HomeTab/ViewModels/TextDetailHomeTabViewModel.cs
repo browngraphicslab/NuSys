@@ -24,29 +24,9 @@ namespace NuSysApp
             TextChanged?.Invoke(source,data);
         }
 
-        public override void AddRegion(object sender, RegionLibraryElementController libraryElementController)
-        {
-            //throw new NotImplementedException();
-        }
-
-        public override void RemoveRegion(object sender, Region displayedRegion)
-        {
-            //throw new NotImplementedException();
-        }
-
-        public override void SizeChanged(object sender, double width, double height)
-        {
-            //throw new NotImplementedException();
-        }
-
-        public override void SetExistingRegions()
-        {
-
-        }
-
         public override Message GetNewRegionMessage()
         {
-            return null;
+            throw new NotImplementedException();
         }
     }
 }

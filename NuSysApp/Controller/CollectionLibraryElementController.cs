@@ -5,6 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NusysIntermediate;
+using Windows.Foundation;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
+using Microsoft.Graphics.Canvas.Geometry;
 
 namespace NuSysApp
 {
@@ -21,16 +25,17 @@ namespace NuSysApp
 
         public delegate void ChildRemovedEventHandler(string id);
         public event ChildRemovedEventHandler OnChildRemoved;
+
+
         public CollectionLibraryElementModel CollectionModel
         {
             get
             {
-                Debug.Assert(base.LibraryElementModel is CollectionLibraryElementModel);
                 return base.LibraryElementModel as CollectionLibraryElementModel;
-                ;
             }
         }
-        public CollectionLibraryElementController(CollectionLibraryElementModel libraryElementModel) : base(libraryElementModel)
+
+        public CollectionLibraryElementController(CollectionLibraryElementModel collectionLibraryElementModel) : base(collectionLibraryElementModel)
         {
             InkLines = new HashSet<string>();
         }
@@ -80,5 +85,6 @@ namespace NuSysApp
             }
             return false;
         }
+
     }
 }

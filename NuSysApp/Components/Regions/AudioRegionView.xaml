@@ -28,21 +28,21 @@
             <Image Grid.Column="1" x:Name="xDelete" Width="15" Height="15" PointerPressed="xDelete_PointerPressed"  Stretch="Uniform" Source="ms-appx:///Assets/icon_delete_color.png"></Image>
 
 
-            <Grid.RenderTransform>
-                <CompositeTransform TranslateX="{Binding LeftHandleX}" TranslateY="100"/>
+            <Grid.RenderTransform >
+                <CompositeTransform x:Name="xToolBarTransform" TranslateX="{Binding LeftHandleX}" TranslateY="100"/>
             </Grid.RenderTransform>
         </Grid>
 
         <local:AudioRegionBound x:Name="Bound1"  Y1="0" Y2="100"  ManipulationMode="{Binding Path=Editable, Converter={StaticResource mConverter}}" 
                                 ManipulationDelta="Bound1_OnManipulationDelta">
             <local:AudioRegionBound.RenderTransform>
-                <CompositeTransform TranslateX="{Binding LeftHandleX}"/>
+                <CompositeTransform x:Name="Bound1Transform" TranslateX="{Binding LeftHandleX}"/>
             </local:AudioRegionBound.RenderTransform>
         </local:AudioRegionBound>
         <local:AudioRegionBound x:Name="Bound2"  Y1="0" Y2="100" ManipulationMode="{Binding Path=Editable, Converter={StaticResource mConverter}}" 
                                 ManipulationDelta="Bound2_OnManipulationDelta">
             <local:AudioRegionBound.RenderTransform>
-                <CompositeTransform TranslateX="{Binding RightHandleX}"/>
+                <CompositeTransform x:Name="Bound2Transform" TranslateX="{Binding RightHandleX}"/>
             </local:AudioRegionBound.RenderTransform>
         </local:AudioRegionBound>
     </Grid>

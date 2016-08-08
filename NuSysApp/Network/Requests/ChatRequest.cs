@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using NusysIntermediate;
+using Windows.UI.Xaml;
 
 namespace NuSysApp
 {
@@ -29,13 +30,25 @@ namespace NuSysApp
                 string userAndMessage = user.Name + ": " + chatMessage;
                 ChatBoxView cBox = SessionController.Instance.SessionView.GetChatBox();
                 cBox.AppendText(user, chatMessage);
+
+                //chatbot stuff
                 string[] chatArr = chatMessage.Split(' ');
-                if (Array.IndexOf(chatArr,"hey") >-1 || Array.IndexOf(chatArr, "Hey") > -1 
+                if (Array.IndexOf(chatArr, "hey") > -1 || Array.IndexOf(chatArr, "Hey") > -1
                     || Array.IndexOf(chatArr, "hi") > -1 || Array.IndexOf(chatArr, "Hi") > -1)
                 {
                     string another = "I only say hi to good coders";
                     cBox.AppendText(new NetworkUser("slackbot"), another);
                 }
+
+                //if the chatbox is closed
+                if (SessionController.Instance.SessionView.GetChatBox().Visibility.Equals(Visibility.Collapsed))
+                {
+                    SessionController.Instance.SessionView.IncrementUnseenMessage();
+                }
+            }
+            else
+            {
+                throw new Exception("user not in NetworkUsers");
             }
         }
 

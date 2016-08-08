@@ -12,33 +12,22 @@ namespace NuSysApp
         public LibraryElementController LibraryElementController { get; }
 
         public LibraryElementModel Model { get; }
+
+        public bool Finite { get; }
+
+        public int ShapePoints { get; }
+
         public GroupDetailHomeTabViewModel(LibraryElementController controller) : base(controller)
         {
             LibraryElementController = controller;
             Model = controller.LibraryElementModel;
-            
+
+            var collectionmodel = Model as CollectionLibraryElementModel;
+            Finite = collectionmodel.IsFinite;
+            ShapePoints = collectionmodel.ShapePoints.Count;
         }
 
-        public override void AddRegion(object sender, RegionLibraryElementController libraryElementController)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void RemoveRegion(object sender, Region displayedRegion)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void SizeChanged(object sender, double width, double height)
-        {
-            //throw new NotImplementedException();
-        }
-
-        public override void SetExistingRegions()
-        {
-            //throw new NotImplementedException();
-        }
-
+        // not implemented cause we don't have regions in collections
         public override Message GetNewRegionMessage()
         {
             throw new NotImplementedException();

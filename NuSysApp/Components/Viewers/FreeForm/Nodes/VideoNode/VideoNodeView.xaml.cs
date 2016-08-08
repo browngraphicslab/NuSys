@@ -23,7 +23,6 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 using NuSysApp.Components.Nodes;
-using NuSysApp.Nodes.AudioNode;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -49,21 +48,10 @@ namespace NuSysApp
             {
                 LoadVideo(this);
             }
-
+            
             vm.Controller.Disposed += ControllerOnDisposed;
-            VideoMediaPlayer.MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
-            VideoMediaPlayer.ScrubBar.ValueChanged += vm.ScrubBarOnValueChanged;
-            vm.OnRegionSeekPassing += VideoMediaPlayer.onSeekedTo;
         }
 
-        private async void MediaPlayer_MediaOpened(object sender, RoutedEventArgs e)
-        {
-            var vm = DataContext as VideoNodeViewModel;
-            vm.VideoDuration = VideoMediaPlayer.MediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
-            //HACKY DELETE AFTER DEMO
-            await Task.Delay(500);
-            vm.UpdateRegions();
-        }
 
         private void ControllerOnDisposed(object source, object args)
         {

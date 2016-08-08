@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NusysIntermediate;
+using Windows.Foundation;
+using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
@@ -43,7 +45,8 @@ namespace NuSysApp
 
             return true; 
         }
-        public static async Task<ElementCollectionController> PutCollectionInstanceOnMainCollection(double x, double y, string contentID, double width = 400, double height = 400, string id = null, CollectionElementModel.CollectionViewType collectionView = CollectionElementModel.CollectionViewType.List)
+
+        public static async Task<ElementCollectionController> PutCollectionInstanceOnMainCollection(double x, double y, string contentID, bool finite, List<Point> shapepoints, double width = 400, double height = 400, string id = null, CollectionElementModel.CollectionViewType collectionView = CollectionElementModel.CollectionViewType.List)
         {
             return await Task.Run(async delegate
             {
@@ -59,6 +62,11 @@ namespace NuSysApp
                 message["collectionview"] = collectionView;
                 message["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
                 message["id"] = newId;
+                message["finite"] = finite;
+                if (shapepoints != null)
+                {
+                    message["points"] = shapepoints;
+                }
 
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(message));
 

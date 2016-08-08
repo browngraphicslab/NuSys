@@ -42,6 +42,8 @@ namespace NuSysApp
         private ExploreMode _exploreMode;
         private MultiMode _explorationMode;
 
+        private FreeFormViewerViewModel _vm;
+
         public Brush CanvasColor
         {
             get { return xInqCanvasContainer.Background; }
@@ -51,9 +53,10 @@ namespace NuSysApp
         public FreeFormViewer(FreeFormViewerViewModel vm)
         {
             this.InitializeComponent();
-
+            
             vm.SelectionChanged += VmOnSelectionChanged;
             vm.Controller.Disposed += ControllerOnDisposed;
+            _vm = vm;
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
@@ -66,9 +69,8 @@ namespace NuSysApp
 
                 var collectionController = (CollectionLibraryElementController)SessionController.Instance.ContentController.GetLibraryElementController(vm.Controller.LibraryElementModel.LibraryElementId);
 
-
-
                 collectionController.OnInkAdded += delegate(string id)
+
                 {
                     if (InkStorage._inkStrokes.ContainsKey(id))
                     {
@@ -107,7 +109,11 @@ namespace NuSysApp
 
                 SwitchMode(Options.SelectNode, false);
 
-
+                var colElementModel = vm.Controller.Model as CollectionElementModel;
+                if ((SessionController.Instance.ContentController.GetLibraryElementModel(colElementModel.LibraryId)as CollectionLibraryElementModel).IsFinite)
+                {
+                    LimitManipulation();
+                }
             };
 
             SizeChanged += delegate(object sender, SizeChangedEventArgs args)
@@ -115,6 +121,7 @@ namespace NuSysApp
                 xInqCanvasContainer.Width = args.NewSize.Width;
                 xInqCanvasContainer.Height = args.NewSize.Height;
             };
+
         }
 
         private void AdornmentRemoved(WetDryInkCanvas canvas, InkStroke stroke)
@@ -300,6 +307,22 @@ namespace NuSysApp
         public void ChangeMode(object source, Options mode)
         {
             SwitchMode(mode, false);
+        }
+
+        public void LimitManipulation()
+        {
+            if (_nodeManipulationMode != null)
+            {
+                _nodeManipulationMode.Limited = true;
+                _nodeManipulationMode.SetViewer(this);
+            }
+        }
+
+        public FrameworkElement GetAdornment()
+        {
+            var items = _vm.AtomViewList.Where(element => element is AdornmentView);
+            var adornment = items.FirstOrDefault();
+            return adornment;
         }
     }
 }

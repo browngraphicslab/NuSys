@@ -288,6 +288,9 @@
     </Compile>
     <Compile Include="Components\Misc\ChatBoxViewModel.cs" />
     <Compile Include="Components\Misc\ChatMessageTemplate.cs" />
+    <Compile Include="Components\Misc\AdornmentView.xaml.cs">
+      <DependentUpon>AdornmentView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Misc\Library\LibraryFavorites.xaml.cs">
       <DependentUpon>LibraryFavorites.xaml</DependentUpon>
     </Compile>
@@ -362,14 +365,14 @@
     <Compile Include="Components\Tools\ToolModel.cs" />
     <Compile Include="Components\Tools\BasicToolViewModel.cs" />
     <Compile Include="Components\Tools\ToolStartable.cs" />
+    <Compile Include="Components\Tools\ToolUtilities.cs" />
     <Compile Include="Components\Tools\ToolViewable.cs" />
     <Compile Include="Components\Tools\ToolViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\ILinkTabable.cs" />
     <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
-    <Compile Include="Components\Viewers\Detail\Sizeable.cs" />
+    <Compile Include="Components\Viewers\Detail\Views\DetailViewTabTemplate.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\LinkHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\DetailHomeTabView.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\IDetailViewable.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\WordDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\WordDetailHomeTabView.xaml.cs">
       <DependentUpon>WordDetailHomeTabView.xaml</DependentUpon>
@@ -425,9 +428,6 @@
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\PdfDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\TextDetailHomeTabViewModel.cs" />
     <Compile Include="Components\Viewers\Detail\Views\HomeTab\ViewModels\VideoDetailHomeTabViewModel.cs" />
-    <Compile Include="Components\Viewers\Detail\Views\HomeTab\Views\ElementCollectionDetailHomeTabView.xaml.cs">
-      <DependentUpon>ElementCollectionDetailHomeTabView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Components\Viewers\Detail\Views\MetadataEditorTabView.xaml.cs">
       <DependentUpon>MetadataEditorTabView.xaml</DependentUpon>
     </Compile>
@@ -527,9 +527,6 @@
     <Compile Include="Components\Misc\SearchWindowViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\TimelineNodeViewFactory.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\DragOutMode.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlock.xaml.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlockModel.cs" />
-    <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlockViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\AudioNode\MediaFoundationReaderUniversal.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeView.xaml.cs">
       <DependentUpon>AreaNodeView.xaml</DependentUpon>
@@ -622,6 +619,7 @@
     <Compile Include="Network\Requests\GetContentDataModelRequest.cs" />
     <Compile Include="Network\Requests\GetEntireWorkspaceRequest.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
+    <Compile Include="Network\Requests\RequestArgs\CreateNewRegionLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\UpdateLibraryElementModelRequest.cs" />
     <Compile Include="Network\Requests\CreateNewLibraryElementRequest.cs" />
     <Compile Include="Network\Requests\DeleteLibraryElementRequest.cs" />
@@ -834,6 +832,7 @@
     <Content Include="Assets\icon_node_x.png" />
     <Content Include="Assets\icon_node_x2.png" />
     <Content Include="Assets\pdf.png" />
+    <Content Include="Assets\placeholder_pdf_thumbnail.png" />
     <Content Include="Assets\plus_icon.png" />
     <Content Include="Assets\piegraph bluegreen.png" />
     <Content Include="Assets\powerpointIcon.png" />
@@ -891,6 +890,8 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Misc\ChatBoxView.xaml">
+    </Page>
+    <Page Include="Components\Misc\AdornmentView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -963,10 +964,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\AudioDetailHomeTabView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\ElementCollectionDetailHomeTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1081,10 +1078,6 @@
     <Page Include="Components\Viewers\FreeForm\Nodes\AudioNode\AudioMediaPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\Viewers\FreeForm\Nodes\AudioNode\LinkedTimeBlock.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Viewers\FreeForm\Nodes\GroupNode\AreaNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>

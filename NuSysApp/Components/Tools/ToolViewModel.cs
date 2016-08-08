@@ -16,42 +16,34 @@ namespace NuSysApp
     public abstract class ToolViewModel : BaseINPC, ToolLinkable
     {
         public delegate void PropertiesToDisplayChangedEventHandler();
+        /// <summary>
+        /// Listened to by view to know when the properties to display have changed
+        /// </summary>
         public event PropertiesToDisplayChangedEventHandler PropertiesToDisplayChanged;
+        /// <summary>
+        /// Listened to by links to know when the anchor changes.
+        /// </summary>
+        public event EventHandler<Point2d> ToolAnchorChanged;
+        /// <summary>
+        /// Listened to by links to know when to delete the link
+        /// </summary>
+        public event EventHandler<string> Disposed;
+        /// <summary>
+        /// Listened to by links to know when to replace the tool it is connected to
+        /// </summary>
+        public event EventHandler<ToolLinkable> ReplacedToolLinkAnchorPoint;
 
-        public ToolController Controller { get { return _controller; } }
         protected ToolController _controller;
         private double _width;
         private double _height;
         private double _x;
         private double _y;
         private CompositeTransform _transform = new CompositeTransform();
-        public Point2d ToolAnchor { get {return _anchor;} }
-        public event EventHandler<Point2d> ToolAnchorChanged;
-        public event EventHandler<string> Disposed;
-        public ToolStartable GetToolStartable()
-        {
-            return Controller;
-        }
-
         private Point2d _anchor;
-        public double Width
-        {
-            set
-            {
-                _width = value;
-                RaisePropertyChanged("Width");
-            }
-            get
-            {
-                return _width;
-            }
-        }
-        public ObservableCollection<ToolModel.ParentOperatorType> ParentOperatorList = new ObservableCollection<ToolModel.ParentOperatorType>() {ToolModel.ParentOperatorType.And, ToolModel.ParentOperatorType.Or}; 
-
-        public void InvokePropertiesToDisplayChanged()
-        {
-            PropertiesToDisplayChanged?.Invoke();
-        }
+        public ObservableCollection<ToolModel.ParentOperatorType> ParentOperatorList = new ObservableCollection<ToolModel.ParentOperatorType>() {ToolModel.ParentOperatorType.And, ToolModel.ParentOperatorType.Or};
+       
+        public Point2d ToolAnchor { get { return _anchor; } }
+        public ToolController Controller { get { return _controller; } }
         public double Height
         {
             set
@@ -101,6 +93,18 @@ namespace NuSysApp
                 RaisePropertyChanged("Transform");
             }
         }
+        public double Width
+        {
+            set
+            {
+                _width = value;
+                RaisePropertyChanged("Width");
+            }
+            get
+            {
+                return _width;
+            }
+        }
 
         public ToolViewModel(ToolController toolController)
         {
@@ -111,6 +115,31 @@ namespace NuSysApp
             Controller.LocationChanged += OnLocationChanged;
             Height = 400;
             Width = 260;
+        }
+
+        /// <summary>
+        ///So that subclasses can fire the event
+        /// </summary>
+        public void FireReplacedToolLinkAnchorPoint(ToolLinkable newTool)
+        {
+            ReplacedToolLinkAnchorPoint?.Invoke(this, newTool);
+        }
+
+        /// <summary>
+        /// So that sublcasses can invoke properties to display changed event
+        /// </summary>
+        public void InvokePropertiesToDisplayChanged()
+        {
+            PropertiesToDisplayChanged?.Invoke();
+        }
+
+        /// <summary>
+        /// Returns the tool startable
+        /// </summary>
+        /// <returns></returns>
+        public ToolStartable GetToolStartable()
+        {
+            return Controller;
         }
 
         /// <summary>
@@ -314,6 +343,10 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Returns the drag filter image with correct sizing etc.
+        /// </summary>
+        /// <returns></returns>
         public Image InitializeDragFilterImage()
         {
             Image dragItem = new Image();
@@ -323,6 +356,9 @@ namespace NuSysApp
             return dragItem;
         }
 
+        /// <summary>
+        /// Removes all the listeners and calls dispose on the controller
+        /// </summary>
         public void Dispose()
         {
             _controller.IdsToDisplayChanged -= ControllerOnLibraryIdsToDisplayChanged;
@@ -330,14 +366,6 @@ namespace NuSysApp
             Controller.LocationChanged -= OnLocationChanged;
             Controller.Dispose();
             Disposed?.Invoke(this, Controller.GetID());
-        }
-
-        /// <summary>
-        ///Adds this tool as a parent of the passed in tool controller 
-        /// </summary>
-        public void AddChildFilter(ToolController controller)
-        {
-            controller.AddParent(_controller);
         }
 
         /// <summary>

@@ -43,7 +43,6 @@ namespace NuSysApp
             controller.ScaleChanged += OnScaleChanged;
             controller.AlphaChanged += OnAlphaChanged;
             controller.MetadataChange += OnMetadataChange;
-            controller.AnchorChanged += ControllerOnAnchorChanged;
             if (controller.LibraryElementController != null)
             {
                 controller.LibraryElementController.TitleChanged += OnTitleChanged;
@@ -53,13 +52,7 @@ namespace NuSysApp
             controller.Deleted += ControllerOnDeleted;
 
             Tags = new ObservableCollection<Button>();
-            CircleLinks = new ObservableCollection<LinkCircle>();
             ReadFromModel();
-        }
-
-        private void ControllerOnAnchorChanged(object sender, Point2d point2D)
-        {
-            UpdateAnchor();
         }
 
         private void KeywordsChanged(object sender, HashSet<Keyword> keywords)
@@ -249,10 +242,6 @@ namespace NuSysApp
         }
 
         #endregion
-        public virtual void UpdateAnchor()
-        {
-            RaisePropertyChanged("Anchor");
-        }
 
         public virtual double GetRatio()
         {

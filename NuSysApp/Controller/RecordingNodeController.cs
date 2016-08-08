@@ -29,8 +29,6 @@ namespace NuSysApp
 
         public delegate void SelectionChangedHandler(object source, bool selected);
 
-        public delegate void LinksUpdatedEventHandler(object source);
-
         public event EventHandler Disposed;
         public event DeleteEventHandler Deleted;
         public event MetadataChangeEventHandler MetadataChange;
@@ -40,7 +38,6 @@ namespace NuSysApp
         public event AlphaChangedEventHandler AlphaChanged;
         public event SelectionChangedHandler SelectionChanged;
         public event EventHandler<Point2d> AnchorChanged;
-        public event LinksUpdatedEventHandler LinksUpdated;
 
         public RecordingNodeController(ElementModel model)
         {
@@ -115,18 +112,6 @@ namespace NuSysApp
             _debouncingDictionary.Add("x", x);
             _debouncingDictionary.Add("y", y);
         }
-
-        public void SaveTimeBlock()
-        {
-            switch (Model.ElementType)
-            {
-                case NusysConstants.ElementType.Image:
-                    break;
-                case NusysConstants.ElementType.Text:
-                    break;
-            }
-        }
-
         public void SetAlpha(double alpha)
         {
             Model.Alpha = alpha;

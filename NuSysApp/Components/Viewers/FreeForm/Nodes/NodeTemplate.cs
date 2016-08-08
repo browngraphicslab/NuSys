@@ -63,6 +63,7 @@ namespace NuSysApp
         {
             this.DefaultStyleKey = typeof(NodeTemplate);
             SubMenu = null;
+            TopMenu = null;
             Inner = null;
 
         }
@@ -85,6 +86,9 @@ namespace NuSysApp
         public static readonly DependencyProperty SubMenuProperty = DependencyProperty.Register("SubMenu",
             typeof(object), typeof(NodeTemplate), new PropertyMetadata(null));
 
+        public static readonly DependencyProperty TopMenuProperty = DependencyProperty.Register("TopMenu",
+            typeof(object), typeof(NodeTemplate), new PropertyMetadata(null));
+
         public static readonly DependencyProperty InnerProperty = DependencyProperty.Register("Inner", typeof(object),
             typeof(NodeTemplate), new PropertyMetadata(null));
 
@@ -94,10 +98,21 @@ namespace NuSysApp
             set { SetValue(SubMenuProperty, value); }
         }
 
+        public object TopMenu
+        {
+            get { return (object)GetValue(TopMenuProperty); }
+            set { SetValue(TopMenuProperty, value); }
+        }
+
         public object Inner
         {
             get { return (object)GetValue(InnerProperty); }
             set { SetValue(InnerProperty, value); }
+        }
+
+        public void HideResizer()
+        {
+            resizer.Visibility = Visibility.Collapsed;
         }
 
         protected override void OnApplyTemplate()
@@ -143,8 +158,6 @@ namespace NuSysApp
 
             tags = (ItemsControl)GetTemplateChild("Tags");
             tags.Tapped += Tags_Tapped;
-
-
 
             title = (TextBox)GetTemplateChild("xTitle");
             title.KeyUp += TitleOnTextChanged;

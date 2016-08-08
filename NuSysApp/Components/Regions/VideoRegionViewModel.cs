@@ -15,7 +15,6 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using NusysIntermediate;
-using NuSysApp.Nodes.AudioNode;
 using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
@@ -37,8 +36,11 @@ namespace NuSysApp
         private bool _editable;
         private double _intervalRegionTranslateY;
         private string _name;
-        private double _progressbarMargin = 10;
+        private VideoRegionLibraryElementController _regionLibraryElementController;
         #endregion PrivateVariables
+
+        public event EventHandler Disposed;
+
 
         public string Name
         {
@@ -62,7 +64,7 @@ namespace NuSysApp
         public double RectangleHeight {
             get
             {
-                return Math.Max(0, _height * ContainerViewModel.GetHeight());
+                return Math.Max(0, _height * AudioWrapper.GetHeight());
             }
             set
             {
@@ -71,7 +73,7 @@ namespace NuSysApp
             }
         }
         public double RectangleWidth {
-            get { return Math.Max(0, _width*ContainerViewModel.GetWidth()); }
+            get { return Math.Max(0, _width* AudioWrapper.GetWidth()); }
             set
             {
                 _width = value;
@@ -82,7 +84,7 @@ namespace NuSysApp
         {
             get
             {
-                return Math.Max(0, (_intervalEnd - _intervalStart) * (ContainerViewModel.GetWidth() - 2 * _progressbarMargin));
+                return Math.Max(0, (_intervalEnd - _intervalStart) * (AudioWrapper.GetWidth()));
             }
             set
             {
@@ -94,7 +96,7 @@ namespace NuSysApp
         {
             get
             {
-                return Math.Max(0, _intervalRegionTranslateY * ContainerViewModel.GetHeight() + _progressbarMargin);
+                return Math.Max(0, _intervalRegionTranslateY * AudioWrapper.GetHeight());
             }
             set
             {
@@ -104,7 +106,7 @@ namespace NuSysApp
         }
         public double IntervalStart
         {
-            get { return Math.Max(0, _intervalStart * (ContainerViewModel.GetWidth() - 2 * _progressbarMargin) + _progressbarMargin); }
+            get { return Math.Max(0, _intervalStart * AudioWrapper.GetWidth()); }
             set
             {
                 Debug.Assert(!Double.IsNaN(value));
@@ -115,7 +117,7 @@ namespace NuSysApp
         }
         public double IntervalEnd
         {
-            get { return Math.Max(0, _intervalEnd * (ContainerViewModel.GetWidth() - 2 * _progressbarMargin) + _progressbarMargin); }
+            get { return Math.Max(0, _intervalEnd * AudioWrapper.GetWidth()); }
             set
             {
                 _intervalEnd = value;
@@ -127,7 +129,7 @@ namespace NuSysApp
         {
             get
             {
-                return new Point(_topLeftPoint.X * ContainerViewModel.GetWidth(), _topLeftPoint.Y * ContainerViewModel.GetHeight()); 
+                return new Point(_topLeftPoint.X * AudioWrapper.GetWidth(), _topLeftPoint.Y * AudioWrapper.GetHeight()); 
             }
             set
             {
@@ -135,13 +137,18 @@ namespace NuSysApp
                 RaisePropertyChanged("TopLeft");
             }
         }
-        public VideoRegionViewModel(VideoRegionModel model, VideoRegionLibraryElementController regionLibraryElementController,Sizeable sizeable) : base(model, regionLibraryElementController,sizeable)
+
+        public AudioWrapper AudioWrapper { get; set; }
+
+        public VideoRegionViewModel(VideoRegionModel model, VideoRegionLibraryElementController regionLibraryElementController, AudioWrapper audioWrapper) : base(model, regionLibraryElementController)
         {
-            ContainerSizeChanged += BaseSizeChanged;
-            regionLibraryElementController.SizeChanged += SizeChanged;
-            regionLibraryElementController.LocationChanged += LocationChanged;
-            regionLibraryElementController.IntervalChanged += IntervalChanged;
-            regionLibraryElementController.TitleChanged += TitleChanged;
+            _regionLibraryElementController = regionLibraryElementController;
+            audioWrapper.SizeChanged += AudioWrapper_SizeChanged;
+            _regionLibraryElementController.SizeChanged += SizeChanged;
+            _regionLibraryElementController.LocationChanged += LocationChanged;
+            _regionLibraryElementController.IntervalChanged += IntervalChanged;
+            _regionLibraryElementController.TitleChanged += TitleChanged;
+            _regionLibraryElementController.IntervalChanged += audioWrapper.AudioWrapper_TimeChanged;
             _height = (model.Height);
             _width = (model.Width);
             _topLeftPoint = new Point(model.TopLeftPoint.X , model.TopLeftPoint.Y );
@@ -151,8 +158,21 @@ namespace NuSysApp
             _intervalRegionTranslateY = 1;
 
             Name = Model.Title;
-
+            AudioWrapper = audioWrapper;
+            
             Editable = true;
+        }
+
+        private void AudioWrapper_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            RaisePropertyChanged("RectangleWidth");
+            RaisePropertyChanged("RectangleHeight");
+            RaisePropertyChanged("IntervalRegionWidth");
+            RaisePropertyChanged("IntervalStart");
+            RaisePropertyChanged("IntervalEnd");
+            RaisePropertyChanged("TopLeft");
+            RaisePropertyChanged("BottomRight");
+            RaisePropertyChanged("IntervalRegionTranslateY");
         }
 
         private void TitleChanged(object source, string title)
@@ -192,15 +212,15 @@ namespace NuSysApp
 
         public void SetIntervalStart(double start)
         {
-            var newstart = Math.Max(0, start-_progressbarMargin);
+            var newstart = Math.Max(0, start);
             var controller = RegionLibraryElementController as VideoRegionLibraryElementController;
-            controller?.SetStartTime(newstart / (ContainerViewModel.GetWidth()-2*_progressbarMargin));
+            controller?.SetStartTime(newstart / (AudioWrapper.GetWidth()));
         }
         public void SetIntervalEnd(double end)
         {
-            var newEnd = Math.Max(0, end-_progressbarMargin);
+            var newEnd = Math.Max(0, end);
             var controller = RegionLibraryElementController as VideoRegionLibraryElementController;
-            controller?.SetEndTime(newEnd / (ContainerViewModel.GetWidth()-2*_progressbarMargin));
+            controller?.SetEndTime(newEnd / (AudioWrapper.GetWidth()));
         }
         
         public void SetRegionSize(double width, double height)
@@ -208,14 +228,25 @@ namespace NuSysApp
             var h = Math.Max(0,height);
             var w = Math.Max(0, width);
             var controller = RegionLibraryElementController as VideoRegionLibraryElementController;
-            controller?.SetHeight(h / ContainerViewModel.GetHeight());
-            controller?.SetWidth(w / ContainerViewModel.GetWidth());
+            controller?.SetHeight(h / AudioWrapper.GetHeight());
+            controller?.SetWidth(w / AudioWrapper.GetWidth());
         }
 
         public void SetRegionLocation(Point topLeft)
         {
             var controller = RegionLibraryElementController as VideoRegionLibraryElementController;
-            controller?.SetLocation(new Point(topLeft.X / ContainerViewModel.GetWidth(), topLeft.Y / ContainerViewModel.GetHeight()));
+            controller?.SetLocation(new Point(topLeft.X / AudioWrapper.GetWidth(), topLeft.Y / AudioWrapper.GetHeight()));
+        }
+
+        public override void Dispose(object sender, EventArgs e)
+        {
+            AudioWrapper.Disposed -= Dispose;
+            AudioWrapper.SizeChanged -= AudioWrapper_SizeChanged;
+            _regionLibraryElementController.IntervalChanged -= IntervalChanged;
+            _regionLibraryElementController.TitleChanged -= TitleChanged;
+            _regionLibraryElementController.IntervalChanged -= AudioWrapper.AudioWrapper_TimeChanged;
+            _regionLibraryElementController.Disposed -= Dispose;
+            Disposed?.Invoke(sender, e);
         }
     }
 

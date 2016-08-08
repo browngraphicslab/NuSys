@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -22,8 +23,10 @@ namespace NuSysApp
 {
     public sealed partial class AudioRegionView
     {
-        public delegate void RegionSelectedEventHandler(object sender, bool selected);
-        public event RegionSelectedEventHandler OnSelected;
+
+        public delegate void RegionSelectedDeselectedEventHandler(object sender, bool selected);
+        public event RegionSelectedDeselectedEventHandler OnSelectedOrDeselected;
+
         public delegate void OnRegionSeekHandler(double time);
         public event OnRegionSeekHandler OnRegionSeek;
         public bool Selected { get; set; }
@@ -36,29 +39,51 @@ namespace NuSysApp
             this.DataContext = vm;
             this.InitializeComponent();
             this.Deselect();
+            vm.Disposed += Dispose;
+        }
 
+        public void FireSelection()
+        {
+            if (!Selected)
+            {
 
+                Select();
+                OnSelectedOrDeselected?.Invoke(this, true);
+
+            }
+
+        }
+
+        public void FireDeselection()
+        {
+            if (Selected)
+            {
+
+                Deselect();
+                OnSelectedOrDeselected?.Invoke(this, false);
+
+            }
         }
 
         private void Bound1_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = this.DataContext as AudioRegionViewModel;
-            if (Rect.Width + e.Delta.Translation.X > 0 && vm.LeftHandleX + e.Delta.Translation.X > 0 && vm.LeftHandleX + e.Delta.Translation.X < vm.RightHandleX)
+            if (Rect.Width + e.Delta.Translation.X * Bound1Transform.ScaleX > 0 && vm.LeftHandleX + e.Delta.Translation.X * Bound1Transform.ScaleX > 0 && vm.LeftHandleX + e.Delta.Translation.X * Bound1Transform.ScaleX < vm.RightHandleX)
             {
-                vm.SetNewPoints(e.Delta.Translation.X,0);
+                vm.SetNewPoints(e.Delta.Translation.X * Bound1Transform.ScaleX, 0);
             }
         }
 
         private void Bound2_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = this.DataContext as AudioRegionViewModel;
-            if (Rect.Width + e.Delta.Translation.X > 0 && vm.RightHandleX + e.Delta.Translation.X < vm.AudioWrapper.ActualWidth)
+            if (Rect.Width + e.Delta.Translation.X * Bound2Transform.ScaleX > 0 && vm.RightHandleX + e.Delta.Translation.X * Bound2Transform.ScaleX < vm.AudioWrapper.ActualWidth)
             {
-                vm.SetNewPoints(0,e.Delta.Translation.X);
+                vm.SetNewPoints(0,e.Delta.Translation.X * Bound2Transform.ScaleX);
             }
         }
 
-        public void Deselect()
+        private void Deselect()
         {
             Rect.Fill = new SolidColorBrush(Color.FromArgb(255, 219, 151, 179));
             xNameTextBox.Visibility = Visibility.Collapsed;
@@ -67,7 +92,7 @@ namespace NuSysApp
             Selected = false;
         }
 
-        public void Select()
+        private void Select()
         {
             var vm = DataContext as AudioRegionViewModel;
             Rect.Fill = new SolidColorBrush(Color.FromArgb(255, 152, 26, 77));
@@ -92,10 +117,10 @@ namespace NuSysApp
         private void Rect_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var vm = this.DataContext as AudioRegionViewModel;
-            if (Rect.Width + e.Delta.Translation.X > 0 && vm.RightHandleX + e.Delta.Translation.X < vm.AudioWrapper.ActualWidth && vm.LeftHandleX + e.Delta.Translation.X > 0)
+            if (Rect.Width + e.Delta.Translation.X * Bound2Transform.ScaleX > 0 && vm.RightHandleX + e.Delta.Translation.X * Bound2Transform.ScaleX < vm.AudioWrapper.ActualWidth && vm.LeftHandleX + e.Delta.Translation.X * Bound2Transform.ScaleX > 0)
             {
 
-                vm.SetNewPoints(e.Delta.Translation.X, e.Delta.Translation.X);
+                vm.SetNewPoints(e.Delta.Translation.X * Bound2Transform.ScaleX, e.Delta.Translation.X * Bound2Transform.ScaleX);
             }
             e.Handled = true;
         }
@@ -113,8 +138,11 @@ namespace NuSysApp
             {
                 return;
             }
-
-            //todo ADD IN remove region request
+            // delete all the references to this region from the library
+            var removeRequest = new DeleteLibraryElementRequest(vm.RegionLibraryElementController.LibraryElementModel.LibraryElementId);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(removeRequest);
+            // If the region is deleted, it needs to dispose of its handlers.
+            vm.Dispose(this, EventArgs.Empty);
 
 
         }
@@ -126,14 +154,27 @@ namespace NuSysApp
             await Task.Delay(200);
             if (!_isSingleTap) return;
 
-
             if (!Selected)
             {
-                OnRegionSeek?.Invoke(((DataContext as AudioRegionViewModel).RegionLibraryElementController.LibraryElementModel as AudioRegionModel).Start + 0.01);
+                OnRegionSeek?.Invoke(((DataContext as AudioRegionViewModel).RegionLibraryElementController.LibraryElementModel as AudioRegionModel).Start);
             }
-
+            FireSelection();
             e.Handled = true;
         }
 
+        public void RescaleComponents(double scaleX)
+        {
+            Bound1Transform.ScaleX = 1.0 / scaleX;
+            Bound2Transform.ScaleX = 1.0 / scaleX;
+            xToolBarTransform.ScaleX = 1.0 / scaleX;
+        }
+
+        public void Dispose(object sender, EventArgs e)
+        {
+            var vm = DataContext as AudioRegionViewModel;
+            vm.Disposed -= Dispose;
+            OnRegionSeek -= vm.AudioWrapper.AudioWrapper_OnRegionSeek;
+        }
+        
     }
 }

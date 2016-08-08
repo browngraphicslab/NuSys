@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -21,22 +24,85 @@ namespace NuSysApp
     public sealed partial class PDFRegionListView : UserControl
     {
         public DetailViewerView DetailViewerView { set; get; }
+
+        public ObservableCollection<PdfRegionModel> RegionModelList { get; set; }
+
+        private ContentDataModel _contentDataModel;
+
         public PDFRegionListView(DetailViewerView dvv)
         {
+            DataContext = this;
             DetailViewerView = dvv;
+            RegionModelList = new ObservableCollection<PdfRegionModel>();
+
+            // populate the region model list with all the regions for the given content
+            var contentDataModelId = (dvv.DataContext as DetailViewerViewModel).CurrentElementController.LibraryElementModel.ContentDataModelId;
+            PopulateRegionModelList(contentDataModelId);
+
+            // add events so that the list is live updated
+            _contentDataModel = SessionController.Instance.ContentController.GetContentDataModel(contentDataModelId);
+            _contentDataModel.OnRegionAdded += ContentDataModel_OnRegionAdded;
+            _contentDataModel.OnRegionRemoved += ContentDataModel_OnRegionRemoved;
+
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            detailViewerView.Disposed += DetailViewerView_Disposed;
+
             this.InitializeComponent();
         }
 
-        private void XListViewItemGrid_OnPointerEnterExit(object sender, PointerRoutedEventArgs e)
+        private void DetailViewerView_Disposed(object sender, EventArgs e)
         {
-
+            var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
+            detailViewerView.Disposed -= DetailViewerView_Disposed;
+            _contentDataModel.OnRegionAdded -= ContentDataModel_OnRegionAdded;
+            _contentDataModel.OnRegionRemoved -= ContentDataModel_OnRegionRemoved;
+            _contentDataModel = null;
         }
 
+        private async void ContentDataModel_OnRegionRemoved(string regionLibraryElementModelId)
+        {
+            foreach (var model in RegionModelList)
+            {
+                if (model.LibraryElementId == regionLibraryElementModelId)
+                {
+                    await UITask.Run(() =>
+                    {
+                        RegionModelList.Remove(model);
+                    });
+                    break;
+                }
+            }
+        }
+
+        private async Task ContentDataModel_OnRegionAdded(string regionLibraryElementModelId)
+        {
+            var region = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementModelId);
+            var model = region.LibraryElementModel as PdfRegionModel;
+            Debug.Assert(model != null);
+            await UITask.Run(() =>
+            {
+                RegionModelList.Add(model);
+            });
+            
+        }
+
+        private async void PopulateRegionModelList(string contentDataModelId)
+        {
+            var regionIds = SessionController.Instance.RegionsController.GetContentDataModelRegionLibraryElementIds(contentDataModelId);
+            foreach (var regionId in regionIds)
+            {
+                var region = SessionController.Instance.ContentController.GetLibraryElementController(regionId);
+                var model = region.LibraryElementModel as PdfRegionModel;
+                Debug.Assert(model != null);
+                await UITask.Run(() =>
+                {
+                    RegionModelList.Add(model);
+                });
+            }
+        }
 
         private async void RegionListViewItem_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            //((ImageFullScreenView)(((DetailViewerViewModel)DetailViewerView.DataContext).RegionView)).SelectedRegion(test);
-
             var vm = DetailViewerView.DataContext as DetailViewerViewModel;
             if (vm == null)
             {
@@ -48,14 +114,6 @@ namespace NuSysApp
             await detailHomeTabViewModel.Goto(pdfRegion.PageLocation, pdfRegion);
 
 
-        }
-
-        private void DeleteButton_OnPointerExited(object sender, PointerRoutedEventArgs e)
-        {
-            var button = sender as Button;
-            button.Visibility = Visibility.Collapsed;
-
-        }
-        
+        }       
     }
 }

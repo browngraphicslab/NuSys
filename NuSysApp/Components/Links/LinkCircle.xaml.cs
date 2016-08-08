@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -168,9 +169,10 @@ namespace NuSysApp
         private void LinkButton_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             _doubleTap = true;
-            var regionController = SessionController.Instance.ContentController.GetLibraryElementController(ContentId) as IDetailViewable;
-            var libraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(ContentId) as IDetailViewable;
-            SessionController.Instance.SessionView.ShowDetailView(regionController ?? libraryElementController);
+            var libraryElementController =
+                SessionController.Instance.ContentController.GetLibraryElementController(ContentId);
+            Debug.Assert(libraryElementController != null);
+            SessionController.Instance.SessionView.ShowDetailView(libraryElementController);
             e.Handled = true;
         }
     }

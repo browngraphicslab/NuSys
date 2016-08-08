@@ -32,6 +32,7 @@ namespace NuSysApp
         {
             BasicToolModel.SetFilter(filter);
             FilterChanged?.Invoke(this, filter);
+            FireIdsToDisplayChanged();
             FireOutputLibraryIdsChanged();
         }
 

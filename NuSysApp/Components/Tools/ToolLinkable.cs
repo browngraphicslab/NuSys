@@ -14,6 +14,8 @@ namespace NuSysApp.Tools
         /// </summary>
         event EventHandler<Point2d> ToolAnchorChanged;
         event EventHandler<string> Disposed;
+        event EventHandler<ToolLinkable> ReplacedToolLinkAnchorPoint;
+
 
         /// <summary>
         ///Should return the tool startable. If there is none, returns null
