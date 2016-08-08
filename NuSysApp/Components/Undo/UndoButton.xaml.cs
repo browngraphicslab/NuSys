@@ -25,7 +25,7 @@ namespace NuSysApp
     /// </summary>
     public enum UndoButtonState
     {
-        Active,InActive
+        Active,Inactive
     }
 
     /// <summary>
@@ -44,18 +44,15 @@ namespace NuSysApp
 
 
         /// <summary>
-        /// Creates a general undo button. Sets up UI, keeps track of original action, and calls a method to start a 6-second timer
+        /// Creates a general undo button. No input parameters so UndoButtons can be added in XAML.
         /// </summary>
         /// <param name="originalAction"></param>
         /// <param name="state"></param>
-        public UndoButton(IUndoable originalAction, UndoButtonState state)
+        public UndoButton()
         {
             this.InitializeComponent();
-            OriginalAction = originalAction;
+            State=UndoButtonState.Inactive;
 
-
-            State = state;
-            Loaded += UndoButton_Loaded;
         }
 
         /// <summary>
@@ -118,6 +115,11 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void UndoButton_OnTapped(object sender, TappedRoutedEventArgs e)
         {
+            // Only conitinue if the button is active
+            if (State == UndoButtonState.Inactive)
+            {
+                return;
+            }
             var undoAction = OriginalAction.GetInverse();
             undoAction.ExecuteAction();
             Dispose();
