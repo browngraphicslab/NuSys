@@ -29,6 +29,6 @@ namespace NuSysApp
         /// </summary>
         */
 
-        void ExecuteRequest();
+        void ExecuteAction();
    }
 }

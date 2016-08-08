@@ -20,7 +20,7 @@ namespace NuSysApp
 
         }
 
-        public async void ExecuteRequest()
+        public async void ExecuteAction()
         {
             var element = _elementController.LibraryElementModel;
             var dict = new Message();

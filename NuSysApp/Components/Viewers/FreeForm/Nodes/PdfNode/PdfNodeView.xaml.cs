@@ -102,10 +102,8 @@ namespace NuSysApp
             //Creates an undo button and places it in the correct position.
 
             var position = new Point(vm.Controller.Model.X, vm.Controller.Model.Y);
-            var undoButton = new UndoButton(removeElementAction, position);
-            var atomViewList = SessionController.Instance.ActiveFreeFormViewer.AtomViewList;
-            atomViewList.Add(undoButton);
-
+            var workspace = SessionController.Instance.ActiveFreeFormViewer;
+            var undoButton = new UndoButton(removeElementAction, workspace,position, UndoButtonState.Active);
             vm.Controller.RequestDelete();
 
 

@@ -15,7 +15,7 @@ namespace NuSysApp
             _elementController = controller;
         }
 
-        public void ExecuteRequest()
+        public void ExecuteAction()
         {
             var model = _elementController.Model;
             SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(model.Id));
