@@ -15,12 +15,19 @@ namespace NuSysApp
             _elementController = controller;
         }
 
+        /// <summary>
+        /// Element controller creates DeleteSendableRequest and sends it to the server. 
+        /// </summary>
         public void ExecuteAction()
         {
-            var model = _elementController.Model;
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(model.Id));
+            _elementController.RequestDelete();
         }
 
+        /// <summary>
+        /// Returns a CreateElementAction that holds the deleted element's position so that position is
+        /// preserved.
+        /// </summary>
+        /// <returns></returns>
         public IUndoable GetInverse()
         {
             var position = new Point(_elementController.Model.X, _elementController.Model.Y);
