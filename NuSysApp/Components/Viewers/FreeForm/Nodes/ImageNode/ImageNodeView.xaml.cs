@@ -53,6 +53,7 @@ namespace NuSysApp
         }
         
 
+        
 
         public async Task<RenderTargetBitmap> ToThumbnail(int width, int height)
         {

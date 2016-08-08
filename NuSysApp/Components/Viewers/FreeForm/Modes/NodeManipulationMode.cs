@@ -58,6 +58,12 @@ namespace NuSysApp
             vm.AtomViewList.CollectionChanged += AtomViewListOnCollectionChanged;
         }
 
+        /// <summary>
+        /// When finished moving node, calculat original and new position in global space, then
+        /// create an Undo action based on those positions
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="manipulationCompletedRoutedEventArgs"></param>
         private void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs manipulationCompletedRoutedEventArgs)
         {
             //Updates new position coordinates
@@ -79,10 +85,9 @@ namespace NuSysApp
                 var moveElementAction = new MoveElementAction(elementController, _originalPosition, _newPosition);
 
                 //Creates UndoButton and makes it appear in the old position.
-
-                var undoButton = new UndoButton(moveElementAction, _originalPosition);
-                var atomViewList = ((FreeFormViewerViewModel)_view.DataContext).AtomViewList;
-                atomViewList.Add(undoButton);
+                var ffvm = (FreeFormViewerViewModel) _view.DataContext;
+                var undoButton = new UndoButton(moveElementAction, ffvm, _originalPosition, UndoButtonState.Active);
+          
 
 
             }
