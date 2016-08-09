@@ -15,7 +15,7 @@ namespace NuSysApp
         public override Message PackToRequestKeys()
         {
             var message = base.PackToRequestKeys();
-
+            //just checking if the values exist
             Debug.Assert(PageLocation != null);
 
 

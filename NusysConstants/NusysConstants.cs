@@ -292,17 +292,17 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_HEIGHT = "rectangle_region_height";
             /// <summary>
-            /// the key that will hold the height of the requested region  
+            /// the key that will hold the page location of the requested region  
             /// Used during a region libraryElementRequest.  
             /// </summary>
            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_PDF_PAGE_LOCATION = "pdf_region_page_location";
           /// <summary>
-          /// the key that will hold the height of the requested region  
+          /// the key that will hold the start of the interval of the requested region  
           /// Used during a region libraryElementRequest.  
           /// </summary>
            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_START = "time_region_start";    
            /// <summary>
-           /// the key that will hold the height of the requested region  
+           /// the key that will hold the end of the interval of the requested region  
            /// Used during a region libraryElementRequest.  
            /// </summary>
         public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_END = "time_region_end";

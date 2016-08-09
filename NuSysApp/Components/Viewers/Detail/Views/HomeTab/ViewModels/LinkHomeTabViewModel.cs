@@ -81,9 +81,10 @@ namespace NuSysApp
 
         public void UpdateAnnotation(string text)
         {
-            _controller.SetContentData(text); 
+            _controller.SetContentData(text);
         }
 
+        // There is no region here so this method should not be called
         public override CreateNewRegionLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs()
         {
             throw new NotImplementedException();

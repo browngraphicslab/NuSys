@@ -16,16 +16,16 @@ namespace NuSysApp
         public override Message PackToRequestKeys()
         {
             var message = base.PackToRequestKeys();
-
+            //just checking if the values exist
             Debug.Assert(RegionStart != null);
             Debug.Assert(RegionEnd != null);
 
-            //add the topleftpoint
+            //add the start
             if (RegionStart != null)
             {
                 message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_START] = RegionStart;
             }
-            //add the width
+            //add the end
             if (RegionEnd != null)
             {
                 message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_END] = RegionEnd;
