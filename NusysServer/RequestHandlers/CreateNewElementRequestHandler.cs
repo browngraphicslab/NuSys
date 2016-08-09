@@ -65,7 +65,7 @@ namespace NusysServer
             addAliasMessage[NusysConstants.ALIAS_CREATOR_ID_KEY] = message[NusysConstants.NEW_ELEMENT_REQUEST_CREATOR_ID_KEY];
 
             //take the first result and set the alias elementType as that returned type
-            addAliasMessage[NusysConstants.LIBRARY_ELEMENT_TYPE_KEY] = results.First().GetString(Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_TYPE_KEY).First());
+            addAliasMessage[NusysConstants.LIBRARY_ELEMENT_TYPE_KEY] = results.First().GetString(NusysConstants.LIBRARY_ELEMENT_TYPE_KEY);
 
             var success = ContentController.Instance.SqlConnector.AddAlias(addAliasMessage);
 

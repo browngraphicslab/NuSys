@@ -41,7 +41,7 @@ namespace NusysServer
             _db = new SqlConnection(SQLSTRING);
             _db.Open(); //open database
 
-            //ResetTables(true);
+            ResetTables();
             //SetUpTables();
 
             TestFunc();
@@ -356,6 +356,10 @@ namespace NusysServer
         /// <returns></returns>
         public IEnumerable<Message> ExecuteSelectQueryAsMessages(SelectCommandReturnArgs args, bool includeNulls = true)
         {
+            SqlDataAdapter da = new SqlDataAdapter(args.Command);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            
             var messages = new List<Message>();
             using (var reader = args.Command.ExecuteReader())
             {
@@ -365,15 +369,23 @@ namespace NusysServer
                     {
                         var m = new Message();
                         var i = 0;
-                        foreach (var columnName in args.Columns)
+                        for (int j = 0; j < reader.FieldCount; j++)
                         {
-                            var x = reader[i];
-                            if (reader[i] != null|| includeNulls)
+                            if (reader[i] != null || includeNulls)
                             {
-                                m[columnName] = reader[i];
+                                m.Add(reader.GetName(i),reader[i]);
                                 i++;
                             }
                         }
+                        //foreach (var columnName in args.Columns)
+                        //{
+                        //    var x = reader[i];
+                        //    if (reader[i] != null|| includeNulls)
+                        //    {
+                        //        m[columnName] = reader[i];
+                        //        i++;
+                        //    }
+                        //}
                         messages.Add(m);
                     }
                 }

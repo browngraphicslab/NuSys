@@ -24,11 +24,11 @@ namespace NusysServer
                 {
                     if (propertyValueKey != null)
                     {
-                        message.Add(message.GetString(Constants.GetFullColumnTitle(Constants.SQLTableType.Properties, NusysConstants.PROPERTIES_KEY_COLUMN_KEY).First()), message.GetString(propertyValueKey));
-                        message.Remove(Constants.GetFullColumnTitle(Constants.SQLTableType.Properties, NusysConstants.PROPERTIES_KEY_COLUMN_KEY).First());
-                        message.Remove(Constants.GetFullColumnTitle(Constants.SQLTableType.Properties, NusysConstants.PROPERTIES_STRING_VALUE_COLUMN_KEY).First());
-                        message.Remove(Constants.GetFullColumnTitle(Constants.SQLTableType.Properties, NusysConstants.PROPERTIES_DATE_VALUE_COLUMN_KEY).First());
-                        message.Remove(Constants.GetFullColumnTitle(Constants.SQLTableType.Properties, NusysConstants.PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY).First());
+                        message.Add(message.GetString(NusysConstants.PROPERTIES_KEY_COLUMN_KEY), message.GetString(propertyValueKey));
+                        message.Remove(NusysConstants.PROPERTIES_KEY_COLUMN_KEY);
+                        message.Remove(NusysConstants.PROPERTIES_STRING_VALUE_COLUMN_KEY);
+                        message.Remove(NusysConstants.PROPERTIES_DATE_VALUE_COLUMN_KEY);
+                        message.Remove(NusysConstants.PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY);
                     }
                     newMessages[message.GetString(idToGroupBy)] = message;
                 }
@@ -36,7 +36,7 @@ namespace NusysServer
                 {
                     if (propertyValueKey != null)
                     {
-                        newMessages[message.GetString(idToGroupBy)].Add(message.GetString(Constants.GetFullColumnTitle(Constants.SQLTableType.Properties, NusysConstants.PROPERTIES_KEY_COLUMN_KEY).First()), message.GetString(propertyValueKey));
+                        newMessages[message.GetString(idToGroupBy)].Add(message.GetString(NusysConstants.PROPERTIES_KEY_COLUMN_KEY), message.GetString(propertyValueKey));
                     }
                 }
             }
@@ -51,8 +51,8 @@ namespace NusysServer
         private string GetIDKey(Message message)
         {
             var idToGroupBy = "";
-            var aliasIDKey = Constants.GetFullColumnTitle(Constants.SQLTableType.Alias, NusysConstants.ALIAS_ID_KEY).First();
-            var libraryIDKey = Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY).First();
+            var aliasIDKey = NusysConstants.ALIAS_ID_KEY;
+            var libraryIDKey = NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY;
             if (message.ContainsKey(aliasIDKey) &&
                 message.GetString(aliasIDKey) == message.GetString(Constants.GetFullColumnTitle(Constants.SQLTableType.Properties, NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY).First()))
             {
