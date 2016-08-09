@@ -125,11 +125,9 @@ namespace NuSysApp
             });
         }
 
-        // we don't have regions on word nodes so this is fine
-        public override Message GetNewRegionMessage()
+        public override CreateNewRegionLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs()
         {
             throw new NotImplementedException();
         }
-
     }
 }

@@ -37,7 +37,7 @@ namespace NuSysApp
         }
         public virtual async Task Init() { }
 
-        public abstract Message GetNewRegionMessage();
+        public abstract CreateNewRegionLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs();
 
 
 

@@ -24,7 +24,7 @@ namespace NuSysApp
             TextChanged?.Invoke(source,data);
         }
 
-        public override Message GetNewRegionMessage()
+        public override CreateNewRegionLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs()
         {
             throw new NotImplementedException();
         }

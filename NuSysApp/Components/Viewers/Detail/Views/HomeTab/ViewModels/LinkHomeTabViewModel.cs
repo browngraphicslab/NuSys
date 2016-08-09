@@ -84,8 +84,7 @@ namespace NuSysApp
             _controller.SetContentData(text); 
         }
 
-        // we don't have regions on links so this should never happen
-        public override Message GetNewRegionMessage()
+        public override CreateNewRegionLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs()
         {
             throw new NotImplementedException();
         }
