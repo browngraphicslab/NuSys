@@ -304,6 +304,8 @@
     </Compile>
     <Compile Include="Components\Misc\TextInputBlockViewModel.cs" />
     <Compile Include="Components\NuSysRenderer\AdornmentRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\HTMLHelper.cs" />
+    <Compile Include="Components\NuSysRenderer\HTMLParser.cs" />
     <Compile Include="Components\NuSysRenderer\NodeMenuButtonRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\VideoElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionInteractionManager.cs" />
