@@ -87,7 +87,6 @@ namespace NuSysApp
 
             //debug.asserts for required types
             Debug.Assert(LibraryElementType != null);
-            Debug.Assert(ContentId != null);
 
             message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY] = LibraryElementType.ToString();
 

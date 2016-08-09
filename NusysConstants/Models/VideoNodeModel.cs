@@ -14,22 +14,14 @@ namespace NusysIntermediate
     public class VideoNodeModel : ElementModel
     {
         private byte[] _byteArray;
-        private InMemoryRandomAccessStream _recording;
         private int _resX, _resY;
-        public MediaElement Test { get; }
         public delegate void JumpEventHandler(TimeSpan time);
         public event JumpEventHandler OnJump;
 
         public VideoNodeModel(string id) : base(id)
         {
-            Recording = new InMemoryRandomAccessStream();
+            //Recording = new InMemoryRandomAccessStream();
             ElementType = NusysConstants.ElementType.Video;
-        }
-
-        public InMemoryRandomAccessStream Recording
-        {
-            get { return _recording; }
-            set { _recording = value; }
         }
         public byte[] ByteArray
         {

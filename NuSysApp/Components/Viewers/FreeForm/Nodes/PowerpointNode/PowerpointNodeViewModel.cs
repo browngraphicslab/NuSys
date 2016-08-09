@@ -121,7 +121,7 @@ namespace NuSysApp
                     new NewContentSystemRequest(contentId,
                         pdfContent), NetworkClient.PacketType.TCP, null, true);*/
 
-            Request deleteRequest = new DeleteSendableRequest(wordId);
+            Request deleteRequest = new DeleteElementRequest(wordId);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(deleteRequest);
         }
 

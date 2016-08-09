@@ -10,21 +10,30 @@ namespace NusysServer
         {
             Debug.Assert(request.GetRequestType() == NusysConstants.RequestType.DeleteElementRequest);
             var message = GetRequestMessage(request);
-            Debug.Assert(message.ContainsKey(NusysConstants.DELETE_ELEMENT_REQUEST_LIBRARY_ID_KEY));
+            Debug.Assert(message.ContainsKey(NusysConstants.DELETE_ELEMENT_REQUEST_ELEMENT_ID));
 
             //safetly create new message to pass into the delete library element method
             var safedeleteAliasMessage = new Message();
-            safedeleteAliasMessage[NusysConstants.ALIAS_ID_KEY] = message[NusysConstants.DELETE_ELEMENT_REQUEST_LIBRARY_ID_KEY];
+            safedeleteAliasMessage[NusysConstants.ALIAS_ID_KEY] = message[NusysConstants.DELETE_ELEMENT_REQUEST_ELEMENT_ID];
 
             //delete library element
             var success = ContentController.Instance.SqlConnector.DeleteAlias(safedeleteAliasMessage);
 
+            //if it failed, return that it failee
+            if (!success)
+            {
+                return new Message() { { NusysConstants.REQUEST_SUCCESS_BOOL_KEY ,false} };
+            }
+
             //notify everyone that a library element has been deleted
-            var forwardMessage = new Message(message);
-            forwardMessage.Remove(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING);
-            NuWebSocketHandler.BroadcastToSubset(forwardMessage, new HashSet<NuWebSocketHandler>() { senderHandler });
+            ForwardMessage(message, senderHandler);
 
             var returnMessage = new Message();
+            if (success)
+            {
+                //add in the id so the original sender can delete locally.
+                returnMessage[NusysConstants.DELETE_ELEMENT_REQUEST_RETURNED_DELETED_ELEMENT_ID] = message[NusysConstants.DELETE_ELEMENT_REQUEST_ELEMENT_ID];
+            }
             returnMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = success;
             return returnMessage;
         }

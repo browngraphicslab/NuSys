@@ -121,6 +121,19 @@ namespace NusysIntermediate
             return _returnMessage.GetBool(NusysConstants.REQUEST_SUCCESS_BOOL_KEY);
         }
 
+        /// <summary>
+        /// this method can be called in local request methods to ensure that that method is being executed only after a succesful request returns. 
+        /// This will throw an exception if the request hasn't returned or was unsuccesful. 
+        /// Saves from repeatedly copy and pasting code.
+        /// </summary>
+        protected void CheckWasSuccessfull()
+        {
+            if (WasSuccessful() != true)//Weird syntax because of nullable bool
+            {
+                //If this fails here, check with .WasSuccessful() before calling this method.
+                throw new Exception("The request hasn't returned yet or was unsuccessful");
+            }
+        }
         public class InvalidRequestTypeException : Exception
         {
             public InvalidRequestTypeException(string message) : base(message) { }
