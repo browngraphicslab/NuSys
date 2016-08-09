@@ -14,7 +14,7 @@ namespace NusysServer
         public SingleTable(Constants.SQLTableType tableType)
         {
             _tableType = tableType;
-            _sqlQueryString = SQLConnector.GetTableName(tableType);
+            _sqlQueryString = Constants.GetTableName(tableType);
         }
 
         /// <summary>
