@@ -131,7 +131,7 @@ namespace NuSysApp
 
         public async virtual Task RequestDelete()
         {
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new DeleteSendableRequest(Model.Id));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new DeleteElementRequest(Model.Id));
         }
         public async virtual Task RequestDuplicate(double x, double y, Message m = null)
         {
@@ -195,7 +195,7 @@ namespace NuSysApp
             m1["autoCreate"] = true;
             m1["creator"] = newCollectionContentID;
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new DeleteSendableRequest(Model.Id));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new DeleteElementRequest(Model.Id));
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m1));
 
         }

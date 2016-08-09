@@ -39,7 +39,21 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string REQUEST_ERROR_MESSAGE_KEY = "error_message";
 
-            #endregion AllRequests
+        #endregion AllRequests
+
+            #region DeleteElementRequest
+
+            /// <summary>
+            /// The ID of the element Model that you wish to delete using this DeleteElementRequest
+            /// </summary>
+            public static readonly string DELETE_ELEMENT_REQUEST_ELEMENT_ID = "element_id_to_delete";
+
+            /// <summary>
+            /// The ID of the element Model that you wish to delete using this DeleteElementRequest
+            /// </summary>
+            public static readonly string DELETE_ELEMENT_REQUEST_RETURNED_DELETED_ELEMENT_ID = "element_id_deleted";
+
+            #endregion DeleteElementRequest
 
             #region GetContentDataModelRequest
 
@@ -48,12 +62,12 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string GET_CONTENT_DATA_MODEL_REQUEST_CONTENT_ID_KEY = "content_data_model_id";
         
-            /// <summary>
-            /// The key whose value should be the returned, json serialized, ContentDataModel requested
-            /// </summary>
-            public static readonly string GET_CONTENT_DATA_MODEL_REQUEST_RETURNED_CONTENT_DATA_MODEL_KEY = "returned_content_data_model";
+                    /// <summary>
+                    /// The key whose value should be the returned, json serialized, ContentDataModel requested
+                    /// </summary>
+                    public static readonly string GET_CONTENT_DATA_MODEL_REQUEST_RETURNED_CONTENT_DATA_MODEL_KEY = "returned_content_data_model";
 
-            #endregion GetContentDataModelRequest
+                    #endregion GetContentDataModelRequest
 
             #region GetEntireWorkspaceRequest
             /// <summary>
@@ -120,13 +134,6 @@ namespace NusysIntermediate
             public static readonly string GET_ALL_LIBRARY_ELEMENTS_REQUEST_RETURNED_LIBRARY_ELEMENT_MODELS_KEY = "returned_library_element_models";
 
             #endregion GetAllLibraryElementsRequst
-
-            #region DeleteElementRequest
-            /// <summary>
-            /// the key used to send the element id key of the element (alias) to be deleted
-            /// </summary>
-            public static readonly string DELETE_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
-            #endregion DeleteElementRequest
 
             #region NewElementRequest
             /// <summary>

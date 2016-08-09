@@ -54,8 +54,10 @@ namespace NusysServer
                         break;
                     case NusysConstants.RequestType.SetTagsRequest:
                         break;
-                    case NusysConstants.RequestType.DeleteSendableRequest:
-                        break;*/
+                        */
+                    case NusysConstants.RequestType.DeleteElementRequest:
+                        requestHandler = new DeleteElementRequestHandler();
+                        break;
                     case NusysConstants.RequestType.ElementUpdateRequest:
                         requestHandler = new ElementUpdateRequestHandler();
                         break;

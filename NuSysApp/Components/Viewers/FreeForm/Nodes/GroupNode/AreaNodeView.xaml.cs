@@ -59,7 +59,7 @@ namespace NuSysApp
             var shapePoints = (SessionController.Instance.ContentController.GetLibraryElementModel(collElementModel.LibraryId) as CollectionLibraryElementModel).ShapePoints;
 
 
-            var adornment = new AdornmentView(new List<Point>(shapePoints.Select(p => new Point(p.X, p.Y))));
+            var adornment = new AdornmentView(new List<Point>(shapePoints?.Select(p => new Point(p.X, p.Y)) ?? new List<Point>()));
             vm.AtomViewList.Add(adornment);
             adornment.SetFill(new SolidColorBrush(Colors.Green));
             Canvas.SetZIndex(adornment,-1);

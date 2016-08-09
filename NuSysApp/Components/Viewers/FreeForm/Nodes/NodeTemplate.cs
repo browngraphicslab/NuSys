@@ -449,7 +449,7 @@ namespace NuSysApp
         private void OnBtnDeleteClick(object sender, RoutedEventArgs e)
         {
             var model = (ElementModel)((ElementViewModel)this.DataContext).Model;
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new DeleteSendableRequest(model.Id));
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new DeleteElementRequest(model.Id));
         }
 
         private void OnPresentationClick(object sender, RoutedEventArgs e)
