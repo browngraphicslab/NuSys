@@ -5,11 +5,11 @@ using System.Web;
 
 namespace NusysServer
 {
-    public class SendTrent
+    public class CognitiveApiSendObject
     {
-        public Document[] documents { get; set; }
         public string[] stopWords { get; set; }
-        public string[] stopPhrases { get; set; }
-
+        public string[] topicsToExclude { get; set; }
+        public CognitiveApiDocument[] documents { get; set; }
+        
     }
 }

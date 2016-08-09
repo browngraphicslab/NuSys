@@ -44,15 +44,17 @@ namespace NusysServer
                 }
             }
 
-            var list = new List<string>();
+            var list = new List<CognitiveApiDocument>();
 
             for(int i = 1; i <= 105; i++)
             {
-                list.Add("A random string for testing topic modeling");
+                list.Add(new CognitiveApiDocument(i.ToString(), "There should be more spaghhetti with my pizza. The floors were just terrible."));
             }
 
             Task.Run(async delegate {
-                await TextProcessor.GetTextAnalytics(list);
+                //await CognitiveApiTextProcessor.GetTextKeyPhrasesAsync(list);
+                //await CognitiveApiTextProcessor.GetTextSentimentAsync(list);
+                await CognitiveApiTextProcessor.GetTextTopicsAsync(list);
             });
 
         }
