@@ -44,7 +44,7 @@ namespace NuSysApp
 
 
         public Vector2 CameraTranslation { get; set; } = new Vector2(-Constants.MaxCanvasSize/2f, -Constants.MaxCanvasSize / 2f);
-        public Vector2 CamertaCenter { get; set; } = new Vector2(Constants.MaxCanvasSize / 2f, Constants.MaxCanvasSize / 2f);
+        public Vector2 CameraCenter { get; set; } = new Vector2(Constants.MaxCanvasSize / 2f, Constants.MaxCanvasSize / 2f);
         public float CameraScale { get; set; } = 1f;
 
 
@@ -66,7 +66,7 @@ namespace NuSysApp
 
         private void ControllerOnCameraCenterChanged(float f, float f1)
         {
-            CamertaCenter = new Vector2(f, f1);
+            CameraCenter = new Vector2(f, f1);
         }
 
         private void ControllerOnCameraPositionChanged(float f, float f1)

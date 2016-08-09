@@ -44,6 +44,7 @@ namespace NuSysApp
         public delegate void MarkingMenuPointerMoveHandler(Vector2 p);
         public event RenderItemSelectedHandler ItemTapped;
         public event RenderItemSelectedHandler ItemLongTapped;
+        public event RenderItemSelectedHandler ItemDoubleTapped;
         public event InkDrawHandler InkStarted;
         public event InkDrawHandler InkDrawing;
         public event InkDrawHandler InkStopped;
@@ -76,6 +77,7 @@ namespace NuSysApp
         private DateTime _lastReleased = DateTime.Now;
         private Stopwatch _secondPointerStopwatch = new Stopwatch();
         private Stopwatch _firstPointerStopWatch = new Stopwatch();
+        private Stopwatch _lastTap = new Stopwatch();
         private CollectionRenderItem _collection;
         private uint _markingMenuPointer = uint.MaxValue;
 
@@ -188,7 +190,7 @@ namespace NuSysApp
             {
                 var coll = (CollectionRenderItem)_selectedRenderItem;
                 coll.ViewModel.CameraTranslation = new Vector2(coll.Camera.T.M31, coll.Camera.T.M32);
-                coll.ViewModel.CamertaCenter = new Vector2(coll.Camera.C.M31, coll.Camera.C.M32);
+                coll.ViewModel.CameraCenter = new Vector2(coll.Camera.C.M31, coll.Camera.C.M32);
                 coll.ViewModel.CameraScale = coll.Camera.S.M11;
             }
 
@@ -257,26 +259,21 @@ namespace NuSysApp
                 if (NuSysRenderer.Instance.Selections.Count == 0)
                     _transformables.Clear();
 
-                var dt = (DateTime.Now - _lastReleased).TotalMilliseconds;
-                if (dt < 200)
-                {
-                    _lastReleased = DateTime.Now;
-                    _secondPointerStopwatch.Reset();
-                    return;
-                }
+ 
 
                 _collection.ResourceCreator.PointerMoved -= OnPointerMoved;
                 if (_distanceTraveled <20 && _secondPointerStopwatch.ElapsedMilliseconds < 150)
                 {
-                    if (_firstPointerStopWatch.ElapsedMilliseconds < 150) {
-
-                        Debug.WriteLine("Tap");
-
+                    if (_lastTap.ElapsedMilliseconds > 10 && _lastTap.ElapsedMilliseconds < 500)
+                    { 
+                        _lastTap.Reset();
+                        ItemDoubleTapped?.Invoke(_selectedRenderItem, e);
+                    } else if (_firstPointerStopWatch.ElapsedMilliseconds < 150) {
+                        _lastTap.Restart();
                         ItemTapped?.Invoke(_selectedRenderItem, e);
                     }
                     else if (_firstPointerStopWatch.ElapsedMilliseconds > 250)
                     {
-                        Debug.WriteLine("PressHoldRelease");
                         ItemLongTapped?.Invoke(_selectedRenderItem, e);
                     }
                 }
@@ -341,7 +338,7 @@ namespace NuSysApp
                             {
                                 var elemc = elem as ElementCollectionViewModel;
                                 t.CameraTranslation = elemc.CameraTranslation;
-                                t.CameraCenter = elemc.CamertaCenter;
+                                t.CameraCenter = elemc.CameraCenter;
                                 t.CameraScale = elemc.CameraScale;
                                 _transformables.Add(elem, t);
                             }

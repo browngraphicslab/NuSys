@@ -42,7 +42,7 @@ namespace NuSysApp
         private SelectMode _selectMode;
         private List<uint> _activePointers = new List<uint>();
         private ElementSelectionRenderItem _elementSelectionRenderItem;
-        private CollectionRenderItem _currentCollection;
+        public CollectionRenderItem CurrentCollection { get; private set; }
         private Dictionary<CollectionRenderItem, CollectionInteractionManager> _interactionManagers = new Dictionary<CollectionRenderItem, CollectionInteractionManager>();
         private enum LinkType { Semantic, Trail, None }
         private LinkType _currentLinkType = LinkType.Semantic;
@@ -96,19 +96,19 @@ namespace NuSysApp
         private void OnInkStopped(PointerRoutedEventArgs e)
         {
             //Debug.WriteLine("ink stopped");
-            _currentCollection.InkRenderItem.StopInkByEvent(e);
+            CurrentCollection.InkRenderItem.StopInkByEvent(e);
         }
 
         private void OnInkDrawing(PointerRoutedEventArgs e)
         {
             //Debug.WriteLine("ink drawing");
-            _currentCollection.InkRenderItem.UpdateInkByEvent(e);
+            CurrentCollection.InkRenderItem.UpdateInkByEvent(e);
         }
 
         private void OnInkStarted(PointerRoutedEventArgs e)
         {
             //Debug.WriteLine("ink started");
-            _currentCollection.InkRenderItem.StartInkByEvent(e);
+            CurrentCollection.InkRenderItem.StartInkByEvent(e);
         }
 
         private void XRenderCanvasOnPointerReleased(object sender, PointerRoutedEventArgs args)
@@ -131,36 +131,49 @@ namespace NuSysApp
 
         private void SwitchCollection(CollectionRenderItem collection)
         {
-            if (collection != _currentCollection && collection != null)
+            if (collection != CurrentCollection && collection != null)
             {
-                if (_currentCollection != null) { 
-                    _interactionManagers[_currentCollection].ItemTapped -= OnItemTapped;
-                    _interactionManagers[_currentCollection].ItemLongTapped -= OnItemLongTapped;
-                    _interactionManagers[_currentCollection].InkStarted -= OnInkStarted;
-                    _interactionManagers[_currentCollection].InkDrawing -= OnInkDrawing;
-                    _interactionManagers[_currentCollection].InkStopped -= OnInkStopped;
-                    _interactionManagers[_currentCollection].LinkCreated -= OnLinkCreated;
-                    _interactionManagers[_currentCollection].MarkingMenuPointerReleased -= OnMarkingMenuPointerReleased;
-                    _interactionManagers[_currentCollection].MarkingMenuPointerMove -= OnMarkingMenuPointerMove;
-                    _interactionManagers[_currentCollection].DuplicateCreated -= OnDuplicateCreated;
-                    _interactionManagers[_currentCollection].Dispose();
-                    _interactionManagers.Remove(_currentCollection);
+                if (CurrentCollection != null) { 
+                    _interactionManagers[CurrentCollection].ItemTapped -= OnItemTapped;
+                    _interactionManagers[CurrentCollection].ItemLongTapped -= OnItemLongTapped;
+                    _interactionManagers[CurrentCollection].ItemDoubleTapped -= OnItemDoubleTapped;
+                    _interactionManagers[CurrentCollection].InkStarted -= OnInkStarted;
+                    _interactionManagers[CurrentCollection].InkDrawing -= OnInkDrawing;
+                    _interactionManagers[CurrentCollection].InkStopped -= OnInkStopped;
+                    _interactionManagers[CurrentCollection].LinkCreated -= OnLinkCreated;
+                    _interactionManagers[CurrentCollection].MarkingMenuPointerReleased -= OnMarkingMenuPointerReleased;
+                    _interactionManagers[CurrentCollection].MarkingMenuPointerMove -= OnMarkingMenuPointerMove;
+                    _interactionManagers[CurrentCollection].DuplicateCreated -= OnDuplicateCreated;
+                    _interactionManagers[CurrentCollection].Dispose();
+                    _interactionManagers.Remove(CurrentCollection);
                 }
 
-                _currentCollection = collection;
+                CurrentCollection = collection;
 
                 _interactionManagers[collection] = new CollectionInteractionManager(collection);
                 _interactionManagers[collection].ItemTapped += OnItemTapped;
                 _interactionManagers[collection].ItemLongTapped += OnItemLongTapped;
-                _interactionManagers[_currentCollection].InkStarted += OnInkStarted;
-                _interactionManagers[_currentCollection].InkDrawing += OnInkDrawing;
-                _interactionManagers[_currentCollection].InkStopped += OnInkStopped;
-                _interactionManagers[_currentCollection].LinkCreated += OnLinkCreated;
-                _interactionManagers[_currentCollection].MarkingMenuPointerReleased += OnMarkingMenuPointerReleased;
-                _interactionManagers[_currentCollection].MarkingMenuPointerMove += OnMarkingMenuPointerMove;
-                _interactionManagers[_currentCollection].DuplicateCreated += OnDuplicateCreated;
+                _interactionManagers[collection].ItemDoubleTapped += OnItemDoubleTapped;
+                _interactionManagers[CurrentCollection].InkStarted += OnInkStarted;
+                _interactionManagers[CurrentCollection].InkDrawing += OnInkDrawing;
+                _interactionManagers[CurrentCollection].InkStopped += OnInkStopped;
+                _interactionManagers[CurrentCollection].LinkCreated += OnLinkCreated;
+                _interactionManagers[CurrentCollection].MarkingMenuPointerReleased += OnMarkingMenuPointerReleased;
+                _interactionManagers[CurrentCollection].MarkingMenuPointerMove += OnMarkingMenuPointerMove;
+                _interactionManagers[CurrentCollection].DuplicateCreated += OnDuplicateCreated;
 
             }
+        }
+
+        private void OnItemDoubleTapped(BaseRenderItem item, PointerRoutedEventArgs args)
+        {
+            var element = item as ElementRenderItem;
+            if (element == null)
+                return;
+
+            var libraryElementModelId = element.ViewModel.Controller.LibraryElementModel.LibraryElementId;
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
+            SessionController.Instance.SessionView.ShowDetailView(controller);
         }
 
         private async void OnDuplicateCreated(ElementRenderItem element, Vector2 point)
@@ -209,7 +222,7 @@ namespace NuSysApp
 
         private void OnMarkingMenuPointerReleased()
         {
-            _currentCollection.Remove(_tempLink);
+            CurrentCollection.Remove(_tempLink);
             
             if (_tempLink.Element1.ViewModel.ContentId == _tempLink.Element2.ViewModel.ContentId)
                 return;
@@ -220,7 +233,7 @@ namespace NuSysApp
             if (_selectedLinkType == LinkType.Semantic)
                 SessionController.Instance.LinksController.RequestLink(m);
             else if (_selectedLinkType == LinkType.Trail)
-                SessionController.Instance.NuSysNetworkSession.AddPresentationLink(_tempLink.Element1.ViewModel.Id, _tempLink.Element2.ViewModel.Id, _currentCollection.ViewModel.Controller.LibraryElementModel.LibraryElementId);
+                SessionController.Instance.NuSysNetworkSession.AddPresentationLink(_tempLink.Element1.ViewModel.Id, _tempLink.Element2.ViewModel.Id, CurrentCollection.ViewModel.Controller.LibraryElementModel.LibraryElementId);
         }
 
         private void OnLinkCreated(ElementRenderItem element1, ElementRenderItem element2)
@@ -239,9 +252,9 @@ namespace NuSysApp
                     break;
             }
 
-            _markingMenuStartPos = _interactionManagers[_currentCollection].MarkingMenuPointerPosition;
-            _tempLink = new TempLinkRenderItem(element1, element2, color, _currentCollection, _canvas);
-            _currentCollection.AddTempLink(_tempLink);
+            _markingMenuStartPos = _interactionManagers[CurrentCollection].MarkingMenuPointerPosition;
+            _tempLink = new TempLinkRenderItem(element1, element2, color, CurrentCollection, _canvas);
+            CurrentCollection.AddTempLink(_tempLink);
 
             /*
             if (element1.ViewModel.ContentId == element2.ViewModel.ContentId)
@@ -256,7 +269,6 @@ namespace NuSysApp
 
         private void OnItemTapped(BaseRenderItem element, PointerRoutedEventArgs args)
         {
-            Debug.WriteLine(Selections.Count);
             if (Selections.Count == 1)
             {
                 var p = args.GetCurrentPoint(null).Position;
@@ -269,8 +281,8 @@ namespace NuSysApp
                 }
                 if (_elementSelectionRenderItem.BtnPresent.HitTest(vec))
                 {
-
-                    return;
+                    var sv = SessionController.Instance.SessionView;
+                    sv.EnterPresentationMode(Selections.First().ViewModel);
                 }
             }
 
@@ -278,7 +290,7 @@ namespace NuSysApp
             var elementRenderItem = element as ElementRenderItem;
             
             var vm = InitialCollection.ViewModel;
-            if (elementRenderItem == InitialCollection || elementRenderItem == _currentCollection || elementRenderItem == null)
+            if (elementRenderItem == InitialCollection || elementRenderItem == CurrentCollection || elementRenderItem == null)
             {
                 Selections.Clear();
                 if (element == null)

@@ -164,8 +164,9 @@ namespace NuSysApp
                         {
                             PresentationLinkViewModel.Models = new HashSet<PresentationLinkModel>();
                         }
+                        NuSysRenderer.Instance.InitialCollection.AddTrail(vm);
                         PresentationLinkViewModel.Models.Add(presentationlink);
-                        new PresentationLinkView(vm);
+                        //new PresentationLinkView(vm);
                     });
 
                 }

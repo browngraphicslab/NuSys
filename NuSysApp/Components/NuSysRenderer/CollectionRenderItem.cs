@@ -45,7 +45,7 @@ namespace NuSysApp
                 T = Matrix3x2.CreateTranslation((float)vm.X, (float)vm.Y);
 
             Camera.T = Matrix3x2.CreateTranslation(vm.CameraTranslation);
-            Camera.C = Matrix3x2.CreateTranslation(vm.CamertaCenter);
+            Camera.C = Matrix3x2.CreateTranslation(vm.CameraCenter);
             Camera.S = Matrix3x2.CreateScale(vm.CameraScale);
             
 
@@ -96,6 +96,7 @@ namespace NuSysApp
             var boundariesGeom = CanvasGeometry.CreateRectangle(ds, boundaries);
             using (ds.CreateLayer(1, boundariesGeom))
             {
+                Debug.WriteLine(Camera.S.M11);
                 ds.Transform = Win2dUtil.Invert(Camera.C) * Camera.S * Camera.C * Camera.T * ds.Transform;
            
                 foreach (var item in _renderItems0.ToArray())

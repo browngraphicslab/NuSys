@@ -168,7 +168,7 @@ namespace NuSysApp
         {
             get
             {
-                return AtomViewList.Select(e => e.DataContext as ElementViewModel).Where(item => item != null).ToList();
+                return Elements.Where(item => item != null).ToList();
             }
         }
 
