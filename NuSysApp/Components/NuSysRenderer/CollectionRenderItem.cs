@@ -127,37 +127,37 @@ namespace NuSysApp
                     {
                         item = new TextElementRenderItem((TextNodeViewModel) vm, this, ResourceCreator);
                         await item.Load();
-                        _renderItems0.Add(item);
+                        _renderItems2.Add(item);
                     }
                     else if (vm is ImageElementViewModel)
                     {
                         item = new ImageElementRenderItem((ImageElementViewModel) vm, this, ResourceCreator);
                         await item.Load();
-                        _renderItems1.Add(item);
+                        _renderItems2.Add(item);
                     }
                     else if (vm is PdfNodeViewModel)
                     {
                         item = new PdfElementRenderItem((PdfNodeViewModel) vm, this, ResourceCreator);
                         await item.Load();
-                        _renderItems1.Add(item);
+                        _renderItems2.Add(item);
                     }
                     else if (vm is AudioNodeViewModel)
                     {
                         item = new AudioElementRenderItem((AudioNodeViewModel) vm, this, ResourceCreator);
                         await item.Load();
-                        _renderItems1.Add(item);
+                        _renderItems2.Add(item);
                     }
                     else if (vm is VideoNodeViewModel)
                     {
                         item = new VideoElementRenderItem((VideoNodeViewModel) vm, this, ResourceCreator);
                         await item.Load();
-                        _renderItems1.Add(item);
+                        _renderItems2.Add(item);
                     }
                     else if (vm is ElementCollectionViewModel)
                     {
                         item = new CollectionRenderItem((ElementCollectionViewModel) vm, this, ResourceCreator);
                         await item.Load();
-                        _renderItems1.Add(item);
+                        _renderItems2.Add(item);
                     }
                     else
                     {

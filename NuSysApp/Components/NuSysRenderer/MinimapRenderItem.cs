@@ -118,8 +118,8 @@ namespace NuSysApp
                 var screenRect = new Rect(0, 0, nr.Size.Width, nr.Size.Height);
                 var tl = nr.InitialCollection.ScreenPointToObjectPoint(new Vector2((float)screenRect.X, (float)screenRect.Y));
                 var tr = nr.InitialCollection.ScreenPointToObjectPoint(new Vector2((float)screenRect.X + (float)screenRect.Width, (float)screenRect.Y + (float)screenRect.Height));
-
-                var rects = _collection.Elements.Select(vm => new Rect(vm.X, vm.Y, vm.Width, vm.Height)).ToList();
+                
+                var rects = _collection.Elements.Select(vm => new Rect(Math.Max(0,vm.X), Math.Max(vm.Y, 0), Math.Max(0,vm.Width), Math.Max(vm.Height,0))).ToList();
                 rects.Add(new Rect(tl.X, tl.Y, tr.X - tl.X, tr.Y - tl.Y));
                 _bb = GetBoundingRect(rects);
                 var c = Matrix3x2.CreateTranslation((float)_bb.X, (float)_bb.Y);
@@ -139,7 +139,7 @@ namespace NuSysApp
                 var trp = Vector2.Transform(tr, dss.Transform);
                 dss.Transform = Matrix3x2.Identity;
                 var strokeWidth = 3f;
-                dss.DrawRectangle(new Rect(tlp.X + strokeWidth, tlp.Y + strokeWidth, Math.Max(0, trp.X - tlp.X - strokeWidth*2),  Math.Max(0, trp.Y - tlp.Y - strokeWidth * 2)), Colors.DarkRed, 3f );
+                dss.DrawRectangle(new Rect(tlp.X - strokeWidth, tlp.Y - strokeWidth, Math.Max(0, trp.X - tlp.X + strokeWidth*2),  Math.Max(0, trp.Y - tlp.Y + strokeWidth * 2)), Colors.DarkRed, 3f );
             }
 
             IsDirty = false;

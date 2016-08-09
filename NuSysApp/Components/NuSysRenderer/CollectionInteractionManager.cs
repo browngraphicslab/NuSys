@@ -439,19 +439,11 @@ namespace NuSysApp
 
         protected void PanZoom(I2dTransformable target, Matrix3x2 transform, Vector2 centerPoint, float dx, float dy, float ds)
         {
-           // Debug.WriteLine(_collection.ViewModel.Title);
-  
+ 
             var cInv = Win2dUtil.Invert(target.C);
-
-          //  Matrix3x2 inverse;
-          //  Matrix3x2.Invert(, out inverse);
-
             var inverse = Win2dUtil.Invert(cInv * target.S * target.C * target.T * transform);
 
             var center = Vector2.Transform(new Vector2(centerPoint.X, centerPoint.Y), inverse);
-
-            //var center = compositeTransform.Inverse.TransformPoint(centerPoint);
-
             var tmpTranslate = Matrix3x2.CreateTranslation(target.C.M31, target.C.M32);
             Matrix3x2 tmpTranslateInv;
             Matrix3x2.Invert(tmpTranslate, out tmpTranslateInv);

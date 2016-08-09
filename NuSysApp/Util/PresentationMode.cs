@@ -26,7 +26,6 @@ namespace NuSysApp
 
         // Animation Values
         private CompositeTransform _originalTransform;
-     //   private DispatcherTimer _timer;
         private Storyboard _storyboard;
         private SolidColorBrush _backwardColor = Application.Current.Resources["lighterredcolor"] as SolidColorBrush;
         private SolidColorBrush _forwardColor = Application.Current.Resources["color4"] as SolidColorBrush;
@@ -123,7 +122,8 @@ namespace NuSysApp
         /// </summary>
         public void ExitMode()
         {
-            AnimatePresentation(_originalTransform.ScaleX-0.2, _originalTransform.CenterX, _originalTransform.CenterY, _originalTransform.TranslateX, _originalTransform.TranslateY, 400);
+            _originalTransform = MakeShallowCopy(NuSysRenderer.Instance.CurrentCollection.Camera);
+            AnimatePresentation(_originalTransform.ScaleX - _originalTransform.ScaleX*0.3, _originalTransform.CenterX, _originalTransform.CenterY, _originalTransform.TranslateX, _originalTransform.TranslateY, 400);
         }
 
         /// <summary>
@@ -138,8 +138,8 @@ namespace NuSysApp
             Debug.Assert(currentElemVm != null);
             Debug.Assert(PresentationLinkViewModel.Models != null);
             // there might be more than one outgoing link but we always just choose one
-            var outgoingLink = PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.InElementId == currentElemVm.Id);
-            var nextElemVm = outgoingLink?.OutElementViewModel;
+            var outgoingLink = PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.OutElementId == currentElemVm.Id);
+            var nextElemVm = outgoingLink?.InElementViewModel;
             return nextElemVm;
 
         }
@@ -156,8 +156,8 @@ namespace NuSysApp
             Debug.Assert(currentElemVm != null);
             Debug.Assert(PresentationLinkViewModel.Models != null);
             // there might be more than one outgoing link but we always just choose one
-            var incomingLink = PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.OutElementId == currentElemVm.Id);
-            var prevElemVm = incomingLink?.InElementViewModel;
+            var incomingLink = PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.InElementId == currentElemVm.Id);
+            var prevElemVm = incomingLink?.OutElementViewModel;
             return prevElemVm;
         }
 
@@ -188,8 +188,7 @@ namespace NuSysApp
             // Determines tag adjustment by getting the height of the tag container from the view
             double tagAdjustment = 0;
 
-            var view = NuSysRenderer.Instance.CurrentCollection.ViewModel.Elements.Where(
-                    item => item.Id == elementToBeFullScreened.Id);
+            var view = NuSysRenderer.Instance.CurrentCollection.ViewModel.Elements.Where(item => item.Id == elementToBeFullScreened.Id);
 
             /*
             if (view.Count() == 0)
@@ -207,11 +206,11 @@ namespace NuSysApp
             // Define some variables that will be used in future translation/scaling
             var nodeWidth = elementToBeFullScreened.Width;
             var nodeHeight = elementToBeFullScreened.Height + 40 + tagAdjustment; // 40 for title adjustment
-            var sv = SessionController.Instance.SessionView;
+           // var sv = SessionController.Instance.SessionView;
             var x = elementToBeFullScreened.Model.X + nodeWidth / 2;
             var y = elementToBeFullScreened.Model.Y - 40 + nodeHeight / 2;
-            var widthAdjustment = sv.ActualWidth / 2;
-            var heightAdjustment = sv.ActualHeight / 2;
+            var widthAdjustment = NuSysRenderer.Instance.CurrentCollection.ViewModel.Width / 2;
+            var heightAdjustment = NuSysRenderer.Instance.CurrentCollection.ViewModel.Height / 2;
 
             // Reset the scaling and translate the free form viewer so that the passed in element is at the center
             var scaleX = 1;
@@ -224,7 +223,7 @@ namespace NuSysApp
             // Scale based on the width and height proportions of the current node
             if (nodeWidth > nodeHeight)
             {
-                scale = sv.ActualWidth / nodeWidth;
+                scale = NuSysRenderer.Instance.CurrentCollection.ViewModel.Width / nodeWidth;
                 if (nodeWidth - nodeHeight <= 20)
                     scale = scale * .50;
                 else
@@ -234,7 +233,7 @@ namespace NuSysApp
 
             else
             {
-                scale = sv.ActualHeight / nodeHeight;
+                scale = NuSysRenderer.Instance.CurrentCollection.ViewModel.Height / nodeHeight;
                 scale = scale * .7;
             }
 
@@ -268,24 +267,13 @@ namespace NuSysApp
             var centerAnimationY = MakeAnimationElement(y, "CenterY", duration);
             var translateAnimationX = MakeAnimationElement(translateX, "TranslateX", duration);
             var translateAnimationY = MakeAnimationElement(translateY, "TranslateY", duration);
-            var animationList = new List<DoubleAnimation>(new DoubleAnimation[] { translateAnimationX, translateAnimationY,  centerAnimationX, centerAnimationY, scaleAnimationX, scaleAnimationY});
+            var animationList = new List<DoubleAnimation>(new DoubleAnimation[] { translateAnimationX, translateAnimationY, centerAnimationX, centerAnimationY,  scaleAnimationX, scaleAnimationY});
 
             // Add each animation to the storyboard
             foreach (var anim in animationList)
             {
                 _storyboard.Children.Add(anim);
             }
-
-            // Saves the final product as a composite transform and updates other transforms based on this
-            var tt = new CompositeTransform
-            {
-                TranslateX = translateX,
-                TranslateY = translateY,
-                ScaleX = scale,
-                ScaleY = scale,
-                CenterX = x,
-                CenterY = y
-            };
 
             CompositionTarget.Rendering -= CompositionTargetOnRendering;
             CompositionTarget.Rendering += CompositionTargetOnRendering;
@@ -310,7 +298,6 @@ namespace NuSysApp
             NuSysRenderer.Instance.CurrentCollection.Camera.C = Matrix3x2.CreateTranslation((float)_originalTransform.CenterX, (float)_originalTransform.CenterY);
             NuSysRenderer.Instance.CurrentCollection.Camera.S = Matrix3x2.CreateScale((float)_originalTransform.ScaleX, (float)_originalTransform.ScaleY);
             NuSysRenderer.Instance.CurrentCollection.ViewModel.CameraTranslation = new Vector2((float) _originalTransform.TranslateX, (float) _originalTransform.TranslateY);
-            NuSysRenderer.Instance.CurrentCollection.ViewModel.CameraCenter = new Vector2((float)_originalTransform.CenterX, (float)_originalTransform.CenterY);
             NuSysRenderer.Instance.CurrentCollection.ViewModel.CameraCenter = new Vector2((float)_originalTransform.CenterX, (float)_originalTransform.CenterY);
             NuSysRenderer.Instance.CurrentCollection.ViewModel.CameraScale = (float) _originalTransform.ScaleX;
 
