@@ -43,7 +43,7 @@ namespace NusysServer
             var aliases = cleaned.Select(m => ElementModelFactory.CreateFromMessage(m));
 
             //create new args to return
-            var returnArgs = new GetEntireWorkspaceRequestArgs();
+            var returnArgs = new GetEntireWorkspaceRequestReturnArgs();
 
             returnArgs.ContentMessages = contentDataModels.Select(m => JsonConvert.SerializeObject(m));
             returnArgs.AliasStrings = aliases.Select(m => JsonConvert.SerializeObject(m));

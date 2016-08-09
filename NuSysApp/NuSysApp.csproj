@@ -631,7 +631,6 @@
     <Compile Include="Network\Requests\NewElementRequest.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewContentRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewPdfContentRequestArgs.cs" />
-    <Compile Include="Network\Requests\RequestArgs\IRequestArgumentable.cs" />
     <Compile Include="Network\Requests\RequestArgs\NewElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\ElementUpdateRequest.cs" />

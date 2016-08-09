@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NusysIntermediate
 {
-    public class GetEntireWorkspaceRequestArgs
+    public class GetEntireWorkspaceRequestReturnArgs
     {
         public IEnumerable<string> AliasStrings;
         public IEnumerable<string> ContentMessages;
