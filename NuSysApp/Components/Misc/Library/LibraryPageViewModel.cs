@@ -73,36 +73,47 @@ namespace NuSysApp
                 //ItemList.Remove(new LibraryItemTemplate(controller));
             });
         }
+
         public async Task Sort(string s, bool reverse = false)
         {
             List<LibraryItemTemplate> ordered = null;
             switch (s)
             {
-                //case "title":
-                //    ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.Title);
-                //    break;
-                //case "nodetype":
-                //    ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.NodeType.ToString());
-                //    break;
-                case "Title":
-                    ordered = new List<LibraryItemTemplate>(ItemList.OrderBy(l => ((LibraryItemTemplate)l).Title));
+                case "TitleButton":
+                    this.SortTitle(ordered, reverse);
                     break;
-                case "Type":
-                    ordered = new List<LibraryItemTemplate>(ItemList.OrderBy(l => ((LibraryItemTemplate)l).Type.ToString()));
-                    break;
-                case "Date/Time":
-                    ordered = new List<LibraryItemTemplate>(ItemList.OrderByDescending(l => Constants.GetTimestampTicksOfLibraryElementModel((LibraryItemTemplate)l)));
+                case "TypeButton":
+                    this.SortType(ordered, reverse);
                     break;
                 default:
+                    this.SortDate(ordered, reverse);
                     break;
             }
+        }
+
+        public async Task SortTitle(List<LibraryItemTemplate> ordered, bool reverse)
+        {
+            ordered = new List<LibraryItemTemplate>(ItemList.OrderBy(l => ((LibraryItemTemplate)l).Title));
+            if (reverse) Reverse(ordered);
+        }
+
+        public async Task SortType(List<LibraryItemTemplate> ordered, bool reverse)
+        {
+            ordered = new List<LibraryItemTemplate>(ItemList.OrderBy(l => ((LibraryItemTemplate)l).Type.ToString()));
+            if (reverse) Reverse(ordered);
+        }
+
+        public async Task SortDate(List<LibraryItemTemplate> ordered, bool reverse)
+        {
+            ordered = new List<LibraryItemTemplate>(ItemList.OrderByDescending(l => Constants.GetTimestampTicksOfLibraryElementModel((LibraryItemTemplate)l)));
+            if (reverse) Reverse(ordered);
+        }
+
+        public async Task Reverse(List<LibraryItemTemplate> ordered)
+        {            
             if (ordered != null)
             {
-                if (reverse)
-                {
-                    ordered.Reverse();
-                }
-                //  ObservableCollection<LibraryElementModel> newCollection = new ObservableCollection<LibraryElementModel>();
+                ordered.Reverse();
                 ItemList.Clear();
 
                 foreach (var item in ordered)

@@ -41,7 +41,6 @@ namespace NuSysApp
 
         private CompositeTransform _ct;
         private LibraryView _library;
-        private Dictionary<string, bool> _reverseTable = new Dictionary<string, bool>();
 
 
         // used to check if library list items are single tapped or double tapped
@@ -95,21 +94,10 @@ namespace NuSysApp
             }
         }
 
-        public async Task Sort(string s, bool reverse = false)
-        {
-            await ((LibraryPageViewModel)this.DataContext).Sort(s, reverse);
-  //          this.SetItems(((LibraryPageViewModel)this.DataContext).PageElements);
-        }
-
         public async Task Search(string s)
         {
             await ((LibraryPageViewModel)this.DataContext).Search(s);
             //this.SetItems(((LibraryPageViewModel)this.DataContext).PageElements);
-        }
-
-        public async void Update()
-        {
-            //this.SetItems(((LibraryPageViewModel)this.DataContext).ItemList);
         }
 
         private void LibraryListItem_OnPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -132,12 +120,13 @@ namespace NuSysApp
 
         private async void Sort_Button_Click(object sender, RoutedEventArgs e)
         {
-            var btnStr = ((Button) sender).Content.ToString();
-            if (_reverseTable.ContainsKey(btnStr))
-                _reverseTable[btnStr] = !_reverseTable[btnStr];
-            else
-                _reverseTable.Add(btnStr, false);
-            Sort(btnStr, _reverseTable[btnStr]);
+            var btnStr = ((Button) sender).Name;
+            Sort(btnStr, true);
+        }
+
+        public async Task Sort(string s, bool reverse = false)
+        {
+            await ((LibraryPageViewModel)this.DataContext).Sort(s, reverse);
         }
         private void LibraryListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {

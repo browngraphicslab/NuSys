@@ -96,7 +96,7 @@ namespace NuSysApp
 
         public async Task Sort(string s, bool reverse = false)
         {
-            await ((LibraryPageViewModel)this.DataContext).Sort(s);
+            await ((LibraryPageViewModel)this.DataContext).Sort(s, reverse);
 
 
             var numCols = 3;
