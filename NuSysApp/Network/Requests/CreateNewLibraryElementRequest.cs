@@ -11,6 +11,10 @@ namespace NuSysApp
 {
     public class CreateNewLibraryElementRequest : Request
     {
+        /// <summary>
+        /// default constructor for from-server deserialization
+        /// </summary>
+        /// <param name="m"></param>
         public CreateNewLibraryElementRequest(Message m) : base(NusysConstants.RequestType.CreateNewLibraryElementRequest, m)
         {
         }
@@ -41,12 +45,7 @@ namespace NuSysApp
         /// Takes in an arguments class.  Check the class properties to see which are required.  
         /// </summary>
         /// <returns></returns>
-        public CreateNewLibraryElementRequest(CreateNewLibraryElementRequestArgs args) :  base(NusysConstants.RequestType.CreateNewLibraryElementRequest)
-        {
-            var message = args.PackToRequestKeys();
-            _message.ForEach(kvp => message[kvp.Key] = kvp.Value);
-            _message = message;
-        }
+        public CreateNewLibraryElementRequest(CreateNewLibraryElementRequestArgs args) :  base(args,NusysConstants.RequestType.CreateNewLibraryElementRequest){}
 
         /// <summary>
         /// this method will parse and add the returned library Element after the request has successfully returned. 

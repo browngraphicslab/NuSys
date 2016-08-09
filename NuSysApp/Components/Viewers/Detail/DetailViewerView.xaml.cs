@@ -54,7 +54,7 @@ namespace NuSysApp
                 }
 
                 // if this fails uncomment the line below, if this doesn't fail remove it completely
-                Debug.Assert(xRegionEditorView.DataContext == DataContext);
+                Debug.Assert(xRegionEditorView?.DataContext == DataContext);
                 //xRegionEditorView.DataContext = DataContext;
 
                 var vm = dataContext;

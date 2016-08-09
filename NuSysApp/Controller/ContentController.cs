@@ -174,15 +174,10 @@ namespace NuSysApp
             return _contentDataModels.ContainsKey(contentId) ? _contentDataModels[contentId] : null;
         }
 
-        public bool AddContentDataModel(string contentId, string data)
+        //use this method to clear every contentData model from this controller
+        public void ClearAllContentDataModels()
         {
-            Debug.Assert(contentId != null);
-            if (_contentDataModels.ContainsKey(contentId))
-            {
-                return false;
-            }
-            _contentDataModels.TryAdd(contentId, new ContentDataModel(contentId, data));
-            return true;
+            _contentDataModels.Clear();
         }
 
         /// <summary>
@@ -199,12 +194,6 @@ namespace NuSysApp
             }
             _contentDataModels.TryAdd(contentDataModel.ContentId, contentDataModel);
             return true;
-        }
-
-    public bool ContentExists(string contentId)
-        {
-            Debug.Assert(contentId != null);
-            return _contentDataModels.ContainsKey(contentId);
         }
     }
 }

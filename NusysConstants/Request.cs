@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace NusysIntermediate
@@ -42,6 +43,31 @@ namespace NusysIntermediate
             _requestType = (NusysConstants.RequestType)Enum.Parse(typeof(NusysConstants.RequestType), _message.GetString(NusysConstants.REQUEST_TYPE_STRING_KEY));//set the request type
 
         }
+
+        /// <summary>
+        /// optional constructor for requests on the client-side.  
+        /// You should populate the correct IRequestArgumentable and then pass it in here.  
+        /// This will simply merge the IRequestArgumentable's PackToRequestKeys() message and merge it with the protected _message in all requests.
+        /// Any merge conflicts will result in the _message class's original value for the conflicted key;
+        /// 
+        /// This also will need to take in the request type
+        /// </summary>
+        /// <param name="requestArgs"></param>
+        public Request(IRequestArgumentable requestArgs, NusysConstants.RequestType requestType) : this(requestType)
+        {
+            //gets the keys from the RequestArgs class using the IRequestArgumentable's PackToRequestKeys()
+            var argsMessage = requestArgs.PackToRequestKeys();
+
+            //for each key-value-pair in _message, add it to the argsMessage
+            foreach(var kvp in _message)
+            {
+                argsMessage[kvp.Key] = kvp.Value;
+            };
+
+            //set the new _message to be the updated args message
+            _message = argsMessage;
+        }
+
         public Message GetFinalMessage()
         {
             _message["request_type"] = _requestType.ToString();

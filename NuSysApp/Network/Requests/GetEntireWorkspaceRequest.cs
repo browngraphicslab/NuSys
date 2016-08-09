@@ -16,6 +16,11 @@ namespace NuSysApp
     {
         private List<ContentDataModel> _returnedContentDataModels;
         private List<ElementModel> _returnedElementModels;
+
+        /// <summary>
+        /// this is the preferred constructor.  It takes in a LibaryElementId of the collection you want to fetch.  
+        /// </summary>
+        /// <param name="collectionId"></param>
         public GetEntireWorkspaceRequest(string collectionId) : base(NusysConstants.RequestType.GetEntireWorkspaceRequest)
         {
             _message[NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_COLLECTION_ID_KEY] = collectionId;
@@ -64,7 +69,7 @@ namespace NuSysApp
             Debug.Assert(_returnMessage.ContainsKey(NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY));
             try
             {
-                var args = _returnMessage.Get<GetEntireWorkspaceRequestArgs>(NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY);
+                var args = _returnMessage.Get<GetEntireWorkspaceRequestReturnArgs>(NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY);
 
                 //create the aliases from the returned args strings
                 _returnedElementModels = new List<ElementModel>();
