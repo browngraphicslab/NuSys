@@ -199,6 +199,7 @@
     <Compile Include="Util\Constants.cs" />
     <Compile Include="Util\ErrorLog.cs" />
     <Compile Include="Util\FileHelper.cs" />
+    <Compile Include="Util\PropertiesParser.cs" />
     <Compile Include="Util\SelectQuery\ITableRepresentable.cs" />
     <Compile Include="Util\SelectQuery\JoinedTable.cs" />
     <Compile Include="Util\SelectQuery\SingleTable.cs" />

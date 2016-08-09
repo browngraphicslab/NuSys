@@ -21,16 +21,16 @@ namespace NusysServer
             Debug.Assert(request.GetRequestType() == NusysConstants.RequestType.GetAllLibraryElementsRequest);
 
             //Joins alias and library element tables where alias.libraryelementid = libraryelement.libraryelementid
-            SqlJoinOperationArgs aliasJoinLibraryElementArgs = new SqlJoinOperationArgs();
-            aliasJoinLibraryElementArgs.LeftTable = new SingleTable(Constants.SQLTableType.LibraryElement);
-            aliasJoinLibraryElementArgs.RightTable = new SingleTable(Constants.SQLTableType.Properties);
-            aliasJoinLibraryElementArgs.JoinOperator = Constants.JoinedType.LeftJoin;
-            aliasJoinLibraryElementArgs.Column1 = Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement,
+            SqlJoinOperationArgs libraryElementJoinProperties = new SqlJoinOperationArgs();
+            libraryElementJoinProperties.LeftTable = new SingleTable(Constants.SQLTableType.LibraryElement);
+            libraryElementJoinProperties.RightTable = new SingleTable(Constants.SQLTableType.Properties);
+            libraryElementJoinProperties.JoinOperator = Constants.JoinedType.LeftJoin;
+            libraryElementJoinProperties.Column1 = Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement,
                 NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY).First();
-            aliasJoinLibraryElementArgs.Column2 = Constants.GetFullColumnTitle(Constants.SQLTableType.Properties,
+            libraryElementJoinProperties.Column2 = Constants.GetFullColumnTitle(Constants.SQLTableType.Properties,
                 NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY).First();
-            JoinedTable aliasJoinLibraryElement = new JoinedTable(aliasJoinLibraryElementArgs);
-            //creates a list of all columns from alias, content, and properties tables
+            JoinedTable aliasJoinLibraryElement = new JoinedTable(libraryElementJoinProperties);
+            //creates a list of all columns from libraryelement, and properties tables
             
             var columnsToGet =
                  new List<string>(
@@ -39,8 +39,11 @@ namespace NusysServer
                     Constants.GetAcceptedKeys(Constants.SQLTableType.Properties)));
             var query = new SQLSelectQuery(columnsToGet, aliasJoinLibraryElement);
 
+            var libraryElementReturnedMessages = query.ExecuteCommand();
+            PropertiesParser propertiesParser = new PropertiesParser();
+            var libraryElementConcatPropertiesMessages = propertiesParser.ConcatMessageProperties(libraryElementReturnedMessages);
             var libraryElementModels = new List<string>();
-            foreach (var m in query.ExecuteCommand())
+            foreach (var m in libraryElementConcatPropertiesMessages)
             {
                 //add to library element models a json-serialzed version of a library element model from the factory
                 libraryElementModels.Add(JsonConvert.SerializeObject(LibraryElementModelFactory.CreateFromMessage(Constants.StripTableNames(m))));

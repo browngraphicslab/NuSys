@@ -13,7 +13,7 @@ namespace NusysServer
     {
         public static readonly string SERVER_SESSION_ID_STRING = "server_session_id";
         public static readonly string VALID_CREDENTIALS_BOOLEAN_STRING = "valid";
-        private static readonly string user = "trent";
+        private static readonly string user = "leandro";
 
         public static string WWW_ROOT {
             get
@@ -21,7 +21,7 @@ namespace NusysServer
                 switch (user)
                 {
                     case "leandro":
-                        return Directory.Exists("C:/Users/Leandro Bengzon/Documents/NuSys Server/") ? "C:/Users/Leandro Bengzon/Documents/NuSys Server/" : "D:/home/site/wwwroot/";
+                        return Directory.Exists("C:/Users/Leandro Bengzon/Documents/NuSys Server/NuSys/NusysServer/") ? "C:/Users/Leandro Bengzon/Documents/NuSys Server/NuSys/NusysServer/" : "D:/home/site/wwwroot/";
                     case "trent":
                         return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "C:/Users/graphics_lab/Documents/Trent_Nusys/nusys/NusysServer/" : "D:/home/site/wwwroot/";
                     case "harsh":
