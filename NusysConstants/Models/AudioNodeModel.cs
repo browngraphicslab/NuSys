@@ -1,16 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
-using Windows.Data.Xml.Dom;
 using Windows.Storage;
-using Windows.Storage.Streams;
-using NusysIntermediate;
 
 namespace NusysIntermediate
 {

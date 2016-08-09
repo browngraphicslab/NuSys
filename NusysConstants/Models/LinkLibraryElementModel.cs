@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.UI;
-using Newtonsoft.Json;
-using NusysIntermediate;
-
-namespace NusysIntermediate
+﻿namespace NusysIntermediate
 {
     public class LinkLibraryElementModel: LibraryElementModel
     {

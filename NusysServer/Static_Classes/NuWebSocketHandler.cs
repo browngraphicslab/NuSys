@@ -43,20 +43,6 @@ namespace NusysServer
                     this.Send(dict);
                 }
             }
-
-            var list = new List<CognitiveApiDocument>();
-
-            for(int i = 1; i <= 105; i++)
-            {
-                list.Add(new CognitiveApiDocument(i.ToString(), "There should be more spaghhetti with my pizza. The floors were just terrible."));
-            }
-
-            Task.Run(async delegate {
-                //await CognitiveApiTextProcessor.GetTextKeyPhrasesAsync(list);
-                //await CognitiveApiTextProcessor.GetTextSentimentAsync(list);
-                await CognitiveApiTextProcessor.GetTextTopicsAsync(list);
-            });
-
         }
 
         /// <summary>

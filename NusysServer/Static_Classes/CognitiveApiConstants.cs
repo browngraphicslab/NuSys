@@ -11,12 +11,12 @@ namespace NusysServer
     public class CognitiveApiConstants
     {
         /// <summary>
-        /// Used to submit requests to cognitive services computer vision api
+        /// API Key used to submit requests to cognitive services computer vision api
         /// </summary>
         public const string COMPUTER_VISION = "d670935ac1b94221be9288c5a2b3f307";
 
         /// <summary>
-        /// Used to submit requests to cognitive services text analytics api
+        /// API Key used to submit requests to cognitive services text analytics api
         /// </summary>
         public const string TEXT_ANALYTICS = "06ae6c84d15140a7a39d62527d72ec88";
     }
