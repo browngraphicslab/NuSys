@@ -80,9 +80,9 @@ namespace NuSysApp
             var rect = new Rect
             {
                 X = _vm.X,
-                Y = _vm.Y - 20 - _textLayout.DrawBounds.Height,
+                Y = _vm.Y,
                 Width = _vm.Width,
-                Height = _vm.Height+20 + _textLayout.DrawBounds.Height
+                Height = _vm.Height
             };
 
             return rect.Contains(new Point(point.X, point.Y));

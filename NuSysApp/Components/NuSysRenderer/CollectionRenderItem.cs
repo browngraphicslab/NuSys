@@ -96,7 +96,6 @@ namespace NuSysApp
             var boundariesGeom = CanvasGeometry.CreateRectangle(ds, boundaries);
             using (ds.CreateLayer(1, boundariesGeom))
             {
-                Debug.WriteLine(Camera.S.M11);
                 ds.Transform = Win2dUtil.Invert(Camera.C) * Camera.S * Camera.C * Camera.T * ds.Transform;
            
                 foreach (var item in _renderItems0.ToArray())

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
+
 using Windows.Graphics.DirectX;
 using Windows.Storage.Streams;
 using Windows.UI;
@@ -25,11 +26,29 @@ namespace NuSysApp
     {
         private TextNodeViewModel _vm;
         private HTMLParser _htmlParser;
+        private CanvasTextLayout _textItemLayout;
+        private string _textboxtext = string.Empty;
 
         public TextElementRenderItem(TextNodeViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator):base(vm, parent, resourceCreator)
         {
             _vm = vm;
             _htmlParser = new HTMLParser(resourceCreator);
+            (_vm.Controller as TextNodeController).LibraryElementController.ContentChanged += LibraryElementControllerOnContentChanged;
+        }
+
+        private void LibraryElementControllerOnContentChanged(object source, string contentData)
+        {
+            _textboxtext = contentData;
+            IsDirty = true;
+        }
+
+
+        public override void Update()
+        {
+            if (!IsDirty)
+                return;
+            _textItemLayout = _htmlParser.GetParsedText(_textboxtext, _vm.Height, _vm.Width);
+            IsDirty = false;
         }
 
         public override void Dispose()
@@ -47,20 +66,13 @@ namespace NuSysApp
 
             ds.FillRectangle( new Rect {X = 0, Y = 0, Width = _vm.Width, Height=_vm.Height}, Colors.White);
 
-            var textLayout = _htmlParser.GetParsedText(_vm.Text, _vm.Height, _vm.Width);
-            textLayout.HorizontalAlignment = CanvasHorizontalAlignment.Center;
-            ds.DrawTextLayout(textLayout, (float)_vm.X, (float)_vm.Y, Colors.Black);
-            /*
-            var f = new CanvasTextFormat();
-            f.WordWrapping = CanvasWordWrapping.Wrap;
-            f.FontSize = 10;
-            if (_vm.Text != null) { 
-                var l = new CanvasTextLayout(ResourceCreator, _vm.Text, f, (float)_vm.Width, (float)_vm.Height);
-                l.HorizontalAlignment = CanvasHorizontalAlignment.Center;
-                ds.DrawTextLayout(l, (float)_vm.X, (float)_vm.Y, Colors.Black);
-            }
-            */
-
+            if (_textItemLayout == null)
+                return;
+            //_textItemLayout = _htmlParser.GetParsedText(_vm.Controller.LibraryElementModel.Data, _vm.Height, _vm.Width);
+            //_textItemLayout.HorizontalAlignment = CanvasHorizontalAlignment.Center;
+            ds.DrawTextLayout(_textItemLayout, 0, 0, Colors.Black);
+            ds.DrawText("wooo", Vector2.Zero, Colors.Aqua);
+                
             ds.Transform = orgTransform;
 
         }
