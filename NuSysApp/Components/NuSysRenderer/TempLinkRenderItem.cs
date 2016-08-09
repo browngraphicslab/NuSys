@@ -13,16 +13,19 @@ using SharpDX.Direct2D1;
 
 namespace NuSysApp
 {
-    public class LinkRenderItem : BaseRenderItem
+    public class TempLinkRenderItem : BaseRenderItem
     {
-        private LinkViewModel _vm;
+        
         private CanvasGeometry _path;
+        public ElementRenderItem Element1;
+        public ElementRenderItem Element2;
+        public Color Color;
 
-        public LinkRenderItem(LinkViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator):base(parent, resourceCreator)
+        public TempLinkRenderItem(ElementRenderItem element1, ElementRenderItem element2, Color color, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator):base(parent, resourceCreator)
         {
-            _vm = vm;
-            _vm.Controller.InElement.AnchorChanged += OnAnchorChanged;
-            _vm.Controller.OutElement.AnchorChanged += OnAnchorChanged;
+            Element1 = element1;
+            Element2 = element2;
+            Color = color;
         }
 
         private void OnAnchorChanged(object sender, Point2d point2D)
@@ -33,9 +36,6 @@ namespace NuSysApp
         public override void Dispose()
         {
             base.Dispose();
-            _vm.Controller.InElement.AnchorChanged -= OnAnchorChanged;
-            _vm.Controller.OutElement.AnchorChanged -= OnAnchorChanged;
-            _vm = null;
             _path.Dispose();
             _path = null;
         }
@@ -44,9 +44,8 @@ namespace NuSysApp
         {
             if (!IsDirty)
                 return;
-            var controller = (LinkController)_vm.Controller;
-            var anchor1 = new Vector2((float)controller.InElement.Anchor.X, (float)controller.InElement.Anchor.Y);
-            var anchor2 = new Vector2((float)controller.OutElement.Anchor.X, (float)controller.OutElement.Anchor.Y);
+            var anchor1 = new Vector2((float)Element1.ViewModel.Anchor.X, (float)Element1.ViewModel.Anchor.Y);
+            var anchor2 = new Vector2((float)Element2.ViewModel.Anchor.X, (float)Element2.ViewModel.Anchor.Y);
 
             var distanceX = (float)anchor1.X - anchor2.X;
             var distanceY = (float)anchor1.Y - anchor2.Y;
@@ -67,14 +66,13 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds) {
             if (_path != null)
-                ds.DrawGeometry(_path, Colors.DodgerBlue, 20);
+                ds.DrawGeometry(_path, Color, 30);
         }
 
         public override bool HitTest(Vector2 point)
         {
-            var controller = _vm.Controller;
-            var anchor1 = new Point((float)controller.InElement.Anchor.X, (float)controller.InElement.Anchor.Y);
-            var anchor2 = new Point((float)controller.OutElement.Anchor.X, (float)controller.OutElement.Anchor.Y);
+            var anchor1 = new Vector2((float)Element1.ViewModel.Anchor.X, (float)Element1.ViewModel.Anchor.Y);
+            var anchor2 = new Vector2((float)Element2.ViewModel.Anchor.X, (float)Element2.ViewModel.Anchor.Y);
 
             var distanceX = (float)anchor1.X - anchor2.X;
 
@@ -86,7 +84,7 @@ namespace NuSysApp
             var pointsOnCurve = new List<Point>();
             var numPoints = 10;
             for (var i = 10; i >= 0; i--)
-                pointsOnCurve.Add(MathUtil.GetPointOnBezierCurve(p0, p1, p2, p3, 1.0 / numPoints * i));
+                pointsOnCurve.Add(MathUtil.GetPointOnBezierCurve(p0.ToPoint(), p1, p2, p3.ToPoint(), 1.0 / numPoints * i));
 
             var minDist = pointsOnCurve.Select(p => MathUtil.Dist(p, new Point(point.X, point.Y))).Concat(new[] { double.PositiveInfinity }).Min();
 

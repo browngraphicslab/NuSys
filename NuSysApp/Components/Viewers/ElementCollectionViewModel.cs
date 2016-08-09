@@ -153,10 +153,17 @@ namespace NuSysApp
 
             var vm = await _elementVmFactory.CreateFromSendable(controller);
             Elements.Add(vm);
+            
+            if (controller.LibraryElementModel.Type == ElementType.Audio || controller.LibraryElementModel.Type == ElementType.Video) { 
+                var view = await _nodeViewFactory.CreateFromSendable(controller);
+                AtomViewList.Add(view);
+            }
 
+            controller.Deleted += OnChildDeleted;
+
+
+            return;
             /*
-          var view = await _nodeViewFactory.CreateFromSendable(controller);
-          AtomViewList.Add(view);
             if (view is TextNodeView)
             {
                 var tview = (TextNodeView) view;
@@ -225,12 +232,20 @@ namespace NuSysApp
 
         private void OnChildRemoved(object source, ElementController elementController)
         {
-            //FuckYouSahilRemoveAllVisualLinks(elementController);
+            //FuckYouSahilRemoveAllVisualLinks(elementController
+
             var soughtChildren = AtomViewList.Where(a => a.DataContext is ElementViewModel && ((ElementViewModel) a.DataContext).Id == elementController.Model.Id);
             if (soughtChildren.Any())
             {
                 AtomViewList.Remove( soughtChildren.First());
             }
+
+            var soughtChildren2 = Elements.Where(a => a.Id == elementController.Model.Id);
+            if (soughtChildren2.Any())
+            {
+                Elements.Remove(soughtChildren2.First());
+            }
+
             OutputLibraryIdsChanged?.Invoke(this, GetOutputLibraryIds());
         }
 

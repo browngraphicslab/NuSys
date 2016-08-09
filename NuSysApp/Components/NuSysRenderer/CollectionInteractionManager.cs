@@ -36,13 +36,21 @@ namespace NuSysApp
 
     public class CollectionInteractionManager : IDisposable
     {
-        public delegate void RenderItemSelectedHandler(BaseRenderItem element, PointerDeviceType device);
+        public delegate void RenderItemSelectedHandler(BaseRenderItem element, PointerRoutedEventArgs args);
         public delegate void InkDrawHandler(PointerRoutedEventArgs e);
+        public delegate void LinkCreatedHandler(ElementRenderItem element1, ElementRenderItem element2);
+        public delegate void DuplicatedCreated(ElementRenderItem element, Vector2 point);
+        public delegate void MarkingMenuPointerReleasedHandler();
+        public delegate void MarkingMenuPointerMoveHandler(Vector2 p);
         public event RenderItemSelectedHandler ItemTapped;
         public event RenderItemSelectedHandler ItemLongTapped;
         public event InkDrawHandler InkStarted;
         public event InkDrawHandler InkDrawing;
         public event InkDrawHandler InkStopped;
+        public event LinkCreatedHandler LinkCreated;
+        public event MarkingMenuPointerReleasedHandler MarkingMenuPointerReleased;
+        public event MarkingMenuPointerMoveHandler MarkingMenuPointerMove;
+        public event DuplicatedCreated DuplicateCreated;
 
         private enum Mode
         {
@@ -50,6 +58,7 @@ namespace NuSysApp
             Ink,
             MoveNode,
             OutOfBounds,
+            Link,
             None
         }
 
@@ -60,15 +69,19 @@ namespace NuSysApp
             new Dictionary<ElementViewModel, Transformable>();
 
         private BaseRenderItem _selectedRenderItem;
+        private BaseRenderItem _secondSelectedRenderItem;
         private Vector2 _centerPoint;
         private double _twoFingerDist;
         private double _distanceTraveled;
         private DateTime _lastReleased = DateTime.Now;
-        private Stopwatch _stopwatch = new Stopwatch();
+        private Stopwatch _secondPointerStopwatch = new Stopwatch();
         private Stopwatch _firstPointerStopWatch = new Stopwatch();
         private CollectionRenderItem _collection;
+        private uint _markingMenuPointer = uint.MaxValue;
 
         private Matrix3x2 _transform = Matrix3x2.Identity;
+
+        public Vector2 MarkingMenuPointerPosition => _markingMenuPointer == uint.MaxValue ? Vector2.Zero : PointerPoints[_markingMenuPointer];
 
         public CollectionInteractionManager(CollectionRenderItem collection)
         {
@@ -104,54 +117,64 @@ namespace NuSysApp
         {
             if (PointerPoints.Count == 0) { 
                 _mode = Mode.None;
+                _selectedRenderItem = null;
+                _secondSelectedRenderItem = null;
+                _distanceTraveled = 0;
                 _firstPointerStopWatch.Restart();
             }
 
             if (PointerPoints.Count >= 1)
-                _stopwatch.Start();
+                _secondPointerStopwatch.Start();
 
             if (e.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
                 PointerPoints.Clear();
 
-            if (CoreApplication.GetCurrentView().CoreWindow.GetAsyncKeyState(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down) || e.Pointer.PointerDeviceType == PointerDeviceType.Pen)
+            /*
+            if (CoreApplication.GetCurrentView().CoreWindow.GetAsyncKeyState(VirtualKey.A).HasFlag(CoreVirtualKeyStates.Down) || e.Pointer.PointerDeviceType == PointerDeviceType.Pen)
             {
                 _mode = Mode.Ink;
             }
+
+            if (CoreApplication.GetCurrentView().CoreWindow.GetAsyncKeyState(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down) || e.Pointer.PointerDeviceType == PointerDeviceType.Pen)
+            {
+                _mode = Mode.Link;
+            }
+            */
 
 
             var p = e.GetCurrentPoint(null).Position;
             PointerPoints.Add(e.Pointer.PointerId, new Vector2((float) p.X, (float) p.Y));
             var until = NuSysRenderer.Instance.GetTransformUntil(_collection);
             _transform = Win2dUtil.Invert(_collection.C)*_collection.S*_collection.C*_collection.T *  until;
+            
+
+
             if (PointerPoints.Count >= 2)
             {
                 UpdateCenterPoint();
                 UpdateDist();
-                _mode = Mode.PanZoom;
                 _transformables.Clear();
-            }
-            else if (_mode != Mode.Ink)
-            {
-                _centerPoint = new Vector2((float) p.X, (float) p.Y);
-                _selectedRenderItem = NuSysRenderer.Instance.GetRenderItemAt(p, _collection, 1);
 
-                if (_selectedRenderItem == _collection)
+                
+                if (_firstPointerStopWatch.ElapsedMilliseconds > 300)
                 {
-                    _mode = Mode.PanZoom;
-                }
-                else if (_selectedRenderItem == null)
-                {
-                    _mode = Mode.OutOfBounds;
-                    return;
-                }
-                else
-                {
-                    _mode = Mode.MoveNode;
-                }
+                    _secondSelectedRenderItem = NuSysRenderer.Instance.GetRenderItemAt(p, _collection, 1);
+                    if (_selectedRenderItem != null && _selectedRenderItem != _collection && _secondSelectedRenderItem != null && _secondSelectedRenderItem != _collection)
+                    {
+                        _markingMenuPointer = e.Pointer.PointerId;
+                        LinkCreated?.Invoke((ElementRenderItem)_selectedRenderItem, (ElementRenderItem)_secondSelectedRenderItem);
+                    }
+                    else if (_selectedRenderItem != null && _selectedRenderItem != _collection && _secondSelectedRenderItem == _collection)
+                    {
+                        DuplicateCreated?.Invoke((ElementRenderItem)_selectedRenderItem, PointerPoints[e.Pointer.PointerId]);
+                    }
+
+                } 
             }
-            else if (_mode == Mode.Ink)
+            else
             {
-                InkStarted?.Invoke(e);   
+                _selectedRenderItem = NuSysRenderer.Instance.GetRenderItemAt(p, _collection, 1);
+                _centerPoint = new Vector2((float) p.X, (float) p.Y);
             }
 
             _collection.ResourceCreator.PointerMoved += OnPointerMoved;
@@ -159,48 +182,77 @@ namespace NuSysApp
 
         private async void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            _stopwatch.Stop();
-
-            if (PointerPoints.ContainsKey(e.Pointer.PointerId))
-                PointerPoints.Remove(e.Pointer.PointerId);
-
-            if (_mode == Mode.Ink)
-            {
-                InkStopped?.Invoke(e);
-                _stopwatch.Reset();
-                _lastReleased = DateTime.Now;
-                _distanceTraveled = 0;
-                return;
-            }
+            _secondPointerStopwatch.Stop();
 
             if (_selectedRenderItem is CollectionRenderItem)
             {
-                var coll = (CollectionRenderItem) _selectedRenderItem;
+                var coll = (CollectionRenderItem)_selectedRenderItem;
                 coll.ViewModel.CameraTranslation = new Vector2(coll.Camera.T.M31, coll.Camera.T.M32);
                 coll.ViewModel.CamertaCenter = new Vector2(coll.Camera.C.M31, coll.Camera.C.M32);
                 coll.ViewModel.CameraScale = coll.Camera.S.M11;
             }
 
+
+
+            if (PointerPoints.ContainsKey(e.Pointer.PointerId))
+                PointerPoints.Remove(e.Pointer.PointerId);
+
+            if (e.Pointer.PointerId == _markingMenuPointer)
+            {
+                MarkingMenuPointerReleased?.Invoke();
+                _markingMenuPointer = uint.MaxValue;
+                if (PointerPoints.Values.Count > 0)
+                    _centerPoint = PointerPoints.Values.First();
+                return;
+            }
+
+
+            /*
+            if (_mode == Mode.Ink)
+            {
+                InkStopped?.Invoke(e);
+                _secondPointerStopwatch.Reset();
+                _lastReleased = DateTime.Now;
+                _distanceTraveled = 0;
+                return;
+            }
+            */
+
+
+
+
+
+
+
             if (PointerPoints.Count == 1)
             {
-
                 if (_mode == Mode.OutOfBounds)
                     return;
+
+                if (_mode == Mode.Link)
+                {
+                    LinkCreated?.Invoke((ElementRenderItem)_selectedRenderItem, (ElementRenderItem)_secondSelectedRenderItem);
+                    _secondPointerStopwatch.Reset();
+                    _lastReleased = DateTime.Now;
+                    _distanceTraveled = 0;
+                    return;
+                }
 
 
                 _centerPoint = PointerPoints.Values.First();
 
-                var dt = _stopwatch.ElapsedMilliseconds;
+                var dt = _secondPointerStopwatch.ElapsedMilliseconds;
                 if (dt < 200)
                 {
                     var pp = e.GetCurrentPoint(null).Position;
                     var item = NuSysRenderer.Instance.GetRenderItemAt(pp, _collection, 1);
-                    ItemTapped?.Invoke(item, e.Pointer.PointerDeviceType);
+                    ItemTapped?.Invoke(item, e);
                 }
             }
             else if (PointerPoints.Count == 0)
             {
-                 _firstPointerStopWatch.Stop();
+
+                _firstPointerStopWatch.Stop();
 
                 if (NuSysRenderer.Instance.Selections.Count == 0)
                     _transformables.Clear();
@@ -209,30 +261,30 @@ namespace NuSysApp
                 if (dt < 200)
                 {
                     _lastReleased = DateTime.Now;
-                    _stopwatch.Reset();
+                    _secondPointerStopwatch.Reset();
                     return;
                 }
 
                 _collection.ResourceCreator.PointerMoved -= OnPointerMoved;
-                if (_distanceTraveled <20 && _stopwatch.ElapsedMilliseconds < 150)
+                if (_distanceTraveled <20 && _secondPointerStopwatch.ElapsedMilliseconds < 150)
                 {
                     if (_firstPointerStopWatch.ElapsedMilliseconds < 150) {
 
                         Debug.WriteLine("Tap");
 
-                        ItemTapped?.Invoke(_selectedRenderItem, e.Pointer.PointerDeviceType);
+                        ItemTapped?.Invoke(_selectedRenderItem, e);
                     }
                     else if (_firstPointerStopWatch.ElapsedMilliseconds > 250)
                     {
                         Debug.WriteLine("PressHoldRelease");
-                        ItemLongTapped?.Invoke(_selectedRenderItem, e.Pointer.PointerDeviceType);
+                        ItemLongTapped?.Invoke(_selectedRenderItem, e);
                     }
                 }
 
                 _distanceTraveled = 0;
             }
             _lastReleased = DateTime.Now;
-            _stopwatch.Reset();
+            _secondPointerStopwatch.Reset();
         }
 
         private void OnPointerMoved(object sender, PointerRoutedEventArgs args)
@@ -243,11 +295,18 @@ namespace NuSysApp
             var p = args.GetCurrentPoint(null).Position;
             PointerPoints[args.Pointer.PointerId] = new Vector2((float) p.X, (float) p.Y);
 
+            /*
             if (_mode == Mode.Ink)
             {
                 InkDrawing?.Invoke(args);
             }
+            */
 
+            if (_markingMenuPointer != uint.MaxValue)
+            {
+                MarkingMenuPointerMove?.Invoke(PointerPoints[_markingMenuPointer]);
+                return;
+            }
             if (PointerPoints.Count >= 2)
             {
                 if (args.Pointer.PointerId == PointerPoints.Keys.First())
@@ -320,11 +379,12 @@ namespace NuSysApp
                 {
                   //  Debug.WriteLine(_collection.ViewModel.Title);
                     PanZoom(_collection.Camera, _transform, _centerPoint, dx, dy, ds);
+                    UpdateAtomCanvas();
                 }
             }
             else if (PointerPoints.Count == 1)
             {
-                if (_mode == Mode.PanZoom)
+                if (_selectedRenderItem == _collection)
                 {
                     var currPos = args.GetCurrentPoint(null).Position;
                     var deltaX = (float) (currPos.X - _centerPoint.X);
@@ -334,6 +394,7 @@ namespace NuSysApp
                     _distanceTraveled += Math.Abs(deltaX) + Math.Abs(deltaY);
                     _centerPoint = new Vector2((float) currPos.X, (float) currPos.Y);
                     PanZoom(_collection.Camera, _transform, _centerPoint, deltaX, deltaY, 1);
+                    UpdateAtomCanvas();
                 }
                 else
                 {
@@ -366,6 +427,17 @@ namespace NuSysApp
                     }
                 }
             }
+        }
+
+        private void UpdateAtomCanvas()
+        {
+            var vm = (FreeFormViewerViewModel)NuSysRenderer.Instance.InitialCollection.ViewModel;
+            vm.CompositeTransform.TranslateX = NuSysRenderer.Instance.InitialCollection.Camera.T.M31;
+            vm.CompositeTransform.TranslateY = NuSysRenderer.Instance.InitialCollection.Camera.T.M32;
+            vm.CompositeTransform.CenterX = NuSysRenderer.Instance.InitialCollection.Camera.C.M31;
+            vm.CompositeTransform.CenterY = NuSysRenderer.Instance.InitialCollection.Camera.C.M32;
+            vm.CompositeTransform.ScaleX = NuSysRenderer.Instance.InitialCollection.Camera.S.M11;
+            vm.CompositeTransform.ScaleY = NuSysRenderer.Instance.InitialCollection.Camera.S.M22;
         }
 
         protected void PanZoom(I2dTransformable target, Matrix3x2 transform, Vector2 centerPoint, float dx, float dy, float ds)
@@ -415,6 +487,8 @@ namespace NuSysApp
             target.C = Matrix3x2.CreateTranslation(ncx, ncy);
             target.S = Matrix3x2.CreateScale((float) nsx, (float) nsy);
             target.Update();
+
+            
         }
     }
 }

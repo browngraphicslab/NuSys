@@ -51,11 +51,17 @@ namespace NuSysApp
 
         public FreeFormViewer(FreeFormViewerViewModel vm)
         {
+            DataContext = vm;
             this.InitializeComponent();
 
             vm.SelectionChanged += VmOnSelectionChanged;
             vm.Controller.Model.InqCanvas.LineFinalized += InqCanvasOnLineFinalized;
             vm.Controller.Disposed += ControllerOnDisposed;
+
+            _nodeManipulationMode = new NodeManipulationMode(this,false);
+            _nodeManipulationMode.Activate();
+            _selectMode = new SelectMode(this);
+            _selectMode.Activate();
 
             Loaded += async delegate(object sender, RoutedEventArgs args)
             {
@@ -85,9 +91,8 @@ namespace NuSysApp
 
                 await NuSysRenderer.Instance.Init(xRenderCanvas);
 
-                xRenderCanvas.PointerPressed += XRenderCanvasOnPointerPressed;
-                xRenderCanvas.PointerReleased += XRenderCanvasOnPointerReleased;
-
+                xRenderCanvas.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(XRenderCanvasOnPointerPressed), true);
+                xRenderCanvas.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(XRenderCanvasOnPointerReleased), true);
 
             };
 

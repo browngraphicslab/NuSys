@@ -16,7 +16,9 @@
 
         <Canvas x:Name="xWrapper">
 
-            <Canvas x:Name="xAtomCanvas" Visibility="Collapsed"  HorizontalAlignment="Left" Width="100000" Height="100000" RenderTransform="{Binding CompositeTransform}">
+            <xaml:CanvasAnimatedControl x:Name="xRenderCanvas" Visibility="Visible" IsFixedTimeStep="False" Width="{Binding ElementName=xFreeFormViewer, Path=Width}" Height="{Binding ElementName=xFreeFormViewer, Path=Height}" />
+
+            <Canvas x:Name="xAtomCanvas" Width="100000" Height="100000" HorizontalAlignment="Left" RenderTransform="{Binding CompositeTransform}">
                 <ItemsControl x:Name="IC"  ItemsSource="{Binding AtomViewList}" >
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -26,8 +28,7 @@
                 </ItemsControl>
             </Canvas>
 
-            <xaml:CanvasAnimatedControl x:Name="xRenderCanvas" Visibility="Visible" IsFixedTimeStep="False" Width="{Binding ElementName=xFreeFormViewer, Path=Width}" Height="{Binding ElementName=xFreeFormViewer, Path=Height}" />
-          
+              
             <local:MultiSelectMenuView x:Name="multiMenu" Visibility="Collapsed" Canvas.Top="30" Canvas.Left="300"/>
             
 

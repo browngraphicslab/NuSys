@@ -38,9 +38,11 @@ namespace NuSysApp
 
         private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
-            foreach (var newItem in args.NewItems)
-            {
-                AddElement((ElementViewModel)newItem);
+            if (args.NewItems != null) { 
+                foreach (var newItem in args.NewItems)
+                {
+                    AddElement((ElementViewModel)newItem);
+                }
             }
 
             if (args.OldItems == null)

@@ -17,15 +17,23 @@ namespace NuSysApp
     public class ElementSelectionRenderItem : BaseRenderItem
     {
         private Rect _rect;
+        private Rect _screenRect;
         private FreeFormViewerViewModel _vm;
         private bool _isVisible;
         private List<ElementRenderItem> _selectedItems = new List<ElementRenderItem>();
         private Matrix3x2 _transform;
+        public NodeMenuButtonRenderItem BtnDelete;
+        public NodeMenuButtonRenderItem BtnPresent;
 
 
         public ElementSelectionRenderItem(FreeFormViewerViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
+            BtnDelete = new NodeMenuButtonRenderItem(parent, resourceCreator);
+            BtnPresent = new NodeMenuButtonRenderItem(parent, resourceCreator);
+
+
             NuSysRenderer.Instance.Selections.CollectionChanged += SelectionsOnCollectionChanged;
+
         }
 
         private void SelectionsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
@@ -79,6 +87,9 @@ namespace NuSysApp
 
             base.Update();
 
+            BtnDelete.Update();
+            BtnPresent.Update();
+
             if (_selectedItems.Count == 0)
             {
                 _isVisible = false;
@@ -110,16 +121,22 @@ namespace NuSysApp
             var tl = Vector2.Transform(new Vector2((float)_rect.X, (float)_rect.Y), _transform);
             var tr = Vector2.Transform(new Vector2((float)(_rect.X+_rect.Width), (float)(_rect.Y + _rect.Height)), _transform);
            
-            var rect = new Rect(tl.X, tl.Y, tr.X - tl.X, tr.Y - tl.Y);
+            _screenRect = new Rect(tl.X, tl.Y, tr.X - tl.X, tr.Y - tl.Y);
             ds.Transform = Matrix3x2.Identity;
 
             var margin = 15 * ResourceCreator.DpiScale;
-            rect.X -= margin;
-            rect.Y -= margin;
-            rect.Width += margin * 2;
-            rect.Height += margin * 2;
+            _screenRect.X -= margin;
+            _screenRect.Y -= margin;
+            _screenRect.Width += margin * 2;
+            _screenRect.Height += margin * 2;
 
-            ds.DrawRectangle(rect, Colors.SlateGray, 3f, new CanvasStrokeStyle { DashCap = CanvasCapStyle.Flat, DashStyle = CanvasDashStyle.Dash, DashOffset = 10f });
+            ds.DrawRectangle(_screenRect, Colors.SlateGray, 3f, new CanvasStrokeStyle { DashCap = CanvasCapStyle.Flat, DashStyle = CanvasDashStyle.Dash, DashOffset = 10f });
+
+            BtnDelete.Postion = new Vector2((float)_screenRect.X - 40, (float)_screenRect.Y + 15);
+            BtnPresent.Postion = new Vector2((float)_screenRect.X - 40, (float)_screenRect.Y + 15 + 40);
+            BtnDelete.Draw(ds);
+            BtnPresent.Draw(ds);
+
             ds.Transform = old;
         }
 

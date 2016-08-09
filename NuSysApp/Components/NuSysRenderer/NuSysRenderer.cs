@@ -19,12 +19,13 @@ using SharpDX.Direct2D1;
 using Matrix3x2 = System.Numerics.Matrix3x2;
 using System.Numerics;
 using Windows.Devices.Input;
+using Windows.Media.Playback;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Input;
 using Windows.UI.Xaml.Input;
 using Point = Windows.Foundation.Point;
-
+using Vector2 = System.Numerics.Vector2;
 
 
 namespace NuSysApp
@@ -36,12 +37,18 @@ namespace NuSysApp
 
         private CanvasAnimatedControl _canvas;
 
+        private TempLinkRenderItem _tempLink;
         private MinimapRenderItem _minimap;
         private SelectMode _selectMode;
         private List<uint> _activePointers = new List<uint>();
         private ElementSelectionRenderItem _elementSelectionRenderItem;
         private CollectionRenderItem _currentCollection;
         private Dictionary<CollectionRenderItem, CollectionInteractionManager> _interactionManagers = new Dictionary<CollectionRenderItem, CollectionInteractionManager>();
+        private enum LinkType { Semantic, Trail, None }
+        private LinkType _currentLinkType = LinkType.Semantic;
+        private LinkType _selectedLinkType = LinkType.None;
+
+
         public CanvasAnimatedControl Canvas
         {
             get { return _canvas; }
@@ -50,6 +57,7 @@ namespace NuSysApp
         public Size Size { get; set; }
         public CollectionRenderItem InitialCollection { get; private set; }
         public ObservableCollection<ElementRenderItem> Selections { get; set; } = new ObservableCollection<ElementRenderItem>();
+        private Vector2 _markingMenuStartPos;
 
         private NuSysRenderer()
         {
@@ -73,14 +81,7 @@ namespace NuSysApp
 
             var vm = (FreeFormViewerViewModel) canvas.DataContext;
             InitialCollection = new CollectionRenderItem(vm, null, canvas, true);
-            _currentCollection = InitialCollection;
-
-            _interactionManagers[_currentCollection] = new CollectionInteractionManager(InitialCollection);
-            _interactionManagers[_currentCollection].ItemTapped += OnItemTapped;
-            _interactionManagers[_currentCollection].ItemLongTapped += OnItemLongTapped;
-            _interactionManagers[_currentCollection].InkStarted += OnInkStarted;
-            _interactionManagers[_currentCollection].InkDrawing += OnInkDrawing;
-            _interactionManagers[_currentCollection].InkStopped += OnInkStopped;
+            SwitchCollection(InitialCollection);
             
 
             vm.X = 0;
@@ -122,7 +123,7 @@ namespace NuSysApp
                 _activePointers.Add(args.Pointer.PointerId);
         }
 
-        private void OnItemLongTapped(BaseRenderItem element, PointerDeviceType device)
+        private void OnItemLongTapped(BaseRenderItem element, PointerRoutedEventArgs args)
         {
             var collection = element as CollectionRenderItem;
             SwitchCollection(collection);
@@ -132,13 +133,19 @@ namespace NuSysApp
         {
             if (collection != _currentCollection && collection != null)
             {
-                _interactionManagers[_currentCollection].ItemTapped -= OnItemTapped;
-                _interactionManagers[_currentCollection].ItemLongTapped -= OnItemLongTapped;
-                _interactionManagers[_currentCollection].InkStarted -= OnInkStarted;
-                _interactionManagers[_currentCollection].InkDrawing -= OnInkDrawing;
-                _interactionManagers[_currentCollection].InkStopped -= OnInkStopped;
-                _interactionManagers[_currentCollection].Dispose();
-                _interactionManagers.Remove(_currentCollection);
+                if (_currentCollection != null) { 
+                    _interactionManagers[_currentCollection].ItemTapped -= OnItemTapped;
+                    _interactionManagers[_currentCollection].ItemLongTapped -= OnItemLongTapped;
+                    _interactionManagers[_currentCollection].InkStarted -= OnInkStarted;
+                    _interactionManagers[_currentCollection].InkDrawing -= OnInkDrawing;
+                    _interactionManagers[_currentCollection].InkStopped -= OnInkStopped;
+                    _interactionManagers[_currentCollection].LinkCreated -= OnLinkCreated;
+                    _interactionManagers[_currentCollection].MarkingMenuPointerReleased -= OnMarkingMenuPointerReleased;
+                    _interactionManagers[_currentCollection].MarkingMenuPointerMove -= OnMarkingMenuPointerMove;
+                    _interactionManagers[_currentCollection].DuplicateCreated -= OnDuplicateCreated;
+                    _interactionManagers[_currentCollection].Dispose();
+                    _interactionManagers.Remove(_currentCollection);
+                }
 
                 _currentCollection = collection;
 
@@ -148,13 +155,126 @@ namespace NuSysApp
                 _interactionManagers[_currentCollection].InkStarted += OnInkStarted;
                 _interactionManagers[_currentCollection].InkDrawing += OnInkDrawing;
                 _interactionManagers[_currentCollection].InkStopped += OnInkStopped;
-
+                _interactionManagers[_currentCollection].LinkCreated += OnLinkCreated;
+                _interactionManagers[_currentCollection].MarkingMenuPointerReleased += OnMarkingMenuPointerReleased;
+                _interactionManagers[_currentCollection].MarkingMenuPointerMove += OnMarkingMenuPointerMove;
+                _interactionManagers[_currentCollection].DuplicateCreated += OnDuplicateCreated;
 
             }
         }
 
-        private void OnItemTapped(BaseRenderItem element, PointerDeviceType device)
+        private async void OnDuplicateCreated(ElementRenderItem element, Vector2 point)
         {
+            var targetPoint = Vector2.Transform(point, Win2dUtil.Invert(GetTransformUntil(element)));
+            element.ViewModel.Controller.RequestDuplicate(targetPoint.X, targetPoint.Y, new Message(await element.ViewModel.Model.Pack()));
+        }
+
+        private void OnMarkingMenuPointerMove(Vector2 point)
+        {
+            var range = 35f;
+            int startIndex;
+            switch (_currentLinkType)
+            {
+                case LinkType.Semantic:
+                    startIndex = 1;
+                    break;
+                case LinkType.Trail:
+                    startIndex = 2;
+                    break;
+                default:
+                    startIndex = 0;
+                    break;
+            }
+
+            var deltaY = point.Y - _markingMenuStartPos.Y;
+            var newY = startIndex * range + deltaY + range/2;
+
+            if (newY < range)
+            {
+                _selectedLinkType = LinkType.None;
+                _tempLink.Color = Colors.Transparent;
+            } else if (newY >= range && newY < range*2)
+            {
+                //_currentLinkType = LinkType.Semantic;
+                _selectedLinkType = LinkType.Semantic;
+                _tempLink.Color = Colors.CadetBlue;
+            }
+            else if (newY >= range*3)
+            {
+                //_currentLinkType = LinkType.Trail;
+                _selectedLinkType = LinkType.Trail;
+                _tempLink.Color = Colors.DarkRed;
+            }
+        }
+
+        private void OnMarkingMenuPointerReleased()
+        {
+            _currentCollection.Remove(_tempLink);
+            
+            if (_tempLink.Element1.ViewModel.ContentId == _tempLink.Element2.ViewModel.ContentId)
+                return;
+
+            var m = new Message();
+            m["id1"] = _tempLink.Element1.ViewModel.ContentId;
+            m["id2"] = _tempLink.Element2.ViewModel.ContentId;
+            if (_selectedLinkType == LinkType.Semantic)
+                SessionController.Instance.LinksController.RequestLink(m);
+            else if (_selectedLinkType == LinkType.Trail)
+                SessionController.Instance.NuSysNetworkSession.AddPresentationLink(_tempLink.Element1.ViewModel.Id, _tempLink.Element2.ViewModel.Id, _currentCollection.ViewModel.Controller.LibraryElementModel.LibraryElementId);
+        }
+
+        private void OnLinkCreated(ElementRenderItem element1, ElementRenderItem element2)
+        {
+            Color color;
+            switch (_currentLinkType)
+            {
+                case LinkType.Semantic:
+                    color = Colors.CadetBlue;
+                    break;
+                case LinkType.Trail:
+                    color = Colors.DarkRed;
+                    break;
+                default:
+                    color = Colors.Transparent;
+                    break;
+            }
+
+            _markingMenuStartPos = _interactionManagers[_currentCollection].MarkingMenuPointerPosition;
+            _tempLink = new TempLinkRenderItem(element1, element2, color, _currentCollection, _canvas);
+            _currentCollection.AddTempLink(_tempLink);
+
+            /*
+            if (element1.ViewModel.ContentId == element2.ViewModel.ContentId)
+                return;
+
+            var m = new Message();
+            m["id1"] = element1.ViewModel.ContentId;
+            m["id2"] = element2.ViewModel.ContentId;
+            SessionController.Instance.LinksController.RequestLink(m);
+            */
+        }
+
+        private void OnItemTapped(BaseRenderItem element, PointerRoutedEventArgs args)
+        {
+            Debug.WriteLine(Selections.Count);
+            if (Selections.Count == 1)
+            {
+                var p = args.GetCurrentPoint(null).Position;
+                var vec = new Vector2((float)p.X, (float)p.Y);
+                if (_elementSelectionRenderItem.BtnDelete.HitTest(vec))
+                {
+                    SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(Selections.First().ViewModel.Id));
+                    Selections.RemoveAt(0);
+                    return;
+                }
+                if (_elementSelectionRenderItem.BtnPresent.HitTest(vec))
+                {
+
+                    return;
+                }
+            }
+
+
             var elementRenderItem = element as ElementRenderItem;
             
             var vm = InitialCollection.ViewModel;
@@ -166,22 +286,26 @@ namespace NuSysApp
             }
             else
             {
-                if (device == PointerDeviceType.Mouse)
+       
+
+                if (args.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
                 {
                     var keyState = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Control);
                   
                     if (!keyState.HasFlag(CoreVirtualKeyStates.Down))
                         Selections.Clear();
-                    Selections.Add(elementRenderItem);
+                    Selections.Add((ElementRenderItem)elementRenderItem);
                 }
 
-                if (device == PointerDeviceType.Touch)
+                if (args.Pointer.PointerDeviceType == PointerDeviceType.Touch)
                 {
                     if (_activePointers.Count == 0)
                         Selections.Clear();
-                    Selections.Add(elementRenderItem);
+                    Selections.Add((ElementRenderItem)elementRenderItem);
                 }
             }
+
+
         }
 
 
@@ -294,7 +418,7 @@ namespace NuSysApp
         private void CanvasOnDraw(ICanvasAnimatedControl sender, CanvasAnimatedDrawEventArgs args)
         {
             using(var ds = args.DrawingSession) {
-                ds.Clear(Colors.LightGoldenrodYellow);
+                ds.Clear(Colors.Transparent);
                 ds.Transform = Matrix3x2.Identity;
                 InitialCollection.Draw(ds);
                 ds.Transform = Matrix3x2.Identity;

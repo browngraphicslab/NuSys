@@ -36,7 +36,7 @@ namespace NuSysApp
         public Button btnDelete = null;
         public Path resizer = null;
         public Grid bg = null;
-        public Rectangle hitArea = null;
+
         //public TextBlock tags = null;
         public Grid titleContainer = null;
         public TextBox title = null;
@@ -102,7 +102,7 @@ namespace NuSysApp
         protected override void OnApplyTemplate()
         {
             bg = (Grid)GetTemplateChild("bg");
-            hitArea = (Rectangle)GetTemplateChild("HitArea");
+
 
             isSearched = (Button) GetTemplateChild("isSearched");
             
@@ -515,8 +515,9 @@ namespace NuSysApp
                     highlight.Background = new SolidColorBrush(Colors.Transparent);
                     bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 156, 197, 194));
                     bg.BorderThickness = new Thickness(2);
-                    hitArea.Visibility = Visibility.Visible;
+   
                 }
+   
                 if (vm.IsEditing)
                 {
                     highlight.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 131, 166, 163));
@@ -524,14 +525,15 @@ namespace NuSysApp
                     highlight.Background = new SolidColorBrush(Colors.Transparent);
                     bg.BorderBrush = new SolidColorBrush(Color.FromArgb(255, 197, 158, 156));
                     bg.BorderThickness = new Thickness(2);
-                    hitArea.Visibility = Visibility.Collapsed;
                 }
+
+                return;
                 if (!(vm.IsEditing || vm.IsSelected))
                 {
                     highlight.BorderBrush = new SolidColorBrush(Colors.Black);
                     highlight.BorderThickness = new Thickness(1);
                     highlight.Visibility = Visibility.Collapsed;
-                    hitArea.Visibility = Visibility.Visible;
+                   // hitArea.Visibility = Visibility.Visible;
                     bg.BorderBrush = new SolidColorBrush(Colors.Black);
                     bg.BorderThickness = new Thickness(1);
                 }

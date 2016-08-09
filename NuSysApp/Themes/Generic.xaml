@@ -26,7 +26,7 @@
                             <Canvas x:Name="xCanvas" Grid.Row="0" Width="{Binding Width}" Height="{Binding Height}">
                                 <Grid x:Name="xTitleContainer" VerticalAlignment="Top" Width="{Binding Width}" >
                                     <Border x:Name="Rect" Background="{StaticResource color6}" BorderBrush="{StaticResource color3}" BorderThickness="1" Width="{Binding Width}"  />
-                                    <TextBox Padding="10,5,10,10" Margin="0,0" x:Name="xTitle" IsTabStop="{Binding IsSelected}" Width="{Binding Width}"  IsHitTestVisible="{Binding IsSelected}" TextWrapping="NoWrap"  Text="{Binding Title, Mode=TwoWay}" MaxHeight="80" FontSize="20" FontWeight="Bold" BorderBrush="Transparent" Background="Transparent" TextAlignment="Center" VerticalAlignment="Center" BorderThickness="0">
+                                    <TextBox Padding="10,5,10,10" Margin="0,0" x:Name="xTitle" Visibility="Collapsed" IsTabStop="{Binding IsSelected}" Width="{Binding Width}"  IsHitTestVisible="{Binding IsSelected}" TextWrapping="NoWrap"  Text="{Binding Title, Mode=TwoWay}" MaxHeight="80" FontSize="20" FontWeight="Bold" BorderBrush="Transparent" Background="Transparent" TextAlignment="Center" VerticalAlignment="Center" BorderThickness="0">
                                         <TextBox.Resources>
                                             <Style TargetType="ContentControl">
                                                 <Setter Property="Foreground" Value="Black"></Setter>
@@ -85,8 +85,7 @@
                                     </Canvas>
 
                                     <ContentControl Content="{TemplateBinding Inner}" x:Name="innerControl"  />
-                                    <Rectangle x:Name="HitArea" Height="{Binding Height}" Width="{Binding Width}" Fill="Transparent" Stroke="Transparent" />
-
+                                    
                                     <!-- TODO: Readd <local:InqCanvasView x:Name="inkCanvas" Height="{Binding 
                       RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.Height}" Width="{Binding  
                       RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext.Width}" Background="Transparent" IsHitTestVisible="{Binding 

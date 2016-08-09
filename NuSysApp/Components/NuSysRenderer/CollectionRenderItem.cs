@@ -23,13 +23,13 @@ namespace NuSysApp
     public class CollectionRenderItem : ElementRenderItem, I2dTransformable
     {
 
-        private ConcurrentBag<BaseRenderItem> _renderItems0 = new ConcurrentBag<BaseRenderItem>();
-        private ConcurrentBag<BaseRenderItem> _renderItems1 = new ConcurrentBag<BaseRenderItem>();
-        private ConcurrentBag<BaseRenderItem> _renderItems2 = new ConcurrentBag<BaseRenderItem>();
-        private ConcurrentBag<BaseRenderItem> _renderItems3 = new ConcurrentBag<BaseRenderItem>();
+        private HashSet<BaseRenderItem> _renderItems0 = new HashSet<BaseRenderItem>();
+        private HashSet<BaseRenderItem> _renderItems1 = new HashSet<BaseRenderItem>();
+        private HashSet<BaseRenderItem> _renderItems2 = new HashSet<BaseRenderItem>();
+        private HashSet<BaseRenderItem> _renderItems3 = new HashSet<BaseRenderItem>();
 
         public InkRenderItem InkRenderItem { get; set; }
-        private CollectionInteractionManager _interactionManager;
+        public CollectionInteractionManager InteractionManager;
         public ElementCollectionViewModel ViewModel;
 
         public Transformable Camera = new Transformable();
@@ -72,16 +72,16 @@ namespace NuSysApp
         {
             base.Update();
 
-            foreach (var item in _renderItems0)
+            foreach (var item in _renderItems0.ToArray())
                 item.Update();
 
-            foreach (var item in _renderItems1)
+            foreach (var item in _renderItems1.ToArray())
                 item.Update();
 
-            foreach (var item in _renderItems2)
+            foreach (var item in _renderItems2.ToArray())
                 item.Update();
 
-            foreach (var item in _renderItems3)
+            foreach (var item in _renderItems3.ToArray())
                 item.Update();
 
         }
@@ -98,16 +98,16 @@ namespace NuSysApp
             {
                 ds.Transform = Win2dUtil.Invert(Camera.C) * Camera.S * Camera.C * Camera.T * ds.Transform;
            
-                foreach (var item in _renderItems0)
+                foreach (var item in _renderItems0.ToArray())
                     item.Draw(ds);
 
-                foreach (var item in _renderItems1)
+                foreach (var item in _renderItems1.ToArray())
                     item.Draw(ds);
 
-                foreach (var item in _renderItems2)
+                foreach (var item in _renderItems2.ToArray())
                     item.Draw(ds);
 
-                foreach (var item in _renderItems3)
+                foreach (var item in _renderItems3.ToArray())
                     item.Draw(ds);
 
                 ds.Transform = orgTransform;
@@ -116,40 +116,65 @@ namespace NuSysApp
 
         private async void ElementsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            foreach (var newItem in e.NewItems)
+            if (e.NewItems != null)
             {
-                BaseRenderItem item;
-                var vm = (ElementViewModel) newItem;
-                if (vm is TextNodeViewModel)
+                foreach (var newItem in e.NewItems)
                 {
-                    item = new TextElementRenderItem((TextNodeViewModel) vm, this, ResourceCreator);
-                    await item.Load();
-                    _renderItems0.Add(item);
+                    BaseRenderItem item;
+                    var vm = (ElementViewModel) newItem;
+                    if (vm is TextNodeViewModel)
+                    {
+                        item = new TextElementRenderItem((TextNodeViewModel) vm, this, ResourceCreator);
+                        await item.Load();
+                        _renderItems0.Add(item);
+                    }
+                    else if (vm is ImageElementViewModel)
+                    {
+                        item = new ImageElementRenderItem((ImageElementViewModel) vm, this, ResourceCreator);
+                        await item.Load();
+                        _renderItems1.Add(item);
+                    }
+                    else if (vm is PdfNodeViewModel)
+                    {
+                        item = new PdfElementRenderItem((PdfNodeViewModel) vm, this, ResourceCreator);
+                        await item.Load();
+                        _renderItems1.Add(item);
+                    }
+                    else if (vm is AudioNodeViewModel)
+                    {
+                        item = new AudioElementRenderItem((AudioNodeViewModel) vm, this, ResourceCreator);
+                        await item.Load();
+                        _renderItems1.Add(item);
+                    }
+                    else if (vm is VideoNodeViewModel)
+                    {
+                        item = new VideoElementRenderItem((VideoNodeViewModel) vm, this, ResourceCreator);
+                        await item.Load();
+                        _renderItems1.Add(item);
+                    }
+                    else if (vm is ElementCollectionViewModel)
+                    {
+                        item = new CollectionRenderItem((ElementCollectionViewModel) vm, this, ResourceCreator);
+                        await item.Load();
+                        _renderItems1.Add(item);
+                    }
+                    else
+                    {
+                        item = new ElementRenderItem(vm, this, ResourceCreator);
+                        await item.Load();
+                        _renderItems2.Add(item);
+                    }
                 }
-                else if (vm is ImageElementViewModel)
-                {
-                    item = new ImageElementRenderItem((ImageElementViewModel) vm, this, ResourceCreator);
-                    await item.Load();
-                    _renderItems1.Add(item);
-                }
-                else if (vm is PdfNodeViewModel)
-                {
-                    item = new PdfElementRenderItem((PdfNodeViewModel) vm, this, ResourceCreator);
-                    await item.Load();
-                    _renderItems1.Add(item);
-                }
-                else if (vm is ElementCollectionViewModel)
-                {
-                    item = new CollectionRenderItem((ElementCollectionViewModel)vm, this, ResourceCreator);
-                    await item.Load();
-                    _renderItems1.Add(item);
-                }
-                else
-                {
-                    item = new ElementRenderItem(vm, this, ResourceCreator);
-                    await item.Load();
-                    _renderItems2.Add(item);
-                }
+            }
+
+            if (e.OldItems == null)
+                return;
+
+            var allItems = _renderItems0.Concat(_renderItems1).Concat(_renderItems2).Concat(_renderItems3);
+            foreach (var oldItem in e.OldItems)
+            {
+                var renderItem = allItems.OfType<ElementRenderItem>().Where(el => el.ViewModel == oldItem).First();
+                Remove(renderItem);
             }
         }
 
@@ -182,6 +207,18 @@ namespace NuSysApp
                 item.CreateResources();
         }
 
+        public void Remove(BaseRenderItem item)
+        {
+            if (_renderItems0.Contains(item))
+                _renderItems0.Remove(item);
+            if (_renderItems1.Contains(item))
+                _renderItems1.Remove(item);
+            if (_renderItems2.Contains(item))
+                _renderItems2.Remove(item);
+            if (_renderItems3.Contains(item))
+                _renderItems3.Remove(item);
+        }
+
 
         public void AddAdornment(InkStroke stroke)
         {
@@ -197,6 +234,12 @@ namespace NuSysApp
         {
             _renderItems1.Add(new LinkRenderItem(vm, this, ResourceCreator));
         }
+
+        public void AddTempLink(TempLinkRenderItem tempLink)
+        {
+            _renderItems1.Add(tempLink);
+        }
+
 
         public void AddTrail(PresentationLinkViewModel vm)
         {
