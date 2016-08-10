@@ -22,13 +22,13 @@ namespace NusysIntermediate
         public override void UnPackFromDatabaseKeys(Message message)
         {
             base.UnPackFromDatabaseKeys(message);
-            if (message.ContainsKey(NusysConstants.AUDIO_REGION_START_KEY))
+            if (message.ContainsKey(NusysConstants.TIMESPAN_REGION_START_KEY))
             {
-                Start = message.GetDouble(NusysConstants.AUDIO_REGION_START_KEY);
+                Start = message.GetDouble(NusysConstants.TIMESPAN_REGION_START_KEY);
             }
-            if (message.ContainsKey(NusysConstants.AUDIO_REGION_END_KEY))
+            if (message.ContainsKey(NusysConstants.TIMESPAN_REGION_END_KEY))
             {
-                End = message.GetDouble(NusysConstants.AUDIO_REGION_END_KEY);
+                End = message.GetDouble(NusysConstants.TIMESPAN_REGION_END_KEY);
             }
         }
     }

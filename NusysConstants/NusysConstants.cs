@@ -650,6 +650,12 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string LIBRARY_ELEMENT_METADATA_KEY = "library_element_metadata";
 
+            /// <summary>
+            /// This key is used to hold the clipping parent's library element Id.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// </summary>
+            public static readonly string REGION_CLIPPING_PARENT_ID_KEY = "clipping_parent_id_key";
+
             #region RectangleRegion
             /// <summary>
             /// This key is used to hold the top left point of the rectangular region when represented in message form.
@@ -670,34 +676,18 @@ namespace NusysIntermediate
             public static readonly string RECTANGLE_REGION_HEIGHT_KEY = "height";
             #endregion RectangleRegion
 
-            #region VideoRegion
-            /// <summary>
-            /// This key is used to hold the start time of a video region when represented in message form.
-            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-            /// </summary>
-            public static readonly string VIDEO_REGION_START_KEY = "start";
-
-            /// <summary>
-            /// This key is used to hold the end time of a video region when represented in message form.
-            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-            /// </summary>
-            public static readonly string VIDEO_REGION_END_KEY = "end";
-
-
-            #endregion VideoRegion
-
             #region AudioRegion
             /// <summary>
             /// This key is used to hold the start time of a audio region when represented in message form.
             /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
             /// </summary>
-            public static readonly string AUDIO_REGION_START_KEY = "start";
+            public static readonly string TIMESPAN_REGION_START_KEY = "start";
 
             /// <summary>
             /// This key is used to hold the end time of a audio region when represented in message form.
             /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
             /// </summary>
-            public static readonly string AUDIO_REGION_END_KEY = "end";
+            public static readonly string TIMESPAN_REGION_END_KEY = "end";
 
 
             #endregion AudioRegion
@@ -734,108 +724,84 @@ namespace NusysIntermediate
 
             #endregion LibraryElementModel
 
-        #region ContentDataModel
+            #region ContentDataModel
 
-        /// <summary>
-        /// The key that will hold the actual string data for the library element model.  Used in the factory class
-        /// </summary>
-        public static readonly string CONTENT_DATA_MODEL_DATA_STRING_KEY = "data_string";
+            /// <summary>
+            /// The key that will hold the actual string data for the library element model.  Used in the factory class
+            /// </summary>
+            public static readonly string CONTENT_DATA_MODEL_DATA_STRING_KEY = "data_string";
 
-        #endregion ContentDataModel
+            #endregion ContentDataModel
 
-        #region ElementModel
-        #region AreaModel
-        /// <summary>
-        /// This key is used to hold the points for the area models when represented in message form.
-        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-        /// </summary>
-        public static readonly string AREA_MODEL_POINTS_KEY = "points";
-        #endregion AreaModel
+            #region ElementModel
+            #region AreaModel
+            /// <summary>
+            /// This key is used to hold the points for the area models when represented in message form.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// </summary>
+            public static readonly string AREA_MODEL_POINTS_KEY = "points";
+            #endregion AreaModel
 
-        #region CollectionElement
-        /// <summary>
-        /// This key is used to hold the the collection view type for collection element models when represented in message form.
-        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-        /// </summary>
-        public static readonly string COLLECTION_ELEMENT_COLLECTION_VIEW_KEY = "collectionview";
-        #endregion CollectionElement
+            #region CollectionElement
+            /// <summary>
+            /// This key is used to hold the the collection view type for collection element models when represented in message form.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// </summary>
+            public static readonly string COLLECTION_ELEMENT_COLLECTION_VIEW_KEY = "collectionview";
+            #endregion CollectionElement
 
-        #region VideoElement
+            #region VideoElement
 
-        /// <summary>
-        /// This key is used to hold the X resolution for the video element models when represented in message form.
-        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-        /// </summary>
-        public static readonly string VIDEO_ELEMENT_RESOLUTION_X_KEY = "resolutionX";
+            /// <summary>
+            /// This key is used to hold the X resolution for the video element models when represented in message form.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// </summary>
+            public static readonly string VIDEO_ELEMENT_RESOLUTION_X_KEY = "resolutionX";
 
-        /// <summary>
-        /// This key is used to hold the Y resolution for the video element models when represented in message form.
-        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-        /// </summary>
-        public static readonly string VIDEO_ELEMENT_RESOLUTION_Y_KEY = "resolutionY";
+            /// <summary>
+            /// This key is used to hold the Y resolution for the video element models when represented in message form.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// </summary>
+            public static readonly string VIDEO_ELEMENT_RESOLUTION_Y_KEY = "resolutionY";
 
-        /// <summary>
-        /// This key is used to hold the data bytes for the video element models when represented in message form.
-        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-        /// </summary>
-        public static readonly string VIDEO_ELEMENT_VIDEO_DATA_BYTES = "video";
+            /// <summary>
+            /// This key is used to hold the data bytes for the video element models when represented in message form.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// </summary>
+            public static readonly string VIDEO_ELEMENT_VIDEO_DATA_BYTES = "video";
 
 
-        #endregion VideoElement
+            #endregion VideoElement
 
-        #region AudioElement
-        /// <summary>
-        /// This key is used to hold the the audio element file name when represented in message form.
-        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-        /// </summary>
-        public static readonly string AUDIO_ELEMENT_FILE_NAME_KEY = "fileName";
-        #endregion AudioElement
+            #region AudioElement
+            /// <summary>
+            /// This key is used to hold the the audio element file name when represented in message form.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// </summary>
+            public static readonly string AUDIO_ELEMENT_FILE_NAME_KEY = "fileName";
+            #endregion AudioElement
 
-        #region PdfElement
-        /// <summary>
-        /// This key is used to hold the the PDF'S page location in message form.
-        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-        /// </summary>
-        public static readonly string PDF_ELEMENT_PAGE_LOCATION_KEY = "page_location";
-        #endregion PdfElement
+            #region PdfElement
+            /// <summary>
+            /// This key is used to hold the the PDF'S page location in message form.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// </summary>
+            public static readonly string PDF_ELEMENT_PAGE_LOCATION_KEY = "page_location";
+            #endregion PdfElement
 
-        #region ImageElement
-        /// <summary>
-        /// This key is used to hold the the image element's file path in message form.
-        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-        /// </summary>
-        public static readonly string IMAGE_ELEMENT_FILE_PATH_KEY = "filepath";
-        #endregion ImageElement
+            #region ImageElement
+            /// <summary>
+            /// This key is used to hold the the image element's file path in message form.
+            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+            /// </summary>
+            public static readonly string IMAGE_ELEMENT_FILE_PATH_KEY = "filepath";
+            #endregion ImageElement
 
-        #endregion ElementModel
+            #endregion ElementModel
 
 
 
         #endregion UnPackingModelKeys
-
-        #region SubClassKeys
-
-            #region LibraryElementModel
-
-            /// <summary>
-            /// any non-basic property key must be put into this list.
-            /// For example, link is a LibraryElementModel but its LibraryElement endpoints are not basic LibraryElementProperties.  
-            /// Thus, the keys used to send and store the link ids must be added here
-            /// </summary>
-            public static readonly HashSet<string> ALL_ALLOWED_LIBRARY_ELEMENT_PROPERTY_KEYS = new HashSet<string>(LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS.Keys)
-            {
-                NEW_LIBRARY_ELEMENT_REQUEST_REGION_CLIPPING_PARENT_ID,
-                NEW_LIBRARY_ELEMENT_REQUEST_REGION_PDF_PAGE_LOCATION,
-                NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_START,
-                NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_TOP_LEFT_POINT,
-                NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_HEIGHT,
-                NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_WIDTH,
-                NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_END,
-            };
-
-            #endregion LibraryElementModel
-
-        #endregion SubClassKeys
 
         #region Enums
         /// <summary>

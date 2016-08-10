@@ -39,7 +39,7 @@ namespace NusysIntermediate
 
         public override void UnPackFromDatabaseMessage(Message props)
         {
-            if (props.ContainsKey(NusysConstants.AUDIO_ELEMENT_FILE_NAME_KEY))
+            if (props.ContainsKey(NusysConstants.AUDIO_ELEMENT_FILE_NAME_KEY))//i dont think this key ever gets set, theres no corresponding request key
             {
                 FileName = props.GetString(NusysConstants.AUDIO_ELEMENT_FILE_NAME_KEY);
             }
