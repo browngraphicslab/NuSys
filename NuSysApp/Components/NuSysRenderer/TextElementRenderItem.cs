@@ -68,10 +68,8 @@ namespace NuSysApp
 
             if (_textItemLayout == null)
                 return;
-            //_textItemLayout = _htmlParser.GetParsedText(_vm.Controller.LibraryElementModel.Data, _vm.Height, _vm.Width);
-            //_textItemLayout.HorizontalAlignment = CanvasHorizontalAlignment.Center;
+            
             ds.DrawTextLayout(_textItemLayout, 0, 0, Colors.Black);
-                
             ds.Transform = orgTransform;
 
         }

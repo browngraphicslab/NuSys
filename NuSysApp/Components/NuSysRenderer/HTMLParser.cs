@@ -11,6 +11,7 @@ namespace NuSysApp
     public struct ParseItem
     {
         public string Tag;
+        public int Size;
         public string Text;
         public int StartIndex;
         public int Length;
@@ -46,6 +47,7 @@ namespace NuSysApp
         {
             foreach (var parsedItem in _parsedItems)
             {
+                Debug.WriteLine(parsedItem.Size);
 
                 if (parsedItem.Tag == "b")
                 {
@@ -91,7 +93,22 @@ namespace NuSysApp
                 {
                     textLayout.SetFontSize(parsedItem.StartIndex, parsedItem.Length, 11);
                 }
-                
+                if (parsedItem.Tag == "font")
+                {
+                    if (parsedItem.Size == 3)
+                    {
+                        textLayout.SetFontSize(parsedItem.StartIndex, parsedItem.Length, 10);
+                    }
+                    if (parsedItem.Size == 4)
+                    {
+                        textLayout.SetFontSize(parsedItem.StartIndex, parsedItem.Length, 18);
+                    }
+                    if (parsedItem.Size == 5)
+                    {
+                        textLayout.SetFontSize(parsedItem.StartIndex, parsedItem.Length, 28);
+                    }
+                }
+
             }
         }
 
@@ -119,6 +136,7 @@ namespace NuSysApp
                 item.Length = innerString.Length;
                 item.StartIndex = characterIndex;
                 item.Tag = node.Name;
+                item.Size = node.GetAttributeValue("size", 3);
                 _parsedItems.Add(item);
                 currentIndex += item.Length;
                 characterIndex += item.Length;
@@ -135,12 +153,12 @@ namespace NuSysApp
             htmlString = htmlString.Replace("</ol>", "\n");
             htmlString = htmlString.Replace("<li>", "\n \u2022 \u0020");
             htmlString = htmlString.Replace("&nbsp;", " ");
-            htmlString = htmlString.Replace("<font size=\"5\">", "<h2>");
-            htmlString = htmlString.Replace("<font size=\"4\">", "<h4>");
+            //htmlString = htmlString.Replace("<font size=\"5\">", "<title>");
+            //htmlString = htmlString.Replace("<font size=\"4\">", "<subtitle>");
+            //htmlString = htmlString.Replace("<font size=\"3\">", "<normalText>");
             htmlString = htmlString.Replace("<div>", "");
             htmlString = htmlString.Replace("</div>", "\n");
-            
-
+           
             return htmlString;
         }
 
