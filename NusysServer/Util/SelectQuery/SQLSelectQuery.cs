@@ -78,7 +78,7 @@ namespace NusysServer
             string commandString = "";
             if (_conditionals != null)
             {
-                commandString = "SELECT " + string.Join(", ", _cleanedSelectedColumns) + " FROM " +
+                commandString = "SELECT " + string.Join(",", _cleanedSelectedColumns) + " FROM " +
                                 _fromTable.GetSqlQueryRepresentation() + " WHERE " + _conditionals.GetQueryString();
             }
             else

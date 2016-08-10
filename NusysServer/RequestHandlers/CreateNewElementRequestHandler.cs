@@ -27,6 +27,19 @@ namespace NusysServer
             //set the creator of the element as the sender
             message[NusysConstants.NEW_ELEMENT_REQUEST_CREATOR_ID_KEY] = ActiveClient.ActiveClients[senderHandler].Client.ID;
 
+            //TESTING STUFF DELETE AFTER FINISHED TESTING***************************
+            //ContentController.Instance.SqlConnector.AddStringProperty(
+            //    message.GetString(NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_ID_KEY), "test key 1",
+            //    "test value 1");
+            //ContentController.Instance.SqlConnector.AddStringProperty(
+            //    message.GetString(NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_ID_KEY), "test key 2",
+            //    "test value 2");
+            //ContentController.Instance.SqlConnector.AddStringProperty(
+            //    message.GetString(NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_ID_KEY), "test key 3",
+            //    "test value 3");
+            //****************************************************************    
+
+
             //query the library elements to get the type
             var typeQuery = new SQLSelectQuery(Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement,NusysConstants.LIBRARY_ELEMENT_TYPE_KEY ),
                 new SingleTable(Constants.SQLTableType.LibraryElement),
@@ -52,7 +65,7 @@ namespace NusysServer
             addAliasMessage[NusysConstants.ALIAS_CREATOR_ID_KEY] = message[NusysConstants.NEW_ELEMENT_REQUEST_CREATOR_ID_KEY];
 
             //take the first result and set the alias elementType as that returned type
-            addAliasMessage[NusysConstants.LIBRARY_ELEMENT_TYPE_KEY] = results.First().GetString(Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_TYPE_KEY).First());
+            addAliasMessage[NusysConstants.LIBRARY_ELEMENT_TYPE_KEY] = results.First().GetString(NusysConstants.LIBRARY_ELEMENT_TYPE_KEY);
 
             var success = ContentController.Instance.SqlConnector.AddAlias(addAliasMessage);
 

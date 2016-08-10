@@ -49,7 +49,7 @@ namespace NusysServer
 
         public void TestFunc()
         {
-            
+             
         }
 
         /// <summary>
@@ -283,7 +283,7 @@ namespace NusysServer
         /// <param name="propertyKey"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        private bool AddStringProperty(string objectId, string propertyKey, string value)
+        public bool AddStringProperty(string objectId, string propertyKey, string value)
         {
             if (NusysConstants.ILLEGAL_PROPERTIES_TABLE_KEY_NAMES.Contains(propertyKey))
             {
@@ -333,6 +333,10 @@ namespace NusysServer
         /// <returns></returns>
         public IEnumerable<Message> ExecuteSelectQueryAsMessages(SelectCommandReturnArgs args, bool includeNulls = true)
         {
+            SqlDataAdapter da = new SqlDataAdapter(args.Command);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            
             var messages = new List<Message>();
             using (var reader = args.Command.ExecuteReader())
             {
@@ -342,14 +346,23 @@ namespace NusysServer
                     {
                         var m = new Message();
                         var i = 0;
-                        foreach (var columnName in args.Columns)
+                        for (int j = 0; j < reader.FieldCount; j++)
                         {
                             if (reader[i] != null || includeNulls)
                             {
-                                m[columnName] = reader[i];
+                                m.Add(reader.GetName(i),reader[i]);
                                 i++;
                             }
                         }
+                        //foreach (var columnName in args.Columns)
+                        //{
+                        //    var x = reader[i];
+                        //    if (reader[i] != null|| includeNulls)
+                        //    {
+                        //        m[columnName] = reader[i];
+                        //        i++;
+                        //    }
+                        //}
                         messages.Add(m);
                     }
                 }
