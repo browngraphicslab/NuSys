@@ -32,12 +32,12 @@ namespace NusysServer
             JoinedTable aliasJoinLibraryElement = new JoinedTable(libraryElementJoinProperties);
             //creates a list of all columns from libraryelement, and properties tables
             
-            var columnsToGet =
-                 new List<string>(
-                Constants.GetAcceptedKeys(Constants.SQLTableType.LibraryElement)
-                .Concat(
-                    Constants.GetAcceptedKeys(Constants.SQLTableType.Properties)));
-            var query = new SQLSelectQuery(columnsToGet, aliasJoinLibraryElement);
+            //var columnsToGet =
+            //     new List<string>(
+            //    Constants.GetAcceptedKeys(Constants.SQLTableType.LibraryElement)
+            //    .Concat(
+            //        Constants.GetAcceptedKeys(Constants.SQLTableType.Properties)));
+            var query = new SQLSelectQuery(aliasJoinLibraryElement);
 
             var libraryElementReturnedMessages = query.ExecuteCommand();
             PropertiesParser propertiesParser = new PropertiesParser();

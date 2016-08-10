@@ -31,6 +31,8 @@ namespace NusysServer
                         return Directory.Exists("C:/Users/miran_000/Documents/NuSys/NusysServer/") ? "C:/Users/miran_000/Documents/NuSys/NusysServer/" : "D:/home/site/wwwroot/";
                     case "sahil":
                         return Directory.Exists("C:/Users/nusys/Documents/Sahil4/NusysServer/") ? "C:/Users/nusys/Documents/Sahil4/NusysServer/" : "D:/home/site/wwwroot/";
+                    case "book":
+                        return Directory.Exists("C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/") ? "C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/" : "D:/home/site/wwwroot/";
                     default:
                         return "";
                 }
@@ -63,6 +65,8 @@ namespace NusysServer
                             : "D:/home/site/wwwroot/";
                     case "sahil":
                         return Directory.Exists("C:/Users/nusys/Documents/Sahil4/NusysServer/") ? "C:/Users/nusys/Documents/Sahil4/NusysServer/" : "D:/home/site/wwwroot/";
+                    case "book":
+                        return Directory.Exists("C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/") ? "C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/" : "D:/home/site/wwwroot/files/";
                     default:
                         return "";
                 }
@@ -89,6 +93,8 @@ namespace NusysServer
                         return Directory.Exists("C:/Users/miran_000/Documents/NuSys/NusysServer/") ? "http://localhost:2685/" : "http://nusysrepo.azurewebsites.net/";
                     case "sahil":
                         return Directory.Exists("C:/Users/nusys/Documents/Sahil4/NusysServer/") ? "http://localhost:2685/" : "http://nusysrepo.azurewebsites.net/";
+                    case "book":
+                        return Directory.Exists("C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/") ? "http://localhost:2685/" : "http://nusysrepo.azurewebsites.net/";
                     default:
                         return "";
                 }
