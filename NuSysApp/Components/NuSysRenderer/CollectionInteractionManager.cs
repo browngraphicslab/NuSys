@@ -147,11 +147,8 @@ namespace NuSysApp
 
         private void OnPointerPenPressed(object sender, PointerRoutedEventArgs args)
         {
-            if (CoreApplication.GetCurrentView().CoreWindow.GetAsyncKeyState(VirtualKey.A).HasFlag(CoreVirtualKeyStates.Down))
-            {
-                _mode = Mode.Ink;
-                InkStarted?.Invoke(args);
-            }
+            _mode = Mode.Ink;
+            InkStarted?.Invoke(args);
         }
 
         private void OnPointerPenReleased(object sender, PointerRoutedEventArgs args)

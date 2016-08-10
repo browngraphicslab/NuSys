@@ -28,11 +28,12 @@ namespace NuSysApp
             _resourceCreator = resourceCreator;
             _textFormat = new CanvasTextFormat();
             _textFormat.WordWrapping = CanvasWordWrapping.Wrap;
-            _textFormat.FontSize = 10;
+            _textFormat.FontSize = 13;
         }
 
         public CanvasTextLayout GetParsedText(string html, double canvasHeight, double canvasWidth)
         {
+            _textFormat.FontSize = 13;
             _parsedItems = new List<ParseItem>();
             var htmlDocument = GetHTMLDocumentFromString(html);
             RecursiveParsing(htmlDocument.DocumentNode.ChildNodes, 0);
