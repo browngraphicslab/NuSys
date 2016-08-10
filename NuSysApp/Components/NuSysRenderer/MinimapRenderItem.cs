@@ -97,7 +97,7 @@ namespace NuSysApp
             if (_renderTarget == null)
                 CreateResources();
 
-            float rh = (float)NuSysRenderer.Instance.Size.Height/(float)NuSysRenderer.Instance.Size.Width;
+            float rh = (float)NuSysRenderer.Instance.CurrentCollection.ViewModel.Height/(float)NuSysRenderer.Instance.CurrentCollection.ViewModel.Width;
             float newW;
             float newH;
             if (rh < 1)
@@ -110,36 +110,93 @@ namespace NuSysApp
                 newW = 1/rh*170;
                 newH = 170;
             }
-            _rect = new Rect(NuSysRenderer.Instance.Size.Width - newW, NuSysRenderer.Instance.Size.Height - newH, newW, newH);
+            _rect = new Rect(NuSysRenderer.Instance.CurrentCollection.ViewModel.Width - newW, NuSysRenderer.Instance.CurrentCollection.ViewModel.Height - newH, newW, newH);
 
             using (var dss = _renderTarget.CreateDrawingSession())
             {
+
+                var currentColl = NuSysRenderer.Instance.CurrentCollection;
+
+                dss.Clear(Color.FromArgb(220, 0, 0, 0));
                 var nr = NuSysRenderer.Instance;
-                var screenRect = new Rect(0, 0, nr.Size.Width, nr.Size.Height);
-                var tl = nr.InitialCollection.ScreenPointToObjectPoint(new Vector2((float)screenRect.X, (float)screenRect.Y));
-                var tr = nr.InitialCollection.ScreenPointToObjectPoint(new Vector2((float)screenRect.X + (float)screenRect.Width, (float)screenRect.Y + (float)screenRect.Height));
-                
-                var rects = _collection.Elements.Select(vm => new Rect(Math.Max(0,vm.X), Math.Max(vm.Y, 0), Math.Max(0,vm.Width), Math.Max(vm.Height,0))).ToList();
-                rects.Add(new Rect(tl.X, tl.Y, tr.X - tl.X, tr.Y - tl.Y));
+                var collectionRectOrg = new Rect(NuSysRenderer.Instance.CurrentCollection.ViewModel.X,
+                    NuSysRenderer.Instance.CurrentCollection.ViewModel.Y,
+                    NuSysRenderer.Instance.CurrentCollection.ViewModel.Width,
+                    NuSysRenderer.Instance.CurrentCollection.ViewModel.Height);
+
+               var collectionRectScreen = Win2dUtil.TransformRect(collectionRectOrg, NuSysRenderer.Instance.GetTransformUntil(nr.CurrentCollection));
+
+             //   if (currentColl == NuSysRenderer.Instance.InitialCollection)
+             //       collectionRect = Win2dUtil.TransformRect(collectionRect, Win2dUtil.Invert(NuSysRenderer.Instance.GetCollectionTransform(nr.CurrentCollection)));
+
+               var rects = new List<Rect>();
+                foreach (var vm in currentColl.ViewModel.Elements)
+                {
+                    try
+                    {
+                        rects.Add(new Rect(Math.Max(0, vm.X), Math.Max(vm.Y, 0), Math.Max(0, vm.Width),
+                            Math.Max(vm.Height, 0)));
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine("Couldn't get element bounds for minimap.");
+                    }
+                }
+                rects.Add(collectionRectOrg);
                 _bb = GetBoundingRect(rects);
                 var c = Matrix3x2.CreateTranslation((float)_bb.X, (float)_bb.Y);
-                var cp = Matrix3x2.Identity;
-                Matrix3x2.Invert(c, out cp);
+                var cp = Win2dUtil.Invert(c);
 
                 var scale = Math.Min(newW / (float)_bb.Width, newH / (float)_bb.Height);
                 var s = Matrix3x2.CreateScale((float)scale);
-                dss.Transform = cp * s;
-                dss.Clear(Color.FromArgb(220,0,0,0));
-                foreach (var vm in _collection.Elements.ToArray())
+
+              //  var currentColl = NuSysRenderer.Instance.CurrentCollection;
+
+                /*
+                if (NuSysRenderer.Instance.CurrentCollection != NuSysRenderer.Instance.InitialCollection)
                 {
-                    dss.FillRectangle((float)vm.X, (float)vm.Y, (float)vm.Width, (float)vm.Height, Color.FromArgb(150,255,255,255));
+                    //var currentColl = NuSysRenderer.Instance.CurrentCollection;
+                    var scaleFactor = (float)Math.Min(_bb.Width / (float)currentColl.ViewModel.Width, _bb.Height / (float)currentColl.ViewModel.Height);
+                    var s2 = Matrix3x2.CreateScale(scaleFactor);
+                    var targetpoint = Vector2.Transform(new Vector2((float)currentColl.ViewModel.X, (float)currentColl.ViewModel.Y), cp * s);
+
+                    dss.Transform = Win2dUtil.Invert(currentColl.Camera.C) * currentColl.Camera.S * currentColl.Camera.C * currentColl.Camera.T *Win2dUtil.Invert(currentColl.C) * currentColl.S * currentColl.C * currentColl.T * cp * s;
+
+                    foreach (var vm in currentColl.ViewModel.Elements.ToArray())
+                    {
+                        Color color;
+                        if (vm.IsSelected)
+                            color = Color.FromArgb(150, 0, 102, 255);
+                        else
+                            color = Color.FromArgb(150, 255, 255, 255);
+
+                        dss.FillRectangle((float)vm.X, (float)vm.Y, (float)vm.Width, (float)vm.Height, color);
+                    }
+
+                }
+                */
+
+                dss.Transform = cp * s;
+                
+              // 
+                foreach (var vm in currentColl.ViewModel.Elements.ToArray())
+                {
+                    Color color;
+                    if (vm.IsSelected)
+                        color = Color.FromArgb(150, 0, 102, 255);
+                    else
+                        color = Color.FromArgb(150, 255, 255, 255);
+
+                    dss.FillRectangle((float)vm.X, (float)vm.Y, (float)vm.Width, (float)vm.Height, color);
                 }
 
+                /*
                 var tlp = Vector2.Transform(tl, dss.Transform);
                 var trp = Vector2.Transform(tr, dss.Transform);
                 dss.Transform = Matrix3x2.Identity;
                 var strokeWidth = 3f;
                 dss.DrawRectangle(new Rect(tlp.X - strokeWidth, tlp.Y - strokeWidth, Math.Max(0, trp.X - tlp.X + strokeWidth*2),  Math.Max(0, trp.Y - tlp.Y + strokeWidth * 2)), Colors.DarkRed, 3f );
+            */
             }
 
             IsDirty = false;
@@ -152,7 +209,9 @@ namespace NuSysApp
 
             var old = ds.Transform;
             ds.Transform = Matrix3x2.Identity;
-            ds.DrawImage(_renderTarget, _rect);
+            var x = NuSysRenderer.Instance.Size.Width - _rect.Width;
+            var y= NuSysRenderer.Instance.Size.Height - _rect.Height;
+            ds.DrawImage(_renderTarget, new Rect(x,y,_rect.Width, _rect.Height));
             ds.Transform = old;
         }
 

@@ -39,6 +39,11 @@ namespace NuSysApp
             
         }
 
+        public virtual Matrix3x2 GetTransform()
+        {
+            return Win2dUtil.Invert(C)*S*C*T;
+        }
+
         public virtual void Dispose()
         {
             ResourceCreator = null;

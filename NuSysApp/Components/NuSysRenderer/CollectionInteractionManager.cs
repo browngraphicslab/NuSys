@@ -20,6 +20,8 @@ namespace NuSysApp
 
     public class Transformable : I2dTransformable
     {
+
+        public CollectionRenderItem Parent { get; set; }
         public Matrix3x2 T { get; set; } = Matrix3x2.Identity;
         public Matrix3x2 S { get; set; } = Matrix3x2.Identity;
         public Matrix3x2 C { get; set; } = Matrix3x2.Identity;
@@ -74,12 +76,12 @@ namespace NuSysApp
         private Vector2 _centerPoint;
         private double _twoFingerDist;
         private double _distanceTraveled;
-        private DateTime _lastReleased = DateTime.Now;
         private Stopwatch _secondPointerStopwatch = new Stopwatch();
         private Stopwatch _firstPointerStopWatch = new Stopwatch();
         private Stopwatch _lastTap = new Stopwatch();
         private CollectionRenderItem _collection;
         private uint _markingMenuPointer = uint.MaxValue;
+        private BaseRenderItem _firstTappedItem;
 
         private Matrix3x2 _transform = Matrix3x2.Identity;
 
@@ -235,7 +237,6 @@ namespace NuSysApp
                 {
                     LinkCreated?.Invoke((ElementRenderItem)_selectedRenderItem, (ElementRenderItem)_secondSelectedRenderItem);
                     _secondPointerStopwatch.Reset();
-                    _lastReleased = DateTime.Now;
                     _distanceTraveled = 0;
                     return;
                 }
@@ -262,14 +263,19 @@ namespace NuSysApp
  
 
                 _collection.ResourceCreator.PointerMoved -= OnPointerMoved;
-                if (_distanceTraveled <20 && _secondPointerStopwatch.ElapsedMilliseconds < 150)
+                if (_distanceTraveled < 20 && _secondPointerStopwatch.ElapsedMilliseconds < 150)
                 {
                     if (_lastTap.ElapsedMilliseconds > 10 && _lastTap.ElapsedMilliseconds < 500)
-                    { 
+                    {
                         _lastTap.Reset();
-                        ItemDoubleTapped?.Invoke(_selectedRenderItem, e);
-                    } else if (_firstPointerStopWatch.ElapsedMilliseconds < 150) {
+                        if (_firstTappedItem == _selectedRenderItem)
+                            ItemDoubleTapped?.Invoke(_firstTappedItem, e);
+                        _firstTappedItem = null;
+                    }
+                    else if (_firstPointerStopWatch.ElapsedMilliseconds < 150)
+                    {
                         _lastTap.Restart();
+                        _firstTappedItem = _selectedRenderItem;
                         ItemTapped?.Invoke(_selectedRenderItem, e);
                     }
                     else if (_firstPointerStopWatch.ElapsedMilliseconds > 250)
@@ -277,10 +283,13 @@ namespace NuSysApp
                         ItemLongTapped?.Invoke(_selectedRenderItem, e);
                     }
                 }
+                else
+                {
+                    _firstTappedItem = null;
+                }
 
                 _distanceTraveled = 0;
             }
-            _lastReleased = DateTime.Now;
             _secondPointerStopwatch.Reset();
         }
 
@@ -374,7 +383,6 @@ namespace NuSysApp
                 }
                 else
                 {
-                  //  Debug.WriteLine(_collection.ViewModel.Title);
                     PanZoom(_collection.Camera, _transform, _centerPoint, dx, dy, ds);
                     UpdateAtomCanvas();
                 }

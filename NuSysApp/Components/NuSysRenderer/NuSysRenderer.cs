@@ -234,6 +234,9 @@ namespace NuSysApp
                 SessionController.Instance.LinksController.RequestLink(m);
             else if (_selectedLinkType == LinkType.Trail)
                 SessionController.Instance.NuSysNetworkSession.AddPresentationLink(_tempLink.Element1.ViewModel.Id, _tempLink.Element2.ViewModel.Id, CurrentCollection.ViewModel.Controller.LibraryElementModel.LibraryElementId);
+
+            _currentLinkType = _selectedLinkType;
+
         }
 
         private void OnLinkCreated(ElementRenderItem element1, ElementRenderItem element2)
@@ -288,36 +291,41 @@ namespace NuSysApp
 
 
             var elementRenderItem = element as ElementRenderItem;
-            
-            var vm = InitialCollection.ViewModel;
             if (elementRenderItem == InitialCollection || elementRenderItem == CurrentCollection || elementRenderItem == null)
             {
-                Selections.Clear();
+                ClearSelections();
                 if (element == null)
                     SwitchCollection(InitialCollection);
             }
             else
             {
-       
-
                 if (args.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
                 {
                     var keyState = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Control);
                   
                     if (!keyState.HasFlag(CoreVirtualKeyStates.Down))
-                        Selections.Clear();
-                    Selections.Add((ElementRenderItem)elementRenderItem);
+                        ClearSelections();
+                    elementRenderItem.ViewModel.IsSelected = true;
+                    Selections.Add(elementRenderItem);
                 }
 
                 if (args.Pointer.PointerDeviceType == PointerDeviceType.Touch)
                 {
                     if (_activePointers.Count == 0)
-                        Selections.Clear();
-                    Selections.Add((ElementRenderItem)elementRenderItem);
+                        ClearSelections();
+                    elementRenderItem.ViewModel.IsSelected = true;
+                    Selections.Add(elementRenderItem);
                 }
             }
+        }
 
-
+        private void ClearSelections()
+        {
+            foreach (var selection in Selections)
+            {
+                selection.ViewModel.IsSelected = false;
+            }
+            Selections.Clear();
         }
 
 
@@ -344,7 +352,7 @@ namespace NuSysApp
         public Matrix3x2 GetCollectionTransform(CollectionRenderItem collection)
         {
             var transforms = new List<CollectionRenderItem> {collection};
-
+           
             var parent = collection.Parent;
             while (parent != null)
             {
@@ -356,10 +364,11 @@ namespace NuSysApp
             return transforms.Aggregate(Matrix3x2.Identity, (current, t) => Win2dUtil.Invert(t.Camera.C)*t.Camera.S*t.Camera.C*t.Camera.T*Win2dUtil.Invert(t.C)*t.S*t.C*t.T*current);
         }
 
-        public Matrix3x2 GetTransformUntil(BaseRenderItem collection)
+        public Matrix3x2 GetTransformUntil(BaseRenderItem item, bool withCamera = false)
         {
-            var transforms = new List<BaseRenderItem>();
-            var parent = collection.Parent;
+            var transforms = new List<I2dTransformable>();
+        
+            var parent = item.Parent;
             while (parent != null)
             {
                 transforms.Add(parent);
@@ -370,6 +379,8 @@ namespace NuSysApp
 
             return transforms.Select(t1 => t1 as CollectionRenderItem).Aggregate(Matrix3x2.Identity, (current, t) => Win2dUtil.Invert(t.Camera.C)*t.Camera.S*t.Camera.C*t.Camera.T*Win2dUtil.Invert(t.C)*t.S*t.C*t.T*current);
         }
+
+
 
         private BaseRenderItem _GetRenderItemAt(CollectionRenderItem collection, Vector2 sp, Matrix3x2 transform, int currentLevel, int maxLevel)
         {

@@ -109,7 +109,7 @@ namespace NuSysApp
                         return;
                     }
                     
-                    NuSysRenderer.Instance.InitialCollection.AddTrail(vm);
+                    NuSysRenderer.Instance.CurrentCollection.AddTrail(vm);
 
                     // create a new presentation link
                     PresentationLinkViewModel.Models.Add(presentationlink);

@@ -18,7 +18,7 @@ namespace NuSysApp
             get
             {
                 Debug.Assert(InElementId != null);
-                var elementViewModels = SessionController.Instance.ActiveFreeFormViewer.AllContent.Where(elementVM => elementVM.Id == InElementId).ToList();
+                var elementViewModels = NuSysRenderer.Instance.CurrentCollection.ViewModel.Elements.Where(elementVM => elementVM.Id == InElementId).ToList();
                 Debug.Assert(elementViewModels != null);
                 Debug.Assert(elementViewModels.Count == 1); // we shouldn't have multiple
                 return elementViewModels.First();
@@ -30,7 +30,7 @@ namespace NuSysApp
             get
             {
                 Debug.Assert(OutElementId != null);
-                var elementViewModels = SessionController.Instance.ActiveFreeFormViewer.AllContent.Where(elementVM => elementVM.Id == OutElementId).ToList();
+                var elementViewModels = NuSysRenderer.Instance.CurrentCollection.ViewModel.Elements.Where(elementVM => elementVM.Id == OutElementId).ToList();
                 Debug.Assert(elementViewModels != null);
                 Debug.Assert(elementViewModels.Count == 1); // we shouldn't have multiple
                 return elementViewModels.First();

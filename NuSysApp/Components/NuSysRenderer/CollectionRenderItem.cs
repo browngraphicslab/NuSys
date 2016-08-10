@@ -53,7 +53,6 @@ namespace NuSysApp
 
             InkRenderItem = new InkRenderItem(this, canvas);
             _renderItems0.Add(InkRenderItem);
-
         }
 
         private void OnCameraCenterChanged(float f, float f1)
@@ -65,8 +64,6 @@ namespace NuSysApp
         {
             Camera.T = Matrix3x2.CreateTranslation(new Vector2(f,f1));
         }
-
-        
 
         public override void Update()
         {
@@ -89,14 +86,30 @@ namespace NuSysApp
         public override void Draw(CanvasDrawingSession ds)
         {
             var orgTransform = ds.Transform;
-            ds.Transform = Win2dUtil.Invert(C) * S * C * T * ds.Transform;
+            ds.Transform = GetTransform() * ds.Transform;
             var boundaries = new Rect(0, 0, ViewModel.Width, ViewModel.Height);
-            ds.DrawRectangle(boundaries, Colors.Blue, 3f);
+
+            Color borderColor;
+            float borderWidth = 4f;
+
+            if (NuSysRenderer.Instance.CurrentCollection == this)
+            {
+                borderColor = Color.FromArgb(255, 0, 102, 255);
+                borderWidth = 6f;
+            }
+            else
+            {
+                borderColor = Colors.Black;
+                borderWidth = 4f;
+            }
+
+            if (this != NuSysRenderer.Instance.InitialCollection)
+                ds.DrawRectangle(boundaries, borderColor, borderWidth);
 
             var boundariesGeom = CanvasGeometry.CreateRectangle(ds, boundaries);
             using (ds.CreateLayer(1, boundariesGeom))
             {
-                ds.Transform = Win2dUtil.Invert(Camera.C) * Camera.S * Camera.C * Camera.T * ds.Transform;
+                ds.Transform = GetCameraTransform() * ds.Transform;
            
                 foreach (var item in _renderItems0.ToArray())
                     item.Draw(ds);
@@ -180,15 +193,14 @@ namespace NuSysApp
 
         public Vector2 ScreenPointToObjectPoint(Vector2 sp)
         {
-            var other = Win2dUtil.Invert(NuSysRenderer.Instance.GetCollectionTransform(this));
-            return Vector2.Transform(sp, other);
+            var transform = Win2dUtil.Invert(NuSysRenderer.Instance.GetCollectionTransform(this));
+            return Vector2.Transform(sp, transform);
         }
 
         public Vector2 ObjectPointToScreenPoint(Vector2 op)
         {
-            var invTransform = Matrix3x2.Identity;
-            var inverse = Win2dUtil.Invert(Camera.C) * Camera.S * Camera.C * Camera.T * Win2dUtil.Invert(C) * S * C * T;
-            return Vector2.Transform(op, inverse);
+            var transform = NuSysRenderer.Instance.GetCollectionTransform(this);
+            return Vector2.Transform(op, transform);
 
         }
 
@@ -246,9 +258,14 @@ namespace NuSysApp
             _renderItems1.Add(new TrailRenderItem(vm, this, ResourceCreator));
         }
 
+        public Matrix3x2 GetCameraTransform()
+        {
+            return Win2dUtil.Invert(Camera.C)*Camera.S*Camera.C*Camera.T;
+        }
+
         public List<BaseRenderItem> GetRenderItems()
         {
-            return _renderItems0.Concat(_renderItems1).Concat(_renderItems2).Concat(_renderItems3).ToList();
+            return _renderItems3.Concat(_renderItems2).Concat(_renderItems1).Concat(_renderItems0).ToList();
         }
 
         public override bool HitTest(Vector2 point)
