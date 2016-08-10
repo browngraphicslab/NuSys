@@ -3,27 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
     public class DeleteLibraryElementRequest : Request
     {
-        public DeleteLibraryElementRequest(string id) : base(RequestType.DeleteLibraryElementRequest)
+        public DeleteLibraryElementRequest(string id) : base(NusysConstants.RequestType.DeleteLibraryElementRequest)
         {
             _message["id"] = id;
-            SetServerSettings();
         }
-        public DeleteLibraryElementRequest(Message m) : base(RequestType.DeleteLibraryElementRequest,m)
+        public DeleteLibraryElementRequest(Message m) : base(NusysConstants.RequestType.DeleteLibraryElementRequest,m)
         {
-            SetServerSettings();
-        }
-
-        private void SetServerSettings()
-        {
-            SetServerEchoType(ServerEchoType.ForcedEveryone);
-            SetServerIgnore(false);
-            SetServerItemType(ServerItemType.Content);
-            SetServerRequestType(ServerRequestType.Remove);
         }
         public override async Task CheckOutgoingRequest()
         {
@@ -47,7 +38,7 @@ namespace NuSysApp
                     {
                         await Task.Run(async delegate
                         {
-                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
+                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
                                 new DeleteLibraryElementRequest(linkModel.LibraryElementId));
                         });
                     }

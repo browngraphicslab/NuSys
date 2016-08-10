@@ -1,56 +1,92 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
-    public class DeleteSendableRequest : Request
+    /// <summary>
+    /// this class is used to make a server request to delete an Element (node).  
+    /// If the request is successful, it means that the element has been deleted on the server 
+    /// AND that the other clients have been notified about the deletion.
+    /// 
+    /// IN ORDER TO DELETE THE NODE LOCALLY, CALL THE RemoveNodeLocally FUNCTION.
+    /// </summary>
+    public class DeleteElementRequest : Request
     {
-        public string Id;
-        public DeleteSendableRequest(string id) : base(RequestType.DeleteSendableRequest)//maybe make an abstract delete sendable class and have this extend that
+        /// <summary>
+        /// this is the preferred constructor.  Pass in the ID of the element model that you wish to delete.
+        /// After the request returns, use RemoveNodeLocally to actually execute the removal function locally.
+        /// </summary>
+        /// <param name="elementId"></param>
+        public DeleteElementRequest(string elementId) : base(NusysConstants.RequestType.DeleteElementRequest)//maybe make an abstract delete sendable class and have this extend that
         {
-            Id = id;
-            _message["id"] = id;
-            SetServerSettings();
+            _message[NusysConstants.DELETE_ELEMENT_REQUEST_ELEMENT_ID] = elementId;
         }
 
-        public DeleteSendableRequest(Message message) : base(message)
-        {
-            if (message.ContainsKey("id"))
-            {
-                Id = message.GetString("id");
-            }
-            else
-            {
-                throw new DeleteSendableRequestException("No ID was found in the recieved message ");
-            }
-            SetServerSettings();
-        }
+        /// <summary>
+        /// default constructor for server deserialization
+        /// </summary>
+        /// <param name="message"></param>
+        public DeleteElementRequest(Message message) : base(message) {}
 
-        private void SetServerSettings()
-        {
-            SetServerEchoType(ServerEchoType.Everyone);
-            SetServerItemType(ServerItemType.Alias);
-            SetServerIgnore(false);
-            SetServerRequestType(ServerRequestType.Remove);
-        }
+        /// <summary>
+        /// this gets called whenever another client calls the delete node request.  
+        /// This method should simply get the ID of the element and delete it locally
+        /// </summary>
+        /// <returns></returns>
         public override async Task ExecuteRequestFunction()
         {
-            if (!SessionController.Instance.IdToControllers.ContainsKey(Id))
+            Debug.Assert(_message.ContainsKey(NusysConstants.DELETE_ELEMENT_REQUEST_ELEMENT_ID));
+
+            var id = _message.GetString(NusysConstants.DELETE_ELEMENT_REQUEST_ELEMENT_ID);
+
+            RemoveElementWithId(id);
+        }
+
+
+        /// <summary>
+        /// This method can be called to remove the node locally after the request has executed.  
+        /// 
+        /// It will throw exceptions if the 
+        /// </summary>
+        /// <returns></returns>
+        public bool RemoveNodeLocally()
+        {
+            CheckWasSuccessfull();
+            Debug.Assert(_returnMessage.ContainsKey(NusysConstants.DELETE_ELEMENT_REQUEST_RETURNED_DELETED_ELEMENT_ID));
+            var elementId = _returnMessage.GetString(NusysConstants.DELETE_ELEMENT_REQUEST_RETURNED_DELETED_ELEMENT_ID);
+            return RemoveElementWithId(elementId);
+        }
+
+        /// <summary>
+        /// Private method to remove the element on the local client.  
+        /// Will be called when another client removes and node and CAN be called from the original sender as well.
+        /// 
+        /// returns whether the removal was successfull
+        /// </summary>
+        /// <param name="elementId"></param>
+        /// <returns></returns>
+        private bool RemoveElementWithId(string elementId)
+        {
+            if (!SessionController.Instance.IdToControllers.ContainsKey(elementId))
             {
-                return;
+                return false;
             }
 
-            var controller = SessionController.Instance.IdToControllers[Id];
-            if (controller.Model != null) { 
-                var parent = SessionController.Instance.ContentController.GetContent(controller.Model.ParentCollectionId) as CollectionLibraryElementModel;
-                parent?.Children.Remove(Id);
+            var controller = SessionController.Instance.IdToControllers[elementId];
+            if (controller.Model != null)
+            {
+                var parent = SessionController.Instance.ContentController.GetLibraryElementModel(controller.Model.ParentCollectionId) as CollectionLibraryElementModel;
+                parent?.Children.Remove(elementId);
             }
             controller.Delete(this);
             ElementController removed;
-            SessionController.Instance.IdToControllers.TryRemove(Id, out removed);
+            SessionController.Instance.IdToControllers.TryRemove(elementId, out removed);
+            return true;
         }
     }
     public class DeleteSendableRequestException : Exception

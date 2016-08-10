@@ -9,6 +9,7 @@ using Windows.Foundation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using Newtonsoft.Json;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -24,7 +25,7 @@ namespace NuSysApp
             LibraryElementController = controller;
             Model = controller.LibraryElementModel;
 
-            Image = controller.GetSource();
+            Image = new Uri(controller.Data);
             Editable = true;         
         }
 

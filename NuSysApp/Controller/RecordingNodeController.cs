@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Xaml.Controls;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -111,7 +112,6 @@ namespace NuSysApp
             _debouncingDictionary.Add("x", x);
             _debouncingDictionary.Add("y", y);
         }
-
         public void SetAlpha(double alpha)
         {
             Model.Alpha = alpha;
@@ -131,7 +131,7 @@ namespace NuSysApp
 
         public async virtual Task RequestDelete()
         {
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(Model.Id));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new DeleteElementRequest(Model.Id));
         }
         public async virtual Task RequestDuplicate(double x, double y, Message m = null)
         {
@@ -147,7 +147,7 @@ namespace NuSysApp
             m["height"] = Model.Height;
             m["type"] = Model.ElementType.ToString();
             m["creator"] = Model.ParentCollectionId;
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m));
         }
 
         public Dictionary<string, object> CreateImageDictionary(double x, double y, double height, double width)
@@ -195,8 +195,8 @@ namespace NuSysApp
             m1["autoCreate"] = true;
             m1["creator"] = newCollectionContentID;
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(Model.Id));
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m1));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new DeleteElementRequest(Model.Id));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m1));
 
         }
 
@@ -241,10 +241,10 @@ namespace NuSysApp
         {
             if (props.ContainsKey("data"))
             {
-                var content = SessionController.Instance.ContentController.GetContent(props.GetString("contentId", ""));
+                var content = SessionController.Instance.ContentController.GetLibraryElementController(props.GetString("contentId", ""));
                 if (content != null)
                 {
-                    content.Data = props.GetString("data", "");
+                    content.SetContentData(props.GetString("data", ""));
                 }
             }
             if (props.ContainsKey("x") || props.ContainsKey("y"))

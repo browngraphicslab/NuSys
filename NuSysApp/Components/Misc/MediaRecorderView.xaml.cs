@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
+using NusysIntermediate;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -85,7 +86,7 @@ namespace NuSysApp
                 byte[] fileBytes = new byte[stream.Size];
                 await stream.AsStream().ReadAsync(fileBytes, 0, fileBytes.Length);
                 Element.Source = null;
-                await SendRequest(fileBytes, ElementType.Video);
+                await SendRequest(fileBytes, NusysConstants.ElementType.Video);
                 _recording = false;
                 mediaCapture.Dispose();
                 this.IsRecordingSwitch(false);
@@ -129,7 +130,7 @@ namespace NuSysApp
                 await stream.AsStream().ReadAsync(fileBytes, 0, fileBytes.Length);
                 Element.Source = null;
 
-                await SendRequest(fileBytes, ElementType.Audio);
+                await SendRequest(fileBytes, NusysConstants.ElementType.Audio);
 
                 _recording = false;
 
@@ -159,7 +160,7 @@ namespace NuSysApp
             }
         }
 
-        private async Task SendRequest(byte[] data, ElementType type)
+        private async Task SendRequest(byte[] data, NusysConstants.ElementType type)
         {
             var vm = (RecordingNodeViewModel) DataContext;
 
@@ -178,9 +179,9 @@ namespace NuSysApp
             m["title"] = "";
             m["type"] = type.ToString();
             m["autoCreate"] = true;
-            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
 
-            if (type == ElementType.Video)
+            if (type == NusysConstants.ElementType.Video)
             {
                 var settings =
                     mediaCapture.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoPreview);
@@ -207,8 +208,8 @@ namespace NuSysApp
 
 
             // await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(data), type.ToString()));
-           await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(data), type));
-           await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
+           await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(data), type));
+           await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m));
 
             // var vm = (TextNodeViewModel) DataContext;
             // await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(vm.ContentId, Convert.ToBase64String(data)));

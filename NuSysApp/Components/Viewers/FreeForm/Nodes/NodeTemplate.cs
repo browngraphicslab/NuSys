@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using Newtonsoft.Json;
+using NusysIntermediate;
 
 // The Templated Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234235
 
@@ -354,9 +355,9 @@ namespace NuSysApp
                             if (!(dc is RegionViewModel))
                             {
                                 var m = new Message();
-                                m["id1"] = dc.ContentId;
-                                m["id2"] = vm.ContentId;
-                                if (dc.ContentId != vm.ContentId)
+                                m["id1"] = dc.LibraryElementId;
+                                m["id2"] = vm.LibraryElementId;
+                                if (dc.LibraryElementId != vm.LibraryElementId)
                                 {
                                     SessionController.Instance.LinksController.RequestLink(m);
                                 }
@@ -381,7 +382,7 @@ namespace NuSysApp
         /// <param name="elementId2"></param>
         private void AddPresentationLink(string elementId1, string elementId2)
         {
-            var currentCollection = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            var currentCollection = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
 
             Debug.Assert(elementId1 != null);
             Debug.Assert(elementId2 != null);
@@ -447,7 +448,6 @@ namespace NuSysApp
 
         private void OnBtnDeleteClick(object sender, RoutedEventArgs e)
         {
-           
             var vm = (ElementViewModel)this.DataContext;
             var model = (ElementModel) vm.Model;
 
@@ -460,12 +460,7 @@ namespace NuSysApp
             var workspace = SessionController.Instance.ActiveFreeFormViewer;
             var undoButton = new UndoButton(removeElementAction, workspace, position, UndoButtonState.Active);
 
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(model.Id));
-
-
-
-
-
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new DeleteElementRequest(model.Id));
         }
 
         private void OnPresentationClick(object sender, RoutedEventArgs e)

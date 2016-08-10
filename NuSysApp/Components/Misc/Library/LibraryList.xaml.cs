@@ -23,6 +23,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using MyToolkit.UI;
+using NusysIntermediate;
 using Panel = Windows.Devices.Enumeration.Panel;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -146,10 +147,10 @@ namespace NuSysApp
         private void LibraryListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
             LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
-            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(itemTemplate.ContentID);
+            LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(itemTemplate.ContentID);
 
 
-            if ((SessionController.Instance.ActiveFreeFormViewer.ContentId == element.LibraryElementId) || (element.Type == ElementType.Link))
+            if ((SessionController.Instance.ActiveFreeFormViewer.LibraryElementId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -167,11 +168,11 @@ namespace NuSysApp
             t.TranslateX += _x;
             t.TranslateY += _y;
 
-            if (!SessionController.Instance.ContentController.ContainsAndLoaded(element.LibraryElementId))
+            if (!SessionController.Instance.ContentController.ContainsContentDataModel(element.ContentDataModelId))
             {
                 Task.Run(async delegate
                 {
-                    SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(element.LibraryElementId);
+                    SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(element.ContentDataModelId);
                 });
             }
         }
@@ -180,7 +181,7 @@ namespace NuSysApp
         private void LibraryListItem_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
-            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(itemTemplate.ContentID);
+            LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(itemTemplate.ContentID);
 
             
             // get the pointer point position, and upper left corner of the libary in relation to the sessionview
@@ -198,7 +199,7 @@ namespace NuSysApp
             }
             
 
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
+            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -232,8 +233,8 @@ namespace NuSysApp
         private async void LibraryListItem_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             LibraryItemTemplate itemTemplate = (LibraryItemTemplate)((Grid)sender).DataContext;
-            LibraryElementModel element = SessionController.Instance.ContentController.GetContent(itemTemplate.ContentID);
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == ElementType.Link))
+            LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(itemTemplate.ContentID);
+            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -323,7 +324,7 @@ namespace NuSysApp
             {
                 return;
             }
-            var elementModel = SessionController.Instance.ContentController.GetContent(elementTemplate?.ContentID);
+            var elementModel = SessionController.Instance.ContentController.GetLibraryElementModel(elementTemplate?.ContentID);
 
             var regionIds = SessionController.Instance.RegionsController.GetClippingParentRegionLibraryElementIds(elementModel.LibraryElementId);
 
@@ -409,7 +410,7 @@ namespace NuSysApp
             // get the item template from the sender
             var itemTemplate = (sender as Grid)?.DataContext as LibraryItemTemplate;
             // get the library element model using the content id
-            var element = SessionController.Instance.ContentController.GetContent(itemTemplate?.ContentID);
+            var element = SessionController.Instance.ContentController.GetLibraryElementModel(itemTemplate?.ContentID);
             // get the library element libraryElementController using the library element id
             var controller =
                 SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId);
@@ -462,12 +463,14 @@ namespace NuSysApp
             Task.Run(async delegate
             {
                 var request = new DeleteLibraryElementRequest(id);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
             });
+
+            var contentmodel = SessionController.Instance.ContentController.GetContentDataModel(model.ContentDataModelId);
 
             var m = new Message();
             m["id"] = model.LibraryElementId;
-            m["data"] = model.Data;
+            m["data"] = contentmodel.Data;
             m["small_thumbnail"] = model.SmallIconUrl;
             m["medium_thumbnail"] = model.MediumIconUrl;
             m["large_thumbnail"] = model.LargeIconUrl;

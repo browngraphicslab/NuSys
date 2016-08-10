@@ -8,7 +8,6 @@ using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Shapes;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using NAudio;
@@ -18,6 +17,9 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Linq;
 using Windows.UI.Xaml.Controls.Primitives;
 using System.Diagnostics;
+using NetTopologySuite.Utilities;
+using NusysIntermediate;
+using Line = Windows.UI.Xaml.Shapes.Line;
 
 namespace NuSysApp
 {
@@ -52,19 +54,16 @@ namespace NuSysApp
 
         public Uri AudioSource
         {
-            get { return Controller.LibraryElementController.GetSource(); }
+            get { return new Uri(Controller.LibraryElementController.Data); }
         }
 
         public override async Task Init()
         {
-            if (SessionController.Instance.ContentController.ContainsAndLoaded(ContentId))
+            if (!Controller.LibraryElementController.ContentLoaded)
             {
-                InitWhenReady(this);
+                await Controller.LibraryElementController.LoadContentDataModelAsync();
             }
-            else
-            {
-                Controller.LibraryElementController.Loaded += InitWhenReady;
-            }
+            InitWhenReady(this);
         }
 
         private async void InitWhenReady(object sender)
@@ -76,12 +75,13 @@ namespace NuSysApp
             byte[] dataBytes = new byte[(int) response.ContentLength];
             resStream.Read(dataBytes, 0, (int) response.ContentLength);
             resStream.Dispose();
-            Controller.LibraryElementController.Loaded -= InitWhenReady;
             //Visualize(dataBytes);
         }
 
-#region cool wavestream stuff
+        /*
+        #region cool wavestream stuff
 
+        
         private async void Visualize(byte[] bytes)
         {
             MemoryStream s = new MemoryStream(bytes);
@@ -165,7 +165,8 @@ namespace NuSysApp
         }
 
 #endregion cool wavestream stuff
+        */
+
 
     }
-
 }

@@ -1,15 +1,20 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using Windows.Data.Xml.Dom;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using Newtonsoft.Json;
 using Windows.UI.Input.Inking;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -48,6 +53,8 @@ namespace NuSysApp
         public event PresentationLinkRemovedEventHandler PresentationLinkRemoved;
 
         public static HashSet<string> NeededLibraryDataIDs = new HashSet<string>();
+        private ConcurrentDictionary<string,Message> _returnMessages = new ConcurrentDictionary<string, Message>();
+        private ConcurrentDictionary<string, ManualResetEvent> _requestEventDictionary = new ConcurrentDictionary<string, ManualResetEvent>();
         public string ServerBaseURI { get; private set; }
         
 
@@ -101,7 +108,7 @@ namespace NuSysApp
                     };
                     var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(read, settings);
                     string id = null;
-                    if (dict.ContainsKey("server_indication_from_server"))
+                    if (dict.ContainsKey("server_indication_from_server") || dict.ContainsKey("notification_type"))
                     {
                         if (dict.ContainsKey("notification_type"))
                         {
@@ -144,7 +151,7 @@ namespace NuSysApp
                                             SessionController.Instance.ContentController.GetLibraryElementController(id);
                                         var loadArgs = new LoadContentEventArgs();
                                         loadArgs.Data = dict["data"] as string;
-                                        controller.Load(loadArgs);
+                                        //controller.Load(loadArgs); TODO redo this?
                                     }
                                     break;
                                 case "remove_presentation_link":
@@ -159,7 +166,20 @@ namespace NuSysApp
                     }
                     else
                     {
-                        OnMessageRecieved?.Invoke(new Message(dict));
+                        if (dict.ContainsKey(NusysConstants.REQUEST_ERROR_MESSAGE_KEY))
+                        {
+                            Debug.WriteLine("  ******************* BEGIN SERVER ERROR MESSAGE *******************  ");
+                            Debug.WriteLine(dict[NusysConstants.REQUEST_ERROR_MESSAGE_KEY].ToString());
+                            Debug.WriteLine("  *******************  END SERVER ERROR MESSAGE  *******************  ");
+                        }
+                        else if (dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING))
+                        {
+                            await ReturnRequestAsync(new Message(dict));
+                        }
+                        else
+                        {
+                            OnMessageRecieved?.Invoke(new Message(dict));
+                        }
                     }
                 }
             }
@@ -196,7 +216,7 @@ namespace NuSysApp
                 var client =
                     new HttpClient(new HttpClientHandler {ClientCertificateOptions = ClientCertificateOption.Automatic});
                 var response = await client.GetAsync(GetUri("getpresentationlinks/" + collectionContentId));
-
+                return new HashSet<PresentationLinkModel>();
                 string data;
                 using (var content = response.Content)
                 {
@@ -421,7 +441,6 @@ namespace NuSysApp
                 libraryIdsUsed.Add(libraryId);
                 await Task.Run(async delegate
                 {
-                    SessionController.Instance.ContentController.GetLibraryElementController(libraryId)?.SetLoading(true);
                     HttpClient client = new HttpClient();
                     var response = await client.GetAsync(GetUri("getcontent/" + libraryId));
 
@@ -431,7 +450,7 @@ namespace NuSysApp
                         data = await responseContent.ReadAsStringAsync();
                     }
 
-                    if (SessionController.Instance.ContentController.GetContent(libraryId) != null && SessionController.Instance.ContentController.GetContent(libraryId).Type == ElementType.Video)
+                    if (SessionController.Instance.ContentController.GetLibraryElementModel(libraryId) != null && SessionController.Instance.ContentController.GetLibraryElementModel(libraryId).Type == NusysConstants.ElementType.Video)
                     {
                         if (data == "{}")
                         {
@@ -497,8 +516,8 @@ namespace NuSysApp
                     m["data"] = inkline;
                     m["id"] = inkid;
                     var model =
-                        SessionController.Instance.ContentController.GetContent(libraryId) as
-                            CollectionLibraryElementModel;
+                        SessionController.Instance.ContentController.GetLibraryElementController(libraryId) as
+                            CollectionLibraryElementController;
                     if (!model.InkLines.Contains(inkid))
                     {
                         model.InkLines.Add(inkid);
@@ -507,18 +526,17 @@ namespace NuSysApp
                 }
             }
 
-            LibraryElementModel content = SessionController.Instance.ContentController.GetContent(libraryId);
+            LibraryElementModel content = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId);
             if (content == null)
             {
-                content = LibraryElementModelFactory.CreateFromMessage(new Message(dict));
+                content = SessionController.Instance.ContentController.CreateAndAddModelFromMessage(new Message(dict));
             }
             if (content != null)
             {
                 await UITask.Run(async delegate
                 {
                     var args = new LoadContentEventArgs(contentData, inks);
-                    SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId)
-                        .Load(args);
+                    //SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId).Load(args); //TODO redo this?
                 });
             }
         }
@@ -667,56 +685,51 @@ namespace NuSysApp
             }
             return returnList;
         }
-        /*
-        public async Task DeleteAllRepoFiles()
+
+        /// <summary>
+        /// Will send a dictionary to the server and manually wait for its return
+        /// Later, another message will be called that will resumet this thread after placing the returned response in the _returnMessages dictionary
+        /// THESE METHOD PAIRS SHOULD SIMULATE ACTUAL ASYNCHRONOUS CALLS
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public async Task<Message> WaitForRequestRequestAsync(Message message)
         {
-            HttpClient client = new HttpClient();
-            var response = await client.GetAsync(GetUri("delete"));
+            Debug.Assert(!message.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING));
+            var mreId = SessionController.Instance.GenerateId();
+            message[NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING] = mreId;
+            var mre = new ManualResetEvent(false);
+            _requestEventDictionary.TryAdd(mreId, mre);
+
+            Task.Run(async delegate
+            {
+                SendMessageToServer(message);
+            });
+            mre.WaitOne();
+            Debug.Assert(_returnMessages.ContainsKey(mreId));
+            Message outMessage;
+            _returnMessages.TryRemove(mreId, out outMessage);
+            Debug.Assert(outMessage != null);
+            return outMessage;
         }
 
-        public async Task<bool> DeleteContent(string id)
+        /// <summary>
+        /// will be called when a message is recieved and is a get request
+        /// will resume the waiting thread for the get request and place the message in the message dictionary
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        private async Task ReturnRequestAsync(Message message)
         {
-            HttpClient client = new HttpClient();
-            var response = await client.GetAsync(GetUri("delete/"+id));
-            string data;
-            using (var content = response.Content)
-            {
-                data = await content.ReadAsStringAsync();
-            }
-            bool success = bool.Parse(data.Substring(1,data.Length-2));
-            return success;
+            Debug.Assert(message.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING));
+            var mreId = message.GetString(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING);
+            Debug.Assert(_requestEventDictionary.ContainsKey(mreId));
+            ManualResetEvent mre;
+            _requestEventDictionary.TryRemove(mreId, out mre);
+            Debug.Assert(mre != null);
+            _returnMessages.TryAdd(mreId, message);
+            mre?.Set();
         }
-
-        public async Task<bool> UpdateContent(string id, Dictionary<string, string> dict)
-        {
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-            JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-            var uri = GetUri("update/" + id);
-            client.BaseAddress = uri;
-            var message = new HttpRequestMessage();
-            message.Content = new StringContent(JsonConvert.SerializeObject(dict, settings), Encoding.UTF8, "application/json");
-            
-            var response = await client.SendAsync(message);
-            string data;
-            using (var content = response.Content)
-            {
-                data = await content.ReadAsStringAsync();
-            }
-            try
-            {
-                bool success = bool.Parse(data);
-                return success;
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-
-
-        }
-        */
 
         private class SearchIntermediate
         {

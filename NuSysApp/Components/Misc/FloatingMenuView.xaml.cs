@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
+using NusysIntermediate;
 using SharpDX.Direct2D1;
 using Image = Windows.UI.Xaml.Controls.Image;
 using SolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
@@ -35,7 +36,7 @@ namespace NuSysApp
     {
         private FreeFormViewer _freeFormViewer;
         private FrameworkElement _dragItem;
-        private ElementType _elementType;
+        private NusysConstants.ElementType _elementType;
         private LibraryView _lib;
         private LibraryElementPropertiesWindow libProp;
         private bool IsPenMode;
@@ -241,13 +242,13 @@ namespace NuSysApp
 
       
             if (sender == btnText)
-                _elementType = ElementType.Text;
+                _elementType = NusysConstants.ElementType.Text;
             if (sender == btnRecording)
-                _elementType = ElementType.Recording;
+                _elementType = NusysConstants.ElementType.Recording;
             if (sender == btnNew)
-                _elementType = ElementType.Collection;
+                _elementType = NusysConstants.ElementType.Collection;
             if (sender == btnTools)
-                _elementType = ElementType.Tools;
+                _elementType = NusysConstants.ElementType.Tools;
 
             args.Container = xWrapper;
             var bmp = new RenderTargetBitmap();
@@ -266,10 +267,10 @@ namespace NuSysApp
             args.Handled = true;
         }
 
-        public async Task AddNode(Point pos, Size size, ElementType elementType, object data = null)
+        public async Task AddNode(Point pos, Size size, NusysConstants.ElementType elementType, object data = null)
         {
             var vm = SessionController.Instance.ActiveFreeFormViewer;
-            if (elementType == ElementType.Recording)
+            if (elementType == NusysConstants.ElementType.Recording)
             {
                 var r = new RecordingNodeView(new RecordingNodeViewModel(new RecordingNodeController(new ElementModel("")
                 {
@@ -281,40 +282,48 @@ namespace NuSysApp
 
                 vm.AtomViewList.Add(r);
                 
-            } else if (elementType == ElementType.Text || elementType == ElementType.Web || elementType == ElementType.Collection)
+            } else if (elementType == NusysConstants.ElementType.Text || elementType == NusysConstants.ElementType.Web || elementType == NusysConstants.ElementType.Collection)
             {
 
 
                 var title = string.Empty;
-                if (elementType == ElementType.Text)
+                if (elementType == NusysConstants.ElementType.Text)
                     title = "Unnamed Text";
-                if (elementType == ElementType.Collection)
+                if (elementType == NusysConstants.ElementType.Collection)
                     title = "Unnamed Collection";
-                var p = pos;
 
-            var dict = new Message();
-            Dictionary<string, object> metadata;
-           
-            var contentId = SessionController.Instance.GenerateId();
+                var newContentArgs = new CreateNewContentRequestArgs();
+                newContentArgs.DataBytes = data?.ToString();
+                newContentArgs.LibraryElementArgs.LibraryElementType = elementType;
+                newContentArgs.LibraryElementArgs.LibraryElementId = SessionController.Instance.GenerateId();
+                newContentArgs.LibraryElementArgs.Title = title; //TODO factor this out to a constant in nusysApp
+                newContentArgs.ContentId = SessionController.Instance.GenerateId();
 
-            dict = new Message();
-            dict["width"] = size.Width.ToString();
-            dict["height"] = size.Height.ToString();
-            dict["type"] = elementType.ToString();
-            dict["title"] = title;
-            dict["x"] = (p.X).ToString();
-            dict["y"] = (p.Y).ToString();
-            dict["contentId"] = contentId;
-            dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
-            dict["autoCreate"] = true;
-           
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, data == null ? "" : data.ToString(), elementType, dict.ContainsKey("title") ? dict["title"].ToString() : null));
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(dict));
+                var newElementArgs = new NewElementRequestArgs();
+                newElementArgs.LibraryElementId = newContentArgs.LibraryElementArgs.LibraryElementId;
+                newElementArgs.ParentCollectionId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
+                newElementArgs.Width = size.Width;
+                newElementArgs.Height = size.Height;
+                newElementArgs.X = pos.X;
+                newElementArgs.Y = pos.Y;
+
+                var newElementRequest = new NewElementRequest(newElementArgs);
+                var contentRequest = new CreateNewContentRequest(newContentArgs);
+                
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(contentRequest);
+
+                contentRequest.AddReturnedLibraryElementToLibrary(); //before making element, add library element to the library
+
+                await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(newContentArgs.ContentId);
+
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newElementRequest);
+
+                newElementRequest.AddReturnedElementToSession();
 
             }
 
             // Adds a toolview to the atom view list when an tool is droped
-            else if (_elementType == ElementType.Tools)
+            else if (_elementType == NusysConstants.ElementType.Tools)
             {
                 ToolFilterView filter = new ToolFilterView(pos.X, pos.Y);
                 vm.AtomViewList.Add(filter);

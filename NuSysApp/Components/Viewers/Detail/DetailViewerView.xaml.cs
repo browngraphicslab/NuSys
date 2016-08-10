@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using LdaLibrary;
 using MyToolkit.Utilities;
+using NusysIntermediate;
 using WinRTXamlToolkit.IO.Serialization;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -53,7 +54,7 @@ namespace NuSysApp
                 }
 
                 // if this fails uncomment the line below, if this doesn't fail remove it completely
-                Debug.Assert(xRegionEditorView.DataContext == DataContext);
+                Debug.Assert(xRegionEditorView?.DataContext == DataContext);
                 //xRegionEditorView.DataContext = DataContext;
 
                 var vm = dataContext;
@@ -166,9 +167,9 @@ namespace NuSysApp
             }
 
             //Also, for PDFs the list view of the regions is shown in the Region Editor tab. 
-            if (controller.LibraryElementModel.Type == ElementType.PDF)
+            if (controller.LibraryElementModel.Type == NusysConstants.ElementType.PDF)
             {
-                xRegionEditorView.ShowListView(true, ElementType.PDF);
+                xRegionEditorView.ShowListView(true, NusysConstants.ElementType.PDF);
 
             }
             else
@@ -191,8 +192,8 @@ namespace NuSysApp
                 xRootPivot.Items.Add(pivotItem);
             }
 
-            if (controller.LibraryElementModel.Type == ElementType.Text || controller.LibraryElementModel.Type == ElementType.Link ||
-                controller.LibraryElementModel.Type == ElementType.Collection || controller.LibraryElementModel.Type == ElementType.Word)
+            if (controller.LibraryElementModel.Type == NusysConstants.ElementType.Text || controller.LibraryElementModel.Type == NusysConstants.ElementType.Link ||
+                controller.LibraryElementModel.Type == NusysConstants.ElementType.Collection || controller.LibraryElementModel.Type == NusysConstants.ElementType.Word)
             {
                 if (xRootPivot?.Items?.Count == 4)
                 {

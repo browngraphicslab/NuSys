@@ -14,6 +14,7 @@ using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -28,7 +29,7 @@ namespace NuSysApp
 
         public WorkspaceModel(string id ) : base(id)
         {
-            ElementType = ElementType.Collection;
+            ElementType = NusysConstants.ElementType.Collection;
             Zoom = 1;
             LocationX = -Constants.MaxCanvasSize/2.0;
             LocationY= -Constants.MaxCanvasSize/ 2.0;
@@ -48,14 +49,14 @@ namespace NuSysApp
             return pack;
         }
 
-        public async override Task UnPack(Message props)
+        public async override void UnPackFromDatabaseMessage(Message props)
         {
             Zoom =  props.GetDouble("zoom", 1);
             LocationX = props.GetDouble("locationX", -Constants.MaxCanvasSize/2);
             LocationY = props.GetDouble("locationY", -Constants.MaxCanvasSize/2);
             CenterX = props.GetDouble("centerX", -Constants.MaxCanvasSize/2);
             CenterY = props.GetDouble("centerY", -Constants.MaxCanvasSize/2);
-            await base.UnPack(props);
+            base.UnPackFromDatabaseMessage(props);
         }
 
     }

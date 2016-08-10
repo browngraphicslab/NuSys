@@ -38,7 +38,40 @@ namespace NuSysApp
             //When regions are updated (added/removed/timechanged), run method:
             xAudioWrapper.OnRegionsUpdated += XAudioWrapper_OnRegionsUpdated;
             xAudioWrapper.OnRegionSeeked += onSeekedTo;
+            xAudioWrapper.OnIntervalChanged += XAudioWrapper_OnIntervalChanged;
             positionBinding = new Binding();
+
+        }
+
+        private void XAudioWrapper_OnIntervalChanged(object sender, double start, double end)
+        {
+
+            //After updating audiowrapper, set position dyanmically:
+            double normalizedMediaElementPosition = xAudioWrapper.AudioStart;
+            double totalDuration = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+            double denormalizedMediaElementPosition = normalizedMediaElementPosition * totalDuration;
+
+            TimeSpan startTime = new TimeSpan(0, 0, 0, 0, (int)denormalizedMediaElementPosition);
+            TimeSpan endTime = new TimeSpan(0, 0, 0, 0, (int)(totalDuration * xAudioWrapper.AudioEnd));
+
+            MediaElement.Position = startTime;
+
+            MediaElement.Markers.Remove(EndMarker);
+
+            StartMarker = new TimelineMarker();
+            StartMarker.Time = startTime;
+            EndMarker = new TimelineMarker();
+            EndMarker.Time = endTime;
+
+            MediaElement.Markers.Add(EndMarker);
+
+            ScrubBar.Minimum = totalDuration * xAudioWrapper.AudioStart;
+            ScrubBar.Maximum = totalDuration * xAudioWrapper.AudioEnd;
+
+            // set the right time stamp
+            var converter = new PositionToStringConverter();
+            var timeSpan = new TimeSpan(0, 0, 0, 0, (int)(totalDuration * xAudioWrapper.AudioEnd));
+            xRightTimeStampTextBlock.Text = (string)converter.Convert(timeSpan, null, null, null); // this looks weird cause its a xaml converter 
 
         }
 

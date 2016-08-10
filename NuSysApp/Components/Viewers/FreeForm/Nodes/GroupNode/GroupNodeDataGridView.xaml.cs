@@ -62,7 +62,7 @@ namespace NuSysApp
         private void OnPointerPressed(object source, PointerRoutedEventArgs args)
         {
             var src = args.OriginalSource as FrameworkElement;
-            var gridInfo = src?.DataContext as GroupNodeDataGridInfo;
+            var gridInfo = src?.DataContext as GroupNodeDataGridViewModel;
             if (gridInfo != null)
             {
                 src.ManipulationMode = ManipulationModes.All; // for dragging out via touch

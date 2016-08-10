@@ -13,6 +13,8 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
+using NusysIntermediate;
+
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace NuSysApp
@@ -57,7 +59,7 @@ namespace NuSysApp
             UpdateRegionViews(vm.CurrentPageNumber);
 
             // disable page left and page right buttons for pdf regions
-            if (vm.Model.ElementType == ElementType.PdfRegion)
+            if (vm.Model.ElementType == NusysConstants.ElementType.PdfRegion)
             {
                 pageLeft.Height = 0;
                 pageLeft.Width = 0;

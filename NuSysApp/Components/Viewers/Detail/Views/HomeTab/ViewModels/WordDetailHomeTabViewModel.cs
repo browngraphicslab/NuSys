@@ -9,6 +9,7 @@ using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Imaging;
 using LdaLibrary;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -29,7 +30,7 @@ namespace NuSysApp
         private void ChangeContent(object source, string contentData)
         {
             Task.Run(async delegate {
-                _document = await MediaUtil.DataToPDF(LibraryElementController.LibraryElementModel.Data);
+                _document = await MediaUtil.DataToPDF(LibraryElementController.Data);
                 await UITask.Run(async delegate { await Goto(_pageNumber); });
             });
         }
@@ -37,7 +38,7 @@ namespace NuSysApp
         public override async Task Init()
         {
             await Task.Run(async delegate {
-                _document = await MediaUtil.DataToPDF(LibraryElementController.LibraryElementModel.Data);
+                _document = await MediaUtil.DataToPDF(LibraryElementController.Data);
             });
             await Goto(_pageNumber);
         }

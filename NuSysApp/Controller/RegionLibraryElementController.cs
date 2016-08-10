@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using LdaLibrary;
+using NusysIntermediate;
 
 namespace NuSysApp
 {

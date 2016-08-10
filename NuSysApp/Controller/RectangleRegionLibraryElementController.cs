@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Newtonsoft.Json;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -49,8 +51,8 @@ namespace NuSysApp
         public void SetLocation(Point topLeft)
         {
 
-            RectangleRegionModel.TopLeftPoint = new Point(Math.Max(0.001, topLeft.X), Math.Max(0.001, topLeft.Y));
-            LocationChanged?.Invoke(this, RectangleRegionModel.TopLeftPoint);
+            RectangleRegionModel.TopLeftPoint = new PointModel(Math.Max(0.001, topLeft.X), Math.Max(0.001, topLeft.Y));
+            LocationChanged?.Invoke(this, new Point(RectangleRegionModel.TopLeftPoint.X, RectangleRegionModel.TopLeftPoint.Y));
             if (!_blockServerInteraction)
             {
                 _debouncingDictionary.Add("rectangle_location", RectangleRegionModel.TopLeftPoint);
@@ -74,7 +76,9 @@ namespace NuSysApp
             }
             if (message.ContainsKey("rectangle_location"))
             {
-                SetLocation(message.GetPoint("rectangle_location"));
+                var pointString = message.GetString("rectangle_location");
+                var point = JsonConvert.DeserializeObject<Point>(pointString);
+                SetLocation(point);
             }
             base.UnPack(message);
             SetBlockServerBoolean(false);

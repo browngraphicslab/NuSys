@@ -17,6 +17,7 @@ using Windows.UI.Xaml;
 using System.Net;
 using Newtonsoft.Json;
 using LdaLibrary;
+using NusysIntermediate;
 using WinRTXamlToolkit.Imaging;
 using Image = SharpDX.Direct2D1.Image;
 using Point = Windows.Foundation.Point;
@@ -48,7 +49,7 @@ namespace NuSysApp
         public override async Task Init()
         {
             await Task.Run(async delegate {
-                _document = await MediaUtil.DataToPDF(LibraryElementController.LibraryElementModel.Data);
+                _document = await MediaUtil.DataToPDF(LibraryElementController.Data);
             });
             await Goto(_pageNumber);
         }

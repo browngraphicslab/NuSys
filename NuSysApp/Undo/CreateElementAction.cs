@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -37,7 +38,9 @@ namespace NuSysApp
             var element = _elementController.LibraryElementModel;
             var dict = new Message();
             Dictionary<string, object> metadata;
-
+            var cdm =
+                SessionController.Instance.ContentController.GetContentDataModel(
+                    SessionController.Instance.ActiveFreeFormViewer.LibraryElementId);
 
             dict = new Message();
             dict["title"] = _elementController.Model.Title;
@@ -49,9 +52,9 @@ namespace NuSysApp
             dict["contentId"] = element.ContentDataModelId;
             dict["metadata"] = _elementController.LibraryElementModel.Metadata;
             dict["autoCreate"] = true;
-            dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            dict["creator"] = cdm.ContentId;
             var request = new NewElementRequest(dict);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
 
         }
 

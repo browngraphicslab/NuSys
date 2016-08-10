@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Xaml.Controls;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -149,10 +150,22 @@ namespace NuSysApp
             Dispose();
         }
 
-        public async virtual Task RequestDelete()
+        /// <summary>
+        /// this method will send a server request to delete an element.
+        /// If successful, it will remove it locally.  
+        /// Returns whether the local removal was successful.
+        /// </summary>
+        /// <returns></returns>
+        public async virtual Task<bool> RequestDelete()
         {
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(Model.Id));
+            //create and execute the request
+            var request = new DeleteElementRequest(Model.Id);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+
+            //delete it locally (may need to check if it was succesful first)
+            return request.RemoveNodeLocally();
         }
+
         public async virtual Task RequestDuplicate(double x, double y, Message m = null)
         {
            if (m == null)
@@ -167,7 +180,7 @@ namespace NuSysApp
             m["height"] = Model.Height;
             m["type"] = Model.ElementType.ToString();
             m["creator"] = Model.ParentCollectionId;
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m));
         }
 
         public Dictionary<string, object> CreateImageDictionary(double x, double y, double height, double width)
@@ -198,26 +211,30 @@ namespace NuSysApp
             return dic;
         }
 
-        public virtual async Task RequestMoveToCollection(string newCollectionContentID, double x=50000, double y=50000)
+        public virtual async Task RequestMoveToCollection(string newCollectionLibraryID, double x=50000, double y=50000)
         {
-            var metadata = new Dictionary<string, object>();
-            metadata["node_creation_date"] = DateTime.Now;
+            var newElementArgs = new NewElementRequestArgs();
+            newElementArgs.LibraryElementId = Model.LibraryId;
+            newElementArgs.Height = 200;//TODO not hard code this shit
+            newElementArgs.Width = 200;//TODO not hard code this shit
+            newElementArgs.X = x;
+            newElementArgs.Y = y;
+            newElementArgs.ParentCollectionId = newCollectionLibraryID;
+            newElementArgs.Id = Model.Id;
 
-            var m1 = new Message(await Model.Pack());
-            m1["metadata"] = metadata;
-            m1["contentId"] = Model.LibraryId;
-            m1["type"] = Model.ElementType;
-            m1["title"] = Model.Title;
-            m1["x"] = x;
-            m1["y"] = y;
-            m1["width"] = 200;
-            m1["height"] = 200;
-            m1["autoCreate"] = true;
-            m1["creator"] = newCollectionContentID;
+            //delete the old node
+            var deleteElementRequest = new DeleteElementRequest(Model.Id);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(deleteElementRequest);
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(Model.Id));
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new NewElementRequest(m1));
+            //remove locally (may want to check if it was successful)
+            deleteElementRequest.RemoveNodeLocally();
 
+            //create the new element
+            var request = new NewElementRequest(newElementArgs);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+
+            //add the new element locally
+            request.AddReturnedElementToSession();
         }
 
         public ElementModel Model
@@ -259,14 +276,6 @@ namespace NuSysApp
 
         public virtual async Task UnPack(Message props)
         {
-            if (props.ContainsKey("data"))
-            {
-                var content = SessionController.Instance.ContentController.GetContent(props.GetString("contentId", ""));
-                if (content != null)
-                {
-                    content.Data = props.GetString("data", "");
-                }
-            }
             if (props.ContainsKey("x") || props.ContainsKey("y"))
             {
                 //if either "x" or "y" are not found in props, x/y stays the current value stored in Model.X/Y

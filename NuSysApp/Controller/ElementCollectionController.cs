@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NusysIntermediate;
 using NuSysApp.Tools;
 
 namespace NuSysApp
@@ -19,11 +20,11 @@ namespace NuSysApp
 
         public ElementCollectionController(ElementModel model) : base(model)
         {
-            var contentModel = SessionController.Instance.ContentController.GetContent(model.LibraryId);
-            if (contentModel != null)
+            var collectionController = SessionController.Instance.ContentController.GetLibraryElementController(model.LibraryId) as CollectionLibraryElementController;
+            if (collectionController != null)
             {
-                ((CollectionLibraryElementModel) contentModel).OnChildAdded += AddChildById;
-                ((CollectionLibraryElementModel) contentModel).OnChildRemoved += RemoveChildById;
+                collectionController.OnChildAdded += AddChildById;
+                collectionController.OnChildRemoved += RemoveChildById;
             }
 
             Disposed += OnDisposed;
@@ -31,23 +32,23 @@ namespace NuSysApp
 
         public void SetFinite(bool finite)
         {
-            var contentModel = SessionController.Instance.ContentController.GetContent(Model.LibraryId) as CollectionLibraryElementModel;
+            var contentModel = SessionController.Instance.ContentController.GetLibraryElementModel(Model.LibraryId) as CollectionLibraryElementModel;
             contentModel.IsFinite = finite;
         }
 
         public void ChangeShape(List<Windows.Foundation.Point> shapepoints)
         {
-            var contentModel = SessionController.Instance.ContentController.GetContent(Model.LibraryId) as CollectionLibraryElementModel;
-            contentModel.ShapePoints = shapepoints;
+            var contentModel = SessionController.Instance.ContentController.GetLibraryElementModel(Model.LibraryId) as CollectionLibraryElementModel;
+            contentModel.ShapePoints = new List<PointModel>(shapepoints.Select(p => new PointModel(p.X,p.Y)));
         }
 
         private void OnDisposed(object source, object args)
         {
-            var contentModel = SessionController.Instance.ContentController.GetContent(Model.LibraryId);
-            if (contentModel != null)
+            var collectionController = SessionController.Instance.ContentController.GetLibraryElementController(Model.LibraryId) as CollectionLibraryElementController;
+            if (collectionController != null)
             {
-                ((CollectionLibraryElementModel)contentModel).OnChildAdded -= AddChildById;
-                ((CollectionLibraryElementModel)contentModel).OnChildRemoved -= RemoveChildById;
+                collectionController.OnChildAdded -= AddChildById;
+                collectionController.OnChildRemoved -= RemoveChildById;
             }
 
             Disposed -= OnDisposed;
@@ -88,14 +89,14 @@ namespace NuSysApp
         }
         public override async Task UnPack(Message message)
         {
-            var libModel = (Model as CollectionElementModel).CollectionLibraryElementModel;
+            var libModel =SessionController.Instance.ContentController.GetLibraryElementModel(Model.LibraryId) as CollectionLibraryElementModel;
             if (message.ContainsKey("finite"))
             {
                 libModel.IsFinite = message.GetBool("finite");
             }
             if (message.ContainsKey("shape_points"))
             {
-                libModel.ShapePoints = message.GetList<Windows.Foundation.Point>("shape_points");
+                libModel.ShapePoints = message.GetList<PointModel>("shape_points");
             }
             base.UnPack(message);
         }

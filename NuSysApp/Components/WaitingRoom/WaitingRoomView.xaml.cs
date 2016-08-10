@@ -9,6 +9,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using Windows.Data.Xml.Dom;
 using Windows.Storage;
 using Windows.UI;
 using Windows.UI.ViewManagement;
@@ -18,6 +19,7 @@ using Windows.UI.Xaml.Media;
 using Newtonsoft.Json;
 using Windows.UI.Xaml.Input;
 using Newtonsoft.Json.Linq;
+using NusysIntermediate;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -36,11 +38,11 @@ namespace NuSysApp
         //public static string Password { get; private set; }
         public static string ServerSessionID { get; private set; }
 
-        public static bool TEST_LOCAL_BOOLEAN = false;
+        public static bool TEST_LOCAL_BOOLEAN = true;
 
         public static bool IS_HUB = false;
 
-        private static IEnumerable<Message> _firstLoadList;
+        private static IEnumerable<ElementModel> _firstLoadList;
         private bool _loggedIn = false;
         private bool _isLoaded = false;
 
@@ -66,21 +68,22 @@ namespace NuSysApp
 
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
 
-            ServerName = TEST_LOCAL_BOOLEAN ? "localhost:54764" : "nusysrepo.azurewebsites.net";
+            //ServerName = TEST_LOCAL_BOOLEAN ? "localhost:54764" : "nusysrepo.azurewebsites.net";
+            ServerName = TEST_LOCAL_BOOLEAN ? "localhost:2685" : "nusysrepo.azurewebsites.net";
             //ServerName = "172.20.10.4:54764";
             //ServerName = "nusysrepo.azurewebsites.net";
             ServerNameText.Text = ServerName;
             ServerNameText.TextChanged += delegate
             {
                 ServerName = ServerNameText.Text;
-                Init();
+                //Init();
             };
 
-            Init();
+            //Init();
 
             SlideOutLogin.Completed += SlideOutLoginComplete;
 
-            AutoLogin();
+            //AutoLogin();
         }
 
         private void SlideOutLoginComplete(object sender, object e)
@@ -90,55 +93,33 @@ namespace NuSysApp
 
         private async void Init()
         {
-            Keyword k = new Keyword("test");
             List?.Items?.Clear();
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             try
             {
-                var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/getworkspace";
-                HttpClient client = new HttpClient();
-                var response = await client.GetAsync(new Uri(url));
-                string data;
-                using (var content = response.Content)
+                var all = new List<CollectionTextBox>();
+                var libraryElements = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
+                foreach (var libraryElement in libraryElements)
                 {
-                    data = await content.ReadAsStringAsync();
-                }
-                var list = JsonConvert.DeserializeObject<List<string>>(data);
-                list.Sort();
-                List?.Items?.Clear();
-                var ii = new List<CollectionTextBox>();
-                foreach (var s in list)
-                {
-                    Dictionary<string, object> dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(s, settings);
-                    var box = new CollectionTextBox();
-                    box.ID = dict.ContainsKey("id") ? (string)dict["id"] : null;//todo do error handinling since this shouldnt be null
-                    if (dict.ContainsKey("creator_user_id"))
+                    if (SessionController.Instance.ContentController.GetLibraryElementModel(libraryElement.LibraryElementId) == null)
                     {
-                        var creator = dict["creator_user_id"].ToString().ToLower();
-                        if(creator == "rms" || creator == "rosemary" || creator == "gfxadmin")
-                        {
-                            box.MadeByRosemary = true;
-                        }
+                        SessionController.Instance.ContentController.Add(libraryElement);
                     }
-                    if (dict.ContainsKey("title") && dict["title"] != null && dict["title"] != "")
-                        box.Text = (string)dict["title"];
-                    else
-                        box.Text = "Unnamed Collection";
-                    //List.Items.Add(box);
-                    ii.Add(box);
-                    _preloadedIDs.Add(box.ID);
+                    if (libraryElement.Type == NusysConstants.ElementType.Collection)
+                    {
+                        var box = new CollectionTextBox(libraryElement.Title, libraryElement.LibraryElementId);
+                        all.Add(box);
+                    }
                 }
 
-                ii.Sort((a, b) => a.Text.CompareTo(b.Text));
-                foreach (var i in ii)
+                
+                List?.Items?.Clear();
+                all.Sort((a, b) => a.Text.CompareTo(b.Text));
+                foreach (var i in all)
                 {
                     List.Items.Add(i);
                 }
-
-
             }
-
-
             catch (Exception e)
             {
                 Debug.WriteLine("not a valid server");
@@ -153,9 +134,12 @@ namespace NuSysApp
         private async void NewWorkspaceOnClick(object sender, RoutedEventArgs e)
         {
             var name = NewWorkspaceName.Text;
-            var request = new CreateNewLibraryElementRequest(SessionController.Instance.GenerateId(), null, ElementType.Collection, name);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-            await Task.Delay(1000);
+            var props = new Message();
+            props[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY] = NusysConstants.ElementType.Collection;
+            props[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = name;
+            var request = new CreateNewContentRequest(NusysConstants.ContentType.Text, null, props);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            //await Task.Delay(1000);
             Init();
         }
         private async void Join_Workspace_Click(object sender, RoutedEventArgs e)
@@ -165,20 +149,27 @@ namespace NuSysApp
                 SessionController.Instance.ContentController.OnNewContent -= ContentControllerOnOnNewContent;
 
                 var item = List.SelectedItems.First();
-                var id = ((CollectionTextBox)item).ID;
-                _firstLoadList = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(id);
+                var id = ((CollectionTextBox) item).ID;
+                var collectionRequest = new GetEntireWorkspaceRequest(id ?? "test");
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collectionRequest);
+                foreach (var content in collectionRequest.GetReturnedContentDataModels())
+                {
+                    SessionController.Instance.ContentController.AddContentDataModel(content);
+                }
+                _firstLoadList = collectionRequest.GetReturnedElementModels();
                 InitialWorkspaceId = id;
                 this.Frame.Navigate(typeof(SessionView));
+                
             }
         }
 
-        public static IEnumerable<Message> GetFirstLoadList()
+        public static IEnumerable<ElementModel> GetFirstLoadList()
         {
             if (_firstLoadList == null)
             {
-                return new List<Message>();
+                return new List<ElementModel>();
             }
-            var l = new List<Message>(_firstLoadList);
+            var l = new List<ElementModel>(_firstLoadList);
             _firstLoadList = null;
             return l;
         }
@@ -338,19 +329,17 @@ namespace NuSysApp
                         }
 
                         await Task.Run(async delegate
-                        {
-                            var dictionaries = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
-                            //var req = new DeleteLibraryElementRequest("bddeec5295c1429eb383fecb8b9daf2f");
-                            //SessionController.Instance.NuSysNetworkSession.ExecuteRequest(req);
-                            foreach (var kvp in dictionaries)
+                        { 
+                            var models = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
+                            foreach (var model in models)
                             {
                                 try
                                 {
-                                    LibraryElementModelFactory.CreateFromMessage(new Message(kvp.Value));
+                                    SessionController.Instance.ContentController.Add(model);
                                 }
                                 catch (NullReferenceException e)
                                 {
-                                    
+                                    Debug.WriteLine(" this shouldn't ever happen.  trent was too lazy to do error hadnling");
                                 }
                             }
                             _isLoaded = true;
@@ -393,13 +382,11 @@ namespace NuSysApp
 
         private void ContentControllerOnOnNewContent(LibraryElementModel element)
         {
-            if (element.Type == ElementType.Collection && !_preloadedIDs.Contains(element.LibraryElementId))
+            if (element.Type == NusysConstants.ElementType.Collection && !_preloadedIDs.Contains(element.LibraryElementId))
             {
                 UITask.Run(delegate
                 {
-                    var box = new CollectionTextBox();
-                    box.ID = element.LibraryElementId;
-                    box.Text = element.Title ?? "";
+                    var box = new CollectionTextBox(element.Title ?? "", element.LibraryElementId);
                     List.Items.Add(box);
                 });
                 _preloadedIDs.Add(element.LibraryElementId);
@@ -429,10 +416,12 @@ namespace NuSysApp
             public string ID { set; get; }
             public bool MadeByRosemary = false;
 
-            public CollectionTextBox() : base()
+            public CollectionTextBox(string text, string Id) : base()
             {
+                ID = Id;
                 IsEnabled = false;
                 Background = new SolidColorBrush(Colors.Transparent);
+                base.Text = text;
             }
         }
     }

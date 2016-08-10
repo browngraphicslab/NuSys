@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using NusysIntermediate;
 
 
 namespace NuSysApp
@@ -19,38 +20,38 @@ namespace NuSysApp
 
             switch (controller.LibraryElementModel.Type)
             {
-                case ElementType.Text:
+                case NusysConstants.ElementType.Text:
                     view = new TextDetailHomeTabView(new TextDetailHomeTabViewModel(controller));
                     break;
-                case ElementType.ImageRegion:
-                case ElementType.Image:
+                case NusysConstants.ElementType.ImageRegion:
+                case NusysConstants.ElementType.Image:
                     view = new ImageDetailHomeTabView(new ImageDetailHomeTabViewModel(controller));
                     break;
-                case ElementType.Word:
+                case NusysConstants.ElementType.Word:
                     view = new WordDetailHomeTabView(new WordDetailHomeTabViewModel(controller));
                     break;
-                case ElementType.Powerpoint:
+                case NusysConstants.ElementType.Powerpoint:
                     //view = new PowerpointDetailView(new PowerpointNodeViewModel(controller));
                     break;
-                case ElementType.PdfRegion:
-                case ElementType.PDF:
+                case NusysConstants.ElementType.PdfRegion:
+                case NusysConstants.ElementType.PDF:
                     view = new PdfDetailHomeTabView(new PdfDetailHomeTabViewModel(controller));
                     break;
-                case ElementType.Web:
+                case NusysConstants.ElementType.Web:
                     //view = new WebDetailView(new WebNodeViewModel(controller));
                     break;
-                case ElementType.VideoRegion:
-                case ElementType.Video:
+                case NusysConstants.ElementType.VideoRegion:
+                case NusysConstants.ElementType.Video:
                     view = new VideoDetailHomeTabView(new VideoDetailHomeTabViewModel(controller));
                     break;
-                case ElementType.AudioRegion:
-                case ElementType.Audio:
+                case NusysConstants.ElementType.AudioRegion:
+                case NusysConstants.ElementType.Audio:
                     view = new AudioDetailHomeTabView(new AudioDetailHomeTabViewModel(controller));
                     break;
-                case ElementType.Collection:
+                case NusysConstants.ElementType.Collection:
                     view = new GroupDetailHomeTabView(new GroupDetailHomeTabViewModel(controller));
                     break;
-                case ElementType.Link:
+                case NusysConstants.ElementType.Link:
                     view = new LinkDetailHomeTabView(new LinkHomeTabViewModel(controller as LinkLibraryElementController));
                     break;
             }

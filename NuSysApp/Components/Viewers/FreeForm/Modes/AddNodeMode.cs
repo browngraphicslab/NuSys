@@ -9,19 +9,20 @@ using Windows.Foundation;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
     public class AddNodeMode : AbstractWorkspaceViewMode
     {
-        readonly ElementType _elementType;
+        readonly NusysConstants.ElementType _elementType;
         private bool _isDragging;
         private PseudoNode _tempNode;
         private Point _startPos;
         private bool _isFixed;
         private int i; // TODO Remove
 
-        public AddNodeMode(FreeFormViewer view, ElementType elementType, bool isFixed) : base(view) {
+        public AddNodeMode(FreeFormViewer view, NusysConstants.ElementType elementType, bool isFixed) : base(view) {
             _elementType = elementType;
             _tempNode = new PseudoNode();
             _isFixed = isFixed;
@@ -108,13 +109,13 @@ namespace NuSysApp
         }
 
         // TODO: this should be refactored!
-        private async Task AddNode(FreeFormViewer view, Point pos, Size size, ElementType elementType, object data = null)    {
+        private async Task AddNode(FreeFormViewer view, Point pos, Size size, NusysConstants.ElementType elementType, object data = null)    {
             var vm = (FreeFormViewerViewModel)view.DataContext;
             var p = vm.CompositeTransform.Inverse.TransformPoint(pos);
 
             var dict = new Message();
             Dictionary<string, object> metadata;
-            if (elementType == ElementType.Word || elementType == ElementType.Powerpoint || elementType == ElementType.Image || elementType == ElementType.PDF || elementType == ElementType.Video)
+            if (elementType == NusysConstants.ElementType.Word || elementType == NusysConstants.ElementType.Powerpoint || elementType == NusysConstants.ElementType.Image || elementType == NusysConstants.ElementType.PDF || elementType == NusysConstants.ElementType.Video)
             {
                 var storageFiles = await FileManager.PromptUserForFiles(Constants.AllFileTypes);
                 if (storageFiles == null)
@@ -143,7 +144,7 @@ namespace NuSysApp
 
                     if (Constants.ImageFileTypes.Contains(fileType))
                     {
-                        elementType = ElementType.Image;
+                        elementType = NusysConstants.ElementType.Image;
 
                         data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
                     }
@@ -156,7 +157,7 @@ namespace NuSysApp
 
                         dict["metadata"] = metadata;
 
-                        elementType = ElementType.Word;
+                        elementType = NusysConstants.ElementType.Word;
 
                         //data = File.ReadAllBytes(storageFile.Path);
                     }
@@ -169,14 +170,14 @@ namespace NuSysApp
 
                         dict["metadata"] = metadata;
 
-                        elementType = ElementType.Powerpoint;
+                        elementType = NusysConstants.ElementType.Powerpoint;
 
                         //data = File.ReadAllBytes(storageFile.Path);
                     }
 
                     if (Constants.PdfFileTypes.Contains(fileType))
                     {
-                        elementType = ElementType.PDF;
+                        elementType = NusysConstants.ElementType.PDF;
                         IRandomAccessStream s = await storageFile.OpenReadAsync();
 
                         byte[] fileBytes = null;
@@ -194,7 +195,7 @@ namespace NuSysApp
                     }
                     if (Constants.VideoFileTypes.Contains(fileType))
                     {
-                        elementType = ElementType.Video;
+                        elementType = NusysConstants.ElementType.Video;
                         IRandomAccessStream s = await storageFile.OpenReadAsync();
 
                         byte[] fileBytes = null;
@@ -212,7 +213,7 @@ namespace NuSysApp
                     }
                     if (Constants.AudioFileTypes.Contains(fileType))
                     {
-                        elementType = ElementType.Audio;
+                        elementType = NusysConstants.ElementType.Audio;
                         IRandomAccessStream s = await storageFile.OpenReadAsync();
 
                         byte[] fileBytes = null;
@@ -246,13 +247,13 @@ namespace NuSysApp
                 dict["x"] = p.X;
                 dict["y"] = p.Y;
                 dict["contentId"] = contentId;
-                dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+                dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
                 dict["metadata"] = metadata;
                 dict["autoCreate"] = true;
 
                 var request = new NewElementRequest(dict);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(contentId, data == null ? "" : data.ToString(), elementType, dict.ContainsKey("title") ? dict["title"].ToString() : null));
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, data == null ? "" : data.ToString(), elementType, dict.ContainsKey("title") ? dict["title"].ToString() : null));
                 //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, data == null ? "" : data.ToString()), NetworkClient.PacketType.TCP, null, true);
 
                 vm.ClearSelection();

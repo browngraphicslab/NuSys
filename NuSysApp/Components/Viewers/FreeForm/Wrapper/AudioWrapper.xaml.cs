@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using NusysIntermediate;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -85,6 +86,8 @@ namespace NuSysApp
         public delegate void RegionSeekedEventHandler(double normalizedTime);
         public event RegionSeekedEventHandler OnRegionSeeked;
 
+        public delegate void IntervalChangedEventHandler(object sender, double start, double end);
+        public event IntervalChangedEventHandler OnIntervalChanged;
 
         public AudioWrapper()
         {
@@ -96,21 +99,23 @@ namespace NuSysApp
             Debug.Assert(Controller != null);
             var type = Controller.LibraryElementModel.Type;
 
-            if (Constants.IsRegionType(type))
+            if (NusysConstants.IsRegionType(type))
             {
                 RegionLibraryElementController regionController = null;
                 switch (Controller.LibraryElementModel.Type)
                 {
                     //AudioStart and AudioEnd must be stored so that the media element knows the bounds of the region
-                    case ElementType.AudioRegion:
+                    case NusysConstants.ElementType.AudioRegion:
                         regionController = Controller as AudioRegionLibraryElementController;
                         AudioStart = (regionController as AudioRegionLibraryElementController).AudioRegionModel.Start;
                         AudioEnd = (regionController as AudioRegionLibraryElementController).AudioRegionModel.End;
+                        (regionController as AudioRegionLibraryElementController).TimeChanged += AudioWrapper_IntervalUpdated;
                         break;
-                    case ElementType.VideoRegion:
+                    case NusysConstants.ElementType.VideoRegion:
                         regionController = Controller as VideoRegionLibraryElementController;
                         AudioStart = (regionController as VideoRegionLibraryElementController).VideoRegionModel.Start;
                         AudioEnd = (regionController as VideoRegionLibraryElementController).VideoRegionModel.End;
+                        (regionController as VideoRegionLibraryElementController).IntervalChanged += AudioWrapper_IntervalUpdated;
                         break;
                 }
 
@@ -153,6 +158,13 @@ namespace NuSysApp
             xClippingCanvas.RenderTransform = compositeTransform;
         }
 
+        private void AudioWrapper_IntervalUpdated(object sender, double start, double end)
+        {
+            AudioStart = start;
+            AudioEnd = end;
+            OnIntervalChanged?.Invoke(sender, start, end);
+        }
+
         public double GetWidth()
         {
             return this.ActualWidth;
@@ -174,6 +186,7 @@ namespace NuSysApp
 
                 // get the region from the id
                 var regionLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementId);
+
                 Debug.Assert(regionLibraryElementController != null);
                 //  Debug.Assert(regionLibraryElementController.LibraryElementModel is RectangleRegion);
                 if (regionLibraryElementController.LibraryElementModel.LibraryElementId == Controller.LibraryElementModel.LibraryElementId)
@@ -186,7 +199,7 @@ namespace NuSysApp
                 var renderTransform = xClippingCanvas.RenderTransform as CompositeTransform ?? new CompositeTransform();
                 switch (regionLibraryElementController.LibraryElementModel.Type)
                 {
-                    case ElementType.AudioRegion:
+                    case NusysConstants.ElementType.AudioRegion:
                         vm = new AudioRegionViewModel(regionLibraryElementController.LibraryElementModel as AudioRegionModel,
                                 regionLibraryElementController as AudioRegionLibraryElementController, this);
                         view = new AudioRegionView(vm as AudioRegionViewModel);
@@ -195,7 +208,7 @@ namespace NuSysApp
                         audioRegionView.OnRegionSeek += AudioWrapper_OnRegionSeek;
                         audioRegionView.OnSelectedOrDeselected += Region_OnSelectedOrDeselected;
                         break;
-                    case ElementType.VideoRegion:
+                    case NusysConstants.ElementType.VideoRegion:
                         vm = new VideoRegionViewModel(regionLibraryElementController.LibraryElementModel as VideoRegionModel,
                                 regionLibraryElementController as VideoRegionLibraryElementController, this);
                         view = new VideoRegionView(vm as VideoRegionViewModel);
@@ -238,7 +251,7 @@ namespace NuSysApp
                 var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
                 switch (regionViewModel.Model.Type)
                 {
-                    case ElementType.AudioRegion:
+                    case NusysConstants.ElementType.AudioRegion:
                         var audioRegionmodel = regionViewModel.Model as AudioRegionModel;
                         if(normalizedMediaElementPosition < audioRegionmodel.End && normalizedMediaElementPosition > audioRegionmodel.Start)
                         {
@@ -251,7 +264,7 @@ namespace NuSysApp
                         }
 
                         break;
-                    case ElementType.VideoRegion:
+                    case NusysConstants.ElementType.VideoRegion:
                         var videoRegionModel = regionViewModel.Model as VideoRegionModel;
                         if (normalizedMediaElementPosition < videoRegionModel.End && normalizedMediaElementPosition > videoRegionModel.Start)
                         {
@@ -304,13 +317,13 @@ namespace NuSysApp
             {
                 var regionVM = (item as FrameworkElement).DataContext as RegionViewModel;
                 Debug.Assert(regionVM != null);
-                regionVM.Dispose(null, EventArgs.Empty);
                 if (regionVM.Model.LibraryElementId == regionLibraryElementId)
                 {
                     xClippingCanvas.Items.Remove(item);
                     //Fires ONRegionsUpdated event so that the parent AudioMediaPlayer's MediaElement will have a correct list
                     //of TimelineMarkers.
                     FireRegionsUpdated();
+                    regionVM.Dispose(null, EventArgs.Empty);
                     return;
                 }
             }
@@ -329,12 +342,12 @@ namespace NuSysApp
                 var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
                 switch (regionViewModel.Model.Type)
                 {
-                    case ElementType.AudioRegion:
+                    case NusysConstants.ElementType.AudioRegion:
                         var audioModel = regionViewModel.Model as AudioRegionModel;
                         timelineMarkers.Add(audioModel.Start);
                         timelineMarkers.Add(audioModel.End);
                         break;
-                    case ElementType.VideoRegion:
+                    case NusysConstants.ElementType.VideoRegion:
                         var videoModel = regionViewModel.Model as VideoRegionModel;
                         timelineMarkers.Add(videoModel.Start);
                         timelineMarkers.Add(videoModel.End);
@@ -374,11 +387,11 @@ namespace NuSysApp
             var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
             switch (regionViewModel.Model.Type)
             {
-                case ElementType.AudioRegion:
+                case NusysConstants.ElementType.AudioRegion:
                     var audioRegionView = item as AudioRegionView;
                     audioRegionView.FireDeselection();
                     break;
-                case ElementType.VideoRegion:
+                case NusysConstants.ElementType.VideoRegion:
                     var videoRegionView = item as VideoRegionView;
                     videoRegionView.FireDeselection();
                     break;
@@ -404,11 +417,11 @@ namespace NuSysApp
                     FrameworkElement region;
                     switch (regionViewModel.Model.Type)
                     {
-                        case ElementType.AudioRegion:
+                        case NusysConstants.ElementType.AudioRegion:
                             region = item as AudioRegionView;
                             (region as AudioRegionView).RescaleComponents(compositeTransform.ScaleX);
                             break;
-                        case ElementType.VideoRegion:
+                        case NusysConstants.ElementType.VideoRegion:
                             region = item as VideoRegionView;
                             (region as VideoRegionView).RescaleComponents(compositeTransform.ScaleX);
                             break;
@@ -437,7 +450,7 @@ namespace NuSysApp
                 //FrameworkElement region;
                 switch (regionViewModel.Model.Type)
                 {
-                    case ElementType.AudioRegion:
+                    case NusysConstants.ElementType.AudioRegion:
                         var audioRegionView = item as AudioRegionView;
                         var audioRegionViewModel = regionViewModel as AudioRegionViewModel;
                         var audioRegionModel = regionViewModel.Model as AudioRegionModel;
@@ -452,7 +465,7 @@ namespace NuSysApp
 
                         }
                         break;
-                    case ElementType.VideoRegion:
+                    case NusysConstants.ElementType.VideoRegion:
                         var videoRegionView = item as VideoRegionView;
                         var videoRegionViewModel = regionViewModel as VideoRegionViewModel;
                         var videoRegionModel = regionViewModel.Model as VideoRegionModel;

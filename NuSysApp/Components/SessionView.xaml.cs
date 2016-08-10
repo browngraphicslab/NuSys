@@ -19,8 +19,7 @@ using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
-using NuSysApp.Components.Misc;
-using NuSysApp.Util;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -115,25 +114,7 @@ namespace NuSysApp
 
             var l = WaitingRoomView.GetFirstLoadList();
             var firstId = WaitingRoomView.InitialWorkspaceId;
-            if (firstId == null)
-            {
-                //await LoadEmptyWorkspace();
-            }
-            else
-            {
-                await LoadWorkspaceFromServer(l, WaitingRoomView.InitialWorkspaceId);
-            }
-
-            var lem = (SessionController.Instance.ActiveFreeFormViewer.Model as CollectionElementModel).CollectionLibraryElementModel;
-
-            if (lem.ShapePoints != null)
-            {
-                var adornment = new AdornmentView(lem.ShapePoints);
-                SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Add(adornment);
-                Canvas.SetZIndex(adornment,-1);
-                adornment.SetFill(new SolidColorBrush(Colors.Green) {Opacity=.3});
-            }
-
+            await LoadWorkspaceFromServer(l, WaitingRoomView.InitialWorkspaceId);
 
             xDetailViewer.DataContext = new DetailViewerViewModel();
             xSearchViewer.DataContext = new SearchViewModel();
@@ -152,7 +133,7 @@ namespace NuSysApp
             }
             
             var presentationLinks = await SessionController.Instance.NuSysNetworkSession.GetPresentationLinks(firstId);
-            foreach (var presentationlink in presentationLinks)
+            foreach (var presentationlink in presentationLinks ?? new HashSet<PresentationLinkModel>())
             {
                 Debug.Assert(presentationlink != null && presentationlink?.InElementId != null && presentationlink?.OutElementId != null);
 
@@ -521,15 +502,17 @@ namespace NuSysApp
         
            
 
-        public async Task LoadWorkspaceFromServer(IEnumerable<Message> nodeMessages, string collectionId)
+        public async Task LoadWorkspaceFromServer(IEnumerable<ElementModel> elements, string collectionId)
         {
             WaitingRoomView.InitialWorkspaceId = collectionId;
 
             xLoadingGrid.Visibility = Visibility.Visible;
+            
 
-            await
-                SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
-                    new SubscribeToCollectionRequest(collectionId));
+
+            //await
+            // SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
+            //new SubscribeToCollectionRequest(collectionId));
 
             foreach (var controller in SessionController.Instance.IdToControllers.Values)
             {
@@ -557,32 +540,14 @@ namespace NuSysApp
 
             xDetailViewer.DataContext = new DetailViewerViewModel();
 
-            var dict = new Dictionary<string, Message>();
-            foreach (var msg in nodeMessages)
+            var dict = new Dictionary<string, ElementModel>();
+            foreach (var element in elements)
             {
-                msg["creator"] = collectionId;
-                var libraryId = msg.GetString("contentId");
-                var id = msg.GetString("id");
-                if (id == null || libraryId == null)
-                {
-                    continue;
-                }
-                var libraryModel = SessionController.Instance.ContentController.GetContent(libraryId);
-                if (libraryModel == null)
-                {
-                    if (msg.ContainsKey("id"))
-                    {
-                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
-                            new DeleteSendableRequest((string)msg["id"]));
-                    }
-                    continue;
-                }
-                dict[id] = msg;
+                dict[element.Id] = element;
             }
 
-
             await Task.Run(async delegate {
-                await MakeCollection(new Dictionary<string, Message>(dict), true, 2);
+                await MakeCollection(new Dictionary<string, ElementModel>(dict));
             });
 
 
@@ -590,10 +555,7 @@ namespace NuSysApp
 
             xLoadingGrid.Visibility = Visibility.Collapsed;
 
-            Task.Run(async delegate
-            {
-                SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(collectionId);
-            });
+
 
             /*
             foreach (var msg in nodeMessages)
@@ -642,94 +604,30 @@ namespace NuSysApp
                 }
             }*/
         }
-        private async Task MakeCollection(Dictionary<string, Message> messagesLeft, bool loadCollections, int levelsLeft = 1)
+        private async Task MakeCollection(Dictionary<string, ElementModel> elementsLeft)
         {
             var made = new HashSet<string>();
-            while (messagesLeft.Any())
+            while (elementsLeft.Any())
             {
-                await MakeElement(made, messagesLeft, messagesLeft.First().Value, loadCollections, levelsLeft);
+                await MakeElement(made, elementsLeft, elementsLeft.First().Value);
             }
         }
-        private async Task MakeElement(HashSet<string> made, Dictionary<string, Message> messagesLeft, Message message, bool loadCollections, int levelsLeft = 1)
+        private async Task MakeElement(HashSet<string> made, Dictionary<string, ElementModel> elementsLeft, ElementModel element)
         {
-            var libraryId = message.GetString("contentId");
-            var id = message.GetString("id");
-            Debug.WriteLine("making element: " + id);
-            var libraryModel = SessionController.Instance.ContentController.GetContent(libraryId);
+            Debug.WriteLine("making element: " + element.Id);
+            var libraryModel = SessionController.Instance.ContentController.GetLibraryElementModel(element.LibraryId);
             if (libraryModel == null)
             {
-                messagesLeft.Remove(id);
+                elementsLeft.Remove(element.Id);
                 return;
             }
             var type = libraryModel.Type;
-            switch (type)
-            {
-                case ElementType.Collection:
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(message));
-                    Task.Run(async delegate
-                    {
-                        SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(libraryId);
-                    });
-                    if (loadCollections)
-                    {
-                        var messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(libraryId);
-                        var subMessagesLeft = new Dictionary<string, Message>();
-                        foreach (var m in messages)
-                        {
-                            subMessagesLeft.Add(m.GetString("id"), m);
-                        }
-                        await MakeCollection(subMessagesLeft, levelsLeft > 1, levelsLeft - 1);
-                    }
-                    break;
-                case ElementType.Link:
-                    break;/*
-                    var id1 = message.GetString("id1");
-                    var id2 = message.GetString("id2");
-                    if (made.Contains(id1) && made.Contains(id2))//both have been made
-                    {
-                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(message));
-                    }
-                    else if (!made.Contains(id1) && !made.Contains(id2))//neither have been made
-                    {
-                        Debug.Assert(id1 != null && id2 != null);
-                        if (messagesLeft.ContainsKey(id1) && messagesLeft.ContainsKey(id2))
-                        {
-                            await MakeElement(made, messagesLeft, messagesLeft[id1], loadCollections, levelsLeft);
-                            if (messagesLeft.ContainsKey(id2))
-                            {
-                                await MakeElement(made, messagesLeft, messagesLeft[id2], loadCollections, levelsLeft);
-                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(message));
-                            }
-                            else
-                            {
-                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new DeleteSendableRequest(id1));
-                            }
-                        }
-                    }
-                    else if (!made.Contains(id1))//id2 has been made, but id1 hasn't
-                    {
-                        if (messagesLeft.ContainsKey(id1))
-                        {
-                            await MakeElement(made, messagesLeft, messagesLeft[id1], loadCollections, levelsLeft);
-                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(message));
-                        }
-                    }
-                    else if (!made.Contains(id2))//id1 has been made, but id2 hasn't
-                    {
-                        if (messagesLeft.ContainsKey(id2))
-                        {
-                            await MakeElement(made, messagesLeft, messagesLeft[id2], loadCollections, levelsLeft);
-                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(message));
-                        }
-                    }
-                    break;
-                    */
-                default:
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(message));
-                    break;
-            }
-            messagesLeft.Remove(id);
-            made.Add(id);
+
+            SessionController.Instance.AddElement(element);
+
+            ///add element
+            elementsLeft.Remove(element.Id);
+            made.Add(element.Id);
         }
 
         public async Task OpenCollection(ElementCollectionController collectionController)

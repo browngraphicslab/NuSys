@@ -29,7 +29,7 @@
         <local:NodeTemplate.Inner>
             
             <Grid>
-                <local:RectangleWrapper x:Name="xClippingWrapper">
+                <local:RectangleWrapper x:Name="xClippingWrapper" >
                     <local:RectangleWrapper.RenderTransform>
                         <CompositeTransform x:Name="WrapperTransform"></CompositeTransform>
                     </local:RectangleWrapper.RenderTransform>

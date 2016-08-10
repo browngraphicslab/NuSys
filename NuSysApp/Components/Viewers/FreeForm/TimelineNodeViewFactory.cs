@@ -12,6 +12,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 using MuPDFWinRT;
+using NusysIntermediate;
 using NuSysApp.Controller;
 
 
@@ -28,45 +29,45 @@ namespace NuSysApp
 
             switch (model.ElementType)
             {
-                case ElementType.Text:
+                case NusysConstants.ElementType.Text:
                     view = new Image();
                     BitmapImage textimage = new BitmapImage(new Uri("ms-appx:///Assets/icon_text.png", UriKind.Absolute));
                     view.Source = textimage;
                     break;
-                case ElementType.Collection:
+                case NusysConstants.ElementType.Collection:
                     view = new Image();
                     //TODO change icon
                     BitmapImage collectionImage = new BitmapImage(new Uri("ms-appx:///Assets/icon_tag.png", UriKind.Absolute));
                     view.Source = collectionImage;
                     break;
-                case ElementType.Tag:
+                case NusysConstants.ElementType.Tag:
                     view = new Image();
                     BitmapImage tagImage = new BitmapImage(new Uri("ms-appx:///Assets/icon_tag.png", UriKind.Absolute));
                     view.Source = tagImage;
                     break;
-                case ElementType.Image:
+                case NusysConstants.ElementType.Image:
                     view = new Image();
-                    BitmapImage imageImage = new BitmapImage(controller.LibraryElementController.GetSource());
+                    BitmapImage imageImage = new BitmapImage(new Uri(controller.LibraryElementController.Data));
                     view.Source = imageImage;
                     break;
-                case ElementType.Word:
+                case NusysConstants.ElementType.Word:
                     view = new Image();
                     BitmapImage wordImage = new BitmapImage(new Uri("ms-appx:///Assets/wordIcon.png", UriKind.Absolute));
                     view.Source = wordImage;
                     break;
-                case ElementType.Powerpoint:
+                case NusysConstants.ElementType.Powerpoint:
                     view = new Image();
                     BitmapImage pptImage = new BitmapImage(new Uri("ms-appx:///Assets/powerpointIcon.png", UriKind.Absolute));
                     view.Source = pptImage;
                     break;
-                case ElementType.Audio:
+                case NusysConstants.ElementType.Audio:
                     view = new Image();
                     BitmapImage audioImage = new BitmapImage(new Uri("ms-appx:///Assets/icon_recording.png", UriKind.Absolute));
                     view.Source = audioImage;
                     break;
-                case ElementType.PDF:
+                case NusysConstants.ElementType.PDF:
                     view = new Image();
-                    var data = controller.LibraryElementModel.Data;
+                    var data = controller.LibraryElementController.Data;
                     var dataBytes = Convert.FromBase64String(data);
                     var ms = new MemoryStream(dataBytes);
                     using (IInputStream inputStreamAt = ms.AsInputStream())
@@ -95,13 +96,13 @@ namespace NuSysApp
                     view.Source = pdfImage;
                     break;
 
-                case ElementType.Video:
+                case NusysConstants.ElementType.Video:
                     //TODO change icon
                     view = new Image();
                     BitmapImage videoImage = new BitmapImage(new Uri("ms-appx:///Assets/icon_recording.png", UriKind.Absolute));
                     view.Source = videoImage;
                     break;
-                case ElementType.Web:
+                case NusysConstants.ElementType.Web:
                     view = new Image();
                     BitmapImage webImage = new BitmapImage(new Uri("ms-appx:///Assets/icon_web_color.png", UriKind.Absolute));
                     view.Source = webImage;

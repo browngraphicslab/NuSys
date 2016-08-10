@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Media.Animation;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -28,7 +29,7 @@ namespace NuSysApp
             foreach (var id in idList)
             {
                 var controller = SessionController.Instance.ContentController.GetLibraryElementController(id);
-                if (controller.LibraryElementModel.Type != ElementType.Collection)
+                if (controller.LibraryElementModel.Type != NusysConstants.ElementType.Collection)
                 {
                     var libraryElementTemplate = new LibraryItemTemplate(controller);
                     LibraryElements.Add(libraryElementTemplate);
@@ -55,7 +56,7 @@ namespace NuSysApp
         private void ContentController_OnNewContent(LibraryElementModel element)
         {
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(element.LibraryElementId);
-            if (controller.LibraryElementModel.Type != ElementType.Collection)
+            if (controller.LibraryElementModel.Type != NusysConstants.ElementType.Collection)
             {
                 var libraryElementTemplate = new LibraryItemTemplate(controller);
                 UITask.Run(delegate {
@@ -70,7 +71,7 @@ namespace NuSysApp
             _linkTabable.RequestRemoveLink(linkId);
 
             //Removes the link from the content at the other end of the Link
-            var linkModel = SessionController.Instance.ContentController.GetContent(linkId) as LinkLibraryElementModel;
+            var linkModel = SessionController.Instance.ContentController.GetLibraryElementModel(linkId) as LinkLibraryElementModel;
             if (linkModel?.InAtomId == _linkTabable.ContentId)
             {
                 var otherController = SessionController.Instance.ContentController.GetLibraryElementController(linkModel?.OutAtomId);

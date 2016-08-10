@@ -11,13 +11,14 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
     public class DragOutMode : AbstractWorkspaceViewMode
     {
         private FrameworkElement _dragItem;
-        private ElementType _elementType;
+        private NusysConstants.ElementType _elementType;
         private DispatcherTimer _timer;
         private int _counter = 0;
         private readonly int _waitTime = 500;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -29,7 +30,7 @@ namespace NuSysApp
         public async void ExecuteAction()
         {
             var request = new CreateNewLibraryElementRequest(_message);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
         }
 
         /// <summary>

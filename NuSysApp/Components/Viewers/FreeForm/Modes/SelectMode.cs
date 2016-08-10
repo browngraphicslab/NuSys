@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using MyToolkit.Utilities;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -148,14 +149,14 @@ namespace NuSysApp
                 {
                     var vm = dc as ElementViewModel;              
 
-                    if (vm.ElementType == ElementType.Powerpoint)
+                    if (vm.ElementType == NusysConstants.ElementType.Powerpoint)
                     {
                         SessionController.Instance.SessionView.OpenFile(vm);
                     }
-                    else if (vm.ElementType != ElementType.Link)
+                    else if (vm.ElementType != NusysConstants.ElementType.Link)
                     {
 
-                        if (vm.ElementType == ElementType.PDF || vm.ElementType == ElementType.PdfRegion)
+                        if (vm.ElementType == NusysConstants.ElementType.PDF || vm.ElementType == NusysConstants.ElementType.PdfRegion)
                         {
                             var pdfVm = (PdfNodeViewModel)vm;
                             PdfDetailHomeTabViewModel.InitialPageNumber = pdfVm.CurrentPageNumber;

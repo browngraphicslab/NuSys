@@ -18,6 +18,7 @@ using System.Collections.ObjectModel;
 using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -36,7 +37,7 @@ namespace NuSysApp
             var model = (PdfNodeModel) controller.Model;
             model.PageChange += OnPageChange;
             CurrentPageNumber = model.CurrentPageNumber;
-            if (controller.LibraryElementModel.Type == ElementType.PdfRegion)
+            if (controller.LibraryElementModel.Type == NusysConstants.ElementType.PdfRegion)
             {
                 var pdfRegionModel = controller.LibraryElementModel as PdfRegionModel;
                 CurrentPageNumber = pdfRegionModel.PageLocation;
@@ -55,15 +56,11 @@ namespace NuSysApp
 
         public async override Task Init()
         {
-            if (Controller.LibraryElementController.IsLoaded)
+            if (!Controller.LibraryElementController.ContentLoaded)
             {
-                //await DisplayPdf();
-                await DisplayPlaceholderThumbnail();
+                await Controller.LibraryElementController.LoadContentDataModelAsync();
             }
-            else
-            {
-                Controller.LibraryElementController.Loaded += LibraryElementModelOnOnLoaded;
-            }
+            await DisplayPdf();
         }
 
         private async void LibraryElementModelOnOnLoaded(object sender)
@@ -74,11 +71,10 @@ namespace NuSysApp
 
         private async Task DisplayPdf()
         {
-
-            if (Controller.LibraryElementModel == null || Controller.LibraryElementModel.Data == null) {
+            if (Controller.LibraryElementModel == null || Controller.LibraryElementController.Data == null) {
                 return;
             }
-            _document = await MediaUtil.DataToPDF(Controller.LibraryElementModel.Data);
+            _document = await MediaUtil.DataToPDF(Controller.LibraryElementController.Data);
             await Goto(CurrentPageNumber);
             SetSize(Width, Height);
         }

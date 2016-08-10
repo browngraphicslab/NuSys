@@ -31,7 +31,7 @@ namespace NuSysApp
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
-                String url = vm.Controller.LibraryElementModel.Data;
+                String url = vm.Controller.LibraryElementController.Data;
                 url = url ?? "http://www.google.com";
                 vm.Controller.LibraryElementController?.SetContentData(url);
 

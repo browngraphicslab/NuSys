@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
+using NusysIntermediate;
 using Microsoft.Graphics.Canvas.Geometry;
 using NetTopologySuite.Geometries;
 
@@ -96,7 +97,6 @@ namespace NuSysApp
             var newCollectionId = SessionController.Instance.GenerateId();
 
             var t = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform;
-
             // Removes the ink from the canvas
             var req = InkStorage.CreateRemoveInkRequest(new InkWrapper(Stroke, "ink"));
             SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.RemoveStroke(Stroke);
@@ -104,9 +104,8 @@ namespace NuSysApp
             var deleteMsg = new Message();
             deleteMsg["contentId"] = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.LibraryElementId;
             var model = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel as CollectionLibraryElementModel;
-            model.InkLines.Remove(req.Item2);
-            deleteMsg["inklines"] = new HashSet<string>(model.InkLines);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(deleteMsg));
+
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new UpdateLibraryElementModelRequest(deleteMsg));
 
             // make a pointcollection that will be the "shape" property of the collection (use pointcollection or list?)
             var inkpoints = Stroke.GetInkPoints().ToArray();
@@ -132,13 +131,13 @@ namespace NuSysApp
             var m = new Message();
             m["id"] = contentId;
             m["data"] = "";
-            m["type"] = ElementType.Collection.ToString();
+            m["type"] = NusysConstants.ElementType.Collection.ToString();
             m["title"] = "new collection, " + Finite.ToString() + ", " + Points.Count;
             m["finite"] = Finite;
             m["shape_points"] = Points;
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new CreateNewLibraryElementRequest(m));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(m));
 
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new SubscribeToCollectionRequest(contentId));
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new SubscribeToCollectionRequest(contentId));
 
             //here, settings should also be passed in as parameters
             var controller = await StaticServerCalls.PutCollectionInstanceOnMainCollection(bb.X, bb.Y, contentId, Finite, Points, bb.Width, bb.Height, newCollectionId, CollectionElementModel.CollectionViewType.FreeForm);
@@ -168,7 +167,7 @@ namespace NuSysApp
                     }
 
                     var request = new NewElementRequest(dict);
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                     elementViewModel.Controller.RequestDelete();
                 }
                 // do something with links here
@@ -209,10 +208,10 @@ namespace NuSysApp
             m["width"] = 400;
             m["height"] = 400;
             m["color"] = Colors.Red;
-            m["type"] = ElementType.Area.ToString();
+            m["type"] = NusysConstants.ElementType.Area.ToString();
             m["points"] = Stroke.GetInkPoints();
             m["autoCreate"] = true;
-            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.ContentId;
+            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
 
             SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.AddAdorment(Stroke, SelectedColor);
           
@@ -222,10 +221,10 @@ namespace NuSysApp
 
             var deleteMsg = new Message();
             deleteMsg["contentId"] = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.LibraryElementId;
-            var model = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel as CollectionLibraryElementModel;
-            model.InkLines.Remove(request.Item2);
-            deleteMsg["inklines"] = new HashSet<string>(model.InkLines);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(new ChangeContentRequest(deleteMsg));
+            var collectionController = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController as CollectionLibraryElementController;
+            collectionController.InkLines.Remove(request.Item2);
+            deleteMsg["inklines"] = new HashSet<string>(collectionController.InkLines);
+            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new UpdateLibraryElementModelRequest(deleteMsg));
 
             Visibility = Visibility.Collapsed;
         }

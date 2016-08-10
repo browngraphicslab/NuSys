@@ -34,7 +34,7 @@ namespace NuSysApp
             };
             SetDimension(SessionController.Instance.SessionView.ActualWidth / 2 - 30, SessionController.Instance.SessionView.ActualHeight);
 
-            var url = vm.Controller.LibraryElementModel.Data;
+            var url = vm.Controller.LibraryElementController.Data;
             OnUrlChanged(url);
 
             vm.Controller.LibraryElementController.ContentChanged += delegate (object sender, string text)
@@ -139,7 +139,7 @@ namespace NuSysApp
         {
             string url = sender.Source.AbsoluteUri;
             xUrlBox.Text = url;
-            if (_viewMod.Controller.LibraryElementModel.Data != url)
+            if (_viewMod.Controller.LibraryElementController.Data != url)
             {
                 Back.IsEnabled = true;
                 _viewMod.Controller.LibraryElementController?.SetContentData(url);

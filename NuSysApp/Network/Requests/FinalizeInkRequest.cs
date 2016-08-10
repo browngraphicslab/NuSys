@@ -5,12 +5,13 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
     public class FinalizeInkRequest : Request
     {
-        public FinalizeInkRequest(Message message) : base(Request.RequestType.FinalizeInkRequest, message){}
+        public FinalizeInkRequest(Message message) : base(NusysConstants.RequestType.FinalizeInkRequest, message){}
 
         public async override Task CheckOutgoingRequest()
         {
@@ -19,10 +20,6 @@ namespace NuSysApp
                 throw new Exception("FinalizeInkRequest must contain 'id'");
             }
             _message["contentId"] = _message.GetString("id", null);
-            SetServerEchoType(ServerEchoType.Everyone);
-            SetServerItemType(ServerItemType.Content);
-            SetServerRequestType(ServerRequestType.Update);
-            SetServerIgnore(false);
         }
         public override async Task ExecuteRequestFunction()
         {
@@ -32,7 +29,6 @@ namespace NuSysApp
             var has = SessionController.Instance.IdToControllers.ContainsKey(props.GetString("canvasNodeID"));
             if (!has)
                 return;
-            var canvas = SessionController.Instance.IdToControllers[props.GetString("canvasNodeID")].Model.InqCanvas;
             if (props.ContainsKey("inkType") && props["inkType"] == "partial")
             {
                 var one = new Point2d(Double.Parse(props.GetString("x1")), Double.Parse(props.GetString("y1")));
@@ -49,14 +45,12 @@ namespace NuSysApp
                 {
                     lineModel.Stroke = new SolidColorBrush(Colors.Yellow);
                 }
-                canvas.AddTemporaryInqline(lineModel, id);
                     
             }
             else if (props.GetString("inkType") == "full" )
             {
                 var lineModel = new InqLineModel(id);
-                await lineModel.UnPack(props);
-                canvas.FinalizeLine(lineModel);
+                lineModel.UnPackFromDatabaseMessage(props);
             }
         }
     }

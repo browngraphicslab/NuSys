@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MyToolkit.Utilities;
 using NetTopologySuite.Utilities;
+using NusysIntermediate;
 using NuSysApp.Tools;
 using SharpDX.DirectWrite;
 
@@ -75,7 +76,7 @@ namespace NuSysApp
                     {
                         await Task.Run(async delegate
                         {
-                            await SessionController.Instance.NuSysNetworkSession.FetchLibraryElementData(id);
+                            await SessionController.Instance.NuSysNetworkSession.FetchLibraryElementDataAsync(id);
                             try
                             {
                                 var lem = SessionController.Instance.ContentController.GetContent(id);
@@ -292,7 +293,7 @@ namespace NuSysApp
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryId);
             if (controller != null)
             {
-                var metadata = (controller?.LibraryElementModel?.FullMetadata?.ToDictionary(k=>k.Key,v=>v.Value?.Values ?? new List<string>()) ?? new Dictionary<string, List<string>>());
+                var metadata = (controller?.FullMetadata?.ToDictionary(k=>k.Key,v=>v.Value?.Values ?? new List<string>()) ?? new Dictionary<string, List<string>>());
 
                 var element = controller.LibraryElementModel;
                 Debug.Assert(element != null);

@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using MyToolkit.UI;
 using System.Threading.Tasks;
+using NusysIntermediate;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -30,7 +31,7 @@ namespace NuSysApp
             Canvas.SetZIndex(xButtonStack, 20);
         }
 
-        private void AddRegion_Clicked(object sender, RoutedEventArgs e)
+        private async void AddRegion_Clicked(object sender, RoutedEventArgs e)
         {
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
             Debug.Assert(detailViewerView != null);
@@ -44,28 +45,34 @@ namespace NuSysApp
             // loaded in the detail view. i.e. for images top left point, width, and height.
             var detailHomeTabViewModel = vm.RegionView.DataContext as DetailHomeTabViewModel;
             Message message = null;
-            ElementType type;
+            NusysConstants.ElementType type;
+
+            CreateNewRegionLibraryElementRequestArgs regionRequestArgs = new CreateNewRegionLibraryElementRequestArgs();
+
+            //in each case, create a new CreateNewRegionLibraryElementRequestArgs or subclass
             switch (vm.CurrentElementController.LibraryElementModel.Type)
             {
-                case ElementType.ImageRegion:
-                case ElementType.Image:
+                case NusysConstants.ElementType.ImageRegion:
+                case NusysConstants.ElementType.Image:
+
                     message = detailHomeTabViewModel?.GetNewRegionMessage();
-                    type = ElementType.ImageRegion;
+                    type = NusysConstants.ElementType.ImageRegion;
                     break;
-                case ElementType.AudioRegion:
-                case ElementType.Audio:
+                case NusysConstants.ElementType.AudioRegion:
+                case NusysConstants.ElementType.Audio:
+
                     message = detailHomeTabViewModel?.GetNewRegionMessage();
-                    type = ElementType.AudioRegion;
+                    type = NusysConstants.ElementType.AudioRegion;
                     break;
-                case ElementType.VideoRegion:
-                case ElementType.Video:
+                case NusysConstants.ElementType.VideoRegion:
+                case NusysConstants.ElementType.Video:
                     message = detailHomeTabViewModel?.GetNewRegionMessage();
-                    type  = ElementType.VideoRegion;
+                    type  = NusysConstants.ElementType.VideoRegion;
                     break;
-                case ElementType.PdfRegion:
-                case ElementType.PDF:
+                case NusysConstants.ElementType.PdfRegion:
+                case NusysConstants.ElementType.PDF:
                     message = detailHomeTabViewModel?.GetNewRegionMessage();
-                    type = ElementType.PdfRegion;
+                    type = NusysConstants.ElementType.PdfRegion;
                     break;
                 default:
                     Debug.Fail("This should never occur, if it does we just return to be safe but this is a massive bug");
@@ -73,21 +80,17 @@ namespace NuSysApp
             }
             Debug.Assert(message != null);
 
-            // Add universal data to the message, should be self explanatory, unpacked in the rectangleRegionController
-            message["id"] = SessionController.Instance.GenerateId();
-            message["title"] = "Region " + vm.CurrentElementController.Title;
-            message["content__id"] = vm.CurrentElementController.LibraryElementModel.ContentDataModelId;
-            message["type"] = type.ToString();
-            message["clipping_parent_library_id"] = vm.CurrentElementController.LibraryElementModel.LibraryElementId;
-            if (vm.CurrentElementController.LibraryElementModel.ServerUrl != null)
-            {
-                message["server_url"] = vm.CurrentElementController.LibraryElementModel.ServerUrl;
-            }
-            var request = new CreateNewLibraryElementRequest(message);
-            SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
+            //create the args and set the parameters that all regions will need
+            regionRequestArgs.ContentId = vm.CurrentElementController.LibraryElementModel.ContentDataModelId;
+            regionRequestArgs.LibraryElementType = type;
+            regionRequestArgs.Title = "Region " + vm.CurrentElementController.Title; // TODO factor out this hard-coded string to a constant
+            regionRequestArgs.ClippingParentLibraryId = vm.CurrentElementController.LibraryElementModel.LibraryElementId;
+
+            var request = new CreateNewLibraryElementRequest(regionRequestArgs);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
         }
 
-        public void ShowListView(bool visible, ElementType type)
+        public void ShowListView(bool visible, NusysConstants.ElementType type)
         {
             if (!visible)
             {
@@ -100,7 +103,7 @@ namespace NuSysApp
             }
             else
             {
-                if (type == ElementType.PDF)
+                if (type == NusysConstants.ElementType.PDF)
                 {
                     var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
                     Debug.Assert(detailViewerView != null);
