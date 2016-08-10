@@ -842,9 +842,12 @@
     <Content Include="Assets\presentation_backward.png" />
     <Content Include="Assets\presentation_forward.png" />
     <Content Include="Assets\record dark.png" />
+    <Content Include="Assets\refresh.png" />
     <Content Include="Assets\region icon.png" />
     <Content Include="Assets\resizer.png" />
     <Content Include="Assets\search as collection.png" />
+    <Content Include="Assets\settings icon white.png" />
+    <Content Include="Assets\settings icon.png" />
     <Content Include="Assets\SmallLogo.scale-100.png" />
     <Content Include="Assets\snapshot_icon.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />

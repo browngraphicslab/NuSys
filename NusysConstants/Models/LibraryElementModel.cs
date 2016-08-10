@@ -31,7 +31,12 @@ namespace NusysIntermediate
         public string SmallIconUrl { get; set; }
         public ConcurrentDictionary<string, MetadataEntry> Metadata { get; set; }
         public string Creator { set; get; }
-        public string Timestamp { get; set; }//TODO maybe put in a timestamp, maybe remove the field from the library
+
+        public string Timestamp
+        {
+            get;
+            set;
+        }
 
         public string LastEditedTimestamp { get; set; }
 
@@ -64,6 +69,38 @@ namespace NusysIntermediate
             if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_FAVORITED_KEY))
             {
                 Favorited = message.GetBool(NusysConstants.LIBRARY_ELEMENT_FAVORITED_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY))
+            {
+                Keywords = message.GetHashSet<Keyword>(NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_LARGE_ICON_URL_KEY))
+            {
+                LargeIconUrl = message.GetString(NusysConstants.LIBRARY_ELEMENT_LARGE_ICON_URL_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY))
+            {
+                MediumIconUrl = message.GetString(NusysConstants.LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_SMALL_ICON_URL_KEY))
+            {
+                SmallIconUrl = message.GetString(NusysConstants.LIBRARY_ELEMENT_SMALL_ICON_URL_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_METADATA_KEY))
+            {
+                Metadata = new ConcurrentDictionary<string, MetadataEntry>(message.GetDict<string, MetadataEntry>(NusysConstants.LIBRARY_ELEMENT_METADATA_KEY));
+            }
+            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_CREATOR_USER_ID_KEY))
+            {
+                Creator = message.GetString(NusysConstants.LIBRARY_ELEMENT_CREATOR_USER_ID_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY))
+            {
+                Timestamp = message.GetString(NusysConstants.LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY))
+            {
+                LastEditedTimestamp = message.GetString(NusysConstants.LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY);
             }
         }
 

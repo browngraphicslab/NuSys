@@ -41,7 +41,6 @@ namespace NuSysApp
             DataContext = new object();
             DeleteButton.Click += DeleteButtonOnClick;
             GroupButton.Click += GroupButtonOnClick;
-            AdornmentButton.Tapped += AdormentButtonClick;
 
             SelectedColor = Colors.Black;
             Finite = false;
@@ -52,15 +51,10 @@ namespace NuSysApp
         {
             ColorPicker.Visibility = Visibility.Collapsed;
             Visibility = Visibility.Visible;
+            GroupSettings.Visibility = Visibility.Collapsed;
             Buttons.Visibility = Visibility.Visible;
         }
-
-        private void AdormentButtonClick(object sender, TappedRoutedEventArgs e)
-        {
-            ColorPicker.Visibility = Visibility.Visible;
-            Buttons.Visibility = Visibility.Collapsed;
-            e.Handled = true;
-        }
+        
 
         private void GroupButtonOnClick(object sender, RoutedEventArgs e)
         {
@@ -71,6 +65,7 @@ namespace NuSysApp
         private void GroupSettingsXOnClick(object sender, RoutedEventArgs e)
         {
             GroupSettings.Visibility = Visibility.Collapsed;
+            Buttons.Visibility = Visibility.Visible;
         }
 
         private async void CreateGroupButtonOnClick(object sender, RoutedEventArgs routedEventArgs)
@@ -227,6 +222,18 @@ namespace NuSysApp
             SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new UpdateLibraryElementModelRequest(deleteMsg));
 
             Visibility = Visibility.Collapsed;
+        }
+
+        private void OnChangeAccessClick(object sender, RoutedEventArgs e)
+        {
+            AccessPanel.Visibility = Visibility.Visible;
+            Buttons.Visibility = Visibility.Collapsed;
+        }
+
+        private void OnSaveAccessClick(object sender, RoutedEventArgs e)
+        {
+            AccessPanel.Visibility = Visibility.Collapsed;
+            Buttons.Visibility = Visibility.Visible;
         }
     }
 }

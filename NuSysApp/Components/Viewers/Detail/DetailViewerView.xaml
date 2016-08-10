@@ -123,7 +123,6 @@
                 <RowDefinition Height="40"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
-
             </Grid.RowDefinitions>
 
             <!-- NOT USED!!!!! -->
@@ -134,11 +133,17 @@
                 <TextBlock Text="x" Foreground="White" FontSize="24"/>
             </Border>
 
-            <StackPanel Grid.Row="1" Canvas.ZIndex="100" x:Name="TitleEnter" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,0" BorderBrush="DarkSlateGray" BorderThickness="0,0,0,1">
-                <!--<TextBlock Text="{Binding Title}" Foreground="White" FontSize="30" CharacterSpacing="45" HorizontalAlignment="Stretch"/>-->
-                <local:TextInputBlock  x:Name ="TitleBox" HasBackground="False"  TextColor="DarkSlateGray"  FontWeight="Thin"  LeftJustified="True"  FontSize="40" BubbleTop="False" SetHeight="40" HorizontalAlignment="Stretch" TextChanged="TitleBox_OnTextChanged"/>
-                <!--<Rectangle HorizontalAlignment="Stretch" Fill="White" Height="2"/>-->
-            </StackPanel>
+            <Grid Grid.Row="1" Canvas.ZIndex="100" x:Name="TitleEnter" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,0" BorderBrush="DarkSlateGray" BorderThickness="0,0,0,1">
+                <local:TextInputBlock  x:Name ="TitleBox" HasBackground="False"  TextColor="DarkSlateGray"  FontWeight="Thin"  LeftJustified="True"  FontSize="40" BubbleTop="False" SetHeight="40" HorizontalAlignment="Stretch" Margin="0,0,40,0"  TextChanged="TitleBox_OnTextChanged"/>
+                <Button Background="Transparent" Foreground="White"  HorizontalAlignment="Right" Height="30" Margin="5">
+                    <Image Source="ms-appx:///Assets/settings icon.png"></Image>
+                    <Button.Flyout>
+                        <MenuFlyout Placement="Bottom">
+                            <MenuFlyoutItem HorizontalAlignment="Center" Click="OnAccessClick">Change Access</MenuFlyoutItem>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+            </Grid>
 
             <Pivot x:Name="xRootPivot" Grid.Row="2" Margin="0,0,0,0" Grid.RowSpan="5" SelectionChanged="XRootPivot_OnSelectionChanged">
                 <PivotItem Header="Home">
@@ -260,6 +265,18 @@
             </Grid.RenderTransform>
             <Image x:Name="resizerImage" Source="/Assets/openclose icon.png" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
         </Grid>
+
+        <Popup VerticalOffset="100"  x:Name="AccessPopup" >
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Height="300" Width="400" Background="White" BorderThickness="2" BorderBrush="{StaticResource color2}">
+                <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Center">
+                    <TextBlock Text="change access controls" HorizontalAlignment="Center"  Foreground="{StaticResource color3}" FontSize="25" Margin="0,30,0,30" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"></TextBlock>
+                    <RadioButton Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" HorizontalAlignment="Center">Private</RadioButton>
+                    <RadioButton Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" HorizontalAlignment="Center">Public</RadioButton>
+                    <RadioButton Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" HorizontalAlignment="Center">Read-Only</RadioButton>
+                    <Button Margin="0,30,0,30" Background="{StaticResource color2}" Foreground="White"  Width="80" Height="40" HorizontalAlignment="Center" FontSize="20"  FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Click="OnSaveAccessClick">save</Button>
+                </StackPanel>
+            </Grid>
+        </Popup>
 
     </Grid>
 </local:AnimatableUserControl>

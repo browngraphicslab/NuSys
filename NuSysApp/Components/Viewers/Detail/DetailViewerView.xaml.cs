@@ -82,6 +82,9 @@ namespace NuSysApp
                 this.MaxHeight = SessionController.Instance.SessionView.ActualHeight;
                 this.MaxWidth = Math.Max(SessionController.Instance.SessionView.ActualWidth - resizer.ActualWidth, 0);
 
+                AccessPopup.VerticalOffset = this.Height / 2 - 150;
+                AccessPopup.HorizontalOffset = this.Width / 2 - 200;
+
                 // Sets the DV's position on screen
                 Canvas.SetTop(this, 0);
                 Canvas.SetLeft(this, SessionController.Instance.SessionView.ActualWidth - Width);                
@@ -388,6 +391,8 @@ namespace NuSysApp
             vm.TabPaneWidth = this.Width;
             if(vm.Tabs.Count == 0) { return; }
             vm.TabHeight = vm.TabPaneWidth/vm.Tabs.Count;
+            
+            AccessPopup.HorizontalOffset = this.Width/2 - 200;
         }
 
         private void TabList_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -495,5 +500,21 @@ namespace NuSysApp
 
         }
 
+        private void OnAccessClick(object sender, RoutedEventArgs e)
+        {
+            if (AccessPopup.IsOpen == false)
+            {
+                AccessPopup.IsOpen = true;
+            }
+            else
+            {
+                AccessPopup.IsOpen = false;
+            }
+        }
+
+        private void OnSaveAccessClick(object sender, RoutedEventArgs e)
+        {
+            AccessPopup.IsOpen = false;
+        }
     }
 }

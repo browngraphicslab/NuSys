@@ -44,7 +44,6 @@ namespace NuSysApp
                 _controllerList.Add(SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId));
                 Search(_searchString);
             });
-
         }
 
         private void DeleteContent(LibraryElementModel content)
@@ -73,36 +72,47 @@ namespace NuSysApp
                 //ItemList.Remove(new LibraryItemTemplate(controller));
             });
         }
+
         public async Task Sort(string s, bool reverse = false)
         {
             List<LibraryItemTemplate> ordered = null;
             switch (s)
             {
-                //case "title":
-                //    ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.Title);
-                //    break;
-                //case "nodetype":
-                //    ordered = ((ObservableCollection<LibraryElement>)ListView.ItemsSource).OrderBy(l => l.NodeType.ToString());
-                //    break;
-                case "Title":
-                    ordered = new List<LibraryItemTemplate>(ItemList.OrderBy(l => ((LibraryItemTemplate)l).Title));
+                case "TitleButton":
+                    this.SortTitle(reverse);
                     break;
-                case "Type":
-                    ordered = new List<LibraryItemTemplate>(ItemList.OrderBy(l => ((LibraryItemTemplate)l).Type.ToString()));
-                    break;
-                case "Date/Time":
-                    ordered = new List<LibraryItemTemplate>(ItemList.OrderByDescending(l => Constants.GetTimestampTicksOfLibraryElementModel((LibraryItemTemplate)l)));
+                case "TypeButton":
+                    this.SortType(reverse);
                     break;
                 default:
+                    this.SortDate(reverse);
                     break;
             }
+        }
+
+        public async Task SortTitle(bool reverse)
+        {
+            List<LibraryItemTemplate> ordered = new List<LibraryItemTemplate>(ItemList.OrderBy(l => ((LibraryItemTemplate)l).Title));
+            SetList(ordered, reverse);
+        }
+
+        public async Task SortType(bool reverse)
+        {
+            List<LibraryItemTemplate> ordered = new List<LibraryItemTemplate>(ItemList.OrderBy(l => ((LibraryItemTemplate)l).Type.ToString()));
+            SetList(ordered, reverse);
+        }
+
+        public async Task SortDate(bool reverse)
+        {
+            List<LibraryItemTemplate> ordered = new List<LibraryItemTemplate>(ItemList.OrderByDescending(l => Constants.GetTimestampTicksOfLibraryElementModel((LibraryItemTemplate)l)));
+            SetList(ordered, reverse);
+        }
+
+        public async Task SetList(List<LibraryItemTemplate> ordered, bool reverse)
+        {            
             if (ordered != null)
             {
-                if (reverse)
-                {
-                    ordered.Reverse();
-                }
-                //  ObservableCollection<LibraryElementModel> newCollection = new ObservableCollection<LibraryElementModel>();
+                if (reverse) ordered.Reverse(); 
                 ItemList.Clear();
 
                 foreach (var item in ordered)
@@ -135,7 +145,7 @@ namespace NuSysApp
             {
                 if (valids.Contains(item.LibraryElementModel.LibraryElementId) && !hash.Contains(item.LibraryElementModel.LibraryElementId))
                 {
-                    ItemList.Add(new LibraryItemTemplate(item));
+                    ItemList.Insert(0,new LibraryItemTemplate(item));
                 }
             }
         }

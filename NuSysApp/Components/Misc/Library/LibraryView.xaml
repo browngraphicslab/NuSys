@@ -249,21 +249,11 @@
             <Grid x:Name="xHeaderRow" Grid.Row="0" HorizontalAlignment="Stretch"  Background="Transparent">
                 <Grid>
                     <TextBlock Text="Library" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Foreground="{StaticResource color3}" FontSize="24" Margin="5,5,5,5"></TextBlock>
+                    
                     <Button HorizontalAlignment="Right" Margin="0,0,0,3"  Height="40" Width="50"  Tapped="Folder_Tapped" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Bottom">
-                        <Image Source="ms-appx:/Assets/add from file dark.png"></Image>
+                        <Image Source="ms-appx:///Assets/add from file dark.png"></Image>
                     </Button>
                 </Grid>
-                <!--<StackPanel  Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">-->
-                    <!--<StackPanel.RenderTransform>
-                        <TranslateTransform Y="3"></TranslateTransform>
-                    </StackPanel.RenderTransform>-->
-                <!--<Button x:Name="btnAll"  Tapped="Favorites_OnTapped" VerticalAlignment="Top" Width="72" Height="36"  Background="White"  Foreground="{StaticResource color3}" BorderBrush="{StaticResource color3}" BorderThickness="2,2,2,0" Margin="-230,0,0,0">
-                    <TextBlock Text="All" Margin="0,0,0,0" Foreground="{StaticResource color3}" FontSize="18" FontWeight="Bold"  FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
-                </Button>
-                    <Button x:Name="btnFav" Tapped="Favorites_OnTapped"  VerticalAlignment="Top" HorizontalAlignment="Left" Height ="36" Width="72" Background="White" Foreground="{StaticResource color3}" BorderBrush="{StaticResource color3}" BorderThickness="2,2,2,0" Margin="-160,0,0,0">
-                    <TextBlock Text="Fav" Margin="0,0,0,0" Foreground="{StaticResource color3}" FontSize="18" FontWeight="Bold" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std"/>
-                </Button>-->
-                <!--</StackPanel>-->
             </Grid>
 
             <Grid x:Name="ListContainer" Grid.Row="1" Background="{StaticResource color6}">
@@ -278,7 +268,5 @@
             </Grid>
         </Grid>
 
-
-        
     </Grid>
 </UserControl>
