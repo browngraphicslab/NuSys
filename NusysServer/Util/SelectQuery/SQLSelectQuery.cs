@@ -87,7 +87,7 @@ namespace NusysServer
                                 _fromTable.GetSqlQueryRepresentation();
             }
             var cmd = ContentController.Instance.SqlConnector.MakeCommand(commandString);
-            return ContentController.Instance.SqlConnector.ExecuteSelectQueryAsMessages(new SelectCommandReturnArgs(cmd,_cleanedSelectedColumns));
+            return ContentController.Instance.SqlConnector.ExecuteSelectQueryAsMessages(new SelectCommandReturnArgs(cmd,_cleanedSelectedColumns), false);
         }
 
     }

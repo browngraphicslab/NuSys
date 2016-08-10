@@ -23,8 +23,7 @@ namespace NusysServer
             var keys =
                 Constants.GetFullColumnTitles(Constants.SQLTableType.Content, NusysConstants.ACCEPTED_CONTENT_TABLE_KEYS)
                     .Concat(Constants.GetFullColumnTitles(Constants.SQLTableType.Alias,
-                        NusysConstants.ALIAS_ACCEPTED_KEYS.Keys)).Concat(Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_TYPE_KEY)).Concat(Constants.GetAcceptedKeys(Constants.SQLTableType.Properties));
-
+                        NusysConstants.ALIAS_ACCEPTED_KEYS.Keys)).Concat(new List<string>() {NusysConstants.LIBRARY_ELEMENT_TYPE_KEY});
 
             //var command = "SELECT "+string.Join(",",keys)+" FROM "+Constants.GetTableName(Constants.SQLTableType.Alias)+ " LEFT JOIN " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + " ON " + Constants.GetTableName(Constants.SQLTableType.Alias) + ".library_id = " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + ".library_id LEFT JOIN " + Constants.GetTableName(Constants.SQLTableType.Content) + " ON " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + ".content_id = " + Constants.GetTableName(Constants.SQLTableType.Content) + ".content_id WHERE " + Constants.GetTableName(Constants.SQLTableType.Alias) + ".parent_collection_id = '" + workspaceId+"'";
             //var command = "SELECT "+string.Join(",",keys)+" FROM alias LEFT JOIN library_elements ON alias.library_id = library_elements.library_id LEFT JOIN contents ON library_elements.content_id = contents.content_id WHERE alias.parent_collection_id = '" + workspaceId+"'";
@@ -34,10 +33,13 @@ namespace NusysServer
             var returnedMessages = ContentController.Instance.SqlConnector.ExecuteSelectQueryAsMessages(args);
 
             //this should work now
-            var testCommand = CreateGetEntireWorkspaceSqlQuery(workspaceId);
+            //var testCommand = CreateGetEntireWorkspaceSqlQuery(workspaceId);
             //var returnedMessages = testCommand.ExecuteCommand();
+
             PropertiesParser propertiesParser = new PropertiesParser();
             var concatPropertiesReturnedMessages = propertiesParser.ConcatMessageProperties(returnedMessages);
+            //var args = new SelectCommandReturnArgs(ContentController.Instance.SqlConnector.MakeCommand(command), keys);
+            //returnedMessages = ContentController.Instance.SqlConnector.ExecuteSelectQueryAsMessages(args);
 
             var stripped = concatPropertiesReturnedMessages.Select(m => Constants.StripTableNames(m));
 
@@ -111,6 +113,11 @@ namespace NusysServer
                     NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY, workspaceId);
 
             //creates a list of all columns from alias, content, and properties tables
+            var columnsToGet =
+                new List<string>((
+                    Constants.GetAcceptedKeys(Constants.SQLTableType.Alias))
+                        .Concat(Constants.GetAcceptedKeys(Constants.SQLTableType.Content))
+                        .Concat(Constants.GetAcceptedKeys(Constants.SQLTableType.Properties)));
             var keys =
                 Constants.GetFullColumnTitles(Constants.SQLTableType.Content, NusysConstants.ACCEPTED_CONTENT_TABLE_KEYS)
                     .Concat(Constants.GetFullColumnTitles(Constants.SQLTableType.Alias,
