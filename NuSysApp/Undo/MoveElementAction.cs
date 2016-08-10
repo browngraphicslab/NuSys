@@ -7,6 +7,10 @@ using Windows.Foundation;
 
 namespace NuSysApp
 {
+
+    /// <summary>
+    /// Describes a MoveElementAction, which is instatiated every time a node is moved and stopped
+    /// </summary>
     public class MoveElementAction : IUndoable
     {
  
@@ -14,6 +18,13 @@ namespace NuSysApp
         private ElementController _elementController;
         private Point _oldPosition;
         private Point _newPosition;
+
+        /// <summary>
+        /// Instantiates a MoveElementAction, gaining reference to the ElementController, and new/old positions
+        /// </summary>
+        /// <param name="controller"></param>
+        /// <param name="oldPosition"></param>
+        /// <param name="newPosition"></param>
         public MoveElementAction(ElementController controller, Point oldPosition, Point newPosition)
         {
             _elementController = controller;

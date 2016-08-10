@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
+    /// <summary>
+    /// Describes a CreateLibraryAction, which is instantiated when DeleteLibraryActions are undone
+    /// </summary>
     public class CreateLibraryElementAction : IUndoable
     {
         private Message _message;
@@ -20,15 +23,22 @@ namespace NuSysApp
             _message = m;
         }
 
+        /// <summary>
+        /// Executes a CreateLibraryElementRequest based on the message contained in the CreateLibraryElementAction
+        /// </summary>
         public async void ExecuteAction()
         {
             var request = new CreateNewLibraryElementRequest(_message);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequest(request);
         }
 
+        /// <summary>
+        /// Returns a DeleteLibraryElementAction, which is the logical inverse of a CreateLibraryElementAction
+        /// </summary>
+        /// <returns></returns>
         public IUndoable GetInverse()
         {
-            return new RemoveLibraryElementAction(_message);
+            return new DeleteLibraryElementAction(_message);
         }
     }
 }

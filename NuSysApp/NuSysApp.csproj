@@ -662,8 +662,8 @@
     <Compile Include="Undo\CreateLibraryElementAction.cs" />
     <Compile Include="Undo\IUndoable.cs" />
     <Compile Include="Undo\MoveElementAction.cs" />
-    <Compile Include="Undo\RemoveElementAction.cs" />
-    <Compile Include="Undo\RemoveLibraryElementAction.cs" />
+    <Compile Include="Undo\DeleteElementAction.cs" />
+    <Compile Include="Undo\DeleteLibraryElementAction.cs" />
     <Compile Include="Util\AccessList.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />

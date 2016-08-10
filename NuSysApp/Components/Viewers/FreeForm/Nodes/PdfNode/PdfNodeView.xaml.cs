@@ -96,8 +96,8 @@ namespace NuSysApp
         {
             var vm = (ElementViewModel) this.DataContext;
 
-            //Creates a RemoveElementAction
-            var removeElementAction = new RemoveElementAction(vm.Controller);
+            //Creates a DeleteElementAction
+            var removeElementAction = new DeleteElementAction(vm.Controller);
 
             //Creates an undo button and places it in the correct position.
 

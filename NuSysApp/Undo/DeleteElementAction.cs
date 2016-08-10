@@ -7,10 +7,19 @@ using Windows.Foundation;
 
 namespace NuSysApp
 {
-    public class RemoveElementAction : IUndoable
+    /// <summary>
+    /// Describes a DeleteElementAction, which is instantiated when the client deletes an element
+    /// </summary>
+    public class DeleteElementAction : IUndoable
     {
+
         private ElementController _elementController;
-        public RemoveElementAction(ElementController controller)
+
+        /// <summary>
+        /// A DeleteElementAction needs a reference to the ElementController of the deleted element
+        /// </summary>
+        /// <param name="controller"></param>
+        public DeleteElementAction(ElementController controller)
         {
             _elementController = controller;
         }

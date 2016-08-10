@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    public class RemoveLibraryElementAction : IUndoable
+    /// <summary>
+    /// Describes a DeleteLibraryElementAction, which is to be instantiated when the client deletes a library element
+    /// </summary>
+    public class DeleteLibraryElementAction : IUndoable
     {
 
         private Message _message;
@@ -16,16 +19,23 @@ namespace NuSysApp
         /// type, title, server_url, creation_timestamp, last_edited_timestamp
         /// </summary>
         /// <param name="m"></param>
-        public RemoveLibraryElementAction(Message m)
+        public DeleteLibraryElementAction(Message m)
         {
             _message = m;
         }
 
+        /// <summary>
+        /// Returns a CreateLibraryElementAction, the inverse of a DeleteLibraryElementAction
+        /// </summary>
+        /// <returns></returns>
         public IUndoable GetInverse()
         {
             return new CreateLibraryElementAction(_message);
         }
 
+        /// <summary>
+        /// Executes the DeleteLibraryAction by creating and executing a request based on the action's properties
+        /// </summary>
         public void ExecuteAction()
         {
             var request = new DeleteLibraryElementRequest(_message);

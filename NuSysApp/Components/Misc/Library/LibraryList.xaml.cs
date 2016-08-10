@@ -478,7 +478,7 @@ namespace NuSysApp
             m["creation_timestamp"] = model.Timestamp;
             m["last_edited_timestamp"] = model.LastEditedTimestamp;
 
-            var action = new RemoveLibraryElementAction(m);
+            var action = new DeleteLibraryElementAction(m);
             DeleteClicked?.Invoke(this, action);
         }
     }

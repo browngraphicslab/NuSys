@@ -9,26 +9,17 @@ namespace NuSysApp
     /// <summary>
     /// All undoable actions will implement this undoable interface
     /// </summary>
-   public interface IUndoable
-   {
+    public interface IUndoable
+    {
         /// <summary>
         /// Returns the inverse--an action representing the "undone" version of the current action
         /// </summary>
         /// <returns></returns>
-       IUndoable GetInverse();
+        IUndoable GetInverse();
 
         /// <summary>
-        /// To extract the undoable action as a Request that you can use to regenerate the state of the action
+        /// Executes the request that is created by this IUndoable
         /// </summary>
-        /// <returns></returns>
-       
-        /*
-       Request ToRequest();
-        /// <summary>
-        /// executes the request that is created by this IUndoable
-        /// </summary>
-        */
-
         void ExecuteAction();
-   }
+    }
 }
