@@ -795,7 +795,8 @@ namespace NusysIntermediate
             PDF,
             Image,
             Video,
-            Audio
+            Audio,
+            Word
         }
 
         /// <summary>
@@ -926,6 +927,8 @@ namespace NusysIntermediate
                     return ContentType.Audio;
                 case ElementType.PDF:
                     return ContentType.PDF;
+                case ElementType.Word:
+                    return ContentType.Word;
                 default:
                     return ContentType.Text;
             }
