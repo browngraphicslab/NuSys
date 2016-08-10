@@ -58,12 +58,12 @@ namespace NusysServer
         private void SetUpTables()
         {
 
-            var contentTable = MakeCommand("CREATE TABLE " + GetTableName(Constants.SQLTableType.Content) + " (" +
+            var contentTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Content) + " (" +
                 NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
                 NusysConstants.CONTENT_TABLE_TYPE_KEY + " varchar(128), " +
                 NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY + " varchar(1024));");
 
-            var libraryElementTable = MakeCommand("CREATE TABLE " + GetTableName(Constants.SQLTableType.LibraryElement) + " (" +
+            var libraryElementTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + " (" +
                 NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
                 NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY + " varchar(128), " +
                 NusysConstants.LIBRARY_ELEMENT_TYPE_KEY + " varchar(128), " +
@@ -78,7 +78,7 @@ namespace NusysServer
                 NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY + " varchar(32), " +
                 NusysConstants.LIBRARY_ELEMENT_LARGE_ICON_URL_KEY + " varchar(1024));");
 
-            var aliasTable = MakeCommand("CREATE TABLE "+GetTableName(Constants.SQLTableType.Alias)+" ("+
+            var aliasTable = MakeCommand("CREATE TABLE "+ Constants.GetTableName(Constants.SQLTableType.Alias)+" ("+
                 NusysConstants.ALIAS_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
                 NusysConstants.ALIAS_LIBRARY_ID_KEY + " varchar(128), " +
                 NusysConstants.ALIAS_LOCATION_X_KEY + " float, " +
@@ -89,12 +89,12 @@ namespace NusysServer
                  NusysConstants.ALIAS_ACCESS_KEY + " varchar(128), " +
                 NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY + " varchar(128));");
 
-            var metadataTable = MakeCommand("CREATE TABLE "+GetTableName(Constants.SQLTableType.Metadata)+" ("+
+            var metadataTable = MakeCommand("CREATE TABLE "+ Constants.GetTableName(Constants.SQLTableType.Metadata)+" ("+
                 NusysConstants.METADATA_LIBRARY_ELEMENT_ID_KEY + " varchar(128)," +
                 NusysConstants.METADATA_KEY_COLUMN_KEY + " varchar(1028)," +
                 NusysConstants.METADATA_VALUE_COLUMN_KEY + " varchar(4096));");
 
-            var propertiesTable = MakeCommand("CREATE TABLE " + GetTableName(Constants.SQLTableType.Properties) + " (" +
+            var propertiesTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Properties) + " (" +
                 NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY + " varchar(128), " +
                 NusysConstants.PROPERTIES_KEY_COLUMN_KEY + " varchar(1028), " +
                 NusysConstants.PROPERTIES_DATE_VALUE_COLUMN_KEY + " datetime, " +
@@ -119,11 +119,11 @@ namespace NusysServer
             if (delete)
             {
 
-                var dropAliases = MakeCommand("DROP TABLE " + GetTableName(Constants.SQLTableType.Alias));
-                var dropLibraryElements = MakeCommand("DROP TABLE " + GetTableName(Constants.SQLTableType.LibraryElement));
-                var dropProperties = MakeCommand("DROP TABLE " + GetTableName(Constants.SQLTableType.Properties));
-                var dropMetadata = MakeCommand("DROP TABLE " + GetTableName(Constants.SQLTableType.Metadata));
-                var dropContent = MakeCommand("DROP TABLE " + GetTableName(Constants.SQLTableType.Content));
+                var dropAliases = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Alias));
+                var dropLibraryElements = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.LibraryElement));
+                var dropProperties = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Properties));
+                var dropMetadata = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Metadata));
+                var dropContent = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Content));
 
                 dropAliases.ExecuteNonQuery();
                 dropLibraryElements.ExecuteNonQuery();
@@ -133,11 +133,11 @@ namespace NusysServer
             }
             else
             {
-                var clearAliases = MakeCommand("TRUNCATE TABLE " + GetTableName(Constants.SQLTableType.Alias));
-                var clearLibraryElements = MakeCommand("TRUNCATE TABLE " + GetTableName(Constants.SQLTableType.LibraryElement));
-                var clearProperties = MakeCommand("TRUNCATE TABLE " + GetTableName(Constants.SQLTableType.Properties));
-                var clearMetadata = MakeCommand("TRUNCATE TABLE " + GetTableName(Constants.SQLTableType.Metadata));
-                var clearContent = MakeCommand("TRUNCATE TABLE " + GetTableName(Constants.SQLTableType.Content));
+                var clearAliases = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Alias));
+                var clearLibraryElements = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.LibraryElement));
+                var clearProperties = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Properties));
+                var clearMetadata = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Metadata));
+                var clearContent = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Content));
 
                 clearAliases.ExecuteNonQuery();
                 clearLibraryElements.ExecuteNonQuery();
@@ -157,29 +157,6 @@ namespace NusysServer
             var cmd = _db.CreateCommand();
             cmd.CommandText = command;
             return cmd;
-        }
-
-        /// <summary>
-        /// method to return the name of the sql table
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public static string GetTableName(Constants.SQLTableType type)
-        {
-            switch (type)
-            {
-                case Constants.SQLTableType.Alias:
-                    return NusysIntermediate.NusysConstants.ALIASES_SQL_TABLE_NAME;
-                case Constants.SQLTableType.LibraryElement:
-                    return NusysIntermediate.NusysConstants.LIBRARY_ELEMENTS_SQL_TABLE_NAME;
-                case Constants.SQLTableType.Metadata:
-                    return NusysIntermediate.NusysConstants.METADATA_SQL_TABLE_NAME;
-                case Constants.SQLTableType.Properties:
-                    return NusysIntermediate.NusysConstants.PROPERTIES_SQL_TABLE_NAME;
-                case Constants.SQLTableType.Content:
-                    return NusysIntermediate.NusysConstants.CONTENTS_SQL_TABLE_NAME;
-            }
-            return null;
         }
 
         /// <summary>
@@ -393,7 +370,7 @@ namespace NusysServer
             {
                 throw new Exception("didn't find any valid keys in requested sql insert command");
             }
-            var sqlStatement = "INSERT INTO " + GetTableName(tableType) + " ";
+            var sqlStatement = "INSERT INTO " + Constants.GetTableName(tableType) + " ";
             var columnNames = "(";
             var values = "(";
             int i = 0;
@@ -429,7 +406,7 @@ namespace NusysServer
         {
             var cleanedMessage = Constants.GetCleanedMessageForDatabase(columnValueMessage, tableType);
             var deleteOperatorString = deleteOperator.ToString();
-            var deleteStringCmd = "DELETE FROM " + GetTableName(tableType) + " WHERE ";
+            var deleteStringCmd = "DELETE FROM " + Constants.GetTableName(tableType) + " WHERE ";
             int i = 0;
             foreach (var kvp in cleanedMessage)
             {

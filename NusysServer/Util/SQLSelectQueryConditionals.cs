@@ -124,7 +124,7 @@ namespace NusysServer
             {
                 throw new Exception("cannot create a Sql Query contains conditional with null conditionals or no possible values");
             }
-            Property = SQLConnector.GetTableName(tableType) + "." + property;
+            Property = Constants.GetTableName(tableType) + "." + property;
             PossibleValues = possibleValues;
         }
 

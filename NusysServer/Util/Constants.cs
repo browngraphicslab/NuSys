@@ -182,7 +182,7 @@ namespace NusysServer
             {
                 return keys;
             }
-            keys = keys.Select(key => SQLConnector.GetTableName(tableType) + "." + key);
+            keys = keys.Select(key => GetTableName(tableType) + "." + key);
             return keys;
         }
 
@@ -227,7 +227,7 @@ namespace NusysServer
         /// <returns></returns>
         public static IEnumerable<string> GetFullColumnTitles(SQLTableType tableType, IEnumerable<string> columnNames)
         {
-            return columnNames.Select(name => SQLConnector.GetTableName(tableType) + "." + name);
+            return columnNames.Select(name => GetTableName(tableType) + "." + name);
         }
 
         /// <summary>
@@ -238,7 +238,7 @@ namespace NusysServer
         /// <returns></returns>
         public static IEnumerable<string> GetFullColumnTitle(SQLTableType tableType, string columnName)
         {
-            return new List<string>() {SQLConnector.GetTableName(tableType) + "." + columnName};
+            return new List<string>() {GetTableName(tableType) + "." + columnName};
         }
 
         /// <summary>
@@ -250,6 +250,30 @@ namespace NusysServer
         public static Message StripTableNames(Message properties)
         {
             return new Message(properties.ToDictionary(kvp => kvp.Key.Contains(".") ? kvp.Key.Substring(kvp.Key.IndexOf(".") + 1) : kvp.Key, kvp => kvp.Value));
+        }
+
+
+        /// <summary>
+        /// method to return the name of the sql table
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static string GetTableName(Constants.SQLTableType type)
+        {
+            switch (type)
+            {
+                case Constants.SQLTableType.Alias:
+                    return NusysIntermediate.NusysConstants.ALIASES_SQL_TABLE_NAME + "_" + user;//TODO remove all the '  +"_"+user   ', it's only for testing
+                case Constants.SQLTableType.LibraryElement:
+                    return NusysIntermediate.NusysConstants.LIBRARY_ELEMENTS_SQL_TABLE_NAME + "_" + user;
+                case Constants.SQLTableType.Metadata:
+                    return NusysIntermediate.NusysConstants.METADATA_SQL_TABLE_NAME + "_" + user;
+                case Constants.SQLTableType.Properties:
+                    return NusysIntermediate.NusysConstants.PROPERTIES_SQL_TABLE_NAME + "_" + user;
+                case Constants.SQLTableType.Content:
+                    return NusysIntermediate.NusysConstants.CONTENTS_SQL_TABLE_NAME + "_" + user;
+            }
+            return null;
         }
 
         #endregion StaticMethods

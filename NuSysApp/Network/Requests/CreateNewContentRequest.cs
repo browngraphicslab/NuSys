@@ -60,14 +60,7 @@ namespace NuSysApp
         /// Check the arguments comments before popluating so you know which properties are required
         /// </summary>
         /// <param name="requestArgs"></param>
-        public CreateNewContentRequest(CreateNewContentRequestArgs requestArgs)
-            : base(NusysConstants.RequestType.CreateNewContentRequest)
-        {
-            var message = requestArgs.PackToRequestKeys();
-            _message.ForEach(kvp => message[kvp.Key] = kvp.Value);
-            _message = message;
-            
-        }
+        public CreateNewContentRequest(CreateNewContentRequestArgs requestArgs) : base(requestArgs, NusysConstants.RequestType.CreateNewContentRequest) { }
 
         /// <summary>
         /// this method will parse and add the returned library Element after the request has successfully returned. 

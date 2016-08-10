@@ -732,6 +732,7 @@ namespace NusysIntermediate
         #endregion CollectionElement
 
         #region VideoElement
+
         /// <summary>
         /// This key is used to hold the X resolution for the video element models when represented in message form.
         /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
@@ -739,7 +740,7 @@ namespace NusysIntermediate
         public static readonly string VIDEO_ELEMENT_RESOLUTION_X_KEY = "resolutionX";
 
         /// <summary>
-        /// This key is used to hold the X resolution for the video element models when represented in message form.
+        /// This key is used to hold the Y resolution for the video element models when represented in message form.
         /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
         /// </summary>
         public static readonly string VIDEO_ELEMENT_RESOLUTION_Y_KEY = "resolutionY";
