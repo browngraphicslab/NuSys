@@ -13,19 +13,19 @@ namespace NusysServer
         // all public classes are lower case because they need to be serialized for the cognitive services api
 
         /// <summary>
-        /// Applies to topic analysis, see GetTextTopicsAsync in CognitiveApiTextProcessor
+        /// Applies to topic analysis, see GetTextTopicsAsync in TextProcessor
         /// </summary>
         public string[] stopWords { get; set; }
 
         /// <summary>
-        /// Applies to topic analysis, see GetTextTopicsAsync in CognitiveApiTextProcessor
+        /// Applies to topic analysis, see GetTextTopicsAsync in TextProcessor
         /// </summary>
         public string[] topicsToExclude { get; set; }
 
         /// <summary>
         /// A list of documents, CognitiveApiDocument is the base document, all other document types extend from this
         /// </summary>
-        public CognitiveApiDocument[] documents { get; set; }
+        public IEnumerable<ICognitiveApiDocumentable> documents { get; set; }
         
     }
 }

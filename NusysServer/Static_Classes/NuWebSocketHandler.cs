@@ -3,6 +3,7 @@ using Microsoft.Web.WebSockets;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Runtime.Serialization;
@@ -43,6 +44,33 @@ namespace NusysServer
                     this.Send(dict);
                 }
             }
+
+            //// Test CODE ************************ FOR PDFS  **********************************
+            //var sourceDirectory = "C:/Users/luke murray/Downloads/zip2";
+            //Debug.Assert(Directory.Exists(sourceDirectory));
+            //var txtFiles = Directory.EnumerateFiles(sourceDirectory, "*.txt");
+            //var index = (new Random()).Next(0, txtFiles.Count());
+            //var file = txtFiles.ElementAt(index);
+            //var text = File.ReadAllText(file);
+
+            //Task.Run(async delegate
+            //{
+            //    var docuModel = await TextProcessor.GetNusysPdfAnalysisModelFromTextAsync(text);
+            //});
+
+            //// TEST CODE *********************************************************************
+
+            // Test CODE ************************ FOR IMGS  **********************************
+            var imgUrl =
+                "http://www.marketplaceleaders.org/wp-content/uploads/2013/09/893708_10151839045509966_1967887512_o.jpg";
+
+            Task.Run(async delegate
+            {
+                var imgModel = await ImageProcessor.GetNusysImageAnalysisModelFromUrlAsync(imgUrl);
+            });
+
+            // TEST CODE *********************************************************************
+
         }
 
         /// <summary>

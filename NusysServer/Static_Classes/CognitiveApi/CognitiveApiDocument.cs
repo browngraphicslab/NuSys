@@ -10,7 +10,7 @@ namespace NusysServer
     /// Base Document class for sending serialized documents to the cognitive services api
     /// requires only the document text and an identifying id
     /// </summary>
-    public class CognitiveApiDocument
+    public class CognitiveApiDocument : ICognitiveApiDocumentable
     {
         // All public properties are lowercase because they have to be serialized as lowercase in the cog services api
 

@@ -43,7 +43,6 @@ namespace NuSysApp
                 var pdfRegionModel = controller.LibraryElementModel as PdfRegionModel;
                 CurrentPageNumber = pdfRegionModel.PageLocation;
             }
-
         }
        
         
