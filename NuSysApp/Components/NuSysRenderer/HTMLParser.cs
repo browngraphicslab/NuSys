@@ -11,6 +11,7 @@ namespace NuSysApp
     public struct ParseItem
     {
         public string Tag;
+        public int Size;
         public string Text;
         public int StartIndex;
         public int Length;
@@ -32,9 +33,10 @@ namespace NuSysApp
 
         public CanvasTextLayout GetParsedText(string html, double canvasHeight, double canvasWidth)
         {
+            _parsedItems = new List<ParseItem>();
             var htmlDocument = GetHTMLDocumentFromString(html);
             RecursiveParsing(htmlDocument.DocumentNode.ChildNodes, 0);
-            var text = HTMLHelper.StripTagsRegex(html);
+            var text = HTMLHelper.StripTagsRegex(AddWhiteSpace(html));
             var textLayout = new CanvasTextLayout(_resourceCreator, text, _textFormat, (float) canvasWidth, (float) canvasHeight);
             ApplyFormatting(textLayout);
             return textLayout;
@@ -43,9 +45,8 @@ namespace NuSysApp
 
         private void ApplyFormatting(CanvasTextLayout textLayout)
         {
-            foreach (var parsedItem in _parsedItems)
+            foreach (var parsedItem in _parsedItems.ToArray())
             {
-                //Debug.WriteLine(parsedItem.Tag + "\t" + parsedItem.Text + "\t" + parsedItem.StartIndex + "\t" + parsedItem.Length);
 
                 if (parsedItem.Tag == "b")
                 {
@@ -91,7 +92,22 @@ namespace NuSysApp
                 {
                     textLayout.SetFontSize(parsedItem.StartIndex, parsedItem.Length, 11);
                 }
-                
+                if (parsedItem.Tag == "font")
+                {
+                    if (parsedItem.Size == 3)
+                    {
+                        textLayout.SetFontSize(parsedItem.StartIndex, parsedItem.Length, 10);
+                    }
+                    if (parsedItem.Size == 4)
+                    {
+                        textLayout.SetFontSize(parsedItem.StartIndex, parsedItem.Length, 18);
+                    }
+                    if (parsedItem.Size == 5)
+                    {
+                        textLayout.SetFontSize(parsedItem.StartIndex, parsedItem.Length, 28);
+                    }
+                }
+
             }
         }
 
@@ -119,6 +135,7 @@ namespace NuSysApp
                 item.Length = innerString.Length;
                 item.StartIndex = characterIndex;
                 item.Tag = node.Name;
+                item.Size = node.GetAttributeValue("size", 3);
                 _parsedItems.Add(item);
                 currentIndex += item.Length;
                 characterIndex += item.Length;
@@ -133,11 +150,14 @@ namespace NuSysApp
             htmlString = htmlString.Replace("</ul>", "\n");
             htmlString = htmlString.Replace("<ol>", "");
             htmlString = htmlString.Replace("</ol>", "\n");
-            htmlString = htmlString.Replace("<li>", "\n \u2022");
+            htmlString = htmlString.Replace("<li>", "\n \u2022 \u0020");
             htmlString = htmlString.Replace("&nbsp;", " ");
-            htmlString = htmlString.Replace("<font size=\"5\">", "<h2>");
-            htmlString = htmlString.Replace("<font size=\"4\">", "<h3>");
-
+            //htmlString = htmlString.Replace("<font size=\"5\">", "<title>");
+            //htmlString = htmlString.Replace("<font size=\"4\">", "<subtitle>");
+            //htmlString = htmlString.Replace("<font size=\"3\">", "<normalText>");
+            htmlString = htmlString.Replace("<div>", "");
+            htmlString = htmlString.Replace("</div>", "\n");
+           
             return htmlString;
         }
 

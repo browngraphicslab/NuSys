@@ -19,6 +19,7 @@ using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using SharpDX.DirectWrite;
+using WinRTXamlToolkit.IO.Serialization;
 
 namespace NuSysApp
 {
@@ -28,12 +29,22 @@ namespace NuSysApp
         private HTMLParser _htmlParser;
         private CanvasTextLayout _textItemLayout;
         private string _textboxtext = string.Empty;
+        private ICanvasResourceCreator _resourceCreator;
 
         public TextElementRenderItem(TextNodeViewModel vm, CollectionRenderItem parent, CanvasAnimatedControl resourceCreator):base(vm, parent, resourceCreator)
         {
             _vm = vm;
+            _resourceCreator = resourceCreator;
             _htmlParser = new HTMLParser(resourceCreator);
             (_vm.Controller as TextNodeController).LibraryElementController.ContentChanged += LibraryElementControllerOnContentChanged;
+            _vm.Controller.SizeChanged += Controller_SizeChanged;
+        }
+
+        private void Controller_SizeChanged(object source, double width, double height)
+        {
+            IsDirty = true;
+            Update();
+            
         }
 
         private void LibraryElementControllerOnContentChanged(object source, string contentData)
@@ -68,10 +79,15 @@ namespace NuSysApp
 
             if (_textItemLayout == null)
                 return;
-            //_textItemLayout = _htmlParser.GetParsedText(_vm.Controller.LibraryElementModel.Data, _vm.Height, _vm.Width);
-            //_textItemLayout.HorizontalAlignment = CanvasHorizontalAlignment.Center;
-            ds.DrawTextLayout(_textItemLayout, 0, 0, Colors.Black);
-                
+
+            
+            var clippingRect = CanvasGeometry.CreateRectangle(_resourceCreator, new Rect(0, 0, _vm.Width, _vm.Height));
+            using (ds.CreateLayer(1f, clippingRect))
+            {
+                ds.DrawTextLayout(_textItemLayout, 0, 0, Colors.Black);
+            }
+
+
             ds.Transform = orgTransform;
 
         }
