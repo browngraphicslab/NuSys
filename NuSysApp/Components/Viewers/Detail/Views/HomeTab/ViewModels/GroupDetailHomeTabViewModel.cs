@@ -27,8 +27,7 @@ namespace NuSysApp
             ShapePoints = collectionmodel.ShapePoints.Count;
         }
 
-        // not implemented cause we don't have regions in collections
-        public override Message GetNewRegionMessage()
+        public override CreateNewRegionLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs()
         {
             throw new NotImplementedException();
         }

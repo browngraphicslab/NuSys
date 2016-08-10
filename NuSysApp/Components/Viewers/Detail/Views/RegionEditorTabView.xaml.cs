@@ -44,41 +44,37 @@ namespace NuSysApp
             // get appropriate new region message based on the type of library element currently
             // loaded in the detail view. i.e. for images top left point, width, and height.
             var detailHomeTabViewModel = vm.RegionView.DataContext as DetailHomeTabViewModel;
-            Message message = null;
             NusysConstants.ElementType type;
 
             CreateNewRegionLibraryElementRequestArgs regionRequestArgs = new CreateNewRegionLibraryElementRequestArgs();
-
             //in each case, create a new CreateNewRegionLibraryElementRequestArgs or subclass
             switch (vm.CurrentElementController.LibraryElementModel.Type)
             {
                 case NusysConstants.ElementType.ImageRegion:
                 case NusysConstants.ElementType.Image:
-
-                    message = detailHomeTabViewModel?.GetNewRegionMessage();
+                    regionRequestArgs = detailHomeTabViewModel?.GetNewCreateLibraryElementRequestArgs();
                     type = NusysConstants.ElementType.ImageRegion;
                     break;
                 case NusysConstants.ElementType.AudioRegion:
                 case NusysConstants.ElementType.Audio:
-
-                    message = detailHomeTabViewModel?.GetNewRegionMessage();
+                    regionRequestArgs = detailHomeTabViewModel?.GetNewCreateLibraryElementRequestArgs();
                     type = NusysConstants.ElementType.AudioRegion;
                     break;
                 case NusysConstants.ElementType.VideoRegion:
                 case NusysConstants.ElementType.Video:
-                    message = detailHomeTabViewModel?.GetNewRegionMessage();
+                    regionRequestArgs = detailHomeTabViewModel?.GetNewCreateLibraryElementRequestArgs();
                     type  = NusysConstants.ElementType.VideoRegion;
                     break;
                 case NusysConstants.ElementType.PdfRegion:
                 case NusysConstants.ElementType.PDF:
-                    message = detailHomeTabViewModel?.GetNewRegionMessage();
+                    regionRequestArgs = detailHomeTabViewModel?.GetNewCreateLibraryElementRequestArgs();
                     type = NusysConstants.ElementType.PdfRegion;
                     break;
                 default:
                     Debug.Fail("This should never occur, if it does we just return to be safe but this is a massive bug");
                     return;
             }
-            Debug.Assert(message != null);
+            Debug.Assert(regionRequestArgs != null);
 
             //create the args and set the parameters that all regions will need
             regionRequestArgs.ContentId = vm.CurrentElementController.LibraryElementModel.ContentDataModelId;

@@ -29,12 +29,12 @@ namespace NuSysApp
             Editable = true;         
         }
 
-        public override Message GetNewRegionMessage()
+        public override CreateNewRegionLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs()
         {
-            var m = new Message();
-            m["rectangle_location"] = new Point(.25, .25);
-            m["rectangle_width"] = .5;
-            m["rectangle_height"] = .5;
+            var args = new CreateNewRectangleRegionLibraryElementRequestArgs();
+            args.TopLeftPoint = new PointModel(.25, .25);
+            args.RegionWidth = .5;
+            args.RegionHeight = .5;
            
             // if the library element LibraryElementController is a region noramlize top left point, height, and width for original content
             if (LibraryElementController is RectangleRegionLibraryElementController)
@@ -44,14 +44,14 @@ namespace NuSysApp
                 var rectangleRegionModel = imageRegionLibraryElementController?.RectangleRegionModel;
 
                 // normalizes the top left point so that it is in the correct place on the original content
-                m["rectangle_location"] = new Point(.25 * rectangleRegionModel.Width + rectangleRegionModel.TopLeftPoint.X, 
+                args.TopLeftPoint = new PointModel(.25 * rectangleRegionModel.Width + rectangleRegionModel.TopLeftPoint.X, 
                                                     .25 * rectangleRegionModel.Height + rectangleRegionModel.TopLeftPoint.Y);
                 // same for width and height
-                m["rectangle_width"] = .5 * rectangleRegionModel.Width;
-                m["rectangle_height"] = .5 * rectangleRegionModel.Height;
+                args.RegionWidth = .5 * rectangleRegionModel.Width;
+                args.RegionHeight = .5 * rectangleRegionModel.Height;
             }
 
-            return m;
+            return args;
         }
     }
 }

@@ -13,7 +13,7 @@ namespace NusysServer
     {
         public static readonly string SERVER_SESSION_ID_STRING = "server_session_id";
         public static readonly string VALID_CREDENTIALS_BOOLEAN_STRING = "valid";
-        private static readonly string user = "trent";
+        private static readonly string user = "sahil";
 
         public static string WWW_ROOT {
             get
@@ -26,6 +26,8 @@ namespace NusysServer
                         return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "C:/Users/graphics_lab/Documents/Trent_Nusys/nusys/NusysServer/" : "D:/home/site/wwwroot/";
                     case "harsh":
                         return Directory.Exists("C:/Users/Brown GFX/Documents/NuSys_Server") ? "C:/Users/Brown GFX/Documents/NuSys_Server" : "D:/home/site/wwwroot/";
+                    case "sahil":
+                        return Directory.Exists("C:/Users/nusys/Documents/Sahil4/NusysServer/") ? "C:/Users/nusys/Documents/Sahil4/NusysServer/" : "D:/home/site/wwwroot/";
                     default:
                         return "";
                 }
@@ -52,6 +54,8 @@ namespace NusysServer
                         return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "C:/Users/graphics_lab/Documents/NuRepo_Test/" : "D:/home/site/wwwroot/files/";
                     case "harsh":
                         return Directory.Exists("C:/Users/Brown GFX/Documents/NuSys_Server") ? "C:/ Users/Brown GFX/Documents/NuSys_Server" : "D:/home/site/wwwroot/";
+                    case "sahil":
+                        return Directory.Exists("C:/Users/nusys/Documents/Sahil4/NusysServer/") ? "C:/Users/nusys/Documents/Sahil4/NusysServer/" : "D:/home/site/wwwroot/";
                     default:
                         return "";
                 }
@@ -75,6 +79,8 @@ namespace NusysServer
                         return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "http://localhost:2685/" : "http://nusysrepo.azurewebsites.net/";
                     case "harsh":
                         return Directory.Exists("C:/Users/Brown GFX/Documents/NuSys_Server") ? "http://localhost:2685/" : "http://nusysrepo.azurewebsites.net/";
+                    case "sahil":
+                        return Directory.Exists("C:/Users/nusys/Documents/Sahil4/NusysServer/") ? "http://localhost:2685/" : "http://nusysrepo.azurewebsites.net/";
                     default:
                         return "";
                 }

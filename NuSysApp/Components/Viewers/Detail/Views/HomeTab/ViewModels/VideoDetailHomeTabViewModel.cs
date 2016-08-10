@@ -21,22 +21,19 @@ namespace NuSysApp
             LibraryElementController = controller;
         }
 
-        public override Message GetNewRegionMessage()
+        public override CreateNewRegionLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs()
         {
-            var m = new Message();
-            m["rectangle_location"] = new Point(.25, .25);
-            m["rectangle_width"] = .5;
-            m["rectangle_height"] = .5;
-            m["start"] = .25;
-            m["end"] = .75;
+            var args = new CreateNewTimeSpanRegionRequestArgs();
+            args.RegionStart = .25;
+            args.RegionEnd = .75;
             if (LibraryElementController is VideoRegionLibraryElementController)
             {
                 var region = LibraryElementController.LibraryElementModel as VideoRegionModel;
-                m["start"] = region.Start + (region.End - region.Start) * 0.25;
-                m["end"] = region.Start + (region.End - region.Start) * 0.75;
+                args.RegionStart = region.Start + (region.End - region.Start) * 0.25;
+                args.RegionEnd = region.Start + (region.End - region.Start) * 0.75;
             }
 
-            return m;
+            return args;
         }
     }
 }
