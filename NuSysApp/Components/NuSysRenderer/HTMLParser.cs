@@ -32,10 +32,11 @@ namespace NuSysApp
 
         public CanvasTextLayout GetParsedText(string html, double canvasHeight, double canvasWidth)
         {
+            _parsedItems = new List<ParseItem>();
             var htmlDocument = GetHTMLDocumentFromString(html);
             RecursiveParsing(htmlDocument.DocumentNode.ChildNodes, 0);
             var text = HTMLHelper.StripTagsRegex(html);
-            var textLayout = new CanvasTextLayout(_resourceCreator, text, _textFormat, (float) canvasWidth, (float) canvasHeight);
+            var textLayout = new CanvasTextLayout(_resourceCreator, AddWhiteSpace(text), _textFormat, (float) canvasWidth, (float) canvasHeight);
             ApplyFormatting(textLayout);
             return textLayout;
 
@@ -138,6 +139,9 @@ namespace NuSysApp
             htmlString = htmlString.Replace("<font size=\"5\">", "<h2>");
             htmlString = htmlString.Replace("<font size=\"4\">", "<h3>");
 
+            var test = "the&nbsp;Apple";
+            test = test.Replace("&nbsp;", " ");
+            Debug.WriteLine(test);
             return htmlString;
         }
 
