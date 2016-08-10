@@ -1,0 +1,26 @@
+8/10/2016 2:40:34 PM   Invalid object name 'contents_miranda'.  .Net SqlClient Data Provider     at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName, Boolean async, Int32 timeout, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(TaskCompletionSource`1 completion, String methodName, Boolean sendToPipe, Int32 timeout, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at NusysServer.SQLConnector.AddContent(Message message) in C:\Users\miran_000\Documents\NuSys\NusysServer\Static_Classes\SqlConnector.cs:line 220
+   at NusysServer.CreateNewContentRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewContentRequestHandler.cs:line 27
+   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\miran_000\Documents\NuSys\NusysServer\Static_Classes\RequestRouter.cs:line 86
+8/10/2016 2:42:32 PM   Invalid object name 'library_elements_miranda'.  .Net SqlClient Data Provider     at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
+   at System.Data.SqlClient.SqlDataReader.get_MetaData()
+   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, SqlDataReader ds, Boolean describeParameterEncryptionRequest)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader()
+   at NusysServer.SQLConnector.ExecuteSelectQueryAsMessages(SelectCommandReturnArgs args, Boolean includeNulls) in C:\Users\miran_000\Documents\NuSys\NusysServer\Static_Classes\SqlConnector.cs:line 337
+   at NusysServer.SQLSelectQuery.ExecuteCommand() in C:\Users\miran_000\Documents\NuSys\NusysServer\Util\SelectQuery\SQLSelectQuery.cs:line 90
+   at NusysServer.GetAllLibraryElementsRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\GetAllLibraryElementsRequestHandler.cs:line 43
+   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\miran_000\Documents\NuSys\NusysServer\Static_Classes\RequestRouter.cs:line 86

@@ -94,26 +94,26 @@ namespace NuSysApp
         public async Task SortTitle(List<LibraryItemTemplate> ordered, bool reverse)
         {
             ordered = new List<LibraryItemTemplate>(ItemList.OrderBy(l => ((LibraryItemTemplate)l).Title));
-            if (reverse) Reverse(ordered);
+            SetList(ordered, reverse);
         }
 
         public async Task SortType(List<LibraryItemTemplate> ordered, bool reverse)
         {
             ordered = new List<LibraryItemTemplate>(ItemList.OrderBy(l => ((LibraryItemTemplate)l).Type.ToString()));
-            if (reverse) Reverse(ordered);
+            SetList(ordered, reverse);
         }
 
         public async Task SortDate(List<LibraryItemTemplate> ordered, bool reverse)
         {
             ordered = new List<LibraryItemTemplate>(ItemList.OrderByDescending(l => Constants.GetTimestampTicksOfLibraryElementModel((LibraryItemTemplate)l)));
-            if (reverse) Reverse(ordered);
+            SetList(ordered, reverse);
         }
 
-        public async Task Reverse(List<LibraryItemTemplate> ordered)
+        public async Task SetList(List<LibraryItemTemplate> ordered, bool reverse)
         {            
             if (ordered != null)
             {
-                ordered.Reverse();
+                if (reverse) ordered.Reverse(); 
                 ItemList.Clear();
 
                 foreach (var item in ordered)
