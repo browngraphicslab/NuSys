@@ -813,6 +813,30 @@ namespace NusysIntermediate
 
         #endregion UnPackingModelKeys
 
+        #region SubClassKeys
+
+            #region LibraryElementModel
+
+            /// <summary>
+            /// any non-basic property key must be put into this list.
+            /// For example, link is a LibraryElementModel but its LibraryElement endpoints are not basic LibraryElementProperties.  
+            /// Thus, the keys used to send and store the link ids must be added here
+            /// </summary>
+            public static readonly HashSet<string> ALL_ALLOWED_LIBRARY_ELEMENT_PROPERTY_KEYS = new HashSet<string>(LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS.Keys)
+            {
+                NEW_LIBRARY_ELEMENT_REQUEST_REGION_CLIPPING_PARENT_ID,
+                NEW_LIBRARY_ELEMENT_REQUEST_REGION_PDF_PAGE_LOCATION,
+                NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_START,
+                NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_TOP_LEFT_POINT,
+                NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_HEIGHT,
+                NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_WIDTH,
+                NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_END,
+            };
+
+            #endregion LibraryElementModel
+
+        #endregion SubClassKeys
+
         #region Enums
         /// <summary>
         /// The base types for every content.  ElementTypes can have the same content Types.

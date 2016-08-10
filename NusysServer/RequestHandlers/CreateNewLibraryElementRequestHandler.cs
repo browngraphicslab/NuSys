@@ -53,6 +53,14 @@ namespace NusysServer
             addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY] = mediumIconPath;
             addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_LARGE_ICON_URL_KEY] = largeIconPath;
 
+            foreach (var kvp in message)
+            {
+                if (NusysConstants.ALL_ALLOWED_LIBRARY_ELEMENT_PROPERTY_KEYS.Contains(kvp.Key))
+                {
+                    addLibraryElementMessage[kvp.Key] = kvp.Value;
+                }
+            }
+
             var success = ContentController.Instance.SqlConnector.AddLibraryElement(addLibraryElementMessage);
 
             //create a libraryElementModel as requested and serialize it
