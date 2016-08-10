@@ -65,6 +65,7 @@ namespace NuSysApp
 
         private void CanvasOnCreateResources(CanvasAnimatedControl sender, CanvasCreateResourcesEventArgs args)
         {
+            
         }
 
         public async Task Init(CanvasAnimatedControl canvas)
@@ -210,13 +211,13 @@ namespace NuSysApp
             {
                 //_currentLinkType = LinkType.Semantic;
                 _selectedLinkType = LinkType.Semantic;
-                _tempLink.Color = Colors.CadetBlue;
+                _tempLink.Color = Colors.DodgerBlue;
             }
             else if (newY >= range*3)
             {
                 //_currentLinkType = LinkType.Trail;
                 _selectedLinkType = LinkType.Trail;
-                _tempLink.Color = Colors.DarkRed;
+                _tempLink.Color = Colors.PaleVioletRed;
             }
         }
 
@@ -245,10 +246,10 @@ namespace NuSysApp
             switch (_currentLinkType)
             {
                 case LinkType.Semantic:
-                    color = Colors.CadetBlue;
+                    color = Colors.DodgerBlue;
                     break;
                 case LinkType.Trail:
-                    color = Colors.DarkRed;
+                    color = Colors.PaleVioletRed;
                     break;
                 default:
                     color = Colors.Transparent;

@@ -67,7 +67,7 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds) {
             if (_path != null)
-                ds.DrawGeometry(_path, Colors.DodgerBlue, 20);
+                ds.DrawGeometry(_path, Colors.DodgerBlue, 30);
         }
 
         public override bool HitTest(Vector2 point)

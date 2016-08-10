@@ -46,7 +46,7 @@ namespace NuSysApp
             cb.AddCubicBezier(Point1,Point2,Point3);
             cb.EndFigure(CanvasFigureLoop.Open);
             var path = CanvasGeometry.CreatePath(cb);
-            ds.DrawGeometry(path, Colors.PaleVioletRed, 20);
+            ds.DrawGeometry(path, Colors.PaleVioletRed, 30);
         }
     }
 }

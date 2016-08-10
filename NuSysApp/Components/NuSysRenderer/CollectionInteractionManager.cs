@@ -94,6 +94,110 @@ namespace NuSysApp
             _collection.ResourceCreator.PointerReleased += OnPointerReleased;
         }
 
+        private void OnPointerReleased(object sender, PointerRoutedEventArgs args)
+        {
+            if (args.Pointer.PointerDeviceType == PointerDeviceType.Touch)
+            {
+                OnPointerTouchReleased(sender, args);
+            }
+            else if (args.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
+            {
+                OnPointerMouseReleased(sender, args);
+            }
+            else if (args.Pointer.PointerDeviceType == PointerDeviceType.Pen)
+            {
+                OnPointerPenReleased(sender, args);
+            }
+        }
+
+     
+
+        private void OnPointerPressed(object sender, PointerRoutedEventArgs args)
+        {
+            if (args.Pointer.PointerDeviceType == PointerDeviceType.Touch)
+            {
+                OnPointerTouchPressed(sender, args);
+            }
+            else if (args.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
+            {
+                OnPointerMousePressed(sender, args);
+            }
+            else if (args.Pointer.PointerDeviceType == PointerDeviceType.Pen)
+            {
+                OnPointerPenPressed(sender, args);
+            }
+        }
+
+        private void OnPointerMoved(object sender, PointerRoutedEventArgs args)
+        {
+            if (args.Pointer.PointerDeviceType == PointerDeviceType.Touch)
+            {
+                OnPointerTouchMoved(sender, args);
+            }
+            else if (args.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
+            {
+                OnPointerMouseMoved(sender, args);
+            }
+            else if (args.Pointer.PointerDeviceType == PointerDeviceType.Pen)
+            {
+                OnPointerPenMoved(sender, args);
+            }
+        }
+
+
+        private void OnPointerPenPressed(object sender, PointerRoutedEventArgs args)
+        {
+            if (CoreApplication.GetCurrentView().CoreWindow.GetAsyncKeyState(VirtualKey.A).HasFlag(CoreVirtualKeyStates.Down))
+            {
+                _mode = Mode.Ink;
+                InkStarted?.Invoke(args);
+            }
+        }
+
+        private void OnPointerPenReleased(object sender, PointerRoutedEventArgs args)
+        {
+            if (_mode == Mode.Ink)
+            {
+                InkStopped?.Invoke(args);
+            }
+            _mode = Mode.None;
+        }
+
+        private void OnPointerPenMoved(object sender, PointerRoutedEventArgs args)
+        {
+            if (_mode == Mode.Ink)
+            {
+                InkDrawing?.Invoke(args);
+            }
+        }
+
+        private void OnPointerMousePressed(object sender, PointerRoutedEventArgs args)
+        {
+            if (CoreApplication.GetCurrentView().CoreWindow.GetAsyncKeyState(VirtualKey.A).HasFlag(CoreVirtualKeyStates.Down))
+            {
+                _mode = Mode.Ink;
+                InkStarted?.Invoke(args);
+            }
+        }
+
+        private void OnPointerMouseReleased(object sender, PointerRoutedEventArgs args)
+        {
+            if (_mode == Mode.Ink)
+            {
+                InkStopped?.Invoke(args);
+            }
+            _mode = Mode.None;
+        }
+
+        private void OnPointerMouseMoved(object sender, PointerRoutedEventArgs args)
+        {
+            if (_mode == Mode.Ink)
+            {
+                InkDrawing?.Invoke(args);
+            }
+        }
+
+
         public void Dispose()
         {
             _collection.ResourceCreator.PointerPressed -= OnPointerPressed;
@@ -117,7 +221,8 @@ namespace NuSysApp
             _twoFingerDist = MathUtil.Dist(p0, p1);
         }
 
-        private async void OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        
+        private async void OnPointerTouchPressed(object sender, PointerRoutedEventArgs e)
         {
             if (PointerPoints.Count == 0) { 
                 _mode = Mode.None;
@@ -184,7 +289,7 @@ namespace NuSysApp
             _collection.ResourceCreator.PointerMoved += OnPointerMoved;
         }
 
-        private async void OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        private async void OnPointerTouchReleased(object sender, PointerRoutedEventArgs e)
         {
             _secondPointerStopwatch.Stop();
 
@@ -293,7 +398,7 @@ namespace NuSysApp
             _secondPointerStopwatch.Reset();
         }
 
-        private void OnPointerMoved(object sender, PointerRoutedEventArgs args)
+        private void OnPointerTouchMoved(object sender, PointerRoutedEventArgs args)
         {
             if (!PointerPoints.ContainsKey(args.Pointer.PointerId))
                 return;
