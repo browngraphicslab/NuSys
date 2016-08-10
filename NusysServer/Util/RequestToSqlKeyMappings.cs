@@ -47,7 +47,8 @@ namespace NusysServer
         /// <returns></returns>
         public static Message LibraryElementRequestKeysToDatabaseKeys(Message requestMessage)
         {
-            var databaseMessage = new Message(requestMessage.Where(kvp => LibraryElementMapping.ContainsKey(kvp.Key))
+            var databaseMessage = new Message(
+                requestMessage.Where(kvp => LibraryElementMapping.ContainsKey(kvp.Key))
                 .Select(kvp => new KeyValuePair<string,object>(LibraryElementMapping[kvp.Key],kvp.Value))
                 .ToDictionary(k => k.Key, v=> v.Value));
             return databaseMessage;
