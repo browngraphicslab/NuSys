@@ -54,7 +54,6 @@ namespace NusysServer
 
             // Perform OCR on the given url
             OcrResults ocrResult = await VisionServiceClient.RecognizeTextAsync(imageUrl);
-            //Todo build a model for these analysis results
             return ocrResult;
         }
 

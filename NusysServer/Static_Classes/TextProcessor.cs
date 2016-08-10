@@ -3,12 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Http;
 using NusysIntermediate;
 
 namespace NusysServer
@@ -35,11 +38,26 @@ namespace NusysServer
         /// <param name="stopWords">These words and their close forms (e.g. plurals) will be excluded from the entire topic detection pipeline. Use this for common words.</param>
         /// <param name="topicsToExclude">These will be excluded from the list of returned topics. Use this to exclude generic topics that you don’t want to see in the results. </param>
         /// <returns>CognitigeApiTopicModel</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="HttpResponseException"></exception>
         private static async Task<CognitiveApiTopicModel> GetTextTopicsAsync(List<CognitiveApiDocument> documents, List<string> stopWords = null, List<string> topicsToExclude = null)
         {
-            Debug.Assert(documents != null && documents.Count() >= 100, "the cognitive services topic modeling requires that at least 100 documents are sent at a time");
+            if (documents == null)
+            {
+                throw new ArgumentNullException(nameof(documents), "The passed in list of documents cannot be null");
+            }
+            if (documents.Count < 100)
+            {
+                throw new ArgumentOutOfRangeException(nameof(documents), $"The document list passed in contained {documents.Count} items, but requires at least 100.");
+            }
+            if (documents.Count > 1000)
+            {
+                throw new ArgumentOutOfRangeException(nameof(documents), $"The document list passed in contained {documents.Count} items, but requires fewer than 1000.");
+            }
 
-            Debug.Assert(CheckDocumentSize(documents, TextAnalyticsRequestType.Topic), "Max file size per doc is 30kb, Max file size per request is 30mb");
+            // This is a slow safety check
+            CheckDocumentsAndRequest(documents, TextAnalyticsRequestType.Topic);
 
             var jsonData = new CognitiveApiSendObject
             {
@@ -52,20 +70,25 @@ namespace NusysServer
             // serialize the data for a text analytics request
             string json = JsonConvert.SerializeObject(jsonData);
 
-            // get the http respose message from a text analytics request
-            var response = await MakeTextAnalyticsRequestAsync(json, TextAnalyticsRequestType.Topic);
+            // get the http response message from a text analytics request
+            var response = await MakeTextAnalyticsRequestAsync(json, TextAnalyticsRequestType.Topic);          
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpResponseException(response);
+            }
+
 
             // get the url for the topic modeling process from the text analytics request http response message
             var processUrl = response.Headers.Location.AbsoluteUri;
 
             // get the http response message from the topic modeling process upon process finishing - note if this is null the process failed
             response = await GetProcessDataAsync(processUrl);
-
-            Debug.Assert(response.IsSuccessStatusCode);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpResponseException(response);
+            }
 
             var responseContent = await response.Content.ReadAsStringAsync();
-            // test data for the model because waiting for this is too annoying
-            //var responseContent = "{\"status\":\"Succeeded\",\"createdDateTime\":\"2016-08-09T16:00:12Z\",\"operationType\":\"topics\",\"operationProcessingResult\":{\"topics\":[{\"id\":\"c7532570-bb70-4342-bb04-c4a4663cdff7\",\"score\":1.0,\"keyPhrase\":\"pizza\"},{\"id\":\"4add87b6-eaef-4c7a-890a-d9da6ba21e79\",\"score\":1.0,\"keyPhrase\":\"floors\"}],\"topicAssignments\":[{\"documentId\":\"1\",\"topicId\":\"c7532570-bb70-4342-bb04-c4a4663cdff7\",\"distance\":0.0},{\"documentId\":\"1\",\"topicId\":\"4add87b6-eaef-4c7a-890a-d9da6ba21e79\",\"distance\":0.0}],\"errors\":[]}}";
             return JsonConvert.DeserializeObject<CognitiveApiTopicModel>(responseContent);
         }
 
@@ -81,11 +104,27 @@ namespace NusysServer
         /// </summary>
         /// <param name="documents"></param>
         /// <returns>CognitiveApiSentimentModel</returns>
-        /// <remarks>Max file size per doc is 10kb. Max file size per request is 1 mb</remarks>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="HttpResponseException"></exception>
         private static async Task<CognitiveApiSentimentModel> GetTextSentimentAsync(List<CognitiveApiDocumentSentiment> documents)
         {
-            Debug.Assert(documents != null && documents.Any(), "the cognitive services sentiment analysis requires that at least 1 documents is sent at a time");
-            Debug.Assert(CheckDocumentSize(documents, TextAnalyticsRequestType.Sentiment), "Max file size per doc is 10kb, Max file size per request is 1mb");
+            if (documents == null)
+            {
+                throw new ArgumentNullException(nameof(documents), "The passed in list of documents cannot be null");
+            }
+            if (!documents.Any())
+            {
+                throw new ArgumentException("There must be at least one document in the list of documents for sentiment analysis to work.");
+            }
+            if (documents.Count > 1000)
+            {
+                throw new ArgumentOutOfRangeException(nameof(documents), $"The document list passed in contained {documents.Count} items, but requires fewer than 1000.");
+            }
+
+            // This is a slow safety check
+            CheckDocumentsAndRequest(documents, TextAnalyticsRequestType.Sentiment);
 
             // serialize the data for a text analytics request
             var jsonData = new CognitiveApiSendObject {documents = documents};
@@ -93,7 +132,10 @@ namespace NusysServer
 
             // get the http respose message from a text analytics request
             var response = await MakeTextAnalyticsRequestAsync(json, TextAnalyticsRequestType.Sentiment);
-            Debug.Assert(response.IsSuccessStatusCode == true);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpResponseException(response);
+            }
             var responseContent = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<CognitiveApiSentimentModel>(responseContent);
         }
@@ -112,11 +154,26 @@ namespace NusysServer
         /// <param name="documents"></param>
         /// <param name="language">The language of the documents you are getting the sentiment for</param>
         /// <returns>CognitiveApiDocumentSentiment</returns>
-        /// <remarks>Max file size per doc is 10kb. Max file size per request is 1 mb</remarks>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         private static async Task<CognitiveApiSentimentModel> GetTextSentimentAsync(List<CognitiveApiDocument> documents, SentimentLanguages language = SentimentLanguages.English)
         {
-            Debug.Assert(documents != null && documents.Any(), "the cognitive services sentiment analysis requires that at least 1 documents is sent at a time");
-            Debug.Assert(CheckDocumentSize(documents, TextAnalyticsRequestType.Sentiment), "Max file size per doc is 10kb, Max file size per request is 1mb");
+            if (documents == null)
+            {
+                throw new ArgumentNullException(nameof(documents), "The passed in list of documents cannot be null");
+            }
+            if (!documents.Any())
+            {
+                throw new ArgumentException("There must be at least one document in the list of documents for sentiment analysis to work.");
+            }
+            if (documents.Count > 1000)
+            {
+                throw new ArgumentOutOfRangeException(nameof(documents), $"The document list passed in contained {documents.Count} items, but requires fewer than 1000.");
+            }
+
+            // This is a slow safety check
+            CheckDocumentsAndRequest(documents, TextAnalyticsRequestType.Sentiment);
 
             var sentimentDocs = documents.Select(document => new CognitiveApiDocumentSentiment(document, language)).ToList();
             return await GetTextSentimentAsync(sentimentDocs);
@@ -134,11 +191,27 @@ namespace NusysServer
         /// </summary>
         /// <param name="documents"></param>
         /// <returns>CognitiveApiDocumentKeyPhrases</returns>
-        /// <remarks>Max file size per doc is 10kb. Max file size per request is 1 mb</remarks>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="HttpResponseException"></exception>
         private static async Task<CognitiveApiKeyPhrasesModel> GetTextKeyPhrasesAsync(List<CognitiveApiDocumentKeyPhrases> documents)
         {
-            Debug.Assert(documents != null && documents.Any(), "the cognitive services keyphrases analysis requires that at least 1 documents is sent at a time");
-            Debug.Assert(CheckDocumentSize(documents, TextAnalyticsRequestType.KeyPhrases), "Max file size per doc is 10kb, Max file size per request is 1mb");
+            if (documents == null)
+            {
+                throw new ArgumentNullException(nameof(documents), "The passed in list of documents cannot be null");
+            }
+            if (!documents.Any())
+            {
+                throw new ArgumentException("There must be at least one document in the list of documents for keyphrase analysis to work.");
+            }
+            if (documents.Count > 1000)
+            {
+                throw new ArgumentOutOfRangeException(nameof(documents), $"The document list passed in contained {documents.Count} items, but requires fewer than 1000.");
+            }
+
+            // This is a slow safety check
+            CheckDocumentsAndRequest(documents, TextAnalyticsRequestType.KeyPhrases);
 
             // serialize the data for a text analytics request
             var jsonData = new CognitiveApiSendObject();
@@ -147,7 +220,10 @@ namespace NusysServer
 
             // get the http respose message from a text analytics request
             var response = await MakeTextAnalyticsRequestAsync(json, TextAnalyticsRequestType.KeyPhrases);
-            Debug.Assert(response.IsSuccessStatusCode);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpResponseException(response);
+            }
             var responseContent = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<CognitiveApiKeyPhrasesModel>(responseContent);
         }
@@ -166,11 +242,26 @@ namespace NusysServer
         /// <param name="documents"></param>
         /// <param name="language">The language of the documents you are getting the key phrases for</param>
         /// <returns>CognitiveApiDocumentKeyPhrases</returns>
-        /// <remarks>Max file size per doc is 10kb. Max file size per request is 1 mb</remarks>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         private static async Task<CognitiveApiKeyPhrasesModel> GetTextKeyPhrasesAsync(List<CognitiveApiDocument> documents, KeyPhrasesLanguages language = KeyPhrasesLanguages.English)
         {
-            Debug.Assert(documents != null && documents.Any(), "the cognitive services sentiment analysis requires that at least 1 documents is sent at a time");
-            Debug.Assert(CheckDocumentSize(documents, TextAnalyticsRequestType.KeyPhrases), "Max file size per doc is 10kb, Max file size per request is 1mb");
+            if (documents == null)
+            {
+                throw new ArgumentNullException(nameof(documents), "The passed in list of documents cannot be null");
+            }
+            if (!documents.Any())
+            {
+                throw new ArgumentException("There must be at least one document in the list of documents for keyphrase analysis to work.");
+            }
+            if (documents.Count > 1000)
+            {
+                throw new ArgumentOutOfRangeException(nameof(documents), $"The document list passed in contained {documents.Count} items, but requires fewer than 1000.");
+            }
+
+            // This is a slow safety check
+            CheckDocumentsAndRequest(documents, TextAnalyticsRequestType.KeyPhrases);
 
             var keyPhraseDocs = documents.Select(document => new CognitiveApiDocumentKeyPhrases(document, language)).ToList();
             return await GetTextKeyPhrasesAsync(keyPhraseDocs);
@@ -203,8 +294,8 @@ namespace NusysServer
             var segmentList = new List<NusysPdfSegmentAnalysisModel>();
             foreach (var request in requestList)
             {
-                var phrasesModel = await TextProcessor.GetTextKeyPhrasesAsync(request);
-                var sentimentModel = await TextProcessor.GetTextSentimentAsync(request);
+                var phrasesModel = await GetTextKeyPhrasesAsync(request);
+                var sentimentModel = await GetTextSentimentAsync(request);
                 segmentList.AddRange(GetNuSysPdfSegments(request, sentimentModel, phrasesModel));
             }
 
@@ -247,8 +338,17 @@ namespace NusysServer
         /// <param name="jsonData"></param>
         /// <param name="requestType"></param>
         /// <returns>An http response message for the post request that was passed in</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         private static async Task<HttpResponseMessage> MakeTextAnalyticsRequestAsync(string jsonData, TextAnalyticsRequestType requestType)
         {
+            if (jsonData == null)
+            {
+                throw new ArgumentNullException(nameof(jsonData),
+                    "the passed in jsonData string was null, this exception was caught to avoid throwing more later on.");
+            }
+
+
             var client = new HttpClient();
 
             // Add the subscription key to the request header
@@ -268,7 +368,7 @@ namespace NusysServer
                     url += "sentiment";
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(requestType), requestType, null);
+                    throw new ArgumentOutOfRangeException(nameof(requestType), requestType, "The method does not support the passed in request type, please add support for this if you need to use it");
             }
 
             // Build the content of the post request
@@ -318,17 +418,23 @@ namespace NusysServer
         #region testing helper code
 
         /// <summary>
-        /// Returns boolean that reflects whether or not the documents conform to the maximum sizes allowed by the microsoft cognitive services API.
-        /// Should only be called in Debug.Asserts() as this method is inefficient
+        /// This is a highly inefficient please only call in debug.asserts
+        /// 
+        /// Foreach document check document less than max document size
+        /// Foreach document does not contain empty string
+        /// For request checks not greater than maximum size
         /// </summary>
         /// <param name="documents">The </param>
         /// <param name="requestType"></param>
         /// <returns></returns>
-        private static bool CheckDocumentSize(IEnumerable<ICognitiveApiDocumentable> documents, TextAnalyticsRequestType requestType)
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        private static bool CheckDocumentsAndRequest(IEnumerable<ICognitiveApiDocumentable> documents, TextAnalyticsRequestType requestType)
         {
-            var maxBytesPerDoc = 0;
-            var maxBytesPerRequest = 0;
+            int maxBytesPerDoc;
+            int maxBytesPerRequest;
             var totalByteLength = 0; // used to keep track of total request size
+            var idHash = new HashSet<string>();
 
             // set byte limits based on the request type
             switch (requestType)
@@ -342,20 +448,35 @@ namespace NusysServer
                     maxBytesPerDoc = (int) ConvertKilobytesToBytes(30); // 30kb
                     maxBytesPerRequest = (int) ConvertMegaBytesToBytes(30); // 30mb
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(requestType), requestType, "The method does not support the passed in request type, please add support for this if you need to use it");
             }
 
-            // make sure none of the documents are greater than maxBytesPerDoc
+            // make sure none of the documents are greater than maxBytesPerDoc, and that none of them are empty strings
             foreach (var document in documents)
             {
                 var docByteLength = document.text.Length*sizeof(char);
                 totalByteLength += docByteLength;
                 if (docByteLength > maxBytesPerDoc)
                 {
-                    return false;
+                    throw new ArgumentOutOfRangeException(nameof(document), $"The document byte length {docByteLength} exceeds the maximum allowed for {requestType} of {maxBytesPerDoc}");
                 }
+                if (string.IsNullOrEmpty(document.text))
+                {
+                    throw new ArgumentException(nameof(document.text), $"The document's text field cannot be empty. Please check for and remove empty text fields before calling a cognitive services request.");
+                }
+                if (idHash.Contains(document.id))
+                {
+                    throw new ArgumentException(nameof(document.id), $"The request contained two instances of the id {document.id}. Please make sure the invariant, one instance of an id per request is maintained.");
+                }
+                idHash.Add(document.id);
             }
 
             // make sure that the total size of the request is less than maxBytesPerRequest
+            if (totalByteLength < maxBytesPerRequest)
+            {
+                throw new ArgumentOutOfRangeException(nameof(documents), $"The request byte length {totalByteLength} exceeds the maximum allowed for {requestType} of {maxBytesPerRequest}");
+            }
             return totalByteLength <= maxBytesPerRequest;
         }
 
