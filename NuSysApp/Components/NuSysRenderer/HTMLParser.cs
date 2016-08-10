@@ -35,8 +35,8 @@ namespace NuSysApp
             _parsedItems = new List<ParseItem>();
             var htmlDocument = GetHTMLDocumentFromString(html);
             RecursiveParsing(htmlDocument.DocumentNode.ChildNodes, 0);
-            var text = HTMLHelper.StripTagsRegex(html);
-            var textLayout = new CanvasTextLayout(_resourceCreator, AddWhiteSpace(text), _textFormat, (float) canvasWidth, (float) canvasHeight);
+            var text = HTMLHelper.StripTagsRegex(AddWhiteSpace(html));
+            var textLayout = new CanvasTextLayout(_resourceCreator, text, _textFormat, (float) canvasWidth, (float) canvasHeight);
             ApplyFormatting(textLayout);
             return textLayout;
 
@@ -46,7 +46,6 @@ namespace NuSysApp
         {
             foreach (var parsedItem in _parsedItems)
             {
-                //Debug.WriteLine(parsedItem.Tag + "\t" + parsedItem.Text + "\t" + parsedItem.StartIndex + "\t" + parsedItem.Length);
 
                 if (parsedItem.Tag == "b")
                 {
@@ -134,14 +133,14 @@ namespace NuSysApp
             htmlString = htmlString.Replace("</ul>", "\n");
             htmlString = htmlString.Replace("<ol>", "");
             htmlString = htmlString.Replace("</ol>", "\n");
-            htmlString = htmlString.Replace("<li>", "\n \u2022");
+            htmlString = htmlString.Replace("<li>", "\n \u2022 \u0020");
             htmlString = htmlString.Replace("&nbsp;", " ");
             htmlString = htmlString.Replace("<font size=\"5\">", "<h2>");
-            htmlString = htmlString.Replace("<font size=\"4\">", "<h3>");
+            htmlString = htmlString.Replace("<font size=\"4\">", "<h4>");
+            htmlString = htmlString.Replace("<div>", "");
+            htmlString = htmlString.Replace("</div>", "\n");
+            
 
-            var test = "the&nbsp;Apple";
-            test = test.Replace("&nbsp;", " ");
-            Debug.WriteLine(test);
             return htmlString;
         }
 
