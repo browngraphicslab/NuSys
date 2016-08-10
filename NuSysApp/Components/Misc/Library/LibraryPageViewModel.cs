@@ -44,7 +44,6 @@ namespace NuSysApp
                 _controllerList.Add(SessionController.Instance.ContentController.GetLibraryElementController(content.LibraryElementId));
                 Search(_searchString);
             });
-
         }
 
         private void DeleteContent(LibraryElementModel content)
@@ -80,32 +79,32 @@ namespace NuSysApp
             switch (s)
             {
                 case "TitleButton":
-                    this.SortTitle(ordered, reverse);
+                    this.SortTitle(reverse);
                     break;
                 case "TypeButton":
-                    this.SortType(ordered, reverse);
+                    this.SortType(reverse);
                     break;
                 default:
-                    this.SortDate(ordered, reverse);
+                    this.SortDate(reverse);
                     break;
             }
         }
 
-        public async Task SortTitle(List<LibraryItemTemplate> ordered, bool reverse)
+        public async Task SortTitle(bool reverse)
         {
-            ordered = new List<LibraryItemTemplate>(ItemList.OrderBy(l => ((LibraryItemTemplate)l).Title));
+            List<LibraryItemTemplate> ordered = new List<LibraryItemTemplate>(ItemList.OrderBy(l => ((LibraryItemTemplate)l).Title));
             SetList(ordered, reverse);
         }
 
-        public async Task SortType(List<LibraryItemTemplate> ordered, bool reverse)
+        public async Task SortType(bool reverse)
         {
-            ordered = new List<LibraryItemTemplate>(ItemList.OrderBy(l => ((LibraryItemTemplate)l).Type.ToString()));
+            List<LibraryItemTemplate> ordered = new List<LibraryItemTemplate>(ItemList.OrderBy(l => ((LibraryItemTemplate)l).Type.ToString()));
             SetList(ordered, reverse);
         }
 
-        public async Task SortDate(List<LibraryItemTemplate> ordered, bool reverse)
+        public async Task SortDate(bool reverse)
         {
-            ordered = new List<LibraryItemTemplate>(ItemList.OrderByDescending(l => Constants.GetTimestampTicksOfLibraryElementModel((LibraryItemTemplate)l)));
+            List<LibraryItemTemplate> ordered = new List<LibraryItemTemplate>(ItemList.OrderByDescending(l => Constants.GetTimestampTicksOfLibraryElementModel((LibraryItemTemplate)l)));
             SetList(ordered, reverse);
         }
 
@@ -146,7 +145,7 @@ namespace NuSysApp
             {
                 if (valids.Contains(item.LibraryElementModel.LibraryElementId) && !hash.Contains(item.LibraryElementModel.LibraryElementId))
                 {
-                    ItemList.Add(new LibraryItemTemplate(item));
+                    ItemList.Insert(0,new LibraryItemTemplate(item));
                 }
             }
         }

@@ -428,6 +428,9 @@ namespace NuSysApp
 
                     request.AddReturnedLibraryElementToLibrary();
 
+                    //update listview so item is added to top of list
+                    var listvm = (LibraryPageViewModel)_libraryList.DataContext;
+                    
                     vm.ClearSelection();
                 }
                 else

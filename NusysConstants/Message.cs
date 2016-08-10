@@ -186,7 +186,11 @@ namespace NusysIntermediate
         public HashSet<T> GetHashSet<T>(string key, HashSet<T> def = null)
         {
             var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-            return ContainsKey(key) ? JsonConvert.DeserializeObject<HashSet<T>>(Get(key), settings) : def;
+            if (!ContainsKey(key))
+            {
+                return def;
+            }
+            return _dictionary[key] == null ? def : JsonConvert.DeserializeObject<HashSet<T>>(Get(key), settings);
         }
 
 
