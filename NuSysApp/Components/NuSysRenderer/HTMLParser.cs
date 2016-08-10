@@ -45,9 +45,8 @@ namespace NuSysApp
 
         private void ApplyFormatting(CanvasTextLayout textLayout)
         {
-            foreach (var parsedItem in _parsedItems)
+            foreach (var parsedItem in _parsedItems.ToArray())
             {
-                Debug.WriteLine(parsedItem.Size);
 
                 if (parsedItem.Tag == "b")
                 {
