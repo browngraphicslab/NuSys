@@ -23,8 +23,8 @@ namespace NuSysApp
         {
             TextChanged?.Invoke(source,data);
         }
-
-        public override Message GetNewRegionMessage()
+        // There is no region here so this method should not be called
+        public override CreateNewRegionLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs()
         {
             throw new NotImplementedException();
         }

@@ -14,7 +14,20 @@ namespace NusysServer
         {
             get { return _sqlConnector; }
         }
-        private static SQLConnector _sqlConnector;
+
+        /// <summary>
+        /// the comparison controller for the server, acts as a static class
+        /// </summary>
+        public ComparisonController ComparisonController
+        {
+            get
+            {
+                return _comparisonController;
+            }
+        }
+
+        private SQLConnector _sqlConnector;
+        private ComparisonController _comparisonController;
         private static ContentController _instance = null;
         public static ContentController Instance
         {
@@ -34,7 +47,7 @@ namespace NusysServer
         private ContentController()
         {
             _sqlConnector = new SQLConnector();
-           
+            _comparisonController = new ComparisonController();
         }
     }
 }

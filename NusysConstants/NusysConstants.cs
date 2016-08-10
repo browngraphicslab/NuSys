@@ -276,12 +276,41 @@ namespace NusysIntermediate
             /// Used during a region libraryElementRequest.  
             /// </summary>
             public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_CLIPPING_PARENT_ID = "clipping_parent_id";
-
             /// <summary>
-            /// key in message for when the request returns with the fully populated libraryelementModel.
-            /// When the library element model request returns, it will pass a library element model as a json using this key
+            /// the key that will hold the PointModel of the top left point of the requested region  
+            /// Used during a region libraryElementRequest.  
             /// </summary>
-            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY = "returned_library_element_model";
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_TOP_LEFT_POINT = "rectangle_top_left_point"; 
+            /// <summary>
+            /// the key that will hold the width of the requested region  
+            /// Used during a region libraryElementRequest.  
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_WIDTH = "rectangle_region_width";
+            /// <summary>
+            /// the key that will hold the height of the requested region  
+            /// Used during a region libraryElementRequest.  
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_HEIGHT = "rectangle_region_height";
+            /// <summary>
+            /// the key that will hold the page location of the requested region  
+            /// Used during a region libraryElementRequest.  
+            /// </summary>
+           public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_PDF_PAGE_LOCATION = "pdf_region_page_location";
+          /// <summary>
+          /// the key that will hold the start of the interval of the requested region  
+          /// Used during a region libraryElementRequest.  
+          /// </summary>
+           public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_START = "time_region_start";    
+           /// <summary>
+           /// the key that will hold the end of the interval of the requested region  
+           /// Used during a region libraryElementRequest.  
+           /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_END = "time_region_end";
+        /// <summary>
+        /// key in message for when the request returns with the fully populated libraryelementModel.
+        /// When the library element model request returns, it will pass a library element model as a json using this key
+        /// </summary>
+        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY = "returned_library_element_model";
 
             #endregion NewLibraryElementRequest
 
@@ -784,6 +813,30 @@ namespace NusysIntermediate
 
         #endregion UnPackingModelKeys
 
+        #region SubClassKeys
+
+            #region LibraryElementModel
+
+            /// <summary>
+            /// any non-basic property key must be put into this list.
+            /// For example, link is a LibraryElementModel but its LibraryElement endpoints are not basic LibraryElementProperties.  
+            /// Thus, the keys used to send and store the link ids must be added here
+            /// </summary>
+            public static readonly HashSet<string> ALL_ALLOWED_LIBRARY_ELEMENT_PROPERTY_KEYS = new HashSet<string>(LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS.Keys)
+            {
+                NEW_LIBRARY_ELEMENT_REQUEST_REGION_CLIPPING_PARENT_ID,
+                NEW_LIBRARY_ELEMENT_REQUEST_REGION_PDF_PAGE_LOCATION,
+                NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_START,
+                NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_TOP_LEFT_POINT,
+                NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_HEIGHT,
+                NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_WIDTH,
+                NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_END,
+            };
+
+            #endregion LibraryElementModel
+
+        #endregion SubClassKeys
+
         #region Enums
         /// <summary>
         /// The base types for every content.  ElementTypes can have the same content Types.
@@ -795,7 +848,8 @@ namespace NusysIntermediate
             PDF,
             Image,
             Video,
-            Audio
+            Audio,
+            Word
         }
 
         /// <summary>
@@ -919,13 +973,19 @@ namespace NusysIntermediate
             switch (type)
             {
                 case ElementType.Image:
+                case ElementType.ImageRegion:
                     return ContentType.Image;
                 case ElementType.Video:
+                case ElementType.VideoRegion:
                     return ContentType.Video;
                 case ElementType.Audio:
+                case ElementType.AudioRegion:
                     return ContentType.Audio;
                 case ElementType.PDF:
+                case ElementType.PdfRegion:
                     return ContentType.PDF;
+                case ElementType.Word:
+                    return ContentType.Word;
                 default:
                     return ContentType.Text;
             }

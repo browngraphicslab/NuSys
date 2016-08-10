@@ -97,6 +97,7 @@ namespace NuSysApp
 
         /// <summary>
         /// call this method to add an object to be updated on other clients.
+        /// This should use the same keys you would use if you were creating a new request with that property.  
         /// The update will happen within *debouncing_time* milliseconds max.  
         /// Save will occur *delay_time* milliseconds after interactions stop.
         /// </summary>

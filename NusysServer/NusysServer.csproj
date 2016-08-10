@@ -192,6 +192,16 @@
     <Compile Include="RequestHandlers\RequestHandler.cs" />
     <Compile Include="StartUp.cs" />
     <Compile Include="Static_Classes\ContentController.cs" />
+    <Compile Include="Static_Classes\DocumentComparison\ComparisonController.cs" />
+    <Compile Include="Static_Classes\DocumentComparison\Document.cs" />
+    <Compile Include="Static_Classes\DocumentComparison\IdToTFIDF.cs" />
+    <Compile Include="Static_Classes\DocumentComparison\MegaDictionary.cs" />
+    <Compile Include="Static_Classes\DocumentComparison\Parse\Parser.cs" />
+    <Compile Include="Static_Classes\DocumentComparison\Parse\Stemmer.cs" />
+    <Compile Include="Static_Classes\DocumentComparison\Parse\StopWords.cs" />
+    <Compile Include="Static_Classes\DocumentComparison\RetrieveSimilarDocs.cs" />
+    <Compile Include="Static_Classes\DocumentComparison\Tfidf\Tfidf.cs" />
+    <Compile Include="Static_Classes\DocumentComparison\VectorUtil.cs" />
     <Compile Include="Static_Classes\NuWebSocketHandler.cs" />
     <Compile Include="Static_Classes\RequestRouter.cs" />
     <Compile Include="Static_Classes\SqlConnector.cs" />
