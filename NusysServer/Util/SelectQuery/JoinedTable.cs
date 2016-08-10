@@ -24,7 +24,7 @@ namespace NusysServer
                     joinString = " INNER JOIN ";
                     break;
                 case Constants.JoinedType.LeftJoin:
-                    joinString = " LEFT OUTER JOIN ";
+                    joinString = " LEFT JOIN ";
                     break;
                 case Constants.JoinedType.RightJoin:
                     joinString = " RIGHT JOIN ";

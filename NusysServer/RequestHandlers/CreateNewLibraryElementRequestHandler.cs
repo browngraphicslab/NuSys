@@ -68,6 +68,18 @@ namespace NusysServer
             returnMessage[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY] = modelJson;
             returnMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = success;
 
+            //TESTING STUFF DELETE AFTER FINISHED TESTING***************************
+            ContentController.Instance.SqlConnector.AddStringProperty(
+                message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY), "test key 1",
+                "test value 1");
+            ContentController.Instance.SqlConnector.AddStringProperty(
+                message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY), "test key 2",
+                "test value 2");
+            ContentController.Instance.SqlConnector.AddStringProperty(
+                message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY), "test key 3",
+                "test value 3");
+            //****************************************************************    
+
             return returnMessage;
         }
     }

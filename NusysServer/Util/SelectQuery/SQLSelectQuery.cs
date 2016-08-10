@@ -78,7 +78,7 @@ namespace NusysServer
             string commandString = "";
             if (_conditionals != null)
             {
-                commandString = "SELECT " + string.Join(", ", _cleanedSelectedColumns) + " FROM " +
+                commandString = "SELECT " + string.Join(",", _cleanedSelectedColumns) + " FROM " +
                                 _fromTable.GetSqlQueryRepresentation() + " WHERE " + _conditionals.GetQueryString();
             }
             else
@@ -87,7 +87,7 @@ namespace NusysServer
                                 _fromTable.GetSqlQueryRepresentation();
             }
             var cmd = ContentController.Instance.SqlConnector.MakeCommand(commandString);
-            return ContentController.Instance.SqlConnector.ExecuteSelectQueryAsMessages(new SelectCommandReturnArgs(cmd,_cleanedSelectedColumns));
+            return ContentController.Instance.SqlConnector.ExecuteSelectQueryAsMessages(new SelectCommandReturnArgs(cmd,_cleanedSelectedColumns), false);
         }
 
     }

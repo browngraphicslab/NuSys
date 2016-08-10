@@ -49,7 +49,7 @@ namespace NusysServer
 
         public void TestFunc()
         {
-            
+             
         }
 
         /// <summary>
@@ -283,7 +283,7 @@ namespace NusysServer
         /// <param name="propertyKey"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        private bool AddStringProperty(string objectId, string propertyKey, string value)
+        public bool AddStringProperty(string objectId, string propertyKey, string value)
         {
             if (NusysConstants.ILLEGAL_PROPERTIES_TABLE_KEY_NAMES.Contains(propertyKey))
             {
@@ -344,7 +344,8 @@ namespace NusysServer
                         var i = 0;
                         foreach (var columnName in args.Columns)
                         {
-                            if (reader[i] != null || includeNulls)
+                            var x = reader[i];
+                            if (reader[i] != null|| includeNulls)
                             {
                                 m[columnName] = reader[i];
                                 i++;
