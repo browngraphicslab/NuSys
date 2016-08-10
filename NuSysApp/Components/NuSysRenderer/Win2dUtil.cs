@@ -18,11 +18,11 @@ namespace NuSysApp
             return inv;
         }
 
-        public static Rect TransformRect(Rect rect, Matrix3x2 transform)
+        public static Rect TransformRect(Rect rect, Matrix3x2 transform, double margin = 0)
         {
             var tl = Vector2.Transform(new Vector2((float)rect.X, (float)rect.Y), transform);
             var tr = Vector2.Transform(new Vector2((float)rect.X + (float)rect.Width, (float)rect.Y + (float)rect.Height), transform);
-            return new Rect(tl.X, tl.Y, tr.X-tl.X,tr.Y-tl.Y);
+            return new Rect(tl.X - margin, tl.Y - margin, tr.X-tl.X + margin*2, tr.Y-tl.Y + margin * 2);
         }
 
     }
