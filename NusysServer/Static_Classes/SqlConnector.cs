@@ -309,8 +309,8 @@ namespace NusysServer
         public ContentDataModel GetContentDataModel(string contentDataModelId)
         {
             //get SQl Command from query args
-            var sqlQuery = new SQLSelectQuery(new List<string>(Constants.GetFullColumnTitles(Constants.SQLTableType.Content, NusysConstants.ACCEPTED_CONTENT_TABLE_KEYS)), 
-                new SingleTable(Constants.SQLTableType.Content), new SqlSelectQueryEquals(Constants.SQLTableType.Content, NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY,contentDataModelId));
+            var sqlQuery = new SQLSelectQuery(new SingleTable(Constants.SQLTableType.Content), 
+                new SqlSelectQueryEquals(Constants.SQLTableType.Content, NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY,contentDataModelId));
 
             //execute query command
             var executeMessages = sqlQuery.ExecuteCommand();
@@ -331,26 +331,36 @@ namespace NusysServer
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public IEnumerable<Message> ExecuteSelectQueryAsMessages(SelectCommandReturnArgs args, bool includeNulls = true)
+        public IEnumerable<Message> ExecuteSelectQueryAsMessages(SqlCommand command, bool includeNulls = true)
         {
             var messages = new List<Message>();
-            using (var reader = args.Command.ExecuteReader())
+            using (var reader = command.ExecuteReader())
             {
                 if (reader.HasRows)
                 {
                     while (reader.Read())
                     {
                         var m = new Message();
-                        var i = 0;
-                        foreach (var columnName in args.Columns)
+
+                        for (var i= 0; i < reader.FieldCount; i++)
                         {
-                            var x = reader[i];
-                            if (reader[i] != null|| includeNulls)
+                            if (reader[i] != null || includeNulls)
                             {
-                                m[columnName] = reader[i];
-                                i++;
+                                m[reader.GetName(i)] = reader[i];
+                                
                             }
                         }
+
+                        //var i = 0;
+                        //foreach (var columnName in args.Columns)
+                        //{
+                        //    var x = reader[i];
+                        //    if (reader[i] != null|| includeNulls)
+                        //    {
+                        //        m[columnName] = reader[i];
+                        //        i++;
+                        //    }
+                        //}
                         messages.Add(m);
                     }
                 }
