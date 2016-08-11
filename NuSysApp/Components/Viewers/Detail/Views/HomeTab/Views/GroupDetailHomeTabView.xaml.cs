@@ -221,18 +221,8 @@ namespace NuSysApp
                     var content = SessionController.Instance.ContentController.GetLibraryElementModel(id);
                     if (content != null && content.Type == NusysConstants.ElementType.Collection)
                     {
-                        List<Message> messages = new List<Message>();
-                        await Task.Run(async delegate
-                        {
-                            messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(id);
-                        });
                         Visibility = Visibility.Collapsed;
-                        await
-                            SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(
-                                new UnsubscribeFromCollectionRequest(
-                                    SessionController.Instance.ActiveFreeFormViewer.LibraryElementId));
-                        //TODO put back in for collction entering
-                        //await SessionController.Instance.SessionView.LoadWorkspaceFromServer(messages, id);
+                        await SessionController.Instance.EnterCollection(id);
                     }
                 }); 
             }

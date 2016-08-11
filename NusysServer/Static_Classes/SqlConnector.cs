@@ -270,11 +270,7 @@ namespace NusysServer
             return successInt > 0;
 
         }
-
-        public IEnumerable<ElementModel> GetAliasesOfCollection(string collectionLibraryId)
-        {
-            return null;
-        }
+        
 
         /// <summary>
         /// Adds a string property to the properties table using the given key and library or alias Id

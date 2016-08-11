@@ -47,9 +47,6 @@ namespace NusysIntermediate
             LibraryElementId = libraryElementId;
             Type = elementType;
         }
-        protected virtual void OnSessionControllerEnterNewCollection()
-        {
-        }
 
         /// <summary>
         /// to be called directly after SQL queries on the server end.  

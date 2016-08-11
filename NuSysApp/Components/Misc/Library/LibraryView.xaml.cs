@@ -492,7 +492,7 @@ namespace NuSysApp
                     var collection = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId) as CollectionLibraryElementModel;
                     await
                         StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, libraryId, collection.IsFinite,
-                            new List<Point>(collection.ShapePoints.Select(p => new Point(p.X, p.Y))), size.Width, size.Height);
+                            new List<Point>(collection?.ShapePoints.Select(p => new Point(p.X, p.Y)) ?? new List<Point>()), size.Width, size.Height);
                 }
             });
 

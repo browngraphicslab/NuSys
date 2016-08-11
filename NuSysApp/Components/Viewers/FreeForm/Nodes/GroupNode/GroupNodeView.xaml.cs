@@ -343,27 +343,10 @@ namespace NuSysApp
                 var content = SessionController.Instance.ContentController.GetLibraryElementModel(id);
                 if (content != null && content.Type == NusysConstants.ElementType.Collection)
                 {
-                    //creates a new request to get the new workspace
-                    var request = new GetEntireWorkspaceRequest(id);
-
-                    //awaits the requests return after execution
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-
-                    //gets the element mdoels from the returned requst
-                    var elementModels = request.GetReturnedElementModels();
-
-                    //unload all the content data models by deleting them, and clear the element controllers
-                    SessionController.Instance.ContentController.ClearAllContentDataModels();
-                    SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Clear();
-                    SessionController.Instance.IdToControllers.Clear();//TODO actually unload all three of these.  very important
-
-                    //for each returned contentDataMofdel, add it
-                    request.GetReturnedContentDataModels().ForEach(contentDataModel => SessionController.Instance.ContentController.AddContentDataModel(contentDataModel));
+                    await SessionController.Instance.EnterCollection(id);
 
                     Visibility = Visibility.Collapsed;
 
-                    //TODO put back in for collction entering
-                    await SessionController.Instance.SessionView.LoadWorkspaceFromServer(elementModels, id);
                 }
             }
         }
