@@ -147,11 +147,11 @@ public static async Task<StorageFile> ConvertByteToAudio(byte[] byteArray)
                 long r1 = BitConverter.ToInt64(idHash, 1);
                 long r2 = BitConverter.ToInt64(idHash, 2); ;
 
-                var mod = 255;
+                var mod = 245;
 
-                int r = (int)Math.Abs(((int)number % mod));
-                int b = (int)Math.Abs((r1 * number) % mod);
-                int g = (int)Math.Abs((r2 * number) % mod);
+                int r = (int)Math.Abs(((int)number % mod)) + 10;
+                int b = (int)Math.Abs((r1 * number) % mod) + 10;
+                int g = (int)Math.Abs((r2 * number) % mod) + 10;
                 long a = (r + g + b + number%50) + 175;
                 color = Color.FromArgb((byte)a, (byte)r, (byte)g, (byte)b);
             }

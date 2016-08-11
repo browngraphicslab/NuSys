@@ -20,7 +20,27 @@ namespace NuSysApp
         private LibraryElementModel _libraryElementModel;
         private RegionControllerFactory _regionControllerFactory = new RegionControllerFactory();
         protected bool _blockServerInteraction = false;
-        public string Title {
+
+        #region Events
+        public delegate void ContentChangedEventHandler(object source, string contentData);
+        public delegate void MetadataChangedEventHandler(object source);
+        public delegate void FavoritedEventHandler(object sender, bool favorited);
+        public delegate void DeletedEventHandler(object sender);
+        public delegate void NetworkUserChangedEventHandler(object source, NetworkUser user);
+        public delegate void KeywordsChangedEventHandler(object sender, HashSet<Keyword> keywords);
+        public event ContentChangedEventHandler ContentChanged;
+        public event MetadataChangedEventHandler MetadataChanged;
+        public event EventHandler Disposed;
+        public event EventHandler<string> TitleChanged;
+        public event FavoritedEventHandler Favorited;
+        public event DeletedEventHandler Deleted;
+        public event KeywordsChangedEventHandler KeywordsChanged;
+        public event NetworkUserChangedEventHandler UserChanged;
+        public event EventHandler<LinkLibraryElementController> LinkAdded;
+        public event EventHandler<string> LinkRemoved;
+        #endregion Events
+        public string Title
+        {
             get
             {
                 return LibraryElementModel?.Title;
@@ -28,7 +48,7 @@ namespace NuSysApp
             set
             {
                 LibraryElementModel.Title = value;
-            } 
+            }
         }
 
         /// <summary>
@@ -49,25 +69,6 @@ namespace NuSysApp
                 return contentDataModel?.Data;
             }
         }
-
-        #region Events
-        public delegate void ContentChangedEventHandler(object source, string contentData);
-        public delegate void MetadataChangedEventHandler(object source);
-        public delegate void FavoritedEventHandler(object sender, bool favorited);
-        public delegate void DeletedEventHandler(object sender);
-        public delegate void NetworkUserChangedEventHandler(object source, NetworkUser user);
-        public delegate void KeywordsChangedEventHandler(object sender, HashSet<Keyword> keywords);
-        public event ContentChangedEventHandler ContentChanged;
-        public event MetadataChangedEventHandler MetadataChanged;
-        public event EventHandler Disposed;
-        public event EventHandler<string> TitleChanged;
-        public event FavoritedEventHandler Favorited;
-        public event DeletedEventHandler Deleted;
-        public event KeywordsChangedEventHandler KeywordsChanged;
-        public event NetworkUserChangedEventHandler UserChanged;
-        public event EventHandler<LinkLibraryElementController> LinkAdded;
-        public event EventHandler<string> LinkRemoved;
-        #endregion Events
 
         /// <summary>
         /// returns whether the current library element's content Data Model is loaded (aka just locally present);

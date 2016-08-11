@@ -57,7 +57,7 @@ namespace NuSysApp
         private Image _dragItem;
 
         private enum DragMode { Duplicate, Tag, Link, PresentationLink };
-        private DragMode _currenDragMode = DragMode.Duplicate;
+        private DragMode _currentDragMode = DragMode.Duplicate;
 
         public NodeTemplate()
         {
@@ -218,13 +218,6 @@ namespace NuSysApp
             }
         }
 
-        private void OnTagTemplateTapped(object sender, TappedRoutedEventArgs e)
-        {
-            var panel = sender as WrapPanel;
-            var text = panel.Children;
-        }
-
-
         private void TitleOnTextChanged(object sender, object args)
         {
             var vm = (ElementViewModel)this.DataContext;
@@ -268,11 +261,6 @@ namespace NuSysApp
             
         }
 
-        private void LibraryElementModelOnSearched(LibraryElementModel model, bool searched)
-        {
-            isSearched.Visibility = searched ? Visibility.Visible : Visibility.Collapsed;
-        }
-
         private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)
         {
             xCanvas.Children.Remove(_dragItem);
@@ -280,7 +268,7 @@ namespace NuSysApp
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
             var p = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
             var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(p.X, p.Y, 300, 300));
-            if (_currenDragMode == DragMode.Duplicate)
+            if (_currentDragMode == DragMode.Duplicate)
             {
                 var vm = (ElementViewModel)DataContext;
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
@@ -306,68 +294,40 @@ namespace NuSysApp
             
          
 
-            if (_currenDragMode == DragMode.Link || _currenDragMode == DragMode.PresentationLink)
+            if (_currentDragMode == DragMode.Link || _currentDragMode == DragMode.PresentationLink)
             {
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
-                hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementViewModel).ToList();
+                hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement)?.DataContext is ElementViewModel).ToList();
+                Debug.Assert(hitsStart != null);
 
-                var hitsStart2 = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
-                hitsStart2 = hitsStart2.Where(uiElem => (uiElem as FrameworkElement).DataContext is RegionViewModel).ToList();
-                
                 if (hitsStart.Any()){
                     var first = (FrameworkElement)hitsStart.First();
                     var dc = (ElementViewModel)first.DataContext;
                     var vm = (ElementViewModel)DataContext;
 
-                    if (vm == dc || (dc is FreeFormViewerViewModel) || dc is LinkViewModel)
+                    if (vm == dc || (dc is FreeFormViewerViewModel))
                     {
                         return;
                     }
 
-                    if (hitsStart2.Any()){
-                        foreach (var element in hitsStart2)
-                        {
-                            if ((element as FrameworkElement).DataContext is RegionViewModel) // If there is a region under the drag
-                            {
-                                if (_currenDragMode == DragMode.PresentationLink)
-                                {
-                                    AddPresentationLink(dc?.Id, vm?.Id);
-                                }
-                                else
-                                {
-                                    var region = element as FrameworkElement;
-                                    var regiondc = region.DataContext as RegionViewModel;
-                                    var m = new Message();
-                                    m["id2"] = regiondc.RegionLibraryElementController.LibraryElementModel.LibraryElementId;
-                                    m["id1"] = vm.Controller.LibraryElementController.ContentId;
-                                    await SessionController.Instance.LinksController.RequestLink(m);
-                                    UITask.Run(delegate { vm.Controller.UpdateCircleLinks(); });
-                                    break;
-                                    //     vm.LibraryElementController.RequestVisualLinkTo();
-                                }
-                            }          
-                        }
-                    }
-                    else
+                    switch (_currentDragMode)
                     {
-                        if (_currenDragMode == DragMode.Link)
-                        {
-                            if (!(dc is RegionViewModel))
-                            {
-                                var m = new Message();
-                                m["id1"] = dc.LibraryElementId;
-                                m["id2"] = vm.LibraryElementId;
-                                if (dc.LibraryElementId != vm.LibraryElementId)
-                                {
-                                    SessionController.Instance.LinksController.RequestLink(m);
-                                }
-                            }
-                        }
-                        if (_currenDragMode == DragMode.PresentationLink)
-                        {
+
+                        case DragMode.Link:
+                            var createNewLinkLibraryElementRequestArgs = new CreateNewLinkLibraryElementRequestArgs();
+                            createNewLinkLibraryElementRequestArgs.LibraryElementModelInId = vm.LibraryElementId;
+                            createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId = dc.LibraryElementId;
+                            createNewLinkLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Link;
+                            createNewLinkLibraryElementRequestArgs.Title = $"Link from {vm.Model.Title} to {dc.Model.Title}";
+                            var request = new CreateNewLibraryElementRequest(createNewLinkLibraryElementRequestArgs);
+                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                            request.AddReturnedLibraryElementToLibrary();
+                            break;
+                        case DragMode.PresentationLink:
                             AddPresentationLink(dc?.Id,vm?.Id);
-                        }
+                            break;
                     }
+                    
                 }
             }
 
@@ -414,17 +374,17 @@ namespace NuSysApp
 
             if (sender == DuplicateElement)
             {
-                _currenDragMode = DragMode.Duplicate;
+                _currentDragMode = DragMode.Duplicate;
             }
 
             if (sender == Link)
             {
-                _currenDragMode = DragMode.Link;
+                _currentDragMode = DragMode.Link;
             }
 
             if (sender == PresentationLink)
             {
-                _currenDragMode = DragMode.PresentationLink;
+                _currentDragMode = DragMode.PresentationLink;
             }
 
 

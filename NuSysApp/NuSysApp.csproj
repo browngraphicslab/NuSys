@@ -72,11 +72,11 @@
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>false</DebugSymbols>
     <OutputPath>bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <NoWarn>;2008</NoWarn>
-    <DebugType>full</DebugType>
+    <DebugType>none</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
@@ -617,6 +617,7 @@
     <Compile Include="Network\Requests\GetContentDataModelRequest.cs" />
     <Compile Include="Network\Requests\GetEntireWorkspaceRequest.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
+    <Compile Include="Network\Requests\RequestArgs\CreateNewLinkLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewPDFRegionLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewRectangleRegionLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewRegionLibraryElementRequestArgs.cs" />

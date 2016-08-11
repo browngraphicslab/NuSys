@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace NusysIntermediate
 {
@@ -317,22 +315,34 @@ namespace NusysIntermediate
             /// the key that will hold the page location of the requested region  
             /// Used during a region libraryElementRequest.  
             /// </summary>
-           public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_PDF_PAGE_LOCATION = "pdf_region_page_location";
-          /// <summary>
-          /// the key that will hold the start of the interval of the requested region  
-          /// Used during a region libraryElementRequest.  
-          /// </summary>
-           public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_START = "time_region_start";    
-           /// <summary>
-           /// the key that will hold the end of the interval of the requested region  
-           /// Used during a region libraryElementRequest.  
-           /// </summary>
-        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_END = "time_region_end";
-        /// <summary>
-        /// key in message for when the request returns with the fully populated libraryelementModel.
-        /// When the library element model request returns, it will pass a library element model as a json using this key
-        /// </summary>
-        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY = "returned_library_element_model";
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_PDF_PAGE_LOCATION = "pdf_region_page_location";
+            /// <summary>
+            /// the key that will hold the start of the interval of the requested region  
+            /// Used during a region libraryElementRequest.  
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_START = "time_region_start";    
+            /// <summary>
+            /// the key that will hold the end of the interval of the requested region  
+            /// Used during a region libraryElementRequest.  
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_END = "time_region_end";
+            /// <summary>
+            /// key in message for when the request returns with the fully populated libraryelementModel.
+            /// When the library element model request returns, it will pass a library element model as a json using this key
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY = "returned_library_element_model";
+            /// <summary>
+            /// the key that will hold the libraryelementmodelid of one of the libraryelementmodels being linked  
+            /// Used during a region libraryElementRequest.  
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_IN_ID_KEY = "link_library_element_model_in_id";
+
+            /// <summary>
+            /// the key that will hold the libraryelementmodelid of one of the libraryelementmodels being linked  
+            /// Used during a region libraryElementRequest.  
+            /// </summary>
+            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_OUT_ID_KEY = "link_library_element_model_out_id";
+
 
         #endregion NewLibraryElementRequest
 

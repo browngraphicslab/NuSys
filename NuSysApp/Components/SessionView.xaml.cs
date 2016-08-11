@@ -722,15 +722,8 @@ namespace NuSysApp
             {
                 return;
             }
-            if (viewable is RegionLibraryElementController)
-            {
-                await xDetailViewer.ShowElement(viewable as RegionLibraryElementController, tabToOpenTo);
+            await xDetailViewer.ShowElement(viewable, tabToOpenTo);
 
-            }
-            else if (viewable is LibraryElementController)
-            {
-                await xDetailViewer.ShowElement(viewable as LibraryElementController, tabToOpenTo);
-            }
         }
 
         public async void OpenFile(ElementViewModel vm)
