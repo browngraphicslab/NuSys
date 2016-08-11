@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using MyToolkit.Collections;
+using NusysIntermediate;
 
 namespace NuSysApp
 {

@@ -30,8 +30,7 @@ namespace NusysServer
                     switch (request.GetRequestType())
                     {
 /*
-                    case NusysConstants.RequestType.DeleteLibraryElementRequest:
-                        break;
+
                     case NusysConstants.RequestType.AddInkRequest:
                         break;
                     case NusysConstants.RequestType.ChangeContentRequest:
@@ -55,6 +54,15 @@ namespace NusysServer
                     case NusysConstants.RequestType.SetTagsRequest:
                         break;
                         */
+                    case NusysConstants.RequestType.ChatRequest:
+                        requestHandler = new ChatRequestHandler();
+                        break;
+                    case NusysConstants.RequestType.SearchRequest:
+                        requestHandler = new SearchRequestHandler();
+                        break;
+                    case NusysConstants.RequestType.DeleteLibraryElementRequest:
+                        requestHandler = new DeleteLibraryElementRequestHandler();
+                        break;
                     case NusysConstants.RequestType.DeleteElementRequest:
                         requestHandler = new DeleteElementRequestHandler();
                         break;

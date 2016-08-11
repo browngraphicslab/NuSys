@@ -46,6 +46,8 @@ namespace NuSysApp
         private bool _loggedIn = false;
         private bool _isLoaded = false;
 
+        private bool _collectionAdded = false;
+
         private static string LoginCredentialsFilePath;
 
         private HashSet<string> _preloadedIDs = new HashSet<string>();
@@ -93,7 +95,6 @@ namespace NuSysApp
 
         private async void Init()
         {
-            List?.Items?.Clear();
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             try
             {
@@ -112,19 +113,22 @@ namespace NuSysApp
                     }
                 }
 
-                
+
                 List?.Items?.Clear();
                 all.Sort((a, b) => a.Text.CompareTo(b.Text));
                 foreach (var i in all)
                 {
                     List.Items.Add(i);
                 }
+                _collectionAdded = true;
             }
             catch (Exception e)
             {
                 Debug.WriteLine("not a valid server");
                 // TODO: fix this
             }
+
+
         }
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
@@ -139,8 +143,8 @@ namespace NuSysApp
             props[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = name;
             var request = new CreateNewContentRequest(NusysConstants.ContentType.Text, null, props);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-            //await Task.Delay(1000);
             Init();
+
         }
         private async void Join_Workspace_Click(object sender, RoutedEventArgs e)
         {
@@ -384,11 +388,15 @@ namespace NuSysApp
         {
             if (element.Type == NusysConstants.ElementType.Collection && !_preloadedIDs.Contains(element.LibraryElementId))
             {
+                var items = new List<CollectionTextBox>();
+ 
                 UITask.Run(delegate
                 {
                     var box = new CollectionTextBox(element.Title ?? "", element.LibraryElementId);
-                    List.Items.Add(box);
+                    if (_collectionAdded == false) { List.Items.Add(box); }
+                    _collectionAdded = false;
                 });
+
                 _preloadedIDs.Add(element.LibraryElementId);
             }
         }

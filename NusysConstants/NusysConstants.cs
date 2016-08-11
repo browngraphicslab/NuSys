@@ -117,12 +117,34 @@ namespace NusysIntermediate
 
         #endregion CreateNewContentRequest
 
+            #region SearchRequest
+
+            /// <summary>
+            /// the key that will hold the json-serialized Query class when creating a search request.
+            /// </summary>
+            public static readonly string SEARCH_REQUEST_SERIALIZED_QUERY_KEY = "query_json";
+
+            /// <summary>
+            /// The key that will hold the json-serialized version of the returned SearchResults class.  
+            /// The search resuls can be deserialized and fetched from the search request.
+            /// </summary>
+            public static readonly string SEARCH_REQUEST_RETURNED_SEARCH_RESULTS_KEY = "search_results_json";
+
+            #endregion SearchRequest
+
             #region DeleteLibraryElementRequest
 
-        /// <summary>
-        /// the key used to send the library element id key of the library element to be deleted
-        /// </summary>
-        public static readonly string DELETE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
+            /// <summary>
+            /// the key used to send the library element id key of the library element to be deleted
+            /// </summary>
+            public static readonly string DELETE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
+
+            /// <summary>
+            /// the key used in the returning request indicating which IDs were deleted from the library via the server.  
+            /// There can be multiple keys because sometimes the server will have to delete multiple items in order to maintain the collections correctly. 
+            /// The returned object as this key's value will be in the form of a list.  
+            /// </summary>
+            public static readonly string DELETE_LIBRARY_ELEMENT_REQUEST_RETURNED_DELETED_LIBRARY_IDS_KEY = "deleted_library_ids";
 
             #endregion DeleteLibraryElementRequest
 
@@ -133,7 +155,7 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string GET_ALL_LIBRARY_ELEMENTS_REQUEST_RETURNED_LIBRARY_ELEMENT_MODELS_KEY = "returned_library_element_models";
 
-            #endregion GetAllLibraryElementsRequst
+                #endregion GetAllLibraryElementsRequst
 
             #region NewElementRequest
             /// <summary>
@@ -312,7 +334,20 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY = "returned_library_element_model";
 
-            #endregion NewLibraryElementRequest
+        #endregion NewLibraryElementRequest
+
+            #region ChatRequest
+
+            /// <summary>
+            /// Key in message for sending user id in chat requests
+            /// </summary>
+            public static readonly string CHAT_REQUEST_USER_ID_KEY="user";
+
+            /// <summary>
+            /// Key in message for sending chat messages in chat requests
+            /// </summary>
+            public static readonly string CHAT_REQUEST_CHAT_MESSAGE_KEY = "chat_message";
+            #endregion
 
         #endregion RequestKeys
 
@@ -842,7 +877,6 @@ namespace NusysIntermediate
             DuplicateNodeRequest,
             SystemRequest,
             NewLinkRequest,
-            ElementUpdateRequest,
             NewThumbnailRequest,
             UpdateLibraryElementModelRequest,
             SetTagsRequest,
@@ -859,6 +893,16 @@ namespace NusysIntermediate
             NewElementRequest,
             DeleteLibraryElementRequest,
             DeleteElementRequest,
+
+            /// <summary>
+            /// this request type is used to create a search over the library elements.  
+            /// </summary>
+            SearchRequest,
+
+            /// <summary>
+            /// used to update a node.  Should be able to take arbitrary database property keys for updating
+            /// </summary>
+            ElementUpdateRequest,
 
             /// <summary>
             /// This request will create a new content AND a default new library element for that content

@@ -881,6 +881,9 @@ namespace NuSysApp
             
         }
 
+        /// <summary>
+        /// Notifies the client of a new message by updating the red "unseen messages" label on top of the chat box icon
+        /// </summary>
         public void IncrementUnseenMessage()
         {
             if (ChatNotifs.Visibility.Equals(Visibility.Collapsed))
@@ -891,6 +894,10 @@ namespace NuSysApp
             NotifNumber.Text = "" + _unseenChatMessagesNum;
         }
 
+        /// <summary>
+        /// Retreives the chat box instance
+        /// </summary>
+        /// <returns></returns>
         public ChatBoxView GetChatBox()
         {
             return xChatBox;

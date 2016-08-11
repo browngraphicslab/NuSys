@@ -42,7 +42,7 @@ namespace NusysServer
             _db = new SqlConnection(SQLSTRING);
             _db.Open(); //open database
 
-            //ResetTables();
+            ResetTables();
             //SetUpTables();
 
             TestFunc();
@@ -199,15 +199,18 @@ namespace NusysServer
                     acceptedKeysDictionary.Add(kvp.Key, kvp.Value);
                 }
             }
-            SQLUpdateOrInsertPropertyQuery updateOrInsertPropertiesQuery =
-                    new SQLUpdateOrInsertPropertyQuery(propertiesToAdd);
-            if (!updateOrInsertPropertiesQuery.ExecuteCommand())
+            if (propertiesToAdd.Any())
             {
-                throw new Exception("Could not update or insert the properties from the sql query" + updateOrInsertPropertiesQuery.CommandString);
+                SQLUpdateOrInsertPropertyQuery updateOrInsertPropertiesQuery =
+                        new SQLUpdateOrInsertPropertyQuery(propertiesToAdd);
+                if (!updateOrInsertPropertiesQuery.ExecuteCommand())
+                {
+                    throw new Exception("Could not update or insert the properties from the sql query" + updateOrInsertPropertiesQuery.CommandString);
+                }
             }
-
             var cmd = new SQLInsertQuery(Constants.SQLTableType.LibraryElement, acceptedKeysDictionary);
             return cmd.ExecuteCommand();
+
         }
 
         /// <summary>

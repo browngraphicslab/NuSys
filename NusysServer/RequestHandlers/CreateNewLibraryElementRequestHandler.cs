@@ -44,7 +44,12 @@ namespace NusysServer
             addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_SMALL_ICON_URL_KEY] = smallIconPath;
             addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY] = mediumIconPath;
             addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_LARGE_ICON_URL_KEY] = largeIconPath;
-
+            if (!addLibraryElementMessage.ContainsKey(NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY) ||
+                addLibraryElementMessage.GetString(NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY).Equals(""))
+            {
+                addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY] =
+                    NusysConstants.AccessType.Private.ToString();
+            }
             var success = ContentController.Instance.SqlConnector.AddLibraryElement(addLibraryElementMessage);
 
             //create a libraryElementModel as requested and serialize it

@@ -83,6 +83,10 @@ namespace NusysServer.Util.SQLQuery
         /// <returns></returns>
         public bool ExecuteCommand()
         {
+            if (CommandString == null || CommandString.Equals(""))
+            {
+                throw new Exception("trying to execute update row but the command string is empty");
+            }
             var cmd = ContentController.Instance.SqlConnector.MakeCommand(CommandString);
             var success = cmd.ExecuteNonQuery();
             return success > 0;

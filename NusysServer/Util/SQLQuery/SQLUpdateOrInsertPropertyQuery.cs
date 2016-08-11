@@ -42,11 +42,15 @@ namespace NusysServer
         }
 
         /// <summary>
-        /// Executes the query command and returns a bool on whether the command altered any rows
+        /// Executes the query command and returns a bool on whether the command altered any rows.
         /// </summary>
         /// <returns></returns>
         public bool ExecuteCommand()
         {
+            if (CommandString == null || CommandString.Equals(""))
+            {
+                throw new Exception("trying to execute updateorinsertpropertyquery but the command string is empty");
+            }
             var cmd = ContentController.Instance.SqlConnector.MakeCommand(CommandString);
             var success = cmd.ExecuteNonQuery();
             return success > 0;

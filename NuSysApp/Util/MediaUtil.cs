@@ -10,6 +10,7 @@ using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -131,5 +132,34 @@ public static async Task<StorageFile> ConvertByteToAudio(byte[] byteArray)
    await FileIO.WriteBytesAsync(recordStorageFile, byteArray);
    return recordStorageFile;
 }*/
+        /// <summary>
+        /// returns a color based on a passed in string.
+        /// The same color will result from an identical string each time
+        /// </summary>
+        /// <returns></returns>
+        public static Color GetHashColorFromString(string stringToGetColorFrom)
+        {
+            Color color;
+            try
+            {
+                var idHash = WaitingRoomView.Encrypt(stringToGetColorFrom);
+                long number = Math.Abs(BitConverter.ToInt64(idHash, 0));
+                long r1 = BitConverter.ToInt64(idHash, 1);
+                long r2 = BitConverter.ToInt64(idHash, 2); ;
+
+                var mod = 255;
+
+                int r = (int)Math.Abs(((int)number % mod));
+                int b = (int)Math.Abs((r1 * number) % mod);
+                int g = (int)Math.Abs((r2 * number) % mod);
+                long a = (r + g + b + number%50) + 175;
+                color = Color.FromArgb((byte)a, (byte)r, (byte)g, (byte)b);
+            }
+            catch (Exception e)
+            {
+                color = Colors.Black;
+            }
+            return color;
+        }
     }
 }
