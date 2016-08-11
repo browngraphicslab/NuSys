@@ -19,13 +19,15 @@ namespace NusysServer
             //delete library element
             var success = ContentController.Instance.SqlConnector.DeleteLibraryElement(deleteLibraryElementMessage);
 
-            //notify everyone that a library element has been deleted
-            var forwardMessage = new Message(message);
-            forwardMessage.Remove(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING);
-            NuWebSocketHandler.BroadcastToSubset(forwardMessage, new HashSet<NuWebSocketHandler>() { senderHandler });
+            ForwardMessage(message, senderHandler);
 
             var returnMessage = new Message();
             returnMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = success;
+            if (success)
+            {
+                returnMessage[NusysConstants.DELETE_LIBRARY_ELEMENT_REQUEST_RETURNED_DELETED_LIBRARY_IDS_KEY] =
+                    new List<string>() {message.GetString(NusysConstants.DELETE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY)};
+            }
             return returnMessage;
         }
     }

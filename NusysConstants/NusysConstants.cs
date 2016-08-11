@@ -119,10 +119,17 @@ namespace NusysIntermediate
 
             #region DeleteLibraryElementRequest
 
-        /// <summary>
-        /// the key used to send the library element id key of the library element to be deleted
-        /// </summary>
-        public static readonly string DELETE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
+            /// <summary>
+            /// the key used to send the library element id key of the library element to be deleted
+            /// </summary>
+            public static readonly string DELETE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
+
+            /// <summary>
+            /// the key used in the returning request indicating which IDs were deleted from the library via the server.  
+            /// There can be multiple keys because sometimes the server will have to delete multiple items in order to maintain the collections correctly. 
+            /// The returned object as this key's value will be in the form of a list.  
+            /// </summary>
+            public static readonly string DELETE_LIBRARY_ELEMENT_REQUEST_RETURNED_DELETED_LIBRARY_IDS_KEY = "deleted_library_ids";
 
             #endregion DeleteLibraryElementRequest
 
@@ -133,7 +140,7 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string GET_ALL_LIBRARY_ELEMENTS_REQUEST_RETURNED_LIBRARY_ELEMENT_MODELS_KEY = "returned_library_element_models";
 
-            #endregion GetAllLibraryElementsRequst
+                #endregion GetAllLibraryElementsRequst
 
             #region NewElementRequest
             /// <summary>
@@ -841,7 +848,6 @@ namespace NusysIntermediate
             DuplicateNodeRequest,
             SystemRequest,
             NewLinkRequest,
-            ElementUpdateRequest,
             NewThumbnailRequest,
             UpdateLibraryElementModelRequest,
             SetTagsRequest,
@@ -858,6 +864,11 @@ namespace NusysIntermediate
             NewElementRequest,
             DeleteLibraryElementRequest,
             DeleteElementRequest,
+
+            /// <summary>
+            /// used to update a node.  Should be able to take arbitrary database property keys for updating
+            /// </summary>
+            ElementUpdateRequest,
 
             /// <summary>
             /// This request will create a new content AND a default new library element for that content

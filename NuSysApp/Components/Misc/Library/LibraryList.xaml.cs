@@ -457,6 +457,7 @@ namespace NuSysApp
             {
                 var request = new DeleteLibraryElementRequest(id);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                request.DeleteLocally();
             });
         }
     }

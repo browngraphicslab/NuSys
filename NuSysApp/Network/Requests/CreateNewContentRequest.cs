@@ -13,6 +13,7 @@ namespace NuSysApp
     /// this request is used to create a new content.  
     /// IT ALSO CREATES A NEW LIBRARY ELEMENT. 
     /// This should be used when uploading new things to nusys.  
+    /// TO ACTUALLY ADD THE LIBRARY ELEMENT LOCALLY, CALL AddReturnedLibraryElementToLibrary() after the request has returned;
     /// </summary>
     public class CreateNewContentRequest : Request
     {
@@ -57,7 +58,9 @@ namespace NuSysApp
 
         /// <summary>
         /// this is the preferred constructor to use.  Create and populate the request args before adding.
-        /// Check the arguments comments before popluating so you know which properties are required
+        /// Check the arguments comments before popluating so you know which properties are required.  
+        /// 
+        /// TO ACTUALLY ADD THE LIBRARY ELEMENT LOCALLY, CALL AddReturnedLibraryElementToLibrary().
         /// </summary>
         /// <param name="requestArgs"></param>
         public CreateNewContentRequest(CreateNewContentRequestArgs requestArgs) : base(requestArgs, NusysConstants.RequestType.CreateNewContentRequest) { }
