@@ -329,8 +329,8 @@ namespace NuSysApp
                         if (!(dc is RegionViewModel))
                         {
                             var createNewLinkLibraryElementRequestArgs = new CreateNewLinkLibraryElementRequestArgs();
-                            createNewLinkLibraryElementRequestArgs.LibraryElementModelId1 = dc.LibraryElementId;
-                            createNewLinkLibraryElementRequestArgs.LibraryElementModelId2 = vm.LibraryElementId;
+                            createNewLinkLibraryElementRequestArgs.LibraryElementModelId1 = vm.LibraryElementId; 
+                            createNewLinkLibraryElementRequestArgs.LibraryElementModelId2 = dc.LibraryElementId;
                             createNewLinkLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Link;
                             createNewLinkLibraryElementRequestArgs.Title = $"Link from {vm.Model.Title} to {dc.Model.Title}"; // TODO factor out this hard-coded string to a constant
                             var request = new CreateNewLibraryElementRequest(createNewLinkLibraryElementRequestArgs);
