@@ -27,9 +27,7 @@ namespace NusysServer
                 throw new Exception("An elementUpdateRequest must have an element ID to update");
             }
 
-            var forwardMessage = new Message(message);
-            forwardMessage.Remove(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING);
-            NuWebSocketHandler.BroadcastToSubset(forwardMessage,new HashSet<NuWebSocketHandler>() {senderHandler});
+            ForwardMessage(message,senderHandler);
 
             //if the client asked to save the update
             if (message.GetBool(NusysConstants.ELEMENT_UPDATE_REQUEST_SAVE_TO_SERVER_BOOLEAN))
