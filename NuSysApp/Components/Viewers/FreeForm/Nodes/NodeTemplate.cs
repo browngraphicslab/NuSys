@@ -326,17 +326,16 @@ namespace NuSysApp
 
                     if (_currenDragMode == DragMode.Link)
                     {
-                        if (!(dc is RegionViewModel))
-                        {
-                            var createNewLinkLibraryElementRequestArgs = new CreateNewLinkLibraryElementRequestArgs();
-                            createNewLinkLibraryElementRequestArgs.LibraryElementModelId1 = vm.LibraryElementId; 
-                            createNewLinkLibraryElementRequestArgs.LibraryElementModelId2 = dc.LibraryElementId;
-                            createNewLinkLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Link;
-                            createNewLinkLibraryElementRequestArgs.Title = $"Link from {vm.Model.Title} to {dc.Model.Title}"; // TODO factor out this hard-coded string to a constant
-                            var request = new CreateNewLibraryElementRequest(createNewLinkLibraryElementRequestArgs);
-                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                            request.AddReturnedLibraryElementToLibrary();
-                        }
+
+                        var createNewLinkLibraryElementRequestArgs = new CreateNewLinkLibraryElementRequestArgs();
+                        createNewLinkLibraryElementRequestArgs.LibraryElementModelInId = vm.LibraryElementId; 
+                        createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId = dc.LibraryElementId;
+                        createNewLinkLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Link;
+                        createNewLinkLibraryElementRequestArgs.Title = $"Link from {vm.Model.Title} to {dc.Model.Title}"; // TODO factor out this hard-coded string to a constant
+                        var request = new CreateNewLibraryElementRequest(createNewLinkLibraryElementRequestArgs);
+                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                        request.AddReturnedLibraryElementToLibrary();
+                        
                     }
                     else if (_currenDragMode == DragMode.PresentationLink)
                     {

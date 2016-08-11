@@ -21,14 +21,14 @@ namespace NuSysApp
 
         public override void UnPack(Message message)
         {
-            if (message.ContainsKey("id1"))
+            if (message.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_IN_ID_KEY))
             {
-                LinkLibraryElementModel.InAtomId = message["id1"] as string;
+                LinkLibraryElementModel.InAtomId = message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_IN_ID_KEY] as string;
                 Debug.Assert(LinkLibraryElementModel.InAtomId != null);
             }
-            if (message.ContainsKey("id2"))
+            if (message.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_OUT_ID_KEY))
             {
-                LinkLibraryElementModel.OutAtomId = message["id2"] as string;
+                LinkLibraryElementModel.OutAtomId = message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_OUT_ID_KEY] as string;
                 Debug.Assert(LinkLibraryElementModel.OutAtomId != null);
             }
             if (message.ContainsKey("color"))

@@ -37,3 +37,10 @@
    at System.IO.StreamWriter..ctor(String path, Boolean append, Encoding encoding, Int32 bufferSize, Boolean checkHost)
    at System.IO.StreamWriter..ctor(String path)
    at NusysServer.NusysClient.SaveUsers() in C:\Users\nusys\Documents\Sahil5\NusysServer\Clients\NusysClient.cs:line 97
+8/11/2016 1:34:28 PM   The process cannot access the file 'C:\Users\nusys\Documents\Sahil6\NusysServer\Users' because it is being used by another process.  mscorlib     at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share, Int32 bufferSize, FileOptions options, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.StreamWriter.CreateFile(String path, Boolean append, Boolean checkHost)
+   at System.IO.StreamWriter..ctor(String path, Boolean append, Encoding encoding, Int32 bufferSize, Boolean checkHost)
+   at System.IO.StreamWriter..ctor(String path)
+   at NusysServer.NusysClient.SaveUsers() in C:\Users\nusys\Documents\Sahil6\NusysServer\Clients\NusysClient.cs:line 97

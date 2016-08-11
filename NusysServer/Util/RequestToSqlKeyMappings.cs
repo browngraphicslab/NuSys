@@ -38,6 +38,8 @@ namespace NusysServer
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_START, NusysConstants.TIMESPAN_REGION_START_KEY },//time start
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_HEIGHT, NusysConstants.RECTANGLE_REGION_HEIGHT_KEY },//rect height 
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_WIDTH, NusysConstants.RECTANGLE_REGION_WIDTH_KEY },//rect width
+            {NusysConstants.LINK_LIBRARY_ELEMENT_IN_ID_KEY, NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_IN_ID_KEY },//rect width
+            {NusysConstants.LINK_LIBRARY_ELEMENT_OUT_ID_KEY, NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_OUT_ID_KEY },//rect width
         };
 
         /// <summary>
