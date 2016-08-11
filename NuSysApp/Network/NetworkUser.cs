@@ -35,37 +35,8 @@ namespace NuSysApp
         }
         private Color GetColor()
         {
-            try
-            {
-                var idHash = WaitingRoomView.Encrypt(ID);
-                long number = Math.Abs(BitConverter.ToInt64(idHash,0));
-                long r1 = BitConverter.ToInt64(idHash,1);
-                long r2 = BitConverter.ToInt64(idHash,2); ;
-
-                var mod = 250;
-
-                int r = (int)Math.Abs(((int)number % mod));
-                int b = (int)Math.Abs((r1 * number) % mod);
-                int g = (int)Math.Abs((r2 * number) % mod);
-                _color = Color.FromArgb((byte)200, (byte)r, (byte)g, (byte)b);
-                _colorSet = true;
-                /*
-                var number = Int64.Parse(ID.Replace(@".", ""));
-                var start = 2*(Int64.Parse(IP[IP.Length - 1].ToString()) + 1);
-
-                number += start*2*number; 
-
-                var mod = 250 - start;
-
-                int r = (int)Math.Abs(start + ((int) number%mod));
-                int b = (int)Math.Abs(start + ((int) (number*Int64.Parse(IP[IP.Length - 1].ToString())% mod)));
-                int g = (int)Math.Abs(start + ((int) ((start*number*r )% mod)));
-                _color = Color.FromArgb((byte) 200, (byte) r, (byte) g, (byte) b);*/
-            }
-            catch (Exception e)
-            {
-                _color = Colors.Black;
-            }
+            _color = MediaUtil.GetHashColorFromString(ID);
+            _colorSet = true;
             return _color;
         }
         public void Remove()

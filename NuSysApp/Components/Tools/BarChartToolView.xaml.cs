@@ -185,7 +185,7 @@ namespace NuSysApp
                 _maxValue = Math.Max(_maxValue, kvp.Value);
 
                 // ad the barchart items to the bar chart
-                var vm = new BarChartItemViewModel(kvp, GetColor(kvp.Key));
+                var vm = new BarChartItemViewModel(kvp, MediaUtil.GetHashColorFromString(kvp.Key));
                 var item = new BarChartItem(vm);
                 SetUpBarChartItemHandlers(item);
                 Grid.SetColumn(item, i);
@@ -221,46 +221,7 @@ namespace NuSysApp
             item.ManipulationDelta += xListItem_ManipulationDelta;
             item.ManipulationCompleted += xListItem_ManipulationCompleted;
         }
-        
-        /// <summary>
-        /// Returns the color based on the hash of the passed in string
-        /// </summary>
-        private Color GetColor(string text)
-        {
-            Color color;
-            try
-            {
-                var idHash = WaitingRoomView.Encrypt(text);
-                long number = Math.Abs(BitConverter.ToInt64(idHash, 0));
-                long r1 = BitConverter.ToInt64(idHash, 1);
-                long r2 = BitConverter.ToInt64(idHash, 2); ;
-
-                var mod = 250;
-
-                int r = (int)Math.Abs(((int)number % mod));
-                int b = (int)Math.Abs((r1 * number) % mod);
-                int g = (int)Math.Abs((r2 * number) % mod);
-                color = Color.FromArgb((byte)200, (byte)r, (byte)g, (byte)b);
-                /*
-                var number = Int64.Parse(ID.Replace(@".", ""));
-                var start = 2*(Int64.Parse(IP[IP.Length - 1].ToString()) + 1);
-
-                number += start*2*number; 
-
-                var mod = 250 - start;
-
-                int r = (int)Math.Abs(start + ((int) number%mod));
-                int b = (int)Math.Abs(start + ((int) (number*Int64.Parse(IP[IP.Length - 1].ToString())% mod)));
-                int g = (int)Math.Abs(start + ((int) ((start*number*r )% mod)));
-                _color = Color.FromArgb((byte) 200, (byte) r, (byte) g, (byte) b);*/
-            }
-            catch (Exception e)
-            {
-                color = Colors.Black;
-            }
-            return color;
-        }
-
+      
         public void Dispose()
         {
             // there is nothing to dispose though - Leandro, July 21, 2016

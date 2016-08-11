@@ -14,6 +14,7 @@ namespace NuSysApp
             Debug.Assert(user != null);
             _message["chat_message"] = chatMessage;
             _message["user"] = user.ID;
+
         }
         public ChatRequest(Message m) : base(NusysConstants.RequestType.ChatRequest, m)
         {
