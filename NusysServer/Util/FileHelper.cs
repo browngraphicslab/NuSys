@@ -19,6 +19,10 @@ namespace NusysServer
         /// <returns></returns>
         public static string GetDataFromContentURL(string contentUrl, NusysConstants.ContentType contentType)
         {
+            if (contentUrl.Length <= Constants.SERVER_ADDRESS.Length)
+            {
+                throw new Exception("the suggested content URL is too short");
+            }
             switch (contentType)
             {
                 case NusysConstants.ContentType.Audio:

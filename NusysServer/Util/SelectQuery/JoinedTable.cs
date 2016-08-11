@@ -9,6 +9,7 @@ namespace NusysServer
     {
         private SqlJoinOperationArgs _args;
         private string _queryString;
+        private IEnumerable<string> _columnsToSelect;
 
         /// <summary>
         /// Creates a joined table based on the arguments passed in.
@@ -32,7 +33,21 @@ namespace NusysServer
             }
             _queryString = args.LeftTable.GetSqlQueryRepresentation() + joinString +
                            args.RightTable.GetSqlQueryRepresentation() + " ON " + args.Column1 + " = " + args.Column2;
+            _columnsToSelect = args.LeftTable.GetSQLColumnsToSelect().Concat(args.RightTable.GetSQLColumnsToSelect());
+
         }
+
+
+
+        /// <summary>
+        /// returns the cleaned list of columns to select from this table
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<string> GetSQLColumnsToSelect()
+        {
+            return _columnsToSelect;
+        }
+
         /// <summary>
         /// Returns the string representation for the query string. Goes after SELECT ____ FROM...
         /// </summary>

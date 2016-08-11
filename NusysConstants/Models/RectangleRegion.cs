@@ -22,10 +22,10 @@ namespace NusysIntermediate
         public override void UnPackFromDatabaseKeys(Message message)
         {
             base.UnPackFromDatabaseKeys(message);
-            if (message.ContainsKey(NusysConstants.RECTANGLE_REGION_TOP_LEFT_POINT_KEY))
-            {
-                TopLeftPoint = message.Get<PointModel>(NusysConstants.RECTANGLE_REGION_TOP_LEFT_POINT_KEY);
-            }
+            TopLeftPoint = message.ContainsKey(NusysConstants.RECTANGLE_REGION_TOP_LEFT_POINT_KEY)
+                ? message.Get<PointModel>(NusysConstants.RECTANGLE_REGION_TOP_LEFT_POINT_KEY)
+                : new PointModel(0, 0);
+            
             if (message.ContainsKey(NusysConstants.RECTANGLE_REGION_WIDTH_KEY))
             {
                 Width = message.GetDouble(NusysConstants.RECTANGLE_REGION_WIDTH_KEY);

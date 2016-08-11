@@ -35,31 +35,15 @@ namespace NusysServer
             var libraryId = message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY);
 
             //TODO send notification to everyone
-            var addLibraryElementMessage = new Message();
-            addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY] = libraryId;
-            addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY] = message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CONTENT_ID_KEY]; 
-            addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_TYPE_KEY] = message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY];
-            addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY] = message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CREATION_TIMESTAMP_KEY];
-            addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_FAVORITED_KEY] = message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_FAVORITED_KEY];
-            addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY] =  message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_KEYWORDS_KEY];
-            addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_TITLE_KEY] = message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY];
-            addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY] = message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_ACCESS_KEY];
+            var addLibraryElementMessage = RequestToSqlKeyMappings.LibraryElementRequestKeysToDatabaseKeys(message);
 
+            //create thumbnails and add the paths to the sql database
             var smallIconPath = FileHelper.CreateThumbnailFile(libraryId,NusysConstants.ThumbnailSize.Small, message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_SMALL_ICON_BYTE_STRING_KEY));
             var mediumIconPath = FileHelper.CreateThumbnailFile(libraryId, NusysConstants.ThumbnailSize.Medium, message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_MEDIUM_ICON_BYTE_STRING_KEY));
             var largeIconPath = FileHelper.CreateThumbnailFile(libraryId, NusysConstants.ThumbnailSize.Large, message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LARGE_ICON_BYTE_STRING_KEY));
-
             addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_SMALL_ICON_URL_KEY] = smallIconPath;
             addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY] = mediumIconPath;
             addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_LARGE_ICON_URL_KEY] = largeIconPath;
-
-            foreach (var kvp in message)
-            {
-                if (NusysConstants.ALL_ALLOWED_LIBRARY_ELEMENT_PROPERTY_KEYS.Contains(kvp.Key))
-                {
-                    addLibraryElementMessage[kvp.Key] = kvp.Value;
-                }
-            }
 
             var success = ContentController.Instance.SqlConnector.AddLibraryElement(addLibraryElementMessage);
 
@@ -77,15 +61,15 @@ namespace NusysServer
             returnMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = success;
 
             //TESTING STUFF DELETE AFTER FINISHED TESTING***************************
-            ContentController.Instance.SqlConnector.AddStringProperty(
-                message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY), "test key 1",
-                "test value 1");
-            ContentController.Instance.SqlConnector.AddStringProperty(
-                message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY), "test key 2",
-                "test value 2");
-            ContentController.Instance.SqlConnector.AddStringProperty(
-                message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY), "test key 3",
-                "test value 3");
+            //ContentController.Instance.SqlConnector.AddStringProperty(
+            //    message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY), "test key 1",
+            //    "test value 1");
+            //ContentController.Instance.SqlConnector.AddStringProperty(
+            //    message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY), "test key 2",
+            //    "test value 2");
+            //ContentController.Instance.SqlConnector.AddStringProperty(
+            //    message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY), "test key 3",
+            //    "test value 3");
             //****************************************************************    
 
             return returnMessage;

@@ -86,5 +86,10 @@ namespace NuSysApp
             return false;
         }
 
+        protected override void OnSessionControllerEnterNewCollectionStarting(object sender, string newCollectionLibraryId)
+        {
+            (LibraryElementModel as CollectionLibraryElementModel)?.Children?.Clear();
+            base.OnSessionControllerEnterNewCollectionStarting(sender, newCollectionLibraryId);
+        }
     }
 }

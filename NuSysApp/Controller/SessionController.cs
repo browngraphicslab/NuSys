@@ -23,6 +23,13 @@ namespace NuSysApp
 
         public delegate void ModeChangedEventHandler(object source, Options mode);
 
+        /// <summary>
+        /// this event will be fired whenever the sessionController enters a new collection via the EnterCollection method.
+        /// To be specific, this will be fired before any actual collection fetching/entering occurs.  
+        /// The passed string is the LibraryId of the newly entered collection.  
+        /// </summary>
+        public event EventHandler<string> EnterNewCollectionStarting;
+
         public event ModeChangedEventHandler OnModeChanged;
 
         private static readonly object _syncRoot = new Object();
@@ -101,6 +108,8 @@ namespace NuSysApp
                 return _instance;
             }
         }
+
+
 
         public event WorkspaceChangedHandler WorkspaceChanged;
 
@@ -286,6 +295,41 @@ namespace NuSysApp
             }
             return SpeechString;
 
+        }
+
+        /// <summary>
+        /// method to enter a collection from anywhere.  
+        /// The id is the libraryElementId of the collection you want to enter
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task EnterCollection(string collectionLibraryId)
+        {
+            EnterNewCollectionStarting?.Invoke(this,collectionLibraryId);
+            //creates a new request to get the new workspace
+            var request = new GetEntireWorkspaceRequest(collectionLibraryId);
+
+            //awaits the requests return after execution
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+
+            //gets the element mdoels from the returned requst
+            var elementModels = request.GetReturnedElementModels();
+
+            foreach (var controller in SessionController.Instance.IdToControllers.Values)
+            {
+                controller.Dispose();
+            }
+
+            //unload all the content data models by deleting them, and clear the element controllers
+            SessionController.Instance.ContentController.ClearAllContentDataModels();
+            SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Clear();
+            SessionController.Instance.IdToControllers.Clear();//TODO actually unload all three of these.  very important
+
+            //for each returned contentDataMofdel, add it
+            request.GetReturnedContentDataModels().ForEach(contentDataModel => SessionController.Instance.ContentController.AddContentDataModel(contentDataModel));
+
+            //TODO put back in for collction entering
+            await SessionController.Instance.SessionView.LoadWorkspaceFromServer(elementModels, collectionLibraryId);
         }
 
         #endregion

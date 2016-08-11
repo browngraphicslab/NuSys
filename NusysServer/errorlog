@@ -1,14 +1,4 @@
-8/10/2016 2:40:34 PM   Invalid object name 'contents_miranda'.  .Net SqlClient Data Provider     at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
-   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
-   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
-   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
-   at System.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName, Boolean async, Int32 timeout, Boolean asyncWrite)
-   at System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(TaskCompletionSource`1 completion, String methodName, Boolean sendToPipe, Int32 timeout, Boolean asyncWrite)
-   at System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
-   at NusysServer.SQLConnector.AddContent(Message message) in C:\Users\miran_000\Documents\NuSys\NusysServer\Static_Classes\SqlConnector.cs:line 220
-   at NusysServer.CreateNewContentRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewContentRequestHandler.cs:line 27
-   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\miran_000\Documents\NuSys\NusysServer\Static_Classes\RequestRouter.cs:line 86
-8/10/2016 2:42:32 PM   Invalid object name 'library_elements_miranda'.  .Net SqlClient Data Provider     at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+8/10/2016 10:19:11 PM   Incorrect syntax near the keyword 'FROM'.  .Net SqlClient Data Provider     at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
    at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
    at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
    at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
@@ -20,116 +10,23 @@
    at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)
    at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method)
    at System.Data.SqlClient.SqlCommand.ExecuteReader()
-   at NusysServer.SQLConnector.ExecuteSelectQueryAsMessages(SelectCommandReturnArgs args, Boolean includeNulls) in C:\Users\miran_000\Documents\NuSys\NusysServer\Static_Classes\SqlConnector.cs:line 337
-   at NusysServer.SQLSelectQuery.ExecuteCommand() in C:\Users\miran_000\Documents\NuSys\NusysServer\Util\SelectQuery\SQLSelectQuery.cs:line 90
-   at NusysServer.GetAllLibraryElementsRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\GetAllLibraryElementsRequestHandler.cs:line 43
-   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\miran_000\Documents\NuSys\NusysServer\Static_Classes\RequestRouter.cs:line 86
-8/10/2016 5:08:26 PM   Value cannot be null.
-Parameter name: key  mscorlib     at System.Collections.Concurrent.ConcurrentDictionary`2.ContainsKey(TKey key)
-   at NusysIntermediate.Message.Add(String key, Object value) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Message.cs:line 78
-   at NusysServer.PropertiesParser.ConcatMessageProperties(IEnumerable`1 oldMessages) in C:\Users\miran_000\Documents\NuSys\NusysServer\Util\PropertiesParser.cs:line 27
-   at NusysServer.GetEntireWorkspaceRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\GetEntireWorkspaceRequestHandler.cs:line 40
-   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\miran_000\Documents\NuSys\NusysServer\Static_Classes\RequestRouter.cs:line 86
-8/10/2016 5:08:42 PM   Value cannot be null.
-Parameter name: key  mscorlib     at System.Collections.Concurrent.ConcurrentDictionary`2.ContainsKey(TKey key)
-   at NusysIntermediate.Message.Add(String key, Object value) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Message.cs:line 78
-   at NusysServer.PropertiesParser.ConcatMessageProperties(IEnumerable`1 oldMessages) in C:\Users\miran_000\Documents\NuSys\NusysServer\Util\PropertiesParser.cs:line 27
-   at NusysServer.GetEntireWorkspaceRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\GetEntireWorkspaceRequestHandler.cs:line 40
-   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\miran_000\Documents\NuSys\NusysServer\Static_Classes\RequestRouter.cs:line 86
-8/10/2016 5:09:23 PM   Value cannot be null.
-Parameter name: key  mscorlib     at System.Collections.Concurrent.ConcurrentDictionary`2.ContainsKey(TKey key)
-   at NusysIntermediate.Message.Add(String key, Object value) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Message.cs:line 78
-   at NusysServer.PropertiesParser.ConcatMessageProperties(IEnumerable`1 oldMessages) in C:\Users\miran_000\Documents\NuSys\NusysServer\Util\PropertiesParser.cs:line 27
-   at NusysServer.GetEntireWorkspaceRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\GetEntireWorkspaceRequestHandler.cs:line 40
-   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\miran_000\Documents\NuSys\NusysServer\Static_Classes\RequestRouter.cs:line 86
-8/10/2016 6:22:58 PM   Value cannot be null.
-Parameter name: value  Newtonsoft.Json     at Newtonsoft.Json.JsonConvert.DeserializeObject(String value, Type type, JsonSerializerSettings settings)
-   at Newtonsoft.Json.JsonConvert.DeserializeObject[T](String value, JsonSerializerSettings settings)
-   at NusysIntermediate.Message.GetHashSet[T](String key, HashSet`1 def) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Message.cs:line 189
-   at NusysIntermediate.LibraryElementModel.UnPackFromDatabaseKeys(Message message) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Models\LibraryElementModel.cs:line 75
-   at NusysIntermediate.CollectionLibraryElementModel.UnPackFromDatabaseKeys(Message message) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Models\CollectionLibraryElementModel.cs:line 38
-   at NusysIntermediate.LibraryElementModelFactory.CreateFromMessage(Message message) in C:\Users\miran_000\Documents\NuSys\NusysConstants\ModelFactories\LibraryElementModelFactory.cs:line 48
-   at NusysServer.CreateNewLibraryElementRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewLibraryElementRequestHandler.cs:line 59
-   at NusysServer.CreateNewContentRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewContentRequestHandler.cs:line 45
-   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\miran_000\Documents\NuSys\NusysServer\Static_Classes\RequestRouter.cs:line 86
-8/10/2016 6:28:11 PM   Value cannot be null.
-Parameter name: value  Newtonsoft.Json     at Newtonsoft.Json.JsonConvert.DeserializeObject(String value, Type type, JsonSerializerSettings settings)
-   at Newtonsoft.Json.JsonConvert.DeserializeObject[T](String value, JsonSerializerSettings settings)
-   at NusysIntermediate.Message.GetHashSet[T](String key, HashSet`1 def) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Message.cs:line 189
-   at NusysIntermediate.LibraryElementModel.UnPackFromDatabaseKeys(Message message) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Models\LibraryElementModel.cs:line 75
-   at NusysIntermediate.LibraryElementModelFactory.CreateFromMessage(Message message) in C:\Users\miran_000\Documents\NuSys\NusysConstants\ModelFactories\LibraryElementModelFactory.cs:line 48
-   at NusysServer.CreateNewLibraryElementRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewLibraryElementRequestHandler.cs:line 59
-   at NusysServer.CreateNewContentRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewContentRequestHandler.cs:line 45
-   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\miran_000\Documents\NuSys\NusysServer\Static_Classes\RequestRouter.cs:line 86
-8/10/2016 6:28:43 PM   Value cannot be null.
-Parameter name: value  Newtonsoft.Json     at Newtonsoft.Json.JsonConvert.DeserializeObject(String value, Type type, JsonSerializerSettings settings)
-   at Newtonsoft.Json.JsonConvert.DeserializeObject[T](String value, JsonSerializerSettings settings)
-   at NusysIntermediate.Message.GetHashSet[T](String key, HashSet`1 def) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Message.cs:line 189
-   at NusysIntermediate.LibraryElementModel.UnPackFromDatabaseKeys(Message message) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Models\LibraryElementModel.cs:line 75
-   at NusysIntermediate.LibraryElementModelFactory.CreateFromMessage(Message message) in C:\Users\miran_000\Documents\NuSys\NusysConstants\ModelFactories\LibraryElementModelFactory.cs:line 48
-   at NusysServer.CreateNewLibraryElementRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewLibraryElementRequestHandler.cs:line 59
-   at NusysServer.CreateNewContentRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewContentRequestHandler.cs:line 45
-   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\miran_000\Documents\NuSys\NusysServer\Static_Classes\RequestRouter.cs:line 86
-8/10/2016 6:37:31 PM   Value cannot be null.
-Parameter name: value  Newtonsoft.Json     at Newtonsoft.Json.JsonConvert.DeserializeObject(String value, Type type, JsonSerializerSettings settings)
-   at Newtonsoft.Json.JsonConvert.DeserializeObject[T](String value, JsonSerializerSettings settings)
-   at NusysIntermediate.Message.GetHashSet[T](String key, HashSet`1 def) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Message.cs:line 189
-   at NusysIntermediate.LibraryElementModel.UnPackFromDatabaseKeys(Message message) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Models\LibraryElementModel.cs:line 75
-   at NusysIntermediate.LibraryElementModelFactory.CreateFromMessage(Message message) in C:\Users\miran_000\Documents\NuSys\NusysConstants\ModelFactories\LibraryElementModelFactory.cs:line 48
-   at NusysServer.CreateNewLibraryElementRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewLibraryElementRequestHandler.cs:line 59
-   at NusysServer.CreateNewContentRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewContentRequestHandler.cs:line 45
-   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\miran_000\Documents\NuSys\NusysServer\Static_Classes\RequestRouter.cs:line 86
-8/10/2016 6:41:23 PM   Value cannot be null.
-Parameter name: value  Newtonsoft.Json     at Newtonsoft.Json.JsonConvert.DeserializeObject(String value, Type type, JsonSerializerSettings settings)
-   at Newtonsoft.Json.JsonConvert.DeserializeObject[T](String value, JsonSerializerSettings settings)
-   at NusysIntermediate.Message.GetHashSet[T](String key, HashSet`1 def) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Message.cs:line 189
-   at NusysIntermediate.LibraryElementModel.UnPackFromDatabaseKeys(Message message) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Models\LibraryElementModel.cs:line 75
-   at NusysIntermediate.LibraryElementModelFactory.CreateFromMessage(Message message) in C:\Users\miran_000\Documents\NuSys\NusysConstants\ModelFactories\LibraryElementModelFactory.cs:line 48
-   at NusysServer.CreateNewLibraryElementRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewLibraryElementRequestHandler.cs:line 59
-   at NusysServer.CreateNewContentRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewContentRequestHandler.cs:line 45
-   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\miran_000\Documents\NuSys\NusysServer\Static_Classes\RequestRouter.cs:line 86
-8/10/2016 6:43:13 PM   Value cannot be null.
-Parameter name: value  Newtonsoft.Json     at Newtonsoft.Json.JsonConvert.DeserializeObject(String value, Type type, JsonSerializerSettings settings)
-   at Newtonsoft.Json.JsonConvert.DeserializeObject[T](String value, JsonSerializerSettings settings)
-   at NusysIntermediate.Message.GetHashSet[T](String key, HashSet`1 def) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Message.cs:line 189
-   at NusysIntermediate.LibraryElementModel.UnPackFromDatabaseKeys(Message message) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Models\LibraryElementModel.cs:line 75
-   at NusysIntermediate.LibraryElementModelFactory.CreateFromMessage(Message message) in C:\Users\miran_000\Documents\NuSys\NusysConstants\ModelFactories\LibraryElementModelFactory.cs:line 48
-   at NusysServer.CreateNewLibraryElementRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewLibraryElementRequestHandler.cs:line 59
-   at NusysServer.CreateNewContentRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewContentRequestHandler.cs:line 45
-   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\miran_000\Documents\NuSys\NusysServer\Static_Classes\RequestRouter.cs:line 86
-8/10/2016 6:46:19 PM   Value cannot be null.
-Parameter name: value  Newtonsoft.Json     at Newtonsoft.Json.JsonConvert.DeserializeObject(String value, Type type, JsonSerializerSettings settings)
-   at Newtonsoft.Json.JsonConvert.DeserializeObject[T](String value, JsonSerializerSettings settings)
-   at NusysIntermediate.Message.GetHashSet[T](String key, HashSet`1 def) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Message.cs:line 189
-   at NusysIntermediate.LibraryElementModel.UnPackFromDatabaseKeys(Message message) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Models\LibraryElementModel.cs:line 75
-   at NusysIntermediate.LibraryElementModelFactory.CreateFromMessage(Message message) in C:\Users\miran_000\Documents\NuSys\NusysConstants\ModelFactories\LibraryElementModelFactory.cs:line 48
-   at NusysServer.CreateNewLibraryElementRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewLibraryElementRequestHandler.cs:line 59
-   at NusysServer.CreateNewContentRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewContentRequestHandler.cs:line 45
-   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\miran_000\Documents\NuSys\NusysServer\Static_Classes\RequestRouter.cs:line 86
-8/10/2016 6:56:45 PM   Value cannot be null.
-Parameter name: value  Newtonsoft.Json     at Newtonsoft.Json.JsonConvert.DeserializeObject(String value, Type type, JsonSerializerSettings settings)
-   at Newtonsoft.Json.JsonConvert.DeserializeObject[T](String value, JsonSerializerSettings settings)
-   at NusysIntermediate.Message.GetHashSet[T](String key, HashSet`1 def) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Message.cs:line 189
-   at NusysIntermediate.LibraryElementModel.UnPackFromDatabaseKeys(Message message) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Models\LibraryElementModel.cs:line 75
-   at NusysIntermediate.LibraryElementModelFactory.CreateFromMessage(Message message) in C:\Users\miran_000\Documents\NuSys\NusysConstants\ModelFactories\LibraryElementModelFactory.cs:line 48
-   at NusysServer.CreateNewLibraryElementRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewLibraryElementRequestHandler.cs:line 59
-   at NusysServer.CreateNewContentRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewContentRequestHandler.cs:line 45
-   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\miran_000\Documents\NuSys\NusysServer\Static_Classes\RequestRouter.cs:line 86
-8/10/2016 6:59:35 PM   Value cannot be null.
-Parameter name: value  Newtonsoft.Json     at Newtonsoft.Json.JsonConvert.DeserializeObject(String value, Type type, JsonSerializerSettings settings)
-   at Newtonsoft.Json.JsonConvert.DeserializeObject[T](String value, JsonSerializerSettings settings)
-   at NusysIntermediate.Message.GetHashSet[T](String key, HashSet`1 def) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Message.cs:line 189
-   at NusysIntermediate.LibraryElementModel.UnPackFromDatabaseKeys(Message message) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Models\LibraryElementModel.cs:line 75
-   at NusysIntermediate.LibraryElementModelFactory.CreateFromMessage(Message message) in C:\Users\miran_000\Documents\NuSys\NusysConstants\ModelFactories\LibraryElementModelFactory.cs:line 48
-   at NusysServer.CreateNewLibraryElementRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewLibraryElementRequestHandler.cs:line 59
-   at NusysServer.CreateNewContentRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewContentRequestHandler.cs:line 45
-   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\miran_000\Documents\NuSys\NusysServer\Static_Classes\RequestRouter.cs:line 86
-8/10/2016 7:04:05 PM   Value cannot be null.
-Parameter name: value  Newtonsoft.Json     at Newtonsoft.Json.JsonConvert.DeserializeObject(String value, Type type, JsonSerializerSettings settings)
-   at Newtonsoft.Json.JsonConvert.DeserializeObject[T](String value, JsonSerializerSettings settings)
-   at NusysIntermediate.Message.GetHashSet[T](String key, HashSet`1 def) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Message.cs:line 189
-   at NusysIntermediate.LibraryElementModel.UnPackFromDatabaseKeys(Message message) in C:\Users\miran_000\Documents\NuSys\NusysConstants\Models\LibraryElementModel.cs:line 75
-   at NusysIntermediate.LibraryElementModelFactory.CreateFromMessage(Message message) in C:\Users\miran_000\Documents\NuSys\NusysConstants\ModelFactories\LibraryElementModelFactory.cs:line 48
-   at NusysServer.CreateNewLibraryElementRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewLibraryElementRequestHandler.cs:line 59
-   at NusysServer.CreateNewContentRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\miran_000\Documents\NuSys\NusysServer\RequestHandlers\CreateNewContentRequestHandler.cs:line 45
-   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\miran_000\Documents\NuSys\NusysServer\Static_Classes\RequestRouter.cs:line 86
+   at NusysServer.SQLConnector.ExecuteSelectQueryAsMessages(SqlCommand command, Boolean includeNulls) in C:\Users\nusys\Desktop\Leandro NEW SIS\nusys\NusysServer\Static_Classes\SqlConnector.cs:line 337
+   at NusysServer.SQLSelectQuery.ExecuteCommand() in C:\Users\nusys\Desktop\Leandro NEW SIS\nusys\NusysServer\Util\SelectQuery\SQLSelectQuery.cs:line 95
+   at NusysServer.GetAllLibraryElementsRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\nusys\Desktop\Leandro NEW SIS\nusys\NusysServer\RequestHandlers\GetAllLibraryElementsRequestHandler.cs:line 42
+   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\nusys\Desktop\Leandro NEW SIS\nusys\NusysServer\Static_Classes\RequestRouter.cs:line 86
+8/10/2016 10:22:57 PM   Incorrect syntax near the keyword 'FROM'.  .Net SqlClient Data Provider     at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
+   at System.Data.SqlClient.SqlDataReader.get_MetaData()
+   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, SqlDataReader ds, Boolean describeParameterEncryptionRequest)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader()
+   at NusysServer.SQLConnector.ExecuteSelectQueryAsMessages(SqlCommand command, Boolean includeNulls) in C:\Users\nusys\Desktop\Leandro NEW SIS\nusys\NusysServer\Static_Classes\SqlConnector.cs:line 337
+   at NusysServer.SQLSelectQuery.ExecuteCommand() in C:\Users\nusys\Desktop\Leandro NEW SIS\nusys\NusysServer\Util\SelectQuery\SQLSelectQuery.cs:line 95
+   at NusysServer.GetAllLibraryElementsRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\nusys\Desktop\Leandro NEW SIS\nusys\NusysServer\RequestHandlers\GetAllLibraryElementsRequestHandler.cs:line 42
+   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\nusys\Desktop\Leandro NEW SIS\nusys\NusysServer\Static_Classes\RequestRouter.cs:line 86

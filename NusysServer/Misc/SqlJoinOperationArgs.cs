@@ -24,12 +24,12 @@ namespace NusysServer
         public Constants.JoinedType JoinOperator { get; set; }
 
         /// <summary>
-        /// The column which column 2 should be equal to.
+        /// The full column title which column 2 should be equal to.
         /// </summary>
         public string Column1 { get; set; }
 
         /// <summary>
-        /// The column which column 1 should be equal to.
+        /// The full column title  which column 1 should be equal to.
         /// </summary>
         public string Column2 { get; set; }
     }

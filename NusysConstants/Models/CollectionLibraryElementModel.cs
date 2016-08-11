@@ -27,12 +27,6 @@ namespace NusysIntermediate
             Children = new HashSet<string>();
         }
 
-        protected override void OnSessionControllerEnterNewCollection()
-        {
-            Children.Clear();
-            base.OnSessionControllerEnterNewCollection();
-        }
-
         public override void UnPackFromDatabaseKeys(Message message)
         {
             base.UnPackFromDatabaseKeys(message);

@@ -53,7 +53,9 @@ namespace NusysServer
                     libraryElementRequestMessage[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY];
             }
 
-            if (Constants.user == "junsu" && message.GetEnum<NusysConstants.ContentType>(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY) == NusysConstants.ContentType.PDF)//obviously only for testing
+            if (Constants.user == "junsu" && 
+                message.ContainsKey("type") &&
+                message.GetEnum<NusysConstants.ContentType>("type") == NusysConstants.ContentType.PDF)//obviously only for testing
             {
                 var tup = new Tuple<string, string>(FileHelper.GetDataFromContentURL(addContentToDatabaseMessage.GetString(NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY), NusysConstants.ContentType.PDF), message.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY));
                 ContentController.Instance.ComparisonController.AddDocument(tup);

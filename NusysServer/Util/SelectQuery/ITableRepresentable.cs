@@ -12,6 +12,13 @@ namespace NusysServer
         /// </summary>
         /// <returns></returns>
         List<Constants.SQLTableType> GetSqlTableNames();
+        
+
+        /// <summary>
+        /// Returns all the columns you wish to select from the table.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<string> GetSQLColumnsToSelect();
 
         /// <summary>
         /// Returns the fomateed string which can be pluugd into the Select query.
