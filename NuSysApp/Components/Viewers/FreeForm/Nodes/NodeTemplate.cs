@@ -273,10 +273,18 @@ namespace NuSysApp
             isSearched.Visibility = searched ? Visibility.Visible : Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// Will add a duplicate alias when the user finishes moving the duplicate button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)
         {
+            // Remove the drag button from the session
             xCanvas.Children.Remove(_dragItem);
 
+            // Find the coordinates of the point at which the client dropped the button, and use those coordinates to 
+            // Request a duplicate in that location
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
             var p = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
             var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(p.X, p.Y, 300, 300));
@@ -295,12 +303,11 @@ namespace NuSysApp
                     var canvas = groupnode.FreeFormView.AtomContainer;
                     var targetPoint = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(canvas).TransformPoint(p);
                     p = args.GetCurrentPoint(first).Position; ;
-                   
-                   vm.Controller.RequestDuplicate(targetPoint.X, targetPoint.Y, new Message(await vm.Model.Pack()));
+                    vm.Controller.RequestDuplicate(targetPoint.X, targetPoint.Y);          
                 }
                 else
                 {
-                    vm.Controller.RequestDuplicate(r.X, r.Y, new Message(await vm.Model.Pack()));
+                    vm.Controller.RequestDuplicate(r.X, r.Y);
                 }
             }
             
