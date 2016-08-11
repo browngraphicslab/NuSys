@@ -34,6 +34,7 @@ namespace NuSysApp
             if (LibraryElementModelInId != null)
             {
                 message[NusysConstants.LINK_LIBRARY_ELEMENT_IN_ID_KEY] = LibraryElementModelInId;
+
             }
             // packs the out id
             if (LibraryElementModelOutId != null)
