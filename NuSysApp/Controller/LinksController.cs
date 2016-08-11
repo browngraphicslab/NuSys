@@ -12,11 +12,15 @@ namespace NuSysApp
 { 
     public class LinksController
     {
-        //Just to map a linkable id to the linkable itself
+        /// <summary>
+        /// Just to map a linkable id to the linkable itself
+        /// </summary>
         private ConcurrentDictionary<string,ILinkable> _linkableIdToLinkableController = new ConcurrentDictionary<string, ILinkable>();
 
-        //A content ID to a list of the ids of linkables that are instances of that id
-        //aka returns all aliases of a content
+        /// <summary>
+        /// A content ID to a list of the ids of linkables that are instances of that id
+        /// aka returns all aliases of a content
+        /// </summary>
         private ConcurrentDictionary<string,HashSet<string>> _contentIdToLinkableIds = new ConcurrentDictionary<string, HashSet<string>>();
 
         //LibraryElementModel ID to List of LinkLibraryElementModel ID's for links that are attached to it

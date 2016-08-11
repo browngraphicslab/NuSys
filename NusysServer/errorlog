@@ -30,6 +30,7 @@
    at NusysServer.SQLSelectQuery.ExecuteCommand() in C:\Users\nusys\Desktop\Leandro NEW SIS\nusys\NusysServer\Util\SelectQuery\SQLSelectQuery.cs:line 95
    at NusysServer.GetAllLibraryElementsRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\nusys\Desktop\Leandro NEW SIS\nusys\NusysServer\RequestHandlers\GetAllLibraryElementsRequestHandler.cs:line 42
    at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\nusys\Desktop\Leandro NEW SIS\nusys\NusysServer\Static_Classes\RequestRouter.cs:line 86
+<<<<<<< Updated upstream
 8/11/2016 1:29:42 AM   The process cannot access the file 'C:\Users\nusys\Documents\Sahil5\NusysServer\Users' because it is being used by another process.  mscorlib     at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
    at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
    at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share, Int32 bufferSize, FileOptions options, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
@@ -37,3 +38,15 @@
    at System.IO.StreamWriter..ctor(String path, Boolean append, Encoding encoding, Int32 bufferSize, Boolean checkHost)
    at System.IO.StreamWriter..ctor(String path)
    at NusysServer.NusysClient.SaveUsers() in C:\Users\nusys\Documents\Sahil5\NusysServer\Clients\NusysClient.cs:line 97
+=======
+8/11/2016 2:09:40 PM   The content file you requests does not exist. file: eba3d808c1bf44318dee412b3e46f9e6.txt  NusysServer     at NusysServer.FileHelper.FetchDataFromFile(String fileName) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\NewSys\NusysServer\Util\FileHelper.cs:line 127
+   at NusysServer.FileHelper.GetDataFromContentURL(String contentUrl, ContentType contentType) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\NewSys\NusysServer\Util\FileHelper.cs:line 34
+   at NusysServer.SQLConnector.GetContentDataModel(String contentDataModelId) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\NewSys\NusysServer\Static_Classes\SqlConnector.cs:line 316
+   at NusysServer.GetContentDataModelRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\NewSys\NusysServer\RequestHandlers\GetContentDataModelRequestHandler.cs:line 22
+   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\NewSys\NusysServer\Static_Classes\RequestRouter.cs:line 86
+8/11/2016 2:09:40 PM   The content file you requests does not exist. file: eba3d808c1bf44318dee412b3e46f9e6.txt  NusysServer     at NusysServer.FileHelper.FetchDataFromFile(String fileName) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\NewSys\NusysServer\Util\FileHelper.cs:line 127
+   at NusysServer.FileHelper.GetDataFromContentURL(String contentUrl, ContentType contentType) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\NewSys\NusysServer\Util\FileHelper.cs:line 34
+   at NusysServer.SQLConnector.GetContentDataModel(String contentDataModelId) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\NewSys\NusysServer\Static_Classes\SqlConnector.cs:line 316
+   at NusysServer.GetContentDataModelRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\NewSys\NusysServer\RequestHandlers\GetContentDataModelRequestHandler.cs:line 22
+   at NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() in C:\Users\luke murray\Documents\Visual Studio 2015\Projects\NewSys\NusysServer\Static_Classes\RequestRouter.cs:line 86
+>>>>>>> Stashed changes

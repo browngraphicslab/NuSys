@@ -24,11 +24,11 @@ namespace NuSysApp
 
             if (LibraryElementModelId1 != null)
             {
-                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_1_KEY] = LibraryElementModelId1;
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_IN_KEY] = LibraryElementModelId1;
             }
             if (LibraryElementModelId2 != null)
             {
-                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_2_KEY] = LibraryElementModelId2;
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY] = LibraryElementModelId2;
             }
             return message;
         }
