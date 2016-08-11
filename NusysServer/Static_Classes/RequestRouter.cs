@@ -54,6 +54,9 @@ namespace NusysServer
                     case NusysConstants.RequestType.SetTagsRequest:
                         break;
                         */
+                    case NusysConstants.RequestType.SearchRequest:
+                        requestHandler = new SearchRequestHandler();
+                        break;
                     case NusysConstants.RequestType.DeleteLibraryElementRequest:
                         requestHandler = new DeleteLibraryElementRequestHandler();
                         break;

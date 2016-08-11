@@ -439,8 +439,6 @@
     <Compile Include="Components\Viewers\FreeForm\LibraryDragElement.xaml.cs">
       <DependentUpon>LibraryDragElement.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\Viewers\Search\Query.cs" />
-    <Compile Include="Components\Viewers\Search\SearchResult.cs" />
     <Compile Include="Components\Viewers\Search\SearchResultTemplate.cs" />
     <Compile Include="Components\Viewers\Search\SearchView.xaml.cs">
       <DependentUpon>SearchView.xaml</DependentUpon>
@@ -623,6 +621,7 @@
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewRectangleRegionLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewRegionLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewTimeSpanRegionRequestArgs.cs" />
+    <Compile Include="Network\Requests\SearchRequest.cs" />
     <Compile Include="Network\Requests\UpdateLibraryElementModelRequest.cs" />
     <Compile Include="Network\Requests\CreateNewLibraryElementRequest.cs" />
     <Compile Include="Network\Requests\DeleteLibraryElementRequest.cs" />
