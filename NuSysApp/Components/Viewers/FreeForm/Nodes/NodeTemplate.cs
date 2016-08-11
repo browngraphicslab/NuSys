@@ -324,50 +324,25 @@ namespace NuSysApp
                         return;
                     }
 
-                    if (hitsStart2.Any()){
-                        foreach (var element in hitsStart2)
-                        {
-                            if ((element as FrameworkElement).DataContext is RegionViewModel) // If there is a region under the drag
-                            {
-                                if (_currenDragMode == DragMode.PresentationLink)
-                                {
-                                    AddPresentationLink(dc?.Id, vm?.Id);
-                                }
-                                else
-                                {
-                                    var region = element as FrameworkElement;
-                                    var regiondc = region.DataContext as RegionViewModel;
-                                    var m = new Message();
-                                    m["id2"] = regiondc.RegionLibraryElementController.LibraryElementModel.LibraryElementId;
-                                    m["id1"] = vm.Controller.LibraryElementController.ContentId;
-                                    await SessionController.Instance.LinksController.RequestLink(m);
-                                    UITask.Run(delegate { vm.Controller.UpdateCircleLinks(); });
-                                    break;
-                                    //     vm.LibraryElementController.RequestVisualLinkTo();
-                                }
-                            }          
-                        }
-                    }
-                    else
+                    if (_currenDragMode == DragMode.Link)
                     {
-                        if (_currenDragMode == DragMode.Link)
+                        if (!(dc is RegionViewModel))
                         {
-                            if (!(dc is RegionViewModel))
-                            {
-                                var m = new Message();
-                                m["id1"] = dc.LibraryElementId;
-                                m["id2"] = vm.LibraryElementId;
-                                if (dc.LibraryElementId != vm.LibraryElementId)
-                                {
-                                    SessionController.Instance.LinksController.RequestLink(m);
-                                }
-                            }
-                        }
-                        if (_currenDragMode == DragMode.PresentationLink)
-                        {
-                            AddPresentationLink(dc?.Id,vm?.Id);
+                            var createNewLinkLibraryElementRequestArgs = new CreateNewLinkLibraryElementRequestArgs();
+                            createNewLinkLibraryElementRequestArgs.LibraryElementModelId1 = dc.LibraryElementId;
+                            createNewLinkLibraryElementRequestArgs.LibraryElementModelId2 = vm.LibraryElementId;
+                            createNewLinkLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Link;
+                            createNewLinkLibraryElementRequestArgs.Title = $"Link from {vm.Model.Title} to {dc.Model.Title}"; // TODO factor out this hard-coded string to a constant
+                            var request = new CreateNewLibraryElementRequest(createNewLinkLibraryElementRequestArgs);
+                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                            request.AddReturnedLibraryElementToLibrary();
                         }
                     }
+                    else if (_currenDragMode == DragMode.PresentationLink)
+                    {
+                        AddPresentationLink(dc?.Id,vm?.Id);
+                    }
+                    
                 }
             }
 
