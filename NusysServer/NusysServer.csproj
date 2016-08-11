@@ -211,10 +211,11 @@
     <Compile Include="Util\FileHelper.cs" />
     <Compile Include="Util\PropertiesParser.cs" />
     <Compile Include="Util\RequestToSqlKeyMappings.cs" />
-    <Compile Include="Util\SelectQuery\ITableRepresentable.cs" />
-    <Compile Include="Util\SelectQuery\JoinedTable.cs" />
-    <Compile Include="Util\SelectQuery\SingleTable.cs" />
-    <Compile Include="Util\SelectQuery\SQLSelectQuery.cs" />
+    <Compile Include="Util\SQLQuery\ITableRepresentable.cs" />
+    <Compile Include="Util\SQLQuery\JoinedTable.cs" />
+    <Compile Include="Util\SQLQuery\SingleTable.cs" />
+    <Compile Include="Util\SQLQuery\SQLSelectQuery.cs" />
+    <Compile Include="Util\SQLQuery\SQLUpdateOrInsertQuery.cs" />
     <Compile Include="Util\SQLSelectQueryConditionals.cs" />
   </ItemGroup>
   <ItemGroup>
