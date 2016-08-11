@@ -40,8 +40,8 @@ namespace NusysServer
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_WIDTH, NusysConstants.RECTANGLE_REGION_WIDTH_KEY },//rect width
 
             //links start
-            {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_IN_KEY, NusysConstants.LINK_LIBRARY_ELEMENT_IN_ID_KEY },//link in id
-            {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY, NusysConstants.LINK_LIBRARY_ELEMENT_OUT_ID_KEY },//link out id
+            {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_IN_ID_KEY, NusysConstants.LINK_LIBRARY_ELEMENT_IN_ID_KEY },//link in id
+            {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_OUT_ID_KEY, NusysConstants.LINK_LIBRARY_ELEMENT_OUT_ID_KEY },//link out id
         };
 
         /// <summary>

@@ -312,10 +312,11 @@ namespace NuSysApp
 
                     switch (_currentDragMode)
                     {
+
                         case DragMode.Link:
                             var createNewLinkLibraryElementRequestArgs = new CreateNewLinkLibraryElementRequestArgs();
-                            createNewLinkLibraryElementRequestArgs.LibraryElementModelId1 = vm.LibraryElementId;
-                            createNewLinkLibraryElementRequestArgs.LibraryElementModelId2 = dc.LibraryElementId;
+                            createNewLinkLibraryElementRequestArgs.LibraryElementModelInId = vm.LibraryElementId;
+                            createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId = dc.LibraryElementId;
                             createNewLinkLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Link;
                             createNewLinkLibraryElementRequestArgs.Title = $"Link from {vm.Model.Title} to {dc.Model.Title}";
                             var request = new CreateNewLibraryElementRequest(createNewLinkLibraryElementRequestArgs);
