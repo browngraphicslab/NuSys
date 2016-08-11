@@ -7,16 +7,14 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using Windows.Data.Xml.Dom;
-using Windows.Storage;
-using Windows.Storage.Streams;
+
 using NusysIntermediate;
 
 namespace NusysIntermediate
 {
     public class AudioNodeModel : ElementModel
     { 
-        private StorageFile _audioFile;
+  
         public delegate void JumpEventHandler(TimeSpan time);
         public event JumpEventHandler OnJump;
         public AudioNodeModel(string id) : base(id)
