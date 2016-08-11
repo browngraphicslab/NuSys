@@ -24,7 +24,7 @@ namespace NuSysApp
 
             var collectionmodel = Model as CollectionLibraryElementModel;
             Finite = collectionmodel.IsFinite;
-            ShapePoints = collectionmodel.ShapePoints.Count;
+            ShapePoints = collectionmodel.ShapePoints?.Count ?? 0;
         }
 
         public override CreateNewRegionLibraryElementRequestArgs GetNewCreateLibraryElementRequestArgs()

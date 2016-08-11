@@ -128,7 +128,7 @@ namespace NuSysApp
             {
                 await
                     SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(
-                        controller.LibraryElementModel.LibraryElementId);
+                        controller.LibraryElementModel.ContentDataModelId);
             }
             if (CurrentElementController != null)
             {

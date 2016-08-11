@@ -120,7 +120,15 @@ namespace NuSysApp
             _libraryElementModel = libraryElementModel;
             _debouncingDictionary = new DebouncingDictionary(libraryElementModel.LibraryElementId, true);
             Title = libraryElementModel.Title;
+            SessionController.Instance.EnterNewCollectionStarting += OnSessionControllerEnterNewCollectionStarting;
         }
+
+        /// <summary>
+        /// the event handler will be called whenever a new collection is entered via the session controller's EnterCollection method.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="newCollectionLibraryId"></param>
+        protected virtual void OnSessionControllerEnterNewCollectionStarting(object sender, string newCollectionLibraryId){ }
 
         /// <summary>
         /// This will change the library element model's data and update the server.  
@@ -536,6 +544,7 @@ namespace NuSysApp
         }
         public virtual void Dispose()
         {
+            SessionController.Instance.EnterNewCollectionStarting -= OnSessionControllerEnterNewCollectionStarting;
             Disposed?.Invoke(this, EventArgs.Empty);
         }
 
