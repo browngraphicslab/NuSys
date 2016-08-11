@@ -334,7 +334,20 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY = "returned_library_element_model";
 
-            #endregion NewLibraryElementRequest
+        #endregion NewLibraryElementRequest
+
+            #region ChatRequest
+
+            /// <summary>
+            /// Key in message for sending user id in chat requests
+            /// </summary>
+            public static readonly string CHAT_REQUEST_USER_ID_KEY="user";
+
+            /// <summary>
+            /// Key in message for sending chat messages in chat requests
+            /// </summary>
+            public static readonly string CHAT_REQUEST_CHAT_MESSAGE_KEY = "chat_message";
+            #endregion
 
         #endregion RequestKeys
 

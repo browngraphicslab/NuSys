@@ -23,9 +23,14 @@ namespace NusysServer
 
             #region EasterEgg
 
+            if (message.GetString(NusysConstants.CHAT_REQUEST_CHAT_MESSAGE_KEY).ToLower().Contains("does luke suck?"))
+            {
+                message[NusysConstants.CHAT_REQUEST_CHAT_MESSAGE_KEY] = "Chatbot NEVER mentions that name... ";
+            }
             #endregion EasterEgg
+
             ForwardMessage(message, senderHandler);
-            return new Message();
+            return message;
         }
     }
 }
