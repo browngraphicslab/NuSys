@@ -11,7 +11,7 @@ namespace NusysServer
     /// This is the interface for any select query. It has a string that represents the query string
     /// and a list of the properties (table columns) to check against.
     /// </summary>
-    public interface SqlSelectQueryConditional
+    public interface SqlQueryConditional
     {
         string GetQueryString();
         IEnumerable<string> GetPropertyKeys();
@@ -20,11 +20,11 @@ namespace NusysServer
     /// <summary>
     /// Creates a select query by performing operations (AND/OR) on two different conditionals
     /// </summary>
-    public class SqlSelectQueryOperator : SqlSelectQueryConditional
+    public class SqlQueryOperator : SqlQueryConditional
     {
         public Constants.Operator Operator { get; private set; }
-        public SqlSelectQueryConditional FirstConditional { get; private set; }
-        public SqlSelectQueryConditional SecondConditional { get; private set; }
+        public SqlQueryConditional FirstConditional { get; private set; }
+        public SqlQueryConditional SecondConditional { get; private set; }
 
         /// <summary>
         /// Creates a select query by performing operations (AND/OR) on two different conditionals
@@ -32,7 +32,7 @@ namespace NusysServer
         /// <param name="firstConditional"></param>
         /// <param name="secondConditional"></param>
         /// <param name="conditionalOperator"></param>
-        public SqlSelectQueryOperator(SqlSelectQueryConditional firstConditional, SqlSelectQueryConditional secondConditional, Constants.Operator conditionalOperator)
+        public SqlQueryOperator(SqlQueryConditional firstConditional, SqlQueryConditional secondConditional, Constants.Operator conditionalOperator)
         {
             if (firstConditional == null || secondConditional == null)
             {
@@ -65,7 +65,7 @@ namespace NusysServer
     /// <summary>
     /// Creates a select query conditional that checks if the property = the required value
     /// </summary>
-    public class SqlSelectQueryEquals : SqlSelectQueryConditional
+    public class SqlQueryEquals : SqlQueryConditional
     {
         /// <summary>
         /// the FULL-COLUMN TITLE property that has to have the specified value
@@ -80,7 +80,7 @@ namespace NusysServer
         /// <summary>
         /// Creates a select query conditional that checks if the property = the required value
         /// </summary>
-        public SqlSelectQueryEquals(Constants.SQLTableType tableType, string property, string requiredValue)
+        public SqlQueryEquals(Constants.SQLTableType tableType, string property, string requiredValue)
         {
             if (property == null || requiredValue == null)
             {
@@ -110,7 +110,7 @@ namespace NusysServer
     /// <summary>
     /// Creates a select query conditional that checks if the property is equal to any of the possible values passed in.
     /// </summary>
-    public class SqlSelectQueryContains : SqlSelectQueryConditional
+    public class SqlQueryContains : SqlQueryConditional
     {
         public string Property { get; private set; }
         public IEnumerable<string> PossibleValues { get; private set; }
@@ -118,7 +118,7 @@ namespace NusysServer
         /// <summary>
         /// Creates a select query conditional that checks if the property is equal to any of the possible values passed in.
         /// </summary>
-        public SqlSelectQueryContains(Constants.SQLTableType tableType, string property, IEnumerable<string> possibleValues)
+        public SqlQueryContains(Constants.SQLTableType tableType, string property, IEnumerable<string> possibleValues)
         {
             if (property == null || possibleValues == null || !possibleValues.Any())
             {

@@ -114,7 +114,7 @@ namespace NusysServer
         //    JoinedTable aliasJoinLibraryJoinContentJoinProperties = new JoinedTable(aliasJoinLibraryJoinContentJoinPropertiesArgs);
 
         //    //creates a where query where the alias parent collection is equal the one requested
-        //    var whereQuery = new SqlSelectQueryEquals(Constants.SQLTableType.Alias,
+        //    var whereQuery = new SqlQueryEquals(Constants.SQLTableType.Alias,
         //            NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY, workspaceId);
 
         //    //creates a list of all columns from alias, content, and properties tables

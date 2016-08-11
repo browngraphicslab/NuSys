@@ -575,7 +575,8 @@ namespace NusysIntermediate
             public static readonly HashSet<string> ILLEGAL_PROPERTIES_TABLE_KEY_NAMES = new HashSet<string>()
             {
                 RETURN_AWAITABLE_REQUEST_ID_STRING,
-                REQUEST_TYPE_STRING_KEY
+                REQUEST_TYPE_STRING_KEY,
+                ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY
             };
 
             #endregion propertiesTable

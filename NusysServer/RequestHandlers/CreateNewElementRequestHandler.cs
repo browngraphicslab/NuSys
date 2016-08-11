@@ -42,7 +42,7 @@ namespace NusysServer
 
             //query the library elements to get the type
             var typeQuery = new SQLSelectQuery(new SingleTable(Constants.SQLTableType.LibraryElement),
-                new SqlSelectQueryEquals(Constants.SQLTableType.LibraryElement,
+                new SqlQueryEquals(Constants.SQLTableType.LibraryElement,
                     NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY,
                     message.GetString(NusysConstants.NEW_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID_KEY)));
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using NusysIntermediate;
+using NusysServer.Util.SQLQuery;
 
 namespace NusysServer
 {
@@ -10,7 +11,7 @@ namespace NusysServer
     {
         //private IEnumerable<string> _cleanedSelectedColumns;
         private ITableRepresentable _fromTable;
-        private SqlSelectQueryConditional _conditionals;
+        private SqlQueryConditional _conditionals;
 
         /// <summary>
         /// Creates a new select query based on parameters.
@@ -18,7 +19,7 @@ namespace NusysServer
         /// <param name="selectedColumns"> The columns you wish to recieve</param>
         /// <param name="fromTable">The tables from which you want to select </param>
         /// <param name="conditionals">Optional. Checks for conditional</param>
-        public SQLSelectQuery(ITableRepresentable fromTable, SqlSelectQueryConditional conditionals = null)
+        public SQLSelectQuery(ITableRepresentable fromTable, SqlQueryConditional conditionals = null)
         {
             _fromTable = fromTable;
             _conditionals = CleanConditional(conditionals);
@@ -33,7 +34,7 @@ namespace NusysServer
         /// </summary>
         /// <param name="conditionalToBeCleaned"></param>
         /// <returns></returns>
-        private SqlSelectQueryConditional CleanConditional(SqlSelectQueryConditional conditionalToBeCleaned)
+        private SqlQueryConditional CleanConditional(SqlQueryConditional conditionalToBeCleaned)
         {
             if (conditionalToBeCleaned == null)
             {

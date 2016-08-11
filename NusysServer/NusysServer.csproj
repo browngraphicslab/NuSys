@@ -214,9 +214,13 @@
     <Compile Include="Util\SQLQuery\ITableRepresentable.cs" />
     <Compile Include="Util\SQLQuery\JoinedTable.cs" />
     <Compile Include="Util\SQLQuery\SingleTable.cs" />
+    <Compile Include="Util\SQLQuery\SQLDeleteQuery.cs" />
+    <Compile Include="Util\SQLQuery\SQLInsertQuery.cs" />
     <Compile Include="Util\SQLQuery\SQLSelectQuery.cs" />
-    <Compile Include="Util\SQLQuery\SQLUpdateOrInsertQuery.cs" />
-    <Compile Include="Util\SQLSelectQueryConditionals.cs" />
+    <Compile Include="Util\SQLQuery\SQLUpdateOrInsertPropertyQuery.cs" />
+    <Compile Include="Util\SQLQuery\SQLUpdatePropertiesArgs.cs" />
+    <Compile Include="Util\SQLQuery\SQLUpdateRowQuery.cs" />
+    <Compile Include="Util\SQLQuery\SQLQueryConditionals.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="apiapp.json" />

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Newtonsoft.Json;
 using NusysIntermediate;
+using NusysServer.Util.SQLQuery;
 
 namespace NusysServer
 {
@@ -49,7 +50,6 @@ namespace NusysServer
 
         public void TestFunc()
         {
-             
         }
 
         /// <summary>
@@ -175,6 +175,8 @@ namespace NusysServer
             //a dictionary to keep track of the present keys
             //that we can add directly into the library element database
             var acceptedKeysDictionary = new Message();
+            List<SQLUpdatePropertiesArgs> propertiesToAdd = new List<SQLUpdatePropertiesArgs>();
+
             foreach (var kvp in message)
             {
                 if (!NusysConstants.LIBRARY_ELEMENT_MODEL_ACCEPTED_KEYS.Keys.Contains(kvp.Key))
@@ -184,14 +186,12 @@ namespace NusysServer
                     {
                         continue;
                     }
-
                     //if we reach here then the key has passed the bar of allowed to be a custom property
-                    if (!AddStringProperty(libraryId, kvp.Key, kvp.Value.ToString()))
-                    {
-                        //TODO remove all the already-added properties
-                        throw new Exception("The library element could not be added with key: " + kvp.Key +
-                                            "  and value: " + kvp.Value);
-                    }
+                    SQLUpdatePropertiesArgs property = new SQLUpdatePropertiesArgs();
+                    property.PropertyKey = kvp.Key;
+                    property.PropertyValue = kvp.Value.ToString();
+                    property.LibraryOrAliasId = libraryId;
+                    propertiesToAdd.Add(property);
                 }
                 else
                 {
@@ -199,9 +199,15 @@ namespace NusysServer
                     acceptedKeysDictionary.Add(kvp.Key, kvp.Value);
                 }
             }
-            var cmd = GetInsertCommand(Constants.SQLTableType.LibraryElement, acceptedKeysDictionary);
-            var successInt = cmd.ExecuteNonQuery();
-            return successInt > 0;
+            SQLUpdateOrInsertPropertyQuery updateOrInsertPropertiesQuery =
+                    new SQLUpdateOrInsertPropertyQuery(propertiesToAdd);
+            if (!updateOrInsertPropertiesQuery.ExecuteCommand())
+            {
+                throw new Exception("Could not update or insert the properties from the sql query" + updateOrInsertPropertiesQuery.CommandString);
+            }
+
+            var cmd = new SQLInsertQuery(Constants.SQLTableType.LibraryElement, acceptedKeysDictionary);
+            return cmd.ExecuteCommand();
         }
 
         /// <summary>
@@ -216,9 +222,8 @@ namespace NusysServer
                 return false;
             }
 
-            var cmd = GetInsertCommand(Constants.SQLTableType.Content, message);
-            var successInt = cmd.ExecuteNonQuery();
-            return successInt > 0;
+            var cmd = new SQLInsertQuery(Constants.SQLTableType.Content, message);
+            return cmd.ExecuteCommand();
         }
 
         
@@ -235,9 +240,8 @@ namespace NusysServer
                 return false;
             }
 
-            var cmd = GetInsertCommand(Constants.SQLTableType.Alias, message);
-            var successInt = cmd.ExecuteNonQuery();
-            return successInt > 0;
+            var cmd = new SQLInsertQuery(Constants.SQLTableType.Alias, message);
+            return cmd.ExecuteCommand();
         }
 
         /// <summary>
@@ -251,9 +255,8 @@ namespace NusysServer
             {
                 return false;
             }
-            var cmd = GetDeleteCommand(Constants.SQLTableType.LibraryElement, message, Constants.Operator.And);
-            var successInt = cmd.ExecuteNonQuery();
-            return successInt > 0;
+            var cmd = new SQLDeleteQuery(Constants.SQLTableType.LibraryElement, message, Constants.Operator.And);
+            return cmd.ExecuteCommand();
         }
 
         /// <summary>
@@ -267,36 +270,10 @@ namespace NusysServer
             {
                 return false;
             }
-            var cmd = GetDeleteCommand(Constants.SQLTableType.Alias, message, Constants.Operator.And);
-            var successInt = cmd.ExecuteNonQuery();
-            return successInt > 0;
-
+            var cmd = new SQLDeleteQuery(Constants.SQLTableType.Alias, message, Constants.Operator.And);
+            return cmd.ExecuteCommand();
         }
         
-
-        /// <summary>
-        /// Adds a string property to the properties table using the given key and library or alias Id
-        /// </summary>
-        /// <param name="objectId"></param>
-        /// <param name="propertyKey"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public bool AddStringProperty(string objectId, string propertyKey, string value)
-        {
-            if (NusysConstants.ILLEGAL_PROPERTIES_TABLE_KEY_NAMES.Contains(propertyKey))
-            {
-                throw new Exception("Tried to add ilegal key to the properties table");
-            }
-            //TODO do some sort of type management
-            var cmd = GetInsertCommand(Constants.SQLTableType.Properties, new Message(new Dictionary<string, object>()
-            {
-                {NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY, objectId},
-                {NusysConstants.PROPERTIES_STRING_VALUE_COLUMN_KEY, value},
-                {NusysConstants.PROPERTIES_KEY_COLUMN_KEY, propertyKey},
-            }));
-            var successInt = cmd.ExecuteNonQuery();
-            return successInt > 0;
-        }
 
         /// <summary>
         /// returns the contentDataModel, if any, of the specified contentDataModelId.  
@@ -308,7 +285,7 @@ namespace NusysServer
         {
             //get SQl Command from query args
             var sqlQuery = new SQLSelectQuery(new SingleTable(Constants.SQLTableType.Content), 
-                new SqlSelectQueryEquals(Constants.SQLTableType.Content, NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY,contentDataModelId));
+                new SqlQueryEquals(Constants.SQLTableType.Content, NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY,contentDataModelId));
 
             //execute query command
             var executeMessages = sqlQuery.ExecuteCommand();
@@ -366,72 +343,72 @@ namespace NusysServer
             return messages;
         }
 
-        /// <summary>
-        /// creates an insert command for the table specified
-        /// </summary>
-        /// <param name="tableType"></param>
-        /// <param name="columnValueMessage"></param>
-        /// <returns></returns>
-        private SqlCommand GetInsertCommand (Constants.SQLTableType tableType, Message columnValueMessage)
-        {
-            var cleanedMessage = Constants.GetCleanedMessageForDatabase(columnValueMessage,tableType);
-            if (!cleanedMessage.Any())
-            {
-                throw new Exception("didn't find any valid keys in requested sql insert command");
-            }
-            var sqlStatement = "INSERT INTO " + Constants.GetTableName(tableType) + " ";
-            var columnNames = "(";
-            var values = "(";
-            int i = 0;
-            foreach (var kvp in cleanedMessage)
-            {
-                if (i == 0)
-                {
-                    columnNames = columnNames + kvp.Key;
-                    values = values + "'"+kvp.Value+"'";
-                }
-                else
-                {
-                    columnNames = columnNames + ", " + kvp.Key;
-                    values = values + ", " + "'" + kvp.Value + "'";
-                }
-                i++;
-            }
-            columnNames = columnNames + ")";
-            values = values + ")";
-            sqlStatement = sqlStatement + columnNames + " VALUES " + values + ";";
-            return MakeCommand(sqlStatement);
-        }
+        ///// <summary>
+        ///// creates an insert command for the table specified
+        ///// </summary>
+        ///// <param name="tableType"></param>
+        ///// <param name="columnValueMessage"></param>
+        ///// <returns></returns>
+        //private SqlCommand GetInsertCommand (Constants.SQLTableType tableType, Message columnValueMessage)
+        //{
+        //    var cleanedMessage = Constants.GetCleanedMessageForDatabase(columnValueMessage,tableType);
+        //    if (!cleanedMessage.Any())
+        //    {
+        //        throw new Exception("didn't find any valid keys in requested sql insert command");
+        //    }
+        //    var sqlStatement = "INSERT INTO " + Constants.GetTableName(tableType) + " ";
+        //    var columnNames = "(";
+        //    var values = "(";
+        //    int i = 0;
+        //    foreach (var kvp in cleanedMessage)
+        //    {
+        //        if (i == 0)
+        //        {
+        //            columnNames = columnNames + kvp.Key;
+        //            values = values + "'"+kvp.Value+"'";
+        //        }
+        //        else
+        //        {
+        //            columnNames = columnNames + ", " + kvp.Key;
+        //            values = values + ", " + "'" + kvp.Value + "'";
+        //        }
+        //        i++;
+        //    }
+        //    columnNames = columnNames + ")";
+        //    values = values + ")";
+        //    sqlStatement = sqlStatement + columnNames + " VALUES " + values + ";";
+        //    return MakeCommand(sqlStatement);
+        //}
         
-        /// <summary>
-        /// This returns an sql delete command where either all or any (depending on the delete operator passed in) 
-        /// of the key value pairs of columnValueMessage is is contained in the table.
-        /// </summary>
-        /// <param name="tableType"></param>
-        /// <param name="columnValueMessage"></param>
-        /// <param name="deleteOperator"></param>
-        /// <returns></returns>
-        private SqlCommand GetDeleteCommand(Constants.SQLTableType tableType, Message columnValueMessage, Constants.Operator deleteOperator )
-        {
-            var cleanedMessage = Constants.GetCleanedMessageForDatabase(columnValueMessage, tableType);
-            var deleteOperatorString = deleteOperator.ToString();
-            var deleteStringCmd = "DELETE FROM " + Constants.GetTableName(tableType) + " WHERE ";
-            int i = 0;
-            foreach (var kvp in cleanedMessage)
-            {
-                if (i == 0)
-                {
-                    deleteStringCmd = deleteStringCmd + kvp.Key + " = '" + kvp.Value + "' ";
-                }
-                else
-                {
-                    deleteStringCmd = deleteStringCmd + deleteOperatorString + kvp.Key + " = '" + kvp.Value + "' ";
-                }
-                i++;
-            }
-            deleteStringCmd = deleteStringCmd + ";";
-            return MakeCommand(deleteStringCmd);
-        }
+        ///// <summary>
+        ///// This returns an sql delete command where either all or any (depending on the delete operator passed in) 
+        ///// of the key value pairs of columnValueMessage is is contained in the table.
+        ///// </summary>
+        ///// <param name="tableType"></param>
+        ///// <param name="columnValueMessage"></param>
+        ///// <param name="deleteOperator"></param>
+        ///// <returns></returns>
+        //private SqlCommand GetDeleteCommand(Constants.SQLTableType tableType, Message columnValueMessage, Constants.Operator deleteOperator )
+        //{
+        //    var cleanedMessage = Constants.GetCleanedMessageForDatabase(columnValueMessage, tableType);
+        //    var deleteOperatorString = deleteOperator.ToString();
+        //    var deleteStringCmd = "DELETE FROM " + Constants.GetTableName(tableType) + " WHERE ";
+        //    int i = 0;
+        //    foreach (var kvp in cleanedMessage)
+        //    {
+        //        if (i == 0)
+        //        {
+        //            deleteStringCmd = deleteStringCmd + kvp.Key + " = '" + kvp.Value + "' ";
+        //        }
+        //        else
+        //        {
+        //            deleteStringCmd = deleteStringCmd + deleteOperatorString + kvp.Key + " = '" + kvp.Value + "' ";
+        //        }
+        //        i++;
+        //    }
+        //    deleteStringCmd = deleteStringCmd + ";";
+        //    return MakeCommand(deleteStringCmd);
+        //}
     }
 
 }
