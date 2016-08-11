@@ -12,15 +12,11 @@ namespace NuSysApp
 { 
     public class LinksController
     {
-        /// <summary>
-        /// Just to map a linkable id to the linkable itself
-        /// </summary>
+        //Just to map a linkable id to the linkable itself
         private ConcurrentDictionary<string,ILinkable> _linkableIdToLinkableController = new ConcurrentDictionary<string, ILinkable>();
 
-        /// <summary>
-        /// A content ID to a list of the ids of linkables that are instances of that id
-        /// aka returns all aliases of a content
-        /// </summary>
+        //A content ID to a list of the ids of linkables that are instances of that id
+        //aka returns all aliases of a content
         private ConcurrentDictionary<string,HashSet<string>> _contentIdToLinkableIds = new ConcurrentDictionary<string, HashSet<string>>();
 
         //LibraryElementModel ID to List of LinkLibraryElementModel ID's for links that are attached to it
@@ -317,7 +313,7 @@ namespace NuSysApp
                 var allContent = SessionController.Instance.ActiveFreeFormViewer.AllContent;
 
 
-                BezierLinkView view = new BezierLinkView(vm, true);
+                BezierLinkView view = new BezierLinkView(vm, false);
 
                 var collectionViewModel =
                     allContent.FirstOrDefault(item => ((item as GroupNodeViewModel)?.LibraryElementId == oneParentCollectionId)) as GroupNodeViewModel;

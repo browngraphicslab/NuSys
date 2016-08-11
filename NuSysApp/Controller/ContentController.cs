@@ -119,10 +119,6 @@ namespace NuSysApp
             return null;
         }
 
-        /// <summary>
-        /// Add a newly added library element model to any controllers. i.e. regionsController, linksController
-        /// </summary>
-        /// <param name="model"></param>
         private void AddModelToControllers(LibraryElementModel model)
         {
 
@@ -138,7 +134,6 @@ namespace NuSysApp
                         LinkLibraryElementController;
                 Debug.Assert(linkController != null);
                 SessionController.Instance.LinksController.AddLinkLibraryElementController(linkController);
-                SessionController.Instance.LinksController.CreateVisualLinks(linkController);
             }
         }
 

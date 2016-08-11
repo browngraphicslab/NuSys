@@ -13,6 +13,16 @@ namespace NuSysApp
 {
     public class RegionLibraryElementController : LibraryElementController
     {
+        public event EventHandler<string> TitleChanged;
+        public delegate void SelectHandler(RegionLibraryElementController regionLibraryElementController);
+        public event SelectHandler OnSelect;
+        public delegate void DeselectHandler(RegionLibraryElementController regionLibraryElementController);
+        public event DeselectHandler OnDeselect;
+        public event EventHandler<LinkLibraryElementController> LinkAdded;
+        public event EventHandler<string> LinkRemoved;
+        public delegate void MetadataChangedEventHandler(object source);
+        public event MetadataChangedEventHandler MetadataChanged;
+
         public Region RegionModel
         {
             get
@@ -22,9 +32,41 @@ namespace NuSysApp
             }
         }
 
+
+        private bool _selected;
         public RegionLibraryElementController(Region model): base(model)
         {
 
+        }
+
+
+
+        //public bool AddMetadata(MetadataEntry entry)
+        //{
+        //    if (entry.Values==null || string.IsNullOrEmpty(entry.Key) || string.IsNullOrWhiteSpace(entry.Key))
+        //        return false;
+        //    if (Model.Metadata.ContainsKey(entry.Key))
+        //    {
+        //        if (entry.Mutability==MetadataMutability.IMMUTABLE)//weird syntax in case we want to change mutability to an enum eventually
+        //        {
+        //            return false;
+        //        }
+        //        Model.Metadata.Remove(entry.Key);
+        //    }
+        //    Model.Metadata.Add(entry.Key,entry);
+        //    return true;
+        //}
+
+        public void Select()
+        {
+            _selected = true;
+            OnSelect?.Invoke(this);
+        }
+
+        public void Deselect()
+        {
+            _selected = false;
+            OnDeselect?.Invoke(this);
         }
 
         /// <summary>
