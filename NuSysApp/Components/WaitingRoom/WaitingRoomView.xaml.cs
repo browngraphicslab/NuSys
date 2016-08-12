@@ -95,6 +95,7 @@ namespace NuSysApp
 
         private async void Init()
         {
+
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             try
             {
