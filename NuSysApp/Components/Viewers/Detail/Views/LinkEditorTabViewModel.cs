@@ -46,7 +46,7 @@ namespace NuSysApp
         {
             foreach (var item in new HashSet<LibraryItemTemplate>(LibraryElements))
             {
-                if (item.ContentID == element.LibraryElementId)
+                if (item.LibraryElementId == element.LibraryElementId)
                 {
                     LibraryElements.Remove(item);
                 }

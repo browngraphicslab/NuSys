@@ -59,7 +59,7 @@ namespace NuSysApp
 
                     foreach (var item in ItemList)
                     {
-                        if (item.ContentID == content.LibraryElementId)
+                        if (item.LibraryElementId == content.LibraryElementId)
                         {
                             toRemove.Add(item);
                         }
@@ -140,7 +140,7 @@ namespace NuSysApp
             {
                 return;
             }
-            var hash = new HashSet<string>(ItemList.Select(item => item.ContentID));
+            var hash = new HashSet<string>(ItemList.Select(item => item.LibraryElementId));
             foreach (var item in _controllerList)
             {
                 if (valids.Contains(item.LibraryElementModel.LibraryElementId) && !hash.Contains(item.LibraryElementModel.LibraryElementId))

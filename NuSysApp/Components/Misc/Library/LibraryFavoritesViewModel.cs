@@ -102,7 +102,7 @@ namespace NuSysApp
                 //{
                     foreach (var item in ItemList.ToList())
                     {
-                        if (item.ContentID == content.LibraryElementId)
+                        if (item.LibraryElementId == content.LibraryElementId)
                         {
                             ItemList.Remove(item);
                         }

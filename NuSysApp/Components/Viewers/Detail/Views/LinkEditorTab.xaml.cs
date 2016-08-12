@@ -55,8 +55,8 @@ namespace NuSysApp
 
             var vm = DataContext as LinkEditorTabViewModel;
 
-            Debug.Assert(content != null && content.ContentID != null);
-            vm.CreateLink(content.ContentID);
+            Debug.Assert(content != null && content.LibraryElementId != null);
+            vm.CreateLink(content.LibraryElementId);
         }
 
         private void SortLinkedTo_OnClick(object sender, RoutedEventArgs e)
@@ -100,7 +100,7 @@ namespace NuSysApp
                         .CurrentElementController.LibraryElementModel.LibraryElementId;
                 // filter the data shown by the autosuggest box to only library elements whose titles contain the text entered
                 // and whose library element ids don't match the id of the library element currently shown in the detail veiwer
-                var filteredData = (DataContext as LinkEditorTabViewModel).LibraryElements.Where(t => t.Title.ToLowerInvariant().Contains(sender.Text.ToLowerInvariant()) && t.ContentID != libraryElementId);
+                var filteredData = (DataContext as LinkEditorTabViewModel).LibraryElements.Where(t => t.Title.ToLowerInvariant().Contains(sender.Text.ToLowerInvariant()) && t.LibraryElementId != libraryElementId);
                 // set the LinkToBox.ItemsSource to the filtered data to update the suggestions
                 LinkToBox.ItemsSource = filteredData;
             }
@@ -130,7 +130,7 @@ namespace NuSysApp
                 //or null if no items match the search string
                 var item = (DataContext as LinkEditorTabViewModel)?.LibraryElements.FirstOrDefault(t =>
                                      t.Title.ToLowerInvariant().Contains(args.QueryText.ToLowerInvariant()) &&
-                                     t.ContentID != libraryElementId);
+                                     t.LibraryElementId != libraryElementId);
                 if (item != null)
                 {
                     // set the text to the item's title, and enable the createLinkButton
