@@ -393,7 +393,25 @@ namespace NusysIntermediate
         public static readonly string DELETE_METADATA_REQUEST_METADATA_KEY = "key";
         #endregion DeleteMetadataRequest
 
-            #region CreateNewPresentationLinkRequest
+        #region UpdateMetadataRequest
+        /// <summary>
+        /// key in message for library id of the element that the metadata to be edited belongs to
+        /// </summary>
+        public static readonly string UPDATE_METADATA_REQUEST_LIBRARY_ID_KEY = "library_id";
+
+        /// <summary>
+        /// key in message for signifying which entry should be edited
+        /// </summary>
+        public static readonly string UPDATE_METADATA_REQUEST_METADATA_KEY = "key";
+
+        /// <summary>
+        /// key in message for signifying the new value for the entry
+        /// </summary>
+        public static readonly string UPDATE_METADATA_REQUEST_METADATA_VALUE = "value";
+        
+        #endregion UpdateMetadataRequest
+
+        #region CreateNewPresentationLinkRequest
         /// <summary>
         /// The key for sending the link id for the create new presentation link request
         /// </summary>
@@ -464,7 +482,7 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY = "returned_presentation_link_model";
         #endregion UpdatePresentationLinkRequest
-
+        
 
         #region ChatRequest
 
@@ -1082,6 +1100,8 @@ namespace NusysIntermediate
             CreateNewPresentationLinkRequest,
             DeletePresentationLinkRequest,
             UpdatePresentationLinkRequest,
+            UpdateMetadataEntryRequest,
+            
             /// <summary>
             /// this request type is used to create a search over the library elements.  
             /// </summary>

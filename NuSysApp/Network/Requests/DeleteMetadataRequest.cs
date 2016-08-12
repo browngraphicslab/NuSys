@@ -8,13 +8,20 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    class DeleteMetadataRequest : Request
+    public class DeleteMetadataRequest : Request
     {
         public DeleteMetadataRequest(Message message) : base(NusysConstants.RequestType.DeleteMetadataRequest, message)
         {
 
         }
-
+        /// <summary>
+        /// Suggested constuctor. 
+        /// Usage:
+        /// Create Request 
+        /// Await Execution
+        /// Call DeleteLocally on the request
+        /// </summary>
+        /// <param name="requestArgs"></param>
         public DeleteMetadataRequest(DeleteMetadataRequestArgs requestArgs) : base(requestArgs, NusysConstants.RequestType.DeleteMetadataRequest)
         {
 
