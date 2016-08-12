@@ -170,7 +170,7 @@ namespace NuSysApp
             {
                 Debug.WriteLine("Debounce dictionary had a previous 'contentId' value.  It was overritten with the original ID");
             }
-            d[_updateLibraryElement ? "contentId":NusysConstants.ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY] = _id;
+            d[_updateLibraryElement ? NusysConstants.UPDATE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID:NusysConstants.ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY] = _id;
             var message = new Message(d);
             if (d.Count > 1)
             {

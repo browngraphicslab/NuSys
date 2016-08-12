@@ -80,6 +80,10 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// use this as a getter of the entire set of metadata for an object.
+        /// The 'automatic metadata' will be found here
+        /// </summary>
         public Dictionary<string, MetadataEntry> FullMetadata
         {
             get
@@ -155,7 +159,7 @@ namespace NuSysApp
             TitleChanged?.Invoke(this, title);
             if (!_blockServerInteraction)
             {
-                _debouncingDictionary.Add("title", title);
+                _debouncingDictionary.Add(NusysConstants.LIBRARY_ELEMENT_TITLE_KEY, title);
             }
         }
 
@@ -169,7 +173,7 @@ namespace NuSysApp
             Favorited?.Invoke(this, favorited);
             if (!_blockServerInteraction)
             {
-                _debouncingDictionary.Add("favorited", favorited);
+                _debouncingDictionary.Add(NusysConstants.LIBRARY_ELEMENT_FAVORITED_KEY, favorited);
             }
         }
 
@@ -312,7 +316,7 @@ namespace NuSysApp
             KeywordsChanged?.Invoke(this, keywords);
             if (!_blockServerInteraction)
             {
-                _debouncingDictionary.Add("keywords", keywords);
+                _debouncingDictionary.Add(NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY, keywords);
             }
         }
 
@@ -326,7 +330,7 @@ namespace NuSysApp
             KeywordsChanged?.Invoke(this, _libraryElementModel.Keywords);
             if (!_blockServerInteraction)
             {
-                _debouncingDictionary.Add("keywords", _libraryElementModel.Keywords);
+                _debouncingDictionary.Add(NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY, _libraryElementModel.Keywords);
             }
         }
 
@@ -348,7 +352,7 @@ namespace NuSysApp
             KeywordsChanged?.Invoke(this, _libraryElementModel.Keywords);
             if (!_blockServerInteraction)
             {
-                _debouncingDictionary.Add("keywords", _libraryElementModel.Keywords);
+                _debouncingDictionary.Add(NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY, _libraryElementModel.Keywords);
             }
         }
 
@@ -366,15 +370,15 @@ namespace NuSysApp
         {
             get
             {
-                if (LibraryElementModel.LargeIconUrl != null)
+                if (!string.IsNullOrEmpty(LibraryElementModel.LargeIconUrl))
                 {
-                    return new Uri("http://" + WaitingRoomView.ServerName + "/" +LibraryElementModel.LargeIconUrl);
+                    return new Uri(LibraryElementModel.LargeIconUrl);
                 }
                 switch (LibraryElementModel.Type)
                 {
                     case NusysConstants.ElementType.Image:
                     case NusysConstants.ElementType.Video:
-                        return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_large.jpg");
+                        return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_large.jpg");//TODO just had default icons 
                         break;
                     case NusysConstants.ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
@@ -403,15 +407,15 @@ namespace NuSysApp
         {
             get
             {
-                if (LibraryElementModel.MediumIconUrl != null)
+                if (!string.IsNullOrEmpty(LibraryElementModel.MediumIconUrl))
                 {
-                    return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.MediumIconUrl);
+                    return new Uri(LibraryElementModel.MediumIconUrl);
                 }
                 switch (LibraryElementModel.Type)
                 {
                     case NusysConstants.ElementType.Image:
                     case NusysConstants.ElementType.Video:
-                        return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_medium.jpg");
+                        return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_medium.jpg");//TODO just had default icons 
                         break;
                     case NusysConstants.ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
@@ -441,15 +445,15 @@ namespace NuSysApp
         {
             get
             {
-                if (LibraryElementModel.SmallIconUrl != null)
+                if (!string.IsNullOrEmpty(LibraryElementModel.SmallIconUrl))
                 {
-                    return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.SmallIconUrl);
+                    return new Uri(LibraryElementModel.SmallIconUrl);
                 }
                 switch (LibraryElementModel.Type)
                 {
                     case NusysConstants.ElementType.Image:
                     case NusysConstants.ElementType.Video:
-                        return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_small.jpg");
+                        return new Uri("http://" + WaitingRoomView.ServerName + "/" + LibraryElementModel.LibraryElementId + "_thumbnail_small.jpg");//TODO just had default icons 
                         break;
                     case NusysConstants.ElementType.PDF:
                         return new Uri("ms-appx:///Assets/library_thumbnails/pdf.png");
@@ -491,25 +495,25 @@ namespace NuSysApp
             {
                 SetContentData(message.GetString("data"));
             }
-            if (message.ContainsKey("title"))
+            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_TITLE_KEY))
             {
-                SetTitle(message.GetString("title"));
+                SetTitle(message.GetString(NusysConstants.LIBRARY_ELEMENT_TITLE_KEY));
             }
-            if (message.ContainsKey("keywords"))
+            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY))
             {
-                SetKeywords(message.GetHashSet<Keyword>("keywords"));
+                SetKeywords(message.GetHashSet<Keyword>(NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY));
             }
-            if (message.GetString("small_thumbnail_url") != null)
+            if (message.GetString(NusysConstants.LIBRARY_ELEMENT_SMALL_ICON_URL_KEY) != null)
             {
-                LibraryElementModel.SmallIconUrl = message.GetString("small_thumbnail_url");
+                LibraryElementModel.SmallIconUrl = message.GetString(NusysConstants.LIBRARY_ELEMENT_SMALL_ICON_URL_KEY);
             }
-            if (message.GetString("medium_thumbnail_url") != null)
+            if (message.GetString(NusysConstants.LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY) != null)
             {
-                LibraryElementModel.MediumIconUrl = message.GetString("medium_thumbnail_url");
+                LibraryElementModel.MediumIconUrl = message.GetString(NusysConstants.LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY);
             }
-            if (message.GetString("large_thumbnail_url") != null)
+            if (message.GetString(NusysConstants.LIBRARY_ELEMENT_LARGE_ICON_URL_KEY) != null)
             {
-                LibraryElementModel.LargeIconUrl = message.GetString("large_thumbnail_url");
+                LibraryElementModel.LargeIconUrl = message.GetString(NusysConstants.LIBRARY_ELEMENT_LARGE_ICON_URL_KEY);
             }
             if (message.GetString("creator_user_id") != null)
             {

@@ -87,6 +87,9 @@ namespace NusysServer
                     case NusysConstants.RequestType.GetAllLibraryElementsRequest:
                         requestHandler = new GetAllLibraryElementsRequestHandler();
                         break;
+                    case NusysConstants.RequestType.UpdateLibraryElementModelRequest:
+                        requestHandler = new UpdateLibraryElementRequestHandler();
+                        break;
                     default:
                         requestHandler = null;
                         return false;

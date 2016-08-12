@@ -110,8 +110,8 @@ namespace NuSysApp
             Model.Height = height;
             SizeChanged?.Invoke(this, width, height);
             FireAnchorChanged();
-            _debouncingDictionary.Add("width", width);
-            _debouncingDictionary.Add("height", height);
+            _debouncingDictionary.Add(NusysConstants.ALIAS_SIZE_WIDTH_KEY, width);
+            _debouncingDictionary.Add(NusysConstants.ALIAS_SIZE_HEIGHT_KEY, height);
         }
 
         private void FireAnchorChanged()
@@ -129,8 +129,8 @@ namespace NuSysApp
             PositionChanged?.Invoke(this, x, y, x - px, y - py);
             FireAnchorChanged();
 
-            _debouncingDictionary.Add("x", x);
-            _debouncingDictionary.Add("y", y);
+            _debouncingDictionary.Add(NusysConstants.ALIAS_LOCATION_X_KEY, x);
+            _debouncingDictionary.Add(NusysConstants.ALIAS_LOCATION_Y_KEY, y);
         }
 
         public void SetAlpha(double alpha)
@@ -211,6 +211,15 @@ namespace NuSysApp
             return dic;
         }
 
+        /// <summary>
+        /// This method will move this alias to a different collection.  
+        /// Give it LibaryElementId of the new collection you want to move it to.
+        /// You can also pass in the x and y coordinates for it in the new collection
+        /// </summary>
+        /// <param name="newCollectionLibraryID"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         public virtual async Task RequestMoveToCollection(string newCollectionLibraryID, double x=50000, double y=50000)
         {
             var newElementArgs = new NewElementRequestArgs();
@@ -245,6 +254,7 @@ namespace NuSysApp
         {
             get
             {
+                Debug.Assert(Model.LibraryId != null);
                 return SessionController.Instance.ContentController.GetLibraryElementController(Model.LibraryId);
             }
         }
@@ -252,6 +262,7 @@ namespace NuSysApp
         {
             get
             {
+                Debug.Assert(LibraryElementController != null);
                 return LibraryElementController?.LibraryElementModel;
             }
         }
@@ -276,29 +287,23 @@ namespace NuSysApp
 
         public virtual async Task UnPack(Message props)
         {
-            if (props.ContainsKey("x") || props.ContainsKey("y"))
+            if (props.ContainsKey(NusysConstants.ALIAS_LOCATION_X_KEY) || props.ContainsKey(NusysConstants.ALIAS_LOCATION_Y_KEY))
             {
                 //if either "x" or "y" are not found in props, x/y stays the current value stored in Model.X/Y
-                var x = props.GetDouble("x", this.Model.X);
-                var y = props.GetDouble("y", this.Model.Y);
+                var x = props.GetDouble(NusysConstants.ALIAS_LOCATION_X_KEY, this.Model.X);
+                var y = props.GetDouble(NusysConstants.ALIAS_LOCATION_Y_KEY, this.Model.Y);
                 Model.X = x;
                 Model.Y = y;
 
                 PositionChanged?.Invoke(this, x,y);
                 FireAnchorChanged();
             }
-            if (props.ContainsKey("width") || props.ContainsKey("height"))
+            if (props.ContainsKey(NusysConstants.ALIAS_SIZE_WIDTH_KEY) || props.ContainsKey(NusysConstants.ALIAS_SIZE_HEIGHT_KEY))
             {
-                var width = props.GetDouble("width", this.Model.Width);
-                var height = props.GetDouble("height", this.Model.Height);
+                var width = props.GetDouble(NusysConstants.ALIAS_SIZE_WIDTH_KEY, this.Model.Width);
+                var height = props.GetDouble(NusysConstants.ALIAS_SIZE_HEIGHT_KEY, this.Model.Height);
                 SizeChanged?.Invoke(this,width,height);
                 FireAnchorChanged();
-            }
-
-            if (props.ContainsKey("region"))
-            {
-                string region = props.Get("region");
-                //RegionChanged?.Invoke(this, region);
             }
         }
 

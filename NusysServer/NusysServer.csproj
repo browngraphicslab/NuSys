@@ -192,6 +192,7 @@
     <Compile Include="RequestHandlers\GetEntireWorkspaceRequestHandler.cs" />
     <Compile Include="RequestHandlers\RequestHandler.cs" />
     <Compile Include="RequestHandlers\SearchRequestHandler.cs" />
+    <Compile Include="RequestHandlers\UpdateLibraryElementRequestHandler.cs" />
     <Compile Include="StartUp.cs" />
     <Compile Include="Static_Classes\ContentController.cs" />
     <Compile Include="Static_Classes\DocumentComparison\ComparisonController.cs" />
