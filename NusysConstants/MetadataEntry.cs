@@ -20,10 +20,8 @@ namespace NusysIntermediate
             set
             {
                 _values = value; 
-                
             } }       
         public MetadataMutability Mutability { get; set; }
-        //public Windows.UI.Xaml.Media.SolidColorBrush Brush { get; set; }
 
         /// <summary>
         /// Creates a meta data entry with a key, value, mutability, and brush (based on mutability)
@@ -36,15 +34,6 @@ namespace NusysIntermediate
             Key = key;
             Values = values;
             Mutability = mutability;
-            /*
-            Mutability = MetadataMutability.IMMUTABLE;
-            if (mutability)
-            {
-                Mutability = MetadataMutability.MUTABLE; 
-            }*/
-
-
-
         }
     }
 

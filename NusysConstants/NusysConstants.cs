@@ -352,7 +352,29 @@ namespace NusysIntermediate
                 /// Used during a region libraryElementRequest.  
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY = "link_library_element_model_id_out";
-                #endregion NewLibraryElementRequest
+        #endregion NewLibraryElementRequest
+
+        #region CreateNewMetadataRequest
+        /// <summary>
+        /// key in message for library id of the element that the metadata belongs to
+        /// </summary>
+        public static readonly string CREATE_NEW_METADATA_REQUEST_LIBRARY_ID_KEY = "library_id";
+
+        /// <summary>
+        /// key in message for sending the metadata key
+        /// </summary>
+        public static readonly string CREATE_NEW_METADATA_REQUEST_METADATA_KEY_KEY = "key";
+
+        /// <summary>
+        /// key in message for sending the metadata value
+        /// </summary>
+        public static readonly string CREATE_NEW_METADATA_REQUEST_METADATA_VALUE_KEY = "value";
+
+        /// <summary>
+        /// key in message for sending the metadata key
+        /// </summary>
+        public static readonly string CREATE_NEW_METADATA_REQUEST_METADATA_MUTABILITY_KEY = "mutability";
+        #endregion CreateNewMetadataRequest
 
         #region ChatRequest
 

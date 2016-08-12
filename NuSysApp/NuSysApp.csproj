@@ -613,11 +613,13 @@
     <Compile Include="Network\NuSysNetworkSession.cs" />
     <Compile Include="Network\Requests\ChatRequest.cs" />
     <Compile Include="Network\Requests\CreateNewContentRequest.cs" />
+    <Compile Include="Network\Requests\CreateNewMetadataRequest.cs" />
     <Compile Include="Network\Requests\GetAllLibraryElementsRequest.cs" />
     <Compile Include="Network\Requests\GetContentDataModelRequest.cs" />
     <Compile Include="Network\Requests\GetEntireWorkspaceRequest.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewLinkLibraryElementRequestArgs.cs" />
+    <Compile Include="Network\Requests\RequestArgs\CreateNewMetadataRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewPDFRegionLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewRectangleRegionLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewRegionLibraryElementRequestArgs.cs" />
