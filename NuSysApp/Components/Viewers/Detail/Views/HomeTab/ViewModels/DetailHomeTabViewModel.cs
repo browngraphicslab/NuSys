@@ -9,11 +9,12 @@ namespace NuSysApp
 {
     public abstract class DetailHomeTabViewModel : BaseINPC
     {
-        private LibraryElementController _libraryElementController;
         private bool _editable;
 
         public delegate void TitleChangedEventHandler(object source, string title);
         public event TitleChangedEventHandler TitleChanged;
+
+        public LibraryElementController LibraryElementController { get; }
 
         public bool Editable
         {
@@ -27,7 +28,7 @@ namespace NuSysApp
         public DetailHomeTabViewModel(LibraryElementController controller)
         {
 
-            _libraryElementController = controller;
+            LibraryElementController = controller;
             controller.TitleChanged += OnTitleChanged;
         }
 
