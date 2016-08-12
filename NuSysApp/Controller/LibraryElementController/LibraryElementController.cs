@@ -14,7 +14,7 @@ namespace NuSysApp
     /// Takes care of all the modifying and events invoking for the library element model
     /// Should manage keeping the library element model up to date as well as updating the server
     /// </summary>
-    public class LibraryElementController : IMetadatable, ILinkTabable
+    public class LibraryElementController : IMetadatable
     {
         protected DebouncingDictionary _debouncingDictionary;
         private LibraryElementModel _libraryElementModel;

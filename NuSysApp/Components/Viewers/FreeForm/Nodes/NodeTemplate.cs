@@ -313,72 +313,55 @@ namespace NuSysApp
             
          
 
-            if (_currenDragMode == DragMode.Link || _currenDragMode == DragMode.PresentationLink)
+            if (_currenDragMode == DragMode.Link)
+            {
+                var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
+                var hitsStartElements = hitsStart.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementViewModel).ToList();
+                var hitStartRegions = hitsStart.Where(uiElem => (uiElem as FrameworkElement).DataContext is RegionViewModel).ToList();
+                var vm = (ElementViewModel)DataContext;
+                var createNewLinkLibraryElementRequestArgs = new CreateNewLinkLibraryElementRequestArgs();
+                createNewLinkLibraryElementRequestArgs.LibraryElementModelInId = vm.LibraryElementId;
+                createNewLinkLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Link;
+
+                if (hitStartRegions.Any()){ // If it hits a region
+                    var first = (FrameworkElement)hitStartRegions.First();
+                    var dc = (RegionViewModel)first.DataContext;
+                    createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId = dc.RegionLibraryElementController.LibraryElementModel.LibraryElementId;
+                    createNewLinkLibraryElementRequestArgs.Title = $"Link from {vm.Model.Title} to {dc.Model.Title}";
+                }
+                else if (hitsStartElements.Any()) // if it hits an element
+                {
+                    var first = (FrameworkElement)hitsStartElements.First();
+                    var dc = (ElementViewModel)first.DataContext;
+
+                    createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId = dc.LibraryElementId;
+                    createNewLinkLibraryElementRequestArgs.Title = $"Link from {vm.Model.Title} to {dc.Model.Title}";
+                } else
+                {
+                    ReleasePointerCaptures();
+                    (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta));
+                    return; // just in case it doesn't actually hit anything
+                }
+                // if the link is between two different libary element models then execute the create link request
+                if (createNewLinkLibraryElementRequestArgs.LibraryElementModelInId !=
+                    createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId)
+                {
+                    var contentRequestArgs = new CreateNewContentRequestArgs();
+                    contentRequestArgs.LibraryElementArgs = createNewLinkLibraryElementRequestArgs;
+                    var request = new CreateNewContentRequest(contentRequestArgs);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                    request.AddReturnedLibraryElementToLibrary();
+                }
+            }
+            if (_currenDragMode == DragMode.PresentationLink)
             {
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
                 hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementViewModel).ToList();
-
-                var hitsStart2 = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
-                hitsStart2 = hitsStart2.Where(uiElem => (uiElem as FrameworkElement).DataContext is RegionViewModel).ToList();
-                
-                if (hitsStart.Any()){
-                    var first = (FrameworkElement)hitsStart.First();
-                    var dc = (ElementViewModel)first.DataContext;
-                    var vm = (ElementViewModel)DataContext;
-
-                    if (vm == dc || (dc is FreeFormViewerViewModel) || dc is LinkViewModel)
-                    {
-                        return;
-                    }
-
-                    if (hitsStart2.Any()){
-                        foreach (var element in hitsStart2)
-                        {
-                            if ((element as FrameworkElement).DataContext is RegionViewModel) // If there is a region under the drag
-                            {
-                                if (_currenDragMode == DragMode.PresentationLink)
-                                {
-                                    AddPresentationLink(dc?.Id, vm?.Id);
-                                }
-                                else
-                                {
-                                    var region = element as FrameworkElement;
-                                    var regiondc = region.DataContext as RegionViewModel;
-                                    var m = new Message();
-                                    m["id2"] = regiondc.RegionLibraryElementController.LibraryElementModel.LibraryElementId;
-                                    m["id1"] = vm.Controller.LibraryElementController.ContentId;
-                                    await SessionController.Instance.LinksController.RequestLink(m);
-                                    UITask.Run(delegate { vm.Controller.UpdateCircleLinks(); });
-                                    break;
-                                    //     vm.LibraryElementController.RequestVisualLinkTo();
-                                }
-                            }          
-                        }
-                    }
-                    else
-                    {
-                        if (_currenDragMode == DragMode.Link)
-                        {
-                            var createNewLinkLibraryElementRequestArgs = new CreateNewLinkLibraryElementRequestArgs();
-                            createNewLinkLibraryElementRequestArgs.LibraryElementModelInId = vm.LibraryElementId;
-                            createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId = dc.LibraryElementId;
-                            createNewLinkLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Link;
-                            createNewLinkLibraryElementRequestArgs.Title = $"Link from {vm.Model.Title} to {dc.Model.Title}";
-
-                            var contentRequestArgs = new CreateNewContentRequestArgs();
-                            contentRequestArgs.LibraryElementArgs = createNewLinkLibraryElementRequestArgs;
-                            var request = new CreateNewContentRequest(contentRequestArgs);
-                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                            request.AddReturnedLibraryElementToLibrary();
-                        }
-                        if (_currenDragMode == DragMode.PresentationLink)
-                        {
-                            AddPresentationLink(dc?.Id,vm?.Id);
-                        }
-                    }
-                }
+                var first = (FrameworkElement)hitsStart.First();
+                var dc = (ElementViewModel)first.DataContext;
+                var vm = (ElementViewModel)DataContext;
+                AddPresentationLink(dc?.Id, vm?.Id);
             }
-
             ReleasePointerCaptures();
             (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta));
         }
