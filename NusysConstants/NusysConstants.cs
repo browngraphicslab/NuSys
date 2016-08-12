@@ -354,7 +354,7 @@ namespace NusysIntermediate
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY = "link_library_element_model_id_out";
         #endregion NewLibraryElementRequest
 
-        #region CreateNewMetadataRequest
+            #region CreateNewMetadataRequest
         /// <summary>
         /// key in message for library id of the element that the metadata belongs to
         /// </summary>
@@ -381,7 +381,7 @@ namespace NusysIntermediate
         public static readonly string CREATE_NEW_METADATA_REQUEST_RETURNED_METADATA_ENTRY_KEY = "metadata_entry";
         #endregion CreateNewMetadataRequest
 
-        #region DeleteMetadataRequest
+            #region DeleteMetadataRequest
         /// <summary>
         /// key in message for library id of the element that the metadata to be deleted belongs to
         /// </summary>
@@ -392,6 +392,34 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string DELETE_METADATA_REQUEST_METADATA_KEY = "key";
         #endregion DeleteMetadataRequest
+
+        #region CreateNewPresentationLinkRequest
+        /// <summary>
+        /// The key for sending the link id for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_ID_KEY = "link_id";
+
+        /// <summary>
+        /// The key for sending the link IN id for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_IN_ID_KEY = "link_in_element_id";
+
+        /// <summary>
+        /// The key for sending the link OUT id for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_OUT_ID_KEY = "link_out_element_id";
+
+        /// <summary>
+        /// The key for sending the parent collection id for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_PARENT_COLLECTION_ID_KEY = "parent_collection_id";
+
+        /// <summary>
+        /// The key for sending the annotation for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_ANNOTATION_KEY = "annotation";
+
+        #endregion CreateNewPresentationLinkRequest
 
         #region ChatRequest
 

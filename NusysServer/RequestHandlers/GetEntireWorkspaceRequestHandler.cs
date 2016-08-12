@@ -24,33 +24,9 @@ namespace NusysServer
             {
                 throw new Exception("The client has no id");
             }
-
-            //var selectQuery = CreateGetEntireWorkspaceSqlQuery(workspaceId);
-
-            var keys =
-                Constants.GetFullColumnTitles(Constants.SQLTableType.Content, NusysConstants.ACCEPTED_CONTENT_TABLE_KEYS)
-                    .Concat(Constants.GetFullColumnTitles(Constants.SQLTableType.Alias,
-                        NusysConstants.ALIAS_ACCEPTED_KEYS.Keys)).Concat(new List<string>() {NusysConstants.LIBRARY_ELEMENT_TYPE_KEY});
-
-            //var command = "SELECT "+string.Join(",",keys)+" FROM "+Constants.GetTableName(Constants.SQLTableType.Alias)+ " LEFT JOIN " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + " ON " + Constants.GetTableName(Constants.SQLTableType.Alias) + ".library_id = " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + ".library_id LEFT JOIN " + Constants.GetTableName(Constants.SQLTableType.Content) + " ON " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + ".content_id = " + Constants.GetTableName(Constants.SQLTableType.Content) + ".content_id WHERE " + Constants.GetTableName(Constants.SQLTableType.Alias) + ".parent_collection_id = '" + workspaceId+"'";
-            //var command = "SELECT "+string.Join(",",keys)+" FROM alias LEFT JOIN library_elements ON alias.library_id = library_elements.library_id LEFT JOIN contents ON library_elements.content_id = contents.content_id WHERE alias.parent_collection_id = '" + workspaceId+"'";
             
-            //var command = "WITH q AS (SELECT * FROM " + Constants.GetTableName(Constants.SQLTableType.Alias) +
-            //    " WHERE " + Constants.GetTableName(Constants.SQLTableType.Alias) + "." + NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY + " = '" + workspaceId + "' " + "UNION ALL SELECT m.* FROM " +
-            //    Constants.GetTableName(Constants.SQLTableType.Alias) + " m JOIN q ON m." + NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY + " = q." +
-            //    NusysConstants.ALIAS_LIBRARY_ID_KEY + ") SELECT q.*, " + Constants.GetTableName(Constants.SQLTableType.Properties) +
-            //    ".*, " + Constants.GetTableName(Constants.SQLTableType.Content) + ".*, " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + ".type FROM q LEFT JOIN " +
-            //    Constants.GetTableName(Constants.SQLTableType.LibraryElement) + " ON q." + NusysConstants.ALIAS_LIBRARY_ID_KEY + " = "
-            //    + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + "." + NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY + " LEFT JOIN " +
-            //    Constants.GetTableName(Constants.SQLTableType.Content) + " ON " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + "." + NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY + " = "
-            //    + Constants.GetTableName(Constants.SQLTableType.Content) + "." + NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY +
-            //    " LEFT JOIN " + Constants.GetTableName(Constants.SQLTableType.Properties) + " on " +
-            //    Constants.GetTableName(Constants.SQLTableType.Properties) + "." + NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY + " = q." + NusysConstants.ALIAS_ID_KEY + " WHERE q." + NusysConstants.ALIAS_ACCESS_KEY + " = '" + NusysConstants.AccessType.Public + "' OR q." + NusysConstants.ALIAS_ACCESS_KEY + " = '" + NusysConstants.AccessType.ReadOnly + "' OR q." + NusysConstants.ALIAS_CREATOR_ID_KEY + " = '" + userId + "'";
-
-
             var returnedMessages = ContentController.Instance.SqlConnector.ExecuteSelectQueryAsMessages(CreateGetEntireWorkspaceSqlQuery(workspaceId, userId, 2));
             
-
             PropertiesParser propertiesParser = new PropertiesParser();
             var concatPropertiesReturnedMessages = propertiesParser.ConcatMessageProperties(returnedMessages);
 
