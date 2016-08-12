@@ -357,7 +357,10 @@ namespace NuSysApp
                             createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId = dc.LibraryElementId;
                             createNewLinkLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Link;
                             createNewLinkLibraryElementRequestArgs.Title = $"Link from {vm.Model.Title} to {dc.Model.Title}";
-                            var request = new CreateNewLibraryElementRequest(createNewLinkLibraryElementRequestArgs);
+
+                            var contentRequestArgs = new CreateNewContentRequestArgs();
+                            contentRequestArgs.LibraryElementArgs = createNewLinkLibraryElementRequestArgs;
+                            var request = new CreateNewContentRequest(contentRequestArgs);
                             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                             request.AddReturnedLibraryElementToLibrary();
                         }

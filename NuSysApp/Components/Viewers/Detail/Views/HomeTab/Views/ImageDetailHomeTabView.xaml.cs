@@ -146,8 +146,8 @@ namespace NuSysApp
 
         private async void AddToCollection_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            LibraryElementModel element = SessionController.Instance.ContentController.GetLibraryElementModel(_libraryElementId);
-            if ((WaitingRoomView.InitialWorkspaceId == element.LibraryElementId) || (element.Type == NusysConstants.ElementType.Link))
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(_libraryElementId);
+            if ((WaitingRoomView.InitialWorkspaceId == controller.LibraryElementModel.LibraryElementId) || (controller.LibraryElementModel.Type == NusysConstants.ElementType.Link))
             {
                 e.Handled = true;
                 return;
@@ -166,7 +166,8 @@ namespace NuSysApp
 
             if (_x > SessionController.Instance.SessionView.MainCanvas.ActualWidth - SessionController.Instance.SessionView.DetailViewerView.ActualWidth) return;
 
-            await AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type, element.LibraryElementId);
+            await controller.AddElementAtPosition(r.Y, r.Y);
+            //await AddNode(new Point(r.X, r.Y), new Size(300, 300), element.Type, element.LibraryElementId);
         }
 
         public async Task AddNode(Point pos, Size size, NusysConstants.ElementType elementType, string libraryId)
@@ -197,6 +198,7 @@ namespace NuSysApp
                     dict["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
                     var request = new NewElementRequest(dict);
                     await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+
                 }
                 else
                 {

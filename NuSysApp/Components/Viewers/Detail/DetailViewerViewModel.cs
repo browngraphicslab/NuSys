@@ -281,7 +281,10 @@ namespace NuSysApp
                     {
                         continue;
                     }
-                    suggestedTags.AddRange(opposite.LibraryElementModel.Keywords.Select(key => key.Text));
+                    if(opposite?.LibraryElementModel?.Keywords != null)
+                    {
+                        suggestedTags.AddRange(opposite.LibraryElementModel.Keywords.Select(key => key.Text));
+                    }
                     foreach (var kvp in opposite.FullMetadata ?? new Dictionary<string, MetadataEntry>())
                     {
                         if (kvp.Key != "system_suggested_dates")
