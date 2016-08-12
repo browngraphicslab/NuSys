@@ -16,7 +16,10 @@ namespace NusysServer
             var message = GetRequestMessage(request);
 
             Debug.Assert(message.ContainsKey(NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_COLLECTION_ID_KEY));
+            Debug.Assert(message.ContainsKey(NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_USER_ID_KEY));
+
             var workspaceId = message.GetString(NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_COLLECTION_ID_KEY);
+            var userId = message.GetString(NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_USER_ID_KEY);
 
             //var selectQuery = CreateGetEntireWorkspaceSqlQuery(workspaceId);
 
@@ -37,7 +40,7 @@ namespace NusysServer
                 Constants.GetTableName(Constants.SQLTableType.Content) + " ON " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + "."+NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY+" = " 
                 + Constants.GetTableName(Constants.SQLTableType.Content) + "."+NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY+
                 " LEFT JOIN " + Constants.GetTableName(Constants.SQLTableType.Properties) + " on " +
-                Constants.GetTableName(Constants.SQLTableType.Properties) + "."+NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY+" = q."+NusysConstants.ALIAS_ID_KEY;
+                Constants.GetTableName(Constants.SQLTableType.Properties) + "."+NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY+" = q."+NusysConstants.ALIAS_ID_KEY + " WHERE q." + NusysConstants.ALIAS_ACCESS_KEY + " = " + NusysConstants.AccessType.Public + " OR q." + NusysConstants.ALIAS_ACCESS_KEY + " = " + NusysConstants.AccessType.ReadOnly + " OR q." + NusysConstants.ALIAS_CREATOR_ID_KEY + " = " + userId;
 
             var cmd = ContentController.Instance.SqlConnector.MakeCommand(command);
             var returnedMessages = ContentController.Instance.SqlConnector.ExecuteSelectQueryAsMessages(cmd);
