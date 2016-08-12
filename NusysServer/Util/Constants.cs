@@ -15,7 +15,7 @@ namespace NusysServer
         public static readonly string SERVER_SESSION_ID_STRING = "server_session_id";
         public static readonly string VALID_CREDENTIALS_BOOLEAN_STRING = "valid";
 
-        public static readonly string user = "leandro"; //TODO: CHANGE TO PRIVATE LATER
+        public static readonly string user = "trent"; //TODO: CHANGE TO PRIVATE LATER
 
 
         public static string WWW_ROOT {
@@ -40,7 +40,7 @@ namespace NusysServer
                     case "luke":
                         return Directory.Exists("C:/Users/luke murray/Documents/Visual Studio 2015/Projects/NewSys/NusysServer/") ? "C:/Users/luke murray/Documents/Visual Studio 2015/Projects/NewSys/NusysServer/" : "D:/home/site/wwwroot/";
                     default:
-                        return "";
+                        return "D:/home/site/wwwroot/";
                 }
             }
         }
@@ -78,7 +78,7 @@ namespace NusysServer
                     case "luke":
                         return Directory.Exists("C:/Users/luke murray/Documents/Visual Studio 2015/Projects/NewSys/NusysServer/") ? "C:/Users/luke murray/Documents/Visual Studio 2015/Projects/NewSys/NusysServer/" : "D:/home/site/wwwroot/files/";
                     default:
-                        return "";
+                        return "D:/home/site/wwwroot/files/";
                 }
             }
         }
@@ -110,7 +110,7 @@ namespace NusysServer
                     case "luke":
                         return Directory.Exists("C:/Users/luke murray/Documents/Visual Studio 2015/Projects/NewSys/NusysServer/") ? "http://localhost:2685/" : "http://nusysrepo.azurewebsites.net/";
                     default:
-                        return "";
+                        return "http://nusysrepo.azurewebsites.net/";
                 }
             }
         }
