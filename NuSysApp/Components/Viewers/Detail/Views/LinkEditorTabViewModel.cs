@@ -166,18 +166,14 @@ namespace NuSysApp
 
         public async void CreateLink(string idToLinkTo)
         {
-            if (CurrentLibraryElementId == null)
+            // don't link to itself or if the CurrentLibraryElemtnID is null
+            if (CurrentLibraryElementId == null || CurrentLibraryElementId == idToLinkTo)
             {
                 return;
             }
             var currentLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(CurrentLibraryElementId);
             var toLinkLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(idToLinkTo);
             currentLibraryElementController.LinkAdded -= LinkTabableLinkAdded;
-
-
-                //var linkId = SessionController.Instance.LinksController.GetLinkIdBetween(_linkTabable.ContentId, idToLinkTo);
-                //var linkController = SessionController.Instance.ContentController.GetLibraryElementController(linkId) as LinkLibraryElementController;
-                //linkController?.SetTitle(title);
             
 
             var createNewLinkLibraryElementRequestArgs = new CreateNewLinkLibraryElementRequestArgs();

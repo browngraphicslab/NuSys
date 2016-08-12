@@ -368,7 +368,6 @@
     <Compile Include="Components\Tools\ToolUtilities.cs" />
     <Compile Include="Components\Tools\ToolViewable.cs" />
     <Compile Include="Components\Tools\ToolViewModel.cs" />
-    <Compile Include="Components\Viewers\Detail\ILinkTabable.cs" />
     <Compile Include="Components\Viewers\Detail\IMetadatable.cs" />
     <Compile Include="Components\Viewers\Detail\Misc\AddToCollectionButton.xaml.cs">
       <DependentUpon>AddToCollectionButton.xaml</DependentUpon>

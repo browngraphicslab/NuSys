@@ -29,6 +29,8 @@ namespace NuSysApp
             // checks if the values are there
             Debug.Assert(LibraryElementModelInId != null);
             Debug.Assert(LibraryElementModelOutId != null);
+            
+            Debug.Assert(LibraryElementModelInId != LibraryElementModelOutId, "The UI should never allow create link message to be sent for two instances of the same library element");
 
             // packs the in id
             if (LibraryElementModelInId != null)

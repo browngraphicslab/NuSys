@@ -342,11 +342,16 @@ namespace NuSysApp
                     (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta));
                     return; // just in case it doesn't actually hit anything
                 }
-                var contentRequestArgs = new CreateNewContentRequestArgs();
-                contentRequestArgs.LibraryElementArgs = createNewLinkLibraryElementRequestArgs;
-                var request = new CreateNewContentRequest(contentRequestArgs);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                request.AddReturnedLibraryElementToLibrary();
+                // if the link is between two different libary element models then execute the create link request
+                if (createNewLinkLibraryElementRequestArgs.LibraryElementModelInId !=
+                    createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId)
+                {
+                    var contentRequestArgs = new CreateNewContentRequestArgs();
+                    contentRequestArgs.LibraryElementArgs = createNewLinkLibraryElementRequestArgs;
+                    var request = new CreateNewContentRequest(contentRequestArgs);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                    request.AddReturnedLibraryElementToLibrary();
+                }
             }
             if (_currenDragMode == DragMode.PresentationLink)
             {
