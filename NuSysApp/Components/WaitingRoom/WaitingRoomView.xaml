@@ -112,7 +112,7 @@
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <ListView x:Name="CollectionsList" Grid.Column="0" BorderThickness="0"  Background="White" Margin="0,0,0,0">
+                <ListView x:Name="List" Grid.Column="0" BorderThickness="0"  Background="White" Margin="0,0,0,0">
                     <ListView.Header>
                         <Grid Height="40" BorderThickness="0,0,0,5" BorderBrush="{StaticResource color1}">
                             <Grid.ColumnDefinitions>
@@ -139,11 +139,6 @@
                             <!-- visual state groups -->
                         </Style>
                     </ListView.ItemContainerStyle>
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid></Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
                 </ListView>
                 <Grid x:Name="DetailPanel" Grid.Column="1" HorizontalAlignment="Stretch" Background="White" BorderBrush="{StaticResource color1}" BorderThickness="5,0,0,0">
                     <TextBlock x:Name="SelectedCollectionTitle" HorizontalAlignment="Center" FontSize="35" Foreground="{StaticResource color2}" Margin="0,10,0,0" Height="50" VerticalAlignment="Top">
@@ -182,7 +177,7 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="500"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="JoinWorkspaceButton" IsEnabled="False"  Style="{StaticResource WhiteButton}" Grid.Column="1" Height="50" Width="200" Background="White" Foreground="{StaticResource color2}" HorizontalAlignment="Center" FontWeight="SemiBold" VerticalAlignment="Top" 
+                <Button x:Name="JoinWorkspaceButton" Click="Join_Workspace_Click" IsEnabled="False"  Style="{StaticResource WhiteButton}" Grid.Column="1" Height="50" Width="200" Background="White" Foreground="{StaticResource color2}" HorizontalAlignment="Center" FontWeight="SemiBold" VerticalAlignment="Top" 
                         FontSize="25">ENTER</Button>
                 <StackPanel x:Name="Users"  Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,0,0,20" Orientation="Horizontal"></StackPanel>
             </Grid>
@@ -236,15 +231,15 @@
         <Popup x:Name="NewWorkspacePopup">
             <Grid Background="White" Height="220" Width="500" BorderThickness="3" BorderBrush="{StaticResource color2}">
                 <StackPanel>
-                    <TextBlock Margin="10" HorizontalAlignment="Center" FontSize="18" Foreground="{StaticResource color2}">Enter a title:</TextBlock>
-                    <TextBox Style="{StaticResource DarkTextBox}"  Name="NewWorkspaceName" FontSize="18" Height="30" Width="350" Background="{StaticResource color1}" BorderBrush="{StaticResource color2}"></TextBox>
+                    <TextBlock Margin="10" HorizontalAlignment="Center" FontSize="18" Height="20" Foreground="{StaticResource color2}">Enter a title:</TextBlock>
+                    <TextBox Style="{StaticResource DarkTextBox}"  Name="NewWorkspaceName" FontSize="16" Height="30" Width="350" Background="{StaticResource color1}" BorderBrush="{StaticResource color2}"></TextBox>
                     <TextBlock HorizontalAlignment="Center" Foreground="{StaticResource color2}" FontSize="18" Margin="10">Choose access settings:</TextBlock>
                     <StackPanel x:Name="ButtonGroup" HorizontalAlignment="Center" Orientation="Horizontal" Margin="18,0,0,10">
                         <RadioButton x:Name="PrivateButton" Style="{StaticResource NuSysRadioButton}"  Foreground="{StaticResource color3}" Content="Private"></RadioButton>
                         <RadioButton x:Name="PublicButton" Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" Content="Public"></RadioButton>
                         <RadioButton x:Name="ReadOnlyButton" Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" Content="Read Only"></RadioButton>
                     </StackPanel>
-                    <Button x:Name="NewWorkspaceButton"  HorizontalAlignment="Center" Style="{StaticResource DarkButton}" Height="30" Width="120">CREATE</Button>
+                    <Button x:Name="NewWorkspaceButton" Click="NewWorkspaceOnClick"  HorizontalAlignment="Center" Style="{StaticResource DarkButton}" Height="30" Width="120">CREATE</Button>
                 </StackPanel>
             </Grid>
         </Popup>

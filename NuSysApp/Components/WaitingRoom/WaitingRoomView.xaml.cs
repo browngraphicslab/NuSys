@@ -78,11 +78,9 @@ namespace NuSysApp
             ServerNameText.TextChanged += delegate
             {
                 ServerName = ServerNameText.Text;
-                //Init();
+
             };
-
-            //Init();
-
+            
             SlideOutLogin.Completed += SlideOutLoginComplete;
 
             //AutoLogin();
@@ -109,18 +107,17 @@ namespace NuSysApp
                     }
                     if (libraryElement.Type == NusysConstants.ElementType.Collection)
                     {
-                        var box = new CollectionTextBox(libraryElement.Title, libraryElement.LibraryElementId);
-                        all.Add(box);
+                        var i = new CollectionTextBox(libraryElement.Title, libraryElement.LibraryElementId);
+                        all.Add(i);
                     }
                 }
 
-
-                //List?.Items?.Clear();
-                //all.Sort((a, b) => a.Text.CompareTo(b.Text));
-                //foreach (var i in all)
-                //{
-                //    List.Items.Add(i);
-                //}
+                List?.Items?.Clear();
+                all.Sort((a, b) => a.Text.CompareTo(b.Text));
+                foreach (var i in all)
+                {
+                    List?.Items.Add(i);
+                }
                 _collectionAdded = true;
             }
             catch (Exception e)
@@ -153,27 +150,28 @@ namespace NuSysApp
             var request = new CreateNewContentRequest(NusysConstants.ContentType.Text, null, props);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
             Init();
+            NewWorkspaceName.Text = "";
             NewWorkspacePopup.IsOpen = false;
         }
         private async void Join_Workspace_Click(object sender, RoutedEventArgs e)
         {
-            //if (List.SelectedItems.Count == 1)
-            //{
-            //    SessionController.Instance.ContentController.OnNewContent -= ContentControllerOnOnNewContent;
+            if (List.SelectedItems.Count == 1)
+            {
+                SessionController.Instance.ContentController.OnNewContent -= ContentControllerOnOnNewContent;
 
-            //    var item = List.SelectedItems.First();
-            //    var id = ((CollectionTextBox) item).ID;
-            //    var collectionRequest = new GetEntireWorkspaceRequest(id ?? "test");
-            //    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collectionRequest);
-            //    foreach (var content in collectionRequest.GetReturnedContentDataModels())
-            //    {
-            //        SessionController.Instance.ContentController.AddContentDataModel(content);
-            //    }
-            //    _firstLoadList = collectionRequest.GetReturnedElementModels();
-            //    InitialWorkspaceId = id;
-            //    this.Frame.Navigate(typeof(SessionView));
-                
-            //}
+                var item = List.SelectedItems.First();
+                var id = ((CollectionTextBox)item).ID;
+                var collectionRequest = new GetEntireWorkspaceRequest(id ?? "test");
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collectionRequest);
+                foreach (var content in collectionRequest.GetReturnedContentDataModels())
+                {
+                    SessionController.Instance.ContentController.AddContentDataModel(content);
+                }
+                _firstLoadList = collectionRequest.GetReturnedElementModels();
+                InitialWorkspaceId = id;
+                this.Frame.Navigate(typeof(SessionView));
+
+            }
         }
 
         public static IEnumerable<ElementModel> GetFirstLoadList()
@@ -313,7 +311,7 @@ namespace NuSysApp
                         SessionController.Instance.ContentController.OnNewContent += ContentControllerOnOnNewContent;
 
                         loggedInText.Text = "Logged In!";
-
+                        Init();
                         NewWorkspaceButton.IsEnabled = true;
                         _loggedIn = true;
                         if (_isLoaded)
@@ -332,13 +330,14 @@ namespace NuSysApp
                         UserName = userID;
                         if (userID.ToLower() != "rosemary" && userID.ToLower()!= "rms" && userID.ToLower() != "gfxadmin")
                         {
-                            //foreach(var box in List.Items)
-                            //{
-                            //    if((box as CollectionTextBox).MadeByRosemary)
-                            //    {
-                            //        List.Items.Remove(box);
-                            //    }
-                            //}
+
+                            foreach (var box in List.Items)
+                            {
+                                if ((box as CollectionTextBox).MadeByRosemary)
+                                {
+                                    List.Items.Remove(box);
+                                }
+                            }
                         }
 
                         await Task.Run(async delegate
@@ -359,9 +358,9 @@ namespace NuSysApp
                             if (_loggedIn)
                             {
                                 UITask.Run(delegate {
-                                    //JoinWorkspaceButton.IsEnabled = true;
-                                    //JoinWorkspaceButton.Content = "Enter";
-                                    //JoinWorkspaceButton.Visibility = Visibility.Visible;
+                                    JoinWorkspaceButton.IsEnabled = true;
+                                    JoinWorkspaceButton.Content = "Enter";
+                                    JoinWorkspaceButton.Visibility = Visibility.Visible;
                                 });
                                 if (!File.Exists(LoginCredentialsFilePath))
                                 {
@@ -397,15 +396,6 @@ namespace NuSysApp
         {
             if (element.Type == NusysConstants.ElementType.Collection && !_preloadedIDs.Contains(element.LibraryElementId))
             {
-                var items = new List<CollectionTextBox>();
- 
-                UITask.Run(delegate
-                {
-                    var box = new CollectionTextBox(element.Title ?? "", element.LibraryElementId);
-                    //if (_collectionAdded == false) { List.Items.Add(box); }
-                    _collectionAdded = false;
-                });
-
                 _preloadedIDs.Add(element.LibraryElementId);
             }
         }
