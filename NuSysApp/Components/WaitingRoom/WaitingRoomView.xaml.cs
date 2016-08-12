@@ -97,7 +97,7 @@ namespace NuSysApp
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             try
             {
-                var all = new List<CollectionTextBox>();
+                var all = new List<CollectionListBox>();
                 var libraryElements = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
                 foreach (var libraryElement in libraryElements)
                 {
@@ -107,13 +107,13 @@ namespace NuSysApp
                     }
                     if (libraryElement.Type == NusysConstants.ElementType.Collection)
                     {
-                        var i = new CollectionTextBox(libraryElement.Title, libraryElement.LibraryElementId);
+                        var i = new CollectionListBox(libraryElement);
                         all.Add(i);
                     }
                 }
 
                 List?.Items?.Clear();
-                all.Sort((a, b) => a.Text.CompareTo(b.Text));
+                all.Sort((a, b) => a.Title.CompareTo(b.Title));
                 foreach (var i in all)
                 {
                     List?.Items.Add(i);
@@ -134,6 +134,11 @@ namespace NuSysApp
             NewWorkspacePopup.HorizontalOffset = this.ActualWidth/2 - 250;
             NewWorkspacePopup.VerticalOffset = this.ActualHeight/2 - 110;
             NewWorkspacePopup.IsOpen = true;
+        }
+
+        private void ClosePopupOnClick(object sender, RoutedEventArgs e)
+        {
+            NewWorkspacePopup.IsOpen = false;
         }
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
@@ -160,7 +165,7 @@ namespace NuSysApp
                 SessionController.Instance.ContentController.OnNewContent -= ContentControllerOnOnNewContent;
 
                 var item = List.SelectedItems.First();
-                var id = ((CollectionTextBox)item).ID;
+                var id = ((CollectionListBox)item).ID;
                 var collectionRequest = new GetEntireWorkspaceRequest(id ?? "test");
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collectionRequest);
                 foreach (var content in collectionRequest.GetReturnedContentDataModels())
@@ -333,7 +338,7 @@ namespace NuSysApp
 
                             foreach (var box in List.Items)
                             {
-                                if ((box as CollectionTextBox).MadeByRosemary)
+                                if ((box as CollectionListBox).MadeByRosemary)
                                 {
                                     List.Items.Remove(box);
                                 }
@@ -416,20 +421,6 @@ namespace NuSysApp
             byte[] bytes = new byte[str.Length * sizeof(char)];
             System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
             return bytes;
-        }
-
-        private partial class CollectionTextBox : TextBox
-        {
-            public string ID { set; get; }
-            public bool MadeByRosemary = false;
-
-            public CollectionTextBox(string text, string Id) : base()
-            {
-                ID = Id;
-                IsEnabled = false;
-                Background = new SolidColorBrush(Colors.Transparent);
-                base.Text = text;
-            }
         }
     }
 }

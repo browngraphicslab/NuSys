@@ -1,0 +1,24 @@
+﻿<UserControl
+    x:Class="NuSysApp.CollectionListBox"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NuSysApp.Components.WaitingRoom"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="40"
+    d:DesignWidth="820">
+
+    <Grid Height="40">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="320"></ColumnDefinition>
+            <ColumnDefinition Width="100"></ColumnDefinition>
+            <ColumnDefinition Width="120"></ColumnDefinition>
+            <ColumnDefinition Width="300"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <TextBlock x:Name="TitleBox" Grid.Column="0" FontSize="16" VerticalAlignment="Bottom" Foreground="{StaticResource color3}">asdf</TextBlock>
+        <TextBlock x:Name="AccessBox" Grid.Column="1" FontSize="16" VerticalAlignment="Bottom" Foreground="{StaticResource color3}">asdf</TextBlock>
+        <TextBlock x:Name="DateBox" Grid.Column="2" FontSize="16" VerticalAlignment="Bottom" Foreground="{StaticResource color3}">asdf</TextBlock>
+        <StackPanel x:Name="UsersBox" Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Bottom"></StackPanel>
+    </Grid>
+</UserControl>
