@@ -58,6 +58,7 @@
     <Compile Include="Models\PdfNodeModel.cs" />
     <Compile Include="Models\PdfRegionModel.cs" />
     <Compile Include="Models\PointModel.cs" />
+    <Compile Include="Models\PresentationLinkModel.cs" />
     <Compile Include="Models\RectangleRegion.cs" />
     <Compile Include="Models\Region.cs" />
     <Compile Include="Models\Sendable.cs" />

@@ -152,7 +152,8 @@ namespace NusysServer
             LibraryElement,
             Metadata,
             Properties,
-            Content
+            Content,
+            PresentationLink
         }
 
         /// <summary>
@@ -201,6 +202,9 @@ namespace NusysServer
                     break;
                 case SQLTableType.Properties:
                     keys = NusysConstants.ACCEPTED_PROPERTIES_TABLE_KEYS;
+                    break;
+                case SQLTableType.PresentationLink:
+                    keys = NusysConstants.ACCEPTED_PRESENTATION_LINKS_TABLE_KEYS;
                     break;
                 default:
                     return new List<string>();
@@ -299,6 +303,8 @@ namespace NusysServer
                     return NusysIntermediate.NusysConstants.PROPERTIES_SQL_TABLE_NAME + "_" + user;
                 case Constants.SQLTableType.Content:
                     return NusysIntermediate.NusysConstants.CONTENTS_SQL_TABLE_NAME + "_" + user;
+                case Constants.SQLTableType.PresentationLink:
+                    return NusysIntermediate.NusysConstants.PRESENTATION_LINKS_SQL_TABLE_NAME + "_" + user;
             }
             return null;
         }
