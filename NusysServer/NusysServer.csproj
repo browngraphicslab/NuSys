@@ -189,7 +189,9 @@
     <Compile Include="RequestHandlers\CreateNewElementRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateNewLibraryElementRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateNewMetadataRequestHandler.cs" />
+    <Compile Include="RequestHandlers\CreateNewPresentationLinkRequestHandler.cs" />
     <Compile Include="RequestHandlers\DeleteMetadataRequestHandler.cs" />
+    <Compile Include="RequestHandlers\DeletePresentationLinkRequestHandler.cs" />
     <Compile Include="RequestHandlers\ElementUpdateRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetAllLibraryElementsRequestHandler.cs" />
     <Compile Include="RequestHandlers\DeleteElementRequestHandler.cs" />
@@ -199,6 +201,7 @@
     <Compile Include="RequestHandlers\RequestHandler.cs" />
     <Compile Include="RequestHandlers\SearchRequestHandler.cs" />
     <Compile Include="RequestHandlers\UpdateLibraryElementRequestHandler.cs" />
+    <Compile Include="RequestHandlers\UpdatePresentationLinkRequestHandler.cs" />
     <Compile Include="StartUp.cs" />
     <Compile Include="Static_Classes\CognitiveApi\CognitiveApiConstants.cs" />
     <Compile Include="Static_Classes\CognitiveApi\CognitiveApiDocument.cs" />

@@ -24,6 +24,11 @@ namespace NusysServer
 
             //create new message to pass into the delete metadata method
             var deleteMetadataEntryMessage = new Message();
+            //TODO: This part is wrong, dont wanna change anything now incase there are merge conflicts with harsh
+            //should be:
+            //deleteMetadataEntryMessage[NusysConstants.METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY] = message[NusysConstants.DELETE_METADATA_REQUEST_LIBRARY_ID_KEY];
+            //deleteMetadataEntryMessage[NusysConstants.METADATA_KEY_COLUMN_KEY] = message[NusysConstants.DELETE_METADATA_REQUEST_METADATA_KEY];
+
             deleteMetadataEntryMessage[NusysConstants.DELETE_METADATA_REQUEST_LIBRARY_ID_KEY] = message[NusysConstants.DELETE_METADATA_REQUEST_LIBRARY_ID_KEY];
             deleteMetadataEntryMessage[NusysConstants.DELETE_METADATA_REQUEST_METADATA_KEY] = message[NusysConstants.DELETE_METADATA_REQUEST_METADATA_KEY];
            

@@ -39,17 +39,18 @@ namespace NusysServer
             }
 
             var entry = CreateMetadataEntry(messageToPassIntoQuery);
+            var modelJson = JsonConvert.SerializeObject(entry);
 
             //Let everyone except for the original sender know a new metadata entry was created
             var forwardMessage = new Message(message);
             forwardMessage.Remove(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING);
-            forwardMessage[NusysConstants.CREATE_NEW_METADATA_REQUEST_RETURNED_METADATA_ENTRY_KEY] = entry;
+            forwardMessage[NusysConstants.CREATE_NEW_METADATA_REQUEST_RETURNED_METADATA_ENTRY_KEY] = modelJson;
             NuWebSocketHandler.BroadcastToSubset(forwardMessage, new HashSet<NuWebSocketHandler>() { senderHandler });
             
             //Send message back to original request creator that says we were succesful. 
             var returnMessage = new Message(message);
             returnMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = success;
-            returnMessage[NusysConstants.CREATE_NEW_METADATA_REQUEST_RETURNED_METADATA_ENTRY_KEY] = entry;
+            returnMessage[NusysConstants.CREATE_NEW_METADATA_REQUEST_RETURNED_METADATA_ENTRY_KEY] = modelJson;
 
 
             return returnMessage;

@@ -294,6 +294,7 @@ namespace NusysServer
         /// <returns></returns>
         public bool DeleteMetadataEntry(Message message)
         {
+            
             if (!message.ContainsKey(NusysConstants.DELETE_METADATA_REQUEST_LIBRARY_ID_KEY) || !message.ContainsKey(NusysConstants.DELETE_METADATA_REQUEST_METADATA_KEY))
             {
                 return false;
