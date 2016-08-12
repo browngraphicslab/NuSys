@@ -19,8 +19,12 @@ namespace NusysServer
         public override Message HandleRequest(Request request, NuWebSocketHandler senderHandler)
         {
             Debug.Assert(request.GetRequestType() == NusysConstants.RequestType.GetAllLibraryElementsRequest);
-
-            //Joins alias and library element tables where alias.libraryelementid = libraryelement.libraryelementid
+            var userId = ActiveClient.ActiveClients[senderHandler]?.Client?.ID;
+            if (userId == null)
+            {
+                throw new Exception("The client has no id");
+            }
+            //Joins properties and library element tables where alias.libraryelementid = libraryelement.libraryelementid
             SqlJoinOperationArgs libraryElementJoinProperties = new SqlJoinOperationArgs();
             libraryElementJoinProperties.LeftTable = new SingleTable(Constants.SQLTableType.LibraryElement);
             libraryElementJoinProperties.RightTable = new SingleTable(Constants.SQLTableType.Properties);
@@ -29,7 +33,7 @@ namespace NusysServer
                 NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY).First();
             libraryElementJoinProperties.Column2 = Constants.GetFullColumnTitle(Constants.SQLTableType.Properties,
                 NusysConstants.PROPERTIES_LIBRARY_OR_ALIAS_ID_KEY).First();
-            JoinedTable aliasJoinLibraryElement = new JoinedTable(libraryElementJoinProperties);
+            JoinedTable propertiesJoinLibraryElement = new JoinedTable(libraryElementJoinProperties);
             //creates a list of all columns from libraryelement, and properties tables
             
             //var columnsToGet =
@@ -37,7 +41,14 @@ namespace NusysServer
             //    Constants.GetAcceptedKeys(Constants.SQLTableType.LibraryElement)
             //    .Concat(
             //        Constants.GetAcceptedKeys(Constants.SQLTableType.Properties)));
-            var query = new SQLSelectQuery(aliasJoinLibraryElement);
+
+            var publicConditional = new SqlQueryEquals(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY, NusysConstants.AccessType.Public.ToString());
+            var readOnlyConditional = new SqlQueryEquals(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY, NusysConstants.AccessType.ReadOnly.ToString());
+            var creatorIsRequestorConditional = new SqlQueryEquals(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_CREATOR_USER_ID_KEY, userId);
+            var publicOrReadOnlyConditional = new SqlQueryOperator(publicConditional, readOnlyConditional, Constants.Operator.Or);
+            var publicOrReadOnlyOrCreatorIsRequestorConditional = new SqlQueryOperator(publicOrReadOnlyConditional, creatorIsRequestorConditional, Constants.Operator.Or);
+            
+            var query = new SQLSelectQuery(propertiesJoinLibraryElement, publicOrReadOnlyOrCreatorIsRequestorConditional);
 
             var libraryElementReturnedMessages = query.ExecuteCommand();
             PropertiesParser propertiesParser = new PropertiesParser();

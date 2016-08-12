@@ -96,7 +96,7 @@ namespace NusysServer
                 NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY + " varchar(128));");
 
             var metadataTable = MakeCommand("CREATE TABLE "+ Constants.GetTableName(Constants.SQLTableType.Metadata)+" ("+
-                NusysConstants.METADATA_LIBRARY_ELEMENT_ID_KEY + " varchar(128)," +
+                NusysConstants.METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY + " varchar(128)," +
                 NusysConstants.METADATA_KEY_COLUMN_KEY + " varchar(1028)," +
                 NusysConstants.METADATA_VALUE_COLUMN_KEY + " varchar(4096));");
 
@@ -284,6 +284,21 @@ namespace NusysServer
                 return false;
             }
             var cmd = new SQLDeleteQuery(Constants.SQLTableType.Alias, message, Constants.Operator.And);
+            return cmd.ExecuteCommand();
+        }
+
+        /// <summary>
+        /// This removes the specified metadata entry from the library element whose id is passed in. Needs to have the key of the entry.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public bool DeleteMetadataEntry(Message message)
+        {
+            if (!message.ContainsKey(NusysConstants.DELETE_METADATA_REQUEST_LIBRARY_ID_KEY) || !message.ContainsKey(NusysConstants.DELETE_METADATA_REQUEST_METADATA_KEY))
+            {
+                return false;
+            }
+            var cmd = new SQLDeleteQuery(Constants.SQLTableType.Metadata, message, Constants.Operator.And);
             return cmd.ExecuteCommand();
         }
         

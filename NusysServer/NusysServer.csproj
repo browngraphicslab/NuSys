@@ -184,6 +184,8 @@
     <Compile Include="RequestHandlers\CreateNewContentRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateNewElementRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateNewLibraryElementRequestHandler.cs" />
+    <Compile Include="RequestHandlers\CreateNewMetadataRequestHandler.cs" />
+    <Compile Include="RequestHandlers\DeleteMetadataRequestHandler.cs" />
     <Compile Include="RequestHandlers\ElementUpdateRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetAllLibraryElementsRequestHandler.cs" />
     <Compile Include="RequestHandlers\DeleteElementRequestHandler.cs" />
