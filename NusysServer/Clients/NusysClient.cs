@@ -40,10 +40,6 @@ namespace NusysServer
             {
                 IsRosemary = true;
             }
-            if (save)
-            {
-                SaveUsers();
-            }
         }
 
         public void Update(Dictionary<string, object> dict)
@@ -74,35 +70,6 @@ namespace NusysServer
         public Dictionary<string, object> GetDict()
         {
             return _dict;
-        }
-        public static void SaveUsers()
-        {
-            Dictionary<string, Dictionary<string, object>> saveDict = new Dictionary<string, Dictionary<string, object>>();
-            foreach (var user in IDtoUsers.Values)
-            {
-                var dict = user.GetDict();
-                dict["hashed_username"] = user.GetUsername();
-                dict["hashed_password"] = NusysLogins.GetString(user.GetPassword());
-                dict["salt"] = NusysLogins.GetString(user.GetSalt());
-                saveDict[user.ID] = dict;
-            }
-            var s = JsonConvert.SerializeObject(saveDict, settings);
-
-            if (!Directory.Exists(Constants.FILE_FOLDER))
-            {
-                Directory.CreateDirectory(Constants.FILE_FOLDER);
-            }
-            try
-            {
-                using (StreamWriter outputFile = new StreamWriter(_filepath))
-                {
-                    outputFile.WriteLine(s);
-                }
-            }
-            catch (Exception e)
-            {
-                ErrorLog.AddError(e);
-            }
         }
 
         public static void ReadUsers()

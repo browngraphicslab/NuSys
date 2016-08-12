@@ -554,57 +554,10 @@ namespace NuSysApp
             Debug.WriteLine("done joining collection: " + collectionId);
 
             xLoadingGrid.Visibility = Visibility.Collapsed;
-
-
-
-            /*
-            foreach (var msg in nodeMessages)
-            {
-                msg["creator"] = collectionId;
-                var libraryId = msg.GetString("contentId");
-
-                ElementType type;
-
-                var libraryModel = SessionController.Instance.ContentController.Get(libraryId);
-                if (libraryModel == null)
-                {
-                    if (msg.ContainsKey("id"))
-                    {
-                        SessionController.Instance.NuSysNetworkSession.ExecuteRequest(
-                            new DeleteSendableRequest((string) msg["id"]));
-                    }
-                    continue;
-                }
-                type = libraryModel.Type;
-
-                if (Constants.IsNode(type))
-                {
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(msg));
-                    if (type == ElementType.Collection)
-                    {
-                        Dictionary<string, Message> subCollectionMessages = new Dictionary<string, Message>();
-                        HashSet<string> subCollectionLoaded = new HashSet<string>();
-                        var messages = await SessionController.Instance.NuSysNetworkSession.GetCollectionAsElementMessages(libraryId);
-                        foreach (var m in messages)
-                        {
-                            subCollectionMessages[m.GetString("id")] = m;
-                        }
-
-                        while(subCollectionMessages.Count > 0)
-                        {
-                            var m = subCollectionMessages.First().Value;
-                            m["creator"] = libraryId;
-                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewElementRequest(m));
-                        }
-                    }
-                }
-                if (type == ElementType.Link)
-                {
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestLocally(new NewLinkRequest(msg));
-                }
-            }*/
         }
-        private async Task MakeCollection(Dictionary<string, ElementModel> elementsLeft)
+
+
+        public async Task MakeCollection(Dictionary<string, ElementModel> elementsLeft)
         {
             var made = new HashSet<string>();
             while (elementsLeft.Any())
@@ -612,7 +565,9 @@ namespace NuSysApp
                 await MakeElement(made, elementsLeft, elementsLeft.First().Value);
             }
         }
-        private async Task MakeElement(HashSet<string> made, Dictionary<string, ElementModel> elementsLeft, ElementModel element)
+
+
+        public async Task MakeElement(HashSet<string> made, Dictionary<string, ElementModel> elementsLeft, ElementModel element)
         {
             Debug.WriteLine("making element: " + element.Id);
             var libraryModel = SessionController.Instance.ContentController.GetLibraryElementModel(element.LibraryId);

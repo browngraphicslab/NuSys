@@ -973,8 +973,20 @@ namespace NusysIntermediate
         /// </summary>
         public enum AccessType
         {
+            /// <summary>
+            /// This accesstype means that everyone on your server can see and edit this object
+            /// </summary>
             Public, 
+
+            /// <summary>
+            /// This accesstype means that only the creator of the object can see or edit this object.
+            /// </summary>
             Private,
+
+            /// <summary>
+            /// this accesstype is (as of 8/12/16) limited to just Collections.  
+            /// It is meant that everyone on your server can see this object, but only the creator can edit it.  
+            /// </summary>
             ReadOnly
         }
 

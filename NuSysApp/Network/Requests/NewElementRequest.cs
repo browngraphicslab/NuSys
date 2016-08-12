@@ -8,8 +8,17 @@ using NuSysApp.Controller;
 
 namespace NuSysApp
 {
+    /// <summary>
+    /// the request that should be used to create all the elements (nodes) in nusys.
+    /// Suggested usage is to create a NewElementRequestArgs class (or a subclass) and pass that in the constructor.  
+    /// After a succesful reuqest has been executed and awaited, call AddReturnedElementToSession() to add the element locally.
+    /// </summary>
     public class NewElementRequest : Request
     {
+        /// <summary>
+        ///  the required constructor which should only be used when deserializing from the server as a json.  
+        /// </summary>
+        /// <param name="message"></param>
         public NewElementRequest(Message message) : base(NusysConstants.RequestType.NewElementRequest, message)
         {
         }
@@ -17,29 +26,11 @@ namespace NuSysApp
         /// <summary>
         /// Preferred constructor.  
         /// Create and populate an args class.  
-        /// Check the args properties to see what is and isn't required
+        /// Check the args properties to see what is and isn't required.
+        /// This constructor will add the arg's properties to the message of the request.  
         /// </summary>
         /// <param name="args"></param>
-        public NewElementRequest(NewElementRequestArgs args) : base(NusysConstants.RequestType.NewElementRequest)
-        {
-            //asserts for required properties
-            //TODO not make width and height required, just have defaults in nusysApp constants in they're not set;
-            Debug.Assert(args.ParentCollectionId != null);
-            Debug.Assert(args.LibraryElementId != null);
-            Debug.Assert(args.Height != null);
-            Debug.Assert(args.Width != null);
-            Debug.Assert(args.Y != null);
-            Debug.Assert(args.X != null);
-
-            //set properties after assertions
-            _message[NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_ID_KEY] = args.Id ?? SessionController.Instance.GenerateId();
-            _message[NusysConstants.NEW_ELEMENT_REQUEST_LOCATION_Y_KEY] = args.Y;
-            _message[NusysConstants.NEW_ELEMENT_REQUEST_LOCATION_X_KEY] = args.X;
-            _message[NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_PARENT_COLLECTION_ID_KEY] = args.ParentCollectionId;
-            _message[NusysConstants.NEW_ELEMENT_REQUEST_SIZE_HEIGHT_KEY] = args.Height;
-            _message[NusysConstants.NEW_ELEMENT_REQUEST_SIZE_WIDTH_KEY] = args.Width;
-            _message[NusysConstants.NEW_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID_KEY] = args.LibraryElementId;
-        }
+        public NewElementRequest(NewElementRequestArgs args) : base(args, NusysConstants.RequestType.NewElementRequest) {}
 
         /// <summary>
         /// this checker just debug.asserts() the required keys.
@@ -64,12 +55,7 @@ namespace NuSysApp
         /// </summary>
         public void AddReturnedElementToSession()
         {
-            if (WasSuccessful() != true)
-            {
-                //If this fails here, check with .WasSuccessful() before calling this method.
-                throw new Exception("The request hasn't returned yet or was unsuccessful");
-            }
-
+            CheckWasSuccessfull();
             //get and add the requested element model.
             var model = GetReturnedElementModel();
             Debug.Assert(SessionController.Instance.AddElement(model));//make sure the adding was succesful
@@ -81,14 +67,12 @@ namespace NuSysApp
         /// <returns></returns>
         public ElementModel GetReturnedElementModel()
         {
-            if (WasSuccessful() != true)
-            {
-                //If this fails here, check with .WasSuccessful() before calling this method.
-                throw new Exception("The request hasn't returned yet or was unsuccessful");
-            }
+            //call the base class's checking method
+            CheckWasSuccessfull();
             Debug.Assert(_returnMessage.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_RETURNED_ELEMENT_MODEL_KEY));
             try
             {
+                //get, deserialize, and return the model
                 var model = ElementModelFactory.DeserializeFromString(_returnMessage.GetString(NusysConstants.NEW_ELEMENT_REQUEST_RETURNED_ELEMENT_MODEL_KEY));
                 return model;
             }
