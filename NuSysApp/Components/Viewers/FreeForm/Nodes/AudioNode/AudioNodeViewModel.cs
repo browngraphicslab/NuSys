@@ -68,13 +68,13 @@ namespace NuSysApp
 
         private async void InitWhenReady(object sender)
         {
-            //HttpWebRequest request = (HttpWebRequest) WebRequest.Create(AudioSource);
-            //HttpWebResponse response = (HttpWebResponse) await request.GetResponseAsync();
-            //Stream resStream = response.GetResponseStream();
+            HttpWebRequest request = (HttpWebRequest) WebRequest.Create(AudioSource);
+            HttpWebResponse response = (HttpWebResponse) await request.GetResponseAsync();
+            Stream resStream = response.GetResponseStream();
 
-            //byte[] dataBytes = new byte[(int) response.ContentLength];
-            //resStream.Read(dataBytes, 0, (int) response.ContentLength);
-            //resStream.Dispose();
+            byte[] dataBytes = new byte[(int) response.ContentLength];
+            resStream.Read(dataBytes, 0, (int) response.ContentLength);
+            resStream.Dispose();
             //Visualize(dataBytes);
         }
 

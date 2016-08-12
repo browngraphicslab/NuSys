@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NusysIntermediate;
+using System.Diagnostics;
 
 namespace NuSysApp
 {
-    public class CreateNewLinkLibraryElementRequestArgs : CreateNewLibraryElementRequestArgs
+    class CreateNewLinkLibraryElementRequestArgs : CreateNewLibraryElementRequestArgs
     {
         /// <summary>
         /// This is the in library element model id of the link that is being created
@@ -45,3 +45,4 @@ namespace NuSysApp
         }
     }
 }
+

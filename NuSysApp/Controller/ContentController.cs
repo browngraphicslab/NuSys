@@ -138,7 +138,6 @@ namespace NuSysApp
                         LinkLibraryElementController;
                 Debug.Assert(linkController != null);
                 SessionController.Instance.LinksController.AddLinkLibraryElementController(linkController);
-                SessionController.Instance.LinksController.CreateVisualLinks(linkController);
             }
         }
 

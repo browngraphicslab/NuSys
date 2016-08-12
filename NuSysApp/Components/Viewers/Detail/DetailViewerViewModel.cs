@@ -61,9 +61,11 @@ namespace NuSysApp
                 RaisePropertyChanged("TabVisibility");
             }
         }
+
         // Tab Pane Width is a reference to the width of the Tab pane 
         public double TabPaneWidth { get; set; }
         private double _tabWidth;
+
 
         // TabWidth controls the standard height that tabs have. It is some factor of the TabPaneWidth
         public double TabWidth
@@ -84,6 +86,7 @@ namespace NuSysApp
         private DetailHomeTabViewModel _regionableHomeTabViewModel;
 
         public LibraryElementController CurrentElementController { get; set; }
+
         
         public DetailViewerViewModel()
 

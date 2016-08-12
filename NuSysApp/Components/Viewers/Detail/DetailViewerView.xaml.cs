@@ -219,8 +219,8 @@ namespace NuSysApp
                 default:
                     xRootPivot.SelectedIndex = 0;
                     return;
-
             }
+
         }
         
         private async void NewTagBox_OnKeyUp(object sender, KeyRoutedEventArgs e)

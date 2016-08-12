@@ -313,7 +313,7 @@ namespace NuSysApp
                 var allContent = SessionController.Instance.ActiveFreeFormViewer.AllContent;
 
 
-                BezierLinkView view = new BezierLinkView(vm, true);
+                BezierLinkView view = new BezierLinkView(vm, false);
 
                 var collectionViewModel =
                     allContent.FirstOrDefault(item => ((item as GroupNodeViewModel)?.LibraryElementId == oneParentCollectionId)) as GroupNodeViewModel;
