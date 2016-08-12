@@ -371,10 +371,27 @@ namespace NusysIntermediate
         public static readonly string CREATE_NEW_METADATA_REQUEST_METADATA_VALUE_KEY = "value";
 
         /// <summary>
-        /// key in message for sending the metadata key
+        /// key in message for sending the metadata mutability type
         /// </summary>
         public static readonly string CREATE_NEW_METADATA_REQUEST_METADATA_MUTABILITY_KEY = "mutability";
+
+        /// <summary>
+        /// key in message for forwarding the MetadataEntry class to everyone
+        /// </summary>
+        public static readonly string CREATE_NEW_METADATA_REQUEST_RETURNED_METADATA_ENTRY_KEY = "metadata_entry";
         #endregion CreateNewMetadataRequest
+
+        #region DeleteMetadataRequest
+        /// <summary>
+        /// key in message for library id of the element that the metadata to be deleted belongs to
+        /// </summary>
+        public static readonly string DELETE_METADATA_REQUEST_LIBRARY_ID_KEY = "library_id";
+
+        /// <summary>
+        /// key in message for signifying which entry should be deleted
+        /// </summary>
+        public static readonly string DELETE_METADATA_REQUEST_METADATA_KEY = "key";
+        #endregion DeleteMetadataRequest
 
         #region ChatRequest
 
@@ -567,7 +584,7 @@ namespace NusysIntermediate
             /// <summary>
             /// 32 character ID of the library element this metadata entry belongs to
             /// </summary>
-            public static readonly string METADATA_LIBRARY_ELEMENT_ID_KEY = "library_id";
+            public static readonly string METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY = "library_id";
 
             /// <summary>
             /// the string used as the name of the 'key' column for metadata.  
@@ -583,13 +600,20 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string METADATA_VALUE_COLUMN_KEY = "value_string";
 
-            /// <summary>
-            /// the list of all the column names for the metadata table.
-            /// Should be populated by other constants as strings
-            /// </summary>
-            public static readonly HashSet<string> ACCEPTED_METADATA_TABLE_KEYS = new HashSet<string>()
+        /// <summary>
+        /// the string used as the name of the 'mutability' column for metadata.  
+        /// approximately 2048 characters max
+        /// PROBABLY ONLY FOR SERVER-SIDE USE
+        /// </summary>
+        public static readonly string METADATA_MUTABILITY_COLUMN_KEY = "mutability_string";
+
+        /// <summary>
+        /// the list of all the column names for the metadata table.
+        /// Should be populated by other constants as strings
+        /// </summary>
+        public static readonly HashSet<string> ACCEPTED_METADATA_TABLE_KEYS = new HashSet<string>()
             {
-                METADATA_LIBRARY_ELEMENT_ID_KEY,
+                METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY,
                 METADATA_KEY_COLUMN_KEY,
                 METADATA_VALUE_COLUMN_KEY
             };
@@ -933,6 +957,8 @@ namespace NusysIntermediate
             NewElementRequest,
             DeleteLibraryElementRequest,
             DeleteElementRequest,
+            CreateNewMetadataRequest,
+            DeleteMetadataRequest,
 
             /// <summary>
             /// this request type is used to create a search over the library elements.  
