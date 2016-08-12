@@ -9,6 +9,10 @@ using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 {
+    /// <summary>
+    /// This request should only be used to create a LibraryElement when a content for that library element already exists.
+    /// After a successful request, call AddReturnedLibraryElementToLibrary() to add the element locally.
+    /// </summary>
     public class CreateNewLibraryElementRequest : Request
     {
         /// <summary>

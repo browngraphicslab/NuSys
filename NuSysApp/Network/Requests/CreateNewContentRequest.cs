@@ -73,11 +73,7 @@ namespace NuSysApp
         /// <returns></returns>
         public bool AddReturnedLibraryElementToLibrary()
         {
-            if (WasSuccessful() != true)
-            {
-                //If this fails here, check with .WasSuccessful() before calling this method.
-                throw new Exception("The request hasn't returned yet or was unsuccessful");
-            }
+            CheckWasSuccessfull();
 
             //make sure the returned model is present
             Debug.Assert(_returnMessage.ContainsKey(NusysConstants.NEW_CONTENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY));

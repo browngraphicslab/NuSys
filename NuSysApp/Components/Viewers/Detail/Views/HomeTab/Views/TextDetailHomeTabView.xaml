@@ -15,15 +15,7 @@
                              Visibility="Visible" HorizontalAlignment ="Stretch" VerticalAlignment="Stretch" IsTapEnabled="True" NavigationStarting="WebView_OnNavigationStarting">
             </WebView>
         </Grid>
-        <Border Background="{StaticResource color7}" Height="Auto" Width="140" Padding="5" BorderBrush="{StaticResource color3}" BorderThickness="2" Margin="0,50,0,0"
-                Visibility="{Binding Editable, Converter={StaticResource vConverter}, ConverterParameter=true}">
-            <TextBlock x:Name="AddToCollection" Width="Auto" Height="Auto" Foreground="{StaticResource color3}" Text="Drag To Collection" TextAlignment="Center"
-                   PointerPressed="AddToCollection_OnPointerPressed"
-                   ManipulationStarted="AddToCollection_OnManipulationStarted"
-                   ManipulationDelta="AddToCollection_ManipulationDelta"
-                   ManipulationCompleted="AddToCollection_ManipulationCompleted"
-                   ManipulationMode="TranslateX,TranslateY"/>
-        </Border>
+        <local:AddToCollectionButton Grid.Row="1"/>
     </StackPanel>
 
 </UserControl>

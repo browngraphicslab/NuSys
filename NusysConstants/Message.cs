@@ -138,6 +138,10 @@ namespace NusysIntermediate
         {
             try
             {
+                if (ContainsKey(key) && Get(key) == "")
+                {
+                    return false;
+                }
                 return ContainsKey(key) ? bool.Parse(Get(key)) : defaultValue;
             }
             catch (Exception e)

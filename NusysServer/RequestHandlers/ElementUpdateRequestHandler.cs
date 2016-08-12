@@ -75,7 +75,10 @@ namespace NusysServer
                     throw new Exception("Could not update library element from the sql query" + updateRowQueryQuery.CommandString);
                 }
             }
-            return new Message();
+            var returnMessage = new Message();
+            returnMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = true;
+
+            return returnMessage;
         }
     }
 }

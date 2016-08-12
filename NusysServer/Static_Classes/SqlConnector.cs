@@ -42,7 +42,7 @@ namespace NusysServer
             _db = new SqlConnection(SQLSTRING);
             _db.Open(); //open database
 
-            //ResetTables();
+            ResetTables();
             //SetUpTables();
 
             TestFunc();
@@ -57,6 +57,12 @@ namespace NusysServer
         /// </summary>
         private void SetUpTables()
         {
+            var presentationLinksTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.PresentationLink) + " (" +
+                NusysConstants.PRESENTATION_LINKS_TABLE_LINK_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
+                NusysConstants.PRESENTATION_LINKS_TABLE_IN_ELEMENT_ID_KEY + " varchar(128), " +
+                NusysConstants.PRESENTATION_LINKS_TABLE_OUT_ELEMENT_ID_KEY + " varchar(128), " +
+                NusysConstants.PRESENTATION_LINKS_TABLE_PARENT_COLLECTION_LIBRARY_ID_KEY + " varchar(128), " +
+                NusysConstants.PRESENTATION_LINKS_TABLE_ANNOTATION_TEXT_KEY + " varchar(4096));");
 
             var contentTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Content) + " (" +
                 NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
@@ -101,6 +107,7 @@ namespace NusysServer
                 NusysConstants.PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY + " float, " +
                 NusysConstants.PROPERTIES_STRING_VALUE_COLUMN_KEY + " varchar(4096));");
 
+            presentationLinksTable.ExecuteNonQuery();
             libraryElementTable.ExecuteNonQuery();
             aliasTable.ExecuteNonQuery();
             metadataTable.ExecuteNonQuery();
@@ -118,13 +125,14 @@ namespace NusysServer
         {
             if (delete)
             {
-
+                var dropPresentationLinks = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.PresentationLink));
                 var dropAliases = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Alias));
                 var dropLibraryElements = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.LibraryElement));
                 var dropProperties = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Properties));
                 var dropMetadata = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Metadata));
                 var dropContent = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Content));
 
+                dropPresentationLinks.ExecuteNonQuery();
                 dropAliases.ExecuteNonQuery();
                 dropLibraryElements.ExecuteNonQuery();
                 dropProperties.ExecuteNonQuery();
@@ -133,12 +141,14 @@ namespace NusysServer
             }
             else
             {
+                var clearPresentationLinks = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.PresentationLink));
                 var clearAliases = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Alias));
                 var clearLibraryElements = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.LibraryElement));
                 var clearProperties = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Properties));
                 var clearMetadata = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Metadata));
                 var clearContent = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Content));
 
+                clearPresentationLinks.ExecuteNonQuery();
                 clearAliases.ExecuteNonQuery();
                 clearLibraryElements.ExecuteNonQuery();
                 clearProperties.ExecuteNonQuery();

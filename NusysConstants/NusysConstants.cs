@@ -75,10 +75,10 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string GET_ENTIRE_WORKSPACE_REQUEST_COLLECTION_ID_KEY = "collection_id_to_get";
 
-            /// <summary>
-            /// The key used to hold the GetEntireWorkspaceRequestArgs class
-            /// </summary>
-            public static readonly string GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY = "returned_workspace_arguments";
+        /// <summary>
+        /// The key used to hold the GetEntireWorkspaceRequestArgs class
+        /// </summary>
+        public static readonly string GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY = "returned_workspace_arguments";
 
             #endregion GetEntireWorkspaceRequest
 
@@ -354,7 +354,7 @@ namespace NusysIntermediate
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY = "link_library_element_model_id_out";
         #endregion NewLibraryElementRequest
 
-        #region CreateNewMetadataRequest
+            #region CreateNewMetadataRequest
         /// <summary>
         /// key in message for library id of the element that the metadata belongs to
         /// </summary>
@@ -381,7 +381,7 @@ namespace NusysIntermediate
         public static readonly string CREATE_NEW_METADATA_REQUEST_RETURNED_METADATA_ENTRY_KEY = "metadata_entry";
         #endregion CreateNewMetadataRequest
 
-        #region DeleteMetadataRequest
+            #region DeleteMetadataRequest
         /// <summary>
         /// key in message for library id of the element that the metadata to be deleted belongs to
         /// </summary>
@@ -411,6 +411,34 @@ namespace NusysIntermediate
         
         #endregion UpdateMetadataRequest
 
+        #region CreateNewPresentationLinkRequest
+        /// <summary>
+        /// The key for sending the link id for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_ID_KEY = "link_id";
+
+        /// <summary>
+        /// The key for sending the link IN id for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_IN_ID_KEY = "link_in_element_id";
+
+        /// <summary>
+        /// The key for sending the link OUT id for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_OUT_ID_KEY = "link_out_element_id";
+
+        /// <summary>
+        /// The key for sending the parent collection id for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_PARENT_COLLECTION_ID_KEY = "parent_collection_id";
+
+        /// <summary>
+        /// The key for sending the annotation for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_ANNOTATION_KEY = "annotation";
+
+        #endregion CreateNewPresentationLinkRequest
+
 
         #region ChatRequest
 
@@ -429,7 +457,7 @@ namespace NusysIntermediate
 
         #region SQLColumnNames
 
-        #region alias
+            #region alias
 
         /// <summary>
         /// 32 character string, aka an ID.  
@@ -728,6 +756,48 @@ namespace NusysIntermediate
             };
             #endregion Content
 
+            #region PresentationLinks
+
+            /// <summary>
+            /// 32 character Id of the presentation link.
+            /// </summary>
+            public static readonly string PRESENTATION_LINKS_TABLE_LINK_ID_KEY = "link_id";
+
+            /// <summary>
+            ///  32 character Id of the presentation link's In-Element ElementId;
+            /// </summary>
+            public static readonly string PRESENTATION_LINKS_TABLE_IN_ELEMENT_ID_KEY = "link_in_element_id";
+
+            /// <summary>
+            ///  32 character Id of the presentation link's Out-Element ElementId;
+            /// </summary>
+            public static readonly string PRESENTATION_LINKS_TABLE_OUT_ELEMENT_ID_KEY = "link_out_element_id";
+
+            /// <summary>
+            ///  32 character Id of the presentation link's parent collection Id.
+            /// </summary>
+            public static readonly string PRESENTATION_LINKS_TABLE_PARENT_COLLECTION_LIBRARY_ID_KEY = "parent_collection_id";
+
+            /// <summary>
+            ///  max 2048 character string that will be the presentation link's annotation string.
+            /// </summary>
+            public static readonly string PRESENTATION_LINKS_TABLE_ANNOTATION_TEXT_KEY = "annotation";
+
+            /// <summary>
+            /// the list of keys that will safely be entered into the contents table.  
+            /// Use this to make sure that you're entering correct keys into the database
+            /// </summary>
+            public static readonly HashSet<string> ACCEPTED_PRESENTATION_LINKS_TABLE_KEYS = new HashSet<string>()
+            {
+                PRESENTATION_LINKS_TABLE_LINK_ID_KEY,
+                PRESENTATION_LINKS_TABLE_IN_ELEMENT_ID_KEY,
+                PRESENTATION_LINKS_TABLE_OUT_ELEMENT_ID_KEY,
+                PRESENTATION_LINKS_TABLE_PARENT_COLLECTION_LIBRARY_ID_KEY,
+                PRESENTATION_LINKS_TABLE_ANNOTATION_TEXT_KEY
+            };
+
+        #endregion PresentationLinks
+
         #endregion SQLColumnNames
 
         #region SQLTableNames
@@ -757,17 +827,22 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string CONTENTS_SQL_TABLE_NAME = "contents";
 
+        /// <summary>
+        /// The string name of the presentation links SQL table in our database
+        /// </summary>
+        public static readonly string PRESENTATION_LINKS_SQL_TABLE_NAME = "presentation_link";
+
         #endregion SQLTableNames
 
         #region UnPackingModelKeys
 
-            #region LibraryElementModel
+        #region LibraryElementModel
 
-            /// <summary>
-            /// This key is used to hold the metadata for library element models when represented in message form.
-            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-            /// </summary>
-            public static readonly string LIBRARY_ELEMENT_METADATA_KEY = "library_element_metadata";
+        /// <summary>
+        /// This key is used to hold the metadata for library element models when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string LIBRARY_ELEMENT_METADATA_KEY = "library_element_metadata";
 
             /// <summary>
             /// This key is used to hold the clipping parent's library element Id.
