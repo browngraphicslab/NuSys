@@ -39,7 +39,7 @@ namespace NuSysApp
             vm?.SortByTitle();
         }
 
-        private void CreateLinkButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        private async void CreateLinkButton_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             var content = LinkToBox.SelectedItem as LibraryItemTemplate;
             if (content == null)
@@ -50,24 +50,8 @@ namespace NuSysApp
             }
 
             var vm = DataContext as LinkEditorTabViewModel;
-            var title = linkTitle.Text;
-            HashSet<Keyword> keywords = null;
-            if (Tags.Text != string.Empty)
-            {
-                var tagString = Tags.Text;
-                keywords = new HashSet<Keyword>(tagString.Split(',').Select(sValue => new Keyword(sValue.Trim())));
-            }
-            
             Debug.Assert(content != null && content.ContentID != null);
-            string id = content.ContentID;
-            // if we are linking to a region
-            if (content.RegionId != null)
-            {
-                //id = content.RegionId;
-            }
-            vm?.CreateLink(id, title, keywords);
-            linkTitle.Text = "";
-            Tags.Text = "";
+            vm.CreateLink(content.ContentID);
         }
 
         private void SortLinkedTo_OnClick(object sender, RoutedEventArgs e)
