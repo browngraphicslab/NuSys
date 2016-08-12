@@ -24,7 +24,7 @@ namespace NusysIntermediate
         public MetadataMutability Mutability { get; set; }
 
         /// <summary>
-        /// Creates a meta data entry with a key, value, mutability, and brush (based on mutability)
+        /// Creates a meta data entry with a key, value, and mutability
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>

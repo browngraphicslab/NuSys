@@ -84,6 +84,7 @@ namespace NusysServer
             forwardMessage[NusysConstants.NEW_ELEMENT_REQUEST_RETURNED_ELEMENT_MODEL_KEY] = model;
             NuWebSocketHandler.BroadcastToSubset(forwardMessage, new HashSet<NuWebSocketHandler>() { senderHandler });
 
+
             var returnMessage = new Message();
             returnMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = success;
             returnMessage[NusysConstants.NEW_ELEMENT_REQUEST_RETURNED_ELEMENT_MODEL_KEY] = model;
