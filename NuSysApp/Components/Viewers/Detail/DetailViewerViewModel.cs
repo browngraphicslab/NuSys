@@ -20,36 +20,13 @@ namespace NuSysApp
 {
     public class DetailViewerViewModel : BaseINPC
     {
-        // Private Variables
-
-        /// <summary>
-        /// Visibility binding for the DV tabs. Visible when 2+ tabs.
-        /// </summary>
-        private Visibility _tabVisibility;
-        private string _title;
+        private ElementModel _nodeModel;
         private DetailViewHomeTabViewFactory _viewHomeTabViewFactory = new DetailViewHomeTabViewFactory();
-        private double _tabWidth;
-        private DetailHomeTabViewModel _regionableRegionTabViewModel;
-        private DetailHomeTabViewModel _regionableHomeTabViewModel;
-        private ElementViewModel _currentElementViewModel;
-
-        // Public Variables
-
+        private string _tagToDelete;
+        public bool DeleteOnFocus;
+        private string _title;
         public Dictionary<string, DetailViewTabType> TabDictionary = new Dictionary<string, DetailViewTabType>();
         public event TitleChangedHandler OnTitleChanged;
-        public UserControl View { get; set; }
-        public UserControl RegionView { set; get; }
-        public ObservableCollection<FrameworkElement> Tags { get; set; }
-        public ObservableCollection<FrameworkElement> SuggestedTags { get; set; }
-        public ObservableCollection<DetailViewTabTemplate> Tabs { get; private set; }
-        public ObservableCollection<StackPanel> Metadata { get; set; }
-        public LibraryElementController CurrentElementController { get; set; }
-        public delegate void TitleChangedHandler(object source, string newTitle);
-        public event TitleChangedHandler TitleChanged;
-        // Tab Pane Width is a reference to the width of the Tab pane 
-        public double TabPaneWidth { get; set; }
-
-
         public string Title
         {
             get { return _title; }
@@ -59,6 +36,23 @@ namespace NuSysApp
                 OnTitleChanged?.Invoke(this, _title);
             }
         }
+        public string Date { get; set; }
+
+        public UserControl View { get; set; }
+
+        public UserControl RegionView { set; get; }
+
+        public ObservableCollection<FrameworkElement> Tags { get; set; }
+
+        public ObservableCollection<FrameworkElement> SuggestedTags { get; set; }
+
+        public ObservableCollection<DetailViewTabTemplate> Tabs { get; private set; }
+
+
+
+
+        //Visibility binding for the DV tabs. Visible when 2+ tabs.
+        private Visibility _tabVisibility;
 
         public Visibility TabVisibility
         {
@@ -69,17 +63,37 @@ namespace NuSysApp
                 RaisePropertyChanged("TabVisibility");
             }
         }
+        // Tab Pane Height is a reference to the height of the Tab pane 
+        public double TabPaneWidth { get; set; }
+        private double _tabHeight;
 
-        // TabWidth controls the standard height that tabs have. It is some factor of the TabPaneWidth
-        public double TabWidth
+        // TabHeight controls the standard height that tabs have. It is some factor of the TabPaneWidth
+        public double TabHeight
         {
-            get { return _tabWidth; }
+            get { return _tabHeight; }
             set
             {
-                _tabWidth = value; 
-                RaisePropertyChanged("TabWidth");
+                _tabHeight = value; 
+                RaisePropertyChanged("TabHeight");
+                RaisePropertyChanged("TextHeight");
             }
         }
+        public double TextHeight { get { return _tabHeight - 25; } }
+
+        public ObservableCollection<StackPanel> Metadata { get; set; }
+
+        public ObservableCollection<Region> RegionCollection { set; get; }
+
+        private DetailHomeTabViewModel _regionableRegionTabViewModel;
+        private DetailHomeTabViewModel _regionableHomeTabViewModel;
+
+        private ElementViewModel _currentElementViewModel;
+        public LibraryElementController CurrentElementController { get; set; }
+
+        public LibraryElementController CurrentDetailViewable { get; set; }
+
+        public delegate void TitleChangedHandler(object source, string newTitle);
+        public event TitleChangedHandler TitleChanged;
         
         public DetailViewerViewModel()
 
@@ -87,6 +101,7 @@ namespace NuSysApp
             Tags = new ObservableCollection<FrameworkElement>();
             SuggestedTags = new ObservableCollection<FrameworkElement>();
             Metadata = new ObservableCollection<StackPanel>();
+            RegionCollection = new ObservableCollection<Region>();
             Tabs = new ObservableCollection<DetailViewTabTemplate>();
             SessionController.Instance.ContentController.OnElementDelete += ContentController_OnElementDelete;
         }
@@ -96,14 +111,16 @@ namespace NuSysApp
             RemoveTab(element.LibraryElementId);
             // set tab visibility to true if there is more than one
             TabVisibility = Tabs.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
-            TabWidth = TabPaneWidth / Tabs.Count;
+            TabHeight = TabPaneWidth / Tabs.Count;
         }
 
         public void Dispose()
         {
+            CurrentDetailViewable.TitleChanged -= ControllerTitleChanged;
 
             // If this is null remove it 
             CurrentElementController.KeywordsChanged -= KeywordsChanged;
+            _nodeModel = null;
         }
         public async Task<bool> ShowElement(LibraryElementController controller)
         {                     
@@ -116,10 +133,28 @@ namespace NuSysApp
             if (CurrentElementController != null)
             {
                 CurrentElementController.KeywordsChanged -= KeywordsChanged;
-                CurrentElementController.TitleChanged -= ControllerTitleChanged;
+                if (CurrentDetailViewable != null)
+                {
+                    CurrentDetailViewable.TitleChanged -= ControllerTitleChanged;
+                }
             }
             CurrentElementController = controller;
+            CurrentDetailViewable = controller;
             CurrentElementController.KeywordsChanged += KeywordsChanged;
+
+            RegionCollection.Clear();
+
+            var regions = SessionController.Instance.RegionsController.GetClippingParentRegionLibraryElementIds(CurrentElementController.LibraryElementModel.LibraryElementId);
+
+            if (regions?.Count > 0)
+            {
+                foreach (var regionLibraryId in regions)
+                {
+                    Debug.Assert(SessionController.Instance.ContentController.GetLibraryElementModel(regionLibraryId) is Region);
+                    RegionCollection.Add(SessionController.Instance.ContentController.GetLibraryElementModel(regionLibraryId) as Region);
+                }
+            }
+            RaisePropertyChanged("OrderedRegionCollection");
 
             View = await _viewHomeTabViewFactory.CreateFromSendable(controller);
             if (View == null)
@@ -133,43 +168,38 @@ namespace NuSysApp
                 return false;
             }
 
+
             _regionableRegionTabViewModel = RegionView.DataContext as DetailHomeTabViewModel;
-            Debug.Assert(_regionableRegionTabViewModel != null);
             _regionableRegionTabViewModel.Editable = true;
             _regionableHomeTabViewModel = View.DataContext as DetailHomeTabViewModel;
-            Debug.Assert(_regionableHomeTabViewModel != null);
             _regionableHomeTabViewModel.Editable = false;
 
-            Title = CurrentElementController.LibraryElementModel.Title;
+                
+            Title = controller.LibraryElementModel.Title;
 
-            CurrentElementController.TitleChanged += ControllerTitleChanged;
+            controller.TitleChanged += ControllerTitleChanged;
             MakeTagList();
             MakeSuggestedTagList();
-
-            Debug.Assert(View != null);
-            Debug.Assert(RegionView != null);
-            Debug.Assert(SuggestedTags != null);
-            Debug.Assert(Tags != null);
-            Debug.Assert(Metadata != null);
-
             RaisePropertyChanged("View");
-            RaisePropertyChanged("RegionView");
             RaisePropertyChanged("SuggestedTags");
             RaisePropertyChanged("Tags");
             RaisePropertyChanged("Metadata");
+            RaisePropertyChanged("RegionView");
 
-            AddTab(CurrentElementController);
+            AddTab(controller);
             return true;
         }
 
 
         public void AddTab(LibraryElementController controller)
         {
-            Debug.Assert(Tabs != null);
             // return if the tab is already in the detail view
-            if (Tabs.Any(tab => tab.LibraryElementId == controller.LibraryElementModel.LibraryElementId))
+            foreach (var tab in Tabs)
             {
-                return;
+                if (tab.LibraryElementId == controller.LibraryElementModel.LibraryElementId)
+                {
+                    return;
+                }
             }
 
             if (Tabs.Count < 6)
@@ -185,13 +215,14 @@ namespace NuSysApp
             TabVisibility = Visibility.Visible;
 
             TabVisibility = Tabs.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
-            TabWidth = TabPaneWidth/Tabs.Count;
+            TabHeight = TabPaneWidth/Tabs.Count;
         }
         
 
         private void KeywordsChanged(object sender, HashSet<Keyword> keywords)
         {
             MakeTagList();
+            //MakeSuggestedTagList();
         }
         
         private void ControllerTitleChanged(object sender, string title)
@@ -224,7 +255,6 @@ namespace NuSysApp
                 //TODO remove debug asserts, if statements are ugly but needed because otherwise produced async crash on key not found
 
                 // get the metaDataDictionary for the currentelementController
-                // if this is null we set LibraryElementModel.Metadata to the new metadata at the end of the method
                 var metaDataDict = CurrentElementController?.LibraryElementModel.Metadata ?? new ConcurrentDictionary<string, MetadataEntry>();
                 var suggestedTags = new List<string>();
                 // get a list of the suggested tags from the metadataentry for system suggested names
@@ -323,7 +353,6 @@ namespace NuSysApp
                     numSuggestions++;                   
                 }
             }
-
             RaisePropertyChanged("SuggestedTags");
         }
 
@@ -421,9 +450,9 @@ namespace NuSysApp
 
         public void ChangeControllersTitle(string title)
         {
-            CurrentElementController.TitleChanged -= ControllerTitleChanged;
-            CurrentElementController.SetTitle(title);
-            CurrentElementController.TitleChanged += ControllerTitleChanged;
+            CurrentDetailViewable.TitleChanged -= ControllerTitleChanged;
+            CurrentDetailViewable.SetTitle(title);
+            CurrentDetailViewable.TitleChanged += ControllerTitleChanged;
         }
 
         public void RemoveTab(string libraryElementControllerId)
@@ -457,7 +486,7 @@ namespace NuSysApp
             {
                 SessionController.Instance.SessionView.DetailViewerView.CloseDv();
             }
-            TabWidth = TabPaneWidth / Tabs.Count;
+            TabHeight = TabPaneWidth / Tabs.Count;
         }
 
     }

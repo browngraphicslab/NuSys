@@ -5,6 +5,7 @@
     xmlns:local="using:NuSysApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="using:NuSysApp"
     mc:Ignorable="d"
     d:DesignHeight="960"
     d:DesignWidth="500"
@@ -239,7 +240,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Grid x:Name="TabStack" Background="{StaticResource color1}" BorderBrush="{StaticResource color2}" BorderThickness="0,1,1,0" Padding="3,3,3,3"  Height="40" 
-                              Width="{Binding ElementName=TabList, Path=DataContext.TabWidth}">
+                              Width="{Binding ElementName=TabList, Path=DataContext.TabHeight}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                                 <ColumnDefinition Width="20"></ColumnDefinition>
