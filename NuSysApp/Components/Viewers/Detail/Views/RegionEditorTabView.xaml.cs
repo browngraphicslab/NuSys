@@ -84,6 +84,7 @@ namespace NuSysApp
 
             var request = new CreateNewLibraryElementRequest(regionRequestArgs);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            request.AddReturnedLibraryElementToLibrary();
         }
 
         public void ShowListView(bool visible, NusysConstants.ElementType type)

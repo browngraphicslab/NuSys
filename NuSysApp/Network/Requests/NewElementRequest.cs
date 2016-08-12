@@ -47,6 +47,7 @@ namespace NuSysApp
         /// <returns></returns>
         public override async Task CheckOutgoingRequest()
         {
+            var m = _message;
             Debug.Assert(_message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_ID_KEY));
             Debug.Assert(_message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_LOCATION_Y_KEY));
             Debug.Assert(_message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_LOCATION_X_KEY));

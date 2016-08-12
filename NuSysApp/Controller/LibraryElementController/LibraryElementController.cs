@@ -631,7 +631,49 @@ namespace NuSysApp
             }
 
         }
-        
+
+        /// <summary>
+        /// creates a new element of this controller's libraryElementModel.  
+        /// It creates it at the passed in X and Y location, and on the given collection Id.
+        /// If the given collection ID is null, it will default to the Session's current workspace.
+        /// The Id is the LibraryElementId of the collection. 
+        /// 
+        /// returns whether request was succesful and the element added
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public async Task<bool> AddElementAtPosition(double x, double y, string collectionId = null)
+        {
+            //the workspace id we are using is the passes in one, or the session's current workspace Id if it is null
+            collectionId = collectionId ?? SessionController.Instance.ActiveFreeFormViewer.Model.LibraryId;
+
+            //create the request args 
+            var elementArgs = new NewElementRequestArgs();
+            elementArgs.LibraryElementId = LibraryElementModel.LibraryElementId;
+            elementArgs.Height = 300;//TODO abstract to constant in NusysApp.Constants class
+            elementArgs.Width = 300;//TODO abstract to constant in NusysApp.Constants class
+            elementArgs.ParentCollectionId = collectionId;
+            elementArgs.X = x;
+            elementArgs.Y = y;
+            
+            //create the request
+            var request = new NewElementRequest(elementArgs);
+
+            //execute the request, await return
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+
+            if (request.WasSuccessful() == true) //if it returned sucesssfully
+            {
+                request.AddReturnedElementToSession();
+                return true;
+            }
+            else
+            {
+                //maybe notify user
+                return false;
+            }
+        }
 
     }
 }

@@ -46,7 +46,7 @@ namespace NuSysApp
         {
             get
             {
-                return new Point2d(Model.X + Model.Width/2, Model.Y+Model.Height / 2);
+                return new Point2d(Model.X + Model.Width / 2, Model.Y + Model.Height / 2);
             }
         }
 
@@ -54,10 +54,10 @@ namespace NuSysApp
         public ElementController(ElementModel model)
         {
             _model = model;
-            
-         //   Debug.WriteLine(Model.Title);
 
-         //   LibraryElementModel.SetTitle(Model.Title);
+            //   Debug.WriteLine(Model.Title);
+
+            //   LibraryElementModel.SetTitle(Model.Title);
 
             if (_model != null)
             {
@@ -141,7 +141,7 @@ namespace NuSysApp
 
             _debouncingDictionary.Add("alpha", alpha);
         }
-       
+
         public void Delete(object sender)
         {
             Deleted?.Invoke(this);
@@ -166,21 +166,28 @@ namespace NuSysApp
             return request.RemoveNodeLocally();
         }
 
-        public async virtual Task RequestDuplicate(double x, double y, Message m = null)
+        /// <summary>
+        /// Requests a duplicate of the controller's element that will be located at the given x and y coordinates
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public async virtual Task RequestDuplicate(double x, double y)
         {
-           if (m == null)
-                m = new Message();
+            // Set up the request args
+            var args = new NewElementRequestArgs();
+            args.X = x;
+            args.Y = y;
+            args.Width = Model.Width;
+            args.Height = Model.Height;
+            args.ParentCollectionId = Model.ParentCollectionId;
+            args.LibraryElementId = Model.LibraryId;
 
-            m.Remove("id");
-            m["libraryId"] = Model.LibraryId;
-            m["data"] = "";
-            m["x"] = x;
-            m["y"] = y;
-            m["width"] = Model.Width;
-            m["height"] = Model.Height;
-            m["type"] = Model.ElementType.ToString();
-            m["creator"] = Model.ParentCollectionId;
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m));
+            // Set up the request, execute it, and add the new element to the session
+            var request = new NewElementRequest(args);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            request.AddReturnedElementToSession();
+
         }
 
         public Dictionary<string, object> CreateImageDictionary(double x, double y, double height, double width)
@@ -211,6 +218,7 @@ namespace NuSysApp
             return dic;
         }
 
+
         /// <summary>
         /// This method will move this alias to a different collection.  
         /// Give it LibaryElementId of the new collection you want to move it to.
@@ -222,6 +230,7 @@ namespace NuSysApp
         /// <returns></returns>
         public virtual async Task RequestMoveToCollection(string newCollectionLibraryID, double x=50000, double y=50000)
         {
+
             var newElementArgs = new NewElementRequestArgs();
             newElementArgs.LibraryElementId = Model.LibraryId;
             newElementArgs.Height = 200;//TODO not hard code this shit
@@ -295,7 +304,7 @@ namespace NuSysApp
                 Model.X = x;
                 Model.Y = y;
 
-                PositionChanged?.Invoke(this, x,y);
+                PositionChanged?.Invoke(this, x, y);
                 FireAnchorChanged();
             }
             if (props.ContainsKey(NusysConstants.ALIAS_SIZE_WIDTH_KEY) || props.ContainsKey(NusysConstants.ALIAS_SIZE_HEIGHT_KEY))

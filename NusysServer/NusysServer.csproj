@@ -91,6 +91,10 @@
       <HintPath>..\packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.ProjectOxford.Vision, Version=1.0.354.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ProjectOxford.Vision.1.0.354\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Microsoft.ProjectOxford.Vision.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
@@ -196,6 +200,21 @@
     <Compile Include="RequestHandlers\SearchRequestHandler.cs" />
     <Compile Include="RequestHandlers\UpdateLibraryElementRequestHandler.cs" />
     <Compile Include="StartUp.cs" />
+    <Compile Include="Static_Classes\CognitiveApi\CognitiveApiConstants.cs" />
+    <Compile Include="Static_Classes\CognitiveApi\CognitiveApiDocument.cs" />
+    <Compile Include="Static_Classes\CognitiveApi\CognitiveApiDocumentKeyPhrases.cs" />
+    <Compile Include="Static_Classes\CognitiveApi\CognitiveApiDocumentSentiment.cs" />
+    <Compile Include="Static_Classes\CognitiveApi\CognitiveApiKeyPhrasesModel.cs" />
+    <Compile Include="Static_Classes\CognitiveApi\CognitiveApiReturnDocumentKeyPhrases.cs" />
+    <Compile Include="Static_Classes\CognitiveApi\CognitiveApiReturnDocumentSentiment.cs" />
+    <Compile Include="Static_Classes\CognitiveApi\CognitiveApiReturnError.cs" />
+    <Compile Include="Static_Classes\CognitiveApi\CognitiveApiSendObject.cs" />
+    <Compile Include="Static_Classes\CognitiveApi\CognitiveApiSentimentModel.cs" />
+    <Compile Include="Static_Classes\CognitiveApi\CognitiveApiTopicModel.cs" />
+    <Compile Include="Static_Classes\CognitiveApi\CognitiveApiTopicProcessingResult.cs" />
+    <Compile Include="Static_Classes\CognitiveApi\CognitiveApiTopicProcessingTopic.cs" />
+    <Compile Include="Static_Classes\CognitiveApi\CognitiveApiTopicProcessingTopicAssignment.cs" />
+    <Compile Include="Static_Classes\CognitiveApi\ICognitiveApiDocumentable.cs" />
     <Compile Include="Static_Classes\ContentController.cs" />
     <Compile Include="Static_Classes\DocumentComparison\ComparisonController.cs" />
     <Compile Include="Static_Classes\DocumentComparison\Document.cs" />
@@ -207,9 +226,11 @@
     <Compile Include="Static_Classes\DocumentComparison\RetrieveSimilarDocs.cs" />
     <Compile Include="Static_Classes\DocumentComparison\Tfidf\Tfidf.cs" />
     <Compile Include="Static_Classes\DocumentComparison\VectorUtil.cs" />
+    <Compile Include="Static_Classes\ImageProcessor.cs" />
     <Compile Include="Static_Classes\NuWebSocketHandler.cs" />
     <Compile Include="Static_Classes\RequestRouter.cs" />
     <Compile Include="Static_Classes\SqlConnector.cs" />
+    <Compile Include="Static_Classes\TextProcessor.cs" />
     <Compile Include="Util\BiDictionary.cs" />
     <Compile Include="Util\Constants.cs" />
     <Compile Include="Util\ErrorLog.cs" />

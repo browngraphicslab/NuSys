@@ -410,7 +410,7 @@ namespace NusysIntermediate
 
         #region SQLColumnNames
 
-        #region alias
+            #region alias
 
         /// <summary>
         /// 32 character string, aka an ID.  
@@ -709,6 +709,48 @@ namespace NusysIntermediate
             };
             #endregion Content
 
+            #region PresentationLinks
+
+            /// <summary>
+            /// 32 character Id of the presentation link.
+            /// </summary>
+            public static readonly string PRESENTATION_LINKS_TABLE_LINK_ID_KEY = "link_id";
+
+            /// <summary>
+            ///  32 character Id of the presentation link's In-Element ElementId;
+            /// </summary>
+            public static readonly string PRESENTATION_LINKS_TABLE_IN_ELEMENT_ID_KEY = "link_in_element_id";
+
+            /// <summary>
+            ///  32 character Id of the presentation link's Out-Element ElementId;
+            /// </summary>
+            public static readonly string PRESENTATION_LINKS_TABLE_OUT_ELEMENT_ID_KEY = "link_out_element_id";
+
+            /// <summary>
+            ///  32 character Id of the presentation link's parent collection Id.
+            /// </summary>
+            public static readonly string PRESENTATION_LINKS_TABLE_PARENT_COLLECTION_LIBRARY_ID_KEY = "parent_collection_id";
+
+            /// <summary>
+            ///  max 2048 character string that will be the presentation link's annotation string.
+            /// </summary>
+            public static readonly string PRESENTATION_LINKS_TABLE_ANNOTATION_TEXT_KEY = "annotation";
+
+            /// <summary>
+            /// the list of keys that will safely be entered into the contents table.  
+            /// Use this to make sure that you're entering correct keys into the database
+            /// </summary>
+            public static readonly HashSet<string> ACCEPTED_PRESENTATION_LINKS_TABLE_KEYS = new HashSet<string>()
+            {
+                PRESENTATION_LINKS_TABLE_LINK_ID_KEY,
+                PRESENTATION_LINKS_TABLE_IN_ELEMENT_ID_KEY,
+                PRESENTATION_LINKS_TABLE_OUT_ELEMENT_ID_KEY,
+                PRESENTATION_LINKS_TABLE_PARENT_COLLECTION_LIBRARY_ID_KEY,
+                PRESENTATION_LINKS_TABLE_ANNOTATION_TEXT_KEY
+            };
+
+        #endregion PresentationLinks
+
         #endregion SQLColumnNames
 
         #region SQLTableNames
@@ -738,17 +780,22 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string CONTENTS_SQL_TABLE_NAME = "contents";
 
+        /// <summary>
+        /// The string name of the presentation links SQL table in our database
+        /// </summary>
+        public static readonly string PRESENTATION_LINKS_SQL_TABLE_NAME = "presentation_link";
+
         #endregion SQLTableNames
 
         #region UnPackingModelKeys
 
-            #region LibraryElementModel
+        #region LibraryElementModel
 
-            /// <summary>
-            /// This key is used to hold the metadata for library element models when represented in message form.
-            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-            /// </summary>
-            public static readonly string LIBRARY_ELEMENT_METADATA_KEY = "library_element_metadata";
+        /// <summary>
+        /// This key is used to hold the metadata for library element models when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string LIBRARY_ELEMENT_METADATA_KEY = "library_element_metadata";
 
             /// <summary>
             /// This key is used to hold the clipping parent's library element Id.
