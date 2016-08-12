@@ -91,6 +91,7 @@ namespace NuSysApp
         private void SlideOutLoginComplete(object sender, object e)
         {
             login.Visibility = Visibility.Collapsed;
+            NuSysTitle.Visibility = Visibility.Collapsed;
         }
 
         private async void Init()
@@ -114,12 +115,12 @@ namespace NuSysApp
                 }
 
 
-                List?.Items?.Clear();
-                all.Sort((a, b) => a.Text.CompareTo(b.Text));
-                foreach (var i in all)
-                {
-                    List.Items.Add(i);
-                }
+                //List?.Items?.Clear();
+                //all.Sort((a, b) => a.Text.CompareTo(b.Text));
+                //foreach (var i in all)
+                //{
+                //    List.Items.Add(i);
+                //}
                 _collectionAdded = true;
             }
             catch (Exception e)
@@ -131,10 +132,18 @@ namespace NuSysApp
 
         }
 
+        private void NewButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            NewWorkspacePopup.HorizontalOffset = this.ActualWidth/2 - 250;
+            NewWorkspacePopup.VerticalOffset = this.ActualHeight/2 - 110;
+            NewWorkspacePopup.IsOpen = true;
+        }
+
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(SessionView));
         }
+
         private async void NewWorkspaceOnClick(object sender, RoutedEventArgs e)
         {
             var name = NewWorkspaceName.Text;
@@ -144,27 +153,27 @@ namespace NuSysApp
             var request = new CreateNewContentRequest(NusysConstants.ContentType.Text, null, props);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
             Init();
-
+            NewWorkspacePopup.IsOpen = false;
         }
         private async void Join_Workspace_Click(object sender, RoutedEventArgs e)
         {
-            if (List.SelectedItems.Count == 1)
-            {
-                SessionController.Instance.ContentController.OnNewContent -= ContentControllerOnOnNewContent;
+            //if (List.SelectedItems.Count == 1)
+            //{
+            //    SessionController.Instance.ContentController.OnNewContent -= ContentControllerOnOnNewContent;
 
-                var item = List.SelectedItems.First();
-                var id = ((CollectionTextBox) item).ID;
-                var collectionRequest = new GetEntireWorkspaceRequest(id ?? "test");
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collectionRequest);
-                foreach (var content in collectionRequest.GetReturnedContentDataModels())
-                {
-                    SessionController.Instance.ContentController.AddContentDataModel(content);
-                }
-                _firstLoadList = collectionRequest.GetReturnedElementModels();
-                InitialWorkspaceId = id;
-                this.Frame.Navigate(typeof(SessionView));
+            //    var item = List.SelectedItems.First();
+            //    var id = ((CollectionTextBox) item).ID;
+            //    var collectionRequest = new GetEntireWorkspaceRequest(id ?? "test");
+            //    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collectionRequest);
+            //    foreach (var content in collectionRequest.GetReturnedContentDataModels())
+            //    {
+            //        SessionController.Instance.ContentController.AddContentDataModel(content);
+            //    }
+            //    _firstLoadList = collectionRequest.GetReturnedElementModels();
+            //    InitialWorkspaceId = id;
+            //    this.Frame.Navigate(typeof(SessionView));
                 
-            }
+            //}
         }
 
         public static IEnumerable<ElementModel> GetFirstLoadList()
@@ -262,7 +271,7 @@ namespace NuSysApp
                 }
                 catch (Exception longParseException)
                 {
-                    throw new Exception("error trying to parse timestamp to long");
+                    throw new Exception("error trying to parse timestamp too long");
                 }
 
                 string data;
@@ -323,13 +332,13 @@ namespace NuSysApp
                         UserName = userID;
                         if (userID.ToLower() != "rosemary" && userID.ToLower()!= "rms" && userID.ToLower() != "gfxadmin")
                         {
-                            foreach(var box in List.Items)
-                            {
-                                if((box as CollectionTextBox).MadeByRosemary)
-                                {
-                                    List.Items.Remove(box);
-                                }
-                            }
+                            //foreach(var box in List.Items)
+                            //{
+                            //    if((box as CollectionTextBox).MadeByRosemary)
+                            //    {
+                            //        List.Items.Remove(box);
+                            //    }
+                            //}
                         }
 
                         await Task.Run(async delegate
@@ -350,9 +359,9 @@ namespace NuSysApp
                             if (_loggedIn)
                             {
                                 UITask.Run(delegate {
-                                    JoinWorkspaceButton.IsEnabled = true;
-                                    JoinWorkspaceButton.Content = "Enter";
-                                    JoinWorkspaceButton.Visibility = Visibility.Visible;
+                                    //JoinWorkspaceButton.IsEnabled = true;
+                                    //JoinWorkspaceButton.Content = "Enter";
+                                    //JoinWorkspaceButton.Visibility = Visibility.Visible;
                                 });
                                 if (!File.Exists(LoginCredentialsFilePath))
                                 {
@@ -393,7 +402,7 @@ namespace NuSysApp
                 UITask.Run(delegate
                 {
                     var box = new CollectionTextBox(element.Title ?? "", element.LibraryElementId);
-                    if (_collectionAdded == false) { List.Items.Add(box); }
+                    //if (_collectionAdded == false) { List.Items.Add(box); }
                     _collectionAdded = false;
                 });
 

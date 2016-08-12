@@ -253,6 +253,20 @@
     <Content Include="Assets\fonts\FiraSans-UltraLightItalic.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\fonts\AlegreyaSansSC-Black.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-BlackItalic.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-Bold.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-BoldItalic.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-ExtraBold.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-ExtraBoldItalic.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-Italic.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-Light.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-LightItalic.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-Medium.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-MediumItalic.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-Regular.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-Thin.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-ThinItalic.ttf" />
     <None Include="Assets\paragraph.nusys" />
     <None Include="ClassDiagram1.cd" />
     <None Include="NuSysApp_TemporaryKey.pfx" />
