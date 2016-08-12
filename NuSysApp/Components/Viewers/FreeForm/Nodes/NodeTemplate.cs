@@ -352,16 +352,14 @@ namespace NuSysApp
                     {
                         if (_currenDragMode == DragMode.Link)
                         {
-                            if (!(dc is RegionViewModel))
-                            {
-                                var m = new Message();
-                                m["id1"] = dc.LibraryElementId;
-                                m["id2"] = vm.LibraryElementId;
-                                if (dc.LibraryElementId != vm.LibraryElementId)
-                                {
-                                    SessionController.Instance.LinksController.RequestLink(m);
-                                }
-                            }
+                            var createNewLinkLibraryElementRequestArgs = new CreateNewLinkLibraryElementRequestArgs();
+                            createNewLinkLibraryElementRequestArgs.LibraryElementModelInId = vm.LibraryElementId;
+                            createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId = dc.LibraryElementId;
+                            createNewLinkLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Link;
+                            createNewLinkLibraryElementRequestArgs.Title = $"Link from {vm.Model.Title} to {dc.Model.Title}";
+                            var request = new CreateNewLibraryElementRequest(createNewLinkLibraryElementRequestArgs);
+                            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                            request.AddReturnedLibraryElementToLibrary();
                         }
                         if (_currenDragMode == DragMode.PresentationLink)
                         {
