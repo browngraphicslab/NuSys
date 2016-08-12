@@ -76,11 +76,6 @@ namespace NusysIntermediate
             public static readonly string GET_ENTIRE_WORKSPACE_REQUEST_COLLECTION_ID_KEY = "collection_id_to_get";
 
         /// <summary>
-        /// the key used to send the 32-char value of the libraryId of the collection being asked for 
-        /// </summary>
-        public static readonly string GET_ENTIRE_WORKSPACE_REQUEST_USER_ID_KEY = "user_id";
-
-        /// <summary>
         /// The key used to hold the GetEntireWorkspaceRequestArgs class
         /// </summary>
         public static readonly string GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY = "returned_workspace_arguments";
