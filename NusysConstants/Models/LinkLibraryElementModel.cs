@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,6 +10,9 @@ using Newtonsoft.Json;
 using NusysIntermediate;
 
 namespace NusysIntermediate
+=======
+﻿namespace NusysIntermediate
+>>>>>>> Stashed changes
 {
     public class LinkLibraryElementModel: LibraryElementModel
     {

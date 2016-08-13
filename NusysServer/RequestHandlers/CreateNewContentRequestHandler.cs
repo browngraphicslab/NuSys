@@ -54,6 +54,7 @@ namespace NusysServer
                     libraryElementRequestMessage[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY];
             }
 
+<<<<<<< Updated upstream
             //async processing 
             //TODO make this not just for pdfs, but for anything we can scrape text from
             if (message.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY) && message.GetEnum<NusysConstants.ContentType>(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY) == NusysConstants.ContentType.PDF)
@@ -76,6 +77,16 @@ namespace NusysServer
                         });
                     }
                 }
+=======
+            if (Constants.user == "junsu" && message.GetEnum<NusysConstants.ContentType>("type") == NusysConstants.ContentType.PDF)//obviously only for testing
+            {
+                // content, id
+                var tup = new Tuple<string, string>(FileHelper.GetDataFromContentURL(addContentToDatabaseMessage.GetString(NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY), NusysConstants.ContentType.PDF), addContentToDatabaseMessage.GetString(NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY));
+                Debug.WriteLine("hiiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                var title = message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY);
+                ContentController.Instance.ComparisonController.AddDocument(tup, title);
+                ContentController.Instance.ComparisonController.CompareRandomDoc();
+>>>>>>> Stashed changes
             }
 
             return returnMessage;

@@ -12,8 +12,7 @@ namespace NusysServer.DocumentComparison
         /// <param name="k"></param>
         public static Tuple<string, double>[] GetSimilarDocs(Document document, List<Document> documentList, int k)
         {
-            // TODO Try with quickselect
-
+            // TODO Try with quickselect if k gets big or too slow
             // document dictionary
             Dictionary<int, double> documentDictionary = document.GetTFIDFVector();
             

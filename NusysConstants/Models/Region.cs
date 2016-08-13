@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -7,6 +8,9 @@ using System.Threading.Tasks;
 using NusysIntermediate;
 
 namespace NusysIntermediate
+=======
+﻿namespace NusysIntermediate
+>>>>>>> Stashed changes
 {
     public abstract class Region : LibraryElementModel
     {

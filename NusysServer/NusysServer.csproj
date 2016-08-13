@@ -173,9 +173,15 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+<<<<<<< Updated upstream
     <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
       <HintPath>..\packages\WebActivatorEx.2.1.0\lib\net40\WebActivatorEx.dll</HintPath>
       <Private>True</Private>
+=======
+    <Reference Include="Windows.Foundation.UniversalApiContract, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\References\Windows.Foundation.UniversalApiContract\1.0.0.0\Windows.Foundation.UniversalApiContract.winmd</HintPath>
+>>>>>>> Stashed changes
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -263,8 +269,8 @@
     <Compile Include="Static_Classes\CognitiveApi\ICognitiveApiDocumentable.cs" />
     <Compile Include="Static_Classes\ContentController.cs" />
     <Compile Include="Static_Classes\DocumentComparison\ComparisonController.cs" />
+    <Compile Include="Static_Classes\DocumentComparison\DocSave.cs" />
     <Compile Include="Static_Classes\DocumentComparison\Document.cs" />
-    <Compile Include="Static_Classes\DocumentComparison\IdToTFIDF.cs" />
     <Compile Include="Static_Classes\DocumentComparison\MegaDictionary.cs" />
     <Compile Include="Static_Classes\DocumentComparison\Parse\Parser.cs" />
     <Compile Include="Static_Classes\DocumentComparison\Parse\Stemmer.cs" />

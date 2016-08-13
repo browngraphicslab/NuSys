@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +7,9 @@ using System.Threading.Tasks;
 using NusysIntermediate;
 
 namespace NusysIntermediate
+=======
+﻿namespace NusysIntermediate
+>>>>>>> Stashed changes
 {
     public class PdfRegionModel : RectangleRegion 
     {

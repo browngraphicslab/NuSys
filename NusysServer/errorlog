@@ -1,0 +1,30 @@
+8/10/2016 8:29:51 PM   Invalid object name 'library_elements_junsu'.  .Net SqlClient Data Provider     위치: System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   위치: System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   위치: System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   위치: System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   위치: System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
+   위치: System.Data.SqlClient.SqlDataReader.get_MetaData()
+   위치: System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString)
+   위치: System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, SqlDataReader ds, Boolean describeParameterEncryptionRequest)
+   위치: System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean asyncWrite)
+   위치: System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)
+   위치: System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method)
+   위치: System.Data.SqlClient.SqlCommand.ExecuteReader()
+   위치: NusysServer.SQLConnector.ExecuteSelectQueryAsMessages(SelectCommandReturnArgs args, Boolean includeNulls) 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\Static_Classes\SqlConnector.cs:줄 337
+   위치: NusysServer.SQLSelectQuery.ExecuteCommand() 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\Util\SelectQuery\SQLSelectQuery.cs:줄 90
+   위치: NusysServer.GetAllLibraryElementsRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\RequestHandlers\GetAllLibraryElementsRequestHandler.cs:줄 42
+   위치: NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\Static_Classes\RequestRouter.cs:줄 86
+8/11/2016 7:12:26 PM   값은 null일 수 없습니다.
+매개 변수 이름: key  mscorlib     위치: System.Collections.Generic.Dictionary`2.FindEntry(TKey key)
+   위치: System.Collections.Generic.Dictionary`2.ContainsKey(TKey key)
+   위치: NusysServer.Static_Classes.DocumentComparison.DocSave.addDocument(String id, Document document, String title) 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\Static_Classes\DocumentComparison\DocSave.cs:줄 54
+   위치: NusysServer.ComparisonController.AddDocument(Tuple`2 contentIdTuple, String title) 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\Static_Classes\DocumentComparison\ComparisonController.cs:줄 42
+   위치: NusysServer.CreateNewContentRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\RequestHandlers\CreateNewContentRequestHandler.cs:줄 62
+   위치: NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\Static_Classes\RequestRouter.cs:줄 86
+8/11/2016 7:13:33 PM   값은 null일 수 없습니다.
+매개 변수 이름: key  mscorlib     위치: System.Collections.Generic.Dictionary`2.FindEntry(TKey key)
+   위치: System.Collections.Generic.Dictionary`2.ContainsKey(TKey key)
+   위치: NusysServer.Static_Classes.DocumentComparison.DocSave.addDocument(String id, Document document, String title) 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\Static_Classes\DocumentComparison\DocSave.cs:줄 54
+   위치: NusysServer.ComparisonController.AddDocument(Tuple`2 contentIdTuple, String title) 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\Static_Classes\DocumentComparison\ComparisonController.cs:줄 42
+   위치: NusysServer.CreateNewContentRequestHandler.HandleRequest(Request request, NuWebSocketHandler senderHandler) 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\RequestHandlers\CreateNewContentRequestHandler.cs:줄 62
+   위치: NusysServer.RequestRouter.<HandleRequest>d__0.MoveNext() 파일 C:\Users\Junsu\Desktop\graphics\Nusys2\nusys\NusysServer\Static_Classes\RequestRouter.cs:줄 86

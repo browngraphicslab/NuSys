@@ -21,7 +21,7 @@ namespace NusysServer.DocumentComparison
 
         public static double CosineDistance(Dictionary<int, double> d1, Dictionary<int, double> d2)
         {
-            Debug.WriteLine(1 - tfidfDictionaryDotProduct(d1, d2));
+            //Debug.WriteLine(1 - tfidfDictionaryDotProduct(d1, d2));
             return 1 - tfidfDictionaryDotProduct(d1, d2);
         }
     }
