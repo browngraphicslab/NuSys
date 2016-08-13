@@ -45,7 +45,7 @@ namespace NusysServer
             }
         }
 
-        private static bool Local = WWW_ROOT == "D:/home/site/wwwroot/";
+        private static bool Local = WWW_ROOT != "D:/home/site/wwwroot/";
 
         //public static readonly string WWW_ROOT = Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/")
         //    ? "C:/Users/graphics_lab/Documents/NuRepo_Test/"
