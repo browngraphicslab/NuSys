@@ -39,10 +39,10 @@ namespace NusysServer
         /// <param name="databaseString"></param>
         public SQLConnector(string databaseString = SQLSTRING)
         {
-            _db = new SqlConnection(SQLSTRING);
+            _db = new SqlConnection(databaseString);
             _db.Open(); //open database
 
-            //ResetTables();
+            ResetTables(true);
             SetUpTables();
 
             TestFunc();
@@ -259,6 +259,7 @@ namespace NusysServer
 
         /// <summary>
         /// To remove a single library element from the server, the passed in message should contain the LIBRARY_ELEMENT_LIBRARY_ID_KEY.
+        /// This also takes care of deleting all the related metadata from the metadata table.
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
@@ -268,8 +269,11 @@ namespace NusysServer
             {
                 return false;
             }
-            var cmd = new SQLDeleteQuery(Constants.SQLTableType.LibraryElement, message, Constants.Operator.And);
-            return cmd.ExecuteCommand();
+            var cmdToDeleteFromLibraryElementTable = new SQLDeleteQuery(Constants.SQLTableType.LibraryElement, message, Constants.Operator.And);
+
+            // Deletes all the related metadata from the metadata table.
+            var cmdToDeleteRelatedMetadata = new SQLDeleteQuery(Constants.SQLTableType.Metadata, message, Constants.Operator.And);
+            return cmdToDeleteFromLibraryElementTable.ExecuteCommand() && cmdToDeleteRelatedMetadata.ExecuteCommand();
         }
 
         /// <summary>
@@ -294,6 +298,7 @@ namespace NusysServer
         /// <returns></returns>
         public bool DeleteMetadataEntry(Message message)
         {
+            
             if (!message.ContainsKey(NusysConstants.DELETE_METADATA_REQUEST_LIBRARY_ID_KEY) || !message.ContainsKey(NusysConstants.DELETE_METADATA_REQUEST_METADATA_KEY))
             {
                 return false;

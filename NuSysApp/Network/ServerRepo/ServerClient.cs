@@ -82,7 +82,7 @@ namespace NuSysApp
         private Uri GetUri(string additionToBase, bool useWebSocket = false)
         {
             var firstpart = useWebSocket ? "ws" : "http";
-            firstpart += WaitingRoomView.TEST_LOCAL_BOOLEAN ? "" : "s";
+            firstpart += NusysConstants.TEST_LOCAL_BOOLEAN ? "" : "s";
             return new Uri(firstpart + ServerBaseURI + additionToBase);
         }
 

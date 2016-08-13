@@ -67,6 +67,13 @@ namespace NuSysApp
         public event NetworkUserChangedEventHandler UserChanged;
         public event EventHandler<LinkLibraryElementController> LinkAdded;
         public event EventHandler<string> LinkRemoved;
+
+        /// <summary>
+        /// the event that is fired when the access type of this controller's library element changes. 
+        /// The passed AccessType is the new AccessType of the LibraryElementModel;
+        /// </summary>
+        public event EventHandler<NusysConstants.AccessType> AccessTypeChanged;
+
         #endregion Events
 
         /// <summary>
@@ -201,6 +208,24 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// This method should be called whenever you want to set the access Type of the library element model for this controller.
+        /// It takes in a new access type enum.  
+        /// It will fire an event notifying all listeners of the new access type. 
+        /// This method will also update th server and all other clients IF this controler is not currently in 'block server interaction" mode indicated by the _blockServerInteraction boolean.
+        /// </summary>
+        /// <param name="newAccessType"></param>
+        public void SetAccessType(NusysConstants.AccessType newAccessType)
+        {
+            //TODO set the model's access type after the merge and the access type exists in the LEM base class
+            AccessTypeChanged?.Invoke(this, newAccessType);
+            if (!_blockServerInteraction)
+            {
+                //it's important here to add the enum as a string
+                _debouncingDictionary.Add(NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY, newAccessType.ToString());
+            }
+        }
+
+        /// <summary>
         /// overloads the other change metadata function
         /// </summary>
         /// <param name="metadata"></param>
@@ -276,6 +301,27 @@ namespace NuSysApp
             // Updates the metadata entry
             var newEntry = new MetadataEntry(key, values, original.Mutability);
             _libraryElementModel.Metadata.TryUpdate(original.Key, newEntry,newEntry);
+            ChangeMetadata(FullMetadata);
+            return true;
+        }
+
+        /// <summary>
+        /// This is an overload for Update Metadata that only taken in the original key instead of taking in the entire entry
+        /// </summary>
+        /// <param name="originalKey"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public bool UpdateMetadata(string originalKey, List<string> values)
+        {
+            // Error checking for the passed in parameters
+            if (originalKey == null || string.IsNullOrEmpty(originalKey) || string.IsNullOrWhiteSpace(originalKey) || values == null || !_libraryElementModel.Metadata.ContainsKey(originalKey))
+            {
+                return false;
+            }
+
+            // Updates the metadata entry
+            var newEntry = new MetadataEntry(originalKey, values, MetadataMutability.MUTABLE);
+            _libraryElementModel.Metadata.TryUpdate(originalKey, newEntry, newEntry);
             ChangeMetadata(FullMetadata);
             return true;
         }

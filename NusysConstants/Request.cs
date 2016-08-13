@@ -40,7 +40,7 @@ namespace NusysIntermediate
             {
                 throw new InvalidRequestTypeException("No request type found");
             }
-            _requestType = (NusysConstants.RequestType)Enum.Parse(typeof(NusysConstants.RequestType), _message.GetString(NusysConstants.REQUEST_TYPE_STRING_KEY));//set the request type
+            _requestType = _message.GetEnum<NusysConstants.RequestType>(NusysConstants.REQUEST_TYPE_STRING_KEY);//set the request type
 
         }
 
@@ -70,8 +70,8 @@ namespace NusysIntermediate
 
         public Message GetFinalMessage()
         {
-            _message["request_type"] = _requestType.ToString();
-            _message["system_sent_timestamp"] = DateTime.UtcNow.Ticks;
+            _message[NusysConstants.REQUEST_TYPE_STRING_KEY] = _requestType.ToString();
+            _message["system_sent_timestamp"] = DateTime.UtcNow.Ticks;//TODO fix this
             return _message;
         }
 

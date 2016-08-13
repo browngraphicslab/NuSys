@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -15,8 +16,7 @@ namespace NusysServer
         public static readonly string SERVER_SESSION_ID_STRING = "server_session_id";
         public static readonly string VALID_CREDENTIALS_BOOLEAN_STRING = "valid";
 
-        public static readonly string user = ""; //TODO: CHANGE TO PRIVATE LATER
-
+        public static readonly string user = "trent"; //TODO: CHANGE TO PRIVATE LATER
 
         public static string WWW_ROOT {
             get
@@ -44,6 +44,8 @@ namespace NusysServer
                 }
             }
         }
+
+        private static bool Local = WWW_ROOT != "D:/home/site/wwwroot/";
 
         //public static readonly string WWW_ROOT = Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/")
         //    ? "C:/Users/graphics_lab/Documents/NuRepo_Test/"
@@ -291,22 +293,35 @@ namespace NusysServer
         /// <returns></returns>
         public static string GetTableName(Constants.SQLTableType type)
         {
+            string name;
             switch (type)
             {
                 case Constants.SQLTableType.Alias:
-                    return NusysIntermediate.NusysConstants.ALIASES_SQL_TABLE_NAME + "_" + user;//TODO remove all the '  +"_"+user   ', it's only for testing
+                    name = NusysIntermediate.NusysConstants.ALIASES_SQL_TABLE_NAME;
+                    break;
                 case Constants.SQLTableType.LibraryElement:
-                    return NusysIntermediate.NusysConstants.LIBRARY_ELEMENTS_SQL_TABLE_NAME + "_" + user;
+                    name = NusysIntermediate.NusysConstants.LIBRARY_ELEMENTS_SQL_TABLE_NAME;
+                    break;
                 case Constants.SQLTableType.Metadata:
-                    return NusysIntermediate.NusysConstants.METADATA_SQL_TABLE_NAME + "_" + user;
+                    name = NusysIntermediate.NusysConstants.METADATA_SQL_TABLE_NAME;
+                    break;
                 case Constants.SQLTableType.Properties:
-                    return NusysIntermediate.NusysConstants.PROPERTIES_SQL_TABLE_NAME + "_" + user;
+                    name = NusysIntermediate.NusysConstants.PROPERTIES_SQL_TABLE_NAME;
+                    break;
                 case Constants.SQLTableType.Content:
-                    return NusysIntermediate.NusysConstants.CONTENTS_SQL_TABLE_NAME + "_" + user;
+                    name = NusysIntermediate.NusysConstants.CONTENTS_SQL_TABLE_NAME;
+                    break;
                 case Constants.SQLTableType.PresentationLink:
-                    return NusysIntermediate.NusysConstants.PRESENTATION_LINKS_SQL_TABLE_NAME + "_" + user;
+                    name = NusysIntermediate.NusysConstants.PRESENTATION_LINKS_SQL_TABLE_NAME;
+                    break;
+                default:
+                    throw new Exception("type not supported yet for getting the table name");
             }
-            return null;
+            if (Local)
+            {
+                return name + "_" + user;//TODO remove all the '  +"_"+user   ', it's only for testing
+            }
+            return name;
         }
 
         #endregion StaticMethods

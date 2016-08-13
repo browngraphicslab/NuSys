@@ -616,17 +616,25 @@
     <Compile Include="Network\Requests\ChatRequest.cs" />
     <Compile Include="Network\Requests\CreateNewContentRequest.cs" />
     <Compile Include="Network\Requests\CreateNewMetadataRequest.cs" />
+    <Compile Include="Network\Requests\CreateNewPresentationLinkRequest.cs" />
+    <Compile Include="Network\Requests\DeletePresentationLinkRequest.cs" />
+    <Compile Include="Network\Requests\DeleteMetadataRequest.cs" />
     <Compile Include="Network\Requests\GetAllLibraryElementsRequest.cs" />
     <Compile Include="Network\Requests\GetContentDataModelRequest.cs" />
     <Compile Include="Network\Requests\GetEntireWorkspaceRequest.cs" />
     <Compile Include="Network\Requests\RemoveInkRequest.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewLinkLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewMetadataRequestArgs.cs" />
+    <Compile Include="Network\Requests\RequestArgs\CreateNewPresentationLinkRequestArgs.cs" />
+    <Compile Include="Network\Requests\RequestArgs\DeleteMetadataRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewPDFRegionLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewRectangleRegionLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewRegionLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\Regions\CreateNewTimeSpanRegionRequestArgs.cs" />
+    <Compile Include="Network\Requests\RequestArgs\UpdatePresentationLinkRequestArgs.cs" />
+    <Compile Include="Network\Requests\RequestArgs\UpdateMetadataEntryRequestArgs.cs" />
     <Compile Include="Network\Requests\SearchRequest.cs" />
+    <Compile Include="Network\Requests\UpdateMetadataEntryRequest.cs" />
     <Compile Include="Network\Requests\UpdateLibraryElementModelRequest.cs" />
     <Compile Include="Network\Requests\CreateNewLibraryElementRequest.cs" />
     <Compile Include="Network\Requests\DeleteLibraryElementRequest.cs" />
@@ -653,6 +661,7 @@
       <DependentUpon>SearchWindowView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Network\Requests\UnsubscribeFromCollectionRequest.cs" />
+    <Compile Include="Network\Requests\UpdatePresentationLinkRequest.cs" />
     <Compile Include="Network\ServerRepo\ILockable.cs" />
     <Compile Include="Network\ServerRepo\LockController.cs" />
     <Compile Include="Network\ServerRepo\ServerClient.cs" />
@@ -973,8 +982,8 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\Detail\Misc\AddToCollectionButton.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Components\Viewers\Detail\Views\HomeTab\Views\AudioDetailHomeTabView.xaml">
       <SubType>Designer</SubType>
