@@ -17,7 +17,7 @@ namespace NusysServer
         {
             Debug.Assert(request.GetRequestType() == NusysConstants.RequestType.CreateNewContentRequest);
             var message = GetRequestMessage(request);
-            Debug.Assert(message.ContainsKey(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY));
+            //Debug.Assert(message.ContainsKey(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY));
             Debug.Assert(message.ContainsKey(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY));
             Debug.Assert(message.ContainsKey(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES));
             var returnMessage = new Message();
@@ -98,7 +98,7 @@ namespace NusysServer
             addContentToDatabaseMessage[NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY] = originalMessage[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY];
             addContentToDatabaseMessage[NusysConstants.CONTENT_TABLE_TYPE_KEY] = originalMessage[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY];
 
-            addContentToDatabaseMessage[NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY] = FileHelper.CreateDataFile(originalMessage.Get(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY), contentType, originalMessage.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES), originalMessage.Get(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_FILE_EXTENTION));
+            addContentToDatabaseMessage[NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY] = FileHelper.CreateDataFile(originalMessage.Get(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY), contentType, originalMessage.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES), NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION);
             return addContentToDatabaseMessage;
         }
 

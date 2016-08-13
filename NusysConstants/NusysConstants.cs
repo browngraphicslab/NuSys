@@ -1174,6 +1174,10 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string DEFAULT_THUMBNAIL_FILE_EXTENSION = ".jpg";
 
+        /// <summary>
+        /// the default file extension for pdf page images.  
+        /// </summary>
+        public static readonly string DEFAULT_PDF_PAGE_IMAGE_EXTENSION = ".jpg";
         #endregion Misc
 
         #region staticMethods
