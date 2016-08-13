@@ -2268,7 +2268,7 @@
           }
         }
       },
-      "Win2D.uwp/1.18.0": {
+      "Win2D.uwp/1.19.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         },
@@ -4656,7 +4656,7 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "Win2D.uwp/1.18.0": {
+      "Win2D.uwp/1.19.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         },
@@ -7072,7 +7072,7 @@
           "runtimes/aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "Win2D.uwp/1.18.0": {
+      "Win2D.uwp/1.19.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         },
@@ -9458,7 +9458,7 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "Win2D.uwp/1.18.0": {
+      "Win2D.uwp/1.19.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         },
@@ -11883,7 +11883,7 @@
           "runtimes/aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "Win2D.uwp/1.18.0": {
+      "Win2D.uwp/1.19.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         },
@@ -14269,7 +14269,7 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "Win2D.uwp/1.18.0": {
+      "Win2D.uwp/1.19.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         },
@@ -16694,7 +16694,7 @@
           "runtimes/aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "Win2D.uwp/1.18.0": {
+      "Win2D.uwp/1.19.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
         },
@@ -23150,11 +23150,11 @@
         "runtimes/aot/lib/netcore50/System.Xml.XmlSerializer.dll"
       ]
     },
-    "Win2D.uwp/1.18.0": {
-      "sha512": "qPRgHJF9l7vKLyM/adOjUHE9OE90nYFCpa3/IOaBu1lMyiMwcfXyV2JEri+beNir0eo7luzz8dRBpyBIkjK9qw==",
+    "Win2D.uwp/1.19.0": {
+      "sha512": "pLL/gLb3uY75IlswAKzOvQnwwiGrMxZyBl2DbJOjuzG6SOWMp0sg+tkj+HZU8uyQ8jIdAbOE0Iu5+z9zyT5E6Q==",
       "type": "package",
       "files": [
-        "Win2D.uwp.1.18.0.nupkg.sha512",
+        "Win2D.uwp.1.19.0.nupkg.sha512",
         "Win2D.uwp.nuspec",
         "Win2d.githash.txt",
         "build/native/Win2D.uwp.targets",
@@ -23910,7 +23910,7 @@
       "SharpDX.Mathematics >= 3.0.2",
       "System.Data.SQLite >= 1.0.102",
       "System.Security.Cryptography.Algorithms >= 4.2.0",
-      "Win2D.uwp >= 1.18.0",
+      "Win2D.uwp >= 1.19.0",
       "WinRTXamlToolkit.Controls.DataVisualization.UWP >= 2.0.0",
       "sqlite-net >= 1.0.8"
     ],

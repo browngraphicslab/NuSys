@@ -38,7 +38,7 @@ namespace NuSysApp
         //public static string Password { get; private set; }
         public static string ServerSessionID { get; private set; }
 
-        public static bool TEST_LOCAL_BOOLEAN = true;
+        public static bool TEST_LOCAL_BOOLEAN = false;
 
         public static bool IS_HUB = false;
 
@@ -244,7 +244,7 @@ namespace NuSysApp
                 {
                     cred["new_user"] = "";
                 }
-                var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/login/";
+                var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/nusyslogin/";
                 var client = new HttpClient(
                  new HttpClientHandler
                  {
