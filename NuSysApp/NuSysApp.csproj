@@ -103,6 +103,7 @@
     <Content Include="Assets\add from file dark.png" />
     <Content Include="Assets\audio main menu.png" />
     <Content Include="Assets\audio.png" />
+    <Content Include="Assets\bar chart icon.png" />
     <Content Include="Assets\collection icon bluegreen.png" />
     <Content Include="Assets\collection main menu.png" />
     <Content Include="Assets\collection_1.png" />
@@ -138,6 +139,7 @@
     <Content Include="Assets\icon_webnode.png" />
     <Content Include="Assets\icon_web_color.png" />
     <Content Include="Assets\icon_whitex.png" />
+    <Content Include="Assets\image icon.png" />
     <Content Include="Assets\info.png" />
     <Content Include="Assets\ink.png" />
     <Content Include="Assets\library_thumbnails\audio.png" />
@@ -863,6 +865,7 @@
     <Content Include="Assets\region icon.png" />
     <Content Include="Assets\resizer.png" />
     <Content Include="Assets\search as collection.png" />
+    <Content Include="Assets\search icon.png" />
     <Content Include="Assets\settings icon white.png" />
     <Content Include="Assets\settings icon.png" />
     <Content Include="Assets\SmallLogo.scale-100.png" />
@@ -880,6 +883,7 @@
     <Content Include="Assets\text.png" />
     <Content Include="Assets\tools icon.png" />
     <Content Include="Assets\tool_icon.png" />
+    <Content Include="Assets\video icon.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\word.png" />
     <Content Include="Assets\wordIcon.png" />

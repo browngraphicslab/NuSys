@@ -50,6 +50,9 @@ namespace NuSysApp
 
         private static string LoginCredentialsFilePath;
 
+        private List<LibraryElementModel> _collectionList;
+        private LibraryElementModel _selectedCollection = null;
+
         private HashSet<string> _preloadedIDs = new HashSet<string>();
         public WaitingRoomView()
         {
@@ -84,6 +87,8 @@ namespace NuSysApp
             SlideOutLogin.Completed += SlideOutLoginComplete;
 
             //AutoLogin();
+
+            _selectedCollection = null;
         }
 
         private void SlideOutLoginComplete(object sender, object e)
@@ -109,6 +114,7 @@ namespace NuSysApp
                     {
                         var i = new CollectionListBox(libraryElement);
                         all.Add(i);
+                        _collectionList.Add(libraryElement);
                     }
                 }
 
@@ -160,12 +166,10 @@ namespace NuSysApp
         }
         private async void Join_Workspace_Click(object sender, RoutedEventArgs e)
         {
-            if (List.SelectedItems.Count == 1)
+            if (_selectedCollection != null)
             {
                 SessionController.Instance.ContentController.OnNewContent -= ContentControllerOnOnNewContent;
-
-                var item = List.SelectedItems.First();
-                var id = ((CollectionListBox)item).ID;
+                var id = _selectedCollection.LibraryElementId;
                 var collectionRequest = new GetEntireWorkspaceRequest(id ?? "test");
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collectionRequest);
                 foreach (var content in collectionRequest.GetReturnedContentDataModels())
@@ -189,17 +193,79 @@ namespace NuSysApp
             _firstLoadList = null;
             return l;
         }
+
         private async void NewUser_OnClick(object sender, RoutedEventArgs e)
         {
             var username = usernameInput.Text;
             var password = Convert.ToBase64String(Encrypt(passwordInput.Password));
             Login(username, password, true);
         }
+
         private async void LoginButton_OnClick(object sender, RoutedEventArgs e)
         {
             var username = usernameInput.Text;
             var password = Convert.ToBase64String(Encrypt(passwordInput.Password));
             Login(username,password,false);
+        }
+
+        private void ListItemSelected(object sender, SelectionChangedEventArgs e)
+        {
+            if (List.SelectedItem != null)
+            {
+                var item = List.SelectedItem;
+                var id = ((CollectionListBox)item).ID;
+                _selectedCollection =
+                    SessionController.Instance.ContentController.GetLibraryElementController(id).LibraryElementModel;
+                CreatorText.Text = _selectedCollection.Creator;
+                LastEditedText.Text = _selectedCollection.LastEditedTimestamp;
+                CreateDateText.Text = _selectedCollection.Timestamp;
+            }
+        }
+
+        /// <summary>
+        /// autosuggest for collection list searchbox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SearchBox_Suggest(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs e)
+        {
+            if (e.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                var titlelist = new List<string>();
+                foreach (LibraryElementModel m in _collectionList)
+                {
+                    titlelist.Add(m.Title);
+                }
+                var filteredData = titlelist.Where(t => t.ToLowerInvariant().Contains(sender.Text.ToLowerInvariant()));
+                SearchBox.ItemsSource = filteredData;
+            }
+
+
+        }
+
+        private void Searched(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs e)
+        {
+            var selected = new List<LibraryElementModel>();
+            if (e.ChosenSuggestion != null)
+            {
+                selected = _collectionList.Where(s => s.Title == e.ChosenSuggestion).ToList();
+            }
+            else
+            {
+                selected = _collectionList.Where(s => s.Title == sender.Text).ToList();
+            }
+            
+            if (selected.Count == 1)
+            {
+                _selectedCollection = selected[0];
+                foreach (CollectionListBox i in List.Items)
+                {
+                    if (i.Title == _selectedCollection.Title)
+                    {
+                        List.SelectedItem = i;
+                    }
+                }
+            }
         }
 
         private async void AutoLogin()
@@ -316,6 +382,7 @@ namespace NuSysApp
                         SessionController.Instance.ContentController.OnNewContent += ContentControllerOnOnNewContent;
 
                         loggedInText.Text = "Logged In!";
+                        _collectionList = new List<LibraryElementModel>();
                         Init();
                         NewWorkspaceButton.IsEnabled = true;
                         _loggedIn = true;
@@ -422,5 +489,7 @@ namespace NuSysApp
             System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
             return bytes;
         }
+
+
     }
 }
