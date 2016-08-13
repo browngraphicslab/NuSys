@@ -43,7 +43,7 @@ namespace NusysServer
             _db.Open(); //open database
 
             //ResetTables();
-            SetUpTables();
+            //SetUpTables();
 
             TestFunc();
         }
