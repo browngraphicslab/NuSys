@@ -12,8 +12,6 @@ namespace NuSysApp
     /// </summary>
     public class CreateNewPdfContentRequestArgs : CreateNewContentRequestArgs
     {
-        public CreateNewPdfContentRequestArgs() : base() {}
-
 
         /// <summary>
         /// the text of the pdf to send along with the creation

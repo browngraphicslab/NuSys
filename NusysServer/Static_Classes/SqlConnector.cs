@@ -39,7 +39,7 @@ namespace NusysServer
         /// <param name="databaseString"></param>
         public SQLConnector(string databaseString = SQLSTRING)
         {
-            _db = new SqlConnection(SQLSTRING);
+            _db = new SqlConnection(databaseString);
             _db.Open(); //open database
 
             ResetTables(true);
