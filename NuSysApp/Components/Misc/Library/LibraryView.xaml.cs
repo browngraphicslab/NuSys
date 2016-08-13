@@ -26,6 +26,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using NAudio.MediaFoundation;
+using Newtonsoft.Json;
 using NusysIntermediate;
 using SharpDX.Direct2D1;
 using SharpDX.WIC;
@@ -235,9 +236,10 @@ namespace NuSysApp
             var vm = SessionController.Instance.ActiveFreeFormViewer;
 
             NusysConstants.ElementType elementType = NusysConstants.ElementType.Text;
-            string data = "";
-            string title = "";
-            string pdf_text = "";
+            string data = string.Empty;
+            string title = string.Empty;
+            string pdf_text = string.Empty;
+            int pdf_pageCount = 0;
 
             var storageFiles = await FileManager.PromptUserForFiles(Constants.AllFileTypes);
             foreach (var storageFile in storageFiles ?? new List<StorageFile>())
@@ -289,7 +291,10 @@ namespace NuSysApp
                 {
                     elementType = NusysConstants.ElementType.PDF;
 
-                    // read the contents of the pdf from storageFile into data
+                    // create a list of strings which contain the image data for each page of the pdf
+                    List<string> pdfPages = new List<string>();
+
+                    // read the contents of storageFile into a MUPDF Document
                     byte[] fileBytes;
                     using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
                     {
@@ -300,36 +305,56 @@ namespace NuSysApp
                             reader.ReadBytes(fileBytes);
                         }
                     }
-                    data = Convert.ToBase64String(fileBytes);
-
-                    // Get the MUPDF Document from data
-                    var myDoc = await MediaUtil.DataToPDF(data); 
+                    var MuPdfDoc = await MediaUtil.DataToPDF(Convert.ToBase64String(fileBytes)); 
                     
-                    // get the text from the MUPDF document into pdf_text
-                    int numPages = myDoc.PageCount;
+                    // read the text from the MUPDF document into pdf_text
+                    pdf_pageCount = MuPdfDoc.PageCount;
                     int currPage = 0;
-                    while (currPage < numPages)
+                    while (currPage < pdf_pageCount)
                     {
-                        pdf_text = pdf_text + myDoc.GetAllTexts(currPage);
+                        pdf_text = pdf_text + MuPdfDoc.GetAllTexts(currPage);
                         currPage++;
                     }
 
-                    // draw the first page of the pdf on a writeable bitmap called image
-                    var pageSize = myDoc.GetPageSize(0);
-                    var width = pageSize.X;
-                    var height = pageSize.Y;
-                    var image = new WriteableBitmap(width, height);
-                    IBuffer buf = new Windows.Storage.Streams.Buffer(image.PixelBuffer.Capacity);
-                    buf.Length = image.PixelBuffer.Length;                  
-                    myDoc.DrawPage(0, buf, 0, 0, width, height, false);
-                    var ss = buf.AsStream();
-                    await ss.CopyToAsync(image.PixelBuffer.AsStream());
-                    image.Invalidate();
+                    // convert each page of the pdf into an image file, and store it in the pdfPages list
+                    for (int pageNumber = 0; pageNumber < pdf_pageCount; pageNumber++)
+                    {
+                        // get variables for drawing the page
+                        var pageSize = MuPdfDoc.GetPageSize(pageNumber);
+                        var width = pageSize.X;
+                        var height = pageSize.Y;
 
-                    // temporarily save the image and use the system to generate thumbnails, then delete the image
-                    var x = await image.SaveAsync(NuSysStorages.SaveFolder);
-                    thumbnails = await MediaUtil.GetThumbnailDictionary(x);
-                    await x.DeleteAsync(StorageDeleteOption.PermanentDelete);
+                        // create an image to use for converting
+                        var image = new WriteableBitmap(width, height);
+
+                        // create a buffer to draw the page on
+                        IBuffer buf = new Windows.Storage.Streams.Buffer(image.PixelBuffer.Capacity);
+                        buf.Length = image.PixelBuffer.Length;
+
+                        // draw the page onto the buffer
+                        MuPdfDoc.DrawPage(pageNumber, buf, 0, 0, width, height, false);
+                        var ss = buf.AsStream();
+
+                        // copy the buffer to the image
+                        await ss.CopyToAsync(image.PixelBuffer.AsStream());
+                        image.Invalidate();
+
+                        // save the image as a file (temporarily)
+                        var x = await image.SaveAsync(NuSysStorages.SaveFolder);
+
+                        // use the system to convert the file to a byte array
+                        pdfPages.Add(Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(x)));
+                        if (pageNumber == 0)
+                        {
+                            // if we are on the first apge, get thumbnails of the file from the system
+                            thumbnails = await MediaUtil.GetThumbnailDictionary(x);
+                        }
+
+                        // delete the image file that we saved
+                        await x.DeleteAsync(StorageDeleteOption.PermanentDelete);
+                    }
+
+                    data = JsonConvert.SerializeObject(pdfPages);
                 }
                 else if (Constants.VideoFileTypes.Contains(fileType))
                 {
@@ -380,7 +405,8 @@ namespace NuSysApp
                     {
                         args = new CreateNewPdfContentRequestArgs()
                         {
-                            PdfText = pdf_text
+                            PdfText = pdf_text,
+                            PageCount = pdf_pageCount
                         };
                     }
                     else
