@@ -18,7 +18,9 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    //This will be used (likely temporarily) to populate the waiting room's collection listview.
+    /// This will be used (likely temporarily) to populate the waiting room's collection listview.
+    /// this box allows for us to easily set the title, date, users, etc. of the collection in grid columns.
+    /// also accounts for whether the collection is made by rosemary so we can hide it and not mess it up while testing 
     public sealed partial class CollectionListBox : UserControl
     {
         public string ID { set; get; }

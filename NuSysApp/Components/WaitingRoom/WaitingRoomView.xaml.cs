@@ -97,6 +97,9 @@ namespace NuSysApp
             NuSysTitle.Visibility = Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// initializes collection listview
+        /// </summary>
         private async void Init()
         {
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
@@ -110,6 +113,7 @@ namespace NuSysApp
                     {
                         SessionController.Instance.ContentController.Add(libraryElement);
                     }
+                    //if the libraryelement is of type collection, make a collectionlistbox for it and also add to the collectionlist
                     if (libraryElement.Type == NusysConstants.ElementType.Collection)
                     {
                         var i = new CollectionListBox(libraryElement);
@@ -117,13 +121,14 @@ namespace NuSysApp
                         _collectionList.Add(libraryElement);
                     }
                 }
-
+                //set items in collectionlist alphabetically
                 List?.Items?.Clear();
                 all.Sort((a, b) => a.Title.CompareTo(b.Title));
                 foreach (var i in all)
                 {
                     List?.Items.Add(i);
                 }
+                //makes sure collection doesn't get added twice
                 _collectionAdded = true;
             }
             catch (Exception e)
@@ -208,14 +213,22 @@ namespace NuSysApp
             Login(username,password,false);
         }
 
+        /// <summary>
+        /// changes the window of preview information based on the selected collection.
+        /// also sets selected collection from the list. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ListItemSelected(object sender, SelectionChangedEventArgs e)
         {
             if (List.SelectedItem != null)
             {
                 var item = List.SelectedItem;
                 var id = ((CollectionListBox)item).ID;
+                //set selected collection
                 _selectedCollection =
                     SessionController.Instance.ContentController.GetLibraryElementController(id).LibraryElementModel;
+                //set properties in preview window
                 CreatorText.Text = _selectedCollection.Creator;
                 LastEditedText.Text = _selectedCollection.LastEditedTimestamp;
                 CreateDateText.Text = _selectedCollection.Timestamp;
@@ -223,7 +236,9 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// autosuggest for collection list searchbox
+        /// autosuggest for collection list searchbox.
+        /// comes up with list of collections based on the characters entered in the search text area,
+        /// and sets this list as the searchbox's item source.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -231,30 +246,42 @@ namespace NuSysApp
         {
             if (e.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
+                //turn collectionlist into a list of strings so we can compare titles to text entered
                 var titlelist = new List<string>();
                 foreach (LibraryElementModel m in _collectionList)
                 {
                     titlelist.Add(m.Title);
                 }
-                var filteredData = titlelist.Where(t => t.ToLowerInvariant().Contains(sender.Text.ToLowerInvariant()));
-                SearchBox.ItemsSource = filteredData;
+                //filters collections for suggestion list based on text already entered
+                var filteredCollections = titlelist.Where(t => t.ToLowerInvariant().Contains(sender.Text.ToLowerInvariant()));
+                SearchBox.ItemsSource = filteredCollections;
             }
 
 
         }
 
+        /// <summary>
+        /// turns a submitted query into the selected collection
+        /// if submitted using the enter key or the queryicon, it will check the text in the box itself.
+        /// if a user clicks on a suggestion from the list it will check the text in that selection.
+        /// also highlights selected collection on the listview. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Searched(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs e)
         {
             var selected = new List<LibraryElementModel>();
+            //suggestion is chosen from list
             if (e.ChosenSuggestion != null)
             {
                 selected = _collectionList.Where(s => s.Title == e.ChosenSuggestion).ToList();
             }
+            //suggestion is submitted through query icon or enter key
             else
             {
                 selected = _collectionList.Where(s => s.Title == sender.Text).ToList();
             }
-            
+            //set selected collection and highlight it in the listview
             if (selected.Count == 1)
             {
                 _selectedCollection = selected[0];
