@@ -354,7 +354,7 @@ namespace NusysIntermediate
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY = "link_library_element_model_id_out";
         #endregion NewLibraryElementRequest
 
-        #region CreateNewMetadataRequest
+            #region CreateNewMetadataRequest
         /// <summary>
         /// key in message for library id of the element that the metadata belongs to
         /// </summary>
@@ -381,7 +381,7 @@ namespace NusysIntermediate
         public static readonly string CREATE_NEW_METADATA_REQUEST_RETURNED_METADATA_ENTRY_KEY = "metadata_entry";
         #endregion CreateNewMetadataRequest
 
-        #region DeleteMetadataRequest
+            #region DeleteMetadataRequest
         /// <summary>
         /// key in message for library id of the element that the metadata to be deleted belongs to
         /// </summary>
@@ -392,6 +392,97 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string DELETE_METADATA_REQUEST_METADATA_KEY = "key";
         #endregion DeleteMetadataRequest
+
+        #region UpdateMetadataRequest
+        /// <summary>
+        /// key in message for library id of the element that the metadata to be edited belongs to
+        /// </summary>
+        public static readonly string UPDATE_METADATA_REQUEST_LIBRARY_ID_KEY = "library_id";
+
+        /// <summary>
+        /// key in message for signifying which entry should be edited
+        /// </summary>
+        public static readonly string UPDATE_METADATA_REQUEST_METADATA_KEY = "key";
+
+        /// <summary>
+        /// key in message for signifying the new value for the entry
+        /// </summary>
+        public static readonly string UPDATE_METADATA_REQUEST_METADATA_VALUE = "value";
+        
+        #endregion UpdateMetadataRequest
+
+        #region CreateNewPresentationLinkRequest
+        /// <summary>
+        /// The key for sending the link id for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_ID_KEY = "link_id";
+
+        /// <summary>
+        /// The key for sending the link IN id for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_IN_ID_KEY = "link_in_element_id";
+
+        /// <summary>
+        /// The key for sending the link OUT id for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_OUT_ID_KEY = "link_out_element_id";
+
+        /// <summary>
+        /// The key for sending the parent collection id for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_PARENT_COLLECTION_ID_KEY = "parent_collection_id";
+
+        /// <summary>
+        /// The key for sending the annotation for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_ANNOTATION_KEY = "annotation";
+
+        /// <summary>
+        /// The key for sending the annotation for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY = "returned_presentation_link_model";
+
+        #endregion CreateNewPresentationLinkRequest
+
+        #region DeletePresentationLinkRequest
+        /// <summary>
+        /// The key for sending the link id for the delete presentation link request
+        /// </summary>
+        public static readonly string DELETE_PRESENTATION_LINK_REQUEST_LINK_ID_KEY = "link_id";
+        #endregion DeletePresentationLinkRequest
+
+        #region UpdatePresentationLinkRequest
+        /// <summary>
+        /// The key for sending the link id for the update presentation link request
+        /// </summary>
+        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_LINK_ID_KEY = "link_id";
+
+        /// <summary>
+        /// The key for sending the link IN id for the update presentation link request
+        /// </summary>
+        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_LINK_IN_ID_KEY = "link_in_element_id";
+
+        /// <summary>
+        /// The key for sending the link OUT id for the update presentation link request
+        /// </summary>
+        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_LINK_OUT_ID_KEY = "link_out_element_id";
+
+        /// <summary>
+        /// The key for sending the parent collection id for the update presentation link request
+        /// </summary>
+        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_PARENT_COLLECTION_ID_KEY = "parent_collection_id";
+
+        /// <summary>
+        /// The key for sending the annotation for the update presentation link request
+        /// </summary>
+        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_ANNOTATION_KEY = "annotation";
+
+        /// <summary>
+        /// The key for sending the annotation for the update presentation link request
+        /// </summary>
+        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY = "returned_presentation_link_model";
+        #endregion UpdatePresentationLinkRequest
+        
 
         #region ChatRequest
 
@@ -1018,7 +1109,11 @@ namespace NusysIntermediate
             DeleteElementRequest,
             CreateNewMetadataRequest,
             DeleteMetadataRequest,
-
+            CreateNewPresentationLinkRequest,
+            DeletePresentationLinkRequest,
+            UpdatePresentationLinkRequest,
+            UpdateMetadataEntryRequest,
+            
             /// <summary>
             /// this request type is used to create a search over the library elements.  
             /// </summary>

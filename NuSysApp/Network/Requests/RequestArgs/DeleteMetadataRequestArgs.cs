@@ -7,7 +7,7 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
-    class DeleteMetadataRequestArgs : IRequestArgumentable
+    public class DeleteMetadataRequestArgs : IRequestArgumentable
     {
         public MetadataEntry Entry { get; set; }
         public string LibraryElementId { get; set; }

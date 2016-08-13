@@ -16,7 +16,7 @@ namespace NusysServer
             var deleteLibraryElementMessage = new Message();
             deleteLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY] = message[NusysConstants.DELETE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY];
 
-            //delete library element
+            //delete library element and also related metadata from the metadata table
             var success = ContentController.Instance.SqlConnector.DeleteLibraryElement(deleteLibraryElementMessage);
 
             ForwardMessage(message, senderHandler);

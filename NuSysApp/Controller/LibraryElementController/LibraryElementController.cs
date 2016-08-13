@@ -306,6 +306,27 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// This is an overload for Update Metadata that only taken in the original key instead of taking in the entire entry
+        /// </summary>
+        /// <param name="originalKey"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public bool UpdateMetadata(string originalKey, List<string> values)
+        {
+            // Error checking for the passed in parameters
+            if (originalKey == null || string.IsNullOrEmpty(originalKey) || string.IsNullOrWhiteSpace(originalKey) || values == null || !_libraryElementModel.Metadata.ContainsKey(originalKey))
+            {
+                return false;
+            }
+
+            // Updates the metadata entry
+            var newEntry = new MetadataEntry(originalKey, values, MetadataMutability.MUTABLE);
+            _libraryElementModel.Metadata.TryUpdate(originalKey, newEntry, newEntry);
+            ChangeMetadata(FullMetadata);
+            return true;
+        }
+
+        /// <summary>
         /// Returns the value of the metadata at the specified key
         /// null if not exist
         /// </summary>
