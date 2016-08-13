@@ -25,9 +25,11 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using NAudio.MediaFoundation;
 using NusysIntermediate;
 using SharpDX.Direct2D1;
 using SharpDX.WIC;
+using WinRTXamlToolkit.Imaging;
 using Image = Windows.UI.Xaml.Controls.Image;
 using SolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
 
@@ -252,16 +254,16 @@ namespace NuSysApp
                 // Create a thumbnail dictionary mapping thumbnail sizes to the byte arrays.
                 // Note that only video and images are to get thumbnails this way, currently.
                 var thumbnails = new Dictionary<NusysConstants.ThumbnailSize, string>();
-                thumbnails[NusysConstants.ThumbnailSize.Small] = "";
-                thumbnails[NusysConstants.ThumbnailSize.Medium] = "";
-                thumbnails[NusysConstants.ThumbnailSize.Large] = "";
+                thumbnails[NusysConstants.ThumbnailSize.Small] = string.Empty;
+                thumbnails[NusysConstants.ThumbnailSize.Medium] = string.Empty;
+                thumbnails[NusysConstants.ThumbnailSize.Large] = string.Empty;
 
                 if (Constants.ImageFileTypes.Contains(fileType))
                 {
                     elementType = NusysConstants.ElementType.Image;
                     data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
                     serverURL = contentId + fileType;
-                    thumbnails =await MediaUtil.GetThumbnailDictionary(storageFile);
+                    thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile);
                 }
                 else if (Constants.WordFileTypes.Contains(fileType))
                 {
@@ -286,9 +288,9 @@ namespace NuSysApp
                 else if (Constants.PdfFileTypes.Contains(fileType))
                 {
                     elementType = NusysConstants.ElementType.PDF;
-                    IRandomAccessStream s = await storageFile.OpenReadAsync();
 
-                    byte[] fileBytes = null;
+                    // read the contents of the pdf from storageFile into data
+                    byte[] fileBytes;
                     using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
                     {
                         fileBytes = new byte[stream.Size];
@@ -298,12 +300,12 @@ namespace NuSysApp
                             reader.ReadBytes(fileBytes);
                         }
                     }
-
                     data = Convert.ToBase64String(fileBytes);
 
-                    // Get text from the pdf
+                    // Get the MUPDF Document from data
                     var myDoc = await MediaUtil.DataToPDF(data); 
                     
+                    // get the text from the MUPDF document into pdf_text
                     int numPages = myDoc.PageCount;
                     int currPage = 0;
                     while (currPage < numPages)
@@ -312,43 +314,22 @@ namespace NuSysApp
                         currPage++;
                     }
 
-                    /// The following was supposed to create a thumbnail from the first page of the pdf and save
-                    /// it as a 64 bit string, however there is an exception thrown when converting the 
-                    /// RenderBitmap to a ByteArray...something about the index being larger than the capacity of 
-                    /// the buffer...
-
-                    /*
-                    // Instantiate a MuPDF doc and save the rendered first page to a WritableBitmap
-                    var doc = await MediaUtil.DataToPDF(data);
-                    var width = 50;
-                    var height = 50;
-                    var writableBitmap = new WriteableBitmap(width, height);
-                    IBuffer buf = new Windows.Storage.Streams.Buffer(writableBitmap.PixelBuffer.Capacity);
-                    buf.Length = writableBitmap.PixelBuffer.Length;
-                    doc.DrawPage(1, buf, 0, 0, 0, 0, false);
+                    // draw the first page of the pdf on a writeable bitmap called image
+                    var pageSize = myDoc.GetPageSize(0);
+                    var width = pageSize.X;
+                    var height = pageSize.Y;
+                    var image = new WriteableBitmap(width, height);
+                    IBuffer buf = new Windows.Storage.Streams.Buffer(image.PixelBuffer.Capacity);
+                    buf.Length = image.PixelBuffer.Length;                  
+                    myDoc.DrawPage(0, buf, 0, 0, width, height, false);
                     var ss = buf.AsStream();
-                    await ss.CopyToAsync(writableBitmap.PixelBuffer.AsStream());
-                    writableBitmap.Invalidate();
+                    await ss.CopyToAsync(image.PixelBuffer.AsStream());
+                    image.Invalidate();
 
-                    // Create an Image, and set the source to the writable bitmap
-                    var myImage = new Image();
-                    myImage.Source = writableBitmap;
-                    myImage.Height = 50;
-                    myImage.Width = 50;
-
-                    // Take screenshot of Image using a render bitmap. In order to do this, the image must
-                    // be inside a visual component, like the session view.
-                    var r = new RenderTargetBitmap();
-                    SessionController.Instance.SessionView.MainCanvas.Children.Add(myImage);
-                    await r.RenderAsync(myImage);
-                    SessionController.Instance.SessionView.MainCanvas.Children.Remove(myImage);
-
-                    // Obtain a ByteArray from the RenderBitmap, store it as a string in the thumbnail dictionary
-                    var tdata = await MediaUtil.RenderTargetBitmapToByteArray(r);
-                    thumbnails[ThumbnailSize.Small] =
-                        Convert.ToBase64String(tdata);
-                    */
-
+                    // temporarily save the image and use the system to generate thumbnails, then delete the image
+                    var x = await image.SaveAsync(NuSysStorages.SaveFolder);
+                    thumbnails = await MediaUtil.GetThumbnailDictionary(x);
+                    await x.DeleteAsync(StorageDeleteOption.PermanentDelete);
                 }
                 else if (Constants.VideoFileTypes.Contains(fileType))
                 {
