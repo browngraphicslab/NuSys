@@ -98,7 +98,7 @@ namespace NusysServer
             addContentToDatabaseMessage[NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY] = originalMessage[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY];
             addContentToDatabaseMessage[NusysConstants.CONTENT_TABLE_TYPE_KEY] = originalMessage[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY];
 
-            addContentToDatabaseMessage[NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY] = FileHelper.CreateDataFile(originalMessage.Get(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY), contentType, originalMessage.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES), NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION);
+            addContentToDatabaseMessage[NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY] = FileHelper.CreateDataFile(originalMessage.Get(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY), contentType, originalMessage.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES));
             return addContentToDatabaseMessage;
         }
 
