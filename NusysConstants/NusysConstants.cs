@@ -7,6 +7,10 @@ namespace NusysIntermediate
 {
     public class NusysConstants
     {
+        /// <summary>
+        /// The boolean for testing locally.  If this is not true and you are running a local server, you won't connect.
+        /// </summary>
+        public static bool TEST_LOCAL_BOOLEAN = true;
 
         #region RequestManagementKeys
 

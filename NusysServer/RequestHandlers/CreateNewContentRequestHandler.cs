@@ -61,7 +61,7 @@ namespace NusysServer
                 var pdfText = message.GetString(NusysConstants.CREATE_NEW_PDF_CONTENT_REQUEST_PDF_TEXT_KEY);
                 if (!string.IsNullOrEmpty(pdfText))
                 {
-                    if (Constants.user == "junsu") ///TODO remove after junsu tests
+                    if (Constants.user == "junsu") //TODO remove after junsu tests
                     {
                         var tup = new Tuple<string, string>(pdfText,
                             message.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY));
