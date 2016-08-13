@@ -15,10 +15,10 @@ namespace NuSysApp
         /// preferred constructor.  Pass in a search query and then call execute.
         /// The returned values can be fetch after a successful request has fully executed.
         /// </summary>
-        /// <param name="query"></param>
-        public SearchRequest(Query query) : base(NusysConstants.RequestType.SearchRequest)
+        /// <param name="queryArgs"></param>
+        public SearchRequest(QueryArgs queryArgs) : base(NusysConstants.RequestType.SearchRequest)
         {
-            _message[NusysConstants.SEARCH_REQUEST_SERIALIZED_QUERY_KEY] = JsonConvert.SerializeObject(query);
+            _message[NusysConstants.SEARCH_REQUEST_SERIALIZED_QUERY_KEY] = JsonConvert.SerializeObject(queryArgs);
         }
 
         /// <summary>
