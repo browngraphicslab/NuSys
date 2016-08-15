@@ -21,7 +21,7 @@
     "SQLiteNetExtensions.Async": "1.3.0",
     "System.Data.SQLite": "1.0.102",
     "System.Security.Cryptography.Algorithms": "4.2.0",
-    "Win2D.uwp": "1.18.0",
+    "Win2D.uwp": "1.19.0",
     "WinRTXamlToolkit.Controls.DataVisualization.UWP": "2.0.0"
   },
   "frameworks": {

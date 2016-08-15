@@ -12,13 +12,16 @@ namespace NuSysApp
     /// </summary>
     public class CreateNewPdfContentRequestArgs : CreateNewContentRequestArgs
     {
-        public CreateNewPdfContentRequestArgs() : base() {}
-
 
         /// <summary>
         /// the text of the pdf to send along with the creation
         /// </summary>
         public string PdfText { get; set; }
+
+        /// <summary>
+        /// Total number of pages in the pdf
+        /// </summary>
+        public int PageCount { get; set; } 
 
         /// <summary>
         /// overrides the base classes but still adds in its keys

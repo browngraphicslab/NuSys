@@ -10,7 +10,7 @@ using System.Web.WebSockets;
 
 namespace NusysServer.Controllers
 {
-    public class ValuesController : ApiController
+    public class NusysConnectController : ApiController
     {
         // GET api/values
         public IEnumerable<string> Get()

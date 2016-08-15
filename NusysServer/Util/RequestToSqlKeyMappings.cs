@@ -15,7 +15,7 @@ namespace NusysServer
     public class RequestToSqlKeyMappings
     {
         /// <summary>
-        /// the mapping dicitonary of request key to database key
+        /// the mapping dicitonary of request key to database key for library elements
         /// </summary>
         public static readonly Dictionary<string, string> LibraryElementMapping = new BiDictionary<string, string>()
         {
@@ -29,6 +29,7 @@ namespace NusysServer
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LAST_EDITED_TIMESTAMP_KEY, NusysConstants.LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY }, // last edited
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY, NusysConstants.LIBRARY_ELEMENT_TYPE_KEY }, // type
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY, NusysConstants.LIBRARY_ELEMENT_TITLE_KEY }, // title
+            {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_ACCESS_KEY, NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY }, // access type
 
             //regions start
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_REGION_CLIPPING_PARENT_ID, NusysConstants.REGION_CLIPPING_PARENT_ID_KEY },//clipping parent id
@@ -44,6 +45,24 @@ namespace NusysServer
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY, NusysConstants.LINK_LIBRARY_ELEMENT_OUT_ID_KEY },//link out id
         };
 
+
+        /// <summary>
+        /// the mapping dictionary of request key to database key for elements (aliases, nodes)
+        /// </summary>
+        public static readonly Dictionary<string, string> ElementMapping = new BiDictionary<string, string>()
+        {
+            //base types start
+            {NusysConstants.NEW_ELEMENT_REQUEST_CREATOR_ID_KEY, NusysConstants.ALIAS_CREATOR_ID_KEY },//creator user id
+            {NusysConstants.NEW_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID_KEY, NusysConstants.ALIAS_LIBRARY_ID_KEY },//library Id
+            {NusysConstants.NEW_ELEMENT_REQUEST_ACCESS_KEY, NusysConstants.ALIAS_ACCESS_KEY },//access
+            {NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_ID_KEY, NusysConstants.ALIAS_ID_KEY }, // alias id
+            {NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_PARENT_COLLECTION_ID_KEY, NusysConstants.ALIAS_PARENT_COLLECTION_ID_KEY }, // parent collection id
+            {NusysConstants.NEW_ELEMENT_REQUEST_LOCATION_X_KEY, NusysConstants.ALIAS_LOCATION_X_KEY }, // x coordinate
+            {NusysConstants.NEW_ELEMENT_REQUEST_LOCATION_Y_KEY, NusysConstants.ALIAS_LOCATION_Y_KEY }, // y coordinate
+            {NusysConstants.NEW_ELEMENT_REQUEST_SIZE_HEIGHT_KEY, NusysConstants.ALIAS_SIZE_HEIGHT_KEY }, // height
+            {NusysConstants.NEW_ELEMENT_REQUEST_SIZE_WIDTH_KEY, NusysConstants.ALIAS_SIZE_WIDTH_KEY }, // width
+        };
+
         /// <summary>
         /// the mappings method for libraryElements.  See the class description for more info.
         /// </summary>
@@ -55,6 +74,20 @@ namespace NusysServer
                 requestMessage.Where(kvp => LibraryElementMapping.ContainsKey(kvp.Key))
                 .Select(kvp => new KeyValuePair<string,object>(LibraryElementMapping[kvp.Key],kvp.Value))
                 .ToDictionary(k => k.Key, v=> v.Value));
+            return databaseMessage;
+        }
+
+        /// <summary>
+        /// the mappings method for elements (aliases).  See the class description for more info.
+        /// </summary>
+        /// <param name="m"></param>
+        /// <returns></returns>
+        public static Message ElementRequestKeysToDatabaseKeys(Message requestMessage)
+        {
+            var databaseMessage = new Message(
+                requestMessage.Where(kvp => ElementMapping.ContainsKey(kvp.Key))
+                .Select(kvp => new KeyValuePair<string, object>(ElementMapping[kvp.Key], kvp.Value))
+                .ToDictionary(k => k.Key, v => v.Value));
             return databaseMessage;
         }
     }

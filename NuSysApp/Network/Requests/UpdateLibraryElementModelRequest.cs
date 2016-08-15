@@ -48,6 +48,10 @@ namespace NuSysApp
 
             //get the library element controller to update
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(_message.GetString(NusysConstants.UPDATE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID));
+            if (controller == null)
+            {
+                return;
+            }
             controller.UnPack(_message);
             if (_message.ContainsKey("favorited"))
             {

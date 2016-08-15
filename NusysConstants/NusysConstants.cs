@@ -7,6 +7,10 @@ namespace NusysIntermediate
 {
     public class NusysConstants
     {
+        /// <summary>
+        /// The boolean for testing locally.  If this is not true and you are running a local server, you won't connect.
+        /// </summary>
+        public static bool TEST_LOCAL_BOOLEAN = true;
 
         #region RequestManagementKeys
 
@@ -437,8 +441,52 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_ANNOTATION_KEY = "annotation";
 
+        /// <summary>
+        /// The key for sending the annotation for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY = "returned_presentation_link_model";
+
         #endregion CreateNewPresentationLinkRequest
 
+        #region DeletePresentationLinkRequest
+        /// <summary>
+        /// The key for sending the link id for the delete presentation link request
+        /// </summary>
+        public static readonly string DELETE_PRESENTATION_LINK_REQUEST_LINK_ID_KEY = "link_id";
+        #endregion DeletePresentationLinkRequest
+
+        #region UpdatePresentationLinkRequest
+        /// <summary>
+        /// The key for sending the link id for the update presentation link request
+        /// </summary>
+        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_LINK_ID_KEY = "link_id";
+
+        /// <summary>
+        /// The key for sending the link IN id for the update presentation link request
+        /// </summary>
+        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_LINK_IN_ID_KEY = "link_in_element_id";
+
+        /// <summary>
+        /// The key for sending the link OUT id for the update presentation link request
+        /// </summary>
+        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_LINK_OUT_ID_KEY = "link_out_element_id";
+
+        /// <summary>
+        /// The key for sending the parent collection id for the update presentation link request
+        /// </summary>
+        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_PARENT_COLLECTION_ID_KEY = "parent_collection_id";
+
+        /// <summary>
+        /// The key for sending the annotation for the update presentation link request
+        /// </summary>
+        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_ANNOTATION_KEY = "annotation";
+
+        /// <summary>
+        /// The key for sending the annotation for the update presentation link request
+        /// </summary>
+        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY = "returned_presentation_link_model";
+        #endregion UpdatePresentationLinkRequest
+        
 
         #region ChatRequest
 
@@ -739,8 +787,7 @@ namespace NusysIntermediate
             public static readonly string CONTENT_TABLE_TYPE_KEY = "content_type";
 
             /// <summary>
-            /// varchar url of the content.
-            /// approximately 512 characters max
+            /// varchar url of the content. MAX
             /// </summary>
             public static readonly string CONTENT_TABLE_CONTENT_URL_KEY = "content_ur";
 
@@ -1020,8 +1067,20 @@ namespace NusysIntermediate
         /// </summary>
         public enum AccessType
         {
+            /// <summary>
+            /// This accesstype means that everyone on your server can see and edit this object
+            /// </summary>
             Public, 
+
+            /// <summary>
+            /// This accesstype means that only the creator of the object can see or edit this object.
+            /// </summary>
             Private,
+
+            /// <summary>
+            /// this accesstype is (as of 8/12/16) limited to just Collections.  
+            /// It is meant that everyone on your server can see this object, but only the creator can edit it.  
+            /// </summary>
             ReadOnly
         }
 
@@ -1053,8 +1112,11 @@ namespace NusysIntermediate
             DeleteElementRequest,
             CreateNewMetadataRequest,
             DeleteMetadataRequest,
+            CreateNewPresentationLinkRequest,
+            DeletePresentationLinkRequest,
+            UpdatePresentationLinkRequest,
             UpdateMetadataEntryRequest,
-
+            
             /// <summary>
             /// this request type is used to create a search over the library elements.  
             /// </summary>
@@ -1111,6 +1173,10 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string DEFAULT_THUMBNAIL_FILE_EXTENSION = ".jpg";
 
+        /// <summary>
+        /// the default file extension for pdf page images.  
+        /// </summary>
+        public static readonly string DEFAULT_PDF_PAGE_IMAGE_EXTENSION = ".jpg";
         #endregion Misc
 
         #region staticMethods

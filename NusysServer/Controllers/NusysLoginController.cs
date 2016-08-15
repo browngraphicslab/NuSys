@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace NusysServer
 {
-    public class LoginController : ApiController
+    public class NusysLoginController : ApiController
     {
         /*
         public static RSACryptoServiceProvider RSA;*/

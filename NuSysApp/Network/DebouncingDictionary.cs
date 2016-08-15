@@ -97,28 +97,31 @@ namespace NuSysApp
 
         /// <summary>
         /// call this method to add an object to be updated on other clients.
-        /// This should use the same keys you would use if you were creating a new request with that property.  
+        /// This should use the same keys as the database uses.  
+        /// If you dont know what those keys are, check the NusysConstants class or ask somebody. 
         /// The update will happen within *debouncing_time* milliseconds max.  
         /// Save will occur *delay_time* milliseconds after interactions stop.
+        /// 
+        /// When adding enum's here, see if you need to add it as an enum, or the stringified version of that enum.  
         /// </summary>
         /// <param name="id"></param>
         /// <param name="value"></param>
-        public void Add(string id, object value)
+        public void Add(string databaseKey, object value)
         {
             //if we are not already timing
             if (!_timing)
             {
                 //start timeing
                 _timing = true;
-                _dict.TryAdd(id, value);
+                _dict.TryAdd(databaseKey, value);
                 //add to the dictionary and server dictionary the latest values
-                if (_serverDict.ContainsKey(id))
+                if (_serverDict.ContainsKey(databaseKey))
                 {
-                    _serverDict[id] = value;
+                    _serverDict[databaseKey] = value;
                 }
                 else
                 {
-                    _serverDict.TryAdd(id, value);
+                    _serverDict.TryAdd(databaseKey, value);
                 }
                 //update the timers to start timing
                 _timer?.Change(_milliSecondDebounce, _milliSecondDebounce);
@@ -127,15 +130,15 @@ namespace NuSysApp
             else
             {
                 //add the values to the dictionary
-                if (_dict.ContainsKey(id))
+                if (_dict.ContainsKey(databaseKey))
                 {
-                    _dict[id] = value;
-                    _serverDict[id] = value;
+                    _dict[databaseKey] = value;
+                    _serverDict[databaseKey] = value;
                 }
                 else
                 {
-                    _dict.TryAdd(id, value);
-                    _serverDict.TryAdd(id, value);
+                    _dict.TryAdd(databaseKey, value);
+                    _serverDict.TryAdd(databaseKey, value);
                 }
                 //only update the save timer to reset its timeout
                 _serverSaveTimer?.Change(_milliSecondServerSaveDelay, _milliSecondServerSaveDelay);

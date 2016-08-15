@@ -25,9 +25,12 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using NAudio.MediaFoundation;
+using Newtonsoft.Json;
 using NusysIntermediate;
 using SharpDX.Direct2D1;
 using SharpDX.WIC;
+using WinRTXamlToolkit.Imaging;
 using Image = Windows.UI.Xaml.Controls.Image;
 using SolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
 
@@ -233,9 +236,10 @@ namespace NuSysApp
             var vm = SessionController.Instance.ActiveFreeFormViewer;
 
             NusysConstants.ElementType elementType = NusysConstants.ElementType.Text;
-            string data = "";
-            string title = "";
-            string pdf_text = "";
+            string data = string.Empty;
+            string title = string.Empty;
+            string pdf_text = string.Empty;
+            int pdf_pageCount = 0;
 
             var storageFiles = await FileManager.PromptUserForFiles(Constants.AllFileTypes);
             foreach (var storageFile in storageFiles ?? new List<StorageFile>())
@@ -252,16 +256,16 @@ namespace NuSysApp
                 // Create a thumbnail dictionary mapping thumbnail sizes to the byte arrays.
                 // Note that only video and images are to get thumbnails this way, currently.
                 var thumbnails = new Dictionary<NusysConstants.ThumbnailSize, string>();
-                thumbnails[NusysConstants.ThumbnailSize.Small] = "";
-                thumbnails[NusysConstants.ThumbnailSize.Medium] = "";
-                thumbnails[NusysConstants.ThumbnailSize.Large] = "";
+                thumbnails[NusysConstants.ThumbnailSize.Small] = string.Empty;
+                thumbnails[NusysConstants.ThumbnailSize.Medium] = string.Empty;
+                thumbnails[NusysConstants.ThumbnailSize.Large] = string.Empty;
 
                 if (Constants.ImageFileTypes.Contains(fileType))
                 {
                     elementType = NusysConstants.ElementType.Image;
                     data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
                     serverURL = contentId + fileType;
-                    thumbnails =await MediaUtil.GetThumbnailDictionary(storageFile);
+                    thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile);
                 }
                 else if (Constants.WordFileTypes.Contains(fileType))
                 {
@@ -286,9 +290,12 @@ namespace NuSysApp
                 else if (Constants.PdfFileTypes.Contains(fileType))
                 {
                     elementType = NusysConstants.ElementType.PDF;
-                    IRandomAccessStream s = await storageFile.OpenReadAsync();
 
-                    byte[] fileBytes = null;
+                    // create a list of strings which contain the image data for each page of the pdf
+                    List<string> pdfPages = new List<string>();
+
+                    // read the contents of storageFile into a MUPDF Document
+                    byte[] fileBytes;
                     using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
                     {
                         fileBytes = new byte[stream.Size];
@@ -298,57 +305,56 @@ namespace NuSysApp
                             reader.ReadBytes(fileBytes);
                         }
                     }
-
-                    data = Convert.ToBase64String(fileBytes);
-
-                    // Get text from the pdf
-                    var myDoc = await MediaUtil.DataToPDF(data); 
+                    var MuPdfDoc = await MediaUtil.DataToPDF(Convert.ToBase64String(fileBytes)); 
                     
-                    int numPages = myDoc.PageCount;
+                    // read the text from the MUPDF document into pdf_text
+                    pdf_pageCount = MuPdfDoc.PageCount;
                     int currPage = 0;
-                    while (currPage < numPages)
+                    while (currPage < pdf_pageCount)
                     {
-                        pdf_text = pdf_text + myDoc.GetAllTexts(currPage);
+                        pdf_text = pdf_text + MuPdfDoc.GetAllTexts(currPage);
                         currPage++;
                     }
 
-                    /// The following was supposed to create a thumbnail from the first page of the pdf and save
-                    /// it as a 64 bit string, however there is an exception thrown when converting the 
-                    /// RenderBitmap to a ByteArray...something about the index being larger than the capacity of 
-                    /// the buffer...
+                    // convert each page of the pdf into an image file, and store it in the pdfPages list
+                    for (int pageNumber = 0; pageNumber < pdf_pageCount; pageNumber++)
+                    {
+                        // get variables for drawing the page
+                        var pageSize = MuPdfDoc.GetPageSize(pageNumber);
+                        var width = pageSize.X;
+                        var height = pageSize.Y;
 
-                    /*
-                    // Instantiate a MuPDF doc and save the rendered first page to a WritableBitmap
-                    var doc = await MediaUtil.DataToPDF(data);
-                    var width = 50;
-                    var height = 50;
-                    var writableBitmap = new WriteableBitmap(width, height);
-                    IBuffer buf = new Windows.Storage.Streams.Buffer(writableBitmap.PixelBuffer.Capacity);
-                    buf.Length = writableBitmap.PixelBuffer.Length;
-                    doc.DrawPage(1, buf, 0, 0, 0, 0, false);
-                    var ss = buf.AsStream();
-                    await ss.CopyToAsync(writableBitmap.PixelBuffer.AsStream());
-                    writableBitmap.Invalidate();
+                        // create an image to use for converting
+                        var image = new WriteableBitmap(width, height);
 
-                    // Create an Image, and set the source to the writable bitmap
-                    var myImage = new Image();
-                    myImage.Source = writableBitmap;
-                    myImage.Height = 50;
-                    myImage.Width = 50;
+                        // create a buffer to draw the page on
+                        IBuffer buf = new Windows.Storage.Streams.Buffer(image.PixelBuffer.Capacity);
+                        buf.Length = image.PixelBuffer.Length;
 
-                    // Take screenshot of Image using a render bitmap. In order to do this, the image must
-                    // be inside a visual component, like the session view.
-                    var r = new RenderTargetBitmap();
-                    SessionController.Instance.SessionView.MainCanvas.Children.Add(myImage);
-                    await r.RenderAsync(myImage);
-                    SessionController.Instance.SessionView.MainCanvas.Children.Remove(myImage);
+                        // draw the page onto the buffer
+                        MuPdfDoc.DrawPage(pageNumber, buf, 0, 0, width, height, false);
+                        var ss = buf.AsStream();
 
-                    // Obtain a ByteArray from the RenderBitmap, store it as a string in the thumbnail dictionary
-                    var tdata = await MediaUtil.RenderTargetBitmapToByteArray(r);
-                    thumbnails[ThumbnailSize.Small] =
-                        Convert.ToBase64String(tdata);
-                    */
+                        // copy the buffer to the image
+                        await ss.CopyToAsync(image.PixelBuffer.AsStream());
+                        image.Invalidate();
 
+                        // save the image as a file (temporarily)
+                        var x = await image.SaveAsync(NuSysStorages.SaveFolder);
+
+                        // use the system to convert the file to a byte array
+                        pdfPages.Add(Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(x)));
+                        if (pageNumber == 0)
+                        {
+                            // if we are on the first apge, get thumbnails of the file from the system
+                            thumbnails = await MediaUtil.GetThumbnailDictionary(x);
+                        }
+
+                        // delete the image file that we saved
+                        await x.DeleteAsync(StorageDeleteOption.PermanentDelete);
+                    }
+
+                    data = JsonConvert.SerializeObject(pdfPages);
                 }
                 else if (Constants.VideoFileTypes.Contains(fileType))
                 {
@@ -399,7 +405,8 @@ namespace NuSysApp
                     {
                         args = new CreateNewPdfContentRequestArgs()
                         {
-                            PdfText = pdf_text
+                            PdfText = pdf_text,
+                            PageCount = pdf_pageCount
                         };
                     }
                     else
@@ -645,7 +652,7 @@ namespace NuSysApp
                     dict["type"] = libraryItemTemplate?.Type;
                     dict["x"] = "50000";
                     dict["y"] = "50000";
-                    dict["contentId"] = libraryItemTemplate?.ContentID;
+                    dict["contentId"] = libraryItemTemplate?.LibraryElementId;
                     dict["metadata"] = metadata;
                     dict["autoCreate"] = true;
                     dict["creator"] = controller.LibraryElementModel.LibraryElementId;
@@ -664,7 +671,7 @@ namespace NuSysApp
                     dict["type"] = itemTemplate?.Type;
                     dict["x"] = "50000";
                     dict["y"] = "50000";
-                    dict["contentId"] = itemTemplate?.ContentID;
+                    dict["contentId"] = itemTemplate?.LibraryElementId;
                     dict["metadata"] = metadata;
                     dict["autoCreate"] = true;
                     dict["creator"] = controller.LibraryElementModel.LibraryElementId;

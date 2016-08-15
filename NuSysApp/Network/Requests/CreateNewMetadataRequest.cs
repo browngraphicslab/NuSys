@@ -11,14 +11,22 @@ namespace NuSysApp
 {
     class CreateNewMetadataRequest : Request
     {
+        /// <summary>
+        /// Used when the server sends back a message
+        /// </summary>
+        /// <param name="message"></param>
         public CreateNewMetadataRequest(Message message) : base(NusysConstants.RequestType.CreateNewMetadataRequest, message)
         {
 
         }
-
+        
+        /// <summary>
+        /// This is the contructor prefered constructor when creating a new request to send to the server. To use, create new CreateNewMetadataRequest args, 
+        /// populate it with corresponding values.
+        /// </summary>
+        /// <param name="requestArgs"></param>
         public CreateNewMetadataRequest(CreateNewMetadataRequestArgs requestArgs) : base(requestArgs, NusysConstants.RequestType.CreateNewMetadataRequest)
         {
-
         }
 
         /// <summary>

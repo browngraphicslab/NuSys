@@ -42,6 +42,12 @@ namespace NuSysApp
         public event EventHandler<Point2d> AnchorChanged;
         public event LinksUpdatedEventHandler LinksUpdated;
 
+        /// <summary>
+        /// the event that will be fired when the access type of this element changes. 
+        /// The passed access type is the new access setting for theis eelement.
+        /// </summary>
+        public event EventHandler<NusysConstants.AccessType> AccessChanged;
+
         public Point2d Anchor
         {
             get
@@ -140,6 +146,22 @@ namespace NuSysApp
             AlphaChanged?.Invoke(this, alpha);
 
             _debouncingDictionary.Add("alpha", alpha);
+        }
+
+        /// <summary>
+        /// call this method to change the access type of this controller's elementmodel. 
+        /// This method will fire an event so all listeners are notified of the new access type for this element
+        /// </summary>
+        /// <param name="newAccessType"></param>
+        public void SetAccessType(NusysConstants.AccessType newAccessType)
+        {
+            //TODO actually set the access type after we get that property in the model
+
+            //fire the event so all listener will know of the new access type
+            AccessChanged?.Invoke(this, newAccessType);
+
+            //update the servre and notify other clients
+            _debouncingDictionary.Add(NusysConstants.ALIAS_ACCESS_KEY, newAccessType.ToString());
         }
 
         public void Delete(object sender)

@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChromeExtension", "ChromeExtension\ChromeExtension.csproj", "{F63CD448-F845-40DF-B792-2EE5ACDFF3E2}"
 EndProject
@@ -29,9 +29,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordAddIn1", "WordAddIn1\WordAddIn1.csproj", "{F66268AF-3CA4-40CB-9A7D-E5A71190F5FB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NusysServer", "NusysServer\NusysServer.csproj", "{71D1734C-EC9B-4122-97D7-6CCE8114170D}"
-	ProjectSection(ProjectDependencies) = postProject
-		{12A8F89E-F77A-43AD-B889-7C9D3631097D} = {12A8F89E-F77A-43AD-B889-7C9D3631097D}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NusysIntermediate", "NusysConstants\NusysIntermediate.csproj", "{7296C25F-88E9-478D-A489-8A1C13E8B846}"
 EndProject

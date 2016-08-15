@@ -182,7 +182,7 @@ namespace NuSysApp
 
             // Update the list of links in the Link Editor
             var linkEditorViewModel = xLinkEditorView.DataContext as LinkEditorTabViewModel;
-            linkEditorViewModel?.ChangeLinkTemplates(controller);
+            linkEditorViewModel?.ChangeLinkTemplates(controller.LibraryElementModel.LibraryElementId);
 
             //Update the metadata tab.
             xMetadataEditorView.Metadatable = vm.CurrentElementController;

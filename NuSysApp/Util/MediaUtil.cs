@@ -145,14 +145,14 @@ public static async Task<StorageFile> ConvertByteToAudio(byte[] byteArray)
                 var idHash = WaitingRoomView.Encrypt(stringToGetColorFrom);
                 long number = Math.Abs(BitConverter.ToInt64(idHash, 0));
                 long r1 = BitConverter.ToInt64(idHash, 1);
-                long r2 = BitConverter.ToInt64(idHash, 2); ;
+                long r2 = BitConverter.ToInt64(idHash, 3); ;
 
                 var mod = 255;
 
                 int r = (int)Math.Abs(((int)number % mod));
                 int b = (int)Math.Abs((r1 * number) % mod);
                 int g = (int)Math.Abs((r2 * number) % mod);
-                long a = (r + g + b + number%50) + 175;
+                long a = ((r + g + b + number)%50) + 175;
                 color = Color.FromArgb((byte)a, (byte)r, (byte)g, (byte)b);
             }
             catch (Exception e)

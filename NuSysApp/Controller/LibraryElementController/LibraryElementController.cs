@@ -14,7 +14,7 @@ namespace NuSysApp
     /// Takes care of all the modifying and events invoking for the library element model
     /// Should manage keeping the library element model up to date as well as updating the server
     /// </summary>
-    public class LibraryElementController : IMetadatable, ILinkTabable
+    public class LibraryElementController : IMetadatable
     {
         protected DebouncingDictionary _debouncingDictionary;
         private LibraryElementModel _libraryElementModel;
@@ -67,6 +67,13 @@ namespace NuSysApp
         public event NetworkUserChangedEventHandler UserChanged;
         public event EventHandler<LinkLibraryElementController> LinkAdded;
         public event EventHandler<string> LinkRemoved;
+
+        /// <summary>
+        /// the event that is fired when the access type of this controller's library element changes. 
+        /// The passed AccessType is the new AccessType of the LibraryElementModel;
+        /// </summary>
+        public event EventHandler<NusysConstants.AccessType> AccessTypeChanged;
+
         #endregion Events
 
         /// <summary>
@@ -198,6 +205,24 @@ namespace NuSysApp
         protected void SetBlockServerBoolean(bool blockServerUpdates)
         {
             _blockServerInteraction = blockServerUpdates;
+        }
+
+        /// <summary>
+        /// This method should be called whenever you want to set the access Type of the library element model for this controller.
+        /// It takes in a new access type enum.  
+        /// It will fire an event notifying all listeners of the new access type. 
+        /// This method will also update th server and all other clients IF this controler is not currently in 'block server interaction" mode indicated by the _blockServerInteraction boolean.
+        /// </summary>
+        /// <param name="newAccessType"></param>
+        public void SetAccessType(NusysConstants.AccessType newAccessType)
+        {
+            //TODO set the model's access type after the merge and the access type exists in the LEM base class
+            AccessTypeChanged?.Invoke(this, newAccessType);
+            if (!_blockServerInteraction)
+            {
+                //it's important here to add the enum as a string
+                _debouncingDictionary.Add(NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY, newAccessType.ToString());
+            }
         }
 
         /// <summary>

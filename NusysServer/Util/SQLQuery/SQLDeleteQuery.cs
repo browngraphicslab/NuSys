@@ -22,27 +22,32 @@ namespace NusysServer.Util.SQLQuery
         {
             var cleanedMessage = Constants.GetCleanedMessageForDatabase(columnValueMessage, tableType);
             var deleteOperatorString = deleteOperator.ToString();
-            var CommandString = "DELETE FROM " + Constants.GetTableName(tableType) + " WHERE ";
+            var commandString = "DELETE FROM " + Constants.GetTableName(tableType) + " WHERE ";
             int i = 0;
             foreach (var kvp in cleanedMessage)
             {
                 if (i == 0)
                 {
-                    CommandString = CommandString + kvp.Key + " = '" + kvp.Value + "' ";
+                    commandString = commandString + kvp.Key + " = '" + kvp.Value + "' ";
                 }
                 else
                 {
-                    CommandString = CommandString + deleteOperatorString + kvp.Key + " = '" + kvp.Value + "' ";
+                    commandString = commandString + deleteOperatorString + kvp.Key + " = '" + kvp.Value + "' ";
                 }
                 i++;
             }
-            CommandString = CommandString + ";";
+            CommandString = commandString + ";";
         }
+
+        /// <summary>
+        /// executes the delete command and returns true if a row was deleted;
+        /// </summary>
+        /// <returns></returns>
         public bool ExecuteCommand()
         {
             if (CommandString == null || CommandString.Equals(""))
             {
-                throw new Exception("trying to execute deletequery but the command string is empty");
+                throw new Exception("trying to execute delete query but the command string is empty");
             }
             var cmd = ContentController.Instance.SqlConnector.MakeCommand(CommandString);
             var success = cmd.ExecuteNonQuery();
