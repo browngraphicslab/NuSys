@@ -122,11 +122,11 @@
                                 <ColumnDefinition Width="300"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             <Button x:Name="TitleHeader" Grid.Column="0" Background="White" Style="{StaticResource WhiteButton}"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Foreground="{StaticResource color2}" FontSize="18" 
-                                    HorizontalContentAlignment="Left" FontWeight="SemiBold">TITLE</Button>
+                                    HorizontalContentAlignment="Left" FontWeight="SemiBold" Click="SortList_OnClick">TITLE</Button>
                             <Button x:Name="AccessHeader" Grid.Column="1" Background="White" Style="{StaticResource WhiteButton}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Foreground="{StaticResource color2}" FontSize="18" 
-                                    HorizontalContentAlignment="Left" FontWeight="SemiBold">ACCESS</Button>
+                                    HorizontalContentAlignment="Left" FontWeight="SemiBold" Click="SortList_OnClick">ACCESS</Button>
                             <Button x:Name="DateHeader"  Grid.Column="2" Background="White" Style="{StaticResource WhiteButton}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Foreground="{StaticResource color2}" FontSize="18" 
-                                    HorizontalContentAlignment="Left" FontWeight="SemiBold">DATE</Button>
+                                    HorizontalContentAlignment="Left" FontWeight="SemiBold" Click="SortList_OnClick">DATE</Button>
                             <Button x:Name="CurrUsersHeader" Grid.Column="3" Background="White" Style="{StaticResource WhiteButton}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Foreground="{StaticResource color2}" FontSize="18" 
                                     HorizontalContentAlignment="Left" FontWeight="SemiBold">CURRENT USERS</Button>
                         </Grid>

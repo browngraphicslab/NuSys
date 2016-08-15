@@ -46,12 +46,21 @@ namespace NuSysApp
         private bool _loggedIn = false;
         private bool _isLoaded = false;
 
+        //makes sure collection doesn't get added twice
         private bool _collectionAdded = false;
 
         private static string LoginCredentialsFilePath;
 
+        //list of all collections
         private List<LibraryElementModel> _collectionList;
+
+        //selected collection by user
         private LibraryElementModel _selectedCollection = null;
+
+        //sort booleans for reverse
+        private bool _titleReverse;
+        private bool _dateReverse;
+        private bool _accessReverse;
 
         private HashSet<string> _preloadedIDs = new HashSet<string>();
         public WaitingRoomView()
@@ -89,6 +98,9 @@ namespace NuSysApp
             //AutoLogin();
 
             _selectedCollection = null;
+            _titleReverse = false;
+            _dateReverse = false;
+            _accessReverse = false;
         }
 
         private void SlideOutLoginComplete(object sender, object e)
@@ -130,6 +142,8 @@ namespace NuSysApp
                 }
                 //makes sure collection doesn't get added twice
                 _collectionAdded = true;
+                //next time title is clicked, it will reverse the list
+                _titleReverse = true;
             }
             catch (Exception e)
             {
@@ -517,6 +531,66 @@ namespace NuSysApp
             return bytes;
         }
 
+        /// <summary>
+        /// Sort for collectionlist
+        /// for now not sorting by current users - could sort it by how many users are on the workspace potentially? idk
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SortList_OnClick(object sender, RoutedEventArgs e)
+        {
+            var collections = List?.Items.ToList();
+            List?.Items?.Clear();
+            var sorttype = ((Button) sender).Name;
+            
+            switch (sorttype)
+            {
+                case "TitleHeader":
+                    collections.Sort((a, b) => (a as CollectionListBox).Title.CompareTo((b as CollectionListBox).Title));
+                    if (_titleReverse)
+                    {
+                        collections.Reverse();
+                        _titleReverse = false;
+                    }
+                    else
+                    {
+                        _titleReverse = true;
+                    }
+                    break;
+                case "AccessHeader":
+                    collections.Sort(
+                        (a, b) => (a as CollectionListBox).Access.CompareTo((b as CollectionListBox).Access));
+                    if (_accessReverse)
+                    {
+                        collections.Reverse();
+                        _accessReverse = false;
+                    }
+                    else
+                    {
+                        _accessReverse = true;
+                    }
+                    break;
+                case "DateHeader":
+                    collections.Sort((a, b) => (a as CollectionListBox).Date.CompareTo((b as CollectionListBox).Date));
+                    if (_dateReverse)
+                    {
+                        collections.Reverse();
+                        _dateReverse = false;
+                    }
+                    else
+                    {
+                        _dateReverse = true;
+                    }
+                    break;
+                default:
 
+                    break;
+            }
+
+            foreach (var i in collections)
+            {
+                List?.Items?.Add(i);
+            }
+        }
     }
 }

@@ -126,7 +126,7 @@ namespace NuSysApp
             if (_reverseTable.ContainsKey(btnStr))
             {
                 _reverseTable[btnStr] = !_reverseTable[btnStr];
-            }
+            } 
             else
             {
                 _reverseTable.Add(btnStr, false);

@@ -26,6 +26,7 @@ namespace NuSysApp
         public string ID { set; get; }
         public string Title { set; get; }
         public string Date { set; get; }
+        public string Access { set; get; }
         public bool MadeByRosemary = false;
 
         public CollectionListBox(LibraryElementModel m)
@@ -35,6 +36,7 @@ namespace NuSysApp
             ID = m.LibraryElementId;
             Title = m.Title;
             Date = m.Timestamp;
+            Access = "public"; //only temporary - when merging with acls make this real
 
             TitleBox.Text = Title;
             DateBox.Text = Date;
