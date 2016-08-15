@@ -519,6 +519,9 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Makes only direct descendants of the currently displayed LEM visible
+        /// </summary>
         public void ShowOnlyChildrenRegions()
         {
             foreach (var item in xClippingCanvas.Items)

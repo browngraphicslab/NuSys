@@ -12,7 +12,7 @@ namespace NuSysApp
     /// 
     /// In our current implementation, there are two ways to show/hide regions:
     /// 1) Show/Hide only regions that are descendants of this region (ie, were created by it in
-    /// the region tab of the detail view). This includes descendants of descendants.
+    /// the region tab of the detail view). This does not include descendants of descendants.
     /// 
     /// 2) Show/Hide ALL regions
     /// </summary>

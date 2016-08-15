@@ -563,7 +563,9 @@ namespace NuSysApp
                 regionView.Visibility = Visibility.Collapsed;
             }
         }
-
+        /// <summary>
+        /// Shows only direct descendants of the currently displayed LEM
+        /// </summary>
         public void ShowOnlyChildrenRegions()
         {
             foreach (var item in xClippingCanvas.Items)
