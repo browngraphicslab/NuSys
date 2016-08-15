@@ -11,7 +11,7 @@ namespace NusysServer
         private IEnumerable<string> _columnsToSelect;
 
         /// <summary>
-        /// Creates a new single table based on the table type passed in
+        /// Creates a new single table based on the table type passed in. If columns to Select is null it selects all the columns.
         /// </summary>
         /// <param name="tableType"></param>
         public SingleTable(Constants.SQLTableType tableType, IEnumerable<string> columnsToSelect = null)

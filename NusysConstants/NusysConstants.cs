@@ -129,7 +129,7 @@ namespace NusysIntermediate
             public static readonly string SEARCH_REQUEST_SERIALIZED_QUERY_KEY = "query_json";
 
             /// <summary>
-            /// The key that will hold the json-serialized version of the returned SearchResults class.  
+            /// The key that will hold the json-serialized version of the returned list of SearchResults class.  
             /// The search resuls can be deserialized and fetched from the search request.
             /// </summary>
             public static readonly string SEARCH_REQUEST_RETURNED_SEARCH_RESULTS_KEY = "search_results_json";

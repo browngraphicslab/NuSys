@@ -15,10 +15,10 @@ namespace NuSysApp
         /// preferred constructor.  Pass in a search query and then call execute.
         /// The returned values can be fetch after a successful request has fully executed.
         /// </summary>
-        /// <param name="query"></param>
-        public SearchRequest(Query query) : base(NusysConstants.RequestType.SearchRequest)
+        /// <param name="queryArgs"></param>
+        public SearchRequest(QueryArgs queryArgs) : base(NusysConstants.RequestType.SearchRequest)
         {
-            _message[NusysConstants.SEARCH_REQUEST_SERIALIZED_QUERY_KEY] = JsonConvert.SerializeObject(query);
+            _message[NusysConstants.SEARCH_REQUEST_SERIALIZED_QUERY_KEY] = JsonConvert.SerializeObject(queryArgs);
         }
 
         /// <summary>
@@ -32,14 +32,14 @@ namespace NuSysApp
 
         /// <summary>
         /// the method to be called after the request has returned and was successfull.  
-        /// This will return the server-returned SearchResults class for the correspondingQuery.  
+        /// This will return the server-returned list of SearchResults class for the correspondingQuery.  
         /// </summary>
         /// <returns></returns>
-        public SearchResult GetReturnedResult()
+        public List<SearchResult> GetReturnedResults()
         {
             CheckWasSuccessfull();
             Debug.Assert(_returnMessage.ContainsKey(NusysConstants.SEARCH_REQUEST_RETURNED_SEARCH_RESULTS_KEY));
-            return _returnMessage.Get<SearchResult>(NusysConstants.SEARCH_REQUEST_RETURNED_SEARCH_RESULTS_KEY);
+            return _returnMessage.GetList<SearchResult>(NusysConstants.SEARCH_REQUEST_RETURNED_SEARCH_RESULTS_KEY);
         }
     }
 }
