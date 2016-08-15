@@ -7,6 +7,10 @@ namespace NusysIntermediate
 {
     public class NusysConstants
     {
+        /// <summary>
+        /// The boolean for testing locally.  If this is not true and you are running a local server, you won't connect.
+        /// </summary>
+        public static bool TEST_LOCAL_BOOLEAN = true;
 
         #region RequestManagementKeys
 
@@ -75,10 +79,10 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string GET_ENTIRE_WORKSPACE_REQUEST_COLLECTION_ID_KEY = "collection_id_to_get";
 
-            /// <summary>
-            /// The key used to hold the GetEntireWorkspaceRequestArgs class
-            /// </summary>
-            public static readonly string GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY = "returned_workspace_arguments";
+        /// <summary>
+        /// The key used to hold the GetEntireWorkspaceRequestArgs class
+        /// </summary>
+        public static readonly string GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY = "returned_workspace_arguments";
 
             #endregion GetEntireWorkspaceRequest
 
@@ -117,12 +121,34 @@ namespace NusysIntermediate
 
         #endregion CreateNewContentRequest
 
+            #region SearchRequest
+
+            /// <summary>
+            /// the key that will hold the json-serialized Query class when creating a search request.
+            /// </summary>
+            public static readonly string SEARCH_REQUEST_SERIALIZED_QUERY_KEY = "query_json";
+
+            /// <summary>
+            /// The key that will hold the json-serialized version of the returned SearchResults class.  
+            /// The search resuls can be deserialized and fetched from the search request.
+            /// </summary>
+            public static readonly string SEARCH_REQUEST_RETURNED_SEARCH_RESULTS_KEY = "search_results_json";
+
+            #endregion SearchRequest
+
             #region DeleteLibraryElementRequest
 
-        /// <summary>
-        /// the key used to send the library element id key of the library element to be deleted
-        /// </summary>
-        public static readonly string DELETE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
+            /// <summary>
+            /// the key used to send the library element id key of the library element to be deleted
+            /// </summary>
+            public static readonly string DELETE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
+
+            /// <summary>
+            /// the key used in the returning request indicating which IDs were deleted from the library via the server.  
+            /// There can be multiple keys because sometimes the server will have to delete multiple items in order to maintain the collections correctly. 
+            /// The returned object as this key's value will be in the form of a list.  
+            /// </summary>
+            public static readonly string DELETE_LIBRARY_ELEMENT_REQUEST_RETURNED_DELETED_LIBRARY_IDS_KEY = "deleted_library_ids";
 
             #endregion DeleteLibraryElementRequest
 
@@ -133,7 +159,7 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string GET_ALL_LIBRARY_ELEMENTS_REQUEST_RETURNED_LIBRARY_ELEMENT_MODELS_KEY = "returned_library_element_models";
 
-            #endregion GetAllLibraryElementsRequst
+                #endregion GetAllLibraryElementsRequst
 
             #region NewElementRequest
             /// <summary>
@@ -202,7 +228,16 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string ELEMENT_UPDATE_REQUEST_SAVE_TO_SERVER_BOOLEAN = "save_changes_to_server";
 
-            #endregion ElementUpdateRequest
+        #endregion ElementUpdateRequest
+
+            #region UpdateLibraryElementRequest
+
+            /// <summary>
+            /// In the UpdateLibraryElementRequest this is the key that will be used to hold the LibraryElementId of the library element being updated. 
+            /// </summary>
+            public static readonly string UPDATE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID = "library_element_id_to_update";
+
+            #endregion UpdateLibraryElementRequest
 
             #region NewLibraryElementRequest
             /// <summary>
@@ -210,115 +245,267 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY = "type";
 
-            /// <summary>
-            /// key in message for sending library id when creating new library element request
+                /// <summary>
+                /// key in message for sending library id when creating new library element request
 
-            /// </summary>
-            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY = "library_id";
 
-            /// <summary>
-            /// key in message for sending content id when creating new library element request
-            /// </summary>
-            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_CONTENT_ID_KEY = "content_id";
+                /// <summary>
+                /// key in message for sending content id when creating new library element request
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_CONTENT_ID_KEY = "content_id";
 
-            /// <summary>
-            /// key in message for sending keywords when creating new library element request
-            /// </summary>
-            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_KEYWORDS_KEY = "keywords";
+                /// <summary>
+                /// key in message for sending keywords when creating new library element request
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_KEYWORDS_KEY = "keywords";
 
-            /// <summary>
-            /// key in message for sending title when creating new library element request
-            /// </summary>
-            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY = "title";
+                /// <summary>
+                /// key in message for sending title when creating new library element request
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY = "title";
 
-            /// <summary>
-            /// key in message for sending favorited bool when creating new library element request
-            /// </summary>
-            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_FAVORITED_KEY = "favorited";
+                /// <summary>
+                /// key in message for sending favorited bool when creating new library element request
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_FAVORITED_KEY = "favorited";
 
-            /// <summary>
-            /// key in message for sending large icon base-64 byte string when creating new library element request
-            /// </summary>
-            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LARGE_ICON_BYTE_STRING_KEY = "large_icon_bytes";
+                /// <summary>
+                /// key in message for sending large icon base-64 byte string when creating new library element request
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LARGE_ICON_BYTE_STRING_KEY = "large_icon_bytes";
 
-            /// <summary>
-            /// key in message for sending medium icon base-64 byte string when creating new library element request
-            /// </summary>
-            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_MEDIUM_ICON_BYTE_STRING_KEY = "medium_icon_bytes";
+                /// <summary>
+                /// key in message for sending medium icon base-64 byte string when creating new library element request
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_MEDIUM_ICON_BYTE_STRING_KEY = "medium_icon_bytes";
 
-            /// <summary>
-            /// key in message for sending small icon base-64 byte string when creating new library element request
-            /// </summary>
-            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_SMALL_ICON_BYTE_STRING_KEY = "small_icon_bytes";
+                /// <summary>
+                /// key in message for sending small icon base-64 byte string when creating new library element request
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_SMALL_ICON_BYTE_STRING_KEY = "small_icon_bytes";
 
-            /// <summary>
-            /// key in message for sending creator id when creating new library element request 
-            /// </summary>
-            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_CREATOR_USER_ID_KEY = "creator_user_id";
+                /// <summary>
+                /// key in message for sending creator id when creating new library element request 
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_CREATOR_USER_ID_KEY = "creator_user_id";
 
-            /// <summary>
-            /// key in message for sending creation date when creating new library element request
-            /// </summary>
-            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_CREATION_TIMESTAMP_KEY = "creation_timestamp";
+                /// <summary>
+                /// key in message for sending creation date when creating new library element request
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_CREATION_TIMESTAMP_KEY = "creation_timestamp";
 
-            /// <summary>
-            /// key in message for sending last edited timestamp when creating new library element request
-            /// </summary>
-            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LAST_EDITED_TIMESTAMP_KEY = "last_edited_timestamp";
+                /// <summary>
+                /// key in message for sending last edited timestamp when creating new library element request
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LAST_EDITED_TIMESTAMP_KEY = "last_edited_timestamp";
 
-            /// <summary>
-            /// key in message for access type when creating new library element request
-            /// </summary>
-            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_ACCESS_KEY = "access";
+                /// <summary>
+                /// key in message for access type when creating new library element request
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_ACCESS_KEY = "access";
 
-            /// <summary>
-            /// the key that will hold the library ElementId of the clipping parent of a requested region.  
-            /// Used during a region libraryElementRequest.  
-            /// </summary>
-            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_CLIPPING_PARENT_ID = "clipping_parent_id";
-            /// <summary>
-            /// the key that will hold the PointModel of the top left point of the requested region  
-            /// Used during a region libraryElementRequest.  
-            /// </summary>
-            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_TOP_LEFT_POINT = "rectangle_top_left_point"; 
-            /// <summary>
-            /// the key that will hold the width of the requested region  
-            /// Used during a region libraryElementRequest.  
-            /// </summary>
-            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_WIDTH = "rectangle_region_width";
-            /// <summary>
-            /// the key that will hold the height of the requested region  
-            /// Used during a region libraryElementRequest.  
-            /// </summary>
-            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_HEIGHT = "rectangle_region_height";
-            /// <summary>
-            /// the key that will hold the page location of the requested region  
-            /// Used during a region libraryElementRequest.  
-            /// </summary>
-           public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_PDF_PAGE_LOCATION = "pdf_region_page_location";
-          /// <summary>
-          /// the key that will hold the start of the interval of the requested region  
-          /// Used during a region libraryElementRequest.  
-          /// </summary>
-           public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_START = "time_region_start";    
-           /// <summary>
-           /// the key that will hold the end of the interval of the requested region  
-           /// Used during a region libraryElementRequest.  
-           /// </summary>
-        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_END = "time_region_end";
+                /// <summary>
+                /// the key that will hold the library ElementId of the clipping parent of a requested region.  
+                /// Used during a region libraryElementRequest.  
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_CLIPPING_PARENT_ID = "clipping_parent_id";
+                /// <summary>
+                /// the key that will hold the PointModel of the top left point of the requested region  
+                /// Used during a region libraryElementRequest.  
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_TOP_LEFT_POINT = "rectangle_top_left_point"; 
+                /// <summary>
+                /// the key that will hold the width of the requested region  
+                /// Used during a region libraryElementRequest.  
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_WIDTH = "rectangle_region_width";
+                /// <summary>
+                /// the key that will hold the height of the requested region  
+                /// Used during a region libraryElementRequest.  
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_RECTANGLE_HEIGHT = "rectangle_region_height";
+                /// <summary>
+                /// the key that will hold the page location of the requested region  
+                /// Used during a region libraryElementRequest.  
+                /// </summary>
+               public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_PDF_PAGE_LOCATION = "pdf_region_page_location";
+               /// <summary>
+               /// the key that will hold the start of the interval of the requested region  
+               /// Used during a region libraryElementRequest.  
+               /// </summary>
+               public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_START = "time_region_start";    
+               /// <summary>
+               /// the key that will hold the end of the interval of the requested region  
+               /// Used during a region libraryElementRequest.  
+               /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_REGION_TIMESPAN_END = "time_region_end";
+                /// <summary>
+                /// key in message for when the request returns with the fully populated libraryelementModel.
+                /// When the library element model request returns, it will pass a library element model as a json using this key
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY = "returned_library_element_model";
+                /// <summary>
+                /// the key that will hold the libraryelementmodelid of one of the libraryelementmodels being linked  
+                /// Used during a region libraryElementRequest.  
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_IN_KEY = "link_library_element_model_id_in";
+                /// <summary>
+                /// the key that will hold the libraryelementmodelid of one of the libraryelementmodels being linked  
+                /// Used during a region libraryElementRequest.  
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY = "link_library_element_model_id_out";
+        #endregion NewLibraryElementRequest
+
+            #region CreateNewMetadataRequest
         /// <summary>
-        /// key in message for when the request returns with the fully populated libraryelementModel.
-        /// When the library element model request returns, it will pass a library element model as a json using this key
+        /// key in message for library id of the element that the metadata belongs to
         /// </summary>
-        public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY = "returned_library_element_model";
+        public static readonly string CREATE_NEW_METADATA_REQUEST_LIBRARY_ID_KEY = "library_id";
 
-            #endregion NewLibraryElementRequest
+        /// <summary>
+        /// key in message for sending the metadata key
+        /// </summary>
+        public static readonly string CREATE_NEW_METADATA_REQUEST_METADATA_KEY_KEY = "key";
+
+        /// <summary>
+        /// key in message for sending the metadata value
+        /// </summary>
+        public static readonly string CREATE_NEW_METADATA_REQUEST_METADATA_VALUE_KEY = "value";
+
+        /// <summary>
+        /// key in message for sending the metadata mutability type
+        /// </summary>
+        public static readonly string CREATE_NEW_METADATA_REQUEST_METADATA_MUTABILITY_KEY = "mutability";
+
+        /// <summary>
+        /// key in message for forwarding the MetadataEntry class to everyone
+        /// </summary>
+        public static readonly string CREATE_NEW_METADATA_REQUEST_RETURNED_METADATA_ENTRY_KEY = "metadata_entry";
+        #endregion CreateNewMetadataRequest
+
+            #region DeleteMetadataRequest
+        /// <summary>
+        /// key in message for library id of the element that the metadata to be deleted belongs to
+        /// </summary>
+        public static readonly string DELETE_METADATA_REQUEST_LIBRARY_ID_KEY = "library_id";
+
+        /// <summary>
+        /// key in message for signifying which entry should be deleted
+        /// </summary>
+        public static readonly string DELETE_METADATA_REQUEST_METADATA_KEY = "key";
+        #endregion DeleteMetadataRequest
+
+        #region UpdateMetadataRequest
+        /// <summary>
+        /// key in message for library id of the element that the metadata to be edited belongs to
+        /// </summary>
+        public static readonly string UPDATE_METADATA_REQUEST_LIBRARY_ID_KEY = "library_id";
+
+        /// <summary>
+        /// key in message for signifying which entry should be edited
+        /// </summary>
+        public static readonly string UPDATE_METADATA_REQUEST_METADATA_KEY = "key";
+
+        /// <summary>
+        /// key in message for signifying the new value for the entry
+        /// </summary>
+        public static readonly string UPDATE_METADATA_REQUEST_METADATA_VALUE = "value";
+        
+        #endregion UpdateMetadataRequest
+
+        #region CreateNewPresentationLinkRequest
+        /// <summary>
+        /// The key for sending the link id for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_ID_KEY = "link_id";
+
+        /// <summary>
+        /// The key for sending the link IN id for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_IN_ID_KEY = "link_in_element_id";
+
+        /// <summary>
+        /// The key for sending the link OUT id for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_OUT_ID_KEY = "link_out_element_id";
+
+        /// <summary>
+        /// The key for sending the parent collection id for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_PARENT_COLLECTION_ID_KEY = "parent_collection_id";
+
+        /// <summary>
+        /// The key for sending the annotation for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_ANNOTATION_KEY = "annotation";
+
+        /// <summary>
+        /// The key for sending the annotation for the create new presentation link request
+        /// </summary>
+        public static readonly string CREATE_NEW_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY = "returned_presentation_link_model";
+
+        #endregion CreateNewPresentationLinkRequest
+
+        #region DeletePresentationLinkRequest
+        /// <summary>
+        /// The key for sending the link id for the delete presentation link request
+        /// </summary>
+        public static readonly string DELETE_PRESENTATION_LINK_REQUEST_LINK_ID_KEY = "link_id";
+        #endregion DeletePresentationLinkRequest
+
+        #region UpdatePresentationLinkRequest
+        /// <summary>
+        /// The key for sending the link id for the update presentation link request
+        /// </summary>
+        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_LINK_ID_KEY = "link_id";
+
+        /// <summary>
+        /// The key for sending the link IN id for the update presentation link request
+        /// </summary>
+        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_LINK_IN_ID_KEY = "link_in_element_id";
+
+        /// <summary>
+        /// The key for sending the link OUT id for the update presentation link request
+        /// </summary>
+        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_LINK_OUT_ID_KEY = "link_out_element_id";
+
+        /// <summary>
+        /// The key for sending the parent collection id for the update presentation link request
+        /// </summary>
+        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_PARENT_COLLECTION_ID_KEY = "parent_collection_id";
+
+        /// <summary>
+        /// The key for sending the annotation for the update presentation link request
+        /// </summary>
+        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_ANNOTATION_KEY = "annotation";
+
+        /// <summary>
+        /// The key for sending the annotation for the update presentation link request
+        /// </summary>
+        public static readonly string UPDATE_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY = "returned_presentation_link_model";
+        #endregion UpdatePresentationLinkRequest
+        
+
+        #region ChatRequest
+
+        /// <summary>
+        /// Key in message for sending user id in chat requests
+        /// </summary>
+        public static readonly string CHAT_REQUEST_USER_ID_KEY="user";
+
+            /// <summary>
+            /// Key in message for sending chat messages in chat requests
+            /// </summary>
+            public static readonly string CHAT_REQUEST_CHAT_MESSAGE_KEY = "chat_message";
+            #endregion
 
         #endregion RequestKeys
 
         #region SQLColumnNames
 
-        #region alias
+            #region alias
 
         /// <summary>
         /// 32 character string, aka an ID.  
@@ -492,7 +679,7 @@ namespace NusysIntermediate
             /// <summary>
             /// 32 character ID of the library element this metadata entry belongs to
             /// </summary>
-            public static readonly string METADATA_LIBRARY_ELEMENT_ID_KEY = "library_id";
+            public static readonly string METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY = "library_id";
 
             /// <summary>
             /// the string used as the name of the 'key' column for metadata.  
@@ -508,13 +695,20 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string METADATA_VALUE_COLUMN_KEY = "value_string";
 
-            /// <summary>
-            /// the list of all the column names for the metadata table.
-            /// Should be populated by other constants as strings
-            /// </summary>
-            public static readonly HashSet<string> ACCEPTED_METADATA_TABLE_KEYS = new HashSet<string>()
+        /// <summary>
+        /// the string used as the name of the 'mutability' column for metadata.  
+        /// approximately 2048 characters max
+        /// PROBABLY ONLY FOR SERVER-SIDE USE
+        /// </summary>
+        public static readonly string METADATA_MUTABILITY_COLUMN_KEY = "mutability_string";
+
+        /// <summary>
+        /// the list of all the column names for the metadata table.
+        /// Should be populated by other constants as strings
+        /// </summary>
+        public static readonly HashSet<string> ACCEPTED_METADATA_TABLE_KEYS = new HashSet<string>()
             {
-                METADATA_LIBRARY_ELEMENT_ID_KEY,
+                METADATA_LIBRARY_ELEMENT_ID_COLUMN_KEY,
                 METADATA_KEY_COLUMN_KEY,
                 METADATA_VALUE_COLUMN_KEY
             };
@@ -575,7 +769,8 @@ namespace NusysIntermediate
             public static readonly HashSet<string> ILLEGAL_PROPERTIES_TABLE_KEY_NAMES = new HashSet<string>()
             {
                 RETURN_AWAITABLE_REQUEST_ID_STRING,
-                REQUEST_TYPE_STRING_KEY
+                REQUEST_TYPE_STRING_KEY,
+                ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY
             };
 
             #endregion propertiesTable
@@ -609,6 +804,48 @@ namespace NusysIntermediate
             };
             #endregion Content
 
+            #region PresentationLinks
+
+            /// <summary>
+            /// 32 character Id of the presentation link.
+            /// </summary>
+            public static readonly string PRESENTATION_LINKS_TABLE_LINK_ID_KEY = "link_id";
+
+            /// <summary>
+            ///  32 character Id of the presentation link's In-Element ElementId;
+            /// </summary>
+            public static readonly string PRESENTATION_LINKS_TABLE_IN_ELEMENT_ID_KEY = "link_in_element_id";
+
+            /// <summary>
+            ///  32 character Id of the presentation link's Out-Element ElementId;
+            /// </summary>
+            public static readonly string PRESENTATION_LINKS_TABLE_OUT_ELEMENT_ID_KEY = "link_out_element_id";
+
+            /// <summary>
+            ///  32 character Id of the presentation link's parent collection Id.
+            /// </summary>
+            public static readonly string PRESENTATION_LINKS_TABLE_PARENT_COLLECTION_LIBRARY_ID_KEY = "parent_collection_id";
+
+            /// <summary>
+            ///  max 2048 character string that will be the presentation link's annotation string.
+            /// </summary>
+            public static readonly string PRESENTATION_LINKS_TABLE_ANNOTATION_TEXT_KEY = "annotation";
+
+            /// <summary>
+            /// the list of keys that will safely be entered into the contents table.  
+            /// Use this to make sure that you're entering correct keys into the database
+            /// </summary>
+            public static readonly HashSet<string> ACCEPTED_PRESENTATION_LINKS_TABLE_KEYS = new HashSet<string>()
+            {
+                PRESENTATION_LINKS_TABLE_LINK_ID_KEY,
+                PRESENTATION_LINKS_TABLE_IN_ELEMENT_ID_KEY,
+                PRESENTATION_LINKS_TABLE_OUT_ELEMENT_ID_KEY,
+                PRESENTATION_LINKS_TABLE_PARENT_COLLECTION_LIBRARY_ID_KEY,
+                PRESENTATION_LINKS_TABLE_ANNOTATION_TEXT_KEY
+            };
+
+        #endregion PresentationLinks
+
         #endregion SQLColumnNames
 
         #region SQLTableNames
@@ -638,17 +875,22 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string CONTENTS_SQL_TABLE_NAME = "contents";
 
+        /// <summary>
+        /// The string name of the presentation links SQL table in our database
+        /// </summary>
+        public static readonly string PRESENTATION_LINKS_SQL_TABLE_NAME = "presentation_link";
+
         #endregion SQLTableNames
 
         #region UnPackingModelKeys
 
-            #region LibraryElementModel
+        #region LibraryElementModel
 
-            /// <summary>
-            /// This key is used to hold the metadata for library element models when represented in message form.
-            /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
-            /// </summary>
-            public static readonly string LIBRARY_ELEMENT_METADATA_KEY = "library_element_metadata";
+        /// <summary>
+        /// This key is used to hold the metadata for library element models when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string LIBRARY_ELEMENT_METADATA_KEY = "library_element_metadata";
 
             /// <summary>
             /// This key is used to hold the clipping parent's library element Id.
@@ -826,8 +1068,20 @@ namespace NusysIntermediate
         /// </summary>
         public enum AccessType
         {
+            /// <summary>
+            /// This accesstype means that everyone on your server can see and edit this object
+            /// </summary>
             Public, 
+
+            /// <summary>
+            /// This accesstype means that only the creator of the object can see or edit this object.
+            /// </summary>
             Private,
+
+            /// <summary>
+            /// this accesstype is (as of 8/12/16) limited to just Collections.  
+            /// It is meant that everyone on your server can see this object, but only the creator can edit it.  
+            /// </summary>
             ReadOnly
         }
 
@@ -841,7 +1095,6 @@ namespace NusysIntermediate
             DuplicateNodeRequest,
             SystemRequest,
             NewLinkRequest,
-            ElementUpdateRequest,
             NewThumbnailRequest,
             UpdateLibraryElementModelRequest,
             SetTagsRequest,
@@ -858,6 +1111,22 @@ namespace NusysIntermediate
             NewElementRequest,
             DeleteLibraryElementRequest,
             DeleteElementRequest,
+            CreateNewMetadataRequest,
+            DeleteMetadataRequest,
+            CreateNewPresentationLinkRequest,
+            DeletePresentationLinkRequest,
+            UpdatePresentationLinkRequest,
+            UpdateMetadataEntryRequest,
+            
+            /// <summary>
+            /// this request type is used to create a search over the library elements.  
+            /// </summary>
+            SearchRequest,
+
+            /// <summary>
+            /// used to update a node.  Should be able to take arbitrary database property keys for updating
+            /// </summary>
+            ElementUpdateRequest,
 
             /// <summary>
             /// This request will create a new content AND a default new library element for that content

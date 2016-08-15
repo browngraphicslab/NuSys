@@ -33,13 +33,13 @@ namespace NuSysApp
         /// the args to use to fill in the properties of the default library element;  
         /// THE CONTENT ID OF THE LIBRARY ELEMENT ARGS WILL BE IGNORED
         /// </summary>
-        public CreateNewLibraryElementRequestArgs LibraryElementArgs { get; private set; }
+        public CreateNewLibraryElementRequestArgs LibraryElementArgs { get; set; }
 
         #region Required
 
 
         /// <summary>
-        /// REQUIRED EXCEPT FOR COLLECTIONS OR TEXTS.  
+        /// REQUIRED EXCEPT FOR COLLECTIONS OR TEXTS OR LINKS.  
         /// the base64 representation of the data
         /// </summary>
         public string DataBytes { get; set; }
@@ -63,7 +63,8 @@ namespace NuSysApp
             Debug.Assert(LibraryElementArgs.LibraryElementType != null);
 
             if (LibraryElementArgs.LibraryElementType != NusysConstants.ElementType.Collection &&
-                LibraryElementArgs.LibraryElementType != NusysConstants.ElementType.Text)
+                LibraryElementArgs.LibraryElementType != NusysConstants.ElementType.Text &&
+                LibraryElementArgs.LibraryElementType != NusysConstants.ElementType.Link)
             {
                 Debug.Assert(DataBytes != null);
                 message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES] = DataBytes;

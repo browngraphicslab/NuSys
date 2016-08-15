@@ -71,7 +71,7 @@ namespace NuSysApp
         {
             ServerBaseURI = "://" + WaitingRoomView.ServerName + "/api/";
             var credentials = GetUserCredentials();
-            var uri = GetUri("values/" + credentials, true);
+            var uri = GetUri("nusysconnect/" + credentials, true);
             await _socket.ConnectAsync(uri);
         }
 
@@ -82,7 +82,7 @@ namespace NuSysApp
         private Uri GetUri(string additionToBase, bool useWebSocket = false)
         {
             var firstpart = useWebSocket ? "ws" : "http";
-            firstpart += WaitingRoomView.TEST_LOCAL_BOOLEAN ? "" : "s";
+            firstpart += NusysConstants.TEST_LOCAL_BOOLEAN ? "" : "s";
             return new Uri(firstpart + ServerBaseURI + additionToBase);
         }
 

@@ -138,6 +138,10 @@ namespace NusysIntermediate
         {
             try
             {
+                if (ContainsKey(key) && Get(key) == "")
+                {
+                    return false;
+                }
                 return ContainsKey(key) ? bool.Parse(Get(key)) : defaultValue;
             }
             catch (Exception e)
@@ -171,6 +175,14 @@ namespace NusysIntermediate
             return ContainsKey(key) ? Convert.FromBase64String(Get(key)) : null;
         }
 
+
+        /// <summary>
+        /// just attempts to json-deserialize the value of the passed in key to the type you specify.
+        /// Will assert that the key exists in the message.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public T Get<T>(string key)
         {
             var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };

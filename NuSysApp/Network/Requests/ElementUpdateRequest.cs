@@ -11,6 +11,7 @@ namespace NuSysApp
     public class ElementUpdateRequest : Request
     {
         /// <summary>
+        /// Preferred constructor. 
         /// request takes in a message whose keys should be the database keys. 
         /// It also takes in a boolean to tell the server whether to save the changes or just forward to everyone else
         /// </summary>
@@ -37,6 +38,10 @@ namespace NuSysApp
             _message[NusysConstants.LIBRARY_ELEMENT_LAST_EDITED_TIMESTAMP_KEY] = time;
         }
 
+        /// <summary>
+        /// this will be called when another client updates an element model.  
+        /// </summary>
+        /// <returns></returns>
         public override async Task ExecuteRequestFunction()
         {
             var id = _message.GetString(NusysConstants.ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY);

@@ -38,7 +38,7 @@ namespace NuSysApp
         //public static string Password { get; private set; }
         public static string ServerSessionID { get; private set; }
 
-        public static bool TEST_LOCAL_BOOLEAN = true;
+        
 
         public static bool IS_HUB = false;
 
@@ -63,6 +63,7 @@ namespace NuSysApp
         private bool _accessReverse;
 
         private HashSet<string> _preloadedIDs = new HashSet<string>();
+
         public WaitingRoomView()
         {
             this.InitializeComponent();
@@ -83,7 +84,7 @@ namespace NuSysApp
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
 
             //ServerName = TEST_LOCAL_BOOLEAN ? "localhost:54764" : "nusysrepo.azurewebsites.net";
-            ServerName = TEST_LOCAL_BOOLEAN ? "localhost:2685" : "nusysrepo.azurewebsites.net";
+            ServerName = NusysConstants.TEST_LOCAL_BOOLEAN ? "localhost:2685" : "nusysrepo.azurewebsites.net";
             //ServerName = "172.20.10.4:54764";
             //ServerName = "nusysrepo.azurewebsites.net";
             ServerNameText.Text = ServerName;
@@ -114,6 +115,7 @@ namespace NuSysApp
         /// </summary>
         private async void Init()
         {
+
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             try
             {
@@ -370,7 +372,7 @@ namespace NuSysApp
                 {
                     cred["new_user"] = "";
                 }
-                var url = (TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/login/";
+                var url = (NusysConstants.TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/nusyslogin/";
                 var client = new HttpClient(
                  new HttpClientHandler
                  {

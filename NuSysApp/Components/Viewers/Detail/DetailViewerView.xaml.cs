@@ -182,7 +182,7 @@ namespace NuSysApp
 
             // Update the list of links in the Link Editor
             var linkEditorViewModel = xLinkEditorView.DataContext as LinkEditorTabViewModel;
-            linkEditorViewModel?.ChangeLinkTemplates(controller);
+            linkEditorViewModel?.ChangeLinkTemplates(controller.LibraryElementModel.LibraryElementId);
 
             //Update the metadata tab.
             xMetadataEditorView.Metadatable = vm.CurrentElementController;
@@ -219,54 +219,6 @@ namespace NuSysApp
                 default:
                     xRootPivot.SelectedIndex = 0;
                     return;
-
-            }
-        }
-        public async Task ShowElement(RegionLibraryElementController libraryElementController, DetailViewTabType tabToOpenTo = DetailViewTabType.Home)
-        {
-            Debug.Assert(libraryElementController != null);
-            _currentDetailViewable = libraryElementController;
-            //Calls the view model's ShowElement method which loads regions, etc.
-            var vm = (DetailViewerViewModel)DataContext;
-            if (await vm.ShowElement(libraryElementController))
-            {
-                Visibility = Visibility.Visible;
-            }
-
-            // Hide the list view from the region editor tab as Pdf regions are single page entities
-            xRegionEditorView.ShowListView(false, libraryElementController.LibraryElementModel.Type);
-
-            // Update the list of links in the Link Editor
-            var linkEditorViewModel = xLinkEditorView.DataContext as LinkEditorTabViewModel;
-            linkEditorViewModel?.ChangeLinkTemplates(libraryElementController);
-            //linkEditorViewModel?.Update
-
-            ////Make the region editor invisible
-            //if (xRootPivot?.Items?.Count == 4)
-            //{
-            //    _regionEditorPivotItem = xRootPivot.Items[3];
-            //    xRootPivot.Items.RemoveAt(3);
-            //}
-            
-            //Update metadata editor
-            xMetadataEditorView.Metadatable = libraryElementController;
-            xMetadataEditorView.Update();
-
-            switch (tabToOpenTo)
-            {
-                    case DetailViewTabType.Metadata:
-                        xRootPivot.SelectedIndex = 1;
-                        break;
-                    case DetailViewTabType.Links:
-                        xRootPivot.SelectedIndex = 2;
-                        break;
-                    case DetailViewTabType.Regions:
-                        xRootPivot.SelectedIndex = 3;
-                    break;
-                    default:
-                        xRootPivot.SelectedIndex = 0;
-                    return;
-
             }
 
         }
@@ -390,7 +342,7 @@ namespace NuSysApp
             var vm = (DetailViewerViewModel)DataContext;
             vm.TabPaneWidth = this.Width;
             if(vm.Tabs.Count == 0) { return; }
-            vm.TabHeight = vm.TabPaneWidth/vm.Tabs.Count;
+            vm.TabWidth = vm.TabPaneWidth/vm.Tabs.Count;
             
             AccessPopup.HorizontalOffset = this.Width/2 - 200;
         }

@@ -1,10 +1,12 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.DynamicData.ModelProviders;
 using NusysIntermediate;
 
 namespace NusysServer
@@ -13,8 +15,8 @@ namespace NusysServer
     {
         public static readonly string SERVER_SESSION_ID_STRING = "server_session_id";
         public static readonly string VALID_CREDENTIALS_BOOLEAN_STRING = "valid";
-        
-        public static readonly string user = "miranda"; //TODO: CHANGE TO PRIVATE LATER
+
+        public static readonly string user = "trent"; //TODO: CHANGE TO PRIVATE LATER
 
         public static string WWW_ROOT {
             get
@@ -31,13 +33,19 @@ namespace NusysServer
                         return Directory.Exists("C:/Users/miran_000/Documents/NuSys/NusysServer/") ? "C:/Users/miran_000/Documents/NuSys/NusysServer/" : "D:/home/site/wwwroot/";
                     case "sahil":
                         return Directory.Exists("C:/Users/nusys/Documents/Sahil4/NusysServer/") ? "C:/Users/nusys/Documents/Sahil4/NusysServer/" : "D:/home/site/wwwroot/";
+                    case "zach":
+                        return Directory.Exists("C:/Users/Zach/Documents/Visual Studio 2015/Projects/nusys/NusysServer/") ? "C:/Users/Zach/Documents/Visual Studio 2015/Projects/nusys/NusysServer/" : "D:/home/site/wwwroot/";
                     case "book":
                         return Directory.Exists("C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/") ? "C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/" : "D:/home/site/wwwroot/";
+                    case "luke":
+                        return Directory.Exists("C:/Users/luke murray/Documents/Visual Studio 2015/Projects/NewSys/NusysServer/") ? "C:/Users/luke murray/Documents/Visual Studio 2015/Projects/NewSys/NusysServer/" : "D:/home/site/wwwroot/";
                     default:
-                        return "";
+                        return "D:/home/site/wwwroot/";
                 }
             }
         }
+
+        private static bool Local = WWW_ROOT != "D:/home/site/wwwroot/";
 
         //public static readonly string WWW_ROOT = Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/")
         //    ? "C:/Users/graphics_lab/Documents/NuRepo_Test/"
@@ -58,17 +66,21 @@ namespace NusysServer
                     case "trent":
                         return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "C:/Users/graphics_lab/Documents/NuRepo_Test/" : "D:/home/site/wwwroot/files/";
                     case "harsh":
-                        return Directory.Exists("C:/Users/Brown GFX/Documents/NuSys_Server") ? "C:/ Users/Brown GFX/Documents/NuSys_Server" : "D:/home/site/wwwroot/";
+                        return Directory.Exists("C:/Users/Brown GFX/Documents/NuSys_Server") ? "C:/ Users/Brown GFX/Documents/NuSys_Server" : "D:/home/site/wwwroot/files/";
                     case "miranda":
                         return Directory.Exists("C:/Users/miran_000/Documents/NuSys/NusysServer/")
                             ? "C:/Users/miran_000/Documents/NuSys/NusysServer/"
-                            : "D:/home/site/wwwroot/";
+                            : "D:/home/site/wwwroot/files/";
                     case "sahil":
-                        return Directory.Exists("C:/Users/nusys/Documents/Sahil4/NusysServer/") ? "C:/Users/nusys/Documents/Sahil4/NusysServer/" : "D:/home/site/wwwroot/";
+                        return Directory.Exists("C:/Users/nusys/Documents/Sahil4/NusysServer/") ? "C:/Users/nusys/Documents/Sahil4/NusysServer/" : "D:/home/site/wwwroot/files/";
+                    case "zach":
+                        return Directory.Exists("C:/Users/Zach/Documents/Visual Studio 2015/Projects/nusys/NusysServer/") ? "C:/Users/Zach/Documents/Visual Studio 2015/Projects/nusys/NusysServer/" : "D:/home/site/wwwroot/files/";
                     case "book":
                         return Directory.Exists("C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/") ? "C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/" : "D:/home/site/wwwroot/files/";
+                    case "luke":
+                        return Directory.Exists("C:/Users/luke murray/Documents/Visual Studio 2015/Projects/NewSys/NusysServer/") ? "C:/Users/luke murray/Documents/Visual Studio 2015/Projects/NewSys/NusysServer/" : "D:/home/site/wwwroot/files/";
                     default:
-                        return "";
+                        return "D:/home/site/wwwroot/files/";
                 }
             }
         }
@@ -93,10 +105,14 @@ namespace NusysServer
                         return Directory.Exists("C:/Users/miran_000/Documents/NuSys/NusysServer/") ? "http://localhost:2685/" : "http://nusysrepo.azurewebsites.net/";
                     case "sahil":
                         return Directory.Exists("C:/Users/nusys/Documents/Sahil4/NusysServer/") ? "http://localhost:2685/" : "http://nusysrepo.azurewebsites.net/";
+                    case "zach":
+                        return Directory.Exists("C:/Users/Zach/Documents/Visual Studio 2015/Projects/nusys/NusysServer/") ? "http://localhost:2685/" : "D:/home/site/wwwroot/";
                     case "book":
                         return Directory.Exists("C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/") ? "http://localhost:2685/" : "http://nusysrepo.azurewebsites.net/";
+                    case "luke":
+                        return Directory.Exists("C:/Users/luke murray/Documents/Visual Studio 2015/Projects/NewSys/NusysServer/") ? "http://localhost:2685/" : "http://nusysrepo.azurewebsites.net/";
                     default:
-                        return "";
+                        return "http://nusysrepo.azurewebsites.net/";
                 }
             }
         }
@@ -138,7 +154,8 @@ namespace NusysServer
             LibraryElement,
             Metadata,
             Properties,
-            Content
+            Content,
+            PresentationLink
         }
 
         /// <summary>
@@ -187,6 +204,9 @@ namespace NusysServer
                     break;
                 case SQLTableType.Properties:
                     keys = NusysConstants.ACCEPTED_PROPERTIES_TABLE_KEYS;
+                    break;
+                case SQLTableType.PresentationLink:
+                    keys = NusysConstants.ACCEPTED_PRESENTATION_LINKS_TABLE_KEYS;
                     break;
                 default:
                     return new List<string>();
@@ -273,20 +293,35 @@ namespace NusysServer
         /// <returns></returns>
         public static string GetTableName(Constants.SQLTableType type)
         {
+            string name;
             switch (type)
             {
                 case Constants.SQLTableType.Alias:
-                    return NusysIntermediate.NusysConstants.ALIASES_SQL_TABLE_NAME + "_" + user;//TODO remove all the '  +"_"+user   ', it's only for testing
+                    name = NusysIntermediate.NusysConstants.ALIASES_SQL_TABLE_NAME;
+                    break;
                 case Constants.SQLTableType.LibraryElement:
-                    return NusysIntermediate.NusysConstants.LIBRARY_ELEMENTS_SQL_TABLE_NAME + "_" + user;
+                    name = NusysIntermediate.NusysConstants.LIBRARY_ELEMENTS_SQL_TABLE_NAME;
+                    break;
                 case Constants.SQLTableType.Metadata:
-                    return NusysIntermediate.NusysConstants.METADATA_SQL_TABLE_NAME + "_" + user;
+                    name = NusysIntermediate.NusysConstants.METADATA_SQL_TABLE_NAME;
+                    break;
                 case Constants.SQLTableType.Properties:
-                    return NusysIntermediate.NusysConstants.PROPERTIES_SQL_TABLE_NAME + "_" + user;
+                    name = NusysIntermediate.NusysConstants.PROPERTIES_SQL_TABLE_NAME;
+                    break;
                 case Constants.SQLTableType.Content:
-                    return NusysIntermediate.NusysConstants.CONTENTS_SQL_TABLE_NAME + "_" + user;
+                    name = NusysIntermediate.NusysConstants.CONTENTS_SQL_TABLE_NAME;
+                    break;
+                case Constants.SQLTableType.PresentationLink:
+                    name = NusysIntermediate.NusysConstants.PRESENTATION_LINKS_SQL_TABLE_NAME;
+                    break;
+                default:
+                    throw new Exception("type not supported yet for getting the table name");
             }
-            return null;
+            if (Local)
+            {
+                return name + "_" + user;//TODO remove all the '  +"_"+user   ', it's only for testing
+            }
+            return name;
         }
 
         #endregion StaticMethods

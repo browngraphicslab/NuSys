@@ -39,7 +39,7 @@ namespace NuSysApp
                 vm.MakeMessageList();
             };
         }
-        private void ChatInputBox_KeyDown(object sender, KeyRoutedEventArgs e)
+        private async void ChatInputBox_KeyDown(object sender, KeyRoutedEventArgs e)
         {
             if (e.Key == VirtualKey.Enter)
             {
@@ -58,7 +58,8 @@ namespace NuSysApp
                         new ChatRequest(
                             SessionController.Instance.NuSysNetworkSession.NetworkMembers[
                                 SessionController.Instance.LocalUserID], text);
-                    SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                    request.AddSuccesfullChatLocally();
                 }
                 if (!SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(SessionController.Instance.LocalUserID))
                 {

@@ -492,7 +492,7 @@ namespace NuSysApp
                     var collection = SessionController.Instance.ContentController.GetLibraryElementModel(libraryId) as CollectionLibraryElementModel;
                     await
                         StaticServerCalls.PutCollectionInstanceOnMainCollection(pos.X, pos.Y, libraryId, collection.IsFinite,
-                            new List<Point>(collection?.ShapePoints.Select(p => new Point(p.X, p.Y)) ?? new List<Point>()), size.Width, size.Height);
+                            new List<Point>(collection?.ShapePoints?.Select(p => new Point(p.X, p.Y)) ?? new List<Point>()), size.Width, size.Height);
                 }
             });
 
@@ -645,7 +645,7 @@ namespace NuSysApp
                     dict["type"] = libraryItemTemplate?.Type;
                     dict["x"] = "50000";
                     dict["y"] = "50000";
-                    dict["contentId"] = libraryItemTemplate?.ContentID;
+                    dict["contentId"] = libraryItemTemplate?.LibraryElementId;
                     dict["metadata"] = metadata;
                     dict["autoCreate"] = true;
                     dict["creator"] = controller.LibraryElementModel.LibraryElementId;
@@ -664,7 +664,7 @@ namespace NuSysApp
                     dict["type"] = itemTemplate?.Type;
                     dict["x"] = "50000";
                     dict["y"] = "50000";
-                    dict["contentId"] = itemTemplate?.ContentID;
+                    dict["contentId"] = itemTemplate?.LibraryElementId;
                     dict["metadata"] = metadata;
                     dict["autoCreate"] = true;
                     dict["creator"] = controller.LibraryElementModel.LibraryElementId;

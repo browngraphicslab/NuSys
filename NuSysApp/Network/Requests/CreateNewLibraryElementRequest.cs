@@ -9,6 +9,10 @@ using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 {
+    /// <summary>
+    /// This request should only be used to create a LibraryElement when a content for that library element already exists.
+    /// After a successful request, call AddReturnedLibraryElementToLibrary() to add the element locally.
+    /// </summary>
     public class CreateNewLibraryElementRequest : Request
     {
         /// <summary>
@@ -65,10 +69,21 @@ namespace NuSysApp
             Debug.Assert(_returnMessage.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY));
             var modelString = _returnMessage.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY);
 
-            var libraryElement = LibraryElementModelFactory.DeserializeFromString(modelString);
-            return SessionController.Instance.ContentController.Add(libraryElement) != null;
+            return AddModelStringToSession(modelString);
         }
 
+        /// <summary>
+        /// this method can be called to add a json-serialized LibraryElementModel to the current session.  
+        /// It should be called whenever the AddReturnedLibraryElementToLibrary or the ExecuteRequestFunction methods are called.
+        /// It will return whether the element was succesfully added.
+        /// </summary>
+        /// <param name="libraryElementModelString"></param>
+        /// <returns></returns>
+        private bool AddModelStringToSession(string libraryElementModelString)
+        {
+            var libraryElement = LibraryElementModelFactory.DeserializeFromString(libraryElementModelString);
+            return SessionController.Instance.ContentController.Add(libraryElement) != null;
+        }
 
         /// <summary>
         /// simlply debug.asserts the important ID's.  
@@ -82,6 +97,21 @@ namespace NuSysApp
             Debug.Assert(_message.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY));
             _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CREATION_TIMESTAMP_KEY] = time;
             _message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LAST_EDITED_TIMESTAMP_KEY] = time;
+        }
+
+        /// <summary>
+        /// this method should simply add the returned libraryElementModel to the session.  
+        /// This will be called when another client adds a library element OR a new content since a default library element is made
+        /// </summary>
+        /// <returns></returns>
+        public override async Task ExecuteRequestFunction()
+        {
+            //make sure the key for the json is present
+            Debug.Assert(_message.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY));
+
+            //get the json and add it to the session
+            var modelString = _returnMessage.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY);
+            AddModelStringToSession(modelString);
         }
     }
 }

@@ -22,20 +22,13 @@ namespace NusysServer
             //Debug.Assert(message.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY));
             Debug.Assert(message.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CONTENT_ID_KEY));
             Debug.Assert(message.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY));
-            /*
-            Debug.Assert(message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_CREATION_TIMESTAMP_KEY));
-            Debug.Assert(message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_FAVORITED_KEY));
-            Debug.Assert(message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_KEYWORDS_KEY));
-            Debug.Assert(message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_TITLE_KEY));
-            Debug.Assert(message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_SMALL_ICON_URL_KEY));
-            Debug.Assert(message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY));
-            Debug.Assert(message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_LARGE_ICON_URL_KEY));
-            */
 
             var libraryId = message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY);
 
-            //TODO send notification to everyone
+            //create message of database keys from request keys
             var addLibraryElementMessage = RequestToSqlKeyMappings.LibraryElementRequestKeysToDatabaseKeys(message);
+
+            addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_CREATOR_USER_ID_KEY] = ActiveClient.ActiveClients[senderHandler]?.Client?.ID;
 
             //create thumbnails and add the paths to the sql database
             var smallIconPath = FileHelper.CreateThumbnailFile(libraryId,NusysConstants.ThumbnailSize.Small, message.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_SMALL_ICON_BYTE_STRING_KEY));
@@ -45,16 +38,24 @@ namespace NusysServer
             addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_MEDIUM_ICON_URL_KEY] = mediumIconPath;
             addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_LARGE_ICON_URL_KEY] = largeIconPath;
 
+            //if the request didn't specify a access Control type,
+            if (!addLibraryElementMessage.ContainsKey(NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY) ||
+                addLibraryElementMessage.GetString(NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY).Equals(""))
+            {
+                //default to private
+                addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY] = NusysConstants.AccessType.Private.ToString();
+            }
             var success = ContentController.Instance.SqlConnector.AddLibraryElement(addLibraryElementMessage);
 
             //create a libraryElementModel as requested and serialize it
             var model = LibraryElementModelFactory.CreateFromMessage(addLibraryElementMessage);
             var modelJson = JsonConvert.SerializeObject(model);
 
-            var forwardMessage = new Message(message);
-            forwardMessage.Remove(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING);// This step is a must since the client must recieve this message an not try to resume an awaiting thread
-            forwardMessage[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY] = modelJson;
-            NuWebSocketHandler.BroadcastToSubset(forwardMessage,new HashSet<NuWebSocketHandler>() {senderHandler});
+            //if the library element doesn't have the access Type of private,
+            if(addLibraryElementMessage.GetEnum<NusysConstants.AccessType>(NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY) != NusysConstants.AccessType.Private) { 
+                //forward the message to everyone else, and just add the new model json
+                ForwardMessage(new Message(message) { { NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY, modelJson }},senderHandler);
+            }
 
             var returnMessage = new Message();
             returnMessage[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY] = modelJson;

@@ -40,6 +40,12 @@
   <ItemGroup>
     <Compile Include="IRequestArgumentable.cs" />
     <Compile Include="ModelFactories\ContentDataModelFactory.cs" />
+    <Compile Include="Models\CognitiveApiModels\CognitiveApiCaptionModel.cs" />
+    <Compile Include="Models\CognitiveApiModels\CognitiveApiCategoryModel.cs" />
+    <Compile Include="Models\CognitiveApiModels\CognitiveApiDescriptionModel.cs" />
+    <Compile Include="Models\CognitiveApiModels\CognitiveApiFaceModel.cs" />
+    <Compile Include="Models\CognitiveApiModels\CognitiveApiFaceRectangleModel.cs" />
+    <Compile Include="Models\CognitiveApiModels\CognitiveApiTagModel.cs" />
     <Compile Include="Models\ContentDataModel.cs" />
     <Compile Include="Keyword.cs" />
     <Compile Include="Message.cs" />
@@ -58,6 +64,7 @@
     <Compile Include="Models\PdfNodeModel.cs" />
     <Compile Include="Models\PdfRegionModel.cs" />
     <Compile Include="Models\PointModel.cs" />
+    <Compile Include="Models\PresentationLinkModel.cs" />
     <Compile Include="Models\RectangleRegion.cs" />
     <Compile Include="Models\Region.cs" />
     <Compile Include="Models\Sendable.cs" />
@@ -65,10 +72,15 @@
     <Compile Include="Models\VideoNodeModel.cs" />
     <Compile Include="Models\VideoRegionModel.cs" />
     <Compile Include="Models\WordNodeModel.cs" />
+    <Compile Include="NuSysCognitiveAnalysisModels\NusysImageAnalysisModel.cs" />
+    <Compile Include="NuSysCognitiveAnalysisModels\NusysPdfDocumentAnalysisModel.cs" />
+    <Compile Include="NuSysCognitiveAnalysisModels\NusysPdfSegmentAnalysisModel.cs" />
     <Compile Include="Request.cs" />
     <Compile Include="NusysConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerArguments\GetEntireWorkspaceRequestReturnArgs.cs" />
+    <Compile Include="ServerSearch\Query.cs" />
+    <Compile Include="ServerSearch\SearchResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Windows.Foundation.UniversalApiContract">

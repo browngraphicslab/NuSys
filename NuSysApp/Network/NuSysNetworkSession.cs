@@ -259,6 +259,9 @@ namespace NuSysApp
                 await ProcessIncomingSystemRequest(message);
                 return;
             }
+            //switch statement used to switch on the element type and create a request from it.
+            //NOT ALL REQUEST TYPES SHOULD BE HERE
+            //BE CERTAIN THAT IT SHOULD BE HERE BEFORE YOU BLINDLY ADD IT
             switch (requestType)
             {
                 case NusysConstants.RequestType.DeleteElementRequest:

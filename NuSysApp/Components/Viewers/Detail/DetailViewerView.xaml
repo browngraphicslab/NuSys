@@ -240,7 +240,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Grid x:Name="TabStack" Background="{StaticResource color1}" BorderBrush="{StaticResource color2}" BorderThickness="0,1,1,0" Padding="3,3,3,3"  Height="40" 
-                              Width="{Binding ElementName=TabList, Path=DataContext.TabHeight}">
+                              Width="{Binding ElementName=TabList, Path=DataContext.TabWidth}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                                 <ColumnDefinition Width="20"></ColumnDefinition>

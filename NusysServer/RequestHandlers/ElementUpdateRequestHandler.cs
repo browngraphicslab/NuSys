@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using NusysIntermediate;
+using NusysServer.Util.SQLQuery;
 
 namespace NusysServer
 {
@@ -26,16 +27,58 @@ namespace NusysServer
             {
                 throw new Exception("An elementUpdateRequest must have an element ID to update");
             }
-
-            ForwardMessage(message,senderHandler);
-
+            var libraryId = message.GetString(NusysConstants.ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY);
+            ForwardMessage(message, senderHandler);
+            List<SQLUpdatePropertiesArgs> propertiesToAdd = new List<SQLUpdatePropertiesArgs>();
+            List<SqlQueryEquals> elementNonPropertiesUpdates = new List<SqlQueryEquals>();
             //if the client asked to save the update
             if (message.GetBool(NusysConstants.ELEMENT_UPDATE_REQUEST_SAVE_TO_SERVER_BOOLEAN))
             {
-                //todo actually save the update
-            }
+                
+                foreach (var kvp in message)
+                {
+                    //Check if key that needs to be updated is in the properties table or library element table
+                    if (!NusysConstants.ALIAS_ACCEPTED_KEYS.Keys.Contains(kvp.Key))
+                    {
 
-            return new Message();
+                        if (NusysConstants.ILLEGAL_PROPERTIES_TABLE_KEY_NAMES.Contains(kvp.Key))
+                        {
+                            continue;
+                        }
+                        SQLUpdatePropertiesArgs property = new SQLUpdatePropertiesArgs();
+                        property.PropertyKey = kvp.Key;
+                        property.PropertyValue = kvp.Value.ToString();
+                        property.LibraryOrAliasId = libraryId;
+                        propertiesToAdd.Add(property);
+                    }
+                    else
+                    {
+                        SqlQueryEquals updateValue =
+                            new SqlQueryEquals(Constants.SQLTableType.Alias, kvp.Key, kvp.Value.ToString());
+                        elementNonPropertiesUpdates.Add(updateValue);
+                    }
+                }
+                //Update or insert properties into table
+                SQLUpdateOrInsertPropertyQuery updateOrInsertPropertiesQuery =
+                    new SQLUpdateOrInsertPropertyQuery(propertiesToAdd);
+                if (!updateOrInsertPropertiesQuery.ExecuteCommand())
+                {
+                    throw new Exception("Could not update or insert the properties from the sql query" + updateOrInsertPropertiesQuery.CommandString);
+                }
+
+                //update alias table
+                SQLUpdateRowQuery updateRowQueryQuery =
+                    new SQLUpdateRowQuery(new SingleTable(Constants.SQLTableType.Alias), elementNonPropertiesUpdates,
+                        new SqlQueryEquals(Constants.SQLTableType.Alias, NusysConstants.ALIAS_ID_KEY, libraryId));
+                if (!updateRowQueryQuery.ExecuteCommand())
+                {
+                    throw new Exception("Could not update library element from the sql query" + updateRowQueryQuery.CommandString);
+                }
+            }
+            var returnMessage = new Message();
+            returnMessage[NusysConstants.REQUEST_SUCCESS_BOOL_KEY] = true;
+
+            return returnMessage;
         }
     }
 }

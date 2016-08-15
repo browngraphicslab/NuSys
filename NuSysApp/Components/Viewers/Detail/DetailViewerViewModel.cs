@@ -20,12 +20,10 @@ namespace NuSysApp
 {
     public class DetailViewerViewModel : BaseINPC
     {
-        private ElementModel _nodeModel;
         private DetailViewHomeTabViewFactory _viewHomeTabViewFactory = new DetailViewHomeTabViewFactory();
-        private string _tagToDelete;
-        public bool DeleteOnFocus;
         private string _title;
         public Dictionary<string, DetailViewTabType> TabDictionary = new Dictionary<string, DetailViewTabType>();
+        public delegate void TitleChangedHandler(object source, string newTitle);
         public event TitleChangedHandler OnTitleChanged;
         public string Title
         {
@@ -63,22 +61,22 @@ namespace NuSysApp
                 RaisePropertyChanged("TabVisibility");
             }
         }
-        // Tab Pane Height is a reference to the height of the Tab pane 
-        public double TabPaneWidth { get; set; }
-        private double _tabHeight;
 
-        // TabHeight controls the standard height that tabs have. It is some factor of the TabPaneWidth
-        public double TabHeight
+        // Tab Pane Width is a reference to the width of the Tab pane 
+        public double TabPaneWidth { get; set; }
+        private double _tabWidth;
+
+
+        // TabWidth controls the standard height that tabs have. It is some factor of the TabPaneWidth
+        public double TabWidth
         {
-            get { return _tabHeight; }
+            get { return _tabWidth; }
             set
             {
-                _tabHeight = value; 
-                RaisePropertyChanged("TabHeight");
-                RaisePropertyChanged("TextHeight");
+                _tabWidth = value; 
+                RaisePropertyChanged("TabWidth");
             }
         }
-        public double TextHeight { get { return _tabHeight - 25; } }
 
         public ObservableCollection<StackPanel> Metadata { get; set; }
 
@@ -87,13 +85,8 @@ namespace NuSysApp
         private DetailHomeTabViewModel _regionableRegionTabViewModel;
         private DetailHomeTabViewModel _regionableHomeTabViewModel;
 
-        private ElementViewModel _currentElementViewModel;
         public LibraryElementController CurrentElementController { get; set; }
 
-        public LibraryElementController CurrentDetailViewable { get; set; }
-
-        public delegate void TitleChangedHandler(object source, string newTitle);
-        public event TitleChangedHandler TitleChanged;
         
         public DetailViewerViewModel()
 
@@ -111,16 +104,15 @@ namespace NuSysApp
             RemoveTab(element.LibraryElementId);
             // set tab visibility to true if there is more than one
             TabVisibility = Tabs.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
-            TabHeight = TabPaneWidth / Tabs.Count;
+            TabWidth = TabPaneWidth / Tabs.Count;
         }
 
         public void Dispose()
         {
-            CurrentDetailViewable.TitleChanged -= ControllerTitleChanged;
+            CurrentElementController.TitleChanged -= ControllerTitleChanged;
 
             // If this is null remove it 
             CurrentElementController.KeywordsChanged -= KeywordsChanged;
-            _nodeModel = null;
         }
         public async Task<bool> ShowElement(LibraryElementController controller)
         {                     
@@ -133,13 +125,10 @@ namespace NuSysApp
             if (CurrentElementController != null)
             {
                 CurrentElementController.KeywordsChanged -= KeywordsChanged;
-                if (CurrentDetailViewable != null)
-                {
-                    CurrentDetailViewable.TitleChanged -= ControllerTitleChanged;
-                }
+                CurrentElementController.TitleChanged -= ControllerTitleChanged;
+                
             }
             CurrentElementController = controller;
-            CurrentDetailViewable = controller;
             CurrentElementController.KeywordsChanged += KeywordsChanged;
 
             RegionCollection.Clear();
@@ -215,7 +204,7 @@ namespace NuSysApp
             TabVisibility = Visibility.Visible;
 
             TabVisibility = Tabs.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
-            TabHeight = TabPaneWidth/Tabs.Count;
+            TabWidth = TabPaneWidth/Tabs.Count;
         }
         
 
@@ -292,7 +281,10 @@ namespace NuSysApp
                     {
                         continue;
                     }
-                    suggestedTags.AddRange(opposite.LibraryElementModel.Keywords.Select(key => key.Text));
+                    if(opposite?.LibraryElementModel?.Keywords != null)
+                    {
+                        suggestedTags.AddRange(opposite.LibraryElementModel.Keywords.Select(key => key.Text));
+                    }
                     foreach (var kvp in opposite.FullMetadata ?? new Dictionary<string, MetadataEntry>())
                     {
                         if (kvp.Key != "system_suggested_dates")
@@ -450,9 +442,9 @@ namespace NuSysApp
 
         public void ChangeControllersTitle(string title)
         {
-            CurrentDetailViewable.TitleChanged -= ControllerTitleChanged;
-            CurrentDetailViewable.SetTitle(title);
-            CurrentDetailViewable.TitleChanged += ControllerTitleChanged;
+            CurrentElementController.TitleChanged -= ControllerTitleChanged;
+            CurrentElementController.SetTitle(title);
+            CurrentElementController.TitleChanged += ControllerTitleChanged;
         }
 
         public void RemoveTab(string libraryElementControllerId)
@@ -486,7 +478,7 @@ namespace NuSysApp
             {
                 SessionController.Instance.SessionView.DetailViewerView.CloseDv();
             }
-            TabHeight = TabPaneWidth / Tabs.Count;
+            TabWidth = TabPaneWidth / Tabs.Count;
         }
 
     }

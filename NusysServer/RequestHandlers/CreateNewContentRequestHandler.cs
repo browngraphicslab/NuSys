@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using NusysIntermediate;
 
 namespace NusysServer
@@ -38,7 +39,7 @@ namespace NusysServer
             message.Remove(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY);
             message.Remove(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES);
 
-            var createNewLibraryRequest = new Request(NusysConstants.RequestType.CreateNewLibraryElementRequest, message);
+            var createNewLibraryRequest = new Request(new Request(NusysConstants.RequestType.CreateNewLibraryElementRequest, message).GetFinalMessage());
             var createNewLibraryElementRequestHandler = new CreateNewLibraryElementRequestHandler();
             
             //return a message saying whether content and library element model were successfully created
@@ -53,13 +54,28 @@ namespace NusysServer
                     libraryElementRequestMessage[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY];
             }
 
-            if (Constants.user == "junsu" && 
-                message.ContainsKey("type") &&
-                message.GetEnum<NusysConstants.ContentType>("type") == NusysConstants.ContentType.PDF)//obviously only for testing
+            //async processing 
+            //TODO make this not just for pdfs, but for anything we can scrape text from
+            if (message.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY) && message.GetEnum<NusysConstants.ContentType>(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY) == NusysConstants.ContentType.PDF)
             {
-                var tup = new Tuple<string, string>(FileHelper.GetDataFromContentURL(addContentToDatabaseMessage.GetString(NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY), NusysConstants.ContentType.PDF), message.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY));
-                ContentController.Instance.ComparisonController.AddDocument(tup);
-                ContentController.Instance.ComparisonController.CompareRandonDoc();
+                var pdfText = message.GetString(NusysConstants.CREATE_NEW_PDF_CONTENT_REQUEST_PDF_TEXT_KEY);
+                if (!string.IsNullOrEmpty(pdfText))
+                {
+                    if (Constants.user == "junsu") //TODO remove after junsu tests
+                    {
+                        var tup = new Tuple<string, string>(pdfText,
+                            message.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY));
+                        ContentController.Instance.ComparisonController.AddDocument(tup);
+                        ContentController.Instance.ComparisonController.CompareRandonDoc();
+                    }
+                    else
+                    {
+                        Task.Run(async delegate {
+                            var model = await TextProcessor.GetNusysPdfAnalysisModelFromTextAsync(pdfText);
+                            Debug.WriteLine(model.TotalText);
+                        });
+                    }
+                }
             }
 
             return returnMessage;

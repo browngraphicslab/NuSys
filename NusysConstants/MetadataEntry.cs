@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.UI.Xaml;
+
 
 namespace NusysIntermediate
 {
@@ -20,13 +20,11 @@ namespace NusysIntermediate
             set
             {
                 _values = value; 
-                
             } }       
         public MetadataMutability Mutability { get; set; }
-        //public Windows.UI.Xaml.Media.SolidColorBrush Brush { get; set; }
 
         /// <summary>
-        /// Creates a meta data entry with a key, value, mutability, and brush (based on mutability)
+        /// Creates a meta data entry with a key, value, and mutability
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -36,15 +34,6 @@ namespace NusysIntermediate
             Key = key;
             Values = values;
             Mutability = mutability;
-            /*
-            Mutability = MetadataMutability.IMMUTABLE;
-            if (mutability)
-            {
-                Mutability = MetadataMutability.MUTABLE; 
-            }*/
-
-
-
         }
     }
 

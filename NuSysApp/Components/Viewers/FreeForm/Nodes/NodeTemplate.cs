@@ -273,10 +273,18 @@ namespace NuSysApp
             isSearched.Visibility = searched ? Visibility.Visible : Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// Will add a duplicate alias when the user finishes moving the duplicate button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private async void BtnAddOnManipulationCompleted(object sender, PointerRoutedEventArgs args)
         {
+            // Remove the drag button from the session
             xCanvas.Children.Remove(_dragItem);
 
+            // Find the coordinates of the point at which the client dropped the button, and use those coordinates to 
+            // Request a duplicate in that location
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
             var p = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
             var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(p.X, p.Y, 300, 300));
@@ -295,82 +303,65 @@ namespace NuSysApp
                     var canvas = groupnode.FreeFormView.AtomContainer;
                     var targetPoint = SessionController.Instance.SessionView.MainCanvas.TransformToVisual(canvas).TransformPoint(p);
                     p = args.GetCurrentPoint(first).Position; ;
-                   
-                   vm.Controller.RequestDuplicate(targetPoint.X, targetPoint.Y, new Message(await vm.Model.Pack()));
+                    vm.Controller.RequestDuplicate(targetPoint.X, targetPoint.Y);          
                 }
                 else
                 {
-                    vm.Controller.RequestDuplicate(r.X, r.Y, new Message(await vm.Model.Pack()));
+                    vm.Controller.RequestDuplicate(r.X, r.Y);
                 }
             }
             
          
 
-            if (_currenDragMode == DragMode.Link || _currenDragMode == DragMode.PresentationLink)
+            if (_currenDragMode == DragMode.Link)
+            {
+                var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
+                var hitsStartElements = hitsStart.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementViewModel).ToList();
+                var hitStartRegions = hitsStart.Where(uiElem => (uiElem as FrameworkElement).DataContext is RegionViewModel).ToList();
+                var vm = (ElementViewModel)DataContext;
+                var createNewLinkLibraryElementRequestArgs = new CreateNewLinkLibraryElementRequestArgs();
+                createNewLinkLibraryElementRequestArgs.LibraryElementModelInId = vm.LibraryElementId;
+                createNewLinkLibraryElementRequestArgs.LibraryElementType = NusysConstants.ElementType.Link;
+
+                if (hitStartRegions.Any()){ // If it hits a region
+                    var first = (FrameworkElement)hitStartRegions.First();
+                    var dc = (RegionViewModel)first.DataContext;
+                    createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId = dc.RegionLibraryElementController.LibraryElementModel.LibraryElementId;
+                    createNewLinkLibraryElementRequestArgs.Title = $"Link from {vm.Model.Title} to {dc.Model.Title}";
+                }
+                else if (hitsStartElements.Any()) // if it hits an element
+                {
+                    var first = (FrameworkElement)hitsStartElements.First();
+                    var dc = (ElementViewModel)first.DataContext;
+
+                    createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId = dc.LibraryElementId;
+                    createNewLinkLibraryElementRequestArgs.Title = $"Link from {vm.Model.Title} to {dc.Model.Title}";
+                } else
+                {
+                    ReleasePointerCaptures();
+                    (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta));
+                    return; // just in case it doesn't actually hit anything
+                }
+                // if the link is between two different libary element models then execute the create link request
+                if (createNewLinkLibraryElementRequestArgs.LibraryElementModelInId !=
+                    createNewLinkLibraryElementRequestArgs.LibraryElementModelOutId)
+                {
+                    var contentRequestArgs = new CreateNewContentRequestArgs();
+                    contentRequestArgs.LibraryElementArgs = createNewLinkLibraryElementRequestArgs;
+                    var request = new CreateNewContentRequest(contentRequestArgs);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                    request.AddReturnedLibraryElementToLibrary();
+                }
+            }
+            if (_currenDragMode == DragMode.PresentationLink)
             {
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
                 hitsStart = hitsStart.Where(uiElem => (uiElem as FrameworkElement).DataContext is ElementViewModel).ToList();
-
-                var hitsStart2 = VisualTreeHelper.FindElementsInHostCoordinates(p, null);
-                hitsStart2 = hitsStart2.Where(uiElem => (uiElem as FrameworkElement).DataContext is RegionViewModel).ToList();
-                
-                if (hitsStart.Any()){
-                    var first = (FrameworkElement)hitsStart.First();
-                    var dc = (ElementViewModel)first.DataContext;
-                    var vm = (ElementViewModel)DataContext;
-
-                    if (vm == dc || (dc is FreeFormViewerViewModel) || dc is LinkViewModel)
-                    {
-                        return;
-                    }
-
-                    if (hitsStart2.Any()){
-                        foreach (var element in hitsStart2)
-                        {
-                            if ((element as FrameworkElement).DataContext is RegionViewModel) // If there is a region under the drag
-                            {
-                                if (_currenDragMode == DragMode.PresentationLink)
-                                {
-                                    AddPresentationLink(dc?.Id, vm?.Id);
-                                }
-                                else
-                                {
-                                    var region = element as FrameworkElement;
-                                    var regiondc = region.DataContext as RegionViewModel;
-                                    var m = new Message();
-                                    m["id2"] = regiondc.RegionLibraryElementController.LibraryElementModel.LibraryElementId;
-                                    m["id1"] = vm.Controller.LibraryElementController.ContentId;
-                                    await SessionController.Instance.LinksController.RequestLink(m);
-                                    UITask.Run(delegate { vm.Controller.UpdateCircleLinks(); });
-                                    break;
-                                    //     vm.LibraryElementController.RequestVisualLinkTo();
-                                }
-                            }          
-                        }
-                    }
-                    else
-                    {
-                        if (_currenDragMode == DragMode.Link)
-                        {
-                            if (!(dc is RegionViewModel))
-                            {
-                                var m = new Message();
-                                m["id1"] = dc.LibraryElementId;
-                                m["id2"] = vm.LibraryElementId;
-                                if (dc.LibraryElementId != vm.LibraryElementId)
-                                {
-                                    SessionController.Instance.LinksController.RequestLink(m);
-                                }
-                            }
-                        }
-                        if (_currenDragMode == DragMode.PresentationLink)
-                        {
-                            AddPresentationLink(dc?.Id,vm?.Id);
-                        }
-                    }
-                }
+                var first = (FrameworkElement)hitsStart.First();
+                var dc = (ElementViewModel)first.DataContext;
+                var vm = (ElementViewModel)DataContext;
+                AddPresentationLink(dc?.Id, vm?.Id);
             }
-
             ReleasePointerCaptures();
             (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta));
         }
