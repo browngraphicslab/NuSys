@@ -10,7 +10,7 @@ namespace NusysIntermediate
         /// <summary>
         /// The boolean for testing locally.  If this is not true and you are running a local server, you won't connect.
         /// </summary>
-        public static bool TEST_LOCAL_BOOLEAN = false;
+        public static bool TEST_LOCAL_BOOLEAN = true;
 
         #region RequestManagementKeys
 
@@ -800,8 +800,7 @@ namespace NusysIntermediate
             public static readonly string CONTENT_TABLE_TYPE_KEY = "content_type";
 
             /// <summary>
-            /// varchar url of the content.
-            /// approximately 512 characters max
+            /// varchar url of the content. MAX
             /// </summary>
             public static readonly string CONTENT_TABLE_CONTENT_URL_KEY = "content_ur";
 
@@ -1228,6 +1227,10 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string DEFAULT_THUMBNAIL_FILE_EXTENSION = ".jpg";
 
+        /// <summary>
+        /// the default file extension for pdf page images.  
+        /// </summary>
+        public static readonly string DEFAULT_PDF_PAGE_IMAGE_EXTENSION = ".jpg";
         #endregion Misc
 
         #region staticMethods

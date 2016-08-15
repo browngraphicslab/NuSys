@@ -78,7 +78,7 @@ namespace NusysServer
             var contentTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Content) + " (" +
                 NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
                 NusysConstants.CONTENT_TABLE_TYPE_KEY + " varchar(128), " +
-                NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY + " varchar(1024));");
+                NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY + " varchar(MAX));");
 
             var libraryElementTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + " (" +
                 NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
@@ -347,8 +347,8 @@ namespace NusysServer
             //create a message with the json and id for table insertion
             var insertMessage = new Message()
             {
-                {NusysConstants.ANALYIS_MODELS_TABLE_CONTENT_ID_KEY, analysisModelContentDataModelId },
-                {NusysConstants.ANALYSIS_MODELS_TABLE_ANALYSIS_JSON_KEY, analysisModelJson }
+                {Constants.GetFullColumnTitle(Constants.SQLTableType.AnalysisModels,NusysConstants.ANALYIS_MODELS_TABLE_CONTENT_ID_KEY).First(), analysisModelContentDataModelId },
+                {Constants.GetFullColumnTitle(Constants.SQLTableType.AnalysisModels,NusysConstants.ANALYSIS_MODELS_TABLE_ANALYSIS_JSON_KEY).First(), analysisModelJson }
             };
 
             //create the insert command

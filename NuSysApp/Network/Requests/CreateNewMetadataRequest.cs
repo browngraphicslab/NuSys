@@ -21,7 +21,8 @@ namespace NuSysApp
         }
         
         /// <summary>
-        /// This is the contructor when creating a new request
+        /// This is the contructor prefered constructor when creating a new request to send to the server. To use, create new CreateNewMetadataRequest args, 
+        /// populate it with corresponding values.
         /// </summary>
         /// <param name="requestArgs"></param>
         public CreateNewMetadataRequest(CreateNewMetadataRequestArgs requestArgs) : base(requestArgs, NusysConstants.RequestType.CreateNewMetadataRequest)

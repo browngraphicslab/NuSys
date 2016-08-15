@@ -11,7 +11,7 @@ namespace NusysServer
     /// This is the request hadnler for getting analysis models of ContentDataModels.
     /// This handler will simply get the Analysis model from the database and return it
     /// </summary>
-    public class GetAnalysisModelRequest : RequestHandler
+    public class GetAnalysisModelRequestHandler : RequestHandler
     {
         /// <summary>
         /// this handler implementation will extract from the request the id of the analysis model that was requested.  

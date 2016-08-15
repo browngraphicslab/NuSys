@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using NusysIntermediate;
+using Newtonsoft.Json;
 
 namespace NusysServer
 {
@@ -97,8 +98,23 @@ namespace NusysServer
                     fileUrl = Constants.SERVER_ADDRESS + libraryElementModelId + fileExtension;
                     break;
                 case NusysConstants.ContentType.PDF:
+                    //creates a file and url for each page image and returns a serialized list of urls
+                    var listOfBytes = JsonConvert.DeserializeObject<List<string>>(contentData);
+                    List<string> listOfUrls = new List<string>();
+                    int i = 0;
+                    foreach(var bytesOfImage in listOfBytes)
+                    {
+                        filePath = Constants.WWW_ROOT + libraryElementModelId + "_" + i + NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION;
+                        var stream1 = File.Create(filePath);
+                        stream1.Dispose();
+                        File.WriteAllBytes(filePath, Convert.FromBase64String(bytesOfImage));
+                        listOfUrls.Add(Constants.SERVER_ADDRESS + libraryElementModelId + "_" + i + NusysConstants.DEFAULT_PDF_PAGE_IMAGE_EXTENSION);
+                        i++;
+                    }
+                    return JsonConvert.SerializeObject(listOfUrls);
+                    break;
                 case NusysConstants.ContentType.Text:
-                    var extension = contentType == NusysConstants.ContentType.PDF ? Constants.PDF_DATA_FILE_FILE_EXTENSION : Constants.TEXT_DATA_FILE_FILE_EXTENSION;
+                    var extension = Constants.TEXT_DATA_FILE_FILE_EXTENSION;
                     filePath = libraryElementModelId + extension;
                     var stream = File.Create(Constants.FILE_FOLDER + filePath);
                     stream.Dispose();

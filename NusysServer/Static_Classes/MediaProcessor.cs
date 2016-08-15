@@ -23,20 +23,11 @@ namespace NusysServer
         /// <param name="contentUrl"></param>
         /// <param name="elementType"></param>
         /// <param name="senderHandler"></param>
-        public static void ProcessCreateContentDataModelRequestMedia(Message contentDataModelMessage, string contentUrl, NusysConstants.ElementType elementType, NuWebSocketHandler senderHandler)
+        public static void ProcessCreateContentDataModelRequestMedia(Message contentDataModelMessage, string contentDataModelId, string contentUrl, NusysConstants.ElementType elementType, NuWebSocketHandler senderHandler)
         {
-            //make sure the message has an Id for the content data model and analysis model
-            if (!contentDataModelMessage.ContainsKey(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY))
-            {
-                throw new Exception("no id was found in the contentDataModel message when trying to analyze a new content data model");
-            }
-
             //create a new async Task so we don't slow down the request
             Task.Run(async delegate
             {
-                //get the content Data model id
-                var contentDataModelId = contentDataModelMessage.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY);
-
                 var contentType = NusysConstants.ElementTypeToContentType(elementType);
 
                 //create an empty analysis model, default to null
