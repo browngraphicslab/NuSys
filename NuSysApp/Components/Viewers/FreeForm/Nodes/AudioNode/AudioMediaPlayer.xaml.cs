@@ -25,7 +25,7 @@ namespace NuSysApp
     {
         public ProgressBar ScrubBar => this.ProgressBar;
         public MediaElement MediaPlayer => this.MediaElement;
-
+        public AudioWrapper AudioWrapper => xAudioWrapper;
         public TimeSpan ScrubBarPosition { set; get; }
 
         public TimelineMarker StartMarker { set; get; }

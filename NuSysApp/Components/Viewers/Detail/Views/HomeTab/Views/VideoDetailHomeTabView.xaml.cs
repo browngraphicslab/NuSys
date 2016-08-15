@@ -32,6 +32,10 @@ namespace NuSysApp
         {
             this.InitializeComponent();
             DataContext = vm;
+
+            //Show/hide region buttons need access to the audiowrapper for event handlers
+            xShowHideRegionButtons.Wrapper = VideoMediaPlayer.AudioWrapper;
+
             vm.LibraryElementController.Disposed += ControllerOnDisposed;
             var detailViewerView = SessionController.Instance.SessionView.DetailViewerView;
             detailViewerView.Disposed += DetailViewerView_Disposed; 

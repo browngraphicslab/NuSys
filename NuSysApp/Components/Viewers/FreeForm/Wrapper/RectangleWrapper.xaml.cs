@@ -393,6 +393,33 @@ namespace NuSysApp
                 _selectedRegion = null;
             }
         }
+        public void AddTemporaryRegion(TemporaryImageRegionView view)
+        {
+            xTemporaryClippingCanvas.Items.Add(view);
+        }
+        public void ClearTemporaryRegions()
+        {
+            foreach (var view in xTemporaryClippingCanvas.Items)
+            {
+                (view as TemporaryImageRegionView).Dispose(this, EventArgs.Empty);
+            }
+            xTemporaryClippingCanvas.Items.Clear();
+            
+        }
+        public void RemoveTemporaryRegion(TemporaryImageRegionViewModel vm)
+        {
+            foreach(FrameworkElement view in new HashSet<FrameworkElement>(xTemporaryClippingCanvas.Items.Select(e => e as FrameworkElement)))
+            {
+                var dc = view.DataContext as TemporaryImageRegionViewModel;
+                if (dc.NormalizedHeight == vm.NormalizedHeight &&
+                    dc.NormalizedWidth  == vm.NormalizedWidth &&
+                    dc.NormalizedTopLeftPoint == vm.NormalizedTopLeftPoint)
+                {
+                    (view as TemporaryImageRegionView).Dispose(this, EventArgs.Empty);
+                    xTemporaryClippingCanvas.Items.Remove(view);
+                } 
+            }
+        }
 
         public void RemoveRegionView(string regionLibraryElementId)
         {
@@ -410,7 +437,7 @@ namespace NuSysApp
                     }
                 }
         }
-
+        
         public double GetWidth()
         {
             return this.ActualWidth;
@@ -462,7 +489,7 @@ namespace NuSysApp
                 return;
             }
             var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
-            switch (regionViewModel.Model.Type)
+            switch (regionViewModel?.Model.Type)
             {
                 case NusysConstants.ElementType.ImageRegion:
                     var imageRegionView = item as ImageRegionView;
@@ -487,7 +514,7 @@ namespace NuSysApp
                 return;
             }
             var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
-            switch (regionViewModel.Model.Type)
+            switch (regionViewModel?.Model.Type)
             {
                 case NusysConstants.ElementType.ImageRegion:
                     var imageRegionView = item as ImageRegionView;

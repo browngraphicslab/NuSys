@@ -39,6 +39,9 @@ namespace NuSysApp
             this.DataContext = vm; // has to be set before initComponent so child xaml elements inherit it
             this.InitializeComponent();
 
+            //Show/hide region buttons need access to the audiowrapper for event handlers
+            xShowHideRegionButtons.Wrapper = AudioMediaPlayer.AudioWrapper;
+
             AudioMediaPlayer.AudioSource = new Uri(vm.LibraryElementController.Data);
             AudioMediaPlayer.MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
             
