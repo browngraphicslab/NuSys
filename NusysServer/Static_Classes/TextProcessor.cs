@@ -268,48 +268,11 @@ namespace NusysServer
         }
 
         /// <summary>
-        /// Returns a NusysPdfDocumentAnalysisModel for the text passed into it
+        /// Pass in a list of strings where each string represents a page of text, returns a NusysPdfDocumentModel
         /// </summary>
-        /// <param name="text">the text body of the pdf document to be analysed</param>
-        /// <returns>NusysPdfDocumentAnalysisModel</returns>
-        public static async Task<NusysPdfDocumentAnalysisModel> GetNusysPdfAnalysisModelFromTextAsync(string text)
-        {
-            // create a list of cognitiveApiDocuments where each document represents a single sentence
-            var id = 0;
-            var sentences = Regex.Split(text, @"(?<=[\.!\?])\s+");
-            var combinedRequests = sentences.Where(item => !string.IsNullOrEmpty(item)).Select(sentence => new CognitiveApiDocument(id++.ToString(), sentence)).ToList();
-
-            // split the total list of cognitiveApiDocuments into requests containing 1000 docunments each (due to api restrictions)
-            var requestList = new List<List<CognitiveApiDocument>>();
-            for (int i = 0; i < combinedRequests.Count; i++)
-            {
-                if (i%1000 == 0 && i != 0)
-                {
-                    requestList.Add(combinedRequests.GetRange(i - 1000, 1000));
-                }
-            }
-            requestList.Add(combinedRequests.GetRange(combinedRequests.Count - combinedRequests.Count % 1000,combinedRequests.Count % 1000) );
-
-            // create a list of nusysPdfDocumentSegmentModels by iterating through each of the requests
-            var segmentList = new List<NusysPdfSegmentAnalysisModel>();
-            foreach (var request in requestList)
-            {
-                var phrasesModel = await GetTextKeyPhrasesAsync(request);
-                var sentimentModel = await GetTextSentimentAsync(request);
-                segmentList.AddRange(GetNuSysPdfSegments(request, sentimentModel, phrasesModel));
-            }
-
-            // return a new nusysPdfDocumentModel with the passed in segmentList
-            return new NusysPdfDocumentAnalysisModel {Segments = segmentList};
-        }
-
-        /// <summary>
-        /// Pass in a list of strings where each string represents a page of text, returns a list of NusysPdfDocumentAnalysisModels
-        /// where each document analysis model represents a single page of text
-        /// </summary>
-        /// <param name="text"></param>
+        /// <param name="textByPage"></param>
         /// <returns></returns>
-        public static async Task<List<NusysPdfDocumentAnalysisModel>> GetNusysPdfAnalysisModelFromTextAsync(List<string> textByPage)
+        public static async Task<NusysPdfDocumentAnalysisModel> GetNusysPdfAnalysisModelFromTextAsync(List<string> textByPage)
         {
             // a hash of document ids to page ids
             var docIdToPageMapping = new Dictionary<int, int>();
@@ -358,38 +321,31 @@ namespace NusysServer
             // for each request, get the phrase and sentiment model, then combine the two to create a segment model, and add to the idToSegmentMapping
             foreach (var request in requestList)
             {
-                var phraseModel = await GetTextKeyPhrasesAsync(request));
-                var sentimentModel = await GetTextSentimentAsync(request));
+                // get the phrase and sentiment model
+                var phraseModel = await GetTextKeyPhrasesAsync(request);
+                var sentimentModel = await GetTextSentimentAsync(request);
 
+                // for each document in the request, create a new segment analysis model with the text and the id, add it to the mapping, and identify the page number
                 foreach (var document in request)
                 {
-                    idToSegmentMapping.Add(int.Parse(document.id), new NusysPdfSegmentAnalysisModel { Text = document.text });
+                    var documentId = int.Parse(document.id);
+                    idToSegmentMapping.Add(documentId, new NusysPdfSegmentAnalysisModel { Text = document.text });
+                    idToSegmentMapping[documentId].pageNumber = docIdToPageMapping[documentId];
                 }
+
+                // for each document in the sentiment model add the sentiment rating to the proper mapping
                 foreach (var document in sentimentModel.documents)
                 {
                     idToSegmentMapping[int.Parse(document.id)].SentimentRating = document.score;
                 }
+                // for each document in the key phrases model add the key phrases rating to the proper mapping
                 foreach (var document in phraseModel.documents)
                 {
                     idToSegmentMapping[int.Parse(document.id)].KeyPhrases = document.keyPhrases;
                 }
             }
 
-            // create a list of document analysis models by page number and instantiate lists within it
-            var documentAnalysisModels = new List<NusysPdfDocumentAnalysisModel>();
-            for (int i = 0; i < textByPage.Count; i++)
-            {
-                documentAnalysisModels.Add(new NusysPdfDocumentAnalysisModel());
-            }
-
-            // for each segment, add to the proper page
-            foreach (var documentId in idToSegmentMapping.Keys)
-            {
-                var pageNumber = docIdToPageMapping[documentId];
-                documentAnalysisModels[pageNumber].Segments.Add(idToSegmentMapping[documentId]);
-            }
-
-            return documentAnalysisModels;
+            return new NusysPdfDocumentAnalysisModel {Segments = idToSegmentMapping.Values.ToList()};
         }
 
         /// <summary>

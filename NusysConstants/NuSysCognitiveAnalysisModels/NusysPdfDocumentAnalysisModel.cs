@@ -25,5 +25,6 @@ namespace NusysIntermediate
         /// The total text of the pdf
         /// </summary>
         public string TotalText => string.Join(" ", Segments.Select(item => item.Text));
+
     }
 }

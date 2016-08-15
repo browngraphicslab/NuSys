@@ -25,5 +25,10 @@ namespace NusysIntermediate
         /// A string list of key phrases extracted from the segment by cognitive services
         /// </summary>
         public List<string> KeyPhrases { get; set; }
+
+        /// <summary>
+        /// The page number of the segment in the pdf document
+        /// </summary>
+        public int pageNumber { get; set; }
     }
 }
