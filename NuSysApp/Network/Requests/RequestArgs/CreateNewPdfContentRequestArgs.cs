@@ -19,6 +19,11 @@ namespace NuSysApp
         public string PdfText { get; set; }
 
         /// <summary>
+        /// Total number of pages in the pdf
+        /// </summary>
+        public int PageCount { get; set; } 
+
+        /// <summary>
         /// overrides the base classes but still adds in its keys
         /// </summary>
         /// <returns></returns>
