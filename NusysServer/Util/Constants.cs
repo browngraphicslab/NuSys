@@ -210,6 +210,9 @@ namespace NusysServer
                 case SQLTableType.PresentationLink:
                     keys = NusysConstants.ACCEPTED_PRESENTATION_LINKS_TABLE_KEYS;
                     break;
+                case SQLTableType.AnalysisModels:
+                    keys = NusysConstants.ACCEPTED_ANALYSIS_MODELS_TABLE_KEYS;
+                    break;
                 default:
                     return new List<string>();
             }

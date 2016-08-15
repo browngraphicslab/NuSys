@@ -29,8 +29,8 @@ namespace NusysServer
                 case NusysConstants.ContentType.Audio:
                 case NusysConstants.ContentType.Image:
                 case NusysConstants.ContentType.Video:
-                    return contentUrl;
                 case NusysConstants.ContentType.PDF:
+                    return contentUrl;
                 case NusysConstants.ContentType.Text:
                     return FetchDataFromFile(contentUrl.Substring(Constants.SERVER_ADDRESS.Length));
             }

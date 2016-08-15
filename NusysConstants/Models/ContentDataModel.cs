@@ -16,8 +16,8 @@ namespace NusysIntermediate
 
         public event RegionRemovedEventHandler OnRegionRemoved;
 
-        public string ContentId { get; private set; }
-        public string Data { get; private set; }
+        public string ContentId { get; set; }
+        public string Data { get; set; }
         public NusysConstants.ContentType ContentType { get; set; }
         
         public ContentDataModel(string contentId, string data)

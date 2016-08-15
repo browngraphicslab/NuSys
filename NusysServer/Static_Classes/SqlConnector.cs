@@ -347,8 +347,8 @@ namespace NusysServer
             //create a message with the json and id for table insertion
             var insertMessage = new Message()
             {
-                {Constants.GetFullColumnTitle(Constants.SQLTableType.AnalysisModels,NusysConstants.ANALYIS_MODELS_TABLE_CONTENT_ID_KEY).First(), analysisModelContentDataModelId },
-                {Constants.GetFullColumnTitle(Constants.SQLTableType.AnalysisModels,NusysConstants.ANALYSIS_MODELS_TABLE_ANALYSIS_JSON_KEY).First(), analysisModelJson }
+                {NusysConstants.ANALYIS_MODELS_TABLE_CONTENT_ID_KEY, analysisModelContentDataModelId },
+                {NusysConstants.ANALYSIS_MODELS_TABLE_ANALYSIS_JSON_KEY, analysisModelJson }
             };
 
             //create the insert command

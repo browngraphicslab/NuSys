@@ -17,7 +17,7 @@ namespace NusysIntermediate
         /// this list of Urls, where each one corresponds to an image of the page at the index in the list. 
         /// for example, Page 0 of the pdf can be viewed by displaying the url of index 0 in this list.  
         /// </summary>
-        public List<string> PageUrls { get; private set; }
+        public List<string> PageUrls { get; set; }
 
         /// <summary>
         /// This constructor will call the same-declaration constructor in the base ContentDataModel class and will set the PageUrls for this contentDataModel.
@@ -27,7 +27,7 @@ namespace NusysIntermediate
         public PdfContentDataModel(string contentDataModelId, string contentData) : base(contentDataModelId, contentData)
         {
             //set the page Urls
-            PageUrls = JsonConvert.DeserializeObject<List<string>>(contentData);
+            PageUrls = JsonConvert.DeserializeObject<List<string>>(contentData ?? "");
         }
     }
 }

@@ -238,8 +238,9 @@ namespace NuSysApp
             NusysConstants.ElementType elementType = NusysConstants.ElementType.Text;
             string data = string.Empty;
             string title = string.Empty;
-            string pdf_text = string.Empty;
-            int pdf_pageCount = 0;
+            // a list of strings containing pdf text for each page
+            List<string> pdfTextByPage = new List<string>();
+            int pdfPageCount = 0;
 
             var storageFiles = await FileManager.PromptUserForFiles(Constants.AllFileTypes);
             foreach (var storageFile in storageFiles ?? new List<StorageFile>())
@@ -307,18 +308,12 @@ namespace NuSysApp
                     }
                     var MuPdfDoc = await MediaUtil.DataToPDF(Convert.ToBase64String(fileBytes)); 
                     
-                    // read the text from the MUPDF document into pdf_text
-                    pdf_pageCount = MuPdfDoc.PageCount;
-                    int currPage = 0;
-                    while (currPage < pdf_pageCount)
-                    {
-                        pdf_text = pdf_text + MuPdfDoc.GetAllTexts(currPage);
-                        currPage++;
-                    }
-
                     // convert each page of the pdf into an image file, and store it in the pdfPages list
-                    for (int pageNumber = 0; pageNumber < pdf_pageCount; pageNumber++)
+                    for (int pageNumber = 0; pageNumber < MuPdfDoc.PageCount; pageNumber++)
                     {
+                        // set the pdf text by page for the current page number
+                        pdfTextByPage.Add(MuPdfDoc.GetAllTexts(pageNumber));
+
                         // get variables for drawing the page
                         var pageSize = MuPdfDoc.GetPageSize(pageNumber);
                         var width = pageSize.X;
@@ -401,12 +396,12 @@ namespace NuSysApp
                 {
                     CreateNewContentRequestArgs args;
                     //if there is pdf text, add it to the request
-                    if (!string.IsNullOrEmpty(pdf_text))
+                    if (pdfTextByPage.Any())
                     {
                         args = new CreateNewPdfContentRequestArgs()
                         {
-                            PdfText = pdf_text,
-                            PageCount = pdf_pageCount
+                            PdfText = JsonConvert.SerializeObject(pdfTextByPage),
+                            PageCount = pdfPageCount
                         };
                     }
                     else

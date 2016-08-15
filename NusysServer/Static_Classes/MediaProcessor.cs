@@ -37,13 +37,13 @@ namespace NusysServer
                 {
                     case NusysConstants.ContentType.PDF:
                         //store the pdf text as local variable
-                        var pdfText = contentDataModelMessage.GetString(NusysConstants.CREATE_NEW_PDF_CONTENT_REQUEST_PDF_TEXT_KEY);
+                        var pdfText = contentDataModelMessage.GetList<string>(NusysConstants.CREATE_NEW_PDF_CONTENT_REQUEST_PDF_TEXT_KEY);
 
-                        if (!string.IsNullOrEmpty(pdfText))
+                        if (pdfText != null && pdfText.Any())
                         {
-                            if (Constants.user == "junsu") //TODO remove after junsu tests
+                            if (Constants.user == "junsu") //TODO remove after junsu tests  AND not make it only use the first page
                             {
-                                var tup = new Tuple<string, string>(pdfText, contentDataModelMessage.GetString( NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY));
+                                var tup = new Tuple<string, string>(pdfText.First(), contentDataModelMessage.GetString( NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY));
                                 ContentController.Instance.ComparisonController.AddDocument(tup);
                                 ContentController.Instance.ComparisonController.CompareRandonDoc();
                             }
