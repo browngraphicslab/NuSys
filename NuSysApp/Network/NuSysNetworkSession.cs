@@ -419,10 +419,10 @@ namespace NuSysApp
         }
         public async Task<IEnumerable<string>> SearchOverLibraryElements(string searchText)
         {
-            return (await _serverClient.AdvancedSearchOverLibraryElements(new Query(searchText))).Select(q => q.ContentID);
+            return (await _serverClient.AdvancedSearchOverLibraryElements(QueryArgsBuilder.GetQueryArgs(searchText))).Select(q => q.LibraryElementId);
         }
 
-        public async Task<List<SearchResult>> AdvancedSearchOverLibraryElements(Query searchQuery)
+        public async Task<List<SearchResult>> AdvancedSearchOverLibraryElements(QueryArgs searchQuery)
         {
             return await _serverClient.AdvancedSearchOverLibraryElements(searchQuery);
         }

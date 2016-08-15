@@ -572,7 +572,7 @@ namespace NuSysApp
             });
         }
 
-        public async Task<List<SearchResult>> AdvancedSearchOverLibraryElements(Query searchQuery)
+        public async Task<List<SearchResult>> AdvancedSearchOverLibraryElements(QueryArgs searchQuery)
         {
             return await Task.Run(async delegate
             {

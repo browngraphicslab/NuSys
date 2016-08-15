@@ -30,7 +30,7 @@ namespace NusysServer
             }
 
             //get the query from the json
-            var query = message.Get<Query>(NusysConstants.SEARCH_REQUEST_SERIALIZED_QUERY_KEY);
+            var query = message.Get<QueryArgs>(NusysConstants.SEARCH_REQUEST_SERIALIZED_QUERY_KEY);
 
             //todo actually search and return a new search result
 
