@@ -167,7 +167,7 @@
                         </Grid>
                     </Grid>
                     <Grid x:Name="PreviewPanel" Visibility="Visible">
-                        <TextBlock HorizontalAlignment="Center" FontSize="22" Foreground="{StaticResource color2}" VerticalAlignment="Center" Width="250">Select a collection for more information</TextBlock>
+                        <TextBlock HorizontalAlignment="Center" FontSize="22" Foreground="{StaticResource color2}" VerticalAlignment="Center" Width="100" TextWrapping="Wrap">Select a collection for more information</TextBlock>
                     </Grid>
                 </Grid>
             </Grid>
