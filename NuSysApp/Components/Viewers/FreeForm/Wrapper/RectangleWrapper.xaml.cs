@@ -393,10 +393,17 @@ namespace NuSysApp
                 _selectedRegion = null;
             }
         }
+        /// <summary>
+        /// This allows us to add the temporary regions to the wrapper  
+        /// </summary>
+        /// <param name="view"></param>
         public void AddTemporaryRegion(TemporaryImageRegionView view)
         {
             xTemporaryClippingCanvas.Items.Add(view);
         }
+        /// <summary>
+        /// This iterates through all of the temporary regions and destroys them
+        /// </summary>
         public void ClearTemporaryRegions()
         {
             foreach (var view in xTemporaryClippingCanvas.Items)
@@ -406,6 +413,11 @@ namespace NuSysApp
             xTemporaryClippingCanvas.Items.Clear();
             
         }
+        /// <summary>
+        /// This takes in a temporaryregionviewmodel and compares it to the rest of the view models in the list so that it
+        /// can find the correct one and remove it
+        /// </summary>
+        /// <param name="vm"></param>
         public void RemoveTemporaryRegion(TemporaryImageRegionViewModel vm)
         {
             foreach(FrameworkElement view in new HashSet<FrameworkElement>(xTemporaryClippingCanvas.Items.Select(e => e as FrameworkElement)))
@@ -420,7 +432,7 @@ namespace NuSysApp
                 } 
             }
         }
-
+        ///
         public void RemoveRegionView(string regionLibraryElementId)
         {
                 foreach (var item in xClippingCanvas.Items)

@@ -38,10 +38,25 @@ namespace NuSysApp
                 RaisePropertyChanged("Width");
             }
         }
+        /// <summary>
+        /// Without a model we need to store these temporary values in here
+        /// </summary>
         public double NormalizedHeight { get; set; }
+        /// <summary>
+        /// Without a model we need to store these temporary values in here
+        /// </summary>
         public double NormalizedWidth { get; set; }
+        /// <summary>
+        /// Without a model we need to store these temporary values in here
+        /// </summary>
         public Point NormalizedTopLeftPoint { get; set; }
+        /// <summary>
+        /// This is needed so that we can keeo track of handlers that involve the size changed
+        /// </summary>
         public RectangleWrapper RectangleWrapper { get; set; }
+        /// <summary>
+        /// This is also necessary so that we can get the new region args and then shoot off a request to the server
+        /// </summary>
         public DetailHomeTabViewModel HomeTabViewModel { get; set; }
         public bool Editable { get; private set; }
 
