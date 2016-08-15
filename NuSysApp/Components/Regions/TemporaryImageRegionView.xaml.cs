@@ -168,5 +168,20 @@ namespace NuSysApp
             vm.Disposed -= Dispose;
             vm.LocationChanged -= ChangeLocation;
         }
+
+        private void XGrid_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+
+        }
+
+        private void RectangleRegionView_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+
+        }
+
+        private void RectangleRegionView_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+
+        }
     }
 }

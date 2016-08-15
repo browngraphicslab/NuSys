@@ -35,7 +35,7 @@ namespace NuSysApp
     ///     xClippingWrapper.LibraryElementController = _vm.LibraryElementController;
     /// 
     /// </summary>
-    public sealed partial class RectangleWrapper : UserControl, INuSysDisposable
+    public sealed partial class RectangleWrapper : UserControl, INuSysDisposable, IRegionHideable
     {
 
         /// <summary>
@@ -499,6 +499,49 @@ namespace NuSysApp
                     break;
                 default:
                     break;
+            }
+        }
+
+        /// <summary>
+        /// Makes every single region in the wrapper visible
+        /// </summary>
+        public void ShowAllRegions()
+        {
+            foreach (var item in xClippingCanvas.Items)
+            {
+                var regionView = item as FrameworkElement;
+                regionView.Visibility = Visibility.Visible;
+            }
+        }
+        /// <summary>
+        /// Makes every region in this wrapper invisible
+        /// </summary>
+        public void HideAllRegions()
+        {
+            foreach (var item in xClippingCanvas.Items)
+            {
+                var regionView = item as FrameworkElement;
+                regionView.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        public void ShowOnlyChildrenRegions()
+        {
+            foreach (var item in xClippingCanvas.Items)
+            {
+                var regionViewModel = (item as FrameworkElement).DataContext as RegionViewModel;
+                var regionModel = regionViewModel.Model as Region;
+                var region = item as FrameworkElement;
+
+                if (regionViewModel.Model.ClippingParentId == Controller.LibraryElementModel.LibraryElementId)
+                {
+                    region.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    region.Visibility = Visibility.Collapsed;
+                }
+
             }
         }
 
