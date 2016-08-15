@@ -83,11 +83,9 @@ namespace NuSysApp
 
         private void RegionController_SizeChanged(object sender, double width, double height)
         {
-
             Height = NormalizedHeight * RectangleWrapper.GetHeight();
             Width = NormalizedWidth * RectangleWrapper.GetWidth();
             SizeChanged?.Invoke(this, Width, Height);
-
         }
 
         public void Dispose(object sender, EventArgs e)
