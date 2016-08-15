@@ -554,6 +554,7 @@ namespace NuSysApp
             switch (sorttype)
             {
                 case "TitleHeader":
+                    //sort by title string comparison and reverse if necessary, and make sure you set the reverse bool again
                     collections.Sort((a, b) => (a as CollectionListBox).Title.CompareTo((b as CollectionListBox).Title));
                     if (_titleReverse)
                     {
