@@ -6,8 +6,15 @@ using System.Threading.Tasks;
 
 namespace NusysIntermediate
 {
-    public class NusysImageAnalysisModel
+    public class NusysImageAnalysisModel : AnalysisModel
     {
+        /// <summary>
+        /// constructor requires that a content Data model Id be set.  
+        /// Pass in the Id of the content data model that this analysis model analyzes.
+        /// </summary>
+        /// <param name="contentDataModelId"></param>
+        public NusysImageAnalysisModel(string contentDataModelId) : base(contentDataModelId){ }
+
         /// <summary>
         /// The total height of the image in pixels
         /// </summary>
@@ -69,8 +76,5 @@ namespace NusysIntermediate
         /// An array of faces found in the image
         /// </summary>
         public CognitiveApiFaceModel[] Faces { get; set; }
-
-        
-
     }
 }

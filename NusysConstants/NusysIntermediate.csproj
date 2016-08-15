@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IRequestArgumentable.cs" />
+    <Compile Include="ModelFactories\AnalysisModelFactory.cs" />
     <Compile Include="ModelFactories\ContentDataModelFactory.cs" />
     <Compile Include="Models\CognitiveApiModels\CognitiveApiCaptionModel.cs" />
     <Compile Include="Models\CognitiveApiModels\CognitiveApiCategoryModel.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="Models\LibraryElementModel.cs" />
     <Compile Include="ModelFactories\LibraryElementModelFactory.cs" />
     <Compile Include="Models\LinkLibraryElementModel.cs" />
+    <Compile Include="Models\PdfContentDataModel.cs" />
     <Compile Include="Models\PdfNodeModel.cs" />
     <Compile Include="Models\PdfRegionModel.cs" />
     <Compile Include="Models\PointModel.cs" />
@@ -72,6 +74,7 @@
     <Compile Include="Models\VideoNodeModel.cs" />
     <Compile Include="Models\VideoRegionModel.cs" />
     <Compile Include="Models\WordNodeModel.cs" />
+    <Compile Include="NuSysCognitiveAnalysisModels\AnalysisModel.cs" />
     <Compile Include="NuSysCognitiveAnalysisModels\NusysImageAnalysisModel.cs" />
     <Compile Include="NuSysCognitiveAnalysisModels\NusysPdfDocumentAnalysisModel.cs" />
     <Compile Include="NuSysCognitiveAnalysisModels\NusysPdfSegmentAnalysisModel.cs" />

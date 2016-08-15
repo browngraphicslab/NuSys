@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using NusysIntermediate;
 
 namespace NusysServer
@@ -22,7 +23,7 @@ namespace NusysServer
             Debug.Assert(message.ContainsKey(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES));
             var returnMessage = new Message();
 
-            Message addContentToDatabaseMessage = CreateAddContentToDatabaseMessage(message);
+            var addContentToDatabaseMessage = CreateAddContentToDatabaseMessage(message);
 
             //try to add new content to the sql database
             var createNewContentsuccess = ContentController.Instance.SqlConnector.AddContent(addContentToDatabaseMessage);
@@ -56,25 +57,13 @@ namespace NusysServer
 
             //async processing 
             //TODO make this not just for pdfs, but for anything we can scrape text from
-            if (message.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY) && message.GetEnum<NusysConstants.ContentType>(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY) == NusysConstants.ContentType.PDF)
+            if (message.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY))
             {
-                var pdfText = message.GetString(NusysConstants.CREATE_NEW_PDF_CONTENT_REQUEST_PDF_TEXT_KEY);
-                if (!string.IsNullOrEmpty(pdfText))
+                if (addContentToDatabaseMessage.ContainsKey(NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY))
                 {
-                    if (Constants.user == "junsu") //TODO remove after junsu tests
-                    {
-                        var tup = new Tuple<string, string>(pdfText,
-                            message.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY));
-                        ContentController.Instance.ComparisonController.AddDocument(tup);
-                        ContentController.Instance.ComparisonController.CompareRandonDoc();
-                    }
-                    else
-                    {
-                        Task.Run(async delegate {
-                            var model = await TextProcessor.GetNusysPdfAnalysisModelFromTextAsync(pdfText);
-                            Debug.WriteLine(model.TotalText);
-                        });
-                    }
+                    var elementType = message.GetEnum<NusysConstants.ElementType>(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY);
+                    var contentUrl = message.GetString(NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY);
+                    MediaProcessor.ProcessCreateContentDataModelRequestMedia(message,contentUrl,elementType,senderHandler);
                 }
             }
 

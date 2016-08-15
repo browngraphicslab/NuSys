@@ -54,6 +54,9 @@ namespace NusysServer
                     case NusysConstants.RequestType.SetTagsRequest:
                         break;
                         */
+                    case NusysConstants.RequestType.GetAnalysisModelRequest:
+
+                        break;
                     case NusysConstants.RequestType.ChatRequest:
                         requestHandler = new ChatRequestHandler();
                         break;

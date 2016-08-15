@@ -78,7 +78,9 @@ namespace NusysServer
         public string RequiredValue { get;private set; }
 
         /// <summary>
-        /// Creates a select query conditional that checks if the property = the required value
+        /// Creates a select query conditional that checks if the property = the required value; 
+        /// The property column title does not need to be the full title.  
+        /// In other words, "content_id" will work, while "library_elements.content_id" will not.
         /// </summary>
         public SqlQueryEquals(Constants.SQLTableType tableType, string property, string requiredValue)
         {

@@ -57,6 +57,17 @@ namespace NusysServer
         /// </summary>
         private void SetUpTables()
         {
+            var usersTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Users) + " (" +
+                NusysConstants.PRESENTATION_LINKS_TABLE_LINK_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
+                NusysConstants.PRESENTATION_LINKS_TABLE_IN_ELEMENT_ID_KEY + " varchar(128), " +
+                NusysConstants.PRESENTATION_LINKS_TABLE_OUT_ELEMENT_ID_KEY + " varchar(128), " +
+                NusysConstants.PRESENTATION_LINKS_TABLE_PARENT_COLLECTION_LIBRARY_ID_KEY + " varchar(128), " +
+                NusysConstants.PRESENTATION_LINKS_TABLE_ANNOTATION_TEXT_KEY + " varchar(4096));");
+
+            var analysisModelsTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.AnalysisModels) + " (" +
+                NusysConstants.ANALYIS_MODELS_TABLE_CONTENT_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
+                NusysConstants.ANALYSIS_MODELS_TABLE_ANALYSIS_JSON_KEY + " varchar(MAX));");
+
             var presentationLinksTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.PresentationLink) + " (" +
                 NusysConstants.PRESENTATION_LINKS_TABLE_LINK_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
                 NusysConstants.PRESENTATION_LINKS_TABLE_IN_ELEMENT_ID_KEY + " varchar(128), " +
@@ -107,6 +118,8 @@ namespace NusysServer
                 NusysConstants.PROPERTIES_NUMERICAL_VALUE_COLUMN_KEY + " float, " +
                 NusysConstants.PROPERTIES_STRING_VALUE_COLUMN_KEY + " varchar(4096));");
 
+            usersTable.ExecuteNonQuery();
+            analysisModelsTable.ExecuteNonQuery();
             presentationLinksTable.ExecuteNonQuery();
             libraryElementTable.ExecuteNonQuery();
             aliasTable.ExecuteNonQuery();
@@ -131,6 +144,8 @@ namespace NusysServer
                 var dropProperties = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Properties));
                 var dropMetadata = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Metadata));
                 var dropContent = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Content));
+                var dropAnalysisModels = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.AnalysisModels));
+                var dropUsers = MakeCommand("DROP TABLE " + Constants.GetTableName(Constants.SQLTableType.Users));
 
                 dropPresentationLinks.ExecuteNonQuery();
                 dropAliases.ExecuteNonQuery();
@@ -138,6 +153,8 @@ namespace NusysServer
                 dropProperties.ExecuteNonQuery();
                 dropMetadata.ExecuteNonQuery();
                 dropContent.ExecuteNonQuery();
+                dropAnalysisModels.ExecuteNonQuery();
+                dropUsers.ExecuteNonQuery();
             }
             else
             {
@@ -147,6 +164,8 @@ namespace NusysServer
                 var clearProperties = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Properties));
                 var clearMetadata = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Metadata));
                 var clearContent = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Content));
+                var clearAnalysisModels = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.AnalysisModels));
+                var clearUsers = MakeCommand("TRUNCATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Users));
 
                 clearPresentationLinks.ExecuteNonQuery();
                 clearAliases.ExecuteNonQuery();
@@ -154,6 +173,8 @@ namespace NusysServer
                 clearProperties.ExecuteNonQuery();
                 clearMetadata.ExecuteNonQuery();
                 clearContent.ExecuteNonQuery();
+                clearAnalysisModels.ExecuteNonQuery();
+                clearUsers.ExecuteNonQuery();
             }
         }
 
@@ -306,7 +327,36 @@ namespace NusysServer
             var cmd = new SQLDeleteQuery(Constants.SQLTableType.Metadata, message, Constants.Operator.And);
             return cmd.ExecuteCommand();
         }
-        
+
+        /// <summary>
+        /// method to add a new analysisModelJson to the table. 
+        ///  It takes in the id of the model and the josn for the analysis model and adds it to the table.
+        /// It will return true if the json was added succesfully.
+        /// </summary>
+        /// <param name="analysisModelContentDataModelId"></param>
+        /// <param name="analysisModelJson"></param>
+        /// <returns></returns>
+        public bool AddAnalysisModel(string analysisModelContentDataModelId, string analysisModelJson)
+        {
+            //make sure they arent null or empty strings
+            if (string.IsNullOrEmpty(analysisModelContentDataModelId) || string.IsNullOrEmpty(analysisModelJson))
+            {
+                throw new Exception("tried to insert invalid json or content Data model Ids into the AnalysisModels table");
+            }
+
+            //create a message with the json and id for table insertion
+            var insertMessage = new Message()
+            {
+                {NusysConstants.ANALYIS_MODELS_TABLE_CONTENT_ID_KEY, analysisModelContentDataModelId },
+                {NusysConstants.ANALYSIS_MODELS_TABLE_ANALYSIS_JSON_KEY, analysisModelJson }
+            };
+
+            //create the insert command
+            var insertCmd = new SQLInsertQuery(Constants.SQLTableType.AnalysisModels, insertMessage);
+
+            return insertCmd.ExecuteCommand();
+        }
+
 
         /// <summary>
         /// returns the contentDataModel, if any, of the specified contentDataModelId.  

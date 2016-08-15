@@ -271,8 +271,9 @@ namespace NusysServer
         /// Returns a NusysPdfDocumentAnalysisModel for the text passed into it
         /// </summary>
         /// <param name="text">the text body of the pdf document to be analysed</param>
+        /// <param name="contentDataModelId">the string Id of the contentDataModel that this analysis model is analyzing</param>
         /// <returns>NusysPdfDocumentAnalysisModel</returns>
-        public static async Task<NusysPdfDocumentAnalysisModel> GetNusysPdfAnalysisModelFromTextAsync(string text)
+        public static async Task<NusysPdfDocumentAnalysisModel> GetNusysPdfAnalysisModelFromTextAsync(string text, string contentDataModelId)
         {
             // create a list of cognitiveApiDocuments where each document represents a single sentence
             var id = 0;
@@ -299,8 +300,8 @@ namespace NusysServer
                 segmentList.AddRange(GetNuSysPdfSegments(request, sentimentModel, phrasesModel));
             }
 
-            // return a new nusysPdfDocumentModel with the passed in segmentList
-            return new NusysPdfDocumentAnalysisModel {Segments = segmentList};
+            // return a new nusysPdfDocumentModel with the passed in segmentList and the contentDatamModelId set
+            return new NusysPdfDocumentAnalysisModel(contentDataModelId) {Segments = segmentList};
         }
 
         /// <summary>
@@ -473,11 +474,11 @@ namespace NusysServer
             }
 
             // make sure that the total size of the request is less than maxBytesPerRequest
-            if (totalByteLength < maxBytesPerRequest)
+            if (totalByteLength > maxBytesPerRequest)
             {
                 throw new ArgumentOutOfRangeException(nameof(documents), $"The request byte length {totalByteLength} exceeds the maximum allowed for {requestType} of {maxBytesPerRequest}");
             }
-            return totalByteLength <= maxBytesPerRequest;
+            return totalByteLength >= maxBytesPerRequest;
         }
 
         /// <summary>

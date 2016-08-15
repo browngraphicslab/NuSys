@@ -155,7 +155,9 @@ namespace NusysServer
             Metadata,
             Properties,
             Content,
-            PresentationLink
+            PresentationLink,
+            Users,
+            AnalysisModels
         }
 
         /// <summary>
@@ -297,22 +299,28 @@ namespace NusysServer
             switch (type)
             {
                 case Constants.SQLTableType.Alias:
-                    name = NusysIntermediate.NusysConstants.ALIASES_SQL_TABLE_NAME;
+                    name = NusysConstants.ALIASES_SQL_TABLE_NAME;
                     break;
                 case Constants.SQLTableType.LibraryElement:
-                    name = NusysIntermediate.NusysConstants.LIBRARY_ELEMENTS_SQL_TABLE_NAME;
+                    name = NusysConstants.LIBRARY_ELEMENTS_SQL_TABLE_NAME;
                     break;
                 case Constants.SQLTableType.Metadata:
-                    name = NusysIntermediate.NusysConstants.METADATA_SQL_TABLE_NAME;
+                    name = NusysConstants.METADATA_SQL_TABLE_NAME;
                     break;
                 case Constants.SQLTableType.Properties:
-                    name = NusysIntermediate.NusysConstants.PROPERTIES_SQL_TABLE_NAME;
+                    name = NusysConstants.PROPERTIES_SQL_TABLE_NAME;
                     break;
                 case Constants.SQLTableType.Content:
-                    name = NusysIntermediate.NusysConstants.CONTENTS_SQL_TABLE_NAME;
+                    name = NusysConstants.CONTENTS_SQL_TABLE_NAME;
                     break;
                 case Constants.SQLTableType.PresentationLink:
-                    name = NusysIntermediate.NusysConstants.PRESENTATION_LINKS_SQL_TABLE_NAME;
+                    name = NusysConstants.PRESENTATION_LINKS_SQL_TABLE_NAME;
+                    break;
+                case Constants.SQLTableType.AnalysisModels:
+                    name = NusysConstants.ANALYSIS_MODELS_SQL_TABLE_NAME;
+                    break;
+                case Constants.SQLTableType.Users:
+                    name = NusysConstants.USERS_SQL_TABLE_NAME;
                     break;
                 default:
                     throw new Exception("type not supported yet for getting the table name");

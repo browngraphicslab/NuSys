@@ -232,6 +232,7 @@
     <Compile Include="RequestHandlers\CreateNewLibraryElementRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateNewMetadataRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateNewPresentationLinkRequestHandler.cs" />
+    <Compile Include="RequestHandlers\GetAnalysisModelRequest.cs" />
     <Compile Include="RequestHandlers\UpdateMetadataRequestHandler.cs" />
     <Compile Include="RequestHandlers\DeleteMetadataRequestHandler.cs" />
     <Compile Include="RequestHandlers\DeletePresentationLinkRequestHandler.cs" />
@@ -273,6 +274,7 @@
     <Compile Include="Static_Classes\DocumentComparison\Tfidf\Tfidf.cs" />
     <Compile Include="Static_Classes\DocumentComparison\VectorUtil.cs" />
     <Compile Include="Static_Classes\ImageProcessor.cs" />
+    <Compile Include="Static_Classes\MediaProcessor.cs" />
     <Compile Include="Static_Classes\NuWebSocketHandler.cs" />
     <Compile Include="Static_Classes\RequestRouter.cs" />
     <Compile Include="Static_Classes\SqlConnector.cs" />

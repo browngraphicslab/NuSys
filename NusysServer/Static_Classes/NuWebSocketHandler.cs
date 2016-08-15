@@ -151,37 +151,50 @@ namespace NusysServer
             dict["user_id"] = client.Client.ID;
             return dict;
         }
-        /*
-        public static void BroadcastContentUpdate(string id, IEnumerable<string> keysToUpdate,
-            HashSet<NuWebSocketHandler> ignoreHandlers = null)
-        {
-            ignoreHandlers = ignoreHandlers ?? new HashSet<NuWebSocketHandler>();
-            if (id == null || ContentsHolder.Instance.Contents[id] == null)
-            {
-                return;
-            }
-            var dict = new Dictionary<string, object>();
-            var contentDict = ContentsHolder.Instance.Contents[id].Dictionary;
 
-            foreach (var key in keysToUpdate)
-            {
-                if (contentDict.ContainsKey(key))
-                {
-                    dict[key] = contentDict[key];
-                }
-            }
-            dict["notification_type"] = "content_update";
-            dict[Constants.FROM_SERVER_MESSAGE_INDICATOR_STRING] = true;
-            dict["id"] = id;
-            foreach (var client in clients)
-            {
-                if (ignoreHandlers.Contains(client))
-                {
-                    continue;
-                }
-                (client as NuWebSocketHandler)?.Send(dict);
-            }
-        }*/
+        /// <summary>
+        /// to send an error message to the client.  
+        /// Just pass in the exception and the message will be send to the client.
+        /// </summary>
+        /// <param name="e"></param>
+        public void SendError(Exception e)
+        {
+            var errorMessage = new Message();
+            errorMessage[NusysConstants.REQUEST_ERROR_MESSAGE_KEY] = e.Message;
+            Send(errorMessage.GetSerialized());
+        }
+
+        /*
+public static void BroadcastContentUpdate(string id, IEnumerable<string> keysToUpdate,
+   HashSet<NuWebSocketHandler> ignoreHandlers = null)
+{
+   ignoreHandlers = ignoreHandlers ?? new HashSet<NuWebSocketHandler>();
+   if (id == null || ContentsHolder.Instance.Contents[id] == null)
+   {
+       return;
+   }
+   var dict = new Dictionary<string, object>();
+   var contentDict = ContentsHolder.Instance.Contents[id].Dictionary;
+
+   foreach (var key in keysToUpdate)
+   {
+       if (contentDict.ContainsKey(key))
+       {
+           dict[key] = contentDict[key];
+       }
+   }
+   dict["notification_type"] = "content_update";
+   dict[Constants.FROM_SERVER_MESSAGE_INDICATOR_STRING] = true;
+   dict["id"] = id;
+   foreach (var client in clients)
+   {
+       if (ignoreHandlers.Contains(client))
+       {
+           continue;
+       }
+       (client as NuWebSocketHandler)?.Send(dict);
+   }
+}*/
         /*
         public static void BroadcastContentDataUpdate(NusysContent content)
         {

@@ -66,13 +66,14 @@ namespace NusysServer
         /// Image dimension: Greater than 50 x 50 pixels
         /// </summary>
         /// <param name="ImgURL"></param>
+        /// <param name="contentDataModelId"> The string id of the contentDataModel that this image analysis model is analyzing</param>
         /// <returns></returns>
-        public static async Task<NusysImageAnalysisModel> GetNusysImageAnalysisModelFromUrlAsync(string ImgURL)
+        public static async Task<NusysImageAnalysisModel> GetNusysImageAnalysisModelFromUrlAsync(string ImgURL, string contentDataModelId)
         {
             var analysisResult = await GetAnalysisResultsAsync(ImgURL);
 
             // crazy object initializer syntax that converts an analysis result to a NuSysImageAnalysisModel. : )
-            return new NusysImageAnalysisModel
+            return new NusysImageAnalysisModel(contentDataModelId)
             {
                 // simply set the property of the nusysImageAnalysisModel using different paths in the analysisResult
                 AccentColor = analysisResult.Color?.AccentColor,

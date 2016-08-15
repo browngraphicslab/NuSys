@@ -10,7 +10,7 @@ namespace NusysIntermediate
         /// <summary>
         /// The boolean for testing locally.  If this is not true and you are running a local server, you won't connect.
         /// </summary>
-        public static bool TEST_LOCAL_BOOLEAN = true;
+        public static bool TEST_LOCAL_BOOLEAN = false;
 
         #region RequestManagementKeys
 
@@ -240,10 +240,10 @@ namespace NusysIntermediate
             #endregion UpdateLibraryElementRequest
 
             #region NewLibraryElementRequest
-            /// <summary>
-            /// key in message for sending type when creating new library element request
-            /// </summary>
-            public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY = "type";
+                /// <summary>
+                /// key in message for sending element type when creating new library element request
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY = "type";
 
                 /// <summary>
                 /// key in message for sending library id when creating new library element request
@@ -397,23 +397,36 @@ namespace NusysIntermediate
         public static readonly string DELETE_METADATA_REQUEST_METADATA_KEY = "key";
         #endregion DeleteMetadataRequest
 
-        #region UpdateMetadataRequest
-        /// <summary>
-        /// key in message for library id of the element that the metadata to be edited belongs to
-        /// </summary>
-        public static readonly string UPDATE_METADATA_REQUEST_LIBRARY_ID_KEY = "library_id";
+            #region UpdateMetadataRequest
+            /// <summary>
+            /// key in message for library id of the element that the metadata to be edited belongs to
+            /// </summary>
+            public static readonly string UPDATE_METADATA_REQUEST_LIBRARY_ID_KEY = "library_id";
 
-        /// <summary>
-        /// key in message for signifying which entry should be edited
-        /// </summary>
-        public static readonly string UPDATE_METADATA_REQUEST_METADATA_KEY = "key";
+            /// <summary>
+            /// key in message for signifying which entry should be edited
+            /// </summary>
+            public static readonly string UPDATE_METADATA_REQUEST_METADATA_KEY = "key";
 
-        /// <summary>
-        /// key in message for signifying the new value for the entry
-        /// </summary>
-        public static readonly string UPDATE_METADATA_REQUEST_METADATA_VALUE = "value";
-        
+            /// <summary>
+            /// key in message for signifying the new value for the entry
+            /// </summary>
+            public static readonly string UPDATE_METADATA_REQUEST_METADATA_VALUE = "value";
+
         #endregion UpdateMetadataRequest
+
+            #region GetAnalysisModelRequest
+            /// <summary>
+            ///  This is the key that represent the ContentDataModel Id of the analysis model you wish to fetch when making the request.  
+            /// </summary>
+            public static readonly string GET_ANALYSIS_MODEL_REQUEST_CONTENT_DATA_MODEL_ID = "content_data_model_id";
+        
+            /// <summary>
+            /// The key that represents the AnalysisModel Json that is returned to the sender after the request has been executed.
+            /// </summary>
+            public static readonly string GET_ANALYSIS_MODEL_REQUEST_RETURNED_ANALYSIS_MODEL_JSON = "returned_analysis_model";
+
+            #endregion GetAnalysisModelRequest
 
         #region CreateNewPresentationLinkRequest
         /// <summary>
@@ -844,7 +857,33 @@ namespace NusysIntermediate
                 PRESENTATION_LINKS_TABLE_ANNOTATION_TEXT_KEY
             };
 
-        #endregion PresentationLinks
+            #endregion PresentationLinks
+
+            #region AnalysisModels
+
+            /// <summary>
+            /// 32 character string ID of the analysis model in the row.
+            /// </summary>
+            public static readonly string ANALYIS_MODELS_TABLE_CONTENT_ID_KEY = "content_id";
+
+            /// <summary>
+            /// the json-serializeed string that is the analysis model for the contentId;
+            /// </summary>
+            public static readonly string ANALYSIS_MODELS_TABLE_ANALYSIS_JSON_KEY = "analysis_model";
+
+            /// <summary>
+            /// the list of keys that will safely be entered into the analysis models table.  
+            /// Use this to make sure that you're entering correct keys into the database
+            /// </summary>
+            public static readonly HashSet<string> ACCEPTED_ANALYSIS_MODELS_TABLE_KEYS = new HashSet<string>()
+            {
+                ANALYIS_MODELS_TABLE_CONTENT_ID_KEY,
+                ANALYSIS_MODELS_TABLE_ANALYSIS_JSON_KEY,
+            };
+
+            #endregion AnalysisModels
+
+
 
         #endregion SQLColumnNames
 
@@ -879,6 +918,16 @@ namespace NusysIntermediate
         /// The string name of the presentation links SQL table in our database
         /// </summary>
         public static readonly string PRESENTATION_LINKS_SQL_TABLE_NAME = "presentation_link";
+
+        /// <summary>
+        /// The string name of the presentation links SQL table in our database
+        /// </summary>
+        public static readonly string ANALYSIS_MODELS_SQL_TABLE_NAME = "analysis_model";
+
+        /// <summary>
+        /// The string name of the presentation links SQL table in our database
+        /// </summary>
+        public static readonly string USERS_SQL_TABLE_NAME = "users";
 
         #endregion SQLTableNames
 
@@ -1117,6 +1166,11 @@ namespace NusysIntermediate
             DeletePresentationLinkRequest,
             UpdatePresentationLinkRequest,
             UpdateMetadataEntryRequest,
+
+            /// <summary>
+            /// this request type will be used to make a server cal to get the analysis model of a contentDataModel.
+            /// </summary>
+            GetAnalysisModelRequest,
             
             /// <summary>
             /// this request type is used to create a search over the library elements.  
