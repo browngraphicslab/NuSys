@@ -60,5 +60,12 @@ namespace NuSysApp
             xClippingWrapper.Dispose();
             DataContext = null;
         }
+
+        private void Button_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            var tempvm = new TemporaryImageRegionViewModel(new Windows.Foundation.Point(0.25, 0.3), .4, .2, this.xClippingWrapper,this.DataContext as DetailHomeTabViewModel);
+            var tempview = new TemporaryImageRegionView(tempvm);
+            xClippingWrapper.AddTemporaryRegion(tempview);
+        }
     }
 }
