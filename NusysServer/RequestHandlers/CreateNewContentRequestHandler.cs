@@ -71,8 +71,8 @@ namespace NusysServer
                     else
                     {
                         Task.Run(async delegate {
-                            var model = await TextProcessor.GetNusysPdfAnalysisModelFromTextAsync(pdfText);
-                            Debug.WriteLine(model.TotalText);
+                            //var model = await TextProcessor.GetNusysPdfAnalysisModelFromTextAsync(pdfText);
+                            //Debug.WriteLine(model.TotalText);
                         });
                     }
                 }

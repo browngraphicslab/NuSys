@@ -67,7 +67,7 @@ namespace NusysServer
             var contentTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.Content) + " (" +
                 NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +
                 NusysConstants.CONTENT_TABLE_TYPE_KEY + " varchar(128), " +
-                NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY + " varchar(1024));");
+                NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY + " varchar(MAX));");
 
             var libraryElementTable = MakeCommand("CREATE TABLE " + Constants.GetTableName(Constants.SQLTableType.LibraryElement) + " (" +
                 NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY + " varchar(128) NOT NULL PRIMARY KEY, " +

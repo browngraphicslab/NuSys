@@ -787,8 +787,7 @@ namespace NusysIntermediate
             public static readonly string CONTENT_TABLE_TYPE_KEY = "content_type";
 
             /// <summary>
-            /// varchar url of the content.
-            /// approximately 512 characters max
+            /// varchar url of the content. MAX
             /// </summary>
             public static readonly string CONTENT_TABLE_CONTENT_URL_KEY = "content_ur";
 
