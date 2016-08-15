@@ -58,6 +58,7 @@
     <Compile Include="Models\CollectionLibraryElementModel.cs" />
     <Compile Include="Models\ElementModel.cs" />
     <Compile Include="Models\ImageElementModel.cs" />
+    <Compile Include="Models\IRectangleRegionModelable.cs" />
     <Compile Include="Models\LibraryElementModel.cs" />
     <Compile Include="ModelFactories\LibraryElementModelFactory.cs" />
     <Compile Include="Models\LinkLibraryElementModel.cs" />

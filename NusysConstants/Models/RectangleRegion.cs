@@ -7,7 +7,7 @@ using NusysIntermediate;
 
 namespace NusysIntermediate
 {
-    public class RectangleRegion : Region
+    public class RectangleRegion : Region, IRectangleRegionModelable
     {
 
         public RectangleRegion(string libraryId, NusysConstants.ElementType type) : base(libraryId, type)
