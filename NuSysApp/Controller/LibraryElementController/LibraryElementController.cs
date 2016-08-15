@@ -77,6 +77,19 @@ namespace NuSysApp
         #endregion Events
 
         /// <summary>
+        /// returns the contentDataModel for this LibraryElementController's LibraryElementModel's ContentDataModelId.  
+        /// Will return null if it doesn't exist LOCALLY.  
+        /// </summary>
+        public ContentDataModel ContentDataModel
+        {
+            get
+            {
+                Debug.Assert(LibraryElementModel.ContentDataModelId != null);
+                return SessionController.Instance.ContentController.GetContentDataModel(LibraryElementModel.ContentDataModelId);
+            }
+        }
+
+        /// <summary>
         /// returns whether the current library element's content Data Model is loaded (aka just locally present);
         /// </summary>
         public bool ContentLoaded

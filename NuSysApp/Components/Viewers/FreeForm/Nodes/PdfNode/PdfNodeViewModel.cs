@@ -27,30 +27,34 @@ namespace NuSysApp
         private CompositeTransform _inkScale;
         private bool _isSelected;
         public int CurrentPageNumber { get;  private set; }
-        public MuPDFWinRT.Document _document;
         public ObservableCollection<Button> SuggestedTags { get; set; }
         private List<string> _suggestedTags = new List<string>();
 
+        /// <summary>
+        /// the image source for the current pdf page. 
+        /// </summary>
+        public BitmapImage ImageSource
+        {
+            get; set;
+        }
+
         public PdfNodeViewModel(ElementController controller) : base(controller)
         {
+            ImageSource = new BitmapImage();
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
             var model = (PdfNodeModel) controller.Model;
-            model.PageChange += OnPageChange;
             CurrentPageNumber = model.CurrentPageNumber;
             if (controller.LibraryElementModel.Type == NusysConstants.ElementType.PdfRegion)
             {
                 var pdfRegionModel = controller.LibraryElementModel as PdfRegionModel;
                 CurrentPageNumber = pdfRegionModel.PageLocation;
             }
-
         }           
 
         public override void Dispose()
         {
             var model = (PdfNodeModel)Controller.Model;
-            model.PageChange -= OnPageChange;
-            if (_document != null)
-            _document.Dispose();
+            ImageSource.ImageOpened -= ImageSourceOnImageOpened;
             base.Dispose();
         }
 
@@ -60,7 +64,13 @@ namespace NuSysApp
             {
                 await Controller.LibraryElementController.LoadContentDataModelAsync();
             }
+            ImageSource.ImageOpened += ImageSourceOnImageOpened;
             await DisplayPdf();
+        }
+
+        private void ImageSourceOnImageOpened(object sender, RoutedEventArgs routedEventArgs)
+        {
+            SetSize(ImageSource.PixelWidth, ImageSource.PixelHeight);
         }
 
         private async void LibraryElementModelOnOnLoaded(object sender)
@@ -74,9 +84,7 @@ namespace NuSysApp
             if (Controller.LibraryElementModel == null || Controller.LibraryElementController.Data == null) {
                 return;
             }
-            _document = await MediaUtil.DataToPDF(Controller.LibraryElementController.Data);
             await Goto(CurrentPageNumber);
-            SetSize(Width, Height);
         }
 
         /// <summary>
@@ -95,19 +103,11 @@ namespace NuSysApp
             // Save the storage file as a writeable bitmap and set the ImageSource to this bitmap
             using (var stream = await file.OpenReadAsync())
             {
-                WriteableBitmap bitmap = new WriteableBitmap(400, 600);
-                await bitmap.SetSourceAsync(stream);
-                bitmap.Invalidate();
+                BitmapImage bitmap = new BitmapImage(Controller.LibraryElementController.LargeIconUri);
                 ImageSource = bitmap;
                 RaisePropertyChanged("ImageSource");
             }
             
-        }
-
-        private async void OnPageChange(int page)
-        {
-            CurrentPageNumber = page;
-            await RenderPage(page);
         }
 
         public async Task FlipRight()
@@ -124,36 +124,21 @@ namespace NuSysApp
 
         public async Task Goto(int pageNumber)
         {
-            if (_document == null)
+            var content = Controller.LibraryElementController.ContentDataModel as PdfContentDataModel;
+            if (content == null || pageNumber == -1)
+            {
                 return;
-            if (pageNumber == -1) return;
-            if (pageNumber >= (_document.PageCount)) return;
+            }
+
+            if (pageNumber >= (content.PageUrls.Count))
+            {
+                return;
+            }
+            ImageSource.UriSource = new Uri(content.PageUrls[pageNumber]);
             CurrentPageNumber = pageNumber;
             ((PdfNodeModel)Model).CurrentPageNumber = CurrentPageNumber;
-        }
-
-        private async Task RenderPage(int pageNumber)
-        {
-            if (_document == null)
-                return;
-            var pageSize = _document.GetPageSize(pageNumber);
-            var width = pageSize.X;
-            var height = pageSize.Y;
-            var image = new WriteableBitmap(width, height);
-            IBuffer buf = new Windows.Storage.Streams.Buffer(image.PixelBuffer.Capacity);
-            buf.Length = image.PixelBuffer.Length;
-            
-            _document.DrawPage(pageNumber, buf, 0, 0, width, height, false);
-
-            var s = buf.AsStream();
-            await s.CopyToAsync(image.PixelBuffer.AsStream());
-            image.Invalidate();
-            ImageSource = image;
             RaisePropertyChanged("ImageSource");
-
-
         }
-
 
         public override void SetSize(double width, double height)
         {
@@ -200,83 +185,7 @@ namespace NuSysApp
                 return;
             }
 
-            SetSize(width, height);
-        }
-
-
-        public string GetAllText()
-        {
-            string data = "";
-            int numPages = _document.PageCount;
-            int currPage = 0;
-            while (currPage<numPages)
-            {
-                data = data + _document.GetAllTexts(currPage);
-                currPage++;
-            }
-            return data;
-        }
-
-        public async Task LaunchLDA(PdfNodeModel model)
-        {
-
-            Task.Run(async () =>
-            {
-                var test = new List<string>();
-
-                // parameters for our LDA algorithm
-                string filename = model.Title;
-                test.Add(filename);
-                test.Add("niters 8");
-                test.Add("ntopics 5");
-                test.Add("twords 10");
-                test.Add("dir ");
-                test.Add("est true");
-                test.Add("alpha 12.5");
-                test.Add("beta .1");
-                test.Add("model model-final");
-
-                string data = "";
-                int numPages = _document.PageCount;
-                int currPage = 0;
-                while (currPage < numPages)
-                {
-                    data = data + _document.GetAllTexts(currPage);
-                    currPage++;
-                }
-
-
-                DieStopWords ds = new DieStopWords();
-                data = await ds.removeStopWords(data);
-                List<string> topics = await TagExtractor.launch(test, new List<string>() {data});
-                await UITask.Run(() =>
-                {
-                    var topicKeywords = new HashSet<Keyword>();
-                    foreach(var topic in topics)
-                    {
-                        topicKeywords.Add(new Keyword(topic, Keyword.KeywordSource.TopicModeling));
-                    }
-                    Controller.LibraryElementController.SetKeywords((topicKeywords));
-                    RaisePropertyChanged("Tags");
-                });
-            });
-        }
-
-        public MuPDFWinRT.Document Document
-        {
-            get
-            {
-                return this._document;
-            }
-            set
-            {
-               this. _document = value;
-            }
-        }
-
-        public WriteableBitmap ImageSource
-        {
-            get; set;
+            SetSize(width, height);       
         }
     }
 }

@@ -40,7 +40,6 @@ namespace NuSysApp
                     Debug.Assert(videoModel != null);
                     controller = new VideoRegionLibraryElementController(videoModel);
                     break;
-
                 case NusysConstants.ElementType.Word:
                     //Do debug.asserts above the controller instantiation to make sure the model types are correct
                     controller = new WordNodeLibraryElementController(model);

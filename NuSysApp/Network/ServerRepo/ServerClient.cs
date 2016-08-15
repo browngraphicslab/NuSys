@@ -606,7 +606,8 @@ namespace NuSysApp
 
         public async Task SendMessageToServer(Message message)
         {
-            await SendToServer(message.GetSerialized());
+            var serialized = message.GetSerialized();
+            await SendToServer(serialized);
         }
         private async Task SendToServer(string message)
         {
