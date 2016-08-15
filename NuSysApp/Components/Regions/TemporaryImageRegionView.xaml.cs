@@ -34,16 +34,12 @@ namespace NuSysApp
         public delegate void RegionSelectedDeselectedEventHandler(object sender, bool selected);
         public event RegionSelectedDeselectedEventHandler OnSelectedOrDeselected;
 
-        public TemporaryImageRegionView(ImageRegionViewModel vm)
+        public TemporaryImageRegionView(TemporaryImageRegionViewModel vm)
         {
             this.InitializeComponent();
             this.DataContext = vm;
             this.Deselect();
-            var model = vm.Model as RectangleRegion;
-            if (model == null)
-            {
-                return;
-            }
+
 
             CompositeTransform composite = new CompositeTransform();
             this.RenderTransform = composite;
@@ -53,10 +49,10 @@ namespace NuSysApp
             var parentWidth = vm.RectangleWrapper.GetWidth();
             var parentHeight = vm.RectangleWrapper.GetHeight();
 
-            composite.TranslateX = model.TopLeftPoint.X * parentWidth;
-            composite.TranslateY = model.TopLeftPoint.Y * parentHeight;
-            vm.Width = (model.Width) * parentWidth;
-            vm.Height = (model.Height) * parentHeight;
+            composite.TranslateX = vm.NormalizedWidth * parentWidth;
+            composite.TranslateY = vm.NormalizedTopLeftPoint.Y * parentHeight;
+            vm.Width = (vm.NormalizedWidth) * parentWidth;
+            vm.Height = (vm.NormalizedHeight) * parentHeight;
             vm.Disposed += Dispose;
 
             _tx = composite.TranslateX;
@@ -73,7 +69,7 @@ namespace NuSysApp
         private void ChangeLocation(object sender, Point topLeft)
         {
 
-            var vm = DataContext as ImageRegionViewModel;
+            var vm = DataContext as TemporaryImageRegionViewModel;
 
             var composite = RenderTransform as CompositeTransform;
             if (composite == null)
@@ -131,7 +127,7 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void xMainRectangle_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            var vm = DataContext as ImageRegionViewModel;
+            var vm = DataContext as TemporaryImageRegionViewModel;
 
             if (!vm.Editable)
                 return;
@@ -164,9 +160,33 @@ namespace NuSysApp
 
         public void Dispose(object sender, EventArgs e)
         {
-            var vm = DataContext as ImageRegionViewModel;
+            var vm = DataContext as TemporaryImageRegionViewModel;
             vm.Disposed -= Dispose;
             vm.LocationChanged -= ChangeLocation;
+            xMainRectangleBorder.Tapped -= xMainRectangleBorder_Tapped;
+        }
+
+        private async void xMainRectangleBorder_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            //We create a request using the detail view's create args function
+            var vm = this.DataContext as TemporaryImageRegionViewModel;
+            var regionRequestArgs = vm.HomeTabViewModel?.GetNewCreateLibraryElementRequestArgs() as CreateNewRectangleRegionLibraryElementRequestArgs;
+            var type = NusysConstants.ElementType.ImageRegion;
+            // We need to then populate our new figures into it
+            regionRequestArgs.RegionHeight = vm.NormalizedHeight;
+            regionRequestArgs.RegionWidth = vm.NormalizedWidth;
+            regionRequestArgs.TopLeftPoint = new PointModel(vm.NormalizedTopLeftPoint.X,vm.NormalizedTopLeftPoint.Y);
+            // this is the rest of what's left to do to make this
+            regionRequestArgs.ContentId = vm.HomeTabViewModel.LibraryElementController.ContentId;
+            regionRequestArgs.LibraryElementType = type;
+            regionRequestArgs.Title = "Region " + vm.HomeTabViewModel.LibraryElementController.Title; // TODO factor out this hard-coded string to a constant
+            regionRequestArgs.ClippingParentLibraryId = vm.HomeTabViewModel.LibraryElementController.LibraryElementModel.LibraryElementId;
+            //create a request and send it to the server
+            var request = new CreateNewLibraryElementRequest(regionRequestArgs);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            request.AddReturnedLibraryElementToLibrary();
+            //this then removes the temporary region
+            vm.RectangleWrapper.RemoveTemporaryRegion(vm);
         }
     }
 }

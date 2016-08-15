@@ -38,10 +38,11 @@ namespace NuSysApp
                 RaisePropertyChanged("Width");
             }
         }
-        private double _normailzedHeight;
-        private double _normalizedWidth;
-        private Point _topLeftPoint;
+        public double NormalizedHeight { get; set; }
+        public double NormalizedWidth { get; set; }
+        public Point NormalizedTopLeftPoint { get; set; }
         public RectangleWrapper RectangleWrapper { get; set; }
+        public DetailHomeTabViewModel HomeTabViewModel { get; set; }
         public bool Editable { get; private set; }
 
         public delegate void SizeChangedEventHandler(object sender, double width, double height);
@@ -53,15 +54,16 @@ namespace NuSysApp
         private RectangleRegionLibraryElementController _regionLibraryElementController;
 
 
-        public TemporaryImageRegionViewModel( Point topLeftPoint, double width, double height, RectangleWrapper rectangleWrapper)
+        public TemporaryImageRegionViewModel( Point topLeftPoint, double width, double height, RectangleWrapper rectangleWrapper, DetailHomeTabViewModel hometabViewModel)
         {
-            _topLeftPoint = topLeftPoint;
-            _width = width;
-            _height = height;
+            NormalizedTopLeftPoint = topLeftPoint;
+            NormalizedWidth = width;
+            NormalizedHeight = height;
             Editable = true;
             RectangleWrapper = rectangleWrapper;
             rectangleWrapper.SizeChanged += RectangleWrapper_SizeChanged;
             RectangleWrapper.Disposed += Dispose;
+            HomeTabViewModel = hometabViewModel;
         }
 
 
@@ -69,8 +71,8 @@ namespace NuSysApp
         {
             var containerHeight = RectangleWrapper.GetHeight();
             var containerWidth = RectangleWrapper.GetWidth();
-            Height = _height * containerHeight;
-            Width = _width * containerWidth;
+            Height = NormalizedHeight * containerHeight;
+            Width = NormalizedWidth * containerWidth;
 
             // do not remove this location changed, it breaks everything if you do
             LocationChanged?.Invoke(this, new Point(Width,Height));
@@ -78,7 +80,7 @@ namespace NuSysApp
         private void RegionController_LocationChanged(object sender, Point topLeft)
         { 
 
-            var denormalizedTopLeft = _topLeftPoint;
+            var denormalizedTopLeft = NormalizedTopLeftPoint;
             LocationChanged?.Invoke(this, denormalizedTopLeft);
 
         }
@@ -87,8 +89,8 @@ namespace NuSysApp
         private void RegionController_SizeChanged(object sender, double width, double height)
         {
 
-            Height = _height * RectangleWrapper.GetHeight();
-            Width = _width * RectangleWrapper.GetWidth();
+            Height = NormalizedHeight * RectangleWrapper.GetHeight();
+            Width = NormalizedWidth * RectangleWrapper.GetWidth();
             SizeChanged?.Invoke(this, Width, Height);
 
         }
