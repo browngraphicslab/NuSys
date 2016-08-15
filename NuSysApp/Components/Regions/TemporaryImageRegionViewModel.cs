@@ -62,6 +62,7 @@ namespace NuSysApp
             Editable = true;
             RectangleWrapper = rectangleWrapper;
             rectangleWrapper.SizeChanged += RectangleWrapper_SizeChanged;
+
             RectangleWrapper.Disposed += Dispose;
             HomeTabViewModel = hometabViewModel;
         }
@@ -73,16 +74,10 @@ namespace NuSysApp
             var containerWidth = RectangleWrapper.GetWidth();
             Height = NormalizedHeight * containerHeight;
             Width = NormalizedWidth * containerWidth;
-
-            // do not remove this location changed, it breaks everything if you do
-            LocationChanged?.Invoke(this, new Point(Width,Height));
-        }
-        private void RegionController_LocationChanged(object sender, Point topLeft)
-        { 
-
             var denormalizedTopLeft = NormalizedTopLeftPoint;
-            LocationChanged?.Invoke(this, denormalizedTopLeft);
-
+            // do not remove this location changed, it breaks everything if you do
+            SizeChanged?.Invoke(this, Width,Height);
+            LocationChanged?.Invoke(this, new Point(NormalizedTopLeftPoint.X * containerWidth, NormalizedTopLeftPoint.Y * containerHeight));
         }
 
 

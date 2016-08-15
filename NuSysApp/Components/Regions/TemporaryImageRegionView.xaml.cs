@@ -49,7 +49,7 @@ namespace NuSysApp
             var parentWidth = vm.RectangleWrapper.GetWidth();
             var parentHeight = vm.RectangleWrapper.GetHeight();
 
-            composite.TranslateX = vm.NormalizedWidth * parentWidth;
+            composite.TranslateX = vm.NormalizedTopLeftPoint.X * parentWidth;
             composite.TranslateY = vm.NormalizedTopLeftPoint.Y * parentHeight;
             vm.Width = (vm.NormalizedWidth) * parentWidth;
             vm.Height = (vm.NormalizedHeight) * parentHeight;
@@ -177,7 +177,7 @@ namespace NuSysApp
             regionRequestArgs.RegionWidth = vm.NormalizedWidth;
             regionRequestArgs.TopLeftPoint = new PointModel(vm.NormalizedTopLeftPoint.X,vm.NormalizedTopLeftPoint.Y);
             // this is the rest of what's left to do to make this
-            regionRequestArgs.ContentId = vm.HomeTabViewModel.LibraryElementController.ContentId;
+            regionRequestArgs.ContentId = vm.HomeTabViewModel.LibraryElementController.LibraryElementModel.ContentDataModelId;
             regionRequestArgs.LibraryElementType = type;
             regionRequestArgs.Title = "Region " + vm.HomeTabViewModel.LibraryElementController.Title; // TODO factor out this hard-coded string to a constant
             regionRequestArgs.ClippingParentLibraryId = vm.HomeTabViewModel.LibraryElementController.LibraryElementModel.LibraryElementId;
