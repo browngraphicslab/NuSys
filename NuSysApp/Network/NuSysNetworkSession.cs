@@ -424,7 +424,9 @@ namespace NuSysApp
 
         public async Task<List<SearchResult>> AdvancedSearchOverLibraryElements(QueryArgs searchQuery)
         {
-            return await _serverClient.AdvancedSearchOverLibraryElements(searchQuery);
+            var request = new SearchRequest(searchQuery);
+            await ExecuteRequestAsync(request);
+            return request.GetReturnedResults();
         }
 
         public async Task<string> DuplicateLibraryElement(string libraryElementId)

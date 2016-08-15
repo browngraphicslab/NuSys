@@ -32,14 +32,14 @@ namespace NuSysApp
 
         /// <summary>
         /// the method to be called after the request has returned and was successfull.  
-        /// This will return the server-returned SearchResults class for the correspondingQuery.  
+        /// This will return the server-returned list of SearchResults class for the correspondingQuery.  
         /// </summary>
         /// <returns></returns>
-        public SearchResult GetReturnedResult()
+        public List<SearchResult> GetReturnedResults()
         {
             CheckWasSuccessfull();
             Debug.Assert(_returnMessage.ContainsKey(NusysConstants.SEARCH_REQUEST_RETURNED_SEARCH_RESULTS_KEY));
-            return _returnMessage.Get<SearchResult>(NusysConstants.SEARCH_REQUEST_RETURNED_SEARCH_RESULTS_KEY);
+            return _returnMessage.GetList<SearchResult>(NusysConstants.SEARCH_REQUEST_RETURNED_SEARCH_RESULTS_KEY);
         }
     }
 }

@@ -23,11 +23,12 @@ namespace NusysServer
     public class SqlQueryOperator : SqlQueryConditional
     {
         public Constants.Operator Operator { get; private set; }
-        public SqlQueryConditional FirstConditional { get; private set; }
-        public SqlQueryConditional SecondConditional { get; private set; }
 
+        private List<SqlQueryConditional> _conditionalsList;
+
+        private string _queryString;
         /// <summary>
-        /// Creates a select query by performing operations (AND/OR) on two different conditionals
+        /// Creates a select query by performing operations (AND/OR) on two different conditionals.
         /// </summary>
         /// <param name="firstConditional"></param>
         /// <param name="secondConditional"></param>
@@ -39,8 +40,26 @@ namespace NusysServer
                 throw new Exception("cannot create a Sql Query Operator with null conditionals");
             }
             Operator = conditionalOperator;
-            FirstConditional = firstConditional;
-            SecondConditional = secondConditional;
+            _conditionalsList = new List<SqlQueryConditional>();
+            _conditionalsList.Add(firstConditional);
+            _conditionalsList.Add(secondConditional);
+            _queryString = " (" + firstConditional.GetQueryString() + " " + Operator.ToString() + " " + secondConditional.GetQueryString() + ") ";
+        }
+
+        /// <summary>
+        /// This constructor creates a new query joining the list of conditionals with the conditional Operator. 
+        /// </summary>
+        /// <param name="listOfConditionals"></param>
+        /// <param name="conditionalOperator"></param>
+        public SqlQueryOperator(List<SqlQueryConditional> listOfConditionals, Constants.Operator conditionalOperator)
+        {
+            if (listOfConditionals.Count <= 1)
+            {
+                throw new Exception("cannot create a Sql Query Operator with less than two conditinals");
+            }
+            _conditionalsList = listOfConditionals;
+            Operator = conditionalOperator;
+            _queryString = "(" + string.Join(" " + Operator.ToString() + " ", listOfConditionals.Select(q => q.GetQueryString())) + ")";
         }
 
         /// <summary>
@@ -49,7 +68,7 @@ namespace NusysServer
         /// <returns></returns>
         public string GetQueryString()
         {
-            return " ("+FirstConditional.GetQueryString() + " "+Operator.ToString() +" "+SecondConditional.GetQueryString() +") ";
+            return _queryString;
         }
 
         /// <summary>
@@ -58,7 +77,12 @@ namespace NusysServer
         /// <returns></returns>
         public IEnumerable<string> GetPropertyKeys()
         {
-            return FirstConditional.GetPropertyKeys().Concat(SecondConditional.GetPropertyKeys());
+            List<string> propertyKeys = new List<string>();
+            foreach (var conditional in _conditionalsList)
+            {
+                propertyKeys.AddRange(conditional.GetPropertyKeys());
+            }
+            return propertyKeys;
         }
     }
 
@@ -134,6 +158,96 @@ namespace NusysServer
         public string GetQueryString()
         {
             return Property + " IN('" + string.Join("','",PossibleValues) + "') ";
+        }
+
+        /// <summary>
+        /// Returns the list of properties (table columns) that are checked
+        /// </summary>
+        public IEnumerable<string> GetPropertyKeys()
+        {
+            return new List<string>() { Property };
+        }
+    }
+
+
+    /// <summary>
+    /// Creates a select query condtional that checks if the any of the possible values passed in is a substring of the property's value
+    /// </summary>
+    public class SqlQueryContainsSubstring : SqlQueryConditional
+    {
+        /// <summary>
+        /// the FULL-COLUMN TITLE property that has to have the specified value
+        /// </summary>
+        public string Property { get; private set; }
+
+        /// <summary>
+        /// the specified values that the must be a substring of property
+        /// </summary>
+        public IEnumerable<string> PossibleValues { get; private set; }
+
+        /// <summary>
+        /// Creates a select query condtional that checks if the any of the possible values passed in is a substring of the property's value
+        /// </summary>
+        public SqlQueryContainsSubstring(Constants.SQLTableType tableType, string property, IEnumerable<string> possibleValues)
+        {
+            if (property == null || possibleValues == null || !possibleValues.Any())
+            {
+                throw new Exception("cannot create a Sql Query contains conditional with null conditionals or no possible values");
+            }
+            Property = Constants.GetTableName(tableType) + "." + property;
+            PossibleValues = possibleValues;
+        }
+
+        /// <summary>
+        /// Returns the query string that checks if any of the possible values are substrings of the properties value
+        /// </summary>
+        public string GetQueryString()
+        {
+            string queryString = "";
+            return string.Join("OR ", PossibleValues.Select(q => Property + " LIKE '%" + q + "%' "));
+            
+        }
+
+        public IEnumerable<string> GetPropertyKeys()
+        {
+            return new List<string>() { Property };
+        }
+    }
+
+    /// <summary>
+    /// Condtional that checks if the required value is a substring of the property
+    /// </summary>
+    public class SqlQueryIsSubstring: SqlQueryConditional
+    {
+        /// <summary>
+        /// the FULL-COLUMN TITLE property that has to have the specified value
+        /// </summary>
+        public string Property { get; private set; }
+
+        /// <summary>
+        /// the specified value that the proeprty must have as a substring to satisfy the equals condition
+        /// </summary>
+        public string RequiredValue { get; private set; }
+
+        /// <summary>
+        /// Creates a select query conditional that checks if the requred value is a substring of the property
+        /// </summary>
+        public SqlQueryIsSubstring(Constants.SQLTableType tableType, string property, string requiredValue)
+        {
+            if (property == null || requiredValue == null)
+            {
+                throw new Exception("cannot create a Sql Query Equals conditional with null conditionals");
+            }
+            Property = Constants.GetFullColumnTitle(tableType, property).First();
+            RequiredValue = requiredValue;
+        }
+
+        /// <summary>
+        /// Returns the query string that checks if the requred value is a substring of the property
+        /// </summary>
+        public string GetQueryString()
+        {
+            return Property + " LIKE '%" + RequiredValue + "%' ";
         }
 
         /// <summary>

@@ -37,13 +37,19 @@ namespace NuSysApp
             this.Creator = model.Creator;
 
             // extra info fields
-            this.Keywords = parseKeyWordsToCommaSeparatedList(model.Keywords);
-            this.Metadata = parseMetaDataToHyphenBulletList(new Dictionary<string, MetadataEntry>(model.Metadata));
+            if (model.Keywords != null)
+            {
+                this.Keywords = parseKeyWordsToCommaSeparatedList(model.Keywords);
+            }
+            if (model.Metadata != null)
+            {
+                this.Metadata = parseMetaDataToHyphenBulletList(new Dictionary<string, MetadataEntry>(model.Metadata));
+            }
 
             // unused
             this.Id = model.LibraryElementId;
             this.Model = model;
-            this.Data = controller.Data;
+            //this.Data = controller.Data;
         }
 
         //formatting helper class
