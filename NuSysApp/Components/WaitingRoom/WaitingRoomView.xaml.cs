@@ -46,9 +46,21 @@ namespace NuSysApp
         private bool _loggedIn = false;
         private bool _isLoaded = false;
 
+        //makes sure collection doesn't get added twice
         private bool _collectionAdded = false;
 
         private static string LoginCredentialsFilePath;
+
+        //list of all collections
+        private List<LibraryElementModel> _collectionList;
+
+        //selected collection by user
+        private LibraryElementModel _selectedCollection = null;
+
+        //sort booleans for reverse
+        private bool _titleReverse;
+        private bool _dateReverse;
+        private bool _accessReverse;
 
         private HashSet<string> _preloadedIDs = new HashSet<string>();
 
@@ -79,28 +91,35 @@ namespace NuSysApp
             ServerNameText.TextChanged += delegate
             {
                 ServerName = ServerNameText.Text;
-                //Init();
+
             };
-
-            //Init();
-
+            
             SlideOutLogin.Completed += SlideOutLoginComplete;
 
             //AutoLogin();
+
+            _selectedCollection = null;
+            _titleReverse = false;
+            _dateReverse = false;
+            _accessReverse = false;
         }
 
         private void SlideOutLoginComplete(object sender, object e)
         {
             login.Visibility = Visibility.Collapsed;
+            NuSysTitle.Visibility = Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// initializes collection listview
+        /// </summary>
         private async void Init()
         {
 
             JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
             try
             {
-                var all = new List<CollectionTextBox>();
+                var all = new List<CollectionListBox>();
                 var libraryElements = await SessionController.Instance.NuSysNetworkSession.GetAllLibraryElements();
                 foreach (var libraryElement in libraryElements)
                 {
@@ -108,21 +127,25 @@ namespace NuSysApp
                     {
                         SessionController.Instance.ContentController.Add(libraryElement);
                     }
+                    //if the libraryelement is of type collection, make a collectionlistbox for it and also add to the collectionlist
                     if (libraryElement.Type == NusysConstants.ElementType.Collection)
                     {
-                        var box = new CollectionTextBox(libraryElement.Title, libraryElement.LibraryElementId);
-                        all.Add(box);
+                        var i = new CollectionListBox(libraryElement);
+                        all.Add(i);
+                        _collectionList.Add(libraryElement);
                     }
                 }
-
-
+                //set items in collectionlist alphabetically
                 List?.Items?.Clear();
-                all.Sort((a, b) => a.Text.CompareTo(b.Text));
+                all.Sort((a, b) => a.Title.CompareTo(b.Title));
                 foreach (var i in all)
                 {
-                    List.Items.Add(i);
+                    List?.Items.Add(i);
                 }
+                //makes sure collection doesn't get added twice
                 _collectionAdded = true;
+                //next time title is clicked, it will reverse the list
+                _titleReverse = true;
             }
             catch (Exception e)
             {
@@ -133,10 +156,23 @@ namespace NuSysApp
 
         }
 
+        private void NewButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            NewWorkspacePopup.HorizontalOffset = this.ActualWidth/2 - 250;
+            NewWorkspacePopup.VerticalOffset = this.ActualHeight/2 - 110;
+            NewWorkspacePopup.IsOpen = true;
+        }
+
+        private void ClosePopupOnClick(object sender, RoutedEventArgs e)
+        {
+            NewWorkspacePopup.IsOpen = false;
+        }
+
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(SessionView));
         }
+
         private async void NewWorkspaceOnClick(object sender, RoutedEventArgs e)
         {
             var name = NewWorkspaceName.Text;
@@ -146,16 +182,15 @@ namespace NuSysApp
             var request = new CreateNewContentRequest(NusysConstants.ContentType.Text, null, props);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
             Init();
-
+            NewWorkspaceName.Text = "";
+            NewWorkspacePopup.IsOpen = false;
         }
         private async void Join_Workspace_Click(object sender, RoutedEventArgs e)
         {
-            if (List.SelectedItems.Count == 1)
+            if (_selectedCollection != null)
             {
                 SessionController.Instance.ContentController.OnNewContent -= ContentControllerOnOnNewContent;
-
-                var item = List.SelectedItems.First();
-                var id = ((CollectionTextBox) item).ID;
+                var id = _selectedCollection.LibraryElementId;
                 var collectionRequest = new GetEntireWorkspaceRequest(id ?? "test");
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(collectionRequest);
                 foreach (var content in collectionRequest.GetReturnedContentDataModels())
@@ -165,7 +200,7 @@ namespace NuSysApp
                 _firstLoadList = collectionRequest.GetReturnedElementModels();
                 InitialWorkspaceId = id;
                 this.Frame.Navigate(typeof(SessionView));
-                
+
             }
         }
 
@@ -179,17 +214,109 @@ namespace NuSysApp
             _firstLoadList = null;
             return l;
         }
+
         private async void NewUser_OnClick(object sender, RoutedEventArgs e)
         {
             var username = usernameInput.Text;
             var password = Convert.ToBase64String(Encrypt(passwordInput.Password));
             Login(username, password, true);
         }
+
         private async void LoginButton_OnClick(object sender, RoutedEventArgs e)
         {
             var username = usernameInput.Text;
             var password = Convert.ToBase64String(Encrypt(passwordInput.Password));
             Login(username,password,false);
+        }
+
+        /// <summary>
+        /// changes the window of preview information based on the selected collection.
+        /// also sets selected collection from the list. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ListItemSelected(object sender, SelectionChangedEventArgs e)
+        {
+            if (List.SelectedItem != null)
+            {
+                var item = List.SelectedItem;
+                var id = ((CollectionListBox)item).ID;
+                //set selected collection
+                _selectedCollection =
+                    SessionController.Instance.ContentController.GetLibraryElementController(id).LibraryElementModel;
+                //set properties in preview window
+                CreatorText.Text = _selectedCollection.Creator;
+                LastEditedText.Text = _selectedCollection.LastEditedTimestamp;
+                CreateDateText.Text = _selectedCollection.Timestamp;
+
+                SearchBox.Text = "";
+
+                PreviewPanel.Visibility = Visibility.Collapsed;
+                DetailPanel.Visibility = Visibility.Visible;
+            }
+        }
+
+        /// <summary>
+        /// autosuggest for collection list searchbox.
+        /// comes up with list of collections based on the characters entered in the search text area,
+        /// and sets this list as the searchbox's item source.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SearchBox_Suggest(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs e)
+        {
+            if (e.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                //turn collectionlist into a list of strings so we can compare titles to text entered
+                var titlelist = new List<string>();
+                foreach (LibraryElementModel m in _collectionList)
+                {
+                    titlelist.Add(m.Title);
+                }
+                //filters collections for suggestion list based on text already entered
+                var filteredCollections = titlelist.Where(t => t.ToLowerInvariant().Contains(sender.Text.ToLowerInvariant()));
+                SearchBox.ItemsSource = filteredCollections;
+            }
+
+
+        }
+
+        /// <summary>
+        /// turns a submitted query into the selected collection
+        /// if submitted using the enter key or the queryicon, it will check the text in the box itself.
+        /// if a user clicks on a suggestion from the list it will check the text in that selection.
+        /// also highlights selected collection on the listview. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Searched(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs e)
+        {
+            var selected = new List<LibraryElementModel>();
+            //suggestion is chosen from list
+            if (e.ChosenSuggestion != null)
+            {
+                selected = _collectionList.Where(s => s.Title == e.ChosenSuggestion).ToList();
+            }
+            //suggestion is submitted through query icon or enter key
+            else
+            {
+                selected = _collectionList.Where(s => s.Title == sender.Text).ToList();
+            }
+            //set selected collection and highlight it in the listview
+            if (selected.Count == 1)
+            {
+                _selectedCollection = selected[0];
+                foreach (CollectionListBox i in List.Items)
+                {
+                    if (i.Title == _selectedCollection.Title)
+                    {
+                        List.SelectedItem = i;
+                    }
+                }
+                List.ScrollIntoView(List.SelectedItem);
+                PreviewPanel.Visibility = Visibility.Collapsed;
+                DetailPanel.Visibility = Visibility.Visible;
+            }
         }
 
         private async void AutoLogin()
@@ -264,7 +391,7 @@ namespace NuSysApp
                 }
                 catch (Exception longParseException)
                 {
-                    throw new Exception("error trying to parse timestamp to long");
+                    throw new Exception("error trying to parse timestamp too long");
                 }
 
                 string data;
@@ -306,7 +433,8 @@ namespace NuSysApp
                         SessionController.Instance.ContentController.OnNewContent += ContentControllerOnOnNewContent;
 
                         loggedInText.Text = "Logged In!";
-
+                        _collectionList = new List<LibraryElementModel>();
+                        Init();
                         NewWorkspaceButton.IsEnabled = true;
                         _loggedIn = true;
                         if (_isLoaded)
@@ -325,9 +453,10 @@ namespace NuSysApp
                         UserName = userID;
                         if (userID.ToLower() != "rosemary" && userID.ToLower()!= "rms" && userID.ToLower() != "gfxadmin")
                         {
-                            foreach(var box in List.Items)
+
+                            foreach (var box in List.Items)
                             {
-                                if((box as CollectionTextBox).MadeByRosemary)
+                                if ((box as CollectionListBox).MadeByRosemary)
                                 {
                                     List.Items.Remove(box);
                                 }
@@ -390,15 +519,6 @@ namespace NuSysApp
         {
             if (element.Type == NusysConstants.ElementType.Collection && !_preloadedIDs.Contains(element.LibraryElementId))
             {
-                var items = new List<CollectionTextBox>();
- 
-                UITask.Run(delegate
-                {
-                    var box = new CollectionTextBox(element.Title ?? "", element.LibraryElementId);
-                    if (_collectionAdded == false) { List.Items.Add(box); }
-                    _collectionAdded = false;
-                });
-
                 _preloadedIDs.Add(element.LibraryElementId);
             }
         }
@@ -421,17 +541,66 @@ namespace NuSysApp
             return bytes;
         }
 
-        private partial class CollectionTextBox : TextBox
+        /// <summary>
+        /// Sort for collectionlist
+        /// for now not sorting by current users - could sort it by how many users are on the workspace potentially? idk
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SortList_OnClick(object sender, RoutedEventArgs e)
         {
-            public string ID { set; get; }
-            public bool MadeByRosemary = false;
-
-            public CollectionTextBox(string text, string Id) : base()
+            var collections = List?.Items.ToList();
+            List?.Items?.Clear();
+            var sorttype = ((Button) sender).Name;
+            
+            switch (sorttype)
             {
-                ID = Id;
-                IsEnabled = false;
-                Background = new SolidColorBrush(Colors.Transparent);
-                base.Text = text;
+                case "TitleHeader":
+                    //sort by title string comparison and reverse if necessary, and make sure you set the reverse bool again
+                    collections.Sort((a, b) => (a as CollectionListBox).Title.CompareTo((b as CollectionListBox).Title));
+                    if (_titleReverse)
+                    {
+                        collections.Reverse();
+                        _titleReverse = false;
+                    }
+                    else
+                    {
+                        _titleReverse = true;
+                    }
+                    break;
+                case "AccessHeader":
+                    collections.Sort(
+                        (a, b) => (a as CollectionListBox).Access.CompareTo((b as CollectionListBox).Access));
+                    if (_accessReverse)
+                    {
+                        collections.Reverse();
+                        _accessReverse = false;
+                    }
+                    else
+                    {
+                        _accessReverse = true;
+                    }
+                    break;
+                case "DateHeader":
+                    collections.Sort((a, b) => (a as CollectionListBox).Date.CompareTo((b as CollectionListBox).Date));
+                    if (_dateReverse)
+                    {
+                        collections.Reverse();
+                        _dateReverse = false;
+                    }
+                    else
+                    {
+                        _dateReverse = true;
+                    }
+                    break;
+                default:
+
+                    break;
+            }
+
+            foreach (var i in collections)
+            {
+                List?.Items?.Add(i);
             }
         }
     }

@@ -103,6 +103,7 @@
     <Content Include="Assets\add from file dark.png" />
     <Content Include="Assets\audio main menu.png" />
     <Content Include="Assets\audio.png" />
+    <Content Include="Assets\bar chart icon.png" />
     <Content Include="Assets\collection icon bluegreen.png" />
     <Content Include="Assets\collection main menu.png" />
     <Content Include="Assets\collection_1.png" />
@@ -138,6 +139,7 @@
     <Content Include="Assets\icon_webnode.png" />
     <Content Include="Assets\icon_web_color.png" />
     <Content Include="Assets\icon_whitex.png" />
+    <Content Include="Assets\image icon.png" />
     <Content Include="Assets\info.png" />
     <Content Include="Assets\ink.png" />
     <Content Include="Assets\library_thumbnails\audio.png" />
@@ -235,7 +237,7 @@
     <Content Include="Assets\fonts\FiraSans-BookItalic.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\fonts\FiraSans-Light.ttf">
+    <Content Include="Assets\FiraSans-Light.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\fonts\FiraSans-LightItalic.ttf">
@@ -253,6 +255,20 @@
     <Content Include="Assets\fonts\FiraSans-UltraLightItalic.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\fonts\AlegreyaSansSC-Black.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-BlackItalic.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-Bold.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-BoldItalic.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-ExtraBold.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-ExtraBoldItalic.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-Italic.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-Light.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-LightItalic.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-Medium.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-MediumItalic.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-Regular.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-Thin.ttf" />
+    <Content Include="Assets\fonts\AlegreyaSansSC-ThinItalic.ttf" />
     <None Include="Assets\paragraph.nusys" />
     <None Include="ClassDiagram1.cd" />
     <None Include="NuSysApp_TemporaryKey.pfx" />
@@ -402,6 +418,9 @@
       <DependentUpon>RectangleWrapper.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Viewers\RecordingNodeViewModel.cs" />
+    <Compile Include="Components\WaitingRoom\CollectionListBox.xaml.cs">
+      <DependentUpon>CollectionListBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controller\AudioRegionLibraryElementController.cs" />
     <Compile Include="Controller\CollectionLibraryElementController.cs" />
     <Compile Include="Controller\ElementControllerFactory.cs" />
@@ -860,6 +879,7 @@
     <Content Include="Assets\region icon.png" />
     <Content Include="Assets\resizer.png" />
     <Content Include="Assets\search as collection.png" />
+    <Content Include="Assets\search icon.png" />
     <Content Include="Assets\settings icon white.png" />
     <Content Include="Assets\settings icon.png" />
     <Content Include="Assets\SmallLogo.scale-100.png" />
@@ -877,6 +897,7 @@
     <Content Include="Assets\text.png" />
     <Content Include="Assets\tools icon.png" />
     <Content Include="Assets\tool_icon.png" />
+    <Content Include="Assets\video icon.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\word.png" />
     <Content Include="Assets\wordIcon.png" />
@@ -1183,6 +1204,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\Search\SearchView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\WaitingRoom\CollectionListBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
